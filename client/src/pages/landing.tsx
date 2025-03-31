@@ -93,7 +93,7 @@ export default function Landing() {
                 </div>
                 <h3 className="text-lg font-medium text-gray-900">AI Career Advisor</h3>
                 <p className="mt-2 text-base text-gray-500">
-                  Get personalized career guidance from Mark, our AI career coach, available 24/7.
+                  Get personalized career guidance from Musk, our AI career coach, available 24/7.
                 </p>
               </div>
 

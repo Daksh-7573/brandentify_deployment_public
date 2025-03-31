@@ -18,7 +18,7 @@ export default function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      message: `Hi ${user?.name?.split(' ')[0] || 'there'}! I'm Mark, your AI career advisor. Based on your profile, I see you're interested in advancing your data analysis career. How can I help you today?`,
+      message: `Hi ${user?.name?.split(' ')[0] || 'there'}! I'm Musk, your AI career advisor. Based on your profile, I see you're interested in advancing your data analysis career. How can I help you today?`,
       sender: 'ai',
       timestamp: new Date()
     }
@@ -74,7 +74,7 @@ export default function ChatInterface() {
       // If API fails, provide a fallback response
       setMessages(prev => [...prev, {
         id: (Date.now() + 1).toString(),
-        message: "Based on your profile and recent queries, I'd suggest focusing on developing skills in data visualization and advanced SQL. These are highly sought after in the analytics field you're targeting. Would you like me to recommend specific courses?",
+        message: "As Musk, your AI career advisor, I'd suggest focusing on developing skills in data visualization and advanced SQL based on your profile. These are highly sought after in the analytics field you're targeting. Would you like me to recommend specific courses?",
         sender: 'ai',
         timestamp: new Date()
       }]);
@@ -98,7 +98,7 @@ export default function ChatInterface() {
           <i className="fas fa-robot text-primary text-lg"></i>
         </div>
         <div>
-          <h2 className="font-medium">Mark - AI Career Coach</h2>
+          <h2 className="font-medium">Musk - AI Career Coach</h2>
           <p className="text-xs text-primary-100">Powered by advanced AI to help you reach your career goals</p>
         </div>
       </div>

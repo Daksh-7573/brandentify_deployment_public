@@ -33,7 +33,7 @@ export async function generateCareerAdvice(
       messages: [
         {
           role: "system",
-          content: `You are Mark, a professional career advisor specializing in technology careers. 
+          content: `You are Musk, a professional career advisor specializing in technology careers. 
           You provide concise, practical, and personalized career advice based on the user's profile and questions.
           Keep answers professional, practical, and under 250 words.
           Focus on actionable advice that helps career growth.`
@@ -58,10 +58,10 @@ export async function generateCareerAdvice(
     
     // Fallback responses for when OpenAI API fails
     const fallbackResponses = [
-      "Based on your profile, I'd recommend focusing on developing your technical and analytical skills further. Consider taking courses in data visualization or advanced SQL to enhance your marketability.",
-      "Looking at your background, expanding your knowledge in cloud technologies would be beneficial. AWS or Azure certifications could complement your existing skills nicely.",
-      "To advance in your field, consider developing both technical and soft skills. Project management certifications could help you move into leadership roles while leveraging your technical expertise.",
-      "Based on current industry trends, enhancing your skills in data analysis and business intelligence tools would make you more competitive in the job market."
+      "As Musk, your AI career advisor, I'd recommend focusing on developing your technical and analytical skills further. Consider taking courses in data visualization or advanced SQL to enhance your marketability.",
+      "Musk here! Looking at your background, expanding your knowledge in cloud technologies would be beneficial. AWS or Azure certifications could complement your existing skills nicely.",
+      "Musk speaking - To advance in your field, consider developing both technical and soft skills. Project management certifications could help you move into leadership roles while leveraging your technical expertise.",
+      "This is Musk, your career coach. Based on current industry trends, enhancing your skills in data analysis and business intelligence tools would make you more competitive in the job market."
     ];
     
     return fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
