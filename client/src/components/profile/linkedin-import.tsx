@@ -66,11 +66,34 @@ export default function LinkedInImport() {
       
       // Update user profile with job title and location if available
       if (profileData.title || profileData.location) {
-        const updateData: any = {};
-        if (profileData.title) updateData.title = profileData.title;
-        if (profileData.location) updateData.location = profileData.location;
-        
-        await apiRequest('PUT', `/api/users/${userId}`, updateData);
+        try {
+          // First check if the user exists
+          const response = await apiRequest('GET', `/api/users/${userId}`);
+          
+          if (response.ok) {
+            // User exists, update it
+            const updateData: any = {};
+            if (profileData.title) updateData.title = profileData.title;
+            if (profileData.location) updateData.location = profileData.location;
+            
+            await apiRequest('PUT', `/api/users/${userId}`, updateData);
+          } else {
+            // User doesn't exist, create a demo user
+            const newUser: any = {
+              email: `demo${userId}@example.com`,
+              name: "Demo User",
+              photoURL: null
+            };
+            if (profileData.title) newUser.title = profileData.title;
+            if (profileData.location) newUser.location = profileData.location;
+            
+            // Create the user
+            await apiRequest('POST', '/api/users', newUser);
+          }
+        } catch (error) {
+          console.error('Error updating user profile:', error);
+          // Continue anyway so at least the experiences, education and skills are saved
+        }
       }
       
       // Invalidate relevant queries to refresh data
