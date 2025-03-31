@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import Sidebar from "@/components/layout/sidebar";
@@ -5,10 +6,14 @@ import Header from "@/components/layout/header";
 import ChatInterface from "@/components/chat/chat-interface";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AICareer() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
   const [_, setLocation] = useLocation();
+  const [activeQuestion, setActiveQuestion] = useState<string | undefined>(undefined);
+  const { toast } = useToast();
 
   // Redirect to landing if not authenticated
   if (!isLoading && !isAuthenticated) {
@@ -32,6 +37,10 @@ export default function AICareer() {
     "What are the current trends in data analytics roles?"
   ];
 
+  const handleQuestionClick = (question: string) => {
+    setActiveQuestion(question);
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Top Navigation */}
@@ -48,7 +57,7 @@ export default function AICareer() {
             <h1 className="text-2xl font-semibold text-gray-900 mb-6">AI Career Booster</h1>
             
             {/* AI Chat Interface */}
-            <ChatInterface />
+            <ChatInterface initialQuestion={activeQuestion} />
             
             {/* Suggested Questions */}
             <Card className="mt-6">
@@ -59,7 +68,12 @@ export default function AICareer() {
                     <Button
                       key={index}
                       variant="outline"
-                      className="justify-start text-left text-gray-700 hover:bg-gray-50"
+                      className={`justify-start text-left ${
+                        activeQuestion === question 
+                          ? 'bg-primary/10 text-primary border-primary' 
+                          : 'text-gray-700 hover:bg-gray-50'
+                      }`}
+                      onClick={() => handleQuestionClick(question)}
                     >
                       {question}
                     </Button>

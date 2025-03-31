@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,7 +13,11 @@ type Message = {
   timestamp: Date;
 };
 
-export default function ChatInterface() {
+type ChatInterfaceProps = {
+  initialQuestion?: string;
+};
+
+export default function ChatInterface({ initialQuestion }: ChatInterfaceProps = {}) {
   const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -34,8 +38,11 @@ export default function ChatInterface() {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages]);
+  
+  // Using a ref for tracking if the initial question has been processed
+  const initialQuestionProcessed = useRef(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!inputMessage.trim()) return;
@@ -71,24 +78,38 @@ export default function ChatInterface() {
         }]);
       }
     } catch (error) {
-      // If API fails, provide a fallback response
-      setMessages(prev => [...prev, {
-        id: (Date.now() + 1).toString(),
-        message: "As Musk, your AI career advisor, I'd suggest focusing on developing skills in data visualization and advanced SQL based on your profile. These are highly sought after in the analytics field you're targeting. Would you like me to recommend specific courses?",
-        sender: 'ai',
-        timestamp: new Date()
-      }]);
-      
       console.error('Error sending message:', error);
       toast({
         title: "Error",
         description: "Failed to get AI response. Please try again.",
         variant: "destructive"
       });
+      
+      // Add error message to chat
+      setMessages(prev => [...prev, {
+        id: (Date.now() + 1).toString(),
+        message: "I'm sorry, I couldn't process your request at the moment. Please try again later.",
+        sender: 'ai',
+        timestamp: new Date()
+      }]);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [inputMessage, setMessages, setInputMessage, setIsLoading, toast]);
+  
+  // Handle initialQuestion if provided
+  useEffect(() => {
+    if (initialQuestion && initialQuestion.trim() && !initialQuestionProcessed.current) {
+      initialQuestionProcessed.current = true;
+      setInputMessage(initialQuestion);
+      // Use a timeout to ensure the state update has completed
+      setTimeout(() => {
+        const submitEvent = new Event('submit', { cancelable: true }) as unknown as React.FormEvent;
+        submitEvent.preventDefault = () => {}; // Mock preventDefault
+        handleSubmit(submitEvent);
+      }, 100);
+    }
+  }, [initialQuestion, handleSubmit, setInputMessage]);
 
   return (
     <Card className="flex-1 flex flex-col overflow-hidden">

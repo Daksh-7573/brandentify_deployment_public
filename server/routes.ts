@@ -327,10 +327,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { parseResumeText } = await import('./services/profile-parser');
       const profileData = await parseResumeText(resumeText);
       
+      // Ensure userId is a number
+      const userIdNum = typeof userId === 'string' ? parseInt(userId) : Number(userId);
+      
       // Add the userId to all extracted items
-      const experiences = profileData.experiences.map(exp => ({ ...exp, userId }));
-      const educations = profileData.educations.map(edu => ({ ...edu, userId }));
-      const skills = profileData.skills.map(skill => ({ ...skill, userId }));
+      const experiences = profileData.experiences.map(exp => ({ 
+        ...exp, 
+        userId: userIdNum 
+      }));
+      
+      const educations = profileData.educations.map(edu => ({ 
+        ...edu, 
+        userId: userIdNum 
+      }));
+      
+      const skills = profileData.skills.map(skill => ({ 
+        ...skill, 
+        userId: userIdNum 
+      }));
       
       res.status(200).json({
         ...profileData,
@@ -357,10 +371,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { parseLinkedInProfile } = await import('./services/profile-parser');
       const profileData = await parseLinkedInProfile(profileUrl);
       
+      // Ensure userId is a number
+      const userIdNum = typeof userId === 'string' ? parseInt(userId) : Number(userId);
+      
       // Add the userId to all extracted items
-      const experiences = profileData.experiences.map(exp => ({ ...exp, userId }));
-      const educations = profileData.educations.map(edu => ({ ...edu, userId }));
-      const skills = profileData.skills.map(skill => ({ ...skill, userId }));
+      const experiences = profileData.experiences.map(exp => ({ 
+        ...exp, 
+        userId: userIdNum 
+      }));
+      
+      const educations = profileData.educations.map(edu => ({ 
+        ...edu, 
+        userId: userIdNum 
+      }));
+      
+      const skills = profileData.skills.map(skill => ({ 
+        ...skill, 
+        userId: userIdNum 
+      }));
       
       res.status(200).json({
         ...profileData,
