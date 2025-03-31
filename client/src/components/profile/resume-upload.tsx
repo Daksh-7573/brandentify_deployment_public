@@ -15,7 +15,7 @@ export default function ResumeUpload() {
   const [file, setFile] = useState<File | null>(null);
   const [extractProfileData, setExtractProfileData] = useState(true);
   const { toast } = useToast();
-  const { user, isDemoMode } = useAuth();
+  const { user, isDemoMode, refreshUserData } = useAuth();
   
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -158,10 +158,19 @@ export default function ResumeUpload() {
             // For demo mode, refresh the user context data without a full page reload
             // This will keep us on the profile page but refresh the profile data
             if (isDemoMode) {
-              toast({
-                title: "Profile Updated",
-                description: "Your profile data has been refreshed with information from your resume.",
-              });
+              // First refresh the profile data in auth context
+              try {
+                // Get the refreshUserData function from auth context
+                // Use the refreshUserData from the hook directly
+                await refreshUserData();
+                
+                toast({
+                  title: "Profile Updated",
+                  description: "Your profile has been refreshed with information from your resume.",
+                });
+              } catch (error) {
+                console.error("Error refreshing user data:", error);
+              }
             }
             
             toast({

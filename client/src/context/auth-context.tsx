@@ -28,6 +28,7 @@ type AuthContextType = {
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
   enterDemoMode: () => void;
+  refreshUserData: () => Promise<void>; // New function to refresh user data
 };
 
 export const AuthContext = createContext<AuthContextType>({
@@ -38,6 +39,7 @@ export const AuthContext = createContext<AuthContextType>({
   signInWithGoogle: async () => {},
   signOut: async () => {},
   enterDemoMode: () => {},
+  refreshUserData: async () => {},
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -232,6 +234,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
   };
 
+  // Add the refreshUserData function to update user profile data
+  const refreshUserData = async () => {
+    if (isDemoMode) {
+      console.log("Refreshing demo user data");
+      await fetchDemoUserData();
+      return;
+    }
+    
+    // Handle regular user refresh if needed
+    if (user && !isDemoMode) {
+      // For non-demo users, we would fetch their profile from our backend
+      console.log("Regular user data refresh not implemented");
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -241,7 +258,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isDemoMode,
         signInWithGoogle,
         signOut,
-        enterDemoMode
+        enterDemoMode,
+        refreshUserData
       }}
     >
       {children}

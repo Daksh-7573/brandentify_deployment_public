@@ -12,7 +12,7 @@ export default function LinkedInImport() {
   const [isParsing, setIsParsing] = useState(false);
   const [profileUrl, setProfileUrl] = useState('');
   const { toast } = useToast();
-  const { user, isDemoMode } = useAuth();
+  const { user, isDemoMode, refreshUserData } = useAuth();
   
   const handleImport = async () => {
     if (!profileUrl || !profileUrl.includes('linkedin.com')) {
@@ -104,12 +104,19 @@ export default function LinkedInImport() {
       // Also invalidate the user query to refresh the profile
       queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
       
-      // For demo mode, refresh the user context data
+      // For demo mode, refresh the user context data without a full page reload
       if (isDemoMode) {
-        // Force a page reload to show updated data
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
+        // Use the refreshUserData function from auth context to update profile data
+        try {
+          await refreshUserData();
+          
+          toast({
+            title: "Profile Updated",
+            description: "Your profile has been refreshed with information from your LinkedIn profile.",
+          });
+        } catch (error) {
+          console.error("Error refreshing user data:", error);
+        }
       }
       
       toast({
