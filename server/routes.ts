@@ -321,39 +321,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Convert base64 to text (assuming PDF text extraction is handled by a hypothetical library)
       // In a real implementation, you would use a PDF parsing library
-      const resumeText = Buffer.from(fileData, 'base64').toString('utf-8');
+      let resumeText;
+      try {
+        resumeText = Buffer.from(fileData, 'base64').toString('utf-8');
+      } catch (error) {
+        console.error("Error converting file to text:", error);
+        return res.status(400).json({ 
+          message: "Failed to parse resume file. Please try uploading a text-based PDF or Word document.",
+          experiences: [],
+          educations: [],
+          skills: []
+        });
+      }
       
-      // Parse the resume text using our AI service
-      const { parseResumeText } = await import('./services/profile-parser');
-      const profileData = await parseResumeText(resumeText);
+      // Parse the resume text using our AI service with improved error handling
+      try {
+        const { parseResumeText } = await import('./services/profile-parser');
+        const profileData = await parseResumeText(resumeText);
+        
+        // Ensure userId is a number
+        const userIdNum = typeof userId === 'string' ? parseInt(userId) : Number(userId);
+        
+        // Add the userId to all extracted items
+        const experiences = profileData.experiences.map((exp: any) => ({ 
+          ...exp, 
+          userId: userIdNum 
+        }));
+        
+        const educations = profileData.educations.map((edu: any) => ({ 
+          ...edu, 
+          userId: userIdNum 
+        }));
+        
+        const skills = profileData.skills.map((skill: any) => ({ 
+          ...skill, 
+          userId: userIdNum 
+        }));
       
-      // Ensure userId is a number
-      const userIdNum = typeof userId === 'string' ? parseInt(userId) : Number(userId);
-      
-      // Add the userId to all extracted items
-      const experiences = profileData.experiences.map(exp => ({ 
-        ...exp, 
-        userId: userIdNum 
-      }));
-      
-      const educations = profileData.educations.map(edu => ({ 
-        ...edu, 
-        userId: userIdNum 
-      }));
-      
-      const skills = profileData.skills.map(skill => ({ 
-        ...skill, 
-        userId: userIdNum 
-      }));
-      
-      res.status(200).json({
-        ...profileData,
-        experiences,
-        educations,
-        skills
-      });
+        res.status(200).json({
+          ...profileData,
+          experiences,
+          educations,
+          skills
+        });
+      } catch (error) {
+        console.error('Error processing resume with AI:', error);
+        res.status(500).json({ 
+          message: "Failed to process resume with AI. The file might be too large or in an unsupported format.",
+          experiences: [],
+          educations: [],
+          skills: []
+        });
+      }
     } catch (error) {
-      console.error('Error parsing resume:', error);
+      console.error('Error in resume parsing route:', error);
       res.status(500).json({ message: "Failed to parse resume" });
     }
   });
@@ -375,17 +396,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userIdNum = typeof userId === 'string' ? parseInt(userId) : Number(userId);
       
       // Add the userId to all extracted items
-      const experiences = profileData.experiences.map(exp => ({ 
+      const experiences = profileData.experiences.map((exp: any) => ({ 
         ...exp, 
         userId: userIdNum 
       }));
       
-      const educations = profileData.educations.map(edu => ({ 
+      const educations = profileData.educations.map((edu: any) => ({ 
         ...edu, 
         userId: userIdNum 
       }));
       
-      const skills = profileData.skills.map(skill => ({ 
+      const skills = profileData.skills.map((skill: any) => ({ 
         ...skill, 
         userId: userIdNum 
       }));

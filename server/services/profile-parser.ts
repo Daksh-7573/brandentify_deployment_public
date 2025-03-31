@@ -15,6 +15,12 @@ export async function parseResumeText(resumeText: string): Promise<{
   location?: string;
 }> {
   try {
+    // Limit resume text to prevent token limit errors (roughly 20k characters ≈ 5k tokens)
+    const maxLength = 20000;
+    const truncatedResumeText = resumeText.length > maxLength
+      ? resumeText.substring(0, maxLength) + "\n\n[Content truncated due to length...]"
+      : resumeText;
+
     const systemPrompt = `
       You are an expert resume analyzer. Extract the following information from the resume:
       1. Job title/headline (single most recent/current position)
@@ -55,6 +61,7 @@ export async function parseResumeText(resumeText: string): Promise<{
       }
       
       IMPORTANT: Keep the output strictly in JSON format. Do not include any explanations or markdown.
+      If the resume is long or complex, focus on extracting the most recent and relevant experiences, educations, and skills.
     `;
 
     const response = await openai.chat.completions.create({
@@ -62,10 +69,11 @@ export async function parseResumeText(resumeText: string): Promise<{
       model: "gpt-4o",
       messages: [
         { role: "system", content: systemPrompt },
-        { role: "user", content: resumeText }
+        { role: "user", content: truncatedResumeText }
       ],
       response_format: { type: "json_object" },
       temperature: 0.2, // Lower temperature for more accurate extraction
+      max_tokens: 4000, // Limit response size
     });
 
     const parsed = JSON.parse(response.choices[0].message.content || "{}");
@@ -130,7 +138,7 @@ export async function parseLinkedInProfile(profileUrl: string): Promise<{
       3. Work experiences (include title, company, location, start date, end date, and description)
       4. Education history (include degree, institution, location, start date, and end date)
       5. Skills with proficiency levels
-
+      
       Format the response as a JSON object with these exact keys:
       {
         "title": "Current job title",
