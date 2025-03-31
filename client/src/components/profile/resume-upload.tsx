@@ -89,6 +89,8 @@ export default function ResumeUpload() {
             // Process the extracted data - add work experiences
             if (profileData.experiences && profileData.experiences.length > 0) {
               for (const exp of profileData.experiences) {
+                // Ensure userId is set and is a number
+                exp.userId = userId;
                 await apiRequest('POST', '/api/experiences', exp);
               }
             }
@@ -96,6 +98,8 @@ export default function ResumeUpload() {
             // Process educations
             if (profileData.educations && profileData.educations.length > 0) {
               for (const edu of profileData.educations) {
+                // Ensure userId is set and is a number
+                edu.userId = userId;
                 await apiRequest('POST', '/api/educations', edu);
               }
             }
@@ -103,6 +107,8 @@ export default function ResumeUpload() {
             // Process skills
             if (profileData.skills && profileData.skills.length > 0) {
               for (const skill of profileData.skills) {
+                // Ensure userId is set and is a number
+                skill.userId = userId;
                 await apiRequest('POST', '/api/skills', skill);
               }
             }
@@ -191,8 +197,9 @@ export default function ResumeUpload() {
               )}
               
               <div className="flex gap-4 justify-center">
-                <label>
+                <div>
                   <input 
+                    id="resume-file-input"
                     type="file" 
                     accept=".pdf,.docx" 
                     className="hidden" 
@@ -203,10 +210,13 @@ export default function ResumeUpload() {
                     variant="outline" 
                     className="cursor-pointer"
                     disabled={isUploading || isParsing}
+                    onClick={() => {
+                      document.getElementById('resume-file-input')?.click();
+                    }}
                   >
                     Browse Files
                   </Button>
-                </label>
+                </div>
                 {file && (
                   <Button 
                     onClick={handleUpload}

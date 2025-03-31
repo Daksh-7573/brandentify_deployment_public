@@ -39,6 +39,8 @@ export default function LinkedInImport() {
       // Process the extracted data - add work experiences
       if (profileData.experiences && profileData.experiences.length > 0) {
         for (const exp of profileData.experiences) {
+          // Ensure userId is set and is a number
+          exp.userId = userId;
           await apiRequest('POST', '/api/experiences', exp);
         }
       }
@@ -46,6 +48,8 @@ export default function LinkedInImport() {
       // Process educations
       if (profileData.educations && profileData.educations.length > 0) {
         for (const edu of profileData.educations) {
+          // Ensure userId is set and is a number
+          edu.userId = userId;
           await apiRequest('POST', '/api/educations', edu);
         }
       }
@@ -53,6 +57,8 @@ export default function LinkedInImport() {
       // Process skills
       if (profileData.skills && profileData.skills.length > 0) {
         for (const skill of profileData.skills) {
+          // Ensure userId is set and is a number
+          skill.userId = userId;
           await apiRequest('POST', '/api/skills', skill);
         }
       }
