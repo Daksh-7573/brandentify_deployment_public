@@ -20,13 +20,19 @@ export default function Education() {
   const userId = isDemoMode ? 1 : (user?.uid ? parseInt(user.uid) : 1);
   
   // Fetch educations from the API with advanced options
-  const { data: serverEducations, isLoading } = useQuery({
+  const { data: serverEducations, isLoading, refetch } = useQuery({
     queryKey: [`/api/users/${userId}/educations`],
     enabled: !!userId,
-    staleTime: 1000, // Consider data stale after 1 second to force refresh
-    refetchOnMount: true, // Always refetch when component mounts
+    staleTime: 0, // Always consider data stale to force refresh
+    refetchOnMount: 'always', // Always refetch when component mounts
     refetchOnWindowFocus: true, // Refetch when window regains focus
   });
+  
+  // Force refetch when the component mounts
+  useEffect(() => {
+    console.log("Education component mounted - forcing data refresh");
+    refetch();
+  }, [refetch]);
   
   // Use fetched data if available, otherwise use empty array
   const [educations, setEducations] = useState<EducationItem[]>([]);

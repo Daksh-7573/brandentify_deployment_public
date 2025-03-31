@@ -22,13 +22,19 @@ export default function WorkExperience() {
   const userId = isDemoMode ? 1 : (user?.uid ? parseInt(user.uid) : 1);
   
   // Fetch work experiences from the API with advanced options
-  const { data: serverExperiences, isLoading } = useQuery({
+  const { data: serverExperiences, isLoading, refetch } = useQuery({
     queryKey: [`/api/users/${userId}/experiences`],
     enabled: !!userId,
-    staleTime: 1000, // Consider data stale after 1 second to force refresh
-    refetchOnMount: true, // Always refetch when component mounts
+    staleTime: 0, // Always consider data stale to force refresh
+    refetchOnMount: 'always', // Always refetch when component mounts
     refetchOnWindowFocus: true, // Refetch when window regains focus
   });
+  
+  // Force refetch when the component mounts
+  useEffect(() => {
+    console.log("WorkExperience component mounted - forcing data refresh");
+    refetch();
+  }, [refetch]);
   
   // Use fetched data if available, otherwise use empty array
   const [experiences, setExperiences] = useState<WorkExperienceItem[]>([]);

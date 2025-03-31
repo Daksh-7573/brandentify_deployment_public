@@ -9,7 +9,7 @@ import {
 } from "firebase/auth";
 import { auth, googleProvider } from "../lib/firebase";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 
 type AuthUser = {
   uid: string;
@@ -236,9 +236,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Add the refreshUserData function to update user profile data
   const refreshUserData = async () => {
+    // Get the user ID
+    const userId = isDemoMode ? 1 : (user?.uid ? parseInt(user.uid) : null);
+    
     if (isDemoMode) {
       console.log("Refreshing demo user data");
       await fetchDemoUserData();
+      
+      // Also invalidate all related queries for the profile components
+      if (userId) {
+        console.log("Invalidating profile data queries");
+        queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
+        queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/experiences`] });
+        queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/educations`] });
+        queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/skills`] });
+        
+        // Give it a small delay to ensure all components receive fresh data
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
       return;
     }
     
