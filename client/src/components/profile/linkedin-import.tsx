@@ -12,7 +12,7 @@ export default function LinkedInImport() {
   const [isParsing, setIsParsing] = useState(false);
   const [profileUrl, setProfileUrl] = useState('');
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user, isDemoMode } = useAuth();
   
   const handleImport = async () => {
     if (!profileUrl || !profileUrl.includes('linkedin.com')) {
@@ -27,7 +27,8 @@ export default function LinkedInImport() {
     setIsParsing(true);
     
     try {
-      const userId = user?.uid ? parseInt(user.uid) : 1; // Use uid or default to 1 for demo mode
+      // In demo mode, use user ID 1, otherwise try to parse the user's UID as a number
+      const userId = isDemoMode ? 1 : (user?.uid ? parseInt(user.uid) : 1);
       
       const response = await apiRequest('POST', '/api/parse-linkedin', {
         userId,

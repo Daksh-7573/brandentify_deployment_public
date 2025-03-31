@@ -15,7 +15,7 @@ export default function ResumeUpload() {
   const [file, setFile] = useState<File | null>(null);
   const [extractProfileData, setExtractProfileData] = useState(true);
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user, isDemoMode } = useAuth();
   
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -63,7 +63,9 @@ export default function ResumeUpload() {
         }
         
         // Save the resume
-        const userId = user?.uid ? parseInt(user.uid) : 1; // Use uid or default to 1 for demo mode
+        // In demo mode, use user ID 1, otherwise try to parse the user's UID as a number
+        const userId = isDemoMode ? 1 : (user?.uid ? parseInt(user.uid) : 1);
+        
         await apiRequest('POST', '/api/resumes', {
           userId,
           fileName: file.name,
