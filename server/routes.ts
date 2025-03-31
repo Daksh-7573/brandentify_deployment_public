@@ -371,7 +371,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
             await storage.createUser({
               username: `user${userIdNum}`,
               email: `user${userIdNum}@example.com`,
-              name: "Profile User"
+              name: "Profile User",
+              title: profileData.title || "Professional",
+              location: profileData.location || "Not specified",
+              photoURL: null
             });
             
             // If there's profile data with title/location, update the user
@@ -478,7 +481,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           await storage.createUser({
             username: `user${userIdNum}`,
             email: `user${userIdNum}@example.com`,
-            name: "Profile User"
+            name: "Profile User",
+            title: profileData.title || "Professional",
+            location: profileData.location || "Not specified",
+            photoURL: null
           });
           
           // If there's profile data with title/location, update the user
