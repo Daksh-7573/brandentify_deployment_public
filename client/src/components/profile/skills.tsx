@@ -38,7 +38,14 @@ export default function Skills() {
   // Update skills state when server data changes
   useEffect(() => {
     if (serverSkills && Array.isArray(serverSkills)) {
-      setSkills(serverSkills);
+      console.log("Skills received new data:", serverSkills);
+      // Force state update by creating a new array
+      setSkills([...serverSkills]);
+      
+      // Log the current state after update
+      setTimeout(() => {
+        console.log("Skills state after update:", skills);
+      }, 0);
     }
   }, [serverSkills]);
 

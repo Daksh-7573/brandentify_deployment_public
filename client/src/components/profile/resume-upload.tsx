@@ -147,30 +147,37 @@ export default function ResumeUpload() {
               }
             }
             
-            // Invalidate relevant queries to refresh data
-            queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/experiences`] });
-            queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/educations`] });
-            queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/skills`] });
+            // Reset and force refetch all queries
+            console.log("Resume parsing successful - forcing complete data refresh");
             
-            // Also invalidate the user query to refresh the profile
-            queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
+            // Reset queries first (more aggressive than just invalidating)
+            queryClient.resetQueries({ queryKey: [`/api/users/${userId}/experiences`] });
+            queryClient.resetQueries({ queryKey: [`/api/users/${userId}/educations`] });
+            queryClient.resetQueries({ queryKey: [`/api/users/${userId}/skills`] });
+            queryClient.resetQueries({ queryKey: [`/api/users/${userId}`] });
             
-            // For demo mode, refresh the user context data without a full page reload
-            // This will keep us on the profile page but refresh the profile data
-            if (isDemoMode) {
-              // First refresh the profile data in auth context
-              try {
-                // Get the refreshUserData function from auth context
-                // Use the refreshUserData from the hook directly
-                await refreshUserData();
-                
-                toast({
-                  title: "Profile Updated",
-                  description: "Your profile has been refreshed with information from your resume.",
-                });
-              } catch (error) {
-                console.error("Error refreshing user data:", error);
-              }
+            // Then force immediate refetching
+            await Promise.all([
+              queryClient.fetchQuery({ queryKey: [`/api/users/${userId}/experiences`] }),
+              queryClient.fetchQuery({ queryKey: [`/api/users/${userId}/educations`] }),
+              queryClient.fetchQuery({ queryKey: [`/api/users/${userId}/skills`] }),
+              queryClient.fetchQuery({ queryKey: [`/api/users/${userId}`] })
+            ]);
+            
+            // Use the enhanced refreshUserData function to update profile data for all users
+            try {
+              console.log("Calling refreshUserData to ensure complete data refresh after resume parsing");
+              await refreshUserData();
+              
+              // Wait for a brief moment to let all components update
+              await new Promise(resolve => setTimeout(resolve, 500));
+              
+              toast({
+                title: "Profile Updated",
+                description: "Your profile has been refreshed with information from your resume.",
+              });
+            } catch (error) {
+              console.error("Error during data refresh after resume parsing:", error);
             }
             
             toast({

@@ -57,7 +57,14 @@ export default function WorkExperience() {
   // Update experiences state when server data changes
   useEffect(() => {
     if (serverExperiences && Array.isArray(serverExperiences)) {
-      setExperiences(serverExperiences);
+      console.log("WorkExperience received new data:", serverExperiences);
+      // Force state update by creating a new array
+      setExperiences([...serverExperiences]);
+      
+      // Log the current state after update
+      setTimeout(() => {
+        console.log("WorkExperience state after update:", experiences);
+      }, 0);
     }
   }, [serverExperiences]);
 

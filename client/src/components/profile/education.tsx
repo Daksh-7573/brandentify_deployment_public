@@ -40,7 +40,14 @@ export default function Education() {
   // Update educations state when server data changes
   useEffect(() => {
     if (serverEducations && Array.isArray(serverEducations)) {
-      setEducations(serverEducations);
+      console.log("Education received new data:", serverEducations);
+      // Force state update by creating a new array
+      setEducations([...serverEducations]);
+      
+      // Log the current state after update
+      setTimeout(() => {
+        console.log("Education state after update:", educations);
+      }, 0);
     }
   }, [serverEducations]);
 

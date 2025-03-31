@@ -243,16 +243,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log("Refreshing demo user data");
       await fetchDemoUserData();
       
-      // Also invalidate all related queries for the profile components
+      // Also invalidate and immediately refetch all related queries for the profile components
       if (userId) {
-        console.log("Invalidating profile data queries");
+        console.log("Invalidating and refetching profile data queries");
+        
+        // First, clear the cache to force refetch
         queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
         queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/experiences`] });
         queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/educations`] });
         queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/skills`] });
         
-        // Give it a small delay to ensure all components receive fresh data
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // Then immediately refetch the data from the server
+        try {
+          // Force a complete reset of the query cache for these specific queries
+          queryClient.resetQueries({ queryKey: [`/api/users/${userId}/experiences`] });
+          queryClient.resetQueries({ queryKey: [`/api/users/${userId}/educations`] });
+          queryClient.resetQueries({ queryKey: [`/api/users/${userId}/skills`] });
+          
+          // Add a manual fetch to ensure we get the latest data
+          const experiencesResponse = await apiRequest('GET', `/api/users/${userId}/experiences`);
+          const educationsResponse = await apiRequest('GET', `/api/users/${userId}/educations`);
+          const skillsResponse = await apiRequest('GET', `/api/users/${userId}/skills`);
+          
+          // Log the fetched data
+          console.log("Manual fetch experiences:", await experiencesResponse.json());
+          console.log("Manual fetch educations:", await educationsResponse.json());
+          console.log("Manual fetch skills:", await skillsResponse.json());
+          
+          // Give it a small delay to ensure all components receive fresh data
+          await new Promise(resolve => setTimeout(resolve, 300));
+        } catch (error) {
+          console.error("Error during manual data refresh:", error);
+        }
       }
       return;
     }
