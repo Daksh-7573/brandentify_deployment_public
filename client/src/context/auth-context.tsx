@@ -149,17 +149,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const enterDemoMode = () => {
+  const enterDemoMode = async () => {
     setIsLoading(true);
-    // Create a demo user
-    setUser({
-      uid: '1',
-      email: 'demo@brandentifier.com',
-      name: 'Demo User',
-      photoURL: null,
-      title: 'Software Engineer',
-      location: 'San Francisco, CA'
-    });
+    
+    // Try to fetch the actual user data from the API
+    try {
+      const response = await apiRequest('GET', '/api/users/1');
+      const userData = await response.json();
+      
+      // Create a demo user with real data if available
+      setUser({
+        uid: '1',
+        email: userData.email || 'demo@brandentifier.com',
+        name: userData.name || 'Demo User',
+        photoURL: userData.photoURL || null,
+        title: userData.title || 'Software Engineer',
+        location: userData.location || 'San Francisco, CA'
+      });
+    } catch (error) {
+      console.log('Could not fetch user data, using default demo user');
+      // Fallback to default demo user if API fails
+      setUser({
+        uid: '1',
+        email: 'demo@brandentifier.com',
+        name: 'Demo User',
+        photoURL: null,
+        title: 'Software Engineer',
+        location: 'San Francisco, CA'
+      });
+    }
+    
     setIsDemoMode(true);
     setIsLoading(false);
     
