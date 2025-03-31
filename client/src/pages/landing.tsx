@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 
 export default function Landing() {
-  const { signInWithGoogle, isLoading, isAuthenticated } = useAuth();
+  const { signInWithGoogle, enterDemoMode, isLoading, isAuthenticated } = useAuth();
   const [_, setLocation] = useLocation();
 
   // Redirect to dashboard if already authenticated
@@ -24,6 +24,14 @@ export default function Landing() {
               </div>
             </div>
             <div className="flex items-center">
+              <Button 
+                variant="outline" 
+                className="ml-4"
+                onClick={enterDemoMode}
+                disabled={isLoading}
+              >
+                Try Demo
+              </Button>
               <Button 
                 variant="default" 
                 className="ml-4"
@@ -59,6 +67,17 @@ export default function Landing() {
                       disabled={isLoading}
                     >
                       <i className="fab fa-google mr-2"></i> Sign up with Google
+                    </Button>
+                  </div>
+                  <div className="mt-3 sm:mt-0 sm:ml-3">
+                    <Button 
+                      size="lg"
+                      variant="outline"
+                      className="w-full flex items-center justify-center px-8 py-3 md:py-4 md:text-lg md:px-10"
+                      onClick={enterDemoMode}
+                      disabled={isLoading}
+                    >
+                      Try Demo Mode
                     </Button>
                   </div>
                 </div>

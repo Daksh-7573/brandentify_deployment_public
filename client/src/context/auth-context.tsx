@@ -22,21 +22,26 @@ type AuthContextType = {
   user: AuthUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isDemoMode: boolean;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
+  enterDemoMode: () => void;
 };
 
 export const AuthContext = createContext<AuthContextType>({
   user: null,
   isAuthenticated: false,
   isLoading: true,
+  isDemoMode: false,
   signInWithGoogle: async () => {},
   signOut: async () => {},
+  enterDemoMode: () => {},
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isDemoMode, setIsDemoMode] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -119,6 +124,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => {
     try {
+      if (isDemoMode) {
+        setIsDemoMode(false);
+        setUser(null);
+        toast({
+          title: "Exited demo mode"
+        });
+        return;
+      }
+      
       await firebaseSignOut(auth);
       toast({
         title: "Signed out successfully"
@@ -133,14 +147,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const enterDemoMode = () => {
+    setIsLoading(true);
+    // Create a demo user
+    setUser({
+      uid: 'demo-user',
+      email: 'demo@brandentifier.com',
+      name: 'Demo User',
+      photoURL: null
+    });
+    setIsDemoMode(true);
+    setIsLoading(false);
+    
+    toast({
+      title: "Demo mode activated",
+      description: "You're now using Brandentifier in demo mode"
+    });
+  };
+
   return (
     <AuthContext.Provider
       value={{
         user,
-        isAuthenticated: !!user,
+        isAuthenticated: !!user || isDemoMode,
         isLoading,
+        isDemoMode,
         signInWithGoogle,
-        signOut
+        signOut,
+        enterDemoMode
       }}
     >
       {children}

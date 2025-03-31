@@ -1,21 +1,51 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "./context/auth-context";
+import { useAuth } from "./hooks/use-auth";
+import { useEffect } from "react";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import Dashboard from "@/pages/dashboard";
 import Profile from "@/pages/profile";
 import AICareer from "@/pages/ai-career";
 
+// Protected route component that checks if the user is authenticated
+function ProtectedRoute({ component: Component, ...rest }: { component: React.ComponentType, path: string }) {
+  const { isAuthenticated, isLoading } = useAuth();
+  const [_, navigate] = useLocation();
+  
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      navigate('/');
+    }
+  }, [isAuthenticated, isLoading, navigate]);
+  
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+  
+  return isAuthenticated ? <Component /> : null;
+}
+
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Landing} />
-      <Route path="/dashboard" component={Dashboard} />
-      <Route path="/profile" component={Profile} />
-      <Route path="/ai-career" component={AICareer} />
+      <Route path="/dashboard">
+        <ProtectedRoute path="/dashboard" component={Dashboard} />
+      </Route>
+      <Route path="/profile">
+        <ProtectedRoute path="/profile" component={Profile} />
+      </Route>
+      <Route path="/ai-career">
+        <ProtectedRoute path="/ai-career" component={AICareer} />
+      </Route>
       <Route component={NotFound} />
     </Switch>
   );

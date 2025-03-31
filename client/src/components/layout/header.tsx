@@ -1,9 +1,10 @@
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
+import { Badge } from "@/components/ui/badge";
 
 export default function Header() {
-  const { user, signOut } = useAuth();
+  const { user, isDemoMode, signOut } = useAuth();
   const [_, setLocation] = useLocation();
 
   return (
@@ -12,12 +13,19 @@ export default function Header() {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <div className="flex-shrink-0 flex items-center">
-              <span 
-                className="text-primary text-2xl font-bold cursor-pointer"
-                onClick={() => setLocation('/dashboard')}
-              >
-                Brandentifier
-              </span>
+              <div className="flex items-center">
+                <span 
+                  className="text-primary text-2xl font-bold cursor-pointer"
+                  onClick={() => setLocation('/dashboard')}
+                >
+                  Brandentifier
+                </span>
+                {isDemoMode && (
+                  <Badge variant="outline" className="ml-2 text-orange-500 border-orange-500">
+                    Demo Mode
+                  </Badge>
+                )}
+              </div>
             </div>
           </div>
           <div className="flex items-center">
