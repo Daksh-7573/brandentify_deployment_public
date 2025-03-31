@@ -9,6 +9,7 @@ import WorkExperience from "@/components/profile/work-experience";
 import Education from "@/components/profile/education";
 import Skills from "@/components/profile/skills";
 import ResumeUpload from "@/components/profile/resume-upload";
+import LinkedInImport from "@/components/profile/linkedin-import";
 
 export default function Profile() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -81,8 +82,15 @@ export default function Profile() {
               </CardContent>
             </Card>
             
-            {/* Resume Upload */}
-            <ResumeUpload />
+            {/* Profile Import Options */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <div className="md:col-span-1">
+                <ResumeUpload />
+              </div>
+              <div className="md:col-span-1">
+                <LinkedInImport />
+              </div>
+            </div>
             
             {/* Work Experience */}
             <WorkExperience />

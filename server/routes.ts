@@ -310,6 +310,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Profile data parsing endpoints
+  apiRouter.post("/parse-resume", async (req: Request, res: Response) => {
+    try {
+      const { userId, fileData } = req.body;
+      
+      if (!fileData) {
+        return res.status(400).json({ message: "No file data provided" });
+      }
+
+      // Convert base64 to text (assuming PDF text extraction is handled by a hypothetical library)
+      // In a real implementation, you would use a PDF parsing library
+      const resumeText = Buffer.from(fileData, 'base64').toString('utf-8');
+      
+      // Parse the resume text using our AI service
+      const { parseResumeText } = await import('./services/profile-parser');
+      const profileData = await parseResumeText(resumeText);
+      
+      // Add the userId to all extracted items
+      const experiences = profileData.experiences.map(exp => ({ ...exp, userId }));
+      const educations = profileData.educations.map(edu => ({ ...edu, userId }));
+      const skills = profileData.skills.map(skill => ({ ...skill, userId }));
+      
+      res.status(200).json({
+        ...profileData,
+        experiences,
+        educations,
+        skills
+      });
+    } catch (error) {
+      console.error('Error parsing resume:', error);
+      res.status(500).json({ message: "Failed to parse resume" });
+    }
+  });
+  
+  // Parse LinkedIn profile and extract data
+  apiRouter.post("/parse-linkedin", async (req: Request, res: Response) => {
+    try {
+      const { userId, profileUrl } = req.body;
+      
+      if (!profileUrl) {
+        return res.status(400).json({ message: "No LinkedIn profile URL provided" });
+      }
+      
+      // Parse the LinkedIn profile using our AI service
+      const { parseLinkedInProfile } = await import('./services/profile-parser');
+      const profileData = await parseLinkedInProfile(profileUrl);
+      
+      // Add the userId to all extracted items
+      const experiences = profileData.experiences.map(exp => ({ ...exp, userId }));
+      const educations = profileData.educations.map(edu => ({ ...edu, userId }));
+      const skills = profileData.skills.map(skill => ({ ...skill, userId }));
+      
+      res.status(200).json({
+        ...profileData,
+        experiences,
+        educations,
+        skills
+      });
+    } catch (error) {
+      console.error('Error parsing LinkedIn profile:', error);
+      res.status(500).json({ message: "Failed to parse LinkedIn profile" });
+    }
+  });
+
   app.use("/api", apiRouter);
 
   const httpServer = createServer(app);

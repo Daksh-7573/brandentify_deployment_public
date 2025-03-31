@@ -2,13 +2,21 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useAuth } from "@/hooks/use-auth";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Loader2 } from "lucide-react";
 
 export default function ResumeUpload() {
   const [isUploading, setIsUploading] = useState(false);
+  const [isParsing, setIsParsing] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [extractProfileData, setExtractProfileData] = useState(true);
   const { toast } = useToast();
-
+  const { user } = useAuth();
+  
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const selectedFile = e.target.files[0];
@@ -54,8 +62,8 @@ export default function ResumeUpload() {
           throw new Error("Failed to convert file to base64");
         }
         
-        // Send to server
-        const userId = 1; // This would ideally come from authenticated user
+        // Save the resume
+        const userId = user?.uid ? parseInt(user.uid) : 1; // Use uid or default to 1 for demo mode
         await apiRequest('POST', '/api/resumes', {
           userId,
           fileName: file.name,
@@ -66,6 +74,68 @@ export default function ResumeUpload() {
           title: "Resume uploaded",
           description: "Your resume has been successfully uploaded."
         });
+        
+        // If user wants to extract profile data
+        if (extractProfileData) {
+          setIsParsing(true);
+          try {
+            const response = await apiRequest('POST', '/api/parse-resume', {
+              userId,
+              fileData: base64Data
+            });
+            
+            const profileData = await response.json();
+            
+            // Process the extracted data - add work experiences
+            if (profileData.experiences && profileData.experiences.length > 0) {
+              for (const exp of profileData.experiences) {
+                await apiRequest('POST', '/api/experiences', exp);
+              }
+            }
+            
+            // Process educations
+            if (profileData.educations && profileData.educations.length > 0) {
+              for (const edu of profileData.educations) {
+                await apiRequest('POST', '/api/educations', edu);
+              }
+            }
+            
+            // Process skills
+            if (profileData.skills && profileData.skills.length > 0) {
+              for (const skill of profileData.skills) {
+                await apiRequest('POST', '/api/skills', skill);
+              }
+            }
+            
+            // Update user profile with job title and location if available
+            if (profileData.title || profileData.location) {
+              const updateData: any = {};
+              if (profileData.title) updateData.title = profileData.title;
+              if (profileData.location) updateData.location = profileData.location;
+              
+              await apiRequest('PUT', `/api/users/${userId}`, updateData);
+            }
+            
+            // Invalidate relevant queries to refresh data
+            queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/experiences`] });
+            queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/educations`] });
+            queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/skills`] });
+            
+            toast({
+              title: "Profile data extracted",
+              description: "Your profile has been updated with data from your resume.",
+            });
+          } catch (error) {
+            console.error('Error parsing resume:', error);
+            toast({
+              title: "Extraction failed",
+              description: "Failed to extract profile data from resume. Please update your profile manually.",
+              variant: "destructive"
+            });
+          } finally {
+            setIsParsing(false);
+          }
+        }
         
         setFile(null);
         setIsUploading(false);
@@ -82,6 +152,7 @@ export default function ResumeUpload() {
         variant: "destructive"
       });
       setIsUploading(false);
+      setIsParsing(false);
     }
   };
 
@@ -96,30 +167,62 @@ export default function ResumeUpload() {
               {file ? `Selected file: ${file.name}` : "Drag and drop your resume here or click to browse"}
             </p>
             <p className="text-xs text-gray-400">Supported formats: PDF, DOCX (Max 5MB)</p>
-            <div className="mt-4 flex gap-4">
-              <label>
-                <input 
-                  type="file" 
-                  accept=".pdf,.docx" 
-                  className="hidden" 
-                  onChange={handleFileChange}
-                  disabled={isUploading}
+            
+            <div className="mt-4 w-full">
+              <div className="flex items-center mb-4 justify-center">
+                <Switch 
+                  id="extract-data" 
+                  checked={extractProfileData} 
+                  onCheckedChange={setExtractProfileData}
+                  disabled={isUploading || isParsing}
                 />
-                <Button 
-                  variant="outline" 
-                  className="cursor-pointer"
-                  disabled={isUploading}
-                >
-                  Browse Files
-                </Button>
-              </label>
-              {file && (
-                <Button 
-                  onClick={handleUpload}
-                  disabled={isUploading}
-                >
-                  {isUploading ? "Uploading..." : "Upload Resume"}
-                </Button>
+                <Label htmlFor="extract-data" className="ml-2">
+                  Extract profile data from resume
+                </Label>
+              </div>
+              
+              {extractProfileData && (
+                <Alert className="mb-4 text-left">
+                  <AlertTitle>AI-powered profile completion</AlertTitle>
+                  <AlertDescription>
+                    We'll use AI to extract your work experience, education, and skills from your resume to automatically complete your profile.
+                  </AlertDescription>
+                </Alert>
+              )}
+              
+              <div className="flex gap-4 justify-center">
+                <label>
+                  <input 
+                    type="file" 
+                    accept=".pdf,.docx" 
+                    className="hidden" 
+                    onChange={handleFileChange}
+                    disabled={isUploading || isParsing}
+                  />
+                  <Button 
+                    variant="outline" 
+                    className="cursor-pointer"
+                    disabled={isUploading || isParsing}
+                  >
+                    Browse Files
+                  </Button>
+                </label>
+                {file && (
+                  <Button 
+                    onClick={handleUpload}
+                    disabled={isUploading || isParsing}
+                  >
+                    {isUploading ? "Uploading..." : isParsing ? "Processing..." : "Upload Resume"}
+                    {(isUploading || isParsing) && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+                  </Button>
+                )}
+              </div>
+              
+              {isParsing && (
+                <div className="mt-4 text-sm text-gray-500">
+                  <Loader2 className="inline mr-2 h-4 w-4 animate-spin" />
+                  Extracting profile data from your resume...
+                </div>
               )}
             </div>
           </div>
