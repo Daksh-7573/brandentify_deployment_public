@@ -1,22 +1,37 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/use-auth";
+import { Loader2 } from "lucide-react";
 
 type SkillItem = {
   id: number;
+  userId: number;
   name: string;
   level: string; // "Beginner", "Intermediate", "Advanced"
   proficiency: number; // Percentage 0-100
 };
 
 export default function Skills() {
-  const [skills, setSkills] = useState<SkillItem[]>([
-    { id: 1, name: "Data Analysis", level: "Advanced", proficiency: 85 },
-    { id: 2, name: "SQL", level: "Intermediate", proficiency: 60 },
-    { id: 3, name: "Python", level: "Intermediate", proficiency: 65 },
-    { id: 4, name: "Excel", level: "Advanced", proficiency: 90 },
-    { id: 5, name: "Data Visualization", level: "Beginner", proficiency: 30 }
-  ]);
+  const { user, isDemoMode } = useAuth();
+  const userId = isDemoMode ? 1 : (user?.uid ? parseInt(user.uid) : 1);
+  
+  // Fetch skills from the API
+  const { data: serverSkills, isLoading } = useQuery({
+    queryKey: [`/api/users/${userId}/skills`],
+    enabled: !!userId,
+  });
+  
+  // Use fetched data if available, otherwise use empty array
+  const [skills, setSkills] = useState<SkillItem[]>([]);
+  
+  // Update skills state when server data changes
+  useEffect(() => {
+    if (serverSkills && Array.isArray(serverSkills)) {
+      setSkills(serverSkills);
+    }
+  }, [serverSkills]);
 
   const handleAdd = () => {
     // In a real app, this would open a form modal
@@ -43,22 +58,33 @@ export default function Skills() {
             <i className="fas fa-plus mr-1"></i> Add
           </Button>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {skills.map((skill) => (
-            <div key={skill.id} className="border border-gray-200 rounded-md p-3">
-              <div className="flex justify-between mb-1">
-                <span className="text-sm font-medium text-gray-700">{skill.name}</span>
-                <span className="text-xs text-gray-500">{skill.level}</span>
+        
+        {isLoading ? (
+          <div className="flex justify-center py-6">
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+          </div>
+        ) : skills && skills.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {skills.map((skill) => (
+              <div key={skill.id} className="border border-gray-200 rounded-md p-3">
+                <div className="flex justify-between mb-1">
+                  <span className="text-sm font-medium text-gray-700">{skill.name}</span>
+                  <span className="text-xs text-gray-500">{skill.level}</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-1.5">
+                  <div 
+                    className={`${getColor(skill.proficiency)} h-1.5 rounded-full`} 
+                    style={{ width: `${skill.proficiency}%` }}
+                  ></div>
+                </div>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-1.5">
-                <div 
-                  className={`${getColor(skill.proficiency)} h-1.5 rounded-full`} 
-                  style={{ width: `${skill.proficiency}%` }}
-                ></div>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-6 text-gray-500">
+            No skills added yet. Add your skills or upload a resume to populate this section.
+          </div>
+        )}
       </CardContent>
     </Card>
   );
