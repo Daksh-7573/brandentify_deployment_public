@@ -147,10 +147,61 @@ export default function ResumeUpload() {
               }
             }
             
-            // Reset and force refetch all queries
+            // Force a complete data refresh
             console.log("Resume parsing successful - forcing complete data refresh");
             
-            // Reset queries first (more aggressive than just invalidating)
+            // First, explicitly verify the data was saved
+            try {
+              console.log("Verifying resume data was saved to database...");
+              const expResponse = await apiRequest('GET', `/api/users/${userId}/experiences`);
+              const savedExperiences = await expResponse.json();
+              console.log("Current experiences in database:", savedExperiences.length);
+              
+              const eduResponse = await apiRequest('GET', `/api/users/${userId}/educations`);
+              const savedEducations = await eduResponse.json();
+              console.log("Current educations in database:", savedEducations.length);
+              
+              const skillsResponse = await apiRequest('GET', `/api/users/${userId}/skills`);
+              const savedSkills = await skillsResponse.json();
+              console.log("Current skills in database:", savedSkills.length);
+              
+              // If we didn't get any saved data, we need to try again
+              if (!savedExperiences.length && !savedEducations.length && !savedSkills.length) {
+                console.warn("No resume data found in database, attempting to save explicitly");
+                
+                // This is an unusual case - try to resave the profile data directly
+                if (profileData.experiences && profileData.experiences.length > 0) {
+                  // Save experiences
+                  for (const exp of profileData.experiences) {
+                    // Ensure userId is set
+                    exp.userId = userId;
+                    await apiRequest('POST', '/api/experiences', exp);
+                  }
+                }
+                
+                if (profileData.educations && profileData.educations.length > 0) {
+                  // Save educations
+                  for (const edu of profileData.educations) {
+                    // Ensure userId is set
+                    edu.userId = userId;
+                    await apiRequest('POST', '/api/educations', edu);
+                  }
+                }
+                
+                if (profileData.skills && profileData.skills.length > 0) {
+                  // Save skills
+                  for (const skill of profileData.skills) {
+                    // Ensure userId is set
+                    skill.userId = userId;
+                    await apiRequest('POST', '/api/skills', skill);
+                  }
+                }
+              }
+            } catch (error) {
+              console.error("Error verifying saved resume data:", error);
+            }
+            
+            // Reset queries for a fresh start
             queryClient.resetQueries({ queryKey: [`/api/users/${userId}/experiences`] });
             queryClient.resetQueries({ queryKey: [`/api/users/${userId}/educations`] });
             queryClient.resetQueries({ queryKey: [`/api/users/${userId}/skills`] });

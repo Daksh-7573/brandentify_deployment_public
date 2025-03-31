@@ -436,26 +436,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Continue anyway to process the rest of the profile
         }
         
-        // Clear existing data for the user before adding new data
-        // This prevents duplicate entries when parsing multiple resumes
-        try {
-          const existingExperiences = await storage.getWorkExperiencesByUserId(userIdNum);
-          for (const exp of existingExperiences) {
-            await storage.deleteWorkExperience(exp.id);
+        // Only clear existing data if we have new data to add
+        // This prevents empty profiles if the extraction fails
+        const hasNewData = 
+          (profileData.experiences && profileData.experiences.length > 0) ||
+          (profileData.educations && profileData.educations.length > 0) ||
+          (profileData.skills && profileData.skills.length > 0);
+        
+        if (hasNewData) {
+          console.log("Resume contains valid data, updating profile");
+          try {
+            // Only delete if we have replacement data
+            if (profileData.experiences && profileData.experiences.length > 0) {
+              const existingExperiences = await storage.getWorkExperiencesByUserId(userIdNum);
+              for (const exp of existingExperiences) {
+                await storage.deleteWorkExperience(exp.id);
+              }
+            }
+            
+            if (profileData.educations && profileData.educations.length > 0) {
+              const existingEducations = await storage.getEducationsByUserId(userIdNum);
+              for (const edu of existingEducations) {
+                await storage.deleteEducation(edu.id);
+              }
+            }
+            
+            if (profileData.skills && profileData.skills.length > 0) {
+              const existingSkills = await storage.getSkillsByUserId(userIdNum);
+              for (const skill of existingSkills) {
+                await storage.deleteSkill(skill.id);
+              }
+            }
+          } catch (error) {
+            console.error("Error clearing existing profile data:", error);
+            // Continue to add new data
           }
-          
-          const existingEducations = await storage.getEducationsByUserId(userIdNum);
-          for (const edu of existingEducations) {
-            await storage.deleteEducation(edu.id);
-          }
-          
-          const existingSkills = await storage.getSkillsByUserId(userIdNum);
-          for (const skill of existingSkills) {
-            await storage.deleteSkill(skill.id);
-          }
-        } catch (error) {
-          console.error("Error clearing existing profile data:", error);
-          // Continue to add new data
+        } else {
+          console.log("Resume parsing yielded no data, keeping existing profile");
         }
         
         // Add the userId to all extracted items
@@ -560,26 +577,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Continue anyway to process the rest of the profile
       }
       
-      // Clear existing data for the user before adding new data
-      // This prevents duplicate entries when parsing multiple LinkedIn profiles
-      try {
-        const existingExperiences = await storage.getWorkExperiencesByUserId(userIdNum);
-        for (const exp of existingExperiences) {
-          await storage.deleteWorkExperience(exp.id);
+      // Only clear existing data if we have new data to add
+      // This prevents empty profiles if the extraction fails
+      const hasNewData = 
+        (profileData.experiences && profileData.experiences.length > 0) ||
+        (profileData.educations && profileData.educations.length > 0) ||
+        (profileData.skills && profileData.skills.length > 0);
+      
+      if (hasNewData) {
+        console.log("LinkedIn profile has valid data, updating profile");
+        try {
+          // Only delete if we have replacement data
+          if (profileData.experiences && profileData.experiences.length > 0) {
+            const existingExperiences = await storage.getWorkExperiencesByUserId(userIdNum);
+            for (const exp of existingExperiences) {
+              await storage.deleteWorkExperience(exp.id);
+            }
+          }
+          
+          if (profileData.educations && profileData.educations.length > 0) {
+            const existingEducations = await storage.getEducationsByUserId(userIdNum);
+            for (const edu of existingEducations) {
+              await storage.deleteEducation(edu.id);
+            }
+          }
+          
+          if (profileData.skills && profileData.skills.length > 0) {
+            const existingSkills = await storage.getSkillsByUserId(userIdNum);
+            for (const skill of existingSkills) {
+              await storage.deleteSkill(skill.id);
+            }
+          }
+        } catch (error) {
+          console.error("Error clearing existing profile data:", error);
+          // Continue to add new data
         }
-        
-        const existingEducations = await storage.getEducationsByUserId(userIdNum);
-        for (const edu of existingEducations) {
-          await storage.deleteEducation(edu.id);
-        }
-        
-        const existingSkills = await storage.getSkillsByUserId(userIdNum);
-        for (const skill of existingSkills) {
-          await storage.deleteSkill(skill.id);
-        }
-      } catch (error) {
-        console.error("Error clearing existing profile data:", error);
-        // Continue to add new data
+      } else {
+        console.log("LinkedIn profile extraction yielded no data, keeping existing profile");
       }
       
       // Add the userId to all extracted items
