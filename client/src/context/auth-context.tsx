@@ -245,35 +245,51 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       // Also invalidate and immediately refetch all related queries for the profile components
       if (userId) {
-        console.log("Invalidating and refetching profile data queries");
+        console.log("AGGRESSIVE CACHE CLEAR AND DATA REFRESH");
         
-        // First, clear the cache to force refetch
-        queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
-        queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/experiences`] });
-        queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/educations`] });
-        queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/skills`] });
+        // Reset the entire query cache
+        console.log("Completely clearing React Query cache");
+        queryClient.clear();
         
-        // Then immediately refetch the data from the server
+        // Manually fetch ALL data directly using fetch API to bypass any caching
         try {
-          // Force a complete reset of the query cache for these specific queries
-          queryClient.resetQueries({ queryKey: [`/api/users/${userId}/experiences`] });
-          queryClient.resetQueries({ queryKey: [`/api/users/${userId}/educations`] });
-          queryClient.resetQueries({ queryKey: [`/api/users/${userId}/skills`] });
+          console.log("Manually fetching all profile data using direct API requests");
           
-          // Add a manual fetch to ensure we get the latest data
-          const experiencesResponse = await apiRequest('GET', `/api/users/${userId}/experiences`);
-          const educationsResponse = await apiRequest('GET', `/api/users/${userId}/educations`);
-          const skillsResponse = await apiRequest('GET', `/api/users/${userId}/skills`);
+          // Add manual fetch to ensure we get the latest data
+          const experiencesResponse = await fetch(`/api/users/${userId}/experiences`, {
+            method: 'GET',
+            headers: { 'Cache-Control': 'no-cache, no-store' }
+          });
+          
+          const educationsResponse = await fetch(`/api/users/${userId}/educations`, {
+            method: 'GET',
+            headers: { 'Cache-Control': 'no-cache, no-store' }
+          });
+          
+          const skillsResponse = await fetch(`/api/users/${userId}/skills`, {
+            method: 'GET',
+            headers: { 'Cache-Control': 'no-cache, no-store' }
+          });
+          
+          // Get the responses as JSON
+          const experiences = await experiencesResponse.json();
+          const educations = await educationsResponse.json();
+          const skills = await skillsResponse.json();
           
           // Log the fetched data
-          console.log("Manual fetch experiences:", await experiencesResponse.json());
-          console.log("Manual fetch educations:", await educationsResponse.json());
-          console.log("Manual fetch skills:", await skillsResponse.json());
+          console.log("Manual fetch experiences:", experiences);
+          console.log("Manual fetch educations:", educations);
+          console.log("Manual fetch skills:", skills);
+          
+          // Explicitly set these in the query cache
+          queryClient.setQueryData([`/api/users/${userId}/experiences`], experiences);
+          queryClient.setQueryData([`/api/users/${userId}/educations`], educations);
+          queryClient.setQueryData([`/api/users/${userId}/skills`], skills);
           
           // Give it a small delay to ensure all components receive fresh data
-          await new Promise(resolve => setTimeout(resolve, 300));
+          await new Promise(resolve => setTimeout(resolve, 500));
         } catch (error) {
-          console.error("Error during manual data refresh:", error);
+          console.error("Error during direct manual data refresh:", error);
         }
       }
       return;

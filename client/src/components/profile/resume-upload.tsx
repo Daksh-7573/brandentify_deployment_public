@@ -201,18 +201,33 @@ export default function ResumeUpload() {
               console.error("Error verifying saved resume data:", error);
             }
             
-            // Reset queries for a fresh start
-            queryClient.resetQueries({ queryKey: [`/api/users/${userId}/experiences`] });
-            queryClient.resetQueries({ queryKey: [`/api/users/${userId}/educations`] });
-            queryClient.resetQueries({ queryKey: [`/api/users/${userId}/skills`] });
-            queryClient.resetQueries({ queryKey: [`/api/users/${userId}`] });
+            // Reset the entire cache
+            console.log("Completely resetting query cache");
+            queryClient.clear();
             
-            // Then force immediate refetching
+            // Then force immediate refetching with cache bypass
+            console.log("Forcibly refetching all data from server with cache bypass");
             await Promise.all([
-              queryClient.fetchQuery({ queryKey: [`/api/users/${userId}/experiences`] }),
-              queryClient.fetchQuery({ queryKey: [`/api/users/${userId}/educations`] }),
-              queryClient.fetchQuery({ queryKey: [`/api/users/${userId}/skills`] }),
-              queryClient.fetchQuery({ queryKey: [`/api/users/${userId}`] })
+              queryClient.fetchQuery({ 
+                queryKey: [`/api/users/${userId}/experiences`],
+                staleTime: 0,
+                gcTime: 0
+              }),
+              queryClient.fetchQuery({ 
+                queryKey: [`/api/users/${userId}/educations`],
+                staleTime: 0,
+                gcTime: 0
+              }),
+              queryClient.fetchQuery({ 
+                queryKey: [`/api/users/${userId}/skills`],
+                staleTime: 0,
+                gcTime: 0
+              }),
+              queryClient.fetchQuery({ 
+                queryKey: [`/api/users/${userId}`],
+                staleTime: 0,
+                gcTime: 0
+              })
             ]);
             
             // Use the enhanced refreshUserData function to update profile data for all users
