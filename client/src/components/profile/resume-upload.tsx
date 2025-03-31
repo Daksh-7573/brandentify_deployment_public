@@ -155,12 +155,13 @@ export default function ResumeUpload() {
             // Also invalidate the user query to refresh the profile
             queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
             
-            // For demo mode, refresh the user context data
+            // For demo mode, refresh the user context data without a full page reload
+            // This will keep us on the profile page but refresh the profile data
             if (isDemoMode) {
-              // Force a page reload to show updated data
-              setTimeout(() => {
-                window.location.reload();
-              }, 1000);
+              toast({
+                title: "Profile Updated",
+                description: "Your profile data has been refreshed with information from your resume.",
+              });
             }
             
             toast({

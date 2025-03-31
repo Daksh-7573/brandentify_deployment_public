@@ -410,10 +410,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
             }
           } else {
             // User exists, update with any new profile info
-            if (profileData.title || profileData.location) {
-              const updateData: { [key: string]: string } = {};
-              if (profileData.title) updateData.title = profileData.title;
-              if (profileData.location) updateData.location = profileData.location;
+            // Make sure to update name if existing name is generic
+            const updateData: { [key: string]: string } = {};
+            
+            if (profileData.title) updateData.title = profileData.title;
+            if (profileData.location) updateData.location = profileData.location;
+            
+            // Get the first experience to use job title as name if needed
+            if (profileData.experiences && profileData.experiences.length > 0) {
+              const firstExp = profileData.experiences[0];
+              if (userResponse.name === "Profile User" && firstExp.title) {
+                // Use the most recent job title plus "professional" to replace generic name 
+                updateData.name = `${firstExp.title.split(' ')[0]} Professional`;
+              }
+            }
+            
+            // Only update if we have data to update
+            if (Object.keys(updateData).length > 0) {
+              console.log("Updating user with profile data:", updateData);
               await storage.updateUser(userIdNum, updateData);
             }
           }
@@ -520,10 +534,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         } else {
           // User exists, update with any new profile info
-          if (profileData.title || profileData.location) {
-            const updateData: any = {};
-            if (profileData.title) updateData.title = profileData.title;
-            if (profileData.location) updateData.location = profileData.location;
+          // Make sure to update name if existing name is generic
+          const updateData: { [key: string]: string } = {};
+          
+          if (profileData.title) updateData.title = profileData.title;
+          if (profileData.location) updateData.location = profileData.location;
+          
+          // Get the first experience to use job title as name if needed
+          if (profileData.experiences && profileData.experiences.length > 0) {
+            const firstExp = profileData.experiences[0];
+            if (userResponse.name === "Profile User" && firstExp.title) {
+              // Use the most recent job title plus "professional" to replace generic name 
+              updateData.name = `${firstExp.title.split(' ')[0]} Professional`;
+            }
+          }
+          
+          // Only update if we have data to update
+          if (Object.keys(updateData).length > 0) {
+            console.log("Updating user with LinkedIn profile data:", updateData);
             await storage.updateUser(userIdNum, updateData);
           }
         }
