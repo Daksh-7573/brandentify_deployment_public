@@ -59,6 +59,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         title: userData.title || 'Software Engineer',
         location: userData.location || 'San Francisco, CA'
       });
+      
+      console.log('Successfully fetched demo user data:', userData);
     } catch (error) {
       console.log('Could not fetch user data, using default demo user');
       // Fallback to default demo user if API fails

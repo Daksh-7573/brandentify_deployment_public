@@ -17,10 +17,13 @@ export default function Skills() {
   const { user, isDemoMode } = useAuth();
   const userId = isDemoMode ? 1 : (user?.uid ? parseInt(user.uid) : 1);
   
-  // Fetch skills from the API
+  // Fetch skills from the API with advanced options
   const { data: serverSkills, isLoading } = useQuery({
     queryKey: [`/api/users/${userId}/skills`],
     enabled: !!userId,
+    staleTime: 1000, // Consider data stale after 1 second to force refresh
+    refetchOnMount: true, // Always refetch when component mounts
+    refetchOnWindowFocus: true, // Refetch when window regains focus
   });
   
   // Use fetched data if available, otherwise use empty array

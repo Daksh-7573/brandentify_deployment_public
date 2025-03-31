@@ -19,10 +19,22 @@ export default function Profile() {
   // Get user ID (use demo ID if in demo mode)
   const userId = isDemoMode ? 1 : (user?.uid ? parseInt(user.uid) : 1);
   
+  // Also fetch current user data for the profile
+  const { data: userData, isLoading: isLoadingUser } = useQuery<any>({
+    queryKey: [`/api/users/${userId}`],
+    enabled: !!userId && isAuthenticated,
+    staleTime: 1000, // Consider data stale after 1 second to force refresh
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+  });
+
   // Fetch user skills for the badges
   const { data: skills = [], isLoading: isLoadingSkills } = useQuery<any[]>({
     queryKey: [`/api/users/${userId}/skills`],
     enabled: !!userId && isAuthenticated,
+    staleTime: 1000, // Consider data stale after 1 second to force refresh
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
 
   // Redirect to landing if not authenticated
@@ -78,9 +90,9 @@ export default function Profile() {
                   />
                 </div>
                 <div className="mt-8">
-                  <h2 className="text-xl font-bold text-gray-900">{user?.name || 'User'}</h2>
-                  <p className="text-sm text-gray-500">{user?.title || 'Professional'}</p>
-                  <p className="text-sm text-gray-500 mt-1">{user?.location || 'Location not specified'}</p>
+                  <h2 className="text-xl font-bold text-gray-900">{userData?.name || user?.name || 'User'}</h2>
+                  <p className="text-sm text-gray-500">{userData?.title || user?.title || 'Professional'}</p>
+                  <p className="text-sm text-gray-500 mt-1">{userData?.location || user?.location || 'Location not specified'}</p>
                 </div>
                 <div className="mt-4 flex flex-wrap gap-2">
                   {isLoadingSkills ? (
