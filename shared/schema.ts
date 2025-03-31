@@ -9,6 +9,8 @@ export const users = pgTable("users", {
   email: text("email").notNull().unique(),
   name: text("name"),
   photoURL: text("photo_url"),
+  title: text("title"), // Job title
+  location: text("location"), // User location
   profileCompleted: integer("profile_completed").default(0), // Percentage
   createdAt: timestamp("created_at").defaultNow(),
 });

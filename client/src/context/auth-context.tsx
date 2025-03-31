@@ -16,6 +16,8 @@ type AuthUser = {
   email: string | null;
   name: string | null;
   photoURL: string | null;
+  title?: string;
+  location?: string;
 };
 
 type AuthContextType = {
@@ -151,10 +153,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
     // Create a demo user
     setUser({
-      uid: 'demo-user',
+      uid: '1',
       email: 'demo@brandentifier.com',
       name: 'Demo User',
-      photoURL: null
+      photoURL: null,
+      title: 'Software Engineer',
+      location: 'San Francisco, CA'
     });
     setIsDemoMode(true);
     setIsLoading(false);

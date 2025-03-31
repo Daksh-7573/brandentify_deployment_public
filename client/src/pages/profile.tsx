@@ -10,10 +10,20 @@ import Education from "@/components/profile/education";
 import Skills from "@/components/profile/skills";
 import ResumeUpload from "@/components/profile/resume-upload";
 import LinkedInImport from "@/components/profile/linkedin-import";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Profile() {
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { user, isAuthenticated, isLoading, isDemoMode } = useAuth();
   const [_, setLocation] = useLocation();
+  
+  // Get user ID (use demo ID if in demo mode)
+  const userId = isDemoMode ? 1 : (user?.uid ? parseInt(user.uid) : 1);
+  
+  // Fetch user skills for the badges
+  const { data: skills = [], isLoading: isLoadingSkills } = useQuery<any[]>({
+    queryKey: [`/api/users/${userId}/skills`],
+    enabled: !!userId && isAuthenticated,
+  });
 
   // Redirect to landing if not authenticated
   if (!isLoading && !isAuthenticated) {
@@ -69,15 +79,25 @@ export default function Profile() {
                 </div>
                 <div className="mt-8">
                   <h2 className="text-xl font-bold text-gray-900">{user?.name || 'User'}</h2>
-                  <p className="text-sm text-gray-500">Data Analyst at TechCorp Inc.</p>
-                  <p className="text-sm text-gray-500 mt-1">New York, NY</p>
+                  <p className="text-sm text-gray-500">{user?.title || 'Professional'}</p>
+                  <p className="text-sm text-gray-500 mt-1">{user?.location || 'Location not specified'}</p>
                 </div>
                 <div className="mt-4 flex flex-wrap gap-2">
-                  <Badge variant="outline" className="bg-blue-100 text-blue-800 hover:bg-blue-100">Data Analysis</Badge>
-                  <Badge variant="outline" className="bg-blue-100 text-blue-800 hover:bg-blue-100">SQL</Badge>
-                  <Badge variant="outline" className="bg-blue-100 text-blue-800 hover:bg-blue-100">Python</Badge>
-                  <Badge variant="outline" className="bg-blue-100 text-blue-800 hover:bg-blue-100">Excel</Badge>
-                  <Badge variant="outline" className="bg-blue-100 text-blue-800 hover:bg-blue-100">Data Visualization</Badge>
+                  {isLoadingSkills ? (
+                    <p className="text-sm text-gray-500">Loading skills...</p>
+                  ) : skills && skills.length > 0 ? (
+                    skills.map((skill: any) => (
+                      <Badge 
+                        key={skill.id} 
+                        variant="outline" 
+                        className="bg-blue-100 text-blue-800 hover:bg-blue-100"
+                      >
+                        {skill.name}
+                      </Badge>
+                    ))
+                  ) : (
+                    <p className="text-sm text-gray-500">No skills added yet</p>
+                  )}
                 </div>
               </CardContent>
             </Card>
