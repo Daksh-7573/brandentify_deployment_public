@@ -101,6 +101,17 @@ export default function LinkedInImport() {
       queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/educations`] });
       queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/skills`] });
       
+      // Also invalidate the user query to refresh the profile
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
+      
+      // For demo mode, refresh the user context data
+      if (isDemoMode) {
+        // Force a page reload to show updated data
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      }
+      
       toast({
         title: "Profile data imported",
         description: "Your profile has been updated with data from your LinkedIn profile.",
