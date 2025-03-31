@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect, ReactNode } from "react";
 import { 
-  signInWithPopup, 
+  signInWithRedirect, 
+  getRedirectResult,
   signOut as firebaseSignOut, 
   onAuthStateChanged, 
   GoogleAuthProvider, 
@@ -39,6 +40,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
 
   useEffect(() => {
+    // Check for redirect result
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result) {
+          // User signed in after redirect
+          toast({
+            title: "Successfully signed in!",
+            description: "Welcome to Brandentifier"
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Error getting redirect result:", error);
+        toast({
+          title: "Sign in failed",
+          description: "There was a problem signing in with Google",
+          variant: "destructive"
+        });
+      });
+      
+    // Listen for auth state changes
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       setIsLoading(true);
       if (firebaseUser) {
@@ -61,7 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [toast]);
 
   const createOrUpdateUserInBackend = async (firebaseUser: FirebaseUser) => {
     try {
@@ -81,11 +103,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithGoogle = async () => {
     setIsLoading(true);
     try {
-      await signInWithPopup(auth, googleProvider);
-      toast({
-        title: "Successfully signed in!",
-        description: "Welcome to Brandentifier"
-      });
+      // Use redirect instead of popup for better compatibility
+      await signInWithRedirect(auth, googleProvider);
+      // Note: We won't reach this point immediately as the page will redirect
     } catch (error) {
       console.error("Error signing in with Google:", error);
       toast({
@@ -93,7 +113,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         description: "There was a problem signing in with Google",
         variant: "destructive"
       });
-    } finally {
       setIsLoading(false);
     }
   };
