@@ -1,16 +1,18 @@
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
+import { useEffect } from "react";
 
 export default function Landing() {
   const { signInWithGoogle, enterDemoMode, isLoading, isAuthenticated } = useAuth();
   const [_, setLocation] = useLocation();
 
-  // Redirect to dashboard if already authenticated
-  if (isAuthenticated) {
-    setLocation('/dashboard');
-    return null;
-  }
+  // Redirect to dashboard if already authenticated - using useEffect to avoid state updates during render
+  useEffect(() => {
+    if (isAuthenticated) {
+      setLocation('/dashboard');
+    }
+  }, [isAuthenticated, setLocation]);
 
   return (
     <div className="min-h-screen flex flex-col">
