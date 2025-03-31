@@ -45,6 +45,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(false); // Set to false initially
   const [isDemoMode, setIsDemoMode] = useState(false);
   const { toast } = useToast();
+  const fetchDemoUserData = async () => {
+    try {
+      const response = await apiRequest('GET', '/api/users/1');
+      const userData = await response.json();
+      
+      // Create a demo user with real data if available
+      setUser({
+        uid: '1',
+        email: userData.email || 'demo@brandentifier.com',
+        name: userData.name || 'Demo User',
+        photoURL: userData.photoURL || null,
+        title: userData.title || 'Software Engineer',
+        location: userData.location || 'San Francisco, CA'
+      });
+    } catch (error) {
+      console.log('Could not fetch user data, using default demo user');
+      // Fallback to default demo user if API fails
+      setUser({
+        uid: '1',
+        email: 'demo@brandentifier.com',
+        name: 'Demo User',
+        photoURL: null,
+        title: 'Software Engineer',
+        location: 'San Francisco, CA'
+      });
+    }
+  };
 
   useEffect(() => {
     // Check for redirect result
@@ -67,6 +94,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
       });
       
+    // Check if we were in demo mode before a page reload
+    const storedDemoMode = localStorage.getItem('demoMode') === 'true';
+    if (storedDemoMode) {
+      console.log("Restoring demo mode after reload");
+      setIsDemoMode(true);
+      // Fetch actual user data if it exists
+      fetchDemoUserData();
+    }
+      
     // Listen for auth state changes
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       setIsLoading(true);
@@ -83,7 +119,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         createOrUpdateUserInBackend(firebaseUser).catch(error => {
           console.error("Failed to create/update user in backend:", error);
         });
-      } else {
+      } else if (!storedDemoMode) {
+        // Only clear user if we're not in demo mode
         setUser(null);
       }
       setIsLoading(false);
@@ -127,6 +164,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = async () => {
     try {
       if (isDemoMode) {
+        // Clear demo mode from localStorage
+        localStorage.removeItem('demoMode');
         setIsDemoMode(false);
         setUser(null);
         toast({
@@ -151,6 +190,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const enterDemoMode = async () => {
     setIsLoading(true);
+    
+    // Store demo mode status in localStorage for persistence across reloads
+    localStorage.setItem('demoMode', 'true');
     
     // Try to fetch the actual user data from the API
     try {
