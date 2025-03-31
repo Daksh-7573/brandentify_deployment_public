@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
@@ -35,19 +35,30 @@ export default function Skills() {
   // Use fetched data if available, otherwise use empty array
   const [skills, setSkills] = useState<SkillItem[]>([]);
   
-  // Update skills state when server data changes
+  // Reference to hold the most recent data
+  const latestDataRef = useRef<SkillItem[]>([]);
+  
+  // Update skills state when server data changes - improved approach
   useEffect(() => {
     if (serverSkills && Array.isArray(serverSkills)) {
       console.log("Skills received new data:", serverSkills);
-      // Force state update by creating a new array
-      setSkills([...serverSkills]);
       
-      // Log the current state after update
-      setTimeout(() => {
-        console.log("Skills state after update:", skills);
-      }, 0);
+      // Store the latest data in our ref
+      latestDataRef.current = [...serverSkills];
+      
+      // Force state update by creating a new array
+      setSkills(latestDataRef.current);
+      
+      // Aggressive approach: render directly from the latest data
+      if (serverSkills.length > 0 && skills.length === 0) {
+        console.log("Using direct data rendering for skills");
+        setTimeout(() => setSkills([...serverSkills]), 50);
+      }
     }
   }, [serverSkills]);
+  
+  // Direct data access - if state hasn't updated, use the latest data from ref
+  const displaySkills = skills.length > 0 ? skills : latestDataRef.current;
 
   const handleAdd = () => {
     // In a real app, this would open a form modal
@@ -79,9 +90,9 @@ export default function Skills() {
           <div className="flex justify-center py-6">
             <Loader2 className="h-6 w-6 animate-spin text-primary" />
           </div>
-        ) : skills && skills.length > 0 ? (
+        ) : displaySkills && displaySkills.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {skills.map((skill) => (
+            {displaySkills.map((skill) => (
               <div key={skill.id} className="border border-gray-200 rounded-md p-3">
                 <div className="flex justify-between mb-1">
                   <span className="text-sm font-medium text-gray-700">{skill.name}</span>

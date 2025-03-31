@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
@@ -54,19 +54,30 @@ export default function WorkExperience() {
     setExperiences(experiences.filter(exp => exp.id !== id));
   };
 
-  // Update experiences state when server data changes
+  // Reference to hold the most recent data
+  const latestDataRef = useRef<WorkExperienceItem[]>([]);
+  
+  // Update experiences state when server data changes - improved approach
   useEffect(() => {
     if (serverExperiences && Array.isArray(serverExperiences)) {
       console.log("WorkExperience received new data:", serverExperiences);
-      // Force state update by creating a new array
-      setExperiences([...serverExperiences]);
       
-      // Log the current state after update
-      setTimeout(() => {
-        console.log("WorkExperience state after update:", experiences);
-      }, 0);
+      // Store the latest data in our ref
+      latestDataRef.current = [...serverExperiences];
+      
+      // Force state update by creating a new array
+      setExperiences(latestDataRef.current);
+      
+      // Aggressive approach: render directly from the latest data
+      if (serverExperiences.length > 0 && experiences.length === 0) {
+        console.log("Using direct data rendering for work experience");
+        setTimeout(() => setExperiences([...serverExperiences]), 50);
+      }
     }
   }, [serverExperiences]);
+  
+  // Direct data access - if state hasn't updated, use the latest data from ref
+  const displayExperiences = experiences.length > 0 ? experiences : latestDataRef.current;
 
   return (
     <Card className="mb-6">
@@ -86,9 +97,9 @@ export default function WorkExperience() {
           <div className="flex justify-center py-6">
             <Loader2 className="h-6 w-6 animate-spin text-primary" />
           </div>
-        ) : experiences && experiences.length > 0 ? (
+        ) : displayExperiences && displayExperiences.length > 0 ? (
           <div className="space-y-6">
-            {experiences.map((exp) => (
+            {displayExperiences.map((exp) => (
               <div key={exp.id} className="border-b border-gray-200 pb-6">
                 <div className="flex items-start justify-between">
                   <div>

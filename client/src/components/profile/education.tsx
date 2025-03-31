@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
@@ -37,19 +37,30 @@ export default function Education() {
   // Use fetched data if available, otherwise use empty array
   const [educations, setEducations] = useState<EducationItem[]>([]);
   
-  // Update educations state when server data changes
+  // Reference to hold the most recent data
+  const latestDataRef = useRef<EducationItem[]>([]);
+  
+  // Update educations state when server data changes - improved approach
   useEffect(() => {
     if (serverEducations && Array.isArray(serverEducations)) {
       console.log("Education received new data:", serverEducations);
-      // Force state update by creating a new array
-      setEducations([...serverEducations]);
       
-      // Log the current state after update
-      setTimeout(() => {
-        console.log("Education state after update:", educations);
-      }, 0);
+      // Store the latest data in our ref
+      latestDataRef.current = [...serverEducations];
+      
+      // Force state update by creating a new array
+      setEducations(latestDataRef.current);
+      
+      // Aggressive approach: render directly from the latest data
+      if (serverEducations.length > 0 && educations.length === 0) {
+        console.log("Using direct data rendering for education");
+        setTimeout(() => setEducations([...serverEducations]), 50);
+      }
     }
   }, [serverEducations]);
+  
+  // Direct data access - if state hasn't updated, use the latest data from ref
+  const displayEducations = educations.length > 0 ? educations : latestDataRef.current;
 
   const handleAdd = () => {
     // In a real app, this would open a form modal
@@ -84,9 +95,9 @@ export default function Education() {
           <div className="flex justify-center py-6">
             <Loader2 className="h-6 w-6 animate-spin text-primary" />
           </div>
-        ) : educations && educations.length > 0 ? (
+        ) : displayEducations && displayEducations.length > 0 ? (
           <div className="space-y-6">
-            {educations.map((edu) => (
+            {displayEducations.map((edu) => (
               <div key={edu.id} className="border-b border-gray-200 pb-6">
                 <div className="flex items-start justify-between">
                   <div>
