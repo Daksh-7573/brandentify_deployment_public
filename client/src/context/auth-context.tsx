@@ -40,7 +40,7 @@ export const AuthContext = createContext<AuthContextType>({
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false); // Set to false initially
   const [isDemoMode, setIsDemoMode] = useState(false);
   const { toast } = useToast();
 

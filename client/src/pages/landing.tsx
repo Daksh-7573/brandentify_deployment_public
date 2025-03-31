@@ -28,7 +28,7 @@ export default function Landing() {
                 variant="outline" 
                 className="ml-4"
                 onClick={enterDemoMode}
-                disabled={isLoading}
+                disabled={false} // Never disable demo mode button
               >
                 Try Demo
               </Button>
@@ -75,7 +75,7 @@ export default function Landing() {
                       variant="outline"
                       className="w-full flex items-center justify-center px-8 py-3 md:py-4 md:text-lg md:px-10"
                       onClick={enterDemoMode}
-                      disabled={isLoading}
+                      disabled={false} // Never disable demo mode button
                     >
                       Try Demo Mode
                     </Button>
