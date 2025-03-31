@@ -2,6 +2,7 @@ import express, { type Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { z } from "zod";
+import OpenAI from "openai";
 import { 
   insertUserSchema, 
   insertResumeSchema, 
@@ -342,14 +343,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         if (hasBinaryIndicators) {
           console.log("Detected likely binary file format (PDF/DOCX)");
-          // For binary files, we need to give the AI a clearer instruction
-          resumeText = `This appears to be a binary file (PDF/DOCX) that couldn't be directly converted to text.
-            The user has uploaded their resume and wants to extract their professional profile.
-            Please create a reasonable professional profile with the understanding that:
-            - This should be authentic to the user's career
-            - Use generic but relevant information for a tech professional
-            - Include realistic job titles, companies, and skills
-            - Make the information general enough to be customized by the user later`;
+          
+          // For binary files, let's allow the user to extract data from their resume
+          // by using OpenAI directly to analyze the file content
+          
+          // We'll use OpenAI to extract and process the information directly
+          const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+          
+          // Only use a portion of the data to stay within token limits
+          const truncatedContent = Buffer.from(fileData, 'base64').toString('base64').substring(0, 10000);
+          
+          const response = await openai.chat.completions.create({
+            model: "gpt-4o",
+            messages: [
+              { 
+                role: "system", 
+                content: "You are an expert resume analyzer looking at a resume binary file. Extract professional information in a structured format." 
+              },
+              { 
+                role: "user", 
+                content: [
+                  "Here is a resume file in base64 format (truncated). Please analyze this data and extract the person's work experience, education, skills, job title, and location. This is the binary content of a resume file:",
+                  truncatedContent
+                ].join("\n\n")
+              }
+            ],
+            temperature: 0.1,
+          });
+          
+          // Now we use the response text as our input for further processing
+          resumeText = "Resume extracted from binary file:\n\n" + response.choices[0].message.content;
+          console.log("GPT extracted text from binary file for further processing");
         } else {
           // Log a snippet of text content for debugging
           console.log("Resume text sample (first 200 chars):", resumeText.substring(0, 200));
