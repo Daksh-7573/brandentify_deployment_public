@@ -84,6 +84,7 @@ export default function Profile() {
 
   // List of popular cities for location suggestions
   const popularLocations = [
+    // North America
     "New York, NY, USA",
     "San Francisco, CA, USA",
     "Los Angeles, CA, USA",
@@ -100,21 +101,100 @@ export default function Profile() {
     "Dallas, TX, USA",
     "Houston, TX, USA",
     "Phoenix, AZ, USA",
-    "London, UK",
     "Toronto, Canada",
     "Vancouver, Canada",
-    "Sydney, Australia",
-    "Berlin, Germany",
-    "Paris, France",
-    "Amsterdam, Netherlands",
-    "Tokyo, Japan",
-    "Singapore",
-    "Hong Kong",
+    "Montreal, Canada",
+    "Mexico City, Mexico",
+    
+    // Europe
+    "London, UK",
+    "Manchester, UK",
+    "Edinburgh, UK",
     "Dublin, Ireland",
-    "Stockholm, Sweden",
+    "Paris, France",
+    "Lyon, France",
+    "Nice, France",
+    "Berlin, Germany",
+    "Munich, Germany",
+    "Hamburg, Germany",
+    "Amsterdam, Netherlands",
+    "Rotterdam, Netherlands",
+    "Madrid, Spain",
+    "Barcelona, Spain",
+    "Lisbon, Portugal",
+    "Rome, Italy",
+    "Milan, Italy",
+    "Florence, Italy",
+    "Vienna, Austria",
     "Zurich, Switzerland",
+    "Geneva, Switzerland",
+    "Brussels, Belgium",
+    "Copenhagen, Denmark",
+    "Oslo, Norway",
+    "Stockholm, Sweden",
+    "Helsinki, Finland",
+    "Prague, Czech Republic",
+    "Warsaw, Poland",
+    "Budapest, Hungary",
+    "Athens, Greece",
+    
+    // Asia
+    "Tokyo, Japan",
+    "Osaka, Japan",
+    "Kyoto, Japan",
+    "Seoul, South Korea",
+    "Busan, South Korea",
+    "Beijing, China",
+    "Shanghai, China",
+    "Guangzhou, China",
+    "Shenzhen, China",
+    "Hong Kong",
+    "Taipei, Taiwan",
+    "Singapore",
+    "Kuala Lumpur, Malaysia",
+    "Bangkok, Thailand",
+    "Jakarta, Indonesia",
+    "Manila, Philippines",
+    "Ho Chi Minh City, Vietnam",
+    "Hanoi, Vietnam",
     "Mumbai, India",
+    "Delhi, India",
     "Bangalore, India",
+    "Chennai, India",
+    "Kolkata, India",
+    "Dubai, UAE",
+    "Abu Dhabi, UAE",
+    "Istanbul, Turkey",
+    
+    // Australia and Oceania
+    "Sydney, Australia",
+    "Melbourne, Australia",
+    "Brisbane, Australia",
+    "Perth, Australia",
+    "Auckland, New Zealand",
+    "Wellington, New Zealand",
+    
+    // Africa
+    "Cairo, Egypt",
+    "Johannesburg, South Africa",
+    "Cape Town, South Africa",
+    "Lagos, Nigeria",
+    "Nairobi, Kenya",
+    "Casablanca, Morocco",
+    "Accra, Ghana",
+    "Addis Ababa, Ethiopia",
+    "Tunis, Tunisia",
+    
+    // South America
+    "São Paulo, Brazil",
+    "Rio de Janeiro, Brazil",
+    "Buenos Aires, Argentina",
+    "Santiago, Chile",
+    "Lima, Peru",
+    "Bogotá, Colombia",
+    "Caracas, Venezuela",
+    "Montevideo, Uruguay",
+    "Quito, Ecuador"
   ];
   
   // State for location suggestions
@@ -146,7 +226,7 @@ export default function Profile() {
       const filtered = popularLocations.filter(location => 
         location.toLowerCase().includes(inputValue)
       );
-      setLocationSuggestions(filtered.slice(0, 5)); // Limit to 5 suggestions
+      setLocationSuggestions(filtered.slice(0, 10)); // Show up to 10 suggestions
     } else if (name === 'location' && !value.trim()) {
       setLocationSuggestions([]);
     }
