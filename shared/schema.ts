@@ -11,6 +11,8 @@ export const users = pgTable("users", {
   photoURL: text("photo_url"),
   title: text("title"), // Job title
   location: text("location"), // User location
+  industry: text("industry"), // User's industry
+  lookingFor: text("looking_for"), // What the user is looking for (networking type)
   profileCompleted: integer("profile_completed").default(0), // Percentage
   createdAt: timestamp("created_at").defaultNow(),
 });

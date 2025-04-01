@@ -34,7 +34,9 @@ export default function Profile() {
   const [formData, setFormData] = useState({
     name: '',
     title: '',
-    location: ''
+    location: '',
+    industry: '',
+    lookingFor: ''
   });
   
   // Get user ID (use demo ID if in demo mode)
@@ -717,7 +719,9 @@ export default function Profile() {
       setFormData({
         name: userData.name || '',
         title: userData.title || '',
-        location: userData.location || ''
+        location: userData.location || '',
+        industry: userData.industry || '',
+        lookingFor: userData.lookingFor || ''
       });
     }
   }, [userData]);
@@ -874,6 +878,26 @@ export default function Profile() {
                   </div>
                 )}
               </div>
+              <div className="grid gap-2">
+                <Label htmlFor="industry">Industry</Label>
+                <Input
+                  id="industry"
+                  name="industry"
+                  value={formData.industry}
+                  onChange={handleInputChange}
+                  placeholder="Your industry (e.g., Technology, Healthcare, Finance)"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="lookingFor">I am looking for</Label>
+                <Input
+                  id="lookingFor"
+                  name="lookingFor"
+                  value={formData.lookingFor}
+                  onChange={handleInputChange}
+                  placeholder="What are you looking for? (e.g., Job opportunities, Mentorship)"
+                />
+              </div>
             </div>
             <DialogFooter>
               <Button 
@@ -947,6 +971,16 @@ export default function Profile() {
                   </div>
                   <p className="text-sm text-gray-500">{userData?.title || user?.title || 'Professional'}</p>
                   <p className="text-sm text-gray-500 mt-1">{userData?.location || user?.location || 'Location not specified'}</p>
+                  {userData?.industry && (
+                    <p className="text-sm text-gray-500 mt-1">
+                      <span className="font-medium">Industry:</span> {userData.industry}
+                    </p>
+                  )}
+                  {userData?.lookingFor && (
+                    <p className="text-sm text-gray-500 mt-1">
+                      <span className="font-medium">Looking for:</span> {userData.lookingFor}
+                    </p>
+                  )}
                 </div>
                 <div className="mt-4 pl-0 md:pl-32 flex flex-wrap gap-2">
                   {isLoadingSkills ? (

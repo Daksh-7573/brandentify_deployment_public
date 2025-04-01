@@ -95,6 +95,8 @@ export class MemStorage implements IStorage {
       photoURL: null,
       title: "Senior Software Engineer",
       location: "San Francisco, CA, USA",
+      industry: "Technology",
+      lookingFor: "A Career Mentor",
       profileCompleted: 65,
       createdAt: new Date()
     };
@@ -195,6 +197,8 @@ export class MemStorage implements IStorage {
       photoURL: insertUser.photoURL ?? null,
       title: insertUser.title ?? null,
       location: insertUser.location ?? null,
+      industry: insertUser.industry ?? null,
+      lookingFor: insertUser.lookingFor ?? null,
       profileCompleted: insertUser.profileCompleted ?? null
     };
     
