@@ -2,7 +2,7 @@ import express, { type Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { z } from "zod";
-import OpenAI from "openai";
+import { handleParseResume } from './routes-parse-resume';
 import { 
   insertUserSchema, 
   insertResumeSchema, 
@@ -358,7 +358,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Profile data parsing endpoints
-  apiRouter.post("/parse-resume", async (req: Request, res: Response) => {
+  apiRouter.post("/parse-resume", handleParseResume);
+  
+  // Keep old implementation as a backup, but it's not used anymore
+  apiRouter.post("/parse-resume-old", async (req: Request, res: Response) => {
     try {
       const { userId, fileData } = req.body;
       

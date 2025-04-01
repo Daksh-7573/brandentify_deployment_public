@@ -66,15 +66,15 @@ function parseStructuredResumeText(text: string): {
                         block.match(/(\d{4})\s*(?:-|–|to)\s*(\d{4}|Present|Current)/i);
       
       const startDate = dateMatch ? dateMatch[1] : 'Unknown';
-      const endDate = dateMatch ? dateMatch[2] : null;
+      const endDate = dateMatch ? dateMatch[2] : '';
       
       // Look for location
       const locationMatch = block.match(/(?:^|\n)([A-Za-z]+,\s*[A-Za-z]+|\w+\s+\w+,\s*[A-Z]{2})/);
-      const location = locationMatch ? locationMatch[1] : null;
+      const location = locationMatch ? locationMatch[1] : '';
       
       // Description is everything else
       let description = lines.slice(2).join('\n').trim();
-      if (description.length === 0) description = null;
+      if (description.length === 0) description = '';
       
       if (title && company) {
         experiences.push({
@@ -126,11 +126,11 @@ function parseStructuredResumeText(text: string): {
                         block.match(/(\d{4})\s*(?:-|–|to)\s*(\d{4}|Present|Current)/i);
       
       const startDate = dateMatch ? dateMatch[1] : 'Unknown';
-      const endDate = dateMatch ? dateMatch[2] : null;
+      const endDate = dateMatch ? dateMatch[2] : '';
       
       // Look for location
       const locationMatch = block.match(/(?:^|\n)([A-Za-z]+,\s*[A-Za-z]+|\w+\s+\w+,\s*[A-Z]{2})/);
-      const location = locationMatch ? locationMatch[1] : null;
+      const location = locationMatch ? locationMatch[1] : '';
       
       if (degree && institution) {
         educations.push({
@@ -320,9 +320,9 @@ export async function parseResumeText(resumeText: string): Promise<{
         title: block.title!,
         company: block.company!,
         startDate: block.startDate!, 
-        location: block.location || null,
-        endDate: block.endDate || null,
-        description: block.description || null
+        location: block.location || '',
+        endDate: block.endDate || '',
+        description: block.description || ''
       }));
 
     const educations: InsertEducation[] = educationBlocks
@@ -332,8 +332,8 @@ export async function parseResumeText(resumeText: string): Promise<{
         degree: block.degree!,
         institution: block.institution!,
         startDate: block.startDate!,
-        location: block.location || null,
-        endDate: block.endDate || null
+        location: block.location || '',
+        endDate: block.endDate || ''
       }));
 
     const skills: InsertSkill[] = skillsList.map(skill => ({
@@ -398,7 +398,7 @@ function extractExperienceBlocks(text: string): Array<{
     "WORK HISTORY"
   ]);
   
-  if (!experienceSection) {
+  if (experienceSection.trim() === '') {
     console.log("No experience section found in resume");
     return [];
   }
@@ -492,7 +492,7 @@ function extractEducationBlocks(text: string): Array<{
     "EDUCATIONAL BACKGROUND"
   ]);
   
-  if (!educationSection) {
+  if (educationSection.trim() === '') {
     console.log("No education section found in resume");
     return [];
   }
@@ -587,7 +587,7 @@ function extractSkills(text: string): string[] {
     "KEY SKILLS"
   ]);
   
-  if (!skillsSection) {
+  if (skillsSection.trim() === '') {
     console.log("No skills section found in resume");
     return [];
   }
@@ -681,7 +681,7 @@ function extractBasicInfo(text: string): { title?: string; location?: string } {
 /**
  * Extract a section from the resume text
  */
-function extractSection(text: string, sectionHeaders: string[]): string | null {
+function extractSection(text: string, sectionHeaders: string[]): string {
   // Normalize the text: convert to uppercase and remove special formatting
   const normalizedText = text.toUpperCase();
   
@@ -699,7 +699,7 @@ function extractSection(text: string, sectionHeaders: string[]): string | null {
   }
   
   if (sectionStart === -1) {
-    return null; // Section not found
+    return ''; // Section not found
   }
   
   // Find the end of the section (start of the next section or end of document)
