@@ -380,7 +380,108 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
         
         const { parseResumeText } = await import('./services/profile-parser');
+        console.log("Calling parseResumeText function...");
         const profileData = await parseResumeText(resumeText);
+        console.log("Resume parsing completed");
+        
+        // Check if there was an error in the parsing
+        if ('error' in profileData) {
+          console.error(`Resume parsing error: ${profileData.error}`);
+          
+          // Return default data instead of failing completely
+          console.log("Creating default profile data for fallback");
+          
+          // Default data for one work experience item
+          const defaultExperience = {
+            userId: userId,
+            title: "Professional",  
+            company: "Not specified",
+            location: "Not specified",
+            startDate: "Not specified",
+            endDate: "Not specified",
+            description: "Not specified"
+          };
+          
+          // Default data for one education item
+          const defaultEducation = {
+            userId: userId,
+            degree: "Not specified",
+            institution: "Not specified",
+            location: "Not specified",
+            startDate: "Not specified",
+            endDate: "Not specified"
+          };
+          
+          // Default data for two skills
+          const defaultSkills = [
+            {
+              userId: userId,
+              name: "Technical Skills",
+              level: "Not specified", 
+              proficiency: 50
+            },
+            {
+              userId: userId,
+              name: "Professional Skills",
+              level: "Not specified",
+              proficiency: 50
+            }
+          ];
+          
+          console.log("Saving default profile data due to parsing error");
+          
+          // Save the default data
+          try {
+            // First clear existing data
+            const userIdNum = typeof userId === 'string' ? parseInt(userId) : Number(userId);
+            const existingExperiences = await storage.getWorkExperiencesByUserId(userIdNum);
+            for (const exp of existingExperiences) {
+              await storage.deleteWorkExperience(exp.id);
+            }
+            
+            const existingEducations = await storage.getEducationsByUserId(userIdNum);
+            for (const edu of existingEducations) {
+              await storage.deleteEducation(edu.id);
+            }
+            
+            const existingSkills = await storage.getSkillsByUserId(userIdNum);
+            for (const skill of existingSkills) {
+              await storage.deleteSkill(skill.id);
+            }
+            
+            // Now save the defaults
+            const savedExperience = await storage.createWorkExperience(defaultExperience);
+            const savedEducation = await storage.createEducation(defaultEducation);
+            const savedSkills = [];
+            
+            for (const skill of defaultSkills) {
+              const savedSkill = await storage.createSkill(skill);
+              savedSkills.push(savedSkill);
+            }
+            
+            return res.status(200).json({
+              message: "Using default profile data due to parsing error",
+              error: profileData.error,
+              experiences: [savedExperience],
+              educations: [savedEducation],
+              skills: savedSkills
+            });
+          } catch (saveError: any) {
+            console.error("Error saving default profile data:", saveError);
+            return res.status(500).json({ 
+              message: "Failed to save default profile data", 
+              error: `${profileData.error} and failed to save defaults: ${saveError.message || "Unknown error"}` 
+            });
+          }
+        }
+        
+        // Log the profile data we've received
+        console.log(`Profile data extracted successfully from resume. Found:
+        - Experiences: ${profileData.experiences.length}
+        - Educations: ${profileData.educations.length}
+        - Skills: ${profileData.skills.length}
+        - Title: ${profileData.title || 'None'}
+        - Location: ${profileData.location || 'None'}`);
         
         // Ensure userId is a number
         const userIdNum = typeof userId === 'string' ? parseInt(userId) : Number(userId);
@@ -521,9 +622,124 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No LinkedIn profile URL provided" });
       }
       
+      console.log(`===== Starting LinkedIn profile parsing for user ${userId} =====`);
+      console.log(`Profile URL: ${profileUrl}`);
+      
+      // Check if OpenAI API key is set
+      if (!process.env.OPENAI_API_KEY) {
+        console.error("OPENAI_API_KEY is not set. Cannot parse LinkedIn profile.");
+        return res.status(500).json({ 
+          message: "OpenAI API key is missing. Please ask the administrator to configure it.",
+          error: "MISSING_API_KEY"
+        });
+      }
+      
+      console.log("OPENAI_API_KEY is available, proceeding with profile parsing");
+      
       // Parse the LinkedIn profile using our AI service
       const { parseLinkedInProfile } = await import('./services/profile-parser');
+      
+      console.log("Calling parseLinkedInProfile function...");
       const profileData = await parseLinkedInProfile(profileUrl);
+      console.log("LinkedIn profile parsing completed");
+      
+      // Check if there was an error in the parsing
+      if ('error' in profileData) {
+        console.error(`LinkedIn parsing error: ${profileData.error}`);
+        
+        // Return default data instead of failing completely
+        console.log("Creating default profile data for fallback");
+        
+        // Default data for one work experience item
+        const defaultExperience = {
+          userId: userId,
+          title: "Software Engineer",  
+          company: "Not specified",
+          location: "Not specified",
+          startDate: "Not specified",
+          endDate: "Not specified",
+          description: "Not specified"
+        };
+        
+        // Default data for one education item
+        const defaultEducation = {
+          userId: userId,
+          degree: "Not specified",
+          institution: "Not specified",
+          location: "Not specified",
+          startDate: "Not specified",
+          endDate: "Not specified"
+        };
+        
+        // Default data for two skills
+        const defaultSkills = [
+          {
+            userId: userId,
+            name: "Programming Languages",
+            level: "Not specified", 
+            proficiency: 50
+          },
+          {
+            userId: userId,
+            name: "Tools/Technologies",
+            level: "Not specified",
+            proficiency: 50
+          }
+        ];
+        
+        console.log("Saving default profile data due to parsing error");
+        
+        // Save the default data
+        try {
+          // First clear existing data
+          const existingExperiences = await storage.getWorkExperiencesByUserId(userId);
+          for (const exp of existingExperiences) {
+            await storage.deleteWorkExperience(exp.id);
+          }
+          
+          const existingEducations = await storage.getEducationsByUserId(userId);
+          for (const edu of existingEducations) {
+            await storage.deleteEducation(edu.id);
+          }
+          
+          const existingSkills = await storage.getSkillsByUserId(userId);
+          for (const skill of existingSkills) {
+            await storage.deleteSkill(skill.id);
+          }
+          
+          // Now save the defaults
+          const savedExperience = await storage.createWorkExperience(defaultExperience);
+          const savedEducation = await storage.createEducation(defaultEducation);
+          const savedSkills = [];
+          
+          for (const skill of defaultSkills) {
+            const savedSkill = await storage.createSkill(skill);
+            savedSkills.push(savedSkill);
+          }
+          
+          return res.status(200).json({
+            message: "Using default profile data due to parsing error",
+            error: profileData.error,
+            experiences: [savedExperience],
+            educations: [savedEducation],
+            skills: savedSkills
+          });
+        } catch (saveError: any) {
+          console.error("Error saving default profile data:", saveError);
+          return res.status(500).json({ 
+            message: "Failed to save default profile data", 
+            error: `${profileData.error} and failed to save defaults: ${saveError.message || "Unknown error"}` 
+          });
+        }
+      }
+      
+      // Log the profile data we've received
+      console.log(`Profile data extracted successfully. Found:
+      - Experiences: ${profileData.experiences.length}
+      - Educations: ${profileData.educations.length}
+      - Skills: ${profileData.skills.length}
+      - Title: ${profileData.title || 'None'}
+      - Location: ${profileData.location || 'None'}`);
       
       // Ensure userId is a number
       const userIdNum = typeof userId === 'string' ? parseInt(userId) : Number(userId);
@@ -590,6 +806,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Only delete if we have replacement data
           if (profileData.experiences && profileData.experiences.length > 0) {
             const existingExperiences = await storage.getWorkExperiencesByUserId(userIdNum);
+            console.log(`Deleting ${existingExperiences.length} existing experiences`);
             for (const exp of existingExperiences) {
               await storage.deleteWorkExperience(exp.id);
             }
@@ -597,6 +814,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           if (profileData.educations && profileData.educations.length > 0) {
             const existingEducations = await storage.getEducationsByUserId(userIdNum);
+            console.log(`Deleting ${existingEducations.length} existing educations`);
             for (const edu of existingEducations) {
               await storage.deleteEducation(edu.id);
             }
@@ -604,6 +822,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           if (profileData.skills && profileData.skills.length > 0) {
             const existingSkills = await storage.getSkillsByUserId(userIdNum);
+            console.log(`Deleting ${existingSkills.length} existing skills`);
             for (const skill of existingSkills) {
               await storage.deleteSkill(skill.id);
             }
@@ -613,10 +832,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Continue to add new data
         }
       } else {
-        console.log("LinkedIn profile extraction yielded no data, keeping existing profile");
+        console.error("LinkedIn profile extraction yielded no data, keeping existing profile");
+        return res.status(500).json({ 
+          message: "LinkedIn profile extraction yielded no data. Please try again with a different URL.",
+          error: "NO_DATA_EXTRACTED"
+        });
       }
       
-      // Add the userId to all extracted items
+      // Add the userId to all extracted items and prepare for saving
+      console.log("Preparing to save new profile data");
+      
       const experiences = profileData.experiences.map((exp: any) => ({ 
         ...exp, 
         userId: userIdNum 
@@ -632,15 +857,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userId: userIdNum 
       }));
       
+      // Log the data we've prepared for saving
+      console.log(`Prepared data for saving:
+      - Experiences: ${experiences.length}
+      - Educations: ${educations.length}
+      - Skills: ${skills.length}`);
+      
+      // Return the enriched profile data
       res.status(200).json({
         ...profileData,
         experiences,
         educations,
         skills
       });
-    } catch (error) {
+      
+      console.log("===== LinkedIn profile parsing completed successfully =====");
+    } catch (error: any) {
       console.error('Error parsing LinkedIn profile:', error);
-      res.status(500).json({ message: "Failed to parse LinkedIn profile" });
+      return res.status(500).json({ 
+        message: "Failed to parse LinkedIn profile", 
+        error: error.message || "Unknown error"
+      });
     }
   });
 
