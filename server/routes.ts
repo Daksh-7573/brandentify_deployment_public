@@ -434,18 +434,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 },
                 { 
                   role: "user", 
-                  content: [
-                    {
-                      type: "text", 
-                      text: "Please analyze this resume file and extract the person's work experience, education, skills, job title, and location. Format your response as plain text that can be parsed later. Focus on extracting the actual text content from the document first."
-                    },
-                    {
-                      type: "image_url", 
-                      image_url: {
-                        url: `data:application/pdf;base64,${truncatedContent}`
-                      }
-                    }
-                  ]
+                  content: "I have a resume in base64 format. Please extract any professional information such as work experience, education, skills, job title, and location. Format your response in plain text that I can parse later.\n\nHere's the beginning of the base64 content (truncated):\n" + truncatedContent.substring(0, 200)
                 }
               ],
               temperature: 0.1,
