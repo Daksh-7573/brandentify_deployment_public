@@ -54,10 +54,12 @@ export function EmailAuth() {
   const [_, setLocation] = useLocation();
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isResendingVerification, setIsResendingVerification] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
   
   // Login form
   const loginForm = useForm<z.infer<typeof loginSchema>>({
@@ -79,11 +81,45 @@ export function EmailAuth() {
     },
   });
   
+  // Function to resend verification email
+  const resendVerificationEmail = async () => {
+    if (!unverifiedEmail) return;
+    
+    try {
+      setIsResendingVerification(true);
+      
+      const response = await fetch("/api/resend-verification", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: unverifiedEmail,
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to resend verification email");
+      }
+      
+      setSuccessMessage(`Verification email sent to ${unverifiedEmail}. Please check your inbox.`);
+      console.log("Verification token (for dev testing):", data.verificationToken);
+      
+    } catch (err: any) {
+      setError(err.message || "Failed to resend verification email");
+    } finally {
+      setIsResendingVerification(false);
+    }
+  };
+  
   // Handle login form submission
   const onLoginSubmit = async (values: z.infer<typeof loginSchema>) => {
     try {
       setIsSubmitting(true);
       setError("");
+      setUnverifiedEmail(null); // Reset unverified email
       
       const response = await fetch("/api/login", {
         method: "POST",
@@ -96,17 +132,23 @@ export function EmailAuth() {
         }),
       });
       
+      const data = await response.json();
+      
       if (!response.ok) {
-        const data = await response.json();
+        // Special handling for unverified email
+        if (response.status === 403 && data.isVerificationError) {
+          setUnverifiedEmail(data.email);
+          setError("Email not verified. Please verify your email to login.");
+          return;
+        }
+        
         throw new Error(data.message || "Invalid credentials");
       }
-      
-      const userData = await response.json();
       
       setSuccessMessage("Login successful!");
       
       // Use Auth Context to set the user
-      authContext.signInWithEmail(userData);
+      authContext.signInWithEmail(data);
       
       // Small delay to show success message before redirecting
       setTimeout(() => {
@@ -149,47 +191,20 @@ export function EmailAuth() {
       
       // Use the user data from the registration response
       const userData = responseData.user;
+      const verificationToken = responseData.verificationToken;
       
       console.log("Registration successful:", userData);
+      console.log("Verification token (for dev testing):", verificationToken);
       
-      setSuccessMessage("Registration successful! You will be automatically logged in.");
+      // Set the unverified email for potential resend
+      setUnverifiedEmail(userData.email);
       
-      // Auto login after successful registration
-      if (userData) {
-        // First log the user in with the login API to get a proper session
-        try {
-          const loginResponse = await fetch("/api/login", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              email: values.email,
-              password: values.password,
-            }),
-          });
-          
-          if (!loginResponse.ok) {
-            console.error("Auto-login after registration failed");
-            throw new Error("Auto-login failed. Please try logging in manually.");
-          }
-          
-          const loginData = await loginResponse.json();
-          
-          // Now use the auth context to set the user
-          authContext.signInWithEmail(loginData);
-          
-          // Small delay to show success message before redirecting
-          setTimeout(() => {
-            setLocation("/dashboard");
-          }, 1500);
-        } catch (loginErr: any) {
-          console.error("Error during auto-login:", loginErr);
-          setError("Registration successful, but auto-login failed. Please try logging in manually.");
-          // Switch to login tab after registration
-          setAuthMode("login");
-        }
-      }
+      // Display success message with verification instructions
+      setSuccessMessage(`Registration successful! A verification email has been sent to ${userData.email}. Please verify your email before logging in.`);
+      
+      // Switch to login tab
+      setAuthMode("login");
+      
     } catch (err: any) {
       setError(err.message || "Registration failed");
     } finally {
@@ -204,6 +219,28 @@ export function EmailAuth() {
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Error</AlertTitle>
           <AlertDescription>{error}</AlertDescription>
+          
+          {/* Show resend verification button when needed */}
+          {unverifiedEmail && (
+            <div className="mt-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="mt-2" 
+                onClick={resendVerificationEmail}
+                disabled={isResendingVerification}
+              >
+                {isResendingVerification ? (
+                  <>
+                    <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  <>Resend Verification Email</>
+                )}
+              </Button>
+            </div>
+          )}
         </Alert>
       )}
       
@@ -214,6 +251,28 @@ export function EmailAuth() {
           <AlertDescription className="text-green-600">
             {successMessage}
           </AlertDescription>
+          
+          {/* Show resend verification button for new registrations */}
+          {unverifiedEmail && !error && (
+            <div className="mt-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="mt-2 text-green-600 border-green-300 hover:bg-green-50 hover:text-green-700" 
+                onClick={resendVerificationEmail}
+                disabled={isResendingVerification}
+              >
+                {isResendingVerification ? (
+                  <>
+                    <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  <>Resend Verification Email</>
+                )}
+              </Button>
+            </div>
+          )}
         </Alert>
       )}
       

@@ -12,6 +12,7 @@ import Profile from "@/pages/profile";
 import AICareer from "@/pages/ai-career";
 import SmartConnect from "@/pages/smart-connect";
 import AuthPage from "@/pages/auth-page";
+import EmailVerification from "@/pages/email-verification";
 
 // Protected route component that checks if the user is authenticated
 function ProtectedRoute({ component: Component, ...rest }: { component: React.ComponentType, path: string }) {
@@ -40,6 +41,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Landing} />
       <Route path="/auth" component={AuthPage} />
+      <Route path="/verify-email" component={EmailVerification} />
       <Route path="/dashboard">
         <ProtectedRoute path="/dashboard" component={Dashboard} />
       </Route>

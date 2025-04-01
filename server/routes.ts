@@ -76,8 +76,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Email already registered" });
       }
       
-      // Create the user
-      const user = await storage.createUser(userData);
+      // Create the user with emailVerified explicitly set to false
+      const userData_withVerificationFlag = {
+        ...userData,
+        emailVerified: false
+      };
+      
+      const user = await storage.createUser(userData_withVerificationFlag);
       
       // Generate a random verification token
       const token = crypto.randomBytes(32).toString('hex');
@@ -102,6 +107,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(`Created verification token for user ${user.email}: ${token}`);
       
       // In a real app, we would send an email with the verification link
+      // The verification URL would be:
+      // ${req.protocol}://${req.get('host')}/api/verify-email/${token}
+      
       // For development, just return the token in the response
       res.status(201).json({
         user,
@@ -1000,6 +1008,15 @@ ${extractedText.substring(0, 5000)}
       // Simple password check for development (in a real app we'd use bcrypt)
       if (user.password !== password) {
         return res.status(401).json({ message: "Invalid credentials" });
+      }
+      
+      // Check if email is verified
+      if (user.emailVerified !== true) {
+        return res.status(403).json({ 
+          message: "Email not verified. Please verify your email to login.",
+          isVerificationError: true,
+          email: user.email
+        });
       }
       
       return res.status(200).json(user);
