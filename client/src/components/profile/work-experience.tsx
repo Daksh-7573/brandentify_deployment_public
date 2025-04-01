@@ -126,6 +126,25 @@ export default function WorkExperience() {
         return;
       }
       
+      // Validate that end date is after start date if both are provided and end date is not "Present"
+      if (
+        newExperience.startDate && 
+        newExperience.endDate && 
+        newExperience.endDate !== 'Present'
+      ) {
+        const startDateObj = new Date(newExperience.startDate);
+        const endDateObj = new Date(newExperience.endDate);
+        
+        if (endDateObj < startDateObj) {
+          toast({
+            title: "Invalid date range",
+            description: "End date must be after start date",
+            variant: "destructive"
+          });
+          return;
+        }
+      }
+      
       // Add userId to the new experience
       const experienceToSave = {
         ...newExperience,
@@ -364,42 +383,86 @@ export default function WorkExperience() {
                 End Date
               </Label>
               <div className="col-span-3">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !endDate && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {endDate ? format(endDate, "PPP") : <span>Pick a date or leave empty for 'Present'</span>}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={endDate}
-                      onSelect={(date) => {
-                        setEndDate(date);
-                        if (date) {
-                          setNewExperience({
-                            ...newExperience,
-                            endDate: format(date, "MMM yyyy")
-                          });
-                        } else {
-                          // If date is cleared, set 'Present'
+                <div className="flex space-x-2 items-center">
+                  <div className={cn(
+                    "flex-1",
+                    newExperience.endDate === 'Present' ? "opacity-50" : ""
+                  )}>
+                    <Popover>
+                      <PopoverTrigger asChild disabled={newExperience.endDate === 'Present'}>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "w-full justify-start text-left font-normal",
+                            !endDate && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {endDate ? format(endDate, "PPP") : <span>Select end date</span>}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0">
+                        <Calendar
+                          mode="single"
+                          selected={endDate}
+                          onSelect={(date) => {
+                            // Only allow dates after start date
+                            if (startDate && date && date < startDate) {
+                              toast({
+                                title: "Invalid date",
+                                description: "End date must be after start date",
+                                variant: "destructive"
+                              });
+                              return;
+                            }
+                            
+                            setEndDate(date);
+                            if (date) {
+                              setNewExperience({
+                                ...newExperience,
+                                endDate: format(date, "MMM yyyy")
+                              });
+                            } else {
+                              // If date is cleared, keep as empty (will be handled as Present if checkbox is checked)
+                              setNewExperience({
+                                ...newExperience,
+                                endDate: ''
+                              });
+                            }
+                          }}
+                          fromDate={startDate || undefined}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="currentJob"
+                      className="rounded border-gray-300 text-primary focus:ring-primary"
+                      checked={newExperience.endDate === 'Present'}
+                      onChange={(e) => {
+                        if (e.target.checked) {
                           setNewExperience({
                             ...newExperience,
                             endDate: 'Present'
                           });
+                          setEndDate(undefined);
+                        } else {
+                          setNewExperience({
+                            ...newExperience,
+                            endDate: ''
+                          });
                         }
                       }}
-                      initialFocus
                     />
-                  </PopoverContent>
-                </Popover>
+                    <label htmlFor="currentJob" className="text-sm text-gray-600">
+                      I currently work here
+                    </label>
+                  </div>
+                </div>
               </div>
             </div>
             <div className="grid grid-cols-4 items-start gap-4">

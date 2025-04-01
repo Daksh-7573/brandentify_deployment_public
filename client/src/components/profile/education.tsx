@@ -1,9 +1,18 @@
 import { useState, useEffect, useRef } from "react";
+import { format } from "date-fns";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
-import { Loader2 } from "lucide-react";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { Loader2, CalendarIcon } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
 type EducationItem = {
   id: number;
@@ -94,74 +103,411 @@ export default function Education() {
   // Always use the latest data for display, using direct ref access as a fallback
   const displayEducations = educations.length > 0 ? educations : 
                           (latestDataRef.current.length > 0 ? latestDataRef.current : []);
+                          
+  // For the modal form
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [newEducation, setNewEducation] = useState<Partial<EducationItem>>({
+    degree: '',
+    institution: '',
+    location: '',
+    startDate: '',
+    endDate: ''
+  });
+  
+  // For date pickers
+  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+  
+  const { toast } = useToast();
 
   const handleAdd = () => {
-    // In a real app, this would open a form modal
-    console.log("Add new education");
+    setIsAddModalOpen(true);
+  };
+  
+  const handleCloseModal = () => {
+    setIsAddModalOpen(false);
+    // Reset form
+    setNewEducation({
+      degree: '',
+      institution: '',
+      location: '',
+      startDate: '',
+      endDate: ''
+    });
+    // Reset date pickers
+    setStartDate(undefined);
+    setEndDate(undefined);
+  };
+  
+  const handleSaveEducation = async () => {
+    try {
+      // Validate form
+      if (!newEducation.degree || !newEducation.institution || !newEducation.startDate) {
+        toast({
+          title: "Missing information",
+          description: "Please fill in all required fields",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      // Validate that end date is after start date if both are provided
+      if (
+        newEducation.startDate && 
+        newEducation.endDate && 
+        newEducation.endDate !== 'Present'
+      ) {
+        const startDateObj = new Date(newEducation.startDate);
+        const endDateObj = new Date(newEducation.endDate);
+        
+        if (endDateObj < startDateObj) {
+          toast({
+            title: "Invalid date range",
+            description: "End date must be after start date",
+            variant: "destructive"
+          });
+          return;
+        }
+      }
+      
+      // Add userId to the new education
+      const educationToSave = {
+        ...newEducation,
+        userId: userId
+      };
+      
+      // Save to API
+      const response = await apiRequest('POST', '/api/educations', educationToSave);
+      if (response.ok) {
+        // Close modal
+        setIsAddModalOpen(false);
+        
+        // Refresh data
+        refetch();
+        
+        // Show success message
+        toast({
+          title: "Education added",
+          description: "Your education has been added successfully",
+        });
+        
+        // Reset form
+        setNewEducation({
+          degree: '',
+          institution: '',
+          location: '',
+          startDate: '',
+          endDate: ''
+        });
+        
+        // Reset date pickers
+        setStartDate(undefined);
+        setEndDate(undefined);
+      } else {
+        throw new Error("Failed to save education");
+      }
+    } catch (error) {
+      console.error("Error saving education:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save your education. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleEdit = (id: number) => {
-    // In a real app, this would open a form modal with the education data
-    console.log("Edit education", id);
+    // Find the education to edit
+    const educationToEdit = displayEducations.find(edu => edu.id === id);
+    if (educationToEdit) {
+      setNewEducation({
+        ...educationToEdit
+      });
+      
+      // Set the date pickers
+      if (educationToEdit.startDate) {
+        try {
+          setStartDate(new Date(educationToEdit.startDate));
+        } catch (error) {
+          console.error("Failed to parse start date:", error);
+        }
+      }
+      
+      if (educationToEdit.endDate && educationToEdit.endDate !== 'Present') {
+        try {
+          setEndDate(new Date(educationToEdit.endDate));
+        } catch (error) {
+          console.error("Failed to parse end date:", error);
+        }
+      }
+      
+      setIsAddModalOpen(true);
+    }
   };
 
-  const handleDelete = (id: number) => {
-    // In a real app, this would show a confirmation dialog
-    setEducations(educations.filter(edu => edu.id !== id));
+  const handleDelete = async (id: number) => {
+    try {
+      const response = await apiRequest('DELETE', `/api/educations/${id}`);
+      if (response.ok) {
+        // Update local state immediately for responsiveness
+        setEducations(educations.filter(edu => edu.id !== id));
+        
+        // Show success message
+        toast({
+          title: "Education deleted",
+          description: "Your education has been deleted successfully",
+        });
+        
+        // Refresh data
+        refetch();
+      } else {
+        throw new Error("Failed to delete education");
+      }
+    } catch (error) {
+      console.error("Error deleting education:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete your education. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
-    <Card className="mb-6">
-      <CardContent className="pt-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-medium text-gray-900">Education</h2>
-          <Button 
-            variant="ghost" 
-            className="text-primary hover:text-primary-600 hover:bg-transparent"
-            onClick={handleAdd}
-          >
-            <i className="fas fa-plus mr-1"></i> Add
-          </Button>
-        </div>
-        
-        {isLoading ? (
-          <div className="flex justify-center py-6">
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+    <>
+      <Card className="mb-6">
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-medium text-gray-900">Education</h2>
+            <Button 
+              variant="ghost" 
+              className="text-primary hover:text-primary-600 hover:bg-transparent"
+              onClick={handleAdd}
+            >
+              <i className="fas fa-plus mr-1"></i> Add
+            </Button>
           </div>
-        ) : displayEducations && displayEducations.length > 0 ? (
-          <div className="space-y-6">
-            {displayEducations.map((edu) => (
-              <div key={edu.id} className="border-b border-gray-200 pb-6">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="text-base font-medium text-gray-900">{edu.degree}</h3>
-                    <p className="text-sm text-gray-500 mt-1">{edu.institution} • {edu.location}</p>
-                    <p className="text-sm text-gray-500 mt-1">{edu.startDate} - {edu.endDate}</p>
+          
+          {isLoading ? (
+            <div className="flex justify-center py-6">
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            </div>
+          ) : displayEducations && displayEducations.length > 0 ? (
+            <div className="space-y-6">
+              {displayEducations.map((edu) => (
+                <div key={edu.id} className="border-b border-gray-200 pb-6">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h3 className="text-base font-medium text-gray-900">{edu.degree}</h3>
+                      <p className="text-sm text-gray-500 mt-1">{edu.institution} • {edu.location}</p>
+                      <p className="text-sm text-gray-500 mt-1">{edu.startDate} - {edu.endDate}</p>
+                    </div>
+                    <div className="flex space-x-2">
+                      <button 
+                        className="text-gray-400 hover:text-gray-500 focus:outline-none"
+                        onClick={() => handleEdit(edu.id)}
+                      >
+                        <i className="fas fa-edit"></i>
+                      </button>
+                      <button 
+                        className="text-gray-400 hover:text-gray-500 focus:outline-none"
+                        onClick={() => handleDelete(edu.id)}
+                      >
+                        <i className="fas fa-trash"></i>
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex space-x-2">
-                    <button 
-                      className="text-gray-400 hover:text-gray-500 focus:outline-none"
-                      onClick={() => handleEdit(edu.id)}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-6 text-gray-500">
+              No education added yet. Add your education history or upload a resume to populate this section.
+            </div>
+          )}
+        </CardContent>
+      </Card>
+      
+      {/* Add Education Modal */}
+      <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+        <DialogContent className="sm:max-w-[550px]">
+          <DialogHeader>
+            <DialogTitle>Add Education</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="degree" className="text-right">
+                Degree*
+              </Label>
+              <Input
+                id="degree"
+                value={newEducation.degree}
+                onChange={(e) => setNewEducation({...newEducation, degree: e.target.value})}
+                className="col-span-3"
+                placeholder="Bachelor of Science"
+                required
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="institution" className="text-right">
+                Institution*
+              </Label>
+              <Input
+                id="institution"
+                value={newEducation.institution}
+                onChange={(e) => setNewEducation({...newEducation, institution: e.target.value})}
+                className="col-span-3"
+                placeholder="University of Technology"
+                required
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="location" className="text-right">
+                Location
+              </Label>
+              <Input
+                id="location"
+                value={newEducation.location}
+                onChange={(e) => setNewEducation({...newEducation, location: e.target.value})}
+                className="col-span-3"
+                placeholder="San Francisco, CA"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="startDate" className="text-right">
+                Start Date*
+              </Label>
+              <div className="col-span-3">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !startDate && "text-muted-foreground"
+                      )}
                     >
-                      <i className="fas fa-edit"></i>
-                    </button>
-                    <button 
-                      className="text-gray-400 hover:text-gray-500 focus:outline-none"
-                      onClick={() => handleDelete(edu.id)}
-                    >
-                      <i className="fas fa-trash"></i>
-                    </button>
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {startDate ? format(startDate, "PPP") : <span>Pick a date</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={startDate}
+                      onSelect={(date) => {
+                        setStartDate(date);
+                        if (date) {
+                          setNewEducation({
+                            ...newEducation,
+                            startDate: format(date, "MMM yyyy")
+                          });
+                        }
+                      }}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="endDate" className="text-right">
+                End Date
+              </Label>
+              <div className="col-span-3">
+                <div className="flex space-x-2 items-center">
+                  <div className={cn(
+                    "flex-1",
+                    newEducation.endDate === 'Present' ? "opacity-50" : ""
+                  )}>
+                    <Popover>
+                      <PopoverTrigger asChild disabled={newEducation.endDate === 'Present'}>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "w-full justify-start text-left font-normal",
+                            !endDate && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {endDate ? format(endDate, "PPP") : <span>Select end date</span>}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0">
+                        <Calendar
+                          mode="single"
+                          selected={endDate}
+                          onSelect={(date) => {
+                            // Only allow dates after start date
+                            if (startDate && date && date < startDate) {
+                              toast({
+                                title: "Invalid date",
+                                description: "End date must be after start date",
+                                variant: "destructive"
+                              });
+                              return;
+                            }
+                            
+                            setEndDate(date);
+                            if (date) {
+                              setNewEducation({
+                                ...newEducation,
+                                endDate: format(date, "MMM yyyy")
+                              });
+                            } else {
+                              // If date is cleared, keep as empty (will be handled as Present if checkbox is checked)
+                              setNewEducation({
+                                ...newEducation,
+                                endDate: ''
+                              });
+                            }
+                          }}
+                          fromDate={startDate || undefined}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="currentEducation"
+                      className="rounded border-gray-300 text-primary focus:ring-primary"
+                      checked={newEducation.endDate === 'Present'}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setNewEducation({
+                            ...newEducation,
+                            endDate: 'Present'
+                          });
+                          setEndDate(undefined);
+                        } else {
+                          setNewEducation({
+                            ...newEducation,
+                            endDate: ''
+                          });
+                        }
+                      }}
+                    />
+                    <label htmlFor="currentEducation" className="text-sm text-gray-600">
+                      I currently study here
+                    </label>
                   </div>
                 </div>
               </div>
-            ))}
+            </div>
           </div>
-        ) : (
-          <div className="text-center py-6 text-gray-500">
-            No education added yet. Add your education history or upload a resume to populate this section.
-          </div>
-        )}
-      </CardContent>
-    </Card>
+          <DialogFooter>
+            <Button variant="outline" onClick={handleCloseModal}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveEducation}>
+              Save
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

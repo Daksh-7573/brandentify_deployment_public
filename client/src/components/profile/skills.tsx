@@ -3,7 +3,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
-import { Loader2 } from "lucide-react";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { Loader2, Pencil, Trash2 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
+import { useToast } from "@/hooks/use-toast";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type SkillItem = {
   id: number;
@@ -93,9 +100,167 @@ export default function Skills() {
   const displaySkills = skills.length > 0 ? skills : 
                        (latestDataRef.current.length > 0 ? latestDataRef.current : []);
 
+  // For the modal form
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [newSkill, setNewSkill] = useState<Partial<SkillItem>>({
+    name: '',
+    level: 'Beginner',
+    proficiency: 50
+  });
+  
+  // For Slider state
+  const [sliderValue, setSliderValue] = useState(50);
+  
+  const { toast } = useToast();
+  
+  // Map level to proficiency ranges
+  const levelToProficiency = {
+    'Beginner': { min: 10, max: 40 },
+    'Intermediate': { min: 41, max: 75 },
+    'Advanced': { min: 76, max: 100 },
+    'Expert': { min: 90, max: 100 }
+  };
+  
+  // Calculate level from proficiency
+  const getProficiencyLevel = (proficiency: number): string => {
+    if (proficiency >= 76) return 'Advanced';
+    if (proficiency >= 41) return 'Intermediate';
+    return 'Beginner';
+  };
+
   const handleAdd = () => {
-    // In a real app, this would open a form modal
-    console.log("Add new skill");
+    setIsAddModalOpen(true);
+  };
+  
+  const handleCloseModal = () => {
+    setIsAddModalOpen(false);
+    // Reset form
+    setNewSkill({
+      name: '',
+      level: 'Beginner',
+      proficiency: 50
+    });
+    // Reset slider
+    setSliderValue(50);
+  };
+  
+  const handleSaveSkill = async () => {
+    try {
+      // Validate form
+      if (!newSkill.name) {
+        toast({
+          title: "Missing information",
+          description: "Please enter a skill name",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      // Add userId to the new skill
+      const skillToSave = {
+        ...newSkill,
+        userId: userId,
+        proficiency: sliderValue // Use the slider value
+      };
+      
+      // Save to API
+      const response = await apiRequest('POST', '/api/skills', skillToSave);
+      if (response.ok) {
+        // Close modal
+        setIsAddModalOpen(false);
+        
+        // Refresh data
+        refetch();
+        
+        // Show success message
+        toast({
+          title: "Skill added",
+          description: "Your skill has been added successfully",
+        });
+        
+        // Reset form
+        setNewSkill({
+          name: '',
+          level: 'Beginner',
+          proficiency: 50
+        });
+        
+        // Reset slider
+        setSliderValue(50);
+      } else {
+        throw new Error("Failed to save skill");
+      }
+    } catch (error) {
+      console.error("Error saving skill:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save your skill. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleEditSkill = (id: number) => {
+    // Find the skill to edit
+    const skillToEdit = displaySkills.find(skill => skill.id === id);
+    if (skillToEdit) {
+      setNewSkill({
+        ...skillToEdit
+      });
+      
+      // Set the slider value
+      setSliderValue(skillToEdit.proficiency);
+      
+      setIsAddModalOpen(true);
+    }
+  };
+
+  const handleDeleteSkill = async (id: number) => {
+    try {
+      const response = await apiRequest('DELETE', `/api/skills/${id}`);
+      if (response.ok) {
+        // Update local state immediately for responsiveness
+        setSkills(skills.filter(skill => skill.id !== id));
+        
+        // Show success message
+        toast({
+          title: "Skill deleted",
+          description: "Your skill has been deleted successfully",
+        });
+        
+        // Refresh data
+        refetch();
+      } else {
+        throw new Error("Failed to delete skill");
+      }
+    } catch (error) {
+      console.error("Error deleting skill:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete your skill. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+  
+  // Handle level change
+  const handleLevelChange = (value: string) => {
+    setNewSkill({...newSkill, level: value});
+    
+    // Set a default proficiency for the level
+    const { min, max } = levelToProficiency[value as keyof typeof levelToProficiency];
+    const defaultValue = Math.floor((min + max) / 2);
+    setSliderValue(defaultValue);
+  };
+  
+  // Handle slider change
+  const handleSliderChange = (value: number[]) => {
+    const newValue = value[0];
+    setSliderValue(newValue);
+    
+    // Update the level based on the proficiency
+    const level = getProficiencyLevel(newValue);
+    setNewSkill({...newSkill, level, proficiency: newValue});
   };
 
   // Get color based on proficiency
@@ -106,46 +271,145 @@ export default function Skills() {
   };
 
   return (
-    <Card className="mb-6">
-      <CardContent className="pt-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-medium text-gray-900">Skills</h2>
-          <Button 
-            variant="ghost" 
-            className="text-primary hover:text-primary-600 hover:bg-transparent"
-            onClick={handleAdd}
-          >
-            <i className="fas fa-plus mr-1"></i> Add
-          </Button>
-        </div>
-        
-        {isLoading ? (
-          <div className="flex justify-center py-6">
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+    <>
+      <Card className="mb-6">
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-medium text-gray-900">Skills</h2>
+            <Button 
+              variant="ghost" 
+              className="text-primary hover:text-primary-600 hover:bg-transparent"
+              onClick={handleAdd}
+            >
+              <i className="fas fa-plus mr-1"></i> Add
+            </Button>
           </div>
-        ) : displaySkills && displaySkills.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {displaySkills.map((skill) => (
-              <div key={skill.id} className="border border-gray-200 rounded-md p-3">
-                <div className="flex justify-between mb-1">
-                  <span className="text-sm font-medium text-gray-700">{skill.name}</span>
-                  <span className="text-xs text-gray-500">{skill.level}</span>
+          
+          {isLoading ? (
+            <div className="flex justify-center py-6">
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            </div>
+          ) : displaySkills && displaySkills.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {displaySkills.map((skill) => (
+                <div key={skill.id} className="border border-gray-200 rounded-md p-3">
+                  <div className="flex justify-between mb-1">
+                    <span className="text-sm font-medium text-gray-700">{skill.name}</span>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-xs text-gray-500">{skill.level}</span>
+                      <button 
+                        className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                        onClick={() => handleEditSkill(skill.id)}
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </button>
+                      <button 
+                        className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                        onClick={() => handleDeleteSkill(skill.id)}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-1.5">
+                    <div 
+                      className={`${getColor(skill.proficiency)} h-1.5 rounded-full`} 
+                      style={{ width: `${skill.proficiency}%` }}
+                    ></div>
+                  </div>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-1.5">
-                  <div 
-                    className={`${getColor(skill.proficiency)} h-1.5 rounded-full`} 
-                    style={{ width: `${skill.proficiency}%` }}
-                  ></div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-6 text-gray-500">
+              No skills added yet. Add your skills or upload a resume to populate this section.
+            </div>
+          )}
+        </CardContent>
+      </Card>
+      
+      {/* Add/Edit Skill Modal */}
+      <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+        <DialogContent className="sm:max-w-[550px]">
+          <DialogHeader>
+            <DialogTitle>{newSkill.id ? 'Edit Skill' : 'Add Skill'}</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="name" className="text-right">
+                Skill Name*
+              </Label>
+              <Input
+                id="name"
+                value={newSkill.name}
+                onChange={(e) => setNewSkill({...newSkill, name: e.target.value})}
+                className="col-span-3"
+                placeholder="JavaScript"
+                required
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="level" className="text-right">
+                Proficiency Level
+              </Label>
+              <div className="col-span-3">
+                <Select 
+                  value={newSkill.level} 
+                  onValueChange={handleLevelChange}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Beginner">Beginner</SelectItem>
+                    <SelectItem value="Intermediate">Intermediate</SelectItem>
+                    <SelectItem value="Advanced">Advanced</SelectItem>
+                    <SelectItem value="Expert">Expert</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label className="text-right">
+                Proficiency
+              </Label>
+              <div className="col-span-3 px-2">
+                <div className="mb-2 flex justify-between">
+                  <span className="text-xs text-gray-600">Beginner</span>
+                  <span className="text-xs text-gray-600">Advanced</span>
+                </div>
+                <Slider
+                  value={[sliderValue]}
+                  min={0}
+                  max={100}
+                  step={1}
+                  onValueChange={handleSliderChange}
+                  className="mb-3"
+                />
+                <div className="flex justify-between items-center">
+                  <div className="w-full bg-gray-200 rounded-full h-1.5 mb-2">
+                    <div 
+                      className={`${getColor(sliderValue)} h-1.5 rounded-full`} 
+                      style={{ width: `${sliderValue}%` }}
+                    ></div>
+                  </div>
+                  <span className="text-xs font-medium text-gray-700 ml-2">{sliderValue}%</span>
                 </div>
               </div>
-            ))}
+            </div>
           </div>
-        ) : (
-          <div className="text-center py-6 text-gray-500">
-            No skills added yet. Add your skills or upload a resume to populate this section.
-          </div>
-        )}
-      </CardContent>
-    </Card>
+          <DialogFooter>
+            <Button variant="outline" onClick={handleCloseModal}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveSkill}>
+              Save
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
