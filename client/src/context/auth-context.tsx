@@ -94,11 +94,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           });
         }
       })
-      .catch((error) => {
+      .catch((error: any) => {
         console.error("Error getting redirect result:", error);
+        
+        // More informative error message
+        let errorMessage = "There was a problem signing in with Google";
+        
+        if (error.code === 'auth/configuration-not-found') {
+          errorMessage = "Firebase authentication is not properly configured. Please check your Firebase setup in the console.";
+          console.log("Firebase auth domain:", `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`);
+          console.log("Current domain:", window.location.hostname);
+        } else if (error.code === 'auth/unauthorized-domain') {
+          errorMessage = "This domain is not authorized for Firebase authentication. Please add it to your Firebase console under Auth > Settings > Authorized domains.";
+        } else if (error.message) {
+          errorMessage = `Error: ${error.message}`;
+        }
+        
         toast({
           title: "Sign in failed",
-          description: "There was a problem signing in with Google",
+          description: errorMessage,
           variant: "destructive"
         });
       });
@@ -156,14 +170,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithGoogle = async () => {
     setIsLoading(true);
     try {
+      // Log Firebase configuration for debugging
+      console.log("Firebase config:", {
+        projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+        authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
+        hasApiKey: !!import.meta.env.VITE_FIREBASE_API_KEY,
+        hasAppId: !!import.meta.env.VITE_FIREBASE_APP_ID
+      });
+      
+      // Add some scopes for Google auth
+      googleProvider.addScope('email');
+      googleProvider.addScope('profile');
+      
       // Use redirect instead of popup for better compatibility
       await signInWithRedirect(auth, googleProvider);
       // Note: We won't reach this point immediately as the page will redirect
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error signing in with Google:", error);
+      
+      // More informative error message
+      let errorMessage = "There was a problem signing in with Google";
+      
+      if (error.code === 'auth/configuration-not-found') {
+        errorMessage = "Firebase authentication is not properly configured. Please check your Firebase setup in the console.";
+      } else if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
+        errorMessage = "Sign-in popup was blocked or closed. Please try again.";
+      } else if (error.code === 'auth/unauthorized-domain') {
+        errorMessage = "This domain is not authorized for Firebase authentication. Please add it to your Firebase configuration.";
+      } else if (error.message) {
+        errorMessage = `Error: ${error.message}`;
+      }
+      
       toast({
         title: "Sign in failed",
-        description: "There was a problem signing in with Google",
+        description: errorMessage,
         variant: "destructive"
       });
       setIsLoading(false);
