@@ -487,9 +487,9 @@ export default function Education() {
                     <SelectTrigger id="startMonth">
                       <SelectValue placeholder="Month" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="max-h-[200px] overflow-y-auto">
                       {months.map(month => (
-                        <SelectItem key={month.value} value={month.value}>
+                        <SelectItem key={month.value} value={month.value} className="cursor-pointer">
                           {month.label}
                         </SelectItem>
                       ))}
@@ -502,9 +502,9 @@ export default function Education() {
                     <SelectTrigger id="startYear">
                       <SelectValue placeholder="Year" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="max-h-[200px] overflow-y-auto">
                       {years.map(year => (
-                        <SelectItem key={year} value={year}>
+                        <SelectItem key={year} value={year} className="cursor-pointer">
                           {year}
                         </SelectItem>
                       ))}
@@ -532,9 +532,9 @@ export default function Education() {
                         <SelectTrigger id="endMonth">
                           <SelectValue placeholder="Month" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="max-h-[200px] overflow-y-auto">
                           {months.map(month => (
-                            <SelectItem key={month.value} value={month.value}>
+                            <SelectItem key={month.value} value={month.value} className="cursor-pointer">
                               {month.label}
                             </SelectItem>
                           ))}
@@ -550,9 +550,9 @@ export default function Education() {
                         <SelectTrigger id="endYear">
                           <SelectValue placeholder="Year" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="max-h-[200px] overflow-y-auto">
                           {years.map(year => (
-                            <SelectItem key={year} value={year}>
+                            <SelectItem key={year} value={year} className="cursor-pointer">
                               {year}
                             </SelectItem>
                           ))}
