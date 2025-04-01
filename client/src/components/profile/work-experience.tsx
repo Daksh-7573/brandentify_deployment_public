@@ -5,6 +5,11 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Loader2 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
 
 type WorkExperienceItem = {
   id: number;
@@ -71,9 +76,86 @@ export default function WorkExperience() {
   // Reference to hold the most recent data
   const latestDataRef = useRef<WorkExperienceItem[]>([]);
 
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [newExperience, setNewExperience] = useState<Partial<WorkExperienceItem>>({
+    title: '',
+    company: '',
+    location: '',
+    startDate: '',
+    endDate: '',
+    description: ''
+  });
+
   const handleAdd = () => {
-    // In a real app, this would open a form modal
-    console.log("Add new work experience");
+    setIsAddModalOpen(true);
+  };
+  
+  const handleCloseModal = () => {
+    setIsAddModalOpen(false);
+    // Reset form
+    setNewExperience({
+      title: '',
+      company: '',
+      location: '',
+      startDate: '',
+      endDate: '',
+      description: ''
+    });
+  };
+  
+  const handleSaveExperience = async () => {
+    try {
+      // Validate form
+      if (!newExperience.title || !newExperience.company || !newExperience.startDate) {
+        toast({
+          title: "Missing information",
+          description: "Please fill in all required fields",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      // Add userId to the new experience
+      const experienceToSave = {
+        ...newExperience,
+        userId: userId
+      };
+      
+      // Save to API
+      const response = await apiRequest('POST', '/api/experiences', experienceToSave);
+      if (response.ok) {
+        // Close modal
+        setIsAddModalOpen(false);
+        
+        // Refresh data
+        refetch();
+        
+        // Show success message
+        toast({
+          title: "Experience added",
+          description: "Your work experience has been added successfully",
+        });
+        
+        // Reset form
+        setNewExperience({
+          title: '',
+          company: '',
+          location: '',
+          startDate: '',
+          endDate: '',
+          description: ''
+        });
+      } else {
+        throw new Error("Failed to save experience");
+      }
+    } catch (error) {
+      console.error("Error saving experience:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save your work experience. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleEdit = (id: number) => {
@@ -112,61 +194,160 @@ export default function WorkExperience() {
   const displayExperiences = experiences.length > 0 ? experiences : 
                            (latestDataRef.current.length > 0 ? latestDataRef.current : []);
 
+  const { toast } = useToast();
+
   return (
-    <Card className="mb-6">
-      <CardContent className="pt-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-medium text-gray-900">Work Experience</h2>
-          <Button 
-            variant="ghost" 
-            className="text-primary hover:text-primary-600 hover:bg-transparent"
-            onClick={handleAdd}
-          >
-            <i className="fas fa-plus mr-1"></i> Add
-          </Button>
-        </div>
-        
-        {isLoading ? (
-          <div className="flex justify-center py-6">
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+    <>
+      <Card className="mb-6">
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-medium text-gray-900">Work Experience</h2>
+            <Button 
+              variant="ghost" 
+              className="text-primary hover:text-primary-600 hover:bg-transparent"
+              onClick={handleAdd}
+            >
+              <i className="fas fa-plus mr-1"></i> Add
+            </Button>
           </div>
-        ) : displayExperiences && displayExperiences.length > 0 ? (
-          <div className="space-y-6">
-            {displayExperiences.map((exp) => (
-              <div key={exp.id} className="border-b border-gray-200 pb-6">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="text-base font-medium text-gray-900">{exp.title}</h3>
-                    <p className="text-sm text-gray-500 mt-1">{exp.company} • {exp.location}</p>
-                    <p className="text-sm text-gray-500 mt-1">{exp.startDate} - {exp.endDate || 'Present'}</p>
+          
+          {isLoading ? (
+            <div className="flex justify-center py-6">
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            </div>
+          ) : displayExperiences && displayExperiences.length > 0 ? (
+            <div className="space-y-6">
+              {displayExperiences.map((exp) => (
+                <div key={exp.id} className="border-b border-gray-200 pb-6">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h3 className="text-base font-medium text-gray-900">{exp.title}</h3>
+                      <p className="text-sm text-gray-500 mt-1">{exp.company} • {exp.location}</p>
+                      <p className="text-sm text-gray-500 mt-1">{exp.startDate} - {exp.endDate || 'Present'}</p>
+                    </div>
+                    <div className="flex space-x-2">
+                      <button 
+                        className="text-gray-400 hover:text-gray-500 focus:outline-none"
+                        onClick={() => handleEdit(exp.id)}
+                      >
+                        <i className="fas fa-edit"></i>
+                      </button>
+                      <button 
+                        className="text-gray-400 hover:text-gray-500 focus:outline-none"
+                        onClick={() => handleDelete(exp.id)}
+                      >
+                        <i className="fas fa-trash"></i>
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex space-x-2">
-                    <button 
-                      className="text-gray-400 hover:text-gray-500 focus:outline-none"
-                      onClick={() => handleEdit(exp.id)}
-                    >
-                      <i className="fas fa-edit"></i>
-                    </button>
-                    <button 
-                      className="text-gray-400 hover:text-gray-500 focus:outline-none"
-                      onClick={() => handleDelete(exp.id)}
-                    >
-                      <i className="fas fa-trash"></i>
-                    </button>
-                  </div>
+                  <p className="mt-2 text-sm text-gray-600">
+                    {exp.description}
+                  </p>
                 </div>
-                <p className="mt-2 text-sm text-gray-600">
-                  {exp.description}
-                </p>
-              </div>
-            ))}
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-6 text-gray-500">
+              No work experience yet. Add your work experience or upload a resume to populate this section.
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Add Experience Modal */}
+      <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+        <DialogContent className="sm:max-w-[550px]">
+          <DialogHeader>
+            <DialogTitle>Add Work Experience</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="title" className="text-right">
+                Job Title*
+              </Label>
+              <Input
+                id="title"
+                value={newExperience.title}
+                onChange={(e) => setNewExperience({...newExperience, title: e.target.value})}
+                className="col-span-3"
+                placeholder="Software Engineer"
+                required
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="company" className="text-right">
+                Company*
+              </Label>
+              <Input
+                id="company"
+                value={newExperience.company}
+                onChange={(e) => setNewExperience({...newExperience, company: e.target.value})}
+                className="col-span-3"
+                placeholder="Acme Inc."
+                required
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="location" className="text-right">
+                Location
+              </Label>
+              <Input
+                id="location"
+                value={newExperience.location}
+                onChange={(e) => setNewExperience({...newExperience, location: e.target.value})}
+                className="col-span-3"
+                placeholder="San Francisco, CA"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="startDate" className="text-right">
+                Start Date*
+              </Label>
+              <Input
+                id="startDate"
+                value={newExperience.startDate}
+                onChange={(e) => setNewExperience({...newExperience, startDate: e.target.value})}
+                className="col-span-3"
+                placeholder="Jan 2022"
+                required
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="endDate" className="text-right">
+                End Date
+              </Label>
+              <Input
+                id="endDate"
+                value={newExperience.endDate}
+                onChange={(e) => setNewExperience({...newExperience, endDate: e.target.value})}
+                className="col-span-3"
+                placeholder="Present (or leave empty for current job)"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-start gap-4">
+              <Label htmlFor="description" className="text-right pt-2">
+                Description
+              </Label>
+              <Textarea
+                id="description"
+                value={newExperience.description}
+                onChange={(e) => setNewExperience({...newExperience, description: e.target.value})}
+                className="col-span-3"
+                placeholder="Describe your responsibilities and achievements..."
+                rows={4}
+              />
+            </div>
           </div>
-        ) : (
-          <div className="text-center py-6 text-gray-500">
-            No work experience yet. Add your work experience or upload a resume to populate this section.
-          </div>
-        )}
-      </CardContent>
-    </Card>
+          <DialogFooter>
+            <Button variant="outline" onClick={handleCloseModal}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveExperience}>
+              Save
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
