@@ -410,15 +410,30 @@ export class MemStorage implements IStorage {
   }
   
   async verifyOtp(phoneNumber: string, otp: string): Promise<boolean> {
+    console.log(`[storage] verifyOtp: Verifying ${phoneNumber} with OTP ${otp}`);
+    
     const verification = await this.getOtpVerificationByPhoneNumber(phoneNumber);
-    if (!verification) return false;
+    if (!verification) {
+      console.log(`[storage] verifyOtp: No verification found for ${phoneNumber}`);
+      return false;
+    }
+    
+    console.log(`[storage] verifyOtp: Found verification:`, verification);
     
     // Check if the OTP has expired using the expiresAt field
     const now = new Date();
-    if (now > verification.expiresAt) return false;
+    if (now > verification.expiresAt) {
+      console.log(`[storage] verifyOtp: OTP expired. Current time: ${now}, Expires at: ${verification.expiresAt}`);
+      return false;
+    }
     
     // Check if the OTP matches
-    if (verification.otp !== otp) return false;
+    if (verification.otp !== otp) {
+      console.log(`[storage] verifyOtp: OTP mismatch. Expected: ${verification.otp}, Received: ${otp}`);
+      return false;
+    }
+    
+    console.log(`[storage] verifyOtp: OTP validated successfully`);
     
     // Mark the verification as verified
     const updatedVerification: OtpVerification = {

@@ -981,12 +981,20 @@ ${extractedText.substring(0, 5000)}
     try {
       const { phoneNumber, otp } = req.body;
       
+      console.log(`Verifying OTP for ${phoneNumber}: ${otp}`);
+      
       if (!phoneNumber || !otp) {
+        console.log("Missing required parameters");
         return res.status(400).json({ message: "Phone number and OTP are required" });
       }
       
+      // Get the verification object for debugging
+      const verification = await storage.getOtpVerificationByPhoneNumber(phoneNumber);
+      console.log("Current verification object:", verification);
+      
       // Verify the OTP
       const isValid = await storage.verifyOtp(phoneNumber, otp);
+      console.log("OTP validation result:", isValid);
       
       if (!isValid) {
         return res.status(400).json({ message: "Invalid or expired OTP" });
