@@ -408,12 +408,17 @@ export default function Education() {
                       mode="single"
                       selected={startDate}
                       onSelect={(date) => {
-                        setStartDate(date);
                         if (date) {
-                          setNewEducation({
-                            ...newEducation,
-                            startDate: format(date, "MMM yyyy")
-                          });
+                          setStartDate(date);
+                          try {
+                            const formattedDate = format(date, "MMM yyyy");
+                            setNewEducation({
+                              ...newEducation,
+                              startDate: formattedDate
+                            });
+                          } catch (error) {
+                            console.error("Error formatting start date:", error);
+                          }
                         }
                       }}
                       initialFocus
@@ -450,28 +455,34 @@ export default function Education() {
                           mode="single"
                           selected={endDate}
                           onSelect={(date) => {
-                            // Only allow dates after start date
-                            if (startDate && date && date < startDate) {
-                              toast({
-                                title: "Invalid date",
-                                description: "End date must be after start date",
-                                variant: "destructive"
-                              });
-                              return;
-                            }
-                            
-                            setEndDate(date);
-                            if (date) {
-                              setNewEducation({
-                                ...newEducation,
-                                endDate: format(date, "MMM yyyy")
-                              });
-                            } else {
-                              // If date is cleared, keep as empty (will be handled as Present if checkbox is checked)
-                              setNewEducation({
-                                ...newEducation,
-                                endDate: ''
-                              });
+                            try {
+                              // Only allow dates after start date
+                              if (startDate && date && date < startDate) {
+                                toast({
+                                  title: "Invalid date",
+                                  description: "End date must be after start date",
+                                  variant: "destructive"
+                                });
+                                return;
+                              }
+                              
+                              if (date) {
+                                setEndDate(date);
+                                const formattedDate = format(date, "MMM yyyy");
+                                setNewEducation({
+                                  ...newEducation,
+                                  endDate: formattedDate
+                                });
+                              } else {
+                                // If date is cleared or null
+                                setEndDate(undefined);
+                                setNewEducation({
+                                  ...newEducation,
+                                  endDate: ''
+                                });
+                              }
+                            } catch (error) {
+                              console.error("Error handling end date selection:", error);
                             }
                           }}
                           fromDate={startDate || undefined}

@@ -423,12 +423,17 @@ export default function WorkExperience() {
                       mode="single"
                       selected={startDate}
                       onSelect={(date) => {
-                        setStartDate(date);
                         if (date) {
-                          setNewExperience({
-                            ...newExperience,
-                            startDate: format(date, "MMM yyyy")
-                          });
+                          setStartDate(date);
+                          try {
+                            const formattedDate = format(date, "MMM yyyy");
+                            setNewExperience({
+                              ...newExperience,
+                              startDate: formattedDate
+                            });
+                          } catch (error) {
+                            console.error("Error formatting start date:", error);
+                          }
                         }
                       }}
                       initialFocus
@@ -465,28 +470,34 @@ export default function WorkExperience() {
                           mode="single"
                           selected={endDate}
                           onSelect={(date) => {
-                            // Only allow dates after start date
-                            if (startDate && date && date < startDate) {
-                              toast({
-                                title: "Invalid date",
-                                description: "End date must be after start date",
-                                variant: "destructive"
-                              });
-                              return;
-                            }
-                            
-                            setEndDate(date);
-                            if (date) {
-                              setNewExperience({
-                                ...newExperience,
-                                endDate: format(date, "MMM yyyy")
-                              });
-                            } else {
-                              // If date is cleared, keep as empty (will be handled as Present if checkbox is checked)
-                              setNewExperience({
-                                ...newExperience,
-                                endDate: ''
-                              });
+                            try {
+                              // Only allow dates after start date
+                              if (startDate && date && date < startDate) {
+                                toast({
+                                  title: "Invalid date",
+                                  description: "End date must be after start date",
+                                  variant: "destructive"
+                                });
+                                return;
+                              }
+                              
+                              if (date) {
+                                setEndDate(date);
+                                const formattedDate = format(date, "MMM yyyy");
+                                setNewExperience({
+                                  ...newExperience,
+                                  endDate: formattedDate
+                                });
+                              } else {
+                                // If date is cleared or null
+                                setEndDate(undefined);
+                                setNewExperience({
+                                  ...newExperience,
+                                  endDate: ''
+                                });
+                              }
+                            } catch (error) {
+                              console.error("Error handling end date selection:", error);
                             }
                           }}
                           fromDate={startDate || undefined}
