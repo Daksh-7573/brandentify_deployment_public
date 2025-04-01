@@ -97,13 +97,40 @@ export async function generateCareerAdvice(
       
       User Question: ${message}
       
-      ATTENTION! You MUST analyze the specific profile information above in a thorough manner before providing advice.
-      FIRST, explicitly identify the key elements of their profile that inform your analysis.
-      NEXT, reference specific skills, experiences, or background information from their profile in your response.
-      THEN, tailor your advice specifically to this individual's situation.
-      FINALLY, provide industry-specific insights relevant to their field (${userTitle || "technology"}).
+      CRITICAL INSTRUCTIONS - FAILURE TO FOLLOW WILL RESULT IN INCORRECT OUTPUT:
       
-      DO NOT give generic career advice that could apply to anyone. Your response must demonstrate that you analyzed their specific profile.
+      1. You MUST begin by explicitly mentioning specific details from the user's profile that you are analyzing.
+         For example: "Based on your experience as [specific job title] at [specific company] and your skills in [specific skills]..."
+         
+      2. Your response MUST demonstrate that you have thoroughly analyzed the specific profile above.
+         - NEVER use generic phrases like "based on your profile" or "given your background"
+         - ALWAYS mention SPECIFIC job titles, company names, skills, or education details from their profile
+      
+      3. Structure your response with these EXACT headings (include the ### markdown):
+         ### Executive Summary
+         [Personalized summary that references specific profile elements]
+         
+         ### Profile Analysis
+         [Detailed analysis of strengths & gaps based on SPECIFIC profile information]
+         
+         ### Strategic Recommendations
+         [3-5 actionable items tailored to THIS SPECIFIC person's situation]
+         
+         ### Industry Context
+         [Insights about their specific industry: ${userTitle || "technology"}]
+      
+      4. Your response MUST end with this EXACT format (copy it precisely):
+         
+         ## Let me ask you a follow-up question:
+         [Question tailored to their profile]
+         
+         **Quick Response Options:**
+         - [Option 1 specific to their background]
+         - [Option 2 specific to their background]
+         - [Option 3 specific to their background]
+         - Tell me more about something else
+      
+      5. DO NOT generate generic career advice. If you cannot find enough profile information, explicitly state what information is missing and how it limits your ability to provide fully personalized advice.
       
       Current date: April 1, 2025
     `;
@@ -149,8 +176,8 @@ export async function generateCareerAdvice(
           content: expertContent
         }
       ],
-      max_tokens: 1000,
-      temperature: 0.6,
+      max_tokens: 2000,
+      temperature: 0.4,
     });
 
     return response.choices[0].message.content || "I'm sorry, I couldn't generate advice at the moment. Please try again.";

@@ -134,44 +134,44 @@ export default function ChatInterface({ initialQuestion }: ChatInterfaceProps = 
     try {
       console.log("Checking message for quick response options...");
       
-      // Less strict check for follow-up sections
-      const hasFollowUp = message.includes("## Let me ask you a follow-up question:") ||
-                          message.includes("let me ask you a follow-up question") ||
-                          message.includes("follow-up question");
-                          
-      if (!hasFollowUp) {
-        console.log("No follow-up question section detected");
+      // Use EXACT format matching from our AI prompt instructions
+      if (!message.includes("## Let me ask you a follow-up question:")) {
+        console.log("No follow-up question section detected with exact format");
         return undefined;
       }
       
-      // Look for Quick Response Options section
-      const hasQuickOptions = message.includes("**Quick Response Options:**") || 
-                               message.includes("Quick Response Options:");
-      
-      if (!hasQuickOptions) {
-        console.log("No quick response options section detected");
+      if (!message.includes("**Quick Response Options:**")) {
+        console.log("No quick response options section detected with exact format");
         return undefined;
       }
       
-      // Extract response options (looking for lines with bullet points)
-      const bulletPointLines = message.split('\n')
+      // Get the section after "Quick Response Options:"
+      const optionsSection = message.split("**Quick Response Options:**")[1];
+      if (!optionsSection) {
+        console.log("Options section extraction failed");
+        return undefined;
+      }
+      
+      // Extract bullet points (strict format)
+      const bulletPointLines = optionsSection.split('\n')
         .filter(line => line.trim().startsWith('- '))
-        .map(line => line.trim().substring(2).trim());
+        .map(line => line.trim().substring(2).trim())
+        .filter(line => line.length > 0);
       
       console.log("Found bullet points:", bulletPointLines);
       
       if (bulletPointLines.length === 0) {
+        console.log("No valid bullet points found after Quick Response Options");
         return undefined;
       }
       
-      // Process the options (removing brackets and formatting)
+      // Clean up the options - remove any brackets
       const cleanOptions = bulletPointLines.map(option => {
-        // Clean up the option text
         let cleanOption = option
-          .replace(/^\[|\]$/g, '') // Remove surrounding brackets
-          .replace(/^.*?:/, '').trim(); // Remove any prefix before colon
+          .replace(/^\[|\]$/g, '') // Remove surrounding brackets if present
+          .trim();
         
-        // Special case for the "tell me more" option
+        // Ensure we have the "Tell me more" option formatted consistently
         if (option.toLowerCase().includes("tell me more")) {
           return "Tell me more about something else";
         }
@@ -181,23 +181,15 @@ export default function ChatInterface({ initialQuestion }: ChatInterfaceProps = 
       
       console.log("Extracted clean options:", cleanOptions);
       
-      // If we don't have the "Tell me more" option, add it
-      if (!cleanOptions.some(opt => opt === "Tell me more about something else")) {
+      // Make sure we have the "Tell me more" option
+      if (!cleanOptions.some(opt => opt.includes("Tell me more"))) {
         cleanOptions.push("Tell me more about something else");
       }
       
       return cleanOptions;
     } catch (error) {
       console.error("Error extracting quick responses:", error);
-      
-      // Fallback with default options
-      console.log("Using fallback quick response options");
-      return [
-        "Yes, that's helpful",
-        "I need more specific advice",
-        "What about alternatives?",
-        "Tell me more about something else"
-      ];
+      return undefined; // Let the fallback mechanism handle it instead of providing defaults here
     }
   };
   
