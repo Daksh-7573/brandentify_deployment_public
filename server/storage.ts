@@ -73,6 +73,61 @@ export class MemStorage implements IStorage {
     this.currentEducationId = 1;
     this.currentSkillId = 1;
     this.currentChatMessageId = 1;
+    
+    // Initialize with a default user for development/demo
+    this.initializeDemoData();
+  }
+  
+  /**
+   * Initialize demo data for development and testing
+   */
+  private initializeDemoData() {
+    // Create demo user 
+    const demoUser: User = {
+      id: 1,
+      username: "user1",
+      email: "user1@example.com",
+      name: "Senior Professional",
+      title: "Senior Software Engineer",
+      location: "San Francisco, CA, USA",
+      createdAt: new Date()
+    };
+    this.users.set(demoUser.id, demoUser);
+    this.currentUserId++;
+    
+    // No default work experiences - these should be added by the resume parser
+    
+    // Add baseline education entries (empty by default)
+    const education: Education = {
+      id: 1,
+      userId: 1,
+      degree: "Not specified",
+      institution: "Not specified",
+      location: "Not specified",
+      startDate: "Not specified",
+      endDate: "Not specified"
+    };
+    this.educations.set(education.id, education);
+    this.currentEducationId++;
+    
+    // Add baseline skills
+    const skill1: Skill = {
+      id: 1,
+      userId: 1,
+      name: "JavaScript",
+      level: "Intermediate",
+      proficiency: 75
+    };
+    const skill2: Skill = {
+      id: 2,
+      userId: 1,
+      name: "Communication",
+      level: "Advanced",
+      proficiency: 90
+    };
+    this.skills.set(skill1.id, skill1);
+    this.skills.set(skill2.id, skill2);
+    this.currentSkillId += 2;
   }
 
   // User operations
