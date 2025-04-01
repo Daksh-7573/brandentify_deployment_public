@@ -744,13 +744,16 @@ export default function SmartConnectPage() {
       // Filter locations that match the input value
       const inputValue = value.toLowerCase();
       
+      // Show more suggestions to ensure comprehensive matches
+      const maxSuggestions = 30;
+      
       // First try exact matches (most relevant)
       let filtered = popularLocations.filter(location => 
         location.toLowerCase().includes(inputValue)
       );
       
       // If no exact matches or very few, try fuzzy matching for spelling variations
-      if (filtered.length < 3) {
+      if (filtered.length < 5) {
         // Try alternative spellings and common misspellings
         const alternativeMatches = popularLocations.filter(location => {
           const locationLower = location.toLowerCase();
@@ -769,6 +772,20 @@ export default function SmartConnectPage() {
           if (inputValue.includes('fran') && locationLower.includes('san francisco')) return true;
           if (inputValue.includes('tokyo') && locationLower.includes('tokyo')) return true;
           if (inputValue.includes('dubai') && locationLower.includes('dubai')) return true;
+          if (inputValue.includes('lon') && locationLower.includes('london')) return true;
+          if (inputValue.includes('berl') && locationLower.includes('berlin')) return true;
+          if (inputValue.includes('mad') && locationLower.includes('madrid')) return true;
+          if (inputValue.includes('mum') && locationLower.includes('mumbai')) return true;
+          if (inputValue.includes('bomb') && locationLower.includes('mumbai')) return true;
+          if (inputValue.includes('del') && locationLower.includes('delhi')) return true;
+          if (inputValue.includes('rio') && locationLower.includes('rio de janeiro')) return true;
+          if (inputValue.includes('chi') && (locationLower.includes('chicago') || locationLower.includes('chiang'))) return true;
+          if (inputValue.includes('beij') && locationLower.includes('beijing')) return true;
+          if (inputValue.includes('pek') && locationLower.includes('beijing')) return true;
+          if (inputValue.includes('shan') && locationLower.includes('shanghai')) return true;
+          if (inputValue.includes('toro') && locationLower.includes('toronto')) return true;
+          if (inputValue.includes('istan') && locationLower.includes('istanbul')) return true;
+          if (inputValue.includes('const') && locationLower.includes('istanbul')) return true;
           
           return false;
         });
@@ -777,7 +794,8 @@ export default function SmartConnectPage() {
         filtered = [...filtered, ...alternativeMatches];
       }
       
-      setLocationSuggestions(filtered.slice(0, 10)); // Show up to 10 suggestions
+      // Show many more suggestions for complete coverage
+      setLocationSuggestions(filtered.slice(0, maxSuggestions));
     } else if (name === 'location' && !value.trim()) {
       setLocationSuggestions([]);
     }
