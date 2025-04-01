@@ -734,9 +734,40 @@ export default function Profile() {
     if (name === 'location' && value.trim()) {
       // Filter locations that match the input value
       const inputValue = value.toLowerCase();
-      const filtered = popularLocations.filter(location => 
+      
+      // First try exact matches (most relevant)
+      let filtered = popularLocations.filter(location => 
         location.toLowerCase().includes(inputValue)
       );
+      
+      // If no exact matches or very few, try fuzzy matching for spelling variations
+      if (filtered.length < 3) {
+        // Try alternative spellings and common misspellings
+        const alternativeMatches = popularLocations.filter(location => {
+          const locationLower = location.toLowerCase();
+          
+          // Handle common spelling variations for major cities
+          if (inputValue.includes('melb') && locationLower.includes('melbourne')) return true;
+          if (inputValue.includes('malb') && locationLower.includes('melbourne')) return true;
+          if (inputValue.includes('syd') && locationLower.includes('sydney')) return true;
+          if (inputValue.includes('bris') && locationLower.includes('brisbane')) return true;
+          if (inputValue.includes('auck') && locationLower.includes('auckland')) return true;
+          if (inputValue.includes('sing') && locationLower.includes('singapore')) return true;
+          if (inputValue.includes('bangl') && locationLower.includes('bangalore')) return true;
+          if (inputValue.includes('bengal') && locationLower.includes('bangalore')) return true;
+          if (inputValue.includes('york') && locationLower.includes('new york')) return true;
+          if (inputValue.includes('angeles') && locationLower.includes('los angeles')) return true;
+          if (inputValue.includes('fran') && locationLower.includes('san francisco')) return true;
+          if (inputValue.includes('tokyo') && locationLower.includes('tokyo')) return true;
+          if (inputValue.includes('dubai') && locationLower.includes('dubai')) return true;
+          
+          return false;
+        });
+        
+        // Combine both sets of results with exact matches first
+        filtered = [...filtered, ...alternativeMatches];
+      }
+      
       setLocationSuggestions(filtered.slice(0, 10)); // Show up to 10 suggestions
     } else if (name === 'location' && !value.trim()) {
       setLocationSuggestions([]);
