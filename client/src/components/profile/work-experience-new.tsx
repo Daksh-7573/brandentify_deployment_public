@@ -5,13 +5,12 @@ import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Loader2, CalendarIcon } from "lucide-react";
+import { Loader2, CalendarIcon, Plus, Pencil, Trash } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
@@ -94,6 +93,10 @@ export default function WorkExperience() {
   // For date pickers
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+  const [startMonth, setStartMonth] = useState<string>("");
+  const [startYear, setStartYear] = useState<string>("");
+  const [endMonth, setEndMonth] = useState<string>("");
+  const [endYear, setEndYear] = useState<string>("");
 
   const handleAdd = () => {
     setIsAddModalOpen(true);
@@ -113,7 +116,67 @@ export default function WorkExperience() {
     // Reset date pickers
     setStartDate(undefined);
     setEndDate(undefined);
+    setStartMonth("");
+    setStartYear("");
+    setEndMonth("");
+    setEndYear("");
   };
+
+  const updateStartDate = () => {
+    if (startMonth && startYear) {
+      try {
+        const month = parseInt(startMonth, 10) - 1;
+        const year = parseInt(startYear, 10);
+        const newDate = new Date(year, month, 1);
+        setStartDate(newDate);
+        
+        const formattedDate = format(newDate, "MMM yyyy");
+        setNewExperience({
+          ...newExperience,
+          startDate: formattedDate
+        });
+      } catch (error) {
+        console.error("Error setting start date:", error);
+      }
+    }
+  };
+  
+  const updateEndDate = () => {
+    if (endMonth && endYear) {
+      try {
+        const month = parseInt(endMonth, 10) - 1;
+        const year = parseInt(endYear, 10);
+        const newDate = new Date(year, month, 1);
+        
+        // Validate that end date is after start date
+        if (startDate && newDate < startDate) {
+          toast({
+            title: "Invalid date",
+            description: "End date must be after start date",
+            variant: "destructive"
+          });
+          return;
+        }
+        
+        setEndDate(newDate);
+        const formattedDate = format(newDate, "MMM yyyy");
+        setNewExperience({
+          ...newExperience,
+          endDate: formattedDate
+        });
+      } catch (error) {
+        console.error("Error setting end date:", error);
+      }
+    }
+  };
+  
+  useEffect(() => {
+    updateStartDate();
+  }, [startMonth, startYear]);
+  
+  useEffect(() => {
+    updateEndDate();
+  }, [endMonth, endYear]);
   
   const handleSaveExperience = async () => {
     try {
@@ -192,6 +255,10 @@ export default function WorkExperience() {
         // Reset date pickers
         setStartDate(undefined);
         setEndDate(undefined);
+        setStartMonth("");
+        setStartYear("");
+        setEndMonth("");
+        setEndYear("");
       } else {
         throw new Error(`Failed to ${newExperience.id ? 'update' : 'save'} experience`);
       }
@@ -216,7 +283,10 @@ export default function WorkExperience() {
       // Set the date pickers
       if (experienceToEdit.startDate) {
         try {
-          setStartDate(new Date(experienceToEdit.startDate));
+          const date = new Date(experienceToEdit.startDate);
+          setStartDate(date);
+          setStartMonth(format(date, "MM"));
+          setStartYear(date.getFullYear().toString());
         } catch (error) {
           console.error("Failed to parse start date:", error);
         }
@@ -224,7 +294,10 @@ export default function WorkExperience() {
       
       if (experienceToEdit.endDate && experienceToEdit.endDate !== 'Present') {
         try {
-          setEndDate(new Date(experienceToEdit.endDate));
+          const date = new Date(experienceToEdit.endDate);
+          setEndDate(date);
+          setEndMonth(format(date, "MM"));
+          setEndYear(date.getFullYear().toString());
         } catch (error) {
           console.error("Failed to parse end date:", error);
         }
@@ -298,6 +371,26 @@ export default function WorkExperience() {
 
   const { toast } = useToast();
 
+  // Generate month options
+  const months = [
+    { value: "01", label: "January" },
+    { value: "02", label: "February" },
+    { value: "03", label: "March" },
+    { value: "04", label: "April" },
+    { value: "05", label: "May" },
+    { value: "06", label: "June" },
+    { value: "07", label: "July" },
+    { value: "08", label: "August" },
+    { value: "09", label: "September" },
+    { value: "10", label: "October" },
+    { value: "11", label: "November" },
+    { value: "12", label: "December" }
+  ];
+
+  // Generate year options from 1990 to current year
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: currentYear - 1990 + 10 }, (_, i) => (1990 + i).toString());
+
   return (
     <>
       <Card className="mb-6">
@@ -309,7 +402,7 @@ export default function WorkExperience() {
               className="text-primary hover:text-primary-600 hover:bg-transparent"
               onClick={handleAdd}
             >
-              <i className="fas fa-plus mr-1"></i> Add
+              <Plus className="mr-1 h-4 w-4" /> Add
             </Button>
           </div>
           
@@ -332,13 +425,13 @@ export default function WorkExperience() {
                         className="text-gray-400 hover:text-gray-500 focus:outline-none"
                         onClick={() => handleEdit(exp.id)}
                       >
-                        <i className="fas fa-edit"></i>
+                        <Pencil className="h-4 w-4" />
                       </button>
                       <button 
                         className="text-gray-400 hover:text-gray-500 focus:outline-none"
                         onClick={() => handleDelete(exp.id)}
                       >
-                        <i className="fas fa-trash"></i>
+                        <Trash className="h-4 w-4" />
                       </button>
                     </div>
                   </div>
@@ -405,96 +498,37 @@ export default function WorkExperience() {
               <Label htmlFor="startDate" className="text-right">
                 Start Date*
               </Label>
-              <div className="col-span-3">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !startDate && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {startDate ? format(startDate, "PPP") : <span>Pick a date</span>}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <div className="p-3">
-                      <div className="flex flex-col gap-2">
-                        <div className="grid grid-cols-2 gap-2">
-                          <div>
-                            <Label htmlFor="startMonth">Month</Label>
-                            <Select 
-                              value={startDate ? format(startDate, "MM") : ""} 
-                              onValueChange={(value) => {
-                                try {
-                                  const month = parseInt(value, 10) - 1; // JavaScript months are 0-indexed
-                                  const year = startDate ? startDate.getFullYear() : new Date().getFullYear();
-                                  const newDate = new Date(year, month, 1);
-                                  setStartDate(newDate);
-                                  setNewExperience({
-                                    ...newExperience,
-                                    startDate: format(newDate, "MMM yyyy")
-                                  });
-                                } catch (error) {
-                                  console.error("Error setting month:", error);
-                                }
-                              }}
-                            >
-                              <SelectTrigger id="startMonth" className="w-full">
-                                <SelectValue placeholder="Month" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="01">January</SelectItem>
-                                <SelectItem value="02">February</SelectItem>
-                                <SelectItem value="03">March</SelectItem>
-                                <SelectItem value="04">April</SelectItem>
-                                <SelectItem value="05">May</SelectItem>
-                                <SelectItem value="06">June</SelectItem>
-                                <SelectItem value="07">July</SelectItem>
-                                <SelectItem value="08">August</SelectItem>
-                                <SelectItem value="09">September</SelectItem>
-                                <SelectItem value="10">October</SelectItem>
-                                <SelectItem value="11">November</SelectItem>
-                                <SelectItem value="12">December</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div>
-                            <Label htmlFor="startYear">Year</Label>
-                            <Select 
-                              value={startDate ? startDate.getFullYear().toString() : ""} 
-                              onValueChange={(value) => {
-                                try {
-                                  const year = parseInt(value, 10);
-                                  const month = startDate ? startDate.getMonth() : 0;
-                                  const newDate = new Date(year, month, 1);
-                                  setStartDate(newDate);
-                                  setNewExperience({
-                                    ...newExperience,
-                                    startDate: format(newDate, "MMM yyyy")
-                                  });
-                                } catch (error) {
-                                  console.error("Error setting year:", error);
-                                }
-                              }}
-                            >
-                              <SelectTrigger id="startYear" className="w-full">
-                                <SelectValue placeholder="Year" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {Array.from({ length: 41 }, (_, i) => 1990 + i).map(year => (
-                                  <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </PopoverContent>
-                </Popover>
+              <div className="col-span-3 grid grid-cols-2 gap-2">
+                <div>
+                  <Label htmlFor="startMonth" className="mb-1 block text-sm">Month</Label>
+                  <Select value={startMonth} onValueChange={setStartMonth}>
+                    <SelectTrigger id="startMonth">
+                      <SelectValue placeholder="Month" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {months.map(month => (
+                        <SelectItem key={month.value} value={month.value}>
+                          {month.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="startYear" className="mb-1 block text-sm">Year</Label>
+                  <Select value={startYear} onValueChange={setStartYear}>
+                    <SelectTrigger id="startYear">
+                      <SelectValue placeholder="Year" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {years.map(year => (
+                        <SelectItem key={year} value={year}>
+                          {year}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
@@ -504,123 +538,48 @@ export default function WorkExperience() {
               <div className="col-span-3">
                 <div className="flex space-x-2 items-center">
                   <div className={cn(
-                    "flex-1",
-                    newExperience.endDate === 'Present' ? "opacity-50" : ""
+                    "flex-1 grid grid-cols-2 gap-2",
+                    newExperience.endDate === 'Present' ? "opacity-50 pointer-events-none" : ""
                   )}>
-                    <Popover>
-                      <PopoverTrigger asChild disabled={newExperience.endDate === 'Present'}>
-                        <Button
-                          variant={"outline"}
-                          className={cn(
-                            "w-full justify-start text-left font-normal",
-                            !endDate && "text-muted-foreground"
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {endDate ? format(endDate, "PPP") : <span>Select end date</span>}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
-                        <div className="p-3">
-                          <div className="flex flex-col gap-2">
-                            <div className="grid grid-cols-2 gap-2">
-                              <div>
-                                <Label htmlFor="endMonth">Month</Label>
-                                <Select 
-                                  value={endDate ? format(endDate, "MM") : ""} 
-                                  onValueChange={(value) => {
-                                    try {
-                                      const month = parseInt(value, 10) - 1; // JavaScript months are 0-indexed
-                                      const year = endDate ? endDate.getFullYear() : new Date().getFullYear();
-                                      const newDate = new Date(year, month, 1);
-                                      
-                                      // Validate that end date is after start date
-                                      if (startDate && newDate < startDate) {
-                                        toast({
-                                          title: "Invalid date",
-                                          description: "End date must be after start date",
-                                          variant: "destructive"
-                                        });
-                                        return;
-                                      }
-                                      
-                                      setEndDate(newDate);
-                                      setNewExperience({
-                                        ...newExperience,
-                                        endDate: format(newDate, "MMM yyyy")
-                                      });
-                                    } catch (error) {
-                                      console.error("Error setting month:", error);
-                                    }
-                                  }}
-                                >
-                                  <SelectTrigger id="endMonth" className="w-full">
-                                    <SelectValue placeholder="Month" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="01">January</SelectItem>
-                                    <SelectItem value="02">February</SelectItem>
-                                    <SelectItem value="03">March</SelectItem>
-                                    <SelectItem value="04">April</SelectItem>
-                                    <SelectItem value="05">May</SelectItem>
-                                    <SelectItem value="06">June</SelectItem>
-                                    <SelectItem value="07">July</SelectItem>
-                                    <SelectItem value="08">August</SelectItem>
-                                    <SelectItem value="09">September</SelectItem>
-                                    <SelectItem value="10">October</SelectItem>
-                                    <SelectItem value="11">November</SelectItem>
-                                    <SelectItem value="12">December</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                              <div>
-                                <Label htmlFor="endYear">Year</Label>
-                                <Select 
-                                  value={endDate ? endDate.getFullYear().toString() : ""} 
-                                  onValueChange={(value) => {
-                                    try {
-                                      const year = parseInt(value, 10);
-                                      const month = endDate ? endDate.getMonth() : 0;
-                                      const newDate = new Date(year, month, 1);
-                                      
-                                      // Validate that end date is after start date
-                                      if (startDate && newDate < startDate) {
-                                        toast({
-                                          title: "Invalid date",
-                                          description: "End date must be after start date",
-                                          variant: "destructive"
-                                        });
-                                        return;
-                                      }
-                                      
-                                      setEndDate(newDate);
-                                      setNewExperience({
-                                        ...newExperience,
-                                        endDate: format(newDate, "MMM yyyy")
-                                      });
-                                    } catch (error) {
-                                      console.error("Error setting year:", error);
-                                    }
-                                  }}
-                                >
-                                  <SelectTrigger id="endYear" className="w-full">
-                                    <SelectValue placeholder="Year" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {Array.from({ length: 41 }, (_, i) => 1990 + i).map(year => (
-                                      <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </PopoverContent>
-                    </Popover>
+                    <div>
+                      <Label htmlFor="endMonth" className="mb-1 block text-sm">Month</Label>
+                      <Select 
+                        value={endMonth} 
+                        onValueChange={setEndMonth}
+                        disabled={newExperience.endDate === 'Present'}>
+                        <SelectTrigger id="endMonth">
+                          <SelectValue placeholder="Month" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {months.map(month => (
+                            <SelectItem key={month.value} value={month.value}>
+                              {month.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="endYear" className="mb-1 block text-sm">Year</Label>
+                      <Select 
+                        value={endYear} 
+                        onValueChange={setEndYear}
+                        disabled={newExperience.endDate === 'Present'}>
+                        <SelectTrigger id="endYear">
+                          <SelectValue placeholder="Year" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {years.map(year => (
+                            <SelectItem key={year} value={year}>
+                              {year}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
 
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-2 ml-2">
                     <input
                       type="checkbox"
                       id="currentJob"
@@ -633,6 +592,8 @@ export default function WorkExperience() {
                             endDate: 'Present'
                           });
                           setEndDate(undefined);
+                          setEndMonth("");
+                          setEndYear("");
                         } else {
                           setNewExperience({
                             ...newExperience,
