@@ -43,7 +43,7 @@ const SelectScrollUpButton = React.forwardRef<
     // Start a recurring throttled scroll
     intervalRef.current = setInterval(() => {
       // This is just to keep the button active - the actual scrolling is managed by Radix
-    }, 300); // Slower scroll speed (300ms between actions)
+    }, 600); // Very slow scroll speed (600ms between actions)
   };
   
   const handleMouseUp = () => {
@@ -94,7 +94,7 @@ const SelectScrollDownButton = React.forwardRef<
     // Start a recurring throttled scroll
     intervalRef.current = setInterval(() => {
       // This is just to keep the button active - the actual scrolling is managed by Radix
-    }, 300); // Slower scroll speed (300ms between actions)
+    }, 600); // Very slow scroll speed (600ms between actions)
   };
   
   const handleMouseUp = () => {
@@ -194,7 +194,7 @@ const SelectItem = React.forwardRef<
     // Set a delayed timer to change the hover state
     timerRef.current = setTimeout(() => {
       setIsHovered(true);
-    }, 300); // 300ms delay before activating hover state - increased for consistency
+    }, 600); // 600ms delay before activating hover state - increased for consistency
   };
   
   const handleMouseLeave = () => {
