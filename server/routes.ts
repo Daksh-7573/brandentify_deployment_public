@@ -944,6 +944,8 @@ ${extractedText.substring(0, 5000)}
     try {
       const { phoneNumber } = req.body;
       
+      console.log(`Request OTP for phone number: ${phoneNumber}`);
+      
       if (!phoneNumber) {
         return res.status(400).json({ message: "Phone number is required" });
       }
@@ -955,11 +957,15 @@ ${extractedText.substring(0, 5000)}
       const expiresAt = new Date();
       expiresAt.setMinutes(expiresAt.getMinutes() + 10);
       
-      await storage.createOtpVerification({
+      console.log(`Generated OTP: ${otp}, expires at: ${expiresAt}`);
+      
+      const verification = await storage.createOtpVerification({
         phoneNumber,
         otp,
         expiresAt
       });
+      
+      console.log(`OTP verification created:`, verification);
       
       // In a real application, you would send the OTP via SMS here
       // For development purposes, we'll just return success
