@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/hooks/use-toast";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select/index.new";
+import { CustomSelect } from "@/components/ui/custom-select";
 
 type SkillItem = {
   id: number;
@@ -127,6 +127,14 @@ export default function Skills() {
     if (proficiency >= 41) return 'Intermediate';
     return 'Beginner';
   };
+  
+  // Define level options for our custom select
+  const levelOptions = [
+    { value: "Beginner", label: "Beginner" },
+    { value: "Intermediate", label: "Intermediate" },
+    { value: "Advanced", label: "Advanced" },
+    { value: "Expert", label: "Expert" }
+  ];
 
   const handleAdd = () => {
     setIsAddModalOpen(true);
@@ -366,20 +374,12 @@ export default function Skills() {
                 Proficiency Level
               </Label>
               <div className="col-span-3">
-                <Select 
-                  value={newSkill.level} 
+                <CustomSelect 
+                  value={newSkill.level || ''} 
                   onValueChange={handleLevelChange}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Beginner">Beginner</SelectItem>
-                    <SelectItem value="Intermediate">Intermediate</SelectItem>
-                    <SelectItem value="Advanced">Advanced</SelectItem>
-                    <SelectItem value="Expert">Expert</SelectItem>
-                  </SelectContent>
-                </Select>
+                  placeholder="Select level"
+                  options={levelOptions}
+                />
               </div>
             </div>
             
