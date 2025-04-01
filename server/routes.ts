@@ -1006,11 +1006,13 @@ ${extractedText.substring(0, 5000)}
         return res.status(400).json({ message: "Invalid or expired OTP" });
       }
       
-      // Get or create a user for this phone number
+      // Check if user exists
       let user = await storage.getUserByPhoneNumber(phoneNumber);
+      let isNewUser = false;
       
       if (!user) {
         // Create a new user if one doesn't exist
+        isNewUser = true;
         user = await storage.createUser({
           username: `user_${Date.now()}`, // Generate a unique username
           email: `${Date.now()}@example.com`, // Generate a unique email (placeholder)
@@ -1023,11 +1025,21 @@ ${extractedText.substring(0, 5000)}
           lookingFor: null,
           profileCompleted: 10, // Start with low completion
         });
+        
+        console.log("Created new user for phone number:", user);
+      } else {
+        console.log("Found existing user for phone number:", user);
+        
+        // If user exists but has minimal profile data, treat as a new user that needs to complete signup
+        if (!user.name || !user.email || user.profileCompleted < 20) {
+          isNewUser = true;
+        }
       }
       
       return res.status(200).json({ 
         message: "OTP verified successfully",
-        user 
+        user,
+        isNewUser
       });
     } catch (error) {
       console.error("Error verifying OTP:", error);

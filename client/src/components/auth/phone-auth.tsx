@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AuthContext } from "@/context/auth-context";
 import { useLocation } from "wouter";
+import { MobileSignupForm } from "./mobile-signup-form";
 
 // Phone validation schema
 const phoneSchema = z.object({
@@ -37,10 +38,12 @@ export function PhoneAuth() {
   const authContext = useContext(AuthContext);
   const [_, setLocation] = useLocation();
   const [otpSent, setOtpSent] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [currentPhoneNumber, setCurrentPhoneNumber] = useState("");
+  const [userData, setUserData] = useState<any>(null);
 
   // Phone number form
   const phoneForm = useForm<z.infer<typeof phoneSchema>>({
@@ -114,16 +117,23 @@ export function PhoneAuth() {
       }
 
       setSuccessMessage("Phone verified successfully");
+      setOtpVerified(true);
       
-      // Use the Auth Context to set the user
+      // Check if user is new or existing
       if (data.user) {
-        authContext.signInWithPhone(data.user);
+        if (data.isNewUser) {
+          // For new users, show the signup form
+          setUserData(data.user);
+        } else {
+          // For existing users, log in directly
+          authContext.signInWithPhone(data.user);
+          
+          // Small delay to show success message before redirecting
+          setTimeout(() => {
+            setLocation("/dashboard");
+          }, 1500);
+        }
       }
-      
-      // Small delay to show success message before redirecting
-      setTimeout(() => {
-        setLocation("/dashboard");
-      }, 1500);
       
     } catch (err: any) {
       setError(err.message || "Invalid OTP");
@@ -131,64 +141,59 @@ export function PhoneAuth() {
       setIsSubmitting(false);
     }
   };
+  
+  // Handle mobile signup form submission
+  const handleSignupComplete = async (formData: any) => {
+    try {
+      setIsSubmitting(true);
+      setError("");
+      
+      // Update the user with additional profile information
+      const response = await fetch(`/api/users/${userData.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...formData,
+          phoneNumber: currentPhoneNumber,
+          profileCompleted: 40, // Set higher completion percentage
+        }),
+      });
+      
+      const updatedUser = await response.json();
+      
+      if (!response.ok) {
+        throw new Error("Failed to update user profile");
+      }
+      
+      // Now sign in with the updated user data
+      authContext.signInWithPhone(updatedUser);
+      
+      setSuccessMessage("Profile created successfully! Redirecting...");
+      
+      // Small delay to show success message before redirecting
+      setTimeout(() => {
+        setLocation("/dashboard");
+      }, 1500);
+      
+    } catch (err: any) {
+      setError(err.message || "Failed to complete signup");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-  return (
-    <div>
-      {error && (
-        <Alert variant="destructive" className="mb-4">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-
-      {successMessage && (
-        <Alert className="mb-4 bg-green-50 border-green-200">
-          <Check className="h-4 w-4 text-green-500" />
-          <AlertTitle className="text-green-700">Success</AlertTitle>
-          <AlertDescription className="text-green-600">
-            {successMessage}
-          </AlertDescription>
-        </Alert>
-      )}
-
-      {!otpSent ? (
-        <Form {...phoneForm}>
-          <form
-            onSubmit={phoneForm.handleSubmit(onPhoneSubmit)}
-            className="space-y-4"
-          >
-            <FormField
-              control={phoneForm.control}
-              name="phoneNumber"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Phone Number</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="+1234567890"
-                      {...field}
-                      disabled={isSubmitting}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                "Send OTP"
-              )}
-            </Button>
-          </form>
-        </Form>
-      ) : (
+  const renderContent = () => {
+    if (otpVerified && userData) {
+      return <MobileSignupForm 
+        phoneNumber={currentPhoneNumber} 
+        onComplete={handleSignupComplete} 
+      />;
+    }
+    
+    if (otpSent) {
+      return (
         <Form {...otpForm}>
           <form
             onSubmit={otpForm.handleSubmit(onOtpSubmit)}
@@ -234,7 +239,69 @@ export function PhoneAuth() {
             </Button>
           </form>
         </Form>
+      );
+    }
+    
+    return (
+      <Form {...phoneForm}>
+        <form
+          onSubmit={phoneForm.handleSubmit(onPhoneSubmit)}
+          className="space-y-4"
+        >
+          <FormField
+            control={phoneForm.control}
+            name="phoneNumber"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Phone Number</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="+1234567890"
+                    {...field}
+                    disabled={isSubmitting}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              "Send OTP"
+            )}
+          </Button>
+        </form>
+      </Form>
+    );
+  };
+
+  return (
+    <div>
+      {error && (
+        <Alert variant="destructive" className="mb-4">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       )}
+
+      {successMessage && (
+        <Alert className="mb-4 bg-green-50 border-green-200">
+          <Check className="h-4 w-4 text-green-500" />
+          <AlertTitle className="text-green-700">Success</AlertTitle>
+          <AlertDescription className="text-green-600">
+            {successMessage}
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {renderContent()}
     </div>
   );
 }
