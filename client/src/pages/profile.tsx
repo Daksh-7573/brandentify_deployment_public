@@ -10,12 +10,32 @@ import Education from "@/components/profile/education-new";
 import Skills from "@/components/profile/skills";
 import ResumeUpload from "@/components/profile/resume-upload";
 import LinkedInImport from "@/components/profile/linkedin-import";
-import { useQuery } from "@tanstack/react-query";
-import { queryClient } from "@/lib/queryClient";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { queryClient, apiRequest } from "@/lib/queryClient";
+import { useState, useEffect } from "react";
+import { 
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Profile() {
   const { user, isAuthenticated, isLoading, isDemoMode } = useAuth();
   const [_, setLocation] = useLocation();
+  const { toast } = useToast();
+  
+  // State for edit dialogs
+  const [showEditBasicInfo, setShowEditBasicInfo] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    title: '',
+    location: ''
+  });
   
   // Get user ID (use demo ID if in demo mode)
   const userId = isDemoMode ? 1 : (user?.uid ? parseInt(user.uid) : 1);
@@ -37,6 +57,56 @@ export default function Profile() {
     refetchOnMount: true,
     refetchOnWindowFocus: true,
   });
+  
+  // Mutation for updating user basic info
+  const updateUserMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const res = await apiRequest('PUT', `/api/users/${userId}`, data);
+      return await res.json();
+    },
+    onSuccess: () => {
+      // Invalidate and refetch
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
+      toast({
+        title: "Profile updated",
+        description: "Your profile information has been updated successfully",
+      });
+      setShowEditBasicInfo(false);
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error updating profile",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Initialize form data when user data changes
+  useEffect(() => {
+    if (userData) {
+      setFormData({
+        name: userData.name || '',
+        title: userData.title || '',
+        location: userData.location || ''
+      });
+    }
+  }, [userData]);
+
+  // Handle form input changes
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // Handle form submission
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateUserMutation.mutate(formData);
+  };
 
   // Redirect to landing if not authenticated
   if (!isLoading && !isAuthenticated) {
@@ -55,6 +125,64 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      {/* Edit Basic Info Dialog */}
+      <Dialog open={showEditBasicInfo} onOpenChange={setShowEditBasicInfo}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Edit Profile Info</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit}>
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label htmlFor="name">Name</Label>
+                <Input
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  placeholder="Your name"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="title">Job Title</Label>
+                <Input
+                  id="title"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleInputChange}
+                  placeholder="Your job title"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="location">Location</Label>
+                <Input
+                  id="location"
+                  name="location"
+                  value={formData.location}
+                  onChange={handleInputChange}
+                  placeholder="Your location"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setShowEditBasicInfo(false)}
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="submit"
+                disabled={updateUserMutation.isPending}
+              >
+                {updateUserMutation.isPending ? 'Saving...' : 'Save Changes'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+      
       {/* Top Navigation */}
       <Header />
 
@@ -97,7 +225,15 @@ export default function Profile() {
                   </div>
                 </div>
                 <div className="pl-0 sm:pl-32 mt-12 sm:mt-2">
-                  <h2 className="text-xl font-bold text-gray-900">{userData?.name || user?.name || 'User'}</h2>
+                  <div className="flex justify-between items-center group">
+                    <h2 className="text-xl font-bold text-gray-900">{userData?.name || user?.name || 'User'}</h2>
+                    <button 
+                      onClick={() => setShowEditBasicInfo(true)}
+                      className="text-sm text-primary opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      Edit
+                    </button>
+                  </div>
                   <p className="text-sm text-gray-500">{userData?.title || user?.title || 'Professional'}</p>
                   <p className="text-sm text-gray-500 mt-1">{userData?.location || user?.location || 'Location not specified'}</p>
                 </div>
