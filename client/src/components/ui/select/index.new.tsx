@@ -136,33 +136,74 @@ SelectScrollDownButton.displayName =
 const SelectContent = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>
->(({ className, children, position = "popper", ...props }, ref) => (
-  <SelectPrimitive.Portal>
-    <SelectPrimitive.Content
-      ref={ref}
-      className={cn(
-        "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-        position === "popper" &&
-          "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
-        className
-      )}
-      position={position}
-      {...props}
-    >
-      <SelectScrollUpButton />
-      <SelectPrimitive.Viewport
+>(({ className, children, position = "popper", ...props }, ref) => {
+  // Create a ref for the content
+  const contentRef = React.useRef<HTMLDivElement>(null);
+  
+  // Use effect to apply global styles to prevent hover behavior
+  React.useEffect(() => {
+    const content = contentRef.current;
+    if (!content) return;
+    
+    // Add a style to prevent any hover effects in the dropdown
+    const style = document.createElement('style');
+    style.textContent = `
+      [data-radix-select-viewport] > * {
+        pointer-events: none !important;
+      }
+      [data-radix-select-viewport] [role="option"] {
+        pointer-events: auto !important;
+      }
+      [data-radix-select-item] {
+        pointer-events: auto !important;
+      }
+    `;
+    content.appendChild(style);
+    
+    return () => {
+      style.remove();
+    };
+  }, []);
+  
+  return (
+    <SelectPrimitive.Portal>
+      <SelectPrimitive.Content
+        ref={(node) => {
+          // Assign the ref to both our ref and the forwardRef
+          if (node) {
+            if (contentRef) contentRef.current = node as HTMLDivElement;
+            if (typeof ref === 'function') ref(node);
+            else if (ref) ref.current = node;
+          }
+        }}
         className={cn(
-          "p-1",
+          "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
           position === "popper" &&
-            "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]"
+            "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
+          className
         )}
+        position={position}
+        onPointerEnter={(e) => {
+          // Prevent default hover behavior
+          e.preventDefault();
+        }}
+        {...props}
       >
-        {children}
-      </SelectPrimitive.Viewport>
-      <SelectScrollDownButton />
-    </SelectPrimitive.Content>
-  </SelectPrimitive.Portal>
-))
+        <SelectScrollUpButton />
+        <SelectPrimitive.Viewport
+          className={cn(
+            "p-1",
+            position === "popper" &&
+              "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]"
+          )}
+        >
+          {children}
+        </SelectPrimitive.Viewport>
+        <SelectScrollDownButton />
+      </SelectPrimitive.Content>
+    </SelectPrimitive.Portal>
+  );
+})
 SelectContent.displayName = SelectPrimitive.Content.displayName
 
 const SelectLabel = React.forwardRef<
@@ -181,42 +222,79 @@ const SelectItem = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item>
 >(({ className, children, ...props }, ref) => {
-  // Use state to track click instead of hover
-  const [isActive, setIsActive] = React.useState(false);
+  const [isSelected, setIsSelected] = React.useState(false);
+  const [isHighlighted, setIsHighlighted] = React.useState(false);
+  const itemRef = React.useRef<HTMLDivElement>(null);
   
-  const handleClick = () => {
-    // Set active state
-    setIsActive(true);
+  // Completely disable hover behavior
+  React.useEffect(() => {
+    const item = itemRef.current;
+    if (!item) return;
     
-    // After a delay, simulate the click on the option
+    // Override any hover styles that might be applied by Radix
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'data-highlighted') {
+          const isHighlightedNow = item.hasAttribute('data-highlighted');
+          if (isHighlightedNow && !isHighlighted) {
+            // Only allow highlighting through explicit clicks
+            setIsHighlighted(false);
+            item.removeAttribute('data-highlighted');
+          }
+        }
+      });
+    });
+    
+    observer.observe(item, { attributes: true });
+    
+    return () => {
+      observer.disconnect();
+    };
+  }, [isHighlighted]);
+  
+  const handleClick = (e: React.MouseEvent) => {
+    // Explicitly set our own highlighted state
+    setIsHighlighted(true);
+    setIsSelected(true);
+    
+    // Let the actual click propagate with a delay for visual feedback
     setTimeout(() => {
-      // The actual selection is handled by Radix
-      // This delay makes the process feel more deliberate
-    }, 300);
+      if (props.onClick) {
+        props.onClick(e as any);
+      }
+    }, 50);
   };
   
   return (
-    <SelectPrimitive.Item
-      ref={ref}
+    <div 
+      ref={itemRef}
       className={cn(
-        "relative flex w-full select-none items-center rounded-sm py-3 pl-8 pr-2 text-sm outline-none cursor-pointer transition-colors",
-        (isActive) ? "bg-accent text-accent-foreground" : "",
-        "data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground", // Maintain Radix highlighting
+        "relative flex w-full select-none items-center rounded-sm py-3 pl-8 pr-2 text-sm outline-none cursor-pointer",
+        (isSelected || isHighlighted) ? "bg-accent text-accent-foreground" : "bg-transparent hover:bg-transparent",
         "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         className
       )}
-      onMouseEnter={() => {}} // Disable hover behavior
-      onClick={handleClick} // Replace hover with click
-      {...props}
+      onClick={handleClick}
     >
+      <SelectPrimitive.Item
+        ref={ref}
+        className="absolute inset-0 opacity-0 cursor-pointer"
+        onMouseEnter={(e) => {
+          // Prevent default hover behavior
+          e.preventDefault();
+          e.stopPropagation();
+        }}
+        {...props}
+      >
+        <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
+      </SelectPrimitive.Item>
+      
       <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
-        <SelectPrimitive.ItemIndicator>
-          <Check className="h-4 w-4" />
-        </SelectPrimitive.ItemIndicator>
+        {isSelected && <Check className="h-4 w-4" />}
       </span>
 
-      <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
-    </SelectPrimitive.Item>
+      <span className="truncate">{children}</span>
+    </div>
   );
 })
 SelectItem.displayName = SelectPrimitive.Item.displayName
