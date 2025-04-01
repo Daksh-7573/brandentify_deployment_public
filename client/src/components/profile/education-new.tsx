@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select/index.new";
 import { cn } from "@/lib/utils";
+import { SimpleDatePicker } from "@/components/ui/simple-date-picker";
 
 type EducationItem = {
   id: number;
@@ -82,16 +83,12 @@ export default function Education() {
     endDate: ''
   });
   
-  // For date pickers
-  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
-  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
-  const [startMonth, setStartMonth] = useState<string>("");
-  const [startYear, setStartYear] = useState<string>("");
-  const [endMonth, setEndMonth] = useState<string>("");
-  const [endYear, setEndYear] = useState<string>("");
+  // Track if we're in 'Present' status for end date
+  const [isCurrentlyStudying, setIsCurrentlyStudying] = useState(false);
 
   const handleAdd = () => {
     setIsAddModalOpen(true);
+    setIsCurrentlyStudying(false);
   };
   
   const handleCloseModal = () => {
@@ -104,70 +101,10 @@ export default function Education() {
       startDate: '',
       endDate: ''
     });
-    // Reset date pickers
-    setStartDate(undefined);
-    setEndDate(undefined);
-    setStartMonth("");
-    setStartYear("");
-    setEndMonth("");
-    setEndYear("");
+    setIsCurrentlyStudying(false);
   };
 
-  const updateStartDate = () => {
-    if (startMonth && startYear) {
-      try {
-        const month = parseInt(startMonth, 10) - 1;
-        const year = parseInt(startYear, 10);
-        const newDate = new Date(year, month, 1);
-        setStartDate(newDate);
-        
-        const formattedDate = format(newDate, "MMM yyyy");
-        setNewEducation({
-          ...newEducation,
-          startDate: formattedDate
-        });
-      } catch (error) {
-        console.error("Error setting start date:", error);
-      }
-    }
-  };
-  
-  const updateEndDate = () => {
-    if (endMonth && endYear) {
-      try {
-        const month = parseInt(endMonth, 10) - 1;
-        const year = parseInt(endYear, 10);
-        const newDate = new Date(year, month, 1);
-        
-        // Validate that end date is after start date
-        if (startDate && newDate < startDate) {
-          toast({
-            title: "Invalid date",
-            description: "End date must be after start date",
-            variant: "destructive"
-          });
-          return;
-        }
-        
-        setEndDate(newDate);
-        const formattedDate = format(newDate, "MMM yyyy");
-        setNewEducation({
-          ...newEducation,
-          endDate: formattedDate
-        });
-      } catch (error) {
-        console.error("Error setting end date:", error);
-      }
-    }
-  };
-  
-  useEffect(() => {
-    updateStartDate();
-  }, [startMonth, startYear]);
-  
-  useEffect(() => {
-    updateEndDate();
-  }, [endMonth, endYear]);
+  // We don't need the date update functions anymore as SimpleDatePicker handles this
   
   const handleSaveEducation = async () => {
     try {
@@ -242,13 +179,7 @@ export default function Education() {
           endDate: ''
         });
         
-        // Reset date pickers
-        setStartDate(undefined);
-        setEndDate(undefined);
-        setStartMonth("");
-        setStartYear("");
-        setEndMonth("");
-        setEndYear("");
+        // No need to reset date pickers as SimpleDatePicker manages its own state
       } else {
         throw new Error(`Failed to ${newEducation.id ? 'update' : 'save'} education`);
       }
@@ -270,27 +201,11 @@ export default function Education() {
         ...educationToEdit
       });
       
-      // Set the date pickers
-      if (educationToEdit.startDate) {
-        try {
-          const date = new Date(educationToEdit.startDate);
-          setStartDate(date);
-          setStartMonth(format(date, "MM"));
-          setStartYear(date.getFullYear().toString());
-        } catch (error) {
-          console.error("Failed to parse start date:", error);
-        }
-      }
-      
-      if (educationToEdit.endDate && educationToEdit.endDate !== 'Present') {
-        try {
-          const date = new Date(educationToEdit.endDate);
-          setEndDate(date);
-          setEndMonth(format(date, "MM"));
-          setEndYear(date.getFullYear().toString());
-        } catch (error) {
-          console.error("Failed to parse end date:", error);
-        }
+      // Check if this is currently studying
+      if (educationToEdit.endDate === 'Present') {
+        setIsCurrentlyStudying(true);
+      } else {
+        setIsCurrentlyStudying(false);
       }
       
       setIsAddModalOpen(true);
@@ -480,55 +395,16 @@ export default function Education() {
               <Label htmlFor="startDate" className="text-right">
                 Start Date*
               </Label>
-              <div className="col-span-3 grid grid-cols-2 gap-2">
-                <div>
-                  <Label htmlFor="startMonth" className="mb-1 block text-sm">Month</Label>
-                  <Select value={startMonth} onValueChange={(value) => {
-                    // Add artificial delay to slow down selection
-                    setTimeout(() => {
-                      setStartMonth(value);
-                    }, 600);
-                  }}>
-                    <SelectTrigger id="startMonth">
-                      <SelectValue placeholder="Month" />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-[200px] overflow-y-auto">
-                      {months.map(month => (
-                        <SelectItem 
-                          key={month.value} 
-                          value={month.value} 
-                          className="cursor-pointer py-3"
-                        >
-                          {month.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="startYear" className="mb-1 block text-sm">Year</Label>
-                  <Select value={startYear} onValueChange={(value) => {
-                    // Add artificial delay to slow down selection
-                    setTimeout(() => {
-                      setStartYear(value);
-                    }, 600);
-                  }}>
-                    <SelectTrigger id="startYear">
-                      <SelectValue placeholder="Year" />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-[200px] overflow-y-auto">
-                      {years.map(year => (
-                        <SelectItem 
-                          key={year} 
-                          value={year} 
-                          className="cursor-pointer py-3"
-                        >
-                          {year}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div className="col-span-3">
+                <SimpleDatePicker 
+                  value={newEducation.startDate || ""}
+                  onChange={(value) => {
+                    setNewEducation({
+                      ...newEducation,
+                      startDate: value
+                    });
+                  }}
+                />
               </div>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
@@ -538,63 +414,19 @@ export default function Education() {
               <div className="col-span-3">
                 <div className="flex space-x-2 items-center">
                   <div className={cn(
-                    "flex-1 grid grid-cols-2 gap-2",
-                    newEducation.endDate === 'Present' ? "opacity-50 pointer-events-none" : ""
+                    "flex-1",
+                    isCurrentlyStudying || newEducation.endDate === 'Present' ? "opacity-50 pointer-events-none" : ""
                   )}>
-                    <div>
-                      <Label htmlFor="endMonth" className="mb-1 block text-sm">Month</Label>
-                      <Select 
-                        value={endMonth} 
-                        onValueChange={(value) => {
-                          // Add artificial delay to slow down selection
-                          setTimeout(() => {
-                            setEndMonth(value);
-                          }, 600);
-                        }}
-                        disabled={newEducation.endDate === 'Present'}>
-                        <SelectTrigger id="endMonth">
-                          <SelectValue placeholder="Month" />
-                        </SelectTrigger>
-                        <SelectContent className="max-h-[200px] overflow-y-auto">
-                          {months.map(month => (
-                            <SelectItem 
-                              key={month.value} 
-                              value={month.value} 
-                              className="cursor-pointer py-3"
-                            >
-                              {month.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label htmlFor="endYear" className="mb-1 block text-sm">Year</Label>
-                      <Select 
-                        value={endYear} 
-                        onValueChange={(value) => {
-                          // Add artificial delay to slow down selection
-                          setTimeout(() => {
-                            setEndYear(value);
-                          }, 600);
-                        }}
-                        disabled={newEducation.endDate === 'Present'}>
-                        <SelectTrigger id="endYear">
-                          <SelectValue placeholder="Year" />
-                        </SelectTrigger>
-                        <SelectContent className="max-h-[200px] overflow-y-auto">
-                          {years.map(year => (
-                            <SelectItem 
-                              key={year} 
-                              value={year} 
-                              className="cursor-pointer py-3"
-                            >
-                              {year}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                    <SimpleDatePicker 
+                      value={newEducation.endDate === 'Present' ? '' : (newEducation.endDate || '')}
+                      onChange={(value) => {
+                        setNewEducation({
+                          ...newEducation,
+                          endDate: value
+                        });
+                      }}
+                      disabled={isCurrentlyStudying || newEducation.endDate === 'Present'}
+                    />
                   </div>
 
                   <div className="flex items-center space-x-2 ml-2">
@@ -602,16 +434,14 @@ export default function Education() {
                       type="checkbox"
                       id="currentEducation"
                       className="rounded border-gray-300 text-primary focus:ring-primary"
-                      checked={newEducation.endDate === 'Present'}
+                      checked={isCurrentlyStudying || newEducation.endDate === 'Present'}
                       onChange={(e) => {
+                        setIsCurrentlyStudying(e.target.checked);
                         if (e.target.checked) {
                           setNewEducation({
                             ...newEducation,
                             endDate: 'Present'
                           });
-                          setEndDate(undefined);
-                          setEndMonth("");
-                          setEndYear("");
                         } else {
                           setNewEducation({
                             ...newEducation,
