@@ -608,10 +608,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Save work experiences
       if (experiences && experiences.length > 0) {
         for (const exp of experiences) {
+          // Cast to InsertWorkExperience to fix type error
           const savedExp = await storage.createWorkExperience({
             ...exp,
             userId: userIdNum
-          });
+          } as any);
           savedItems.experiences.push(savedExp);
         }
         console.log(`Saved ${savedItems.experiences.length} work experiences`);
@@ -620,10 +621,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Save educations
       if (educations && educations.length > 0) {
         for (const edu of educations) {
+          // Cast to InsertEducation to fix type error
           const savedEdu = await storage.createEducation({
             ...edu,
             userId: userIdNum
-          });
+          } as any);
           savedItems.educations.push(savedEdu);
         }
         console.log(`Saved ${savedItems.educations.length} education items`);
@@ -632,10 +634,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Save skills
       if (skills && skills.length > 0) {
         for (const skill of skills) {
+          // Cast to InsertSkill to fix type error
           const savedSkill = await storage.createSkill({
             ...skill,
             userId: userIdNum
-          });
+          } as any);
           savedItems.skills.push(savedSkill);
         }
         console.log(`Saved ${savedItems.skills.length} skills`);

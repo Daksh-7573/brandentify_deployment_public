@@ -7,13 +7,60 @@ import { useAuth } from "@/hooks/use-auth";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Loader2 } from "lucide-react";
+import { Loader2, Check, X } from "lucide-react";
+import { Dialog, DialogContent, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+// Define types for parsed resume data
+type ParsedExperience = {
+  title: string;
+  company: string;
+  location: string | null;
+  startDate: string;
+  endDate: string | null;
+  description: string | null;
+};
+
+type ParsedEducation = {
+  degree: string;
+  institution: string;
+  location: string | null;
+  startDate: string;
+  endDate: string | null;
+};
+
+type ParsedSkill = {
+  name: string;
+  level: string;
+  proficiency: number | null;
+};
+
+type ParsedResumeData = {
+  title?: string;
+  location?: string;
+  experiences: ParsedExperience[];
+  educations: ParsedEducation[];
+  skills: ParsedSkill[];
+  counts: {
+    experiences: number;
+    educations: number;
+    skills: number;
+  };
+  status: string;
+  message: string;
+};
 
 export default function ResumeUpload() {
   const [isUploading, setIsUploading] = useState(false);
   const [isParsing, setIsParsing] = useState(false);
+  const [isConfirming, setIsConfirming] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [extractProfileData, setExtractProfileData] = useState(true);
+  const [parsedData, setParsedData] = useState<ParsedResumeData | null>(null);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  
   const { toast } = useToast();
   const { user, isDemoMode, refreshUserData } = useAuth();
   
@@ -81,180 +128,38 @@ export default function ResumeUpload() {
         if (extractProfileData) {
           setIsParsing(true);
           try {
+            // Call the parse-resume endpoint to get extracted data
             const response = await apiRequest('POST', '/api/parse-resume', {
               userId,
               fileData: base64Data
             });
             
-            const profileData = await response.json();
+            // Get the extracted data
+            const extractedData = await response.json();
             
-            // Process the extracted data - add work experiences
-            if (profileData.experiences && profileData.experiences.length > 0) {
-              for (const exp of profileData.experiences) {
-                // Ensure userId is set and is a number
-                exp.userId = userId;
-                await apiRequest('POST', '/api/experiences', exp);
-              }
+            // If no data was extracted, show error
+            if (!extractedData || 
+                (!extractedData.experiences?.length && 
+                 !extractedData.educations?.length && 
+                 !extractedData.skills?.length)) {
+              throw new Error("No profile data could be extracted from your resume.");
             }
             
-            // Process educations
-            if (profileData.educations && profileData.educations.length > 0) {
-              for (const edu of profileData.educations) {
-                // Ensure userId is set and is a number
-                edu.userId = userId;
-                await apiRequest('POST', '/api/educations', edu);
-              }
-            }
+            // Store the parsed data
+            setParsedData(extractedData);
             
-            // Process skills
-            if (profileData.skills && profileData.skills.length > 0) {
-              for (const skill of profileData.skills) {
-                // Ensure userId is set and is a number
-                skill.userId = userId;
-                await apiRequest('POST', '/api/skills', skill);
-              }
-            }
-            
-            // Update user profile with job title and location if available
-            if (profileData.title || profileData.location) {
-              try {
-                // First check if the user exists
-                const response = await apiRequest('GET', `/api/users/${userId}`);
-                
-                if (response.ok) {
-                  // User exists, update it
-                  const updateData: any = {};
-                  if (profileData.title) updateData.title = profileData.title;
-                  if (profileData.location) updateData.location = profileData.location;
-                  
-                  await apiRequest('PUT', `/api/users/${userId}`, updateData);
-                } else {
-                  // User doesn't exist, create a demo user
-                  const newUser: any = {
-                    email: `demo${userId}@example.com`,
-                    name: "Demo User",
-                    photoURL: null
-                  };
-                  if (profileData.title) newUser.title = profileData.title;
-                  if (profileData.location) newUser.location = profileData.location;
-                  
-                  // Create the user
-                  await apiRequest('POST', '/api/users', newUser);
-                }
-              } catch (error) {
-                console.error('Error updating user profile:', error);
-                // Continue anyway so at least the experiences, education and skills are saved
-              }
-            }
-            
-            // Force a complete data refresh
-            console.log("Resume parsing successful - forcing complete data refresh");
-            
-            // First, explicitly verify the data was saved
-            try {
-              console.log("Verifying resume data was saved to database...");
-              const expResponse = await apiRequest('GET', `/api/users/${userId}/experiences`);
-              const savedExperiences = await expResponse.json();
-              console.log("Current experiences in database:", savedExperiences.length);
-              
-              const eduResponse = await apiRequest('GET', `/api/users/${userId}/educations`);
-              const savedEducations = await eduResponse.json();
-              console.log("Current educations in database:", savedEducations.length);
-              
-              const skillsResponse = await apiRequest('GET', `/api/users/${userId}/skills`);
-              const savedSkills = await skillsResponse.json();
-              console.log("Current skills in database:", savedSkills.length);
-              
-              // If we didn't get any saved data, we need to try again
-              if (!savedExperiences.length && !savedEducations.length && !savedSkills.length) {
-                console.warn("No resume data found in database, attempting to save explicitly");
-                
-                // This is an unusual case - try to resave the profile data directly
-                if (profileData.experiences && profileData.experiences.length > 0) {
-                  // Save experiences
-                  for (const exp of profileData.experiences) {
-                    // Ensure userId is set
-                    exp.userId = userId;
-                    await apiRequest('POST', '/api/experiences', exp);
-                  }
-                }
-                
-                if (profileData.educations && profileData.educations.length > 0) {
-                  // Save educations
-                  for (const edu of profileData.educations) {
-                    // Ensure userId is set
-                    edu.userId = userId;
-                    await apiRequest('POST', '/api/educations', edu);
-                  }
-                }
-                
-                if (profileData.skills && profileData.skills.length > 0) {
-                  // Save skills
-                  for (const skill of profileData.skills) {
-                    // Ensure userId is set
-                    skill.userId = userId;
-                    await apiRequest('POST', '/api/skills', skill);
-                  }
-                }
-              }
-            } catch (error) {
-              console.error("Error verifying saved resume data:", error);
-            }
-            
-            // Reset the entire cache
-            console.log("Completely resetting query cache");
-            queryClient.clear();
-            
-            // Then force immediate refetching with cache bypass
-            console.log("Forcibly refetching all data from server with cache bypass");
-            await Promise.all([
-              queryClient.fetchQuery({ 
-                queryKey: [`/api/users/${userId}/experiences`],
-                staleTime: 0,
-                gcTime: 0
-              }),
-              queryClient.fetchQuery({ 
-                queryKey: [`/api/users/${userId}/educations`],
-                staleTime: 0,
-                gcTime: 0
-              }),
-              queryClient.fetchQuery({ 
-                queryKey: [`/api/users/${userId}/skills`],
-                staleTime: 0,
-                gcTime: 0
-              }),
-              queryClient.fetchQuery({ 
-                queryKey: [`/api/users/${userId}`],
-                staleTime: 0,
-                gcTime: 0
-              })
-            ]);
-            
-            // Use the enhanced refreshUserData function to update profile data for all users
-            try {
-              console.log("Calling refreshUserData to ensure complete data refresh after resume parsing");
-              await refreshUserData();
-              
-              // Wait for a brief moment to let all components update
-              await new Promise(resolve => setTimeout(resolve, 500));
-              
-              toast({
-                title: "Profile Updated",
-                description: "Your profile has been refreshed with information from your resume.",
-              });
-            } catch (error) {
-              console.error("Error during data refresh after resume parsing:", error);
-            }
+            // Show the confirmation dialog
+            setShowConfirmDialog(true);
             
             toast({
-              title: "Profile data extracted",
-              description: "Your profile has been updated with data from your resume.",
+              title: "Data extracted",
+              description: "Please review the extracted information before saving it to your profile.",
             });
           } catch (error) {
             console.error('Error parsing resume:', error);
             toast({
               title: "Extraction failed",
-              description: "Failed to extract profile data from resume. Please update your profile manually.",
+              description: error instanceof Error ? error.message : "Failed to extract profile data from resume. Please update your profile manually.",
               variant: "destructive"
             });
           } finally {
@@ -281,82 +186,312 @@ export default function ResumeUpload() {
     }
   };
 
+  const confirmAndSaveData = async () => {
+    if (!parsedData) return;
+    
+    setIsConfirming(true);
+    
+    try {
+      // In demo mode, use user ID 1, otherwise try to parse the user's UID as a number
+      const userId = isDemoMode ? 1 : (user?.uid ? parseInt(user.uid) : 1);
+      
+      // Call the confirm-resume-data endpoint to save the data
+      const response = await apiRequest('POST', '/api/confirm-resume-data', {
+        userId,
+        experiences: parsedData.experiences,
+        educations: parsedData.educations,
+        skills: parsedData.skills,
+        title: parsedData.title,
+        location: parsedData.location,
+        overwriteExisting: true
+      });
+      
+      if (!response.ok) {
+        throw new Error("Failed to save profile data.");
+      }
+      
+      // Reset the query cache to ensure fresh data
+      queryClient.clear();
+      
+      // Fetch fresh data
+      await Promise.all([
+        queryClient.fetchQuery({ 
+          queryKey: [`/api/users/${userId}/experiences`],
+          staleTime: 0,
+          gcTime: 0
+        }),
+        queryClient.fetchQuery({ 
+          queryKey: [`/api/users/${userId}/educations`],
+          staleTime: 0,
+          gcTime: 0
+        }),
+        queryClient.fetchQuery({ 
+          queryKey: [`/api/users/${userId}/skills`],
+          staleTime: 0,
+          gcTime: 0
+        }),
+        queryClient.fetchQuery({ 
+          queryKey: [`/api/users/${userId}`],
+          staleTime: 0,
+          gcTime: 0
+        })
+      ]);
+      
+      // Refresh user data
+      await refreshUserData();
+      
+      toast({
+        title: "Profile updated",
+        description: "Your profile has been updated with data from your resume.",
+      });
+      
+      // Close the dialog
+      setShowConfirmDialog(false);
+      setParsedData(null);
+    } catch (error) {
+      console.error('Error confirming resume data:', error);
+      toast({
+        title: "Save failed",
+        description: error instanceof Error ? error.message : "Failed to save profile data. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsConfirming(false);
+    }
+  };
+
+  const cancelConfirmation = () => {
+    setShowConfirmDialog(false);
+    setParsedData(null);
+    
+    toast({
+      title: "Update cancelled",
+      description: "No changes were made to your profile.",
+    });
+  };
+
   return (
-    <Card className="mb-6">
-      <CardContent className="pt-6">
-        <h2 className="text-lg font-medium text-gray-900 mb-4">Resume</h2>
-        <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary transition-colors">
-          <div className="flex flex-col items-center">
-            <i className="fas fa-file-upload text-4xl text-gray-400 mb-4"></i>
-            <p className="text-sm text-gray-500 mb-2">
-              {file ? `Selected file: ${file.name}` : "Drag and drop your resume here or click to browse"}
-            </p>
-            <p className="text-xs text-gray-400">Supported formats: PDF, DOCX (Max 5MB)</p>
-            
-            <div className="mt-4 w-full">
-              <div className="flex items-center mb-4 justify-center">
-                <Switch 
-                  id="extract-data" 
-                  checked={extractProfileData} 
-                  onCheckedChange={setExtractProfileData}
-                  disabled={isUploading || isParsing}
-                />
-                <Label htmlFor="extract-data" className="ml-2">
-                  Extract profile data from resume
-                </Label>
-              </div>
+    <>
+      <Card className="mb-6">
+        <CardContent className="pt-6">
+          <h2 className="text-lg font-medium text-gray-900 mb-4">Resume</h2>
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary transition-colors">
+            <div className="flex flex-col items-center">
+              <i className="fas fa-file-upload text-4xl text-gray-400 mb-4"></i>
+              <p className="text-sm text-gray-500 mb-2">
+                {file ? `Selected file: ${file.name}` : "Drag and drop your resume here or click to browse"}
+              </p>
+              <p className="text-xs text-gray-400">Supported formats: PDF, DOCX (Max 5MB)</p>
               
-              {extractProfileData && (
-                <Alert className="mb-4 text-left">
-                  <AlertTitle>AI-powered profile completion</AlertTitle>
-                  <AlertDescription>
-                    We'll use AI to extract your work experience, education, and skills from your resume to automatically complete your profile.
-                  </AlertDescription>
-                </Alert>
-              )}
-              
-              <div className="flex gap-4 justify-center">
-                <div>
-                  <input 
-                    id="resume-file-input"
-                    type="file" 
-                    accept=".pdf,.docx" 
-                    className="hidden" 
-                    onChange={handleFileChange}
+              <div className="mt-4 w-full">
+                <div className="flex items-center mb-4 justify-center">
+                  <Switch 
+                    id="extract-data" 
+                    checked={extractProfileData} 
+                    onCheckedChange={setExtractProfileData}
                     disabled={isUploading || isParsing}
                   />
-                  <Button 
-                    variant="outline" 
-                    className="cursor-pointer"
-                    disabled={isUploading || isParsing}
-                    onClick={() => {
-                      document.getElementById('resume-file-input')?.click();
-                    }}
-                  >
-                    Browse Files
-                  </Button>
+                  <Label htmlFor="extract-data" className="ml-2">
+                    Extract profile data from resume
+                  </Label>
                 </div>
-                {file && (
-                  <Button 
-                    onClick={handleUpload}
-                    disabled={isUploading || isParsing}
-                  >
-                    {isUploading ? "Uploading..." : isParsing ? "Processing..." : "Upload Resume"}
-                    {(isUploading || isParsing) && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
-                  </Button>
+                
+                {extractProfileData && (
+                  <Alert className="mb-4 text-left">
+                    <AlertTitle>AI-powered profile completion</AlertTitle>
+                    <AlertDescription>
+                      We'll use AI to extract your work experience, education, and skills from your resume to automatically complete your profile.
+                      You'll be able to review the extracted data before it's saved.
+                    </AlertDescription>
+                  </Alert>
+                )}
+                
+                <div className="flex gap-4 justify-center">
+                  <div>
+                    <input 
+                      id="resume-file-input"
+                      type="file" 
+                      accept=".pdf,.docx" 
+                      className="hidden" 
+                      onChange={handleFileChange}
+                      disabled={isUploading || isParsing}
+                    />
+                    <Button 
+                      variant="outline" 
+                      className="cursor-pointer"
+                      disabled={isUploading || isParsing}
+                      onClick={() => {
+                        document.getElementById('resume-file-input')?.click();
+                      }}
+                    >
+                      Browse Files
+                    </Button>
+                  </div>
+                  {file && (
+                    <Button 
+                      onClick={handleUpload}
+                      disabled={isUploading || isParsing}
+                    >
+                      {isUploading ? "Uploading..." : isParsing ? "Processing..." : "Upload Resume"}
+                      {(isUploading || isParsing) && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+                    </Button>
+                  )}
+                </div>
+                
+                {isParsing && (
+                  <div className="mt-4 text-sm text-gray-500">
+                    <Loader2 className="inline mr-2 h-4 w-4 animate-spin" />
+                    Extracting profile data from your resume...
+                  </div>
                 )}
               </div>
-              
-              {isParsing && (
-                <div className="mt-4 text-sm text-gray-500">
-                  <Loader2 className="inline mr-2 h-4 w-4 animate-spin" />
-                  Extracting profile data from your resume...
-                </div>
-              )}
             </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+
+      {/* Confirmation Dialog */}
+      <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <DialogContent className="sm:max-w-3xl">
+          <DialogTitle>Confirm Resume Data</DialogTitle>
+          <DialogDescription>
+            Please review the information extracted from your resume. This data will replace your current profile information.
+          </DialogDescription>
+
+          {parsedData && (
+            <div className="mt-4">
+              {/* Title and Location */}
+              {(parsedData.title || parsedData.location) && (
+                <div className="mb-4">
+                  <h3 className="text-sm font-medium text-gray-500 mb-2">Basic Information</h3>
+                  {parsedData.title && (
+                    <p className="text-sm"><span className="font-medium">Position:</span> {parsedData.title}</p>
+                  )}
+                  {parsedData.location && (
+                    <p className="text-sm"><span className="font-medium">Location:</span> {parsedData.location}</p>
+                  )}
+                </div>
+              )}
+
+              <Tabs defaultValue="experience" className="mt-4">
+                <TabsList className="grid grid-cols-3 mb-4">
+                  <TabsTrigger value="experience">
+                    Work Experience {parsedData.counts.experiences > 0 && <Badge variant="secondary" className="ml-2">{parsedData.counts.experiences}</Badge>}
+                  </TabsTrigger>
+                  <TabsTrigger value="education">
+                    Education {parsedData.counts.educations > 0 && <Badge variant="secondary" className="ml-2">{parsedData.counts.educations}</Badge>}
+                  </TabsTrigger>
+                  <TabsTrigger value="skills">
+                    Skills {parsedData.counts.skills > 0 && <Badge variant="secondary" className="ml-2">{parsedData.counts.skills}</Badge>}
+                  </TabsTrigger>
+                </TabsList>
+                
+                {/* Experience Tab */}
+                <TabsContent value="experience">
+                  {parsedData.experiences.length === 0 ? (
+                    <Alert>
+                      <AlertDescription>No work experience could be extracted from your resume.</AlertDescription>
+                    </Alert>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Title</TableHead>
+                          <TableHead>Company</TableHead>
+                          <TableHead>Location</TableHead>
+                          <TableHead>Duration</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {parsedData.experiences.map((exp, index) => (
+                          <TableRow key={index}>
+                            <TableCell className="font-medium">{exp.title}</TableCell>
+                            <TableCell>{exp.company}</TableCell>
+                            <TableCell>{exp.location || 'N/A'}</TableCell>
+                            <TableCell>
+                              {exp.startDate} {exp.endDate ? `- ${exp.endDate}` : '- Present'}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                </TabsContent>
+                
+                {/* Education Tab */}
+                <TabsContent value="education">
+                  {parsedData.educations.length === 0 ? (
+                    <Alert>
+                      <AlertDescription>No education details could be extracted from your resume.</AlertDescription>
+                    </Alert>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Degree</TableHead>
+                          <TableHead>Institution</TableHead>
+                          <TableHead>Location</TableHead>
+                          <TableHead>Duration</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {parsedData.educations.map((edu, index) => (
+                          <TableRow key={index}>
+                            <TableCell className="font-medium">{edu.degree}</TableCell>
+                            <TableCell>{edu.institution}</TableCell>
+                            <TableCell>{edu.location || 'N/A'}</TableCell>
+                            <TableCell>
+                              {edu.startDate} {edu.endDate ? `- ${edu.endDate}` : '- Present'}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                </TabsContent>
+                
+                {/* Skills Tab */}
+                <TabsContent value="skills">
+                  {parsedData.skills.length === 0 ? (
+                    <Alert>
+                      <AlertDescription>No skills could be extracted from your resume.</AlertDescription>
+                    </Alert>
+                  ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {parsedData.skills.map((skill, index) => (
+                        <Badge key={index} variant="outline" className="p-2 justify-between">
+                          <span>{skill.name}</span>
+                          {skill.level && <span className="ml-2 text-xs bg-gray-100 text-gray-700 px-1 rounded">{skill.level}</span>}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                </TabsContent>
+              </Tabs>
+            </div>
+          )}
+
+          <DialogFooter className="gap-2 sm:gap-0 mt-4">
+            <Button variant="outline" onClick={cancelConfirmation} disabled={isConfirming}>
+              <X className="w-4 h-4 mr-2" />
+              Cancel
+            </Button>
+            <Button onClick={confirmAndSaveData} disabled={isConfirming}>
+              {isConfirming ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Check className="w-4 h-4 mr-2" />
+                  Save to Profile
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
