@@ -437,6 +437,9 @@ export default function WorkExperience() {
                         }
                       }}
                       initialFocus
+                      captionLayout="dropdown-buttons"
+                      fromYear={1990}
+                      toYear={2030}
                     />
                   </PopoverContent>
                 </Popover>
@@ -502,6 +505,9 @@ export default function WorkExperience() {
                           }}
                           fromDate={startDate || undefined}
                           initialFocus
+                          captionLayout="dropdown-buttons"
+                          fromYear={1990}
+                          toYear={2030}
                         />
                       </PopoverContent>
                     </Popover>

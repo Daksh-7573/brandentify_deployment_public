@@ -422,6 +422,9 @@ export default function Education() {
                         }
                       }}
                       initialFocus
+                      captionLayout="dropdown-buttons"
+                      fromYear={1990}
+                      toYear={2030}
                     />
                   </PopoverContent>
                 </Popover>
@@ -487,6 +490,9 @@ export default function Education() {
                           }}
                           fromDate={startDate || undefined}
                           initialFocus
+                          captionLayout="dropdown-buttons"
+                          fromYear={1990}
+                          toYear={2030}
                         />
                       </PopoverContent>
                     </Popover>
