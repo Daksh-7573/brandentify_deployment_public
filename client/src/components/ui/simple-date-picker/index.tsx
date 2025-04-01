@@ -18,6 +18,22 @@ export function SimpleDatePicker({
   className,
   disabled = false,
 }: SimpleDatePickerProps) {
+  // Month and year suggestions - defined before use in parseInitialDate
+  const months = [
+    { label: "January", value: "01" },
+    { label: "February", value: "02" },
+    { label: "March", value: "03" },
+    { label: "April", value: "04" },
+    { label: "May", value: "05" },
+    { label: "June", value: "06" },
+    { label: "July", value: "07" },
+    { label: "August", value: "08" },
+    { label: "September", value: "09" },
+    { label: "October", value: "10" },
+    { label: "November", value: "11" },
+    { label: "December", value: "12" }
+  ];
+  
   // Parse the initial value into month, day, year
   const parseInitialDate = () => {
     if (!value) return { month: "", day: "", year: "" };
@@ -25,8 +41,13 @@ export function SimpleDatePicker({
     try {
       const date = parse(value, "yyyy-MM-dd", new Date());
       if (isValid(date)) {
+        const monthIndex = date.getMonth();
+        const monthNumber = String(monthIndex + 1).padStart(2, '0');
+        // Get month name from our months array
+        const monthObj = months.find(m => m.value === monthNumber);
+        
         return {
-          month: String(date.getMonth() + 1).padStart(2, '0'),
+          month: monthObj ? monthObj.label : monthNumber,
           day: String(date.getDate()).padStart(2, '0'),
           year: String(date.getFullYear())
         };
@@ -44,22 +65,6 @@ export function SimpleDatePicker({
   
   const monthRef = useRef<HTMLDivElement>(null);
   const yearRef = useRef<HTMLDivElement>(null);
-  
-  // Month and year suggestions
-  const months = [
-    { label: "January", value: "01" },
-    { label: "February", value: "02" },
-    { label: "March", value: "03" },
-    { label: "April", value: "04" },
-    { label: "May", value: "05" },
-    { label: "June", value: "06" },
-    { label: "July", value: "07" },
-    { label: "August", value: "08" },
-    { label: "September", value: "09" },
-    { label: "October", value: "10" },
-    { label: "November", value: "11" },
-    { label: "December", value: "12" }
-  ];
 
   // Generate years from 1950 to current year + 5
   const currentYear = new Date().getFullYear();
@@ -72,7 +77,7 @@ export function SimpleDatePicker({
   const getFilteredMonths = () => {
     if (!dateValues.month) return months;
     return months.filter(month => 
-      month.label.toLowerCase().startsWith(dateValues.month.toLowerCase()) || 
+      month.label.toLowerCase().includes(dateValues.month.toLowerCase()) || 
       month.value.startsWith(dateValues.month)
     );
   };
@@ -138,9 +143,23 @@ export function SimpleDatePicker({
       setMonthDropdownOpen(true);
     }
     
-    // Handle validation and update date value
-    const newMonth = validateMonth(input);
-    updateDateValue({ ...dateValues, month: newMonth });
+    // Check if input matches a month name
+    const matchedMonth = months.find(
+      month => month.label.toLowerCase() === input.toLowerCase() ||
+               month.label.toLowerCase().startsWith(input.toLowerCase())
+    );
+    
+    if (matchedMonth) {
+      updateDateValue({ ...dateValues, month: matchedMonth.value });
+    } else if (input === "") {
+      updateDateValue({ ...dateValues, month: "" });
+    } else {
+      // Handle numeric input validation  
+      const newMonth = validateMonth(input);
+      if (newMonth) {
+        updateDateValue({ ...dateValues, month: newMonth });
+      }
+    }
   };
 
   const handleDayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -186,7 +205,7 @@ export function SimpleDatePicker({
 
   // Handle suggestion selection
   const selectMonth = (value: string, label: string) => {
-    setDateValues(prev => ({ ...prev, month: value }));
+    setDateValues(prev => ({ ...prev, month: label }));
     updateDateValue({ ...dateValues, month: value });
     setMonthDropdownOpen(false);
   };
@@ -201,13 +220,12 @@ export function SimpleDatePicker({
     <div className={`flex items-center space-x-2 ${className}`}>
       <div className="relative" ref={monthRef}>
         <Input
-          className="w-16"
-          placeholder="MM"
+          className="w-28"
+          placeholder="Month"
           value={dateValues.month}
           onChange={handleMonthChange}
           onFocus={() => !disabled && setMonthDropdownOpen(true)}
           onBlur={() => setTimeout(() => setMonthDropdownOpen(false), 200)}
-          maxLength={2}
           disabled={disabled}
         />
         {monthDropdownOpen && !disabled && (
