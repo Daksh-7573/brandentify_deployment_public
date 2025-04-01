@@ -1464,8 +1464,12 @@ export default function Profile() {
                       Edit
                     </button>
                   </div>
-                  <p className="text-sm text-gray-500">I am: {userData?.title || user?.title || 'Professional'}</p>
-                  <p className="text-sm text-gray-500 mt-1">From: {userData?.location || user?.location || 'Location not specified'}</p>
+                  <p className="text-sm text-gray-500 mt-1">
+                    <span className="font-medium">I am:</span> {userData?.title || user?.title || 'Professional'}
+                  </p>
+                  <p className="text-sm text-gray-500 mt-1">
+                    <span className="font-medium">From:</span> {userData?.location || user?.location || 'Location not specified'}
+                  </p>
                   {userData?.industry && (
                     <>
                       {/* Parse industry and domain if they're combined with ": " */}
