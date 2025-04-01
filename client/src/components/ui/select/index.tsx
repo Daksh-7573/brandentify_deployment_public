@@ -194,7 +194,7 @@ const SelectItem = React.forwardRef<
     // Set a delayed timer to change the hover state
     timerRef.current = setTimeout(() => {
       setIsHovered(true);
-    }, 200); // 200ms delay before activating hover state
+    }, 300); // 300ms delay before activating hover state - increased for consistency
   };
   
   const handleMouseLeave = () => {
