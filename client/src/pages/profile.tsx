@@ -23,6 +23,78 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  SelectGroup,
+  SelectLabel,
+  SelectSeparator
+} from "@/components/ui/select";
+
+// Define "I am looking for" categories
+const LOOKING_FOR_CATEGORIES = [
+  // Career & Job Seeking category
+  { value: "job_opportunities", label: "💼 Job Opportunities" },
+  { value: "job_seekers", label: "💼 Job Seekers / Candidates" },
+  { value: "internships", label: "💼 Internships" },
+  { value: "interns", label: "💼 Interns" },
+  { value: "mentors", label: "💼 Career Mentors" },
+  { value: "mentees", label: "💼 Career Mentees" },
+  
+  // Business & Investment category  
+  { value: "investors", label: "🚀 Investors" },
+  { value: "startups", label: "🚀 Startups" },
+  { value: "co_founders", label: "🚀 Co-Founders" },
+  { value: "business_partners", label: "🚀 Business Partners" },
+  { value: "advisors", label: "🚀 Legal/Financial Advisors" },
+  { value: "tech_partners", label: "🚀 Technical Partners" },
+  
+  // Learning & Upskilling category
+  { value: "skill_trainers", label: "🎓 Skill Trainers" },
+  { value: "learners", label: "🎓 Students/Learners" },
+  { value: "study_groups", label: "🎓 Study Groups" },
+  
+  // Networking & Collaborations category
+  { value: "industry_experts", label: "🤝 Industry Experts" },
+  { value: "share_expertise", label: "🤝 Sharing My Expertise" },
+  
+  // Freelance & Side Hustle category
+  { value: "freelance_gigs", label: "💰 Freelance Gigs" },
+  { value: "hiring_freelancers", label: "💰 Hiring Freelancers" },
+];
+
+// Define common industries
+const INDUSTRIES = [
+  "Technology",
+  "Healthcare",
+  "Finance",
+  "Education",
+  "Manufacturing",
+  "Retail",
+  "Media & Entertainment",
+  "Construction",
+  "Transportation",
+  "Energy",
+  "Hospitality",
+  "Agriculture",
+  "Telecommunications",
+  "Real Estate",
+  "Consulting",
+  "Pharmaceuticals",
+  "Legal Services",
+  "Marketing & Advertising",
+  "Aerospace",
+  "Automotive",
+  "Biotechnology",
+  "Nonprofit",
+  "Government",
+  "Food & Beverage",
+  "Fashion",
+  "Arts & Design",
+];
 
 export default function Profile() {
   const { user, isAuthenticated, isLoading, isDemoMode } = useAuth();
@@ -880,23 +952,88 @@ export default function Profile() {
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="industry">Industry</Label>
-                <Input
-                  id="industry"
-                  name="industry"
+                <Select
                   value={formData.industry}
-                  onChange={handleInputChange}
-                  placeholder="Your industry (e.g., Technology, Healthcare, Finance)"
-                />
+                  onValueChange={(value) => {
+                    setFormData(prev => ({
+                      ...prev,
+                      industry: value
+                    }));
+                  }}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select your industry" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-80">
+                    {INDUSTRIES.map((industry) => (
+                      <SelectItem key={industry} value={industry}>
+                        {industry}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="lookingFor">I am looking for</Label>
-                <Input
-                  id="lookingFor"
-                  name="lookingFor"
+                <Select
                   value={formData.lookingFor}
-                  onChange={handleInputChange}
-                  placeholder="What are you looking for? (e.g., Job opportunities, Mentorship)"
-                />
+                  onValueChange={(value) => {
+                    setFormData(prev => ({
+                      ...prev,
+                      lookingFor: value
+                    }));
+                  }}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="What are you looking for?" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-80">
+                    <SelectGroup>
+                      <SelectLabel>Career & Job Seeking</SelectLabel>
+                      {LOOKING_FOR_CATEGORIES.filter(cat => cat.label.includes("💼")).map(category => (
+                        <SelectItem key={category.value} value={category.value}>
+                          {category.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                    <SelectSeparator />
+                    <SelectGroup>
+                      <SelectLabel>Business & Investment</SelectLabel>
+                      {LOOKING_FOR_CATEGORIES.filter(cat => cat.label.includes("🚀")).map(category => (
+                        <SelectItem key={category.value} value={category.value}>
+                          {category.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                    <SelectSeparator />
+                    <SelectGroup>
+                      <SelectLabel>Learning & Upskilling</SelectLabel>
+                      {LOOKING_FOR_CATEGORIES.filter(cat => cat.label.includes("🎓")).map(category => (
+                        <SelectItem key={category.value} value={category.value}>
+                          {category.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                    <SelectSeparator />
+                    <SelectGroup>
+                      <SelectLabel>Networking & Collaborations</SelectLabel>
+                      {LOOKING_FOR_CATEGORIES.filter(cat => cat.label.includes("🤝")).map(category => (
+                        <SelectItem key={category.value} value={category.value}>
+                          {category.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                    <SelectSeparator />
+                    <SelectGroup>
+                      <SelectLabel>Freelance & Side Hustle</SelectLabel>
+                      {LOOKING_FOR_CATEGORIES.filter(cat => cat.label.includes("💰")).map(category => (
+                        <SelectItem key={category.value} value={category.value}>
+                          {category.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             <DialogFooter>
@@ -978,7 +1115,10 @@ export default function Profile() {
                   )}
                   {userData?.lookingFor && (
                     <p className="text-sm text-gray-500 mt-1">
-                      <span className="font-medium">Looking for:</span> {userData.lookingFor}
+                      <span className="font-medium">Looking for:</span> {
+                        // Display the human-readable label instead of the value
+                        LOOKING_FOR_CATEGORIES.find(cat => cat.value === userData.lookingFor)?.label || userData.lookingFor
+                      }
                     </p>
                   )}
                 </div>
