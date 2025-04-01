@@ -66,7 +66,299 @@ const LOOKING_FOR_CATEGORIES = [
   { value: "hiring_freelancers", label: "💰 Hiring Freelancers" },
 ];
 
-// Define common industries
+// Define interface for the industry domains map
+interface IndustryDomainMap {
+  [key: string]: string[];
+}
+
+// Define common industries with their domains
+const INDUSTRY_DOMAINS: IndustryDomainMap = {
+  "Technology": [
+    "Artificial Intelligence & Machine Learning",
+    "Blockchain & Cryptocurrency",
+    "Cloud Computing & SaaS",
+    "Cybersecurity",
+    "Data Science & Analytics",
+    "DevOps & Infrastructure",
+    "E-commerce Technology",
+    "Enterprise Software",
+    "Gaming & Entertainment",
+    "Hardware & IoT",
+    "Mobile Development",
+    "Quantum Computing",
+    "Robotics & Automation",
+    "Software Development",
+    "Web3 & Decentralized Tech",
+  ],
+  "Healthcare": [
+    "Biotechnology",
+    "Digital Health",
+    "Healthcare IT",
+    "Medical Devices",
+    "Pharmaceuticals",
+    "Research & Development",
+    "Telemedicine",
+    "Healthcare Services",
+    "Mental Health",
+    "Public Health",
+  ],
+  "Finance": [
+    "Banking",
+    "Financial Services",
+    "FinTech",
+    "Investment Management",
+    "Insurance",
+    "Wealth Management",
+    "Payments & Transactions",
+    "Cryptocurrency & DeFi",
+    "Lending & Credit",
+    "Regulatory Compliance",
+  ],
+  "Education": [
+    "EdTech",
+    "Higher Education",
+    "K-12 Education",
+    "Professional Development",
+    "Online Learning",
+    "Educational Content",
+    "Tutoring & Coaching",
+    "Educational Administration",
+    "Research & Development",
+  ],
+  "Manufacturing": [
+    "Advanced Manufacturing",
+    "Automotive Manufacturing",
+    "Chemical Manufacturing",
+    "Electronics Manufacturing",
+    "Food & Beverage Production",
+    "Industrial Automation",
+    "Textiles & Apparel",
+    "Machinery & Equipment",
+    "Quality Assurance",
+    "Supply Chain Management",
+  ],
+  "Retail": [
+    "E-commerce",
+    "Brick & Mortar Retail",
+    "Consumer Goods",
+    "Fashion & Apparel",
+    "Grocery & Food Retail",
+    "Luxury Retail",
+    "Retail Technology",
+    "Omnichannel Retail",
+    "Supply Chain & Logistics",
+  ],
+  "Media & Entertainment": [
+    "Advertising",
+    "Content Creation",
+    "Digital Media",
+    "Film & Television",
+    "Gaming",
+    "Music & Audio",
+    "Publishing",
+    "Social Media",
+    "Sports & Recreation",
+    "Streaming Services",
+  ],
+  "Construction": [
+    "Architecture",
+    "Construction Management",
+    "Engineering",
+    "Infrastructure Development",
+    "Residential Construction",
+    "Commercial Construction",
+    "Sustainable Building",
+    "Project Management",
+    "Construction Technology",
+  ],
+  "Transportation": [
+    "Automotive",
+    "Aviation",
+    "Logistics",
+    "Maritime",
+    "Public Transportation",
+    "Ride-sharing & Mobility",
+    "Transportation Technology",
+    "Supply Chain",
+    "Fleet Management",
+  ],
+  "Energy": [
+    "Renewable Energy",
+    "Oil & Gas",
+    "Utilities",
+    "Energy Storage",
+    "Clean Technology",
+    "Energy Efficiency",
+    "Nuclear Energy",
+    "Smart Grid",
+    "Energy Management",
+  ],
+  "Hospitality": [
+    "Accommodations",
+    "Food & Beverage Service",
+    "Travel & Tourism",
+    "Event Management",
+    "Hospitality Technology",
+    "Cruises & Resorts",
+    "Customer Experience",
+    "Hospitality Management",
+  ],
+  "Agriculture": [
+    "AgTech",
+    "Crop Production",
+    "Livestock",
+    "Sustainable Agriculture",
+    "Food Processing",
+    "Forestry",
+    "Aquaculture",
+    "Agricultural Research",
+    "Agricultural Supply Chain",
+  ],
+  "Telecommunications": [
+    "Wireless Communications",
+    "Network Infrastructure",
+    "Telecom Services",
+    "Internet Service Providers",
+    "Telecom Equipment",
+    "Mobile & Voice",
+    "Data Services",
+    "Satellite Communications",
+    "5G & Next-Gen Networks",
+  ],
+  "Real Estate": [
+    "Commercial Real Estate",
+    "Residential Real Estate",
+    "Property Management",
+    "Real Estate Development",
+    "Real Estate Technology",
+    "Facilities Management",
+    "Property Investment",
+    "Real Estate Services",
+  ],
+  "Consulting": [
+    "Management Consulting",
+    "Technology Consulting",
+    "Strategy Consulting",
+    "Financial Advisory",
+    "HR Consulting",
+    "Business Transformation",
+    "Digital Consulting",
+    "Operations Consulting",
+    "Industry-Specific Consulting",
+  ],
+  "Legal Services": [
+    "Corporate Law",
+    "Intellectual Property",
+    "Litigation",
+    "Legal Technology",
+    "Compliance",
+    "Criminal Law",
+    "Family Law",
+    "Environmental Law",
+    "International Law",
+  ],
+  "Marketing & Advertising": [
+    "Digital Marketing",
+    "Content Marketing",
+    "Social Media Marketing",
+    "Brand Management",
+    "Marketing Technology",
+    "Advertising Technology",
+    "Performance Marketing",
+    "Creative Services",
+    "Market Research",
+  ],
+  "Aerospace": [
+    "Aircraft Manufacturing",
+    "Space Technology",
+    "Defense Aerospace",
+    "Avionics",
+    "Aerospace Engineering",
+    "Unmanned Aerial Systems",
+    "Space Exploration",
+    "Satellite Systems",
+    "Aviation Services",
+  ],
+  "Automotive": [
+    "Vehicle Manufacturing",
+    "Auto Parts & Components",
+    "Electric Vehicles",
+    "Autonomous Driving",
+    "Automotive Technology",
+    "Automotive Design",
+    "Fleet Management",
+    "Mobility Services",
+    "Automotive Retail",
+  ],
+  "Biotechnology": [
+    "Biopharmaceuticals",
+    "Genomics",
+    "Medical Biotechnology",
+    "Agricultural Biotechnology",
+    "Bioinformatics",
+    "Biotech R&D",
+    "Bioprocessing",
+    "Molecular Diagnostics",
+    "Synthetic Biology",
+  ],
+  "Nonprofit": [
+    "Charitable Organizations",
+    "Foundations",
+    "Social Services",
+    "Healthcare Nonprofits",
+    "Educational Nonprofits",
+    "Environmental Organizations",
+    "Arts & Cultural Organizations",
+    "Religious Organizations",
+    "International Development",
+  ],
+  "Government": [
+    "Federal Government",
+    "State/Provincial Government",
+    "Local Government",
+    "Public Administration",
+    "Public Policy",
+    "Government Technology",
+    "Defense & Security",
+    "Public Services",
+    "Government Relations",
+  ],
+  "Food & Beverage": [
+    "Food Production",
+    "Beverage Production",
+    "Food Technology",
+    "Restaurants & Catering",
+    "Food Service",
+    "Specialty Foods",
+    "Functional Foods & Beverages",
+    "Food Safety & Quality",
+    "Food & Beverage Distribution",
+  ],
+  "Fashion": [
+    "Apparel Manufacturing",
+    "Fashion Retail",
+    "Luxury Fashion",
+    "Sustainable Fashion",
+    "Fashion Technology",
+    "Accessories & Footwear",
+    "Textile Development",
+    "Fashion Design",
+    "Fashion Marketing",
+  ],
+  "Arts & Design": [
+    "Graphic Design",
+    "Industrial Design",
+    "UX/UI Design",
+    "Architecture",
+    "Fine Arts",
+    "Digital Arts",
+    "Interior Design",
+    "Design Technology",
+    "Creative Services",
+  ],
+};
+
+// Get list of main industries
 const INDUSTRIES = [
   "Technology",
   "Healthcare",
@@ -103,11 +395,15 @@ export default function Profile() {
   
   // State for edit dialogs
   const [showEditBasicInfo, setShowEditBasicInfo] = useState(false);
+  const [selectedIndustry, setSelectedIndustry] = useState<string>('');
+  const [selectedDomain, setSelectedDomain] = useState<string>('');
+  
   const [formData, setFormData] = useState({
     name: '',
     title: '',
     location: '',
     industry: '',
+    domain: '',
     lookingFor: ''
   });
   
@@ -788,11 +1084,27 @@ export default function Profile() {
   // Initialize form data when user data changes
   useEffect(() => {
     if (userData) {
+      // Parse industry and domain from userData.industry if it contains a colon
+      let mainIndustry = '';
+      let domain = '';
+      
+      if (userData.industry && userData.industry.includes(': ')) {
+        const parts = userData.industry.split(': ');
+        mainIndustry = parts[0];
+        domain = parts[1];
+      } else {
+        mainIndustry = userData.industry || '';
+      }
+      
+      setSelectedIndustry(mainIndustry);
+      setSelectedDomain(domain);
+      
       setFormData({
         name: userData.name || '',
         title: userData.title || '',
         location: userData.location || '',
-        industry: userData.industry || '',
+        industry: mainIndustry || '',
+        domain: domain || '',
         lookingFor: userData.lookingFor || ''
       });
     }
@@ -875,7 +1187,14 @@ export default function Profile() {
   // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    updateUserMutation.mutate(formData);
+    
+    // Combine industry and domain if both are selected
+    const updatedFormData = { ...formData };
+    if (formData.industry && formData.domain) {
+      updatedFormData.industry = `${formData.industry}: ${formData.domain}`;
+    }
+    
+    updateUserMutation.mutate(updatedFormData);
   };
 
   // Redirect to landing if not authenticated
@@ -955,9 +1274,12 @@ export default function Profile() {
                 <Select
                   value={formData.industry}
                   onValueChange={(value) => {
+                    setSelectedIndustry(value);
+                    setSelectedDomain('');
                     setFormData(prev => ({
                       ...prev,
-                      industry: value
+                      industry: value,
+                      domain: ''
                     }));
                   }}
                 >
@@ -973,6 +1295,34 @@ export default function Profile() {
                   </SelectContent>
                 </Select>
               </div>
+              
+              {/* Domain selector - only show when an industry is selected */}
+              {formData.industry && (
+                <div className="grid gap-2">
+                  <Label htmlFor="domain">Specific Domain</Label>
+                  <Select
+                    value={formData.domain}
+                    onValueChange={(value) => {
+                      setSelectedDomain(value);
+                      setFormData(prev => ({
+                        ...prev,
+                        domain: value
+                      }));
+                    }}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select your domain" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-80">
+                      {INDUSTRY_DOMAINS[formData.industry]?.map((domain: string) => (
+                        <SelectItem key={domain} value={domain}>
+                          {domain}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
               <div className="grid gap-2">
                 <Label htmlFor="lookingFor">I am looking for</Label>
                 <Select
