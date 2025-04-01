@@ -145,18 +145,51 @@ export function EmailAuth() {
         throw new Error(data.message || "Registration failed");
       }
       
-      const userData = await response.json();
+      const responseData = await response.json();
       
-      setSuccessMessage("Registration successful! You can now log in.");
+      // Use the user data from the registration response
+      const userData = responseData.user;
+      
+      console.log("Registration successful:", userData);
+      
+      setSuccessMessage("Registration successful! You will be automatically logged in.");
       
       // Auto login after successful registration
-      authContext.signInWithEmail(userData);
-      
-      // Small delay to show success message before redirecting
-      setTimeout(() => {
-        setLocation("/dashboard");
-      }, 1500);
-      
+      if (userData) {
+        // First log the user in with the login API to get a proper session
+        try {
+          const loginResponse = await fetch("/api/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: values.email,
+              password: values.password,
+            }),
+          });
+          
+          if (!loginResponse.ok) {
+            console.error("Auto-login after registration failed");
+            throw new Error("Auto-login failed. Please try logging in manually.");
+          }
+          
+          const loginData = await loginResponse.json();
+          
+          // Now use the auth context to set the user
+          authContext.signInWithEmail(loginData);
+          
+          // Small delay to show success message before redirecting
+          setTimeout(() => {
+            setLocation("/dashboard");
+          }, 1500);
+        } catch (loginErr: any) {
+          console.error("Error during auto-login:", loginErr);
+          setError("Registration successful, but auto-login failed. Please try logging in manually.");
+          // Switch to login tab after registration
+          setAuthMode("login");
+        }
+      }
     } catch (err: any) {
       setError(err.message || "Registration failed");
     } finally {

@@ -206,6 +206,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
     
     try {
+      console.log("signInWithEmail received userData:", userData);
+      
+      if (!userData || !userData.id) {
+        throw new Error("Invalid user data received");
+      }
+      
       // Convert database user to our AuthUser type
       setUser({
         uid: userData.id.toString(),
