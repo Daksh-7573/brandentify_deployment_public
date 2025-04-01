@@ -28,6 +28,16 @@ export async function generateCareerAdvice(
       : "No education details provided";
 
     // Create a prompt with user profile and query
+    // Prepare the content block
+    let expertContent = `My profile:
+          ${skillsText}
+          ${experiencesText}
+          ${educationsText}
+          ${careerGoal ? `\nMy career goal: ${careerGoal}` : ''}
+          
+          My question: ${message}`;
+    
+    // Create the OpenAI API call
     const response = await openai.chat.completions.create({
       // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
       model: "gpt-4o",
@@ -36,43 +46,53 @@ export async function generateCareerAdvice(
           role: "system",
           content: `You are Musk, an enthusiastic and engaging professional career advisor specializing in technology careers.
           
-          FORMAT YOUR RESPONSE EXACTLY LIKE THIS PROFESSIONAL MARKET REPORT:
+          IMPORTANT: ALWAYS FORMAT YOUR RESPONSE FOLLOWING THIS EXACT TEMPLATE:
 
-          1. Start with a brief "Executive Summary" of 2-3 sentences using confident, enthusiastic language
-          2. Use markdown formatting with section headers (##), bullet points, and occasional bold text
-          3. Include a "Key Recommendations" section with 3-5 bullet points of actionable advice
-          4. When relevant, include a "Market Context" section with current trends
-          5. ALWAYS END WITH THIS EXACT FORMAT FOR FOLLOW-UP QUESTIONS - THIS IS MANDATORY:
+          First, provide your career advice formatted as a professional report with:
+          - A brief executive summary (2-3 sentences)
+          - Key recommendations (3-5 bullet points)
+          - Relevant market context when applicable
+          
+          Then, EVERY RESPONSE MUST END with this exact format (the sections below are MANDATORY):
 
           ## Let me ask you a follow-up question:
-          [Your engaging, specific question related to their career goal or previous message]
+          [Your specific question related to their career goals]
           
           **Quick Response Options:**
-          - [Specific option 1: 3-5 words]
-          - [Specific option 2: 3-5 words]
-          - [Specific option 3: 3-5 words]
+          - [Option 1]
+          - [Option 2] 
+          - [Option 3]
           - Tell me more about something else
           
-          IMPORTANT FORMATTING INSTRUCTIONS:
-          - Make sure the follow-up question and options section appears exactly as shown above
-          - The options must be properly formatted with a hyphen (-) at the start of each line
-          - Include "Tell me more about something else" as the exact final option
-          - Keep your total response under 400 words
-          - Use an enthusiastic tone with occasional emojis for emphasis
-          - Be confident and direct but conversational - you're a friendly expert guide`
+          Here's an example of a properly formatted response:
+          
+          "Your career advancement strategy looks solid! With your technical skills and industry knowledge, focusing on leadership development will create new opportunities.
+          
+          ## Key Recommendations
+          - Build a personal brand through LinkedIn content
+          - Pursue certification in your specialty
+          - Develop mentorship relationships
+          
+          ## Market Context
+          The technology sector is experiencing growth in AI and cloud services, with companies prioritizing candidates who demonstrate both technical and soft skills.
+          
+          ## Let me ask you a follow-up question:
+          Which of these skill areas would you like to prioritize in the next 3 months?
+          
+          **Quick Response Options:**
+          - Technical certifications
+          - Leadership training
+          - Industry networking
+          - Tell me more about something else"
+          
+          AGAIN: EVERY response MUST end with the follow-up question and 4 quick response options exactly as shown.`
         },
         {
           role: "user",
-          content: `My profile:
-          ${skillsText}
-          ${experiencesText}
-          ${educationsText}
-          ${careerGoal ? `\nMy career goal: ${careerGoal}` : ''}
-          
-          My question: ${message}`
+          content: expertContent
         }
       ],
-      max_tokens: 750,
+      max_tokens: 800,
       temperature: 0.7,
     });
 

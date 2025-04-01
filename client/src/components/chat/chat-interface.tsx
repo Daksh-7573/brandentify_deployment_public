@@ -132,64 +132,126 @@ export default function ChatInterface({ initialQuestion }: ChatInterfaceProps = 
   // Function to extract quick response options from AI messages
   const extractQuickResponses = (message: string): string[] | undefined => {
     try {
-      console.log("Checking for follow-up section in:", message);
+      console.log("Checking message for quick response options...");
       
-      // Look for the follow-up question section
-      if (!message.includes("## Let me ask you a follow-up question:")) {
-        console.log("No follow-up question section found");
+      // Less strict check for follow-up sections
+      const hasFollowUp = message.includes("## Let me ask you a follow-up question:") ||
+                          message.includes("let me ask you a follow-up question") ||
+                          message.includes("follow-up question");
+                          
+      if (!hasFollowUp) {
+        console.log("No follow-up question section detected");
         return undefined;
       }
       
-      // Extract the options section
-      const parts = message.split("**Quick Response Options:**");
-      if (parts.length < 2) {
-        console.log("No quick response options section found");
+      // Look for Quick Response Options section
+      const hasQuickOptions = message.includes("**Quick Response Options:**") || 
+                               message.includes("Quick Response Options:");
+      
+      if (!hasQuickOptions) {
+        console.log("No quick response options section detected");
         return undefined;
       }
       
-      const optionSection = parts[1];
-      console.log("Option section:", optionSection);
+      // Extract response options (looking for lines with bullet points)
+      const bulletPointLines = message.split('\n')
+        .filter(line => line.trim().startsWith('- '))
+        .map(line => line.trim().substring(2).trim());
       
-      // Extract the options using regex to find lines starting with "- "
-      const optionLines = optionSection.split("\n")
-        .filter(line => line.trim().startsWith("- "))
-        .map(line => {
-          // Remove the "- " prefix and any brackets or other formatting
-          const option = line.trim().substring(2).trim(); 
-          const cleanOption = option
-            .replace(/^\[/, '') // Remove leading [
-            .replace(/\]$/, '') // Remove trailing ]
-            .replace(/^.*?:/, '').trim(); // Remove any prefix before colon
-          
-          return option.includes("Tell me more about something else") 
-            ? "Tell me more about something else" 
-            : cleanOption;
-        });
+      console.log("Found bullet points:", bulletPointLines);
       
-      console.log("Extracted option lines:", optionLines);
-      return optionLines.length > 0 ? optionLines : undefined;
+      if (bulletPointLines.length === 0) {
+        return undefined;
+      }
+      
+      // Process the options (removing brackets and formatting)
+      const cleanOptions = bulletPointLines.map(option => {
+        // Clean up the option text
+        let cleanOption = option
+          .replace(/^\[|\]$/g, '') // Remove surrounding brackets
+          .replace(/^.*?:/, '').trim(); // Remove any prefix before colon
+        
+        // Special case for the "tell me more" option
+        if (option.toLowerCase().includes("tell me more")) {
+          return "Tell me more about something else";
+        }
+        
+        return cleanOption;
+      });
+      
+      console.log("Extracted clean options:", cleanOptions);
+      
+      // If we don't have the "Tell me more" option, add it
+      if (!cleanOptions.some(opt => opt === "Tell me more about something else")) {
+        cleanOptions.push("Tell me more about something else");
+      }
+      
+      return cleanOptions;
     } catch (error) {
       console.error("Error extracting quick responses:", error);
-      return undefined;
+      
+      // Fallback with default options
+      console.log("Using fallback quick response options");
+      return [
+        "Yes, that's helpful",
+        "I need more specific advice",
+        "What about alternatives?",
+        "Tell me more about something else"
+      ];
     }
   };
   
-  // Modify the message to emphasize the follow-up question
+  // Modify the message to emphasize the follow-up question and remove response options
   const processMessage = (message: string): string => {
-    if (!message.includes("## Let me ask you a follow-up question:")) {
-      return message;
-    }
-    
     try {
-      // Split the message at the follow-up question to add emphasis styling
-      const [mainContent, questionSection] = message.split("## Let me ask you a follow-up question:");
+      // Try to find any follow-up section
+      if (message.includes("## Let me ask you a follow-up question:")) {
+        // Standard format found, split it cleanly
+        const [mainContent, questionSection] = message.split("## Let me ask you a follow-up question:");
+        
+        // If we have Quick Response Options, remove them
+        if (questionSection.includes("**Quick Response Options:**")) {
+          const [question, _] = questionSection.split("**Quick Response Options:**");
+          return `${mainContent}\n\n## Let me ask you a follow-up question:${question}`;
+        } else {
+          // Just keep the question part
+          return `${mainContent}\n\n## Let me ask you a follow-up question:${questionSection.split("\n\n")[0]}`;
+        }
+      } 
       
-      // Split the question section at the quick response options
-      const [question, options] = questionSection.split("**Quick Response Options:**");
+      // Look for other possible follow-up formats
+      else if (message.includes("follow-up question")) {
+        // Split the message at the options if present
+        if (message.includes("Quick Response Options")) {
+          return message.split("Quick Response Options")[0];
+        }
+        
+        // Look for bullet points that might indicate options
+        const lines = message.split("\n");
+        let bulletPointIndex = -1;
+        
+        // Find the first bullet point after "follow-up"
+        for (let i = 0; i < lines.length; i++) {
+          if (lines[i].includes("follow-up question") && i < lines.length - 1) {
+            // Look ahead for bullet points
+            for (let j = i + 1; j < lines.length; j++) {
+              if (lines[j].trim().startsWith("- ")) {
+                bulletPointIndex = j;
+                break;
+              }
+            }
+            break;
+          }
+        }
+        
+        // If we found bullet points, remove them and all subsequent lines
+        if (bulletPointIndex > 0) {
+          return lines.slice(0, bulletPointIndex).join("\n");
+        }
+      }
       
-      // Remove the quick response options from the displayed message for cleaner UI
-      // (they'll be shown as buttons instead)
-      return `${mainContent}\n\n## Let me ask you a follow-up question:${question}\n`;
+      // No follow-up sections found or no modifications needed
+      return message;
     } catch (error) {
       console.error("Error processing message:", error);
       return message;
