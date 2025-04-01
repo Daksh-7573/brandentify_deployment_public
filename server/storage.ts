@@ -25,6 +25,7 @@ export interface IStorage {
   createWorkExperience(experience: InsertWorkExperience): Promise<WorkExperience>;
   updateWorkExperience(id: number, experience: Partial<WorkExperience>): Promise<WorkExperience | undefined>;
   deleteWorkExperience(id: number): Promise<boolean>;
+  clearUserWorkExperiences(userId: number): Promise<number>;
   
   // Education operations
   getEducationsByUserId(userId: number): Promise<Education[]>;
@@ -41,6 +42,9 @@ export interface IStorage {
   // Chat Message operations
   getChatMessagesByUserId(userId: number): Promise<ChatMessage[]>;
   createChatMessage(message: InsertChatMessage): Promise<ChatMessage>;
+  
+  // Debug and maintenance operations
+  reinitializeDemoData(): Promise<void>;
 }
 
 // In-memory implementation of the storage
@@ -97,40 +101,59 @@ export class MemStorage implements IStorage {
     this.users.set(demoUser.id, demoUser);
     this.currentUserId++;
     
-    // Clear any existing work experiences for the demo user
-    this.workExperiences.clear();
+    // Clear any existing work experiences, education, and skills for the demo user
+    this.clearDemoDataMaps();
     
-    // Add baseline education entries (empty by default)
-    const education: Education = {
-      id: 1,
-      userId: 1,
-      degree: "Bachelor of Science",
-      institution: "University",
-      location: "San Francisco, CA",
-      startDate: "2014",
-      endDate: "2018"
-    };
-    this.educations.set(education.id, education);
-    this.currentEducationId++;
-    
-    // Add baseline skills
+    // Add just minimal placeholder skills (no default work experience or education)
     const skill1: Skill = {
       id: 1,
       userId: 1,
-      name: "JavaScript",
-      level: "Intermediate",
-      proficiency: 75
-    };
-    const skill2: Skill = {
-      id: 2,
-      userId: 1,
       name: "Communication",
-      level: "Advanced",
-      proficiency: 90
+      level: "Intermediate",
+      proficiency: 70
     };
     this.skills.set(skill1.id, skill1);
-    this.skills.set(skill2.id, skill2);
-    this.currentSkillId += 2;
+    this.currentSkillId++;
+  }
+  
+  /**
+   * Completely reset all demo data and reinitialize with minimal values
+   * Used by the debug endpoint to wipe all existing data
+   */
+  async reinitializeDemoData(): Promise<void> {
+    // First clear all data maps
+    this.clearDemoDataMaps();
+    
+    // Force IDs back to start
+    this.currentWorkExperienceId = 1;
+    this.currentEducationId = 1;
+    this.currentSkillId = 1;
+    
+    // Initialize with minimal data (just one skill)
+    const skill1: Skill = {
+      id: 1,
+      userId: 1,
+      name: "Basic Skills",
+      level: "Beginner",
+      proficiency: 50
+    };
+    this.skills.set(skill1.id, skill1);
+    
+    console.log("Demo data reinitialized with minimal values and cleared all experience data");
+  }
+  
+  /**
+   * Clear all work experience, education, and skills data
+   */
+  private clearDemoDataMaps(): void {
+    // Clear all existing work experiences
+    this.workExperiences.clear();
+    
+    // Clear all existing education
+    this.educations.clear();
+    
+    // Clear all existing skills
+    this.skills.clear();
   }
   
   /**
@@ -139,7 +162,9 @@ export class MemStorage implements IStorage {
    */
   async clearUserWorkExperiences(userId: number): Promise<number> {
     let deleted = 0;
-    for (const [id, exp] of this.workExperiences.entries()) {
+    const entries = Array.from(this.workExperiences.entries());
+    
+    for (const [id, exp] of entries) {
       if (exp.userId === userId) {
         this.workExperiences.delete(id);
         deleted++;
