@@ -483,13 +483,22 @@ export default function Education() {
               <div className="col-span-3 grid grid-cols-2 gap-2">
                 <div>
                   <Label htmlFor="startMonth" className="mb-1 block text-sm">Month</Label>
-                  <Select value={startMonth} onValueChange={setStartMonth}>
+                  <Select value={startMonth} onValueChange={(value) => {
+                    // Add artificial delay to slow down selection
+                    setTimeout(() => {
+                      setStartMonth(value);
+                    }, 600);
+                  }}>
                     <SelectTrigger id="startMonth">
                       <SelectValue placeholder="Month" />
                     </SelectTrigger>
                     <SelectContent className="max-h-[200px] overflow-y-auto">
                       {months.map(month => (
-                        <SelectItem key={month.value} value={month.value} className="cursor-pointer">
+                        <SelectItem 
+                          key={month.value} 
+                          value={month.value} 
+                          className="cursor-pointer py-3"
+                        >
                           {month.label}
                         </SelectItem>
                       ))}
@@ -498,13 +507,22 @@ export default function Education() {
                 </div>
                 <div>
                   <Label htmlFor="startYear" className="mb-1 block text-sm">Year</Label>
-                  <Select value={startYear} onValueChange={setStartYear}>
+                  <Select value={startYear} onValueChange={(value) => {
+                    // Add artificial delay to slow down selection
+                    setTimeout(() => {
+                      setStartYear(value);
+                    }, 600);
+                  }}>
                     <SelectTrigger id="startYear">
                       <SelectValue placeholder="Year" />
                     </SelectTrigger>
                     <SelectContent className="max-h-[200px] overflow-y-auto">
                       {years.map(year => (
-                        <SelectItem key={year} value={year} className="cursor-pointer">
+                        <SelectItem 
+                          key={year} 
+                          value={year} 
+                          className="cursor-pointer py-3"
+                        >
                           {year}
                         </SelectItem>
                       ))}
@@ -527,14 +545,23 @@ export default function Education() {
                       <Label htmlFor="endMonth" className="mb-1 block text-sm">Month</Label>
                       <Select 
                         value={endMonth} 
-                        onValueChange={setEndMonth}
+                        onValueChange={(value) => {
+                          // Add artificial delay to slow down selection
+                          setTimeout(() => {
+                            setEndMonth(value);
+                          }, 600);
+                        }}
                         disabled={newEducation.endDate === 'Present'}>
                         <SelectTrigger id="endMonth">
                           <SelectValue placeholder="Month" />
                         </SelectTrigger>
                         <SelectContent className="max-h-[200px] overflow-y-auto">
                           {months.map(month => (
-                            <SelectItem key={month.value} value={month.value} className="cursor-pointer">
+                            <SelectItem 
+                              key={month.value} 
+                              value={month.value} 
+                              className="cursor-pointer py-3"
+                            >
                               {month.label}
                             </SelectItem>
                           ))}
@@ -545,14 +572,23 @@ export default function Education() {
                       <Label htmlFor="endYear" className="mb-1 block text-sm">Year</Label>
                       <Select 
                         value={endYear} 
-                        onValueChange={setEndYear}
+                        onValueChange={(value) => {
+                          // Add artificial delay to slow down selection
+                          setTimeout(() => {
+                            setEndYear(value);
+                          }, 600);
+                        }}
                         disabled={newEducation.endDate === 'Present'}>
                         <SelectTrigger id="endYear">
                           <SelectValue placeholder="Year" />
                         </SelectTrigger>
                         <SelectContent className="max-h-[200px] overflow-y-auto">
                           {years.map(year => (
-                            <SelectItem key={year} value={year} className="cursor-pointer">
+                            <SelectItem 
+                              key={year} 
+                              value={year} 
+                              className="cursor-pointer py-3"
+                            >
                               {year}
                             </SelectItem>
                           ))}
