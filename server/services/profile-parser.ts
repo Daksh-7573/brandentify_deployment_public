@@ -5,7 +5,9 @@ import OpenAI from "openai";
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 /**
- * Parse resume text and extract structured data
+ * Rule-based resume parser following algorithm from requirements
+ * This implementation focuses on extracting only data that's clearly present
+ * and providing empty fields when data cannot be confidently extracted
  */
 export async function parseResumeText(resumeText: string): Promise<{
   experiences: InsertWorkExperience[];
@@ -13,220 +15,65 @@ export async function parseResumeText(resumeText: string): Promise<{
   skills: InsertSkill[];
   title?: string;
   location?: string;
-  error?: string; // Added to allow error property in return value
+  error?: string;
 }> {
   try {
-    console.log("Starting resume text parsing");
+    console.log("Starting rule-based resume parsing");
     
-    // Check if the OpenAI API key is valid
-    if (!process.env.OPENAI_API_KEY) {
-      console.error("Missing OPENAI_API_KEY - cannot parse resume");
-      throw new Error("OpenAI API key is missing");
-    }
+    // Parse the resume using structured extraction
+    const experienceBlocks = extractExperienceBlocks(resumeText);
+    const educationBlocks = extractEducationBlocks(resumeText);
+    const skillsList = extractSkills(resumeText);
+    const basicInfo = extractBasicInfo(resumeText);
     
-    // Limit resume text to prevent token limit errors (roughly 20k characters ≈ 5k tokens)
-    const maxLength = 20000;
-    const truncatedResumeText = resumeText.length > maxLength
-      ? resumeText.substring(0, maxLength) + "\n\n[Content truncated due to length...]"
-      : resumeText;
-
-    const systemPrompt = `
-      You are an expert resume analyzer. Your task is to precisely extract ONLY information that is EXPLICITLY PRESENT in the resume. DO NOT invent, synthesize, or guess any information.
-
-      Extract the following information from the resume:
-      1. Job title/headline (single most recent/current position)
-      2. Location (city, state/province, country)
-      3. Work experiences (include title, company, location, start date, end date, and description)
-      4. Education history (include degree, institution, location, start date, and end date)
-      5. Skills with proficiency levels (Beginner, Intermediate, Advanced)
-
-      Format the response as a JSON object with these exact keys:
-      {
-        "title": "Current job title",
-        "location": "City, State/Province, Country",
-        "experiences": [
-          {
-            "title": "Job Title",
-            "company": "Company Name",
-            "location": "Location",
-            "startDate": "Start Date (MM/YYYY or YYYY)",
-            "endDate": "End Date (MM/YYYY or YYYY) or 'Present'",
-            "description": "Job description"
-          }
-        ],
-        "educations": [
-          {
-            "degree": "Degree Name",
-            "institution": "Institution Name",
-            "location": "Location",
-            "startDate": "Start Date (YYYY)",
-            "endDate": "End Date (YYYY)"
-          }
-        ],
-        "skills": [
-          {
-            "name": "Skill Name",
-            "level": "Beginner/Intermediate/Advanced"
-          }
-        ]
-      }
-      
-      STRICT EXTRACTION RULES:
-      1. ONLY include information that is EXPLICITLY stated in the resume.
-      2. If any field cannot be found in the resume, set its value to null (e.g., "location": null).
-      3. If a field exists but you're uncertain about its value, set its value to null rather than guessing.
-      4. Never hallucinate, invent, or generate data that isn't in the original resume.
-      5. For skills where the level is not specified, set level to null.
-      6. It is better to return incomplete but accurate data than complete but potentially incorrect data.
-      
-      IMPORTANT: Keep the output strictly in JSON format. Do not include any explanations or markdown.
-    `;
-
-    console.log("Sending request to OpenAI API for resume analysis");
-    
-    try {
-      const response = await openai.chat.completions.create({
-        // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-        model: "gpt-4o",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: truncatedResumeText }
-        ],
-        response_format: { type: "json_object" },
-        temperature: 0.2, // Lower temperature for more accurate extraction
-        max_tokens: 4000, // Limit response size
-      });
-      
-      console.log("Received response from OpenAI API for resume analysis");
-      
-      if (!response.choices[0].message.content) {
-        throw new Error("Empty response from OpenAI API");
-      }
-      
-      const jsonContent = response.choices[0].message.content;
-      console.log("JSON content received from resume analysis:", jsonContent.substring(0, 200) + "...");
-      
-      const parsed = JSON.parse(jsonContent);
-      console.log("Resume parsing successful");
-      
-      // Helper function to check if a field possibly contains synthesized data
-      function isSuspectedGeneration(value: string | null | undefined): boolean {
-        // Skip null checks
-        if (value === null || value === undefined) return false;
-        
-        // Common generic company names that might suggest generation
-        const suspiciousCompanyPatterns = [
-          /tech innovation/i,
-          /web solution/i,
-          /innovative tech/i,
-          /software solution/i,
-          /global tech/i,
-          /digital solution/i,
-          /tech corp/i,
-          /acme/i,
-          /software inc/i
-        ];
-        
-        // Check for suspicious patterns in company names
-        const isGenericCompanyName = suspiciousCompanyPatterns.some(pattern => 
-          pattern.test(value)
-        );
-        
-        return isGenericCompanyName;
-      }
-      
-      // Filter out potentially synthetic experiences
-      const validExperiences = (parsed.experiences || []).filter((exp: any) => {
-        // If all fields are null, it's not synthetic (just empty)
-        const allFieldsNull = !exp.title && !exp.company && !exp.location && !exp.startDate;
-        if (allFieldsNull) return true;
-        
-        // If the company name looks suspicious, filter it out
-        if (isSuspectedGeneration(exp.company)) {
-          console.log(`Filtering out suspected generated experience: ${exp.title} at ${exp.company}`);
-          return false;
-        }
-        
-        return true;
-      });
-      
-      // Transform to match our schema
-      const experiences = validExperiences.map((exp: any) => ({
+    // Convert extracted blocks to our schema format (must match schema.ts exactly)
+    // We filter out any entries that don't have the required fields
+    const experiences: InsertWorkExperience[] = experienceBlocks
+      .filter(block => block.title && block.company && block.startDate) 
+      .map(block => ({
         userId: 0, // This will be filled in by the caller
-        title: exp.title || null,
-        company: exp.company || null,
-        location: exp.location || null,
-        startDate: exp.startDate || null,
-        endDate: exp.endDate === 'Present' ? undefined : (exp.endDate || null),
-        description: exp.description || ""
+        title: block.title!,
+        company: block.company!,
+        startDate: block.startDate!, 
+        location: block.location || null,
+        endDate: block.endDate || null,
+        description: block.description || null
       }));
 
-      // Filter out potentially synthetic educations
-      const validEducations = (parsed.educations || []).filter((edu: any) => {
-        // If the institution contains generic university names, filter it out
-        const suspiciousInstitutions = [
-          /university of california/i,
-          /stanford/i,
-          /harvard/i,
-          /mit/i,
-          /carnegie mellon/i
-        ];
-        
-        const isSuspiciousInstitution = suspiciousInstitutions.some(pattern => 
-          edu.institution && pattern.test(edu.institution)
-        );
-        
-        if (isSuspiciousInstitution) {
-          console.log(`Filtering out suspected generated education: ${edu.degree} at ${edu.institution}`);
-          return false;
-        }
-        
-        return true;
-      });
-      
-      const educations = validEducations.map((edu: any) => ({
-        userId: 0, // This will be filled in by the caller
-        degree: edu.degree || null,
-        institution: edu.institution || null,
-        location: edu.location || null,
-        startDate: edu.startDate || null,
-        endDate: edu.endDate || null
+    const educations: InsertEducation[] = educationBlocks
+      .filter(block => block.degree && block.institution && block.startDate)
+      .map(block => ({
+        userId: 0,
+        degree: block.degree!,
+        institution: block.institution!,
+        startDate: block.startDate!,
+        location: block.location || null,
+        endDate: block.endDate || null
       }));
 
-      // Filter skills: only accept skills with valid levels or null levels
-      const validSkills = (parsed.skills || []).filter((skill: any) => {
-        return skill.name && typeof skill.name === 'string';
-      });
-      
-      const skills = validSkills.map((skill: any) => ({
-        userId: 0, // This will be filled in by the caller
-        name: skill.name,
-        level: skill.level || 'Intermediate',  // Default to Intermediate if null
-        proficiency: skill.level ? calculateProficiency(skill.level) : 50
-      }));
+    const skills: InsertSkill[] = skillsList.map(skill => ({
+      userId: 0,
+      name: skill,
+      level: "Intermediate", // Default to Intermediate when level not specified
+      proficiency: 60 // Default value
+    }));
 
-      const result = {
-        experiences,
-        educations,
-        skills,
-        title: parsed.title,
-        location: parsed.location
-      };
-      
-      console.log("Resume parsing complete. Experiences:", experiences.length, 
-                  "Educations:", educations.length, 
-                  "Skills:", skills.length);
-      
-      return result;
-    } catch (apiError: any) {
-      console.error("Error calling OpenAI API for resume parsing:", apiError);
-      throw new Error(`OpenAI API error: ${apiError.message || "Unknown API error"}`);
-    }
+    console.log("Resume parsing complete", {
+      experienceCount: experiences.length,
+      educationCount: educations.length,
+      skillsCount: skills.length
+    });
+
+    return {
+      experiences,
+      educations,
+      skills,
+      title: basicInfo.title,
+      location: basicInfo.location
+    };
   } catch (error: any) {
-    console.error("Error parsing resume:", error);
-    
-    // Return empty arrays but provide a detailed error message
-    return { 
+    console.error("Error in rule-based resume parsing:", error);
+    return {
       experiences: [],
       educations: [],
       skills: [],
@@ -236,7 +83,363 @@ export async function parseResumeText(resumeText: string): Promise<{
 }
 
 /**
+ * Extract sections related to work experience
+ */
+function extractExperienceBlocks(text: string): Array<{
+  title?: string;
+  company?: string;
+  location?: string;
+  startDate?: string;
+  endDate?: string;
+  description?: string;
+}> {
+  // Find experience section (common headers)
+  const experienceSection = extractSection(text, [
+    "EXPERIENCE", 
+    "WORK EXPERIENCE", 
+    "PROFESSIONAL EXPERIENCE",
+    "EMPLOYMENT HISTORY",
+    "WORK HISTORY"
+  ]);
+  
+  if (!experienceSection) {
+    console.log("No experience section found in resume");
+    return [];
+  }
+  
+  // Split into blocks based on date patterns or company names
+  const experienceBlocks = [];
+  const lines = experienceSection.split('\n').filter(line => line.trim());
+  
+  let currentBlock: any = {};
+  let blockStartIndex = -1;
+  
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    
+    // Check for pattern indicating new job (title at company)
+    const titleCompanyMatch = line.match(/^(.*?)\s+(?:at|@|,)\s+(.*?)(?:,|\s+|\(|$)/i);
+    const dateRangeMatch = line.match(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{4}\s*(?:-|–|to)\s*(?:(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{4}|Present|Current|Now)\b/i);
+    
+    if (titleCompanyMatch || dateRangeMatch || 
+        (line.match(/^[A-Z]/) && line.length > 10 && i > blockStartIndex + 3)) {
+      // Save previous block if it exists
+      if (currentBlock.company || currentBlock.title) {
+        experienceBlocks.push(currentBlock);
+      }
+      
+      // Start a new block
+      currentBlock = {};
+      blockStartIndex = i;
+      
+      // Try to extract title and company
+      if (titleCompanyMatch) {
+        currentBlock.title = titleCompanyMatch[1].trim();
+        currentBlock.company = titleCompanyMatch[2].trim();
+      } else {
+        currentBlock.title = line.split(',')[0].trim();
+      }
+      
+      // Look for dates on this line or next line
+      if (dateRangeMatch) {
+        const dateText = dateRangeMatch[0];
+        const dates = dateText.split(/\s*(?:-|–|to)\s*/);
+        currentBlock.startDate = dates[0].trim();
+        currentBlock.endDate = dates[1]?.trim() || 'Present';
+      } else if (i + 1 < lines.length && lines[i + 1].match(/\b\d{4}\b.*\b(?:\d{4}|Present|Current|Now)\b/i)) {
+        // Date in next line
+        const nextLine = lines[i + 1].trim();
+        const dates = nextLine.split(/\s*(?:-|–|to)\s*/);
+        currentBlock.startDate = dates[0].trim();
+        currentBlock.endDate = dates[1]?.trim() || 'Present';
+      }
+      
+      // Look for location
+      const locationMatch = line.match(/\b([A-Z][a-z]+(?:,\s*[A-Z]{2})?(?:,\s*[A-Z][a-z]+)?)\b/);
+      if (locationMatch) {
+        currentBlock.location = locationMatch[1];
+      }
+    } else if (currentBlock.title || currentBlock.company) {
+      // Add to description of current block
+      if (!currentBlock.description) {
+        currentBlock.description = line;
+      } else {
+        currentBlock.description += '\n' + line;
+      }
+    }
+  }
+  
+  // Add the last block
+  if (currentBlock.company || currentBlock.title) {
+    experienceBlocks.push(currentBlock);
+  }
+  
+  console.log(`Extracted ${experienceBlocks.length} experience blocks`);
+  return experienceBlocks;
+}
+
+/**
+ * Extract sections related to education
+ */
+function extractEducationBlocks(text: string): Array<{
+  degree?: string;
+  institution?: string;
+  location?: string;
+  startDate?: string;
+  endDate?: string;
+}> {
+  // Find education section
+  const educationSection = extractSection(text, [
+    "EDUCATION",
+    "ACADEMIC BACKGROUND",
+    "ACADEMIC HISTORY",
+    "EDUCATIONAL BACKGROUND"
+  ]);
+  
+  if (!educationSection) {
+    console.log("No education section found in resume");
+    return [];
+  }
+  
+  // Split into blocks
+  const educationBlocks = [];
+  const lines = educationSection.split('\n').filter(line => line.trim());
+  
+  let currentBlock: any = {};
+  let blockStartIndex = -1;
+  
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    
+    // Check for patterns indicating a new education entry
+    const institutionMatch = line.match(/^(.*University|.*College|.*School|.*Institute)(?:,|\s+|$)/i);
+    const degreeMatch = line.match(/\b(Bachelor|Master|PhD|Doctorate|B\.S\.|M\.S\.|B\.A\.|M\.A\.|MBA|Associate)\b.*(?:in|of)\s+(.*?)(?:,|\.|\s|$)/i);
+    const yearMatch = line.match(/\b(19|20)\d{2}\b.*\b(?:(19|20)\d{2}|Present|Current|Now)\b/i);
+    
+    if (institutionMatch || degreeMatch || yearMatch || 
+        (line.match(/^[A-Z]/) && line.length > 10 && i > blockStartIndex + 2)) {
+      // Save previous block if it exists
+      if (currentBlock.institution || currentBlock.degree) {
+        educationBlocks.push(currentBlock);
+      }
+      
+      // Start a new block
+      currentBlock = {};
+      blockStartIndex = i;
+      
+      // Extract institution
+      if (institutionMatch) {
+        currentBlock.institution = institutionMatch[1].trim();
+      }
+      
+      // Extract degree
+      if (degreeMatch) {
+        currentBlock.degree = `${degreeMatch[1]} in ${degreeMatch[2]}`.trim();
+      }
+      
+      // Extract years
+      if (yearMatch) {
+        const yearText = yearMatch[0];
+        const years = yearText.match(/\b(19|20)\d{2}\b/g);
+        if (years && years.length >= 1) {
+          currentBlock.startDate = years[0];
+          currentBlock.endDate = years[1] || 'Present';
+        }
+      }
+      
+      // Look for location
+      const locationMatch = line.match(/\b([A-Z][a-z]+(?:,\s*[A-Z]{2})?(?:,\s*[A-Z][a-z]+)?)\b/);
+      if (locationMatch && !currentBlock.location) {
+        currentBlock.location = locationMatch[1];
+      }
+    } else if (currentBlock.institution || currentBlock.degree) {
+      // Try to fill in missing information in current block
+      if (!currentBlock.institution && line.match(/University|College|School|Institute/i)) {
+        currentBlock.institution = line.trim();
+      } else if (!currentBlock.degree && line.match(/Bachelor|Master|PhD|Doctorate|B\.S\.|M\.S\.|B\.A\.|M\.A\.|MBA|Associate/i)) {
+        currentBlock.degree = line.trim();
+      } else if (!currentBlock.startDate && line.match(/\b(19|20)\d{2}\b/)) {
+        const years = line.match(/\b(19|20)\d{2}\b/g);
+        if (years && years.length >= 1) {
+          currentBlock.startDate = years[0];
+          currentBlock.endDate = years[1] || 'Present';
+        }
+      }
+    }
+  }
+  
+  // Add the last block
+  if (currentBlock.institution || currentBlock.degree) {
+    educationBlocks.push(currentBlock);
+  }
+  
+  console.log(`Extracted ${educationBlocks.length} education blocks`);
+  return educationBlocks;
+}
+
+/**
+ * Extract skills from resume text
+ */
+function extractSkills(text: string): string[] {
+  // Find skills section
+  const skillsSection = extractSection(text, [
+    "SKILLS",
+    "TECHNICAL SKILLS",
+    "CORE COMPETENCIES",
+    "COMPETENCIES",
+    "PROFICIENCIES",
+    "KEY SKILLS"
+  ]);
+  
+  if (!skillsSection) {
+    console.log("No skills section found in resume");
+    return [];
+  }
+  
+  // Common skills to look for (limited set - will be expanded by specific skills found)
+  const commonSkills = [
+    "javascript", "python", "java", "c++", "c#", "ruby", "go", "swift", "kotlin",
+    "react", "angular", "vue", "node", "express", "django", "flask", "spring",
+    "aws", "azure", "gcp", "docker", "kubernetes", "terraform", "jenkins",
+    "sql", "mongodb", "postgresql", "mysql", "oracle", "redis", "graphql",
+    "git", "agile", "scrum", "jira", "rest", "graphql", "machine learning"
+  ];
+  
+  // Extract skills using pattern matching
+  const extractedSkills = new Set<string>();
+  
+  // Look for bullet point lists of skills
+  const bulletListMatch = skillsSection.match(/(?:•|\*|\-|\d+\.)\s*([^•\*\-\d\n]+)/g);
+  if (bulletListMatch) {
+    bulletListMatch.forEach(bullet => {
+      const skillText = bullet.replace(/^(?:•|\*|\-|\d+\.)\s*/, '').trim();
+      if (skillText && skillText.length < 50) { // Simple length check to filter out sentences
+        extractedSkills.add(skillText);
+      }
+    });
+  }
+  
+  // Look for comma-separated lists
+  const lines = skillsSection.split('\n');
+  lines.forEach(line => {
+    const commaItems = line.split(/,|;/).map(item => item.trim());
+    commaItems.forEach(item => {
+      if (item && item.length > 2 && item.length < 30) {
+        extractedSkills.add(item);
+      }
+    });
+  });
+  
+  // Look for common skills
+  commonSkills.forEach(skill => {
+    const pattern = new RegExp(`\\b${skill}\\b`, 'i');
+    if (pattern.test(text)) {
+      extractedSkills.add(skill.charAt(0).toUpperCase() + skill.slice(1));
+    }
+  });
+  
+  console.log(`Extracted ${extractedSkills.size} skills`);
+  return Array.from(extractedSkills);
+}
+
+/**
+ * Extract basic info (title, location) from resume
+ */
+function extractBasicInfo(text: string): { title?: string; location?: string } {
+  const info: { title?: string; location?: string } = {};
+  
+  // Get the first few lines as they typically contain basic info
+  const headerLines = text.split('\n').slice(0, 15).map(line => line.trim()).filter(Boolean);
+  
+  // Try to find job title - typically after the name
+  if (headerLines.length >= 2) {
+    // Name is typically the most prominent in the first line
+    // Job title often follows in the next lines
+    for (let i = 1; i < Math.min(5, headerLines.length); i++) {
+      const line = headerLines[i];
+      
+      // Skip email, phone, address lines
+      if (line.match(/[@]|[\d-]{10}|street|road|avenue|ave\.|st\./i)) continue;
+      
+      // Look for job title patterns
+      if (line.match(/engineer|developer|manager|director|specialist|analyst|designer|architect|consultant/i)) {
+        info.title = line;
+        break;
+      }
+    }
+  }
+  
+  // Try to find location
+  const locationPattern = /\b([A-Z][a-z]+(?:,\s*[A-Z]{2})?(?:,\s*[A-Z][a-z]+)?)\b/;
+  for (const line of headerLines) {
+    const match = line.match(locationPattern);
+    if (match) {
+      info.location = match[1];
+      break;
+    }
+  }
+  
+  return info;
+}
+
+/**
+ * Extract a section from the resume text
+ */
+function extractSection(text: string, sectionHeaders: string[]): string | null {
+  // Normalize the text: convert to uppercase and remove special formatting
+  const normalizedText = text.toUpperCase();
+  
+  // Find the start of the section
+  let sectionStart = -1;
+  let matchedHeader = '';
+  
+  for (const header of sectionHeaders) {
+    const normalizedHeader = header.toUpperCase();
+    const headerIndex = normalizedText.indexOf(normalizedHeader);
+    if (headerIndex !== -1 && (sectionStart === -1 || headerIndex < sectionStart)) {
+      sectionStart = headerIndex;
+      matchedHeader = normalizedHeader;
+    }
+  }
+  
+  if (sectionStart === -1) {
+    return null; // Section not found
+  }
+  
+  // Find the end of the section (start of the next section or end of document)
+  let sectionEnd = text.length;
+  
+  // Common section headers to detect the next section
+  const commonSectionHeaders = [
+    "EXPERIENCE", "EDUCATION", "SKILLS", "PROJECTS", "CERTIFICATIONS", 
+    "AWARDS", "PUBLICATIONS", "LANGUAGES", "INTERESTS", "REFERENCES"
+  ];
+  
+  // Find the next section header after our current section
+  for (const header of commonSectionHeaders) {
+    if (header.toUpperCase() === matchedHeader) continue; // Skip our own header
+    
+    const normalizedHeader = header.toUpperCase();
+    const headerIndex = normalizedText.indexOf(normalizedHeader, sectionStart + matchedHeader.length);
+    
+    if (headerIndex !== -1 && headerIndex < sectionEnd) {
+      sectionEnd = headerIndex;
+    }
+  }
+  
+  // Extract the section content
+  const sectionLines = text.substring(sectionStart, sectionEnd).split('\n');
+  
+  // Remove the header line itself
+  const contentLines = sectionLines.slice(1);
+  
+  return contentLines.join('\n');
+}
+
+/**
  * Parse LinkedIn profile URL and extract profile data
+ * Note: This simply returns an empty result with an error message
+ * since we can't actually access LinkedIn data without OAuth
  */
 export async function parseLinkedInProfile(profileUrl: string): Promise<{
   experiences: InsertWorkExperience[];
@@ -244,130 +447,29 @@ export async function parseLinkedInProfile(profileUrl: string): Promise<{
   skills: InsertSkill[];
   title?: string;
   location?: string;
-  error?: string; // Added to allow error property in return value
+  error?: string;
 }> {
-  try {
-    console.log(`Starting LinkedIn profile parsing for URL: ${profileUrl}`);
-    
-    // Check if the OpenAI API key is valid
-    if (!process.env.OPENAI_API_KEY) {
-      console.error("Missing OPENAI_API_KEY - cannot parse LinkedIn profile");
-      throw new Error("OpenAI API key is missing");
-    }
-    
-    // Request the AI to extract LinkedIn profile info from the URL
-    const systemPrompt = `
-      You are an expert LinkedIn profile analyzer. Given a LinkedIn profile URL, IMPORTANT: Note that you do NOT have access to actual LinkedIn data, and you SHOULD NOT pretend to have extracted real data.
-
-      Instead, explicitly respond that LinkedIn data cannot be directly accessed through this API, and provide the following message:
-      
-      Format the response as a JSON object with these exact keys:
-      {
-        "title": null,
-        "location": null,
-        "experiences": [],
-        "educations": [],
-        "skills": [],
-        "message": "LinkedIn data extraction requires OAuth authentication. Please upload a resume or manually enter your professional information."
-      }
-      
-      IMPORTANT: Always return the empty response structure above. Do not invent or generate any profile data.
-    `;
-
-    console.log("Sending request to OpenAI API for LinkedIn profile analysis");
-    
-    try {
-      const response = await openai.chat.completions.create({
-        // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-        model: "gpt-4o",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: `Extract information from this LinkedIn profile: ${profileUrl}` }
-        ],
-        response_format: { type: "json_object" },
-        temperature: 0.2,
-      });
-      
-      console.log("Received response from OpenAI API");
-      
-      if (!response.choices[0].message.content) {
-        throw new Error("Empty response from OpenAI API");
-      }
-      
-      const jsonContent = response.choices[0].message.content;
-      console.log("JSON content received:", jsonContent);
-      
-      const parsed = JSON.parse(jsonContent);
-      console.log("Parsed LinkedIn profile data:", JSON.stringify(parsed, null, 2));
-      
-      // Transform to match our schema
-      const experiences = parsed.experiences?.map((exp: any) => ({
-        userId: 0, // This will be filled in by the caller
-        title: exp.title,
-        company: exp.company,
-        location: exp.location,
-        startDate: exp.startDate,
-        endDate: exp.endDate === 'Present' ? undefined : exp.endDate,
-        description: exp.description || ""
-      })) || [];
-
-      const educations = parsed.educations?.map((edu: any) => ({
-        userId: 0, // This will be filled in by the caller
-        degree: edu.degree,
-        institution: edu.institution,
-        location: edu.location,
-        startDate: edu.startDate,
-        endDate: edu.endDate
-      })) || [];
-
-      const skills = parsed.skills?.map((skill: any) => ({
-        userId: 0, // This will be filled in by the caller
-        name: skill.name,
-        level: skill.level,
-        proficiency: calculateProficiency(skill.level)
-      })) || [];
-
-      const result = {
-        experiences,
-        educations,
-        skills,
-        title: parsed.title,
-        location: parsed.location
-      };
-      
-      console.log("LinkedIn profile parsing complete. Experiences:", experiences.length, 
-                  "Educations:", educations.length, 
-                  "Skills:", skills.length);
-      
-      return result;
-    } catch (apiError: any) {
-      console.error("Error calling OpenAI API:", apiError);
-      throw new Error(`OpenAI API error: ${apiError.message || "Unknown API error"}`);
-    }
-  } catch (error: any) {
-    console.error("Error parsing LinkedIn profile:", error);
-    
-    // Return empty arrays but provide a detailed error message
-    // The calling code should check for this case and handle it appropriately
-    return { 
-      experiences: [],
-      educations: [],
-      skills: [],
-      error: error.message || "Unknown error parsing LinkedIn profile"
-    };
-  }
+  console.log(`LinkedIn profile parsing requested for URL: ${profileUrl}`);
+  
+  return {
+    experiences: [],
+    educations: [],
+    skills: [],
+    error: "LinkedIn data extraction requires OAuth authentication. Please upload a resume or manually enter your professional information."
+  };
 }
 
 /**
  * Convert skill level string to proficiency percentage
  */
 function calculateProficiency(level: string): number {
-  switch (level.toLowerCase()) {
+  switch (level?.toLowerCase()) {
     case 'beginner':
       return 30;
     case 'intermediate':
       return 60;
     case 'advanced':
+    case 'expert':
       return 85;
     default:
       return 50; // Default to intermediate if unknown

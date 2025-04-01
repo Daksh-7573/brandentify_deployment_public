@@ -363,7 +363,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { userId, fileData } = req.body;
       
       if (!fileData) {
-        return res.status(400).json({ message: "No file data provided" });
+        return res.status(400).json({ 
+          error: "No file data provided",
+          message: "Please upload a resume file"
+        });
       }
 
       // Convert base64 to text (assuming PDF text extraction is handled by a hypothetical library)
@@ -374,6 +377,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } catch (error) {
         console.error("Error converting file to text:", error);
         return res.status(400).json({ 
+          error: "Invalid file format",
           message: "Failed to parse resume file. Please try uploading a text-based PDF or Word document.",
           experiences: [],
           educations: [],
@@ -381,7 +385,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // Parse the resume text using our AI service with improved error handling
+      // Parse the resume text using our rules-based parser
       try {
         // First, check if we got binary data (simple heuristic)
         const binaryDataIndicators = ['\0', '\x01', '\x02', '\x03', '%PDF'];
@@ -390,8 +394,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (hasBinaryIndicators) {
           console.log("Detected likely binary file format (PDF/DOCX)");
           
-          // For binary files, let's allow the user to extract data from their resume
-          // by using OpenAI directly to analyze the file content
+          // For binary files, use OpenAI to extract text content from binary
+          if (!process.env.OPENAI_API_KEY) {
+            return res.status(500).json({
+              error: "OpenAI API key not configured",
+              message: "Unable to process binary files without OpenAI API key configuration"
+            });
+          }
           
           // We'll use OpenAI to extract and process the information directly
           const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -433,92 +442,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Check if there was an error in the parsing
         if ('error' in profileData) {
           console.error(`Resume parsing error: ${profileData.error}`);
-          
-          // Return default data instead of failing completely
-          console.log("Creating default profile data for fallback");
-          
-          // Default data for one work experience item
-          const defaultExperience = {
-            userId: userId,
-            title: "Professional",  
-            company: "Not specified",
-            location: "Not specified",
-            startDate: "Not specified",
-            endDate: "Not specified",
-            description: "Not specified"
-          };
-          
-          // Default data for one education item
-          const defaultEducation = {
-            userId: userId,
-            degree: "Not specified",
-            institution: "Not specified",
-            location: "Not specified",
-            startDate: "Not specified",
-            endDate: "Not specified"
-          };
-          
-          // Default data for two skills
-          const defaultSkills = [
-            {
-              userId: userId,
-              name: "Technical Skills",
-              level: "Not specified", 
-              proficiency: 50
-            },
-            {
-              userId: userId,
-              name: "Professional Skills",
-              level: "Not specified",
-              proficiency: 50
-            }
-          ];
-          
-          console.log("Saving default profile data due to parsing error");
-          
-          // Save the default data
-          try {
-            // First clear existing data
-            const userIdNum = typeof userId === 'string' ? parseInt(userId) : Number(userId);
-            const existingExperiences = await storage.getWorkExperiencesByUserId(userIdNum);
-            for (const exp of existingExperiences) {
-              await storage.deleteWorkExperience(exp.id);
-            }
-            
-            const existingEducations = await storage.getEducationsByUserId(userIdNum);
-            for (const edu of existingEducations) {
-              await storage.deleteEducation(edu.id);
-            }
-            
-            const existingSkills = await storage.getSkillsByUserId(userIdNum);
-            for (const skill of existingSkills) {
-              await storage.deleteSkill(skill.id);
-            }
-            
-            // Now save the defaults
-            const savedExperience = await storage.createWorkExperience(defaultExperience);
-            const savedEducation = await storage.createEducation(defaultEducation);
-            const savedSkills = [];
-            
-            for (const skill of defaultSkills) {
-              const savedSkill = await storage.createSkill(skill);
-              savedSkills.push(savedSkill);
-            }
-            
-            return res.status(200).json({
-              message: "Using default profile data due to parsing error",
-              error: profileData.error,
-              experiences: [savedExperience],
-              educations: [savedEducation],
-              skills: savedSkills
-            });
-          } catch (saveError: any) {
-            console.error("Error saving default profile data:", saveError);
-            return res.status(500).json({ 
-              message: "Failed to save default profile data", 
-              error: `${profileData.error} and failed to save defaults: ${saveError.message || "Unknown error"}` 
-            });
-          }
+          return res.status(200).json({
+            error: profileData.error,
+            message: "We encountered an issue extracting information from your resume. Please try a different file or manually enter your professional information.",
+            experiences: [],
+            educations: [],
+            skills: []
+          });
         }
         
         // Log the profile data we've received
@@ -532,96 +462,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Ensure userId is a number
         const userIdNum = typeof userId === 'string' ? parseInt(userId) : Number(userId);
         
-        // First, check if user exists and create them if they don't
-        try {
-          const userResponse = await storage.getUser(userIdNum);
-          if (!userResponse) {
-            console.log(`User ${userIdNum} not found, creating default user`);
-            
-            // Create a user with the required fields according to schema
-            await storage.createUser({
-              username: `user${userIdNum}`,
-              email: `user${userIdNum}@example.com`,
-              name: "Profile User",
-              title: profileData.title || "Professional",
-              location: profileData.location || "Not specified",
-              photoURL: null
-            });
-            
-            // If there's profile data with title/location, update the user
-            if (profileData.title || profileData.location) {
-              const updateData: { [key: string]: string } = {};
-              if (profileData.title) updateData.title = profileData.title;
-              if (profileData.location) updateData.location = profileData.location;
-              await storage.updateUser(userIdNum, updateData);
-            }
-          } else {
-            // User exists, update with any new profile info
-            // Make sure to update name if existing name is generic
-            const updateData: { [key: string]: string } = {};
-            
-            if (profileData.title) updateData.title = profileData.title;
-            if (profileData.location) updateData.location = profileData.location;
-            
-            // Get the first experience to use job title as name if needed
-            if (profileData.experiences && profileData.experiences.length > 0) {
-              const firstExp = profileData.experiences[0];
-              if (userResponse.name === "Profile User" && firstExp.title) {
-                // Use the most recent job title plus "professional" to replace generic name 
-                updateData.name = `${firstExp.title.split(' ')[0]} Professional`;
-              }
-            }
-            
-            // Only update if we have data to update
-            if (Object.keys(updateData).length > 0) {
-              console.log("Updating user with profile data:", updateData);
-              await storage.updateUser(userIdNum, updateData);
-            }
-          }
-        } catch (error) {
-          console.error("Error checking/creating user:", error);
-          // Continue anyway to process the rest of the profile
-        }
-        
-        // Only clear existing data if we have new data to add
-        // This prevents empty profiles if the extraction fails
-        const hasNewData = 
-          (profileData.experiences && profileData.experiences.length > 0) ||
-          (profileData.educations && profileData.educations.length > 0) ||
-          (profileData.skills && profileData.skills.length > 0);
-        
-        if (hasNewData) {
-          console.log("Resume contains valid data, updating profile");
-          try {
-            // Only delete if we have replacement data
-            if (profileData.experiences && profileData.experiences.length > 0) {
-              const existingExperiences = await storage.getWorkExperiencesByUserId(userIdNum);
-              for (const exp of existingExperiences) {
-                await storage.deleteWorkExperience(exp.id);
-              }
-            }
-            
-            if (profileData.educations && profileData.educations.length > 0) {
-              const existingEducations = await storage.getEducationsByUserId(userIdNum);
-              for (const edu of existingEducations) {
-                await storage.deleteEducation(edu.id);
-              }
-            }
-            
-            if (profileData.skills && profileData.skills.length > 0) {
-              const existingSkills = await storage.getSkillsByUserId(userIdNum);
-              for (const skill of existingSkills) {
-                await storage.deleteSkill(skill.id);
-              }
-            }
-          } catch (error) {
-            console.error("Error clearing existing profile data:", error);
-            // Continue to add new data
-          }
-        } else {
-          console.log("Resume parsing yielded no data, keeping existing profile");
-        }
-        
+        // Return the extracted data to the client for confirmation by the user
+        // This implements the user-confirmation step required by the algorithm
         // Add the userId to all extracted items
         const experiences = profileData.experiences.map((exp: any) => ({ 
           ...exp, 
@@ -638,11 +480,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
           userId: userIdNum 
         }));
       
-        res.status(200).json({
-          ...profileData,
+        return res.status(200).json({
+          message: "Please review the extracted information before saving to your profile",
+          status: "waiting_confirmation",
+          title: profileData.title,
+          location: profileData.location,
           experiences,
           educations,
-          skills
+          skills,
+          counts: {
+            experiences: experiences.length,
+            educations: educations.length,
+            skills: skills.length
+          }
         });
       } catch (error) {
         console.error('Error processing resume with AI:', error);
@@ -656,6 +506,156 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error in resume parsing route:', error);
       res.status(500).json({ message: "Failed to parse resume" });
+    }
+  });
+  
+  // Endpoint to save resume/profile data after user confirmation
+  apiRouter.post("/confirm-resume-data", async (req: Request, res: Response) => {
+    try {
+      const { 
+        userId, 
+        experiences, 
+        educations, 
+        skills, 
+        title, 
+        location,
+        overwriteExisting = true // Default to overwriting existing data
+      } = req.body;
+      
+      if (!userId) {
+        return res.status(400).json({ 
+          error: "Missing user ID",
+          message: "User ID is required" 
+        });
+      }
+      
+      // Ensure userId is a number
+      const userIdNum = typeof userId === 'string' ? parseInt(userId) : Number(userId);
+      
+      console.log(`Processing confirmed profile data for user ${userIdNum}`);
+      console.log(`Received: ${experiences?.length || 0} experiences, ${educations?.length || 0} educations, ${skills?.length || 0} skills`);
+      
+      // First, check if user exists and update/create as needed
+      try {
+        const userResponse = await storage.getUser(userIdNum);
+        
+        // Prepare update data if we have title/location
+        const updateData: { [key: string]: string | null } = {};
+        if (title) updateData.title = title;
+        if (location) updateData.location = location;
+        
+        if (!userResponse) {
+          console.log(`User ${userIdNum} not found, creating user`);
+          
+          // Create a user with the required fields according to schema
+          await storage.createUser({
+            username: `user${userIdNum}`,
+            email: `user${userIdNum}@example.com`,
+            name: "Profile User",
+            title: title || null,
+            location: location || null,
+            photoURL: null
+          });
+        } else if (Object.keys(updateData).length > 0) {
+          // User exists and we have updates
+          console.log("Updating user profile information:", updateData);
+          await storage.updateUser(userIdNum, updateData);
+        }
+      } catch (error) {
+        console.error("Error checking/updating user:", error);
+        // Continue anyway to process the profile data
+      }
+      
+      // Clear existing data if overwrite flag is set
+      if (overwriteExisting) {
+        console.log("Overwriting existing profile data");
+        
+        // Clear experiences if we have new ones
+        if (experiences && experiences.length > 0) {
+          const existingExperiences = await storage.getWorkExperiencesByUserId(userIdNum);
+          for (const exp of existingExperiences) {
+            await storage.deleteWorkExperience(exp.id);
+          }
+          console.log(`Cleared ${existingExperiences.length} existing work experiences`);
+        }
+        
+        // Clear educations if we have new ones
+        if (educations && educations.length > 0) {
+          const existingEducations = await storage.getEducationsByUserId(userIdNum);
+          for (const edu of existingEducations) {
+            await storage.deleteEducation(edu.id);
+          }
+          console.log(`Cleared ${existingEducations.length} existing education items`);
+        }
+        
+        // Clear skills if we have new ones
+        if (skills && skills.length > 0) {
+          const existingSkills = await storage.getSkillsByUserId(userIdNum);
+          for (const skill of existingSkills) {
+            await storage.deleteSkill(skill.id);
+          }
+          console.log(`Cleared ${existingSkills.length} existing skills`);
+        }
+      }
+      
+      // Save the confirmed data
+      const savedItems = {
+        experiences: [],
+        educations: [],
+        skills: []
+      };
+      
+      // Save work experiences
+      if (experiences && experiences.length > 0) {
+        for (const exp of experiences) {
+          const savedExp = await storage.createWorkExperience({
+            ...exp,
+            userId: userIdNum
+          });
+          savedItems.experiences.push(savedExp);
+        }
+        console.log(`Saved ${savedItems.experiences.length} work experiences`);
+      }
+      
+      // Save educations
+      if (educations && educations.length > 0) {
+        for (const edu of educations) {
+          const savedEdu = await storage.createEducation({
+            ...edu,
+            userId: userIdNum
+          });
+          savedItems.educations.push(savedEdu);
+        }
+        console.log(`Saved ${savedItems.educations.length} education items`);
+      }
+      
+      // Save skills
+      if (skills && skills.length > 0) {
+        for (const skill of skills) {
+          const savedSkill = await storage.createSkill({
+            ...skill,
+            userId: userIdNum
+          });
+          savedItems.skills.push(savedSkill);
+        }
+        console.log(`Saved ${savedItems.skills.length} skills`);
+      }
+      
+      return res.status(200).json({
+        message: "Profile data saved successfully",
+        savedItems,
+        counts: {
+          experiences: savedItems.experiences.length,
+          educations: savedItems.educations.length,
+          skills: savedItems.skills.length
+        }
+      });
+    } catch (error: any) {
+      console.error("Error saving confirmed profile data:", error);
+      return res.status(500).json({
+        error: error.message,
+        message: "Failed to save profile data"
+      });
     }
   });
   
@@ -692,91 +692,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check if there was an error in the parsing
       if ('error' in profileData) {
         console.error(`LinkedIn parsing error: ${profileData.error}`);
-        
-        // Return default data instead of failing completely
-        console.log("Creating default profile data for fallback");
-        
-        // Default data for one work experience item
-        const defaultExperience = {
-          userId: userId,
-          title: "Software Engineer",  
-          company: "Not specified",
-          location: "Not specified",
-          startDate: "Not specified",
-          endDate: "Not specified",
-          description: "Not specified"
-        };
-        
-        // Default data for one education item
-        const defaultEducation = {
-          userId: userId,
-          degree: "Not specified",
-          institution: "Not specified",
-          location: "Not specified",
-          startDate: "Not specified",
-          endDate: "Not specified"
-        };
-        
-        // Default data for two skills
-        const defaultSkills = [
-          {
-            userId: userId,
-            name: "Programming Languages",
-            level: "Not specified", 
-            proficiency: 50
-          },
-          {
-            userId: userId,
-            name: "Tools/Technologies",
-            level: "Not specified",
-            proficiency: 50
-          }
-        ];
-        
-        console.log("Saving default profile data due to parsing error");
-        
-        // Save the default data
-        try {
-          // First clear existing data
-          const existingExperiences = await storage.getWorkExperiencesByUserId(userId);
-          for (const exp of existingExperiences) {
-            await storage.deleteWorkExperience(exp.id);
-          }
-          
-          const existingEducations = await storage.getEducationsByUserId(userId);
-          for (const edu of existingEducations) {
-            await storage.deleteEducation(edu.id);
-          }
-          
-          const existingSkills = await storage.getSkillsByUserId(userId);
-          for (const skill of existingSkills) {
-            await storage.deleteSkill(skill.id);
-          }
-          
-          // Now save the defaults
-          const savedExperience = await storage.createWorkExperience(defaultExperience);
-          const savedEducation = await storage.createEducation(defaultEducation);
-          const savedSkills = [];
-          
-          for (const skill of defaultSkills) {
-            const savedSkill = await storage.createSkill(skill);
-            savedSkills.push(savedSkill);
-          }
-          
-          return res.status(200).json({
-            message: "Using default profile data due to parsing error",
-            error: profileData.error,
-            experiences: [savedExperience],
-            educations: [savedEducation],
-            skills: savedSkills
-          });
-        } catch (saveError: any) {
-          console.error("Error saving default profile data:", saveError);
-          return res.status(500).json({ 
-            message: "Failed to save default profile data", 
-            error: `${profileData.error} and failed to save defaults: ${saveError.message || "Unknown error"}` 
-          });
-        }
+        return res.status(200).json({
+          error: profileData.error,
+          message: "We encountered an issue accessing your LinkedIn profile. LinkedIn's terms of service may restrict profile access. Please try uploading a resume instead.",
+          experiences: [],
+          educations: [],
+          skills: []
+        });
       }
       
       // Log the profile data we've received
@@ -790,103 +712,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Ensure userId is a number
       const userIdNum = typeof userId === 'string' ? parseInt(userId) : Number(userId);
       
-      // First, check if user exists and create them if they don't
-      try {
-        const userResponse = await storage.getUser(userIdNum);
-        if (!userResponse) {
-          console.log(`User ${userIdNum} not found, creating default user`);
-          await storage.createUser({
-            username: `user${userIdNum}`,
-            email: `user${userIdNum}@example.com`,
-            name: "Profile User",
-            title: profileData.title || "Professional",
-            location: profileData.location || "Not specified",
-            photoURL: null
-          });
-          
-          // If there's profile data with title/location, update the user
-          if (profileData.title || profileData.location) {
-            const updateData: { [key: string]: string } = {};
-            if (profileData.title) updateData.title = profileData.title;
-            if (profileData.location) updateData.location = profileData.location;
-            await storage.updateUser(userIdNum, updateData);
-          }
-        } else {
-          // User exists, update with any new profile info
-          // Make sure to update name if existing name is generic
-          const updateData: { [key: string]: string } = {};
-          
-          if (profileData.title) updateData.title = profileData.title;
-          if (profileData.location) updateData.location = profileData.location;
-          
-          // Get the first experience to use job title as name if needed
-          if (profileData.experiences && profileData.experiences.length > 0) {
-            const firstExp = profileData.experiences[0];
-            if (userResponse.name === "Profile User" && firstExp.title) {
-              // Use the most recent job title plus "professional" to replace generic name 
-              updateData.name = `${firstExp.title.split(' ')[0]} Professional`;
-            }
-          }
-          
-          // Only update if we have data to update
-          if (Object.keys(updateData).length > 0) {
-            console.log("Updating user with LinkedIn profile data:", updateData);
-            await storage.updateUser(userIdNum, updateData);
-          }
-        }
-      } catch (error) {
-        console.error("Error checking/creating user:", error);
-        // Continue anyway to process the rest of the profile
-      }
-      
-      // Only clear existing data if we have new data to add
-      // This prevents empty profiles if the extraction fails
-      const hasNewData = 
+      // Check if we have any data extracted
+      const hasData = 
         (profileData.experiences && profileData.experiences.length > 0) ||
         (profileData.educations && profileData.educations.length > 0) ||
         (profileData.skills && profileData.skills.length > 0);
       
-      if (hasNewData) {
-        console.log("LinkedIn profile has valid data, updating profile");
-        try {
-          // Only delete if we have replacement data
-          if (profileData.experiences && profileData.experiences.length > 0) {
-            const existingExperiences = await storage.getWorkExperiencesByUserId(userIdNum);
-            console.log(`Deleting ${existingExperiences.length} existing experiences`);
-            for (const exp of existingExperiences) {
-              await storage.deleteWorkExperience(exp.id);
-            }
-          }
-          
-          if (profileData.educations && profileData.educations.length > 0) {
-            const existingEducations = await storage.getEducationsByUserId(userIdNum);
-            console.log(`Deleting ${existingEducations.length} existing educations`);
-            for (const edu of existingEducations) {
-              await storage.deleteEducation(edu.id);
-            }
-          }
-          
-          if (profileData.skills && profileData.skills.length > 0) {
-            const existingSkills = await storage.getSkillsByUserId(userIdNum);
-            console.log(`Deleting ${existingSkills.length} existing skills`);
-            for (const skill of existingSkills) {
-              await storage.deleteSkill(skill.id);
-            }
-          }
-        } catch (error) {
-          console.error("Error clearing existing profile data:", error);
-          // Continue to add new data
-        }
-      } else {
-        console.error("LinkedIn profile extraction yielded no data, keeping existing profile");
-        return res.status(500).json({ 
-          message: "LinkedIn profile extraction yielded no data. Please try again with a different URL.",
-          error: "NO_DATA_EXTRACTED"
+      if (!hasData) {
+        console.error("LinkedIn profile extraction yielded no data, sending error response");
+        return res.status(200).json({ 
+          error: "NO_DATA_EXTRACTED",
+          message: "We couldn't extract any information from this LinkedIn profile URL. LinkedIn's terms of service restrict profile access. Please try uploading a resume instead.",
+          experiences: [],
+          educations: [],
+          skills: []
         });
       }
       
-      // Add the userId to all extracted items and prepare for saving
-      console.log("Preparing to save new profile data");
+      // Add the userId to all extracted items
+      console.log("Preparing data for client confirmation");
       
       const experiences = profileData.experiences.map((exp: any) => ({ 
         ...exp, 
@@ -903,18 +747,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userId: userIdNum 
       }));
       
-      // Log the data we've prepared for saving
-      console.log(`Prepared data for saving:
+      // Log the data we've prepared
+      console.log(`Prepared data for client confirmation:
       - Experiences: ${experiences.length}
       - Educations: ${educations.length}
       - Skills: ${skills.length}`);
       
-      // Return the enriched profile data
-      res.status(200).json({
-        ...profileData,
+      // Return the data to the client for confirmation
+      return res.status(200).json({
+        message: "Please review the extracted information before saving to your profile",
+        status: "waiting_confirmation",
+        title: profileData.title,
+        location: profileData.location,
         experiences,
         educations,
-        skills
+        skills,
+        counts: {
+          experiences: experiences.length,
+          educations: educations.length,
+          skills: skills.length
+        }
       });
       
       console.log("===== LinkedIn profile parsing completed successfully =====");

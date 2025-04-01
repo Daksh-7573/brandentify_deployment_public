@@ -185,7 +185,19 @@ export class MemStorage implements IStorage {
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentUserId++;
     const createdAt = new Date();
-    const user: User = { ...insertUser, id, createdAt };
+    
+    // Ensure all nullable fields have explicit null values instead of undefined
+    const user: User = { 
+      ...insertUser, 
+      id, 
+      createdAt, 
+      name: insertUser.name ?? null,
+      photoURL: insertUser.photoURL ?? null,
+      title: insertUser.title ?? null,
+      location: insertUser.location ?? null,
+      profileCompleted: insertUser.profileCompleted ?? null
+    };
+    
     this.users.set(id, user);
     return user;
   }
@@ -207,7 +219,12 @@ export class MemStorage implements IStorage {
   async createResume(insertResume: InsertResume): Promise<Resume> {
     const id = this.currentResumeId++;
     const uploadedAt = new Date();
-    const resume: Resume = { ...insertResume, id, uploadedAt };
+    const resume: Resume = { 
+      ...insertResume, 
+      id, 
+      uploadedAt,
+      score: insertResume.score ?? null 
+    };
     this.resumes.set(id, resume);
     return resume;
   }
@@ -229,7 +246,13 @@ export class MemStorage implements IStorage {
 
   async createWorkExperience(insertExperience: InsertWorkExperience): Promise<WorkExperience> {
     const id = this.currentWorkExperienceId++;
-    const experience: WorkExperience = { ...insertExperience, id };
+    const experience: WorkExperience = { 
+      ...insertExperience, 
+      id,
+      location: insertExperience.location ?? null,
+      endDate: insertExperience.endDate ?? null,
+      description: insertExperience.description ?? null
+    };
     this.workExperiences.set(id, experience);
     return experience;
   }
@@ -255,7 +278,12 @@ export class MemStorage implements IStorage {
 
   async createEducation(insertEducation: InsertEducation): Promise<Education> {
     const id = this.currentEducationId++;
-    const education: Education = { ...insertEducation, id };
+    const education: Education = { 
+      ...insertEducation, 
+      id,
+      location: insertEducation.location ?? null,
+      endDate: insertEducation.endDate ?? null
+    };
     this.educations.set(id, education);
     return education;
   }
@@ -281,7 +309,11 @@ export class MemStorage implements IStorage {
 
   async createSkill(insertSkill: InsertSkill): Promise<Skill> {
     const id = this.currentSkillId++;
-    const skill: Skill = { ...insertSkill, id };
+    const skill: Skill = { 
+      ...insertSkill, 
+      id,
+      proficiency: insertSkill.proficiency ?? null
+    };
     this.skills.set(id, skill);
     return skill;
   }
@@ -303,7 +335,12 @@ export class MemStorage implements IStorage {
   async getChatMessagesByUserId(userId: number): Promise<ChatMessage[]> {
     return Array.from(this.chatMessages.values())
       .filter(message => message.userId === userId)
-      .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+      .sort((a, b) => {
+        // Handle null timestamps safely (shouldn't happen, but TypeScript is strict)
+        const timeA = a.timestamp ? a.timestamp.getTime() : 0;
+        const timeB = b.timestamp ? b.timestamp.getTime() : 0;
+        return timeA - timeB;
+      });
   }
 
   async createChatMessage(insertMessage: InsertChatMessage): Promise<ChatMessage> {
