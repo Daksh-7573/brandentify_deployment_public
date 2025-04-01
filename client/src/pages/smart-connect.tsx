@@ -111,15 +111,36 @@ const EXPERIENCE_LEVELS = [
   "Consultant"
 ];
 
-// Define looking for options
+// Define "I am looking for" categories
 const LOOKING_FOR_OPTIONS = [
-  { value: "job_opportunities", label: "Job Opportunities" },
-  { value: "career_guidance", label: "Career Guidance" },
-  { value: "investors", label: "Investors" },
-  { value: "co_founders", label: "Co-founders" },
-  { value: "freelance_projects", label: "Freelance Projects" },
-  { value: "business_partnerships", label: "Business Partnerships" },
-  { value: "networking", label: "Networking" }
+  // Career & Job Seeking category
+  { value: "job_opportunities", label: "💼 Job Opportunities" },
+  { value: "job_seekers", label: "💼 Job Seekers / Candidates" },
+  { value: "internships", label: "💼 Internships" },
+  { value: "interns", label: "💼 Interns" },
+  { value: "mentors", label: "💼 Career Mentors" },
+  { value: "mentees", label: "💼 Career Mentees" },
+  
+  // Business & Investment category  
+  { value: "investors", label: "🚀 Investors" },
+  { value: "startups", label: "🚀 Startups" },
+  { value: "co_founders", label: "🚀 Co-Founders" },
+  { value: "business_partners", label: "🚀 Business Partners" },
+  { value: "advisors", label: "🚀 Legal/Financial Advisors" },
+  { value: "tech_partners", label: "🚀 Technical Partners" },
+  
+  // Learning & Upskilling category
+  { value: "skill_trainers", label: "🎓 Skill Trainers" },
+  { value: "learners", label: "🎓 Students/Learners" },
+  { value: "study_groups", label: "🎓 Study Groups" },
+  
+  // Networking & Collaborations category
+  { value: "industry_experts", label: "🤝 Industry Experts" },
+  { value: "share_expertise", label: "🤝 Sharing My Expertise" },
+  
+  // Freelance & Side Hustle category
+  { value: "freelance_gigs", label: "💰 Freelance Gigs" },
+  { value: "hiring_freelancers", label: "💰 Hiring Freelancers" },
 ];
 
 // Popular locations for suggestions
@@ -249,7 +270,7 @@ export default function SmartConnectPage() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const [_, setLocation] = useLocation();
   const [formData, setFormData] = useState<MatchmakingFormData>({
-    lookingFor: "networking",
+    lookingFor: "industry_experts",
     jobTitle: "",
     experienceLevel: "",
     industry: "",
@@ -281,7 +302,7 @@ export default function SmartConnectPage() {
   // Pre-fill form with user data when available
   useEffect(() => {
     if (userData) {
-      let lookingFor = userData.lookingFor || "networking";
+      let lookingFor = userData.lookingFor || "industry_experts";
       
       // Map user's lookingFor value to our options
       const lookingForOption = LOOKING_FOR_OPTIONS.find(option => 
@@ -291,7 +312,7 @@ export default function SmartConnectPage() {
       // Initialize form with user data
       setFormData(prev => ({
         ...prev,
-        lookingFor: lookingForOption ? lookingForOption.value : "networking",
+        lookingFor: lookingForOption ? lookingForOption.value : "industry_experts",
         jobTitle: userData.title || "",
         location: userData.location || "",
         industry: userData.industry ? userData.industry.split(": ")[0] : "",
