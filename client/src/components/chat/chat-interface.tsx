@@ -306,14 +306,87 @@ export default function ChatInterface({ initialQuestion }: ChatInterfaceProps = 
       if (data.aiMessage) {
         console.log("Raw AI response:", data.aiMessage.message);
         
-        // Extract quick response options if available
-        const quickResponses = extractQuickResponses(data.aiMessage.message);
-        console.log("Extracted quick responses:", quickResponses);
+        // Always generate follow-up options, even if AI didn't provide them
+        // This ensures we always have a two-way conversation experience
+        let quickResponses: string[] = [];
         
-        // Add AI response to chat
+        // First try to extract options from AI's message
+        const extractedResponses = extractQuickResponses(data.aiMessage.message);
+        console.log("Extracted quick responses:", extractedResponses);
+        
+        if (extractedResponses && extractedResponses.length > 0) {
+          // Use AI provided responses if available
+          quickResponses = extractedResponses;
+        } else {
+          // Generate context-aware fallback options based on the career goal
+          console.log("Using fallback response options for goal:", selectedGoal);
+          
+          if (selectedGoal === 'career-change') {
+            quickResponses = [
+              "Which industries are best?",
+              "Skills I need to transfer",
+              "Resume advice for career change",
+              "Tell me more about something else"
+            ];
+          } else if (selectedGoal === 'promotion') {
+            quickResponses = [
+              "How to approach my boss",
+              "Skills to demonstrate",
+              "Timeline for promotion",
+              "Tell me more about something else"
+            ];
+          } else if (selectedGoal === 'salary-negotiation') {
+            quickResponses = [
+              "What's a reasonable increase?",
+              "Negotiation tactics",
+              "When to discuss salary",
+              "Tell me more about something else"
+            ];
+          } else if (selectedGoal === 'leadership-skills') {
+            quickResponses = [
+              "Best leadership courses",
+              "Daily leadership habits",
+              "Common leadership mistakes",
+              "Tell me more about something else"
+            ];
+          } else {
+            // Default options for any other scenario
+            quickResponses = [
+              "Tell me more about this",
+              "What specific steps to take?",
+              "Any recommended resources?",
+              "Tell me more about something else"
+            ];
+          }
+        }
+        
+        // Add a follow-up question if the AI didn't include one
+        let finalMessage = data.aiMessage.message;
+        
+        // Check if message doesn't already have a follow-up question
+        if (!finalMessage.includes("follow-up question")) {
+          // Add an appropriate follow-up question based on the career goal
+          let followUpQuestion = "\n\n## Let me ask you a follow-up question:\n";
+          
+          if (selectedGoal === 'career-change') {
+            followUpQuestion += "What specific aspect of changing careers interests you most?";
+          } else if (selectedGoal === 'promotion') {
+            followUpQuestion += "Which of these promotion strategies would you like to focus on first?";
+          } else if (selectedGoal === 'salary-negotiation') {
+            followUpQuestion += "What's your biggest concern about negotiating your salary?";
+          } else if (selectedGoal === 'leadership-skills') {
+            followUpQuestion += "Which leadership skill do you think is most important for your career growth?";
+          } else {
+            followUpQuestion += "What specific aspect would you like me to elaborate on?";
+          }
+          
+          finalMessage = finalMessage + followUpQuestion;
+        }
+        
+        // Add AI response to chat with quick responses
         setMessages(prev => [...prev, {
           id: data.aiMessage.id.toString(),
-          message: data.aiMessage.message,
+          message: finalMessage,
           sender: 'ai',
           timestamp: new Date(data.aiMessage.timestamp),
           quickResponses
@@ -399,16 +472,25 @@ export default function ChatInterface({ initialQuestion }: ChatInterfaceProps = 
             
             {/* Quick Response Buttons */}
             {message.sender === 'ai' && message.quickResponses && message.quickResponses.length > 0 && (
-              <div className="mt-3 flex flex-wrap gap-2 max-w-[85%]">
+              <div className="mt-4 flex flex-wrap gap-2 max-w-[85%] bg-gray-50 p-3 rounded-lg border border-gray-100 shadow-sm">
+                <div className="w-full mb-1.5 text-xs text-gray-500 font-medium">
+                  <span className="flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    Quick Responses:
+                  </span>
+                </div>
                 {message.quickResponses.map((response, index) => (
                   <Button
                     key={index}
                     size="sm"
                     variant={response === "Tell me more about something else" ? "outline" : "secondary"}
-                    className={`text-xs rounded-full px-4 py-1 h-auto ${
+                    className={`text-xs rounded-full px-4 py-1 h-auto transition-all duration-200 ${
                       response === "Tell me more about something else"
                         ? "border-primary text-primary hover:bg-primary/10"
-                        : "bg-primary/10 text-primary hover:bg-primary/20"
+                        : "bg-primary/10 text-primary hover:bg-primary/20 hover:shadow-md"
                     }`}
                     onClick={() => handleQuickResponse(response)}
                   >
