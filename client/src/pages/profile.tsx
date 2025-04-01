@@ -1293,12 +1293,14 @@ export default function Profile() {
                         <SelectValue placeholder="Level" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Senior">Senior</SelectItem>
+                        <SelectItem value="Fresher">Fresher</SelectItem>
+                        <SelectItem value="Student">Student</SelectItem>
                         <SelectItem value="Junior">Junior</SelectItem>
+                        <SelectItem value="Senior">Senior</SelectItem>
+                        <SelectItem value="Consultant">Consultant</SelectItem>
                         <SelectItem value="Director">Director</SelectItem>
                         <SelectItem value="Vice President">Vice President</SelectItem>
                         <SelectItem value="President">President</SelectItem>
-                        <SelectItem value="Consultant">Consultant</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
