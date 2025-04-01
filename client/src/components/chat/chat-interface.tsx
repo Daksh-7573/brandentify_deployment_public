@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 
 type Message = {
   id: string;
@@ -12,6 +14,56 @@ type Message = {
   sender: 'user' | 'ai';
   timestamp: Date;
 };
+
+type CareerGoal = {
+  value: string;
+  label: string;
+  prompt: string;
+};
+
+// Define career goals for the dropdown
+const CAREER_GOALS: CareerGoal[] = [
+  { 
+    value: "skill_development", 
+    label: "Skill Development", 
+    prompt: "What skills should I focus on developing to advance my career?"
+  },
+  { 
+    value: "career_transition", 
+    label: "Career Transition", 
+    prompt: "How can I successfully transition to a new role or industry?"
+  },
+  { 
+    value: "career_advancement", 
+    label: "Career Advancement", 
+    prompt: "What strategies should I use to get promoted or advance to a senior position?"
+  },
+  { 
+    value: "education_planning", 
+    label: "Education Planning", 
+    prompt: "What certifications or education should I pursue for my career goals?"
+  },
+  { 
+    value: "networking", 
+    label: "Networking Strategies", 
+    prompt: "How can I build a professional network that advances my career?"
+  },
+  { 
+    value: "interview_preparation", 
+    label: "Interview Preparation", 
+    prompt: "How should I prepare for job interviews in my field?"
+  },
+  { 
+    value: "salary_negotiation", 
+    label: "Salary Negotiation", 
+    prompt: "What's the best approach to negotiate my salary or compensation package?"
+  },
+  { 
+    value: "market_trends", 
+    label: "Industry Trends", 
+    prompt: "What are the current trends in my industry that I should be aware of?"
+  }
+];
 
 type ChatInterfaceProps = {
   initialQuestion?: string;
@@ -22,13 +74,14 @@ export default function ChatInterface({ initialQuestion }: ChatInterfaceProps = 
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      message: `Hi ${user?.name?.split(' ')[0] || 'there'}! I'm Musk, your AI career advisor. Based on your profile, I see you're interested in advancing your data analysis career. How can I help you today?`,
+      message: `Hi ${user?.name?.split(' ')[0] || 'there'}! I'm Musk, your AI career advisor. Based on your profile, I see you're interested in advancing your career. Select a career goal below or ask me a question to get started!`,
       sender: 'ai',
       timestamp: new Date()
     }
   ]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedGoal, setSelectedGoal] = useState<string>('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -63,7 +116,8 @@ export default function ChatInterface({ initialQuestion }: ChatInterfaceProps = 
       const response = await apiRequest('POST', '/api/chat-messages', {
         userId,
         message: inputMessage,
-        sender: 'user'
+        sender: 'user',
+        careerGoal: selectedGoal || undefined
       });
       
       const data = await response.json();
@@ -95,7 +149,7 @@ export default function ChatInterface({ initialQuestion }: ChatInterfaceProps = 
     } finally {
       setIsLoading(false);
     }
-  }, [inputMessage, setMessages, setInputMessage, setIsLoading, toast]);
+  }, [inputMessage, selectedGoal, setMessages, setInputMessage, setIsLoading, toast]);
   
   // Handle initialQuestion if provided
   useEffect(() => {
@@ -145,6 +199,39 @@ export default function ChatInterface({ initialQuestion }: ChatInterfaceProps = 
       
       {/* Chat Input */}
       <CardContent className="border-t border-gray-200 p-4">
+        <div className="mb-4">
+          <Label htmlFor="career-goal" className="mb-2 block text-sm font-medium">Select your career goal:</Label>
+          <Select
+            value={selectedGoal}
+            onValueChange={(value) => {
+              setSelectedGoal(value);
+              // Find the selected goal's prompt
+              const selectedCareerGoal = CAREER_GOALS.find(goal => goal.value === value);
+              if (selectedCareerGoal) {
+                setInputMessage(selectedCareerGoal.prompt);
+                
+                // Auto-submit when a goal is selected
+                setTimeout(() => {
+                  const submitEvent = new Event('submit', { cancelable: true }) as unknown as React.FormEvent;
+                  submitEvent.preventDefault = () => {}; // Mock preventDefault
+                  handleSubmit(submitEvent);
+                }, 100);
+              }
+            }}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Choose a career goal" />
+            </SelectTrigger>
+            <SelectContent>
+              {CAREER_GOALS.map((goal) => (
+                <SelectItem key={goal.value} value={goal.value}>
+                  {goal.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
         <form onSubmit={handleSubmit} className="flex">
           <Input
             className="flex-1 rounded-l-lg border-gray-300 focus:ring-primary focus:border-primary"

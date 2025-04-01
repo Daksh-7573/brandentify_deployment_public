@@ -8,7 +8,8 @@ export async function generateCareerAdvice(
   message: string,
   skills: Skill[],
   experiences: WorkExperience[],
-  educations: Education[]
+  educations: Education[],
+  careerGoal?: string
 ): Promise<string> {
   try {
     // Format user profile information
@@ -44,6 +45,7 @@ export async function generateCareerAdvice(
           ${skillsText}
           ${experiencesText}
           ${educationsText}
+          ${careerGoal ? `\nMy career goal: ${careerGoal}` : ''}
           
           My question: ${message}`
         }

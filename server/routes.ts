@@ -331,11 +331,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const userExperiences = await storage.getWorkExperiencesByUserId(userId);
         const userEducations = await storage.getEducationsByUserId(userId);
         
+        // Extract careerGoal if it exists in the request
+        const careerGoal = req.body.careerGoal;
+        
         const aiResponse = await generateCareerAdvice(
           messageData.message,
           userSkills,
           userExperiences,
-          userEducations
+          userEducations,
+          careerGoal
         );
         
         // Save the AI response
