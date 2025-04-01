@@ -82,8 +82,8 @@ export default function Profile() {
             {/* Profile Header */}
             <Card className="mb-6 overflow-hidden">
               <div className="h-32 bg-gradient-to-r from-primary to-purple-600"></div>
-              <CardContent className="relative">
-                <div className="absolute -top-16 left-6">
+              <CardContent className="relative pt-16 pb-4">
+                <div className="absolute -top-16 left-1/2 sm:left-6 transform -translate-x-1/2 sm:translate-x-0">
                   <div className="h-24 w-24 overflow-hidden rounded-full bg-white ring-4 ring-white flex items-center justify-center">
                     <img 
                       className="h-full w-full object-cover" 
@@ -96,12 +96,12 @@ export default function Profile() {
                     />
                   </div>
                 </div>
-                <div className="mt-8">
+                <div className="pl-0 sm:pl-32 mt-12 sm:mt-2">
                   <h2 className="text-xl font-bold text-gray-900">{userData?.name || user?.name || 'User'}</h2>
                   <p className="text-sm text-gray-500">{userData?.title || user?.title || 'Professional'}</p>
                   <p className="text-sm text-gray-500 mt-1">{userData?.location || user?.location || 'Location not specified'}</p>
                 </div>
-                <div className="mt-4 flex flex-wrap gap-2">
+                <div className="mt-4 pl-0 md:pl-32 flex flex-wrap gap-2">
                   {isLoadingSkills ? (
                     <p className="text-sm text-gray-500">Loading skills...</p>
                   ) : skills && skills.length > 0 ? (
