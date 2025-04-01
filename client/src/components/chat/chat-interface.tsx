@@ -129,22 +129,44 @@ export default function ChatInterface({ initialQuestion }: ChatInterfaceProps = 
   // Using a ref for tracking if the initial question has been processed
   const initialQuestionProcessed = useRef(false);
 
-  // Function to extract quick response options from AI messages and process the message
+  // Function to extract quick response options from AI messages
   const extractQuickResponses = (message: string): string[] | undefined => {
     try {
+      console.log("Checking for follow-up section in:", message);
+      
       // Look for the follow-up question section
       if (!message.includes("## Let me ask you a follow-up question:")) {
+        console.log("No follow-up question section found");
         return undefined;
       }
       
-      // Extract the options using regex to find lines starting with "- "
-      const optionSection = message.split("**Quick Response Options:**")[1];
-      if (!optionSection) return undefined;
+      // Extract the options section
+      const parts = message.split("**Quick Response Options:**");
+      if (parts.length < 2) {
+        console.log("No quick response options section found");
+        return undefined;
+      }
       
+      const optionSection = parts[1];
+      console.log("Option section:", optionSection);
+      
+      // Extract the options using regex to find lines starting with "- "
       const optionLines = optionSection.split("\n")
         .filter(line => line.trim().startsWith("- "))
-        .map(line => line.trim().substring(2).trim());  // Remove the "- " prefix
+        .map(line => {
+          // Remove the "- " prefix and any brackets or other formatting
+          const option = line.trim().substring(2).trim(); 
+          const cleanOption = option
+            .replace(/^\[/, '') // Remove leading [
+            .replace(/\]$/, '') // Remove trailing ]
+            .replace(/^.*?:/, '').trim(); // Remove any prefix before colon
+          
+          return option.includes("Tell me more about something else") 
+            ? "Tell me more about something else" 
+            : cleanOption;
+        });
       
+      console.log("Extracted option lines:", optionLines);
       return optionLines.length > 0 ? optionLines : undefined;
     } catch (error) {
       console.error("Error extracting quick responses:", error);
@@ -220,8 +242,11 @@ export default function ChatInterface({ initialQuestion }: ChatInterfaceProps = 
       const data = await response.json();
       
       if (data.aiMessage) {
+        console.log("Raw AI response:", data.aiMessage.message);
+        
         // Extract quick response options if available
         const quickResponses = extractQuickResponses(data.aiMessage.message);
+        console.log("Extracted quick responses:", quickResponses);
         
         // Add AI response to chat
         setMessages(prev => [...prev, {
