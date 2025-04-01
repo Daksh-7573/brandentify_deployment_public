@@ -490,13 +490,13 @@ export default function SmartConnectPage() {
                     {!showMatchResults ? (
                       <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="space-y-2">
-                          <Label htmlFor="lookingFor">I am looking for</Label>
+                          <Label htmlFor="lookingFor">Candidate is looking for</Label>
                           <Select 
                             value={formData.lookingFor}
                             onValueChange={(value) => setFormData({...formData, lookingFor: value})}
                           >
                             <SelectTrigger>
-                              <SelectValue placeholder="Select what you're looking for" />
+                              <SelectValue placeholder="Select what the candidate is looking for" />
                             </SelectTrigger>
                             <SelectContent>
                               {LOOKING_FOR_OPTIONS.map(option => (
@@ -617,7 +617,7 @@ export default function SmartConnectPage() {
                     ) : (
                       <div className="space-y-3">
                         <div>
-                          <span className="text-sm font-medium">Looking For:</span>
+                          <span className="text-sm font-medium">Candidate is Looking For:</span>
                           <div className="mt-1">
                             <Badge className="mr-1">{LOOKING_FOR_OPTIONS.find(opt => opt.value === formData.lookingFor)?.label}</Badge>
                           </div>
