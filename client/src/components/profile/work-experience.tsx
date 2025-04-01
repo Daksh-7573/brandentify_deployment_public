@@ -145,14 +145,26 @@ export default function WorkExperience() {
         }
       }
       
-      // Add userId to the new experience
+      // Add userId to the experience if it's not already there
       const experienceToSave = {
         ...newExperience,
         userId: userId
       };
       
-      // Save to API
-      const response = await apiRequest('POST', '/api/experiences', experienceToSave);
+      let response;
+      let successMessage;
+      
+      // Check if we're editing an existing experience (has an id) or creating a new one
+      if (newExperience.id) {
+        // Update existing experience
+        response = await apiRequest('PUT', `/api/experiences/${newExperience.id}`, experienceToSave);
+        successMessage = "Your work experience has been updated successfully";
+      } else {
+        // Create new experience
+        response = await apiRequest('POST', '/api/experiences', experienceToSave);
+        successMessage = "Your work experience has been added successfully";
+      }
+      
       if (response.ok) {
         // Close modal
         setIsAddModalOpen(false);
@@ -162,8 +174,8 @@ export default function WorkExperience() {
         
         // Show success message
         toast({
-          title: "Experience added",
-          description: "Your work experience has been added successfully",
+          title: newExperience.id ? "Experience updated" : "Experience added",
+          description: successMessage,
         });
         
         // Reset form
@@ -180,26 +192,73 @@ export default function WorkExperience() {
         setStartDate(undefined);
         setEndDate(undefined);
       } else {
-        throw new Error("Failed to save experience");
+        throw new Error(`Failed to ${newExperience.id ? 'update' : 'save'} experience`);
       }
     } catch (error) {
       console.error("Error saving experience:", error);
       toast({
         title: "Error",
-        description: "Failed to save your work experience. Please try again.",
+        description: `Failed to ${newExperience.id ? 'update' : 'save'} your work experience. Please try again.`,
         variant: "destructive"
       });
     }
   };
 
   const handleEdit = (id: number) => {
-    // In a real app, this would open a form modal with the experience data
-    console.log("Edit experience", id);
+    // Find the experience to edit
+    const experienceToEdit = displayExperiences.find(exp => exp.id === id);
+    if (experienceToEdit) {
+      setNewExperience({
+        ...experienceToEdit
+      });
+      
+      // Set the date pickers
+      if (experienceToEdit.startDate) {
+        try {
+          setStartDate(new Date(experienceToEdit.startDate));
+        } catch (error) {
+          console.error("Failed to parse start date:", error);
+        }
+      }
+      
+      if (experienceToEdit.endDate && experienceToEdit.endDate !== 'Present') {
+        try {
+          setEndDate(new Date(experienceToEdit.endDate));
+        } catch (error) {
+          console.error("Failed to parse end date:", error);
+        }
+      }
+      
+      setIsAddModalOpen(true);
+    }
   };
 
-  const handleDelete = (id: number) => {
-    // In a real app, this would show a confirmation dialog
-    setExperiences(experiences.filter(exp => exp.id !== id));
+  const handleDelete = async (id: number) => {
+    try {
+      const response = await apiRequest('DELETE', `/api/experiences/${id}`);
+      if (response.ok) {
+        // Update local state immediately for responsiveness
+        setExperiences(experiences.filter(exp => exp.id !== id));
+        
+        // Show success message
+        toast({
+          title: "Experience deleted",
+          description: "Your work experience has been deleted successfully",
+        });
+        
+        // Refresh data
+        refetch();
+      } else {
+        throw new Error("Failed to delete experience");
+      }
+    } catch (error) {
+      console.error("Error deleting experience:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete your work experience. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
   
   // CRITICAL IMPROVEMENT: Initialize experiences from serverExperiences on first load
@@ -300,7 +359,7 @@ export default function WorkExperience() {
       <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
         <DialogContent className="sm:max-w-[550px]">
           <DialogHeader>
-            <DialogTitle>Add Work Experience</DialogTitle>
+            <DialogTitle>{newExperience.id ? 'Edit Work Experience' : 'Add Work Experience'}</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">

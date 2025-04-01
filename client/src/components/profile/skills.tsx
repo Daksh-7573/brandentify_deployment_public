@@ -156,15 +156,27 @@ export default function Skills() {
         return;
       }
       
-      // Add userId to the new skill
+      // Add userId to the skill
       const skillToSave = {
         ...newSkill,
         userId: userId,
         proficiency: sliderValue // Use the slider value
       };
       
-      // Save to API
-      const response = await apiRequest('POST', '/api/skills', skillToSave);
+      let response;
+      let successMessage;
+      
+      // Check if we're editing an existing skill (has an id) or creating a new one
+      if (newSkill.id) {
+        // Update existing skill
+        response = await apiRequest('PUT', `/api/skills/${newSkill.id}`, skillToSave);
+        successMessage = "Your skill has been updated successfully";
+      } else {
+        // Create new skill
+        response = await apiRequest('POST', '/api/skills', skillToSave);
+        successMessage = "Your skill has been added successfully";
+      }
+      
       if (response.ok) {
         // Close modal
         setIsAddModalOpen(false);
@@ -174,8 +186,8 @@ export default function Skills() {
         
         // Show success message
         toast({
-          title: "Skill added",
-          description: "Your skill has been added successfully",
+          title: newSkill.id ? "Skill updated" : "Skill added",
+          description: successMessage,
         });
         
         // Reset form
@@ -188,13 +200,13 @@ export default function Skills() {
         // Reset slider
         setSliderValue(50);
       } else {
-        throw new Error("Failed to save skill");
+        throw new Error(`Failed to ${newSkill.id ? 'update' : 'save'} skill`);
       }
     } catch (error) {
       console.error("Error saving skill:", error);
       toast({
         title: "Error",
-        description: "Failed to save your skill. Please try again.",
+        description: `Failed to ${newSkill.id ? 'update' : 'save'} your skill. Please try again.`,
         variant: "destructive"
       });
     }

@@ -170,14 +170,26 @@ export default function Education() {
         }
       }
       
-      // Add userId to the new education
+      // Add userId to the education if it's not already there
       const educationToSave = {
         ...newEducation,
         userId: userId
       };
       
-      // Save to API
-      const response = await apiRequest('POST', '/api/educations', educationToSave);
+      let response;
+      let successMessage;
+      
+      // Check if we're editing an existing education (has an id) or creating a new one
+      if (newEducation.id) {
+        // Update existing education
+        response = await apiRequest('PUT', `/api/educations/${newEducation.id}`, educationToSave);
+        successMessage = "Your education has been updated successfully";
+      } else {
+        // Create new education
+        response = await apiRequest('POST', '/api/educations', educationToSave);
+        successMessage = "Your education has been added successfully";
+      }
+      
       if (response.ok) {
         // Close modal
         setIsAddModalOpen(false);
@@ -187,8 +199,8 @@ export default function Education() {
         
         // Show success message
         toast({
-          title: "Education added",
-          description: "Your education has been added successfully",
+          title: newEducation.id ? "Education updated" : "Education added",
+          description: successMessage,
         });
         
         // Reset form
@@ -204,13 +216,13 @@ export default function Education() {
         setStartDate(undefined);
         setEndDate(undefined);
       } else {
-        throw new Error("Failed to save education");
+        throw new Error(`Failed to ${newEducation.id ? 'update' : 'save'} education`);
       }
     } catch (error) {
       console.error("Error saving education:", error);
       toast({
         title: "Error",
-        description: "Failed to save your education. Please try again.",
+        description: `Failed to ${newEducation.id ? 'update' : 'save'} your education. Please try again.`,
         variant: "destructive"
       });
     }
@@ -328,11 +340,11 @@ export default function Education() {
         </CardContent>
       </Card>
       
-      {/* Add Education Modal */}
+      {/* Education Modal */}
       <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
         <DialogContent className="sm:max-w-[550px]">
           <DialogHeader>
-            <DialogTitle>Add Education</DialogTitle>
+            <DialogTitle>{newEducation.id ? 'Edit Education' : 'Add Education'}</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
