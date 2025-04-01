@@ -464,8 +464,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         const { parseResumeText } = await import('./services/profile-parser');
         console.log("Calling parseResumeText function...");
+        console.log("Resume text to parse (truncated first 500 chars):", resumeText.substring(0, 500));
+        
         const profileData = await parseResumeText(resumeText);
         console.log("Resume parsing completed");
+        
+        // Log the extracted data
+        console.log("Raw parsed experiences:", JSON.stringify(profileData.experiences || []).substring(0, 200));
+        console.log("Raw parsed educations:", JSON.stringify(profileData.educations || []).substring(0, 200));
+        console.log("Raw parsed skills:", JSON.stringify(profileData.skills || []).substring(0, 200));
+        
+        if (profileData.experiences?.length === 0 && 
+            profileData.educations?.length === 0 && 
+            profileData.skills?.length === 0) {
+          console.log("WARNING: No data was extracted from the resume. Check parser implementation.");
+        }
         
         // Check if there was an error in the parsing
         if ('error' in profileData) {

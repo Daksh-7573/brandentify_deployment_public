@@ -89,7 +89,7 @@ The JSON format should be:
 
 Here's the resume text:
 
-${resumeText ? resumeText.substring(0, 10000) : ""}`
+${resumeText ? resumeText.substring(0, 25000) : ""}`
           }
         ],
         temperature: 0.1,
