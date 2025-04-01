@@ -1454,7 +1454,9 @@ export default function Profile() {
                 </div>
                 <div className="pl-0 sm:pl-32 mt-12 sm:mt-2">
                   <div className="flex justify-between items-center group">
-                    <h2 className="text-xl font-bold text-gray-900">{userData?.name || user?.name || 'User'}</h2>
+                    <h2 className="text-xl font-bold text-gray-900">
+                      Hey there! {userData?.name || user?.name || 'User'} here,
+                    </h2>
                     <button 
                       onClick={() => setShowEditBasicInfo(true)}
                       className="text-sm text-primary opacity-0 group-hover:opacity-100 transition-opacity"
@@ -1462,8 +1464,8 @@ export default function Profile() {
                       Edit
                     </button>
                   </div>
-                  <p className="text-sm text-gray-500">{userData?.title || user?.title || 'Professional'}</p>
-                  <p className="text-sm text-gray-500 mt-1">{userData?.location || user?.location || 'Location not specified'}</p>
+                  <p className="text-sm text-gray-500">I am: {userData?.title || user?.title || 'Professional'}</p>
+                  <p className="text-sm text-gray-500 mt-1">From: {userData?.location || user?.location || 'Location not specified'}</p>
                   {userData?.industry && (
                     <>
                       {/* Parse industry and domain if they're combined with ": " */}
