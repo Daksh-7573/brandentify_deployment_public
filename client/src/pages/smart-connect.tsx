@@ -561,7 +561,108 @@ const popularLocations = [
     "Santa Cruz, Bolivia",
     "Georgetown, Guyana",
     "Paramaribo, Suriname",
-    "Cayenne, French Guiana"
+    "Cayenne, French Guiana",
+    
+    // Additional Countries - Europe
+    "Nicosia, Cyprus",
+    "Valletta, Malta",
+    "Andorra la Vella, Andorra",
+    "San Marino, San Marino",
+    "Vaduz, Liechtenstein",
+    "Monaco, Monaco",
+    "Vatican City",
+    "Tirana, Albania",
+    "Podgorica, Montenegro",
+    "Skopje, North Macedonia",
+    "Pristina, Kosovo",
+    "Sarajevo, Bosnia and Herzegovina",
+    "Banja Luka, Bosnia and Herzegovina",
+    
+    // Additional Countries - Nordics
+    "Aalborg, Denmark",
+    "Tampere, Finland",
+    "Oulu, Finland",
+    "Stavanger, Norway",
+    "Tromso, Norway",
+    "Uppsala, Sweden",
+    "Malmo, Sweden",
+    "Reykjavik, Iceland",
+    "Akureyri, Iceland",
+    
+    // Additional Countries - Asia
+    "Ulaanbaatar, Mongolia",
+    "Thimphu, Bhutan",
+    "Male, Maldives",
+    "Vientiane, Laos",
+    "Bandar Seri Begawan, Brunei",
+    "Dili, Timor-Leste",
+    "Pyongyang, North Korea",
+    "Nur-Sultan, Kazakhstan",
+    "Dushanbe, Tajikistan",
+    "Ashgabat, Turkmenistan",
+    "Baku, Azerbaijan",
+    "Yerevan, Armenia",
+    "Tbilisi, Georgia",
+    
+    // Additional Countries - Caribbean
+    "Havana, Cuba",
+    "Nassau, Bahamas",
+    "Kingston, Jamaica",
+    "Port-au-Prince, Haiti",
+    "Santo Domingo, Dominican Republic",
+    "San Juan, Puerto Rico",
+    "Bridgetown, Barbados",
+    "Port of Spain, Trinidad and Tobago",
+    
+    // Additional Countries - Oceania
+    "Nuku'alofa, Tonga",
+    "Apia, Samoa",
+    "Honiara, Solomon Islands",
+    "Port Vila, Vanuatu",
+    "Noumea, New Caledonia",
+    "Papeete, Tahiti, French Polynesia",
+    "Majuro, Marshall Islands",
+    "Tarawa, Kiribati",
+    "Funafuti, Tuvalu",
+    "Yaren, Nauru",
+    "Palikir, Micronesia",
+    
+    // Additional Countries - Middle East
+    "Sana'a, Yemen",
+    "Damascus, Syria",
+    "Erbil, Iraq",
+    "Kabul, Afghanistan",
+    "Ramallah, Palestine",
+    "Gaza City, Palestine",
+    
+    // Additional Countries - Africa
+    "Nouakchott, Mauritania",
+    "Niamey, Niger",
+    "N'Djamena, Chad",
+    "Bangui, Central African Republic",
+    "Juba, South Sudan",
+    "Brazzaville, Republic of the Congo",
+    "Bujumbura, Burundi",
+    "Malabo, Equatorial Guinea",
+    "Bissau, Guinea-Bissau",
+    "Freetown, Sierra Leone",
+    "Monrovia, Liberia",
+    "Banjul, Gambia",
+    "Praia, Cape Verde",
+    "Sao Tome, Sao Tome and Principe",
+    "Maseru, Lesotho",
+    "Mbabane, Eswatini",
+    "Djibouti, Djibouti",
+    
+    // Remote and Digital Nomad Locations
+    "Remote, United States",
+    "Remote, European Union",
+    "Remote, Worldwide",
+    "Remote, UK/London",
+    "Remote, APAC Region",
+    "Digital Nomad, Asia",
+    "Digital Nomad, Europe",
+    "Digital Nomad, Latin America"
 ];
 
 // Mock function to simulate AI matchmaking process
@@ -744,8 +845,8 @@ export default function SmartConnectPage() {
       // Filter locations that match the input value
       const inputValue = value.toLowerCase();
       
-      // Show more suggestions to ensure comprehensive matches
-      const maxSuggestions = 30;
+      // Show many more suggestions to ensure comprehensive matches
+      const maxSuggestions = 100; // Increased to show many more suggestions
       
       // First try exact matches (most relevant)
       let filtered = popularLocations.filter(location => 
@@ -759,33 +860,175 @@ export default function SmartConnectPage() {
           const locationLower = location.toLowerCase();
           
           // Handle common spelling variations for major cities
+          // City variations - Australia, New Zealand
           if (inputValue.includes('melb') && locationLower.includes('melbourne')) return true;
           if (inputValue.includes('malb') && locationLower.includes('melbourne')) return true;
           if (inputValue.includes('syd') && locationLower.includes('sydney')) return true;
           if (inputValue.includes('bris') && locationLower.includes('brisbane')) return true;
+          if (inputValue.includes('brizzy') && locationLower.includes('brisbane')) return true;
           if (inputValue.includes('auck') && locationLower.includes('auckland')) return true;
+          if (inputValue.includes('adel') && locationLower.includes('adelaide')) return true;
+          if (inputValue.includes('perth') && locationLower.includes('perth')) return true;
+          if (inputValue.includes('canberra') && locationLower.includes('canberra')) return true;
+          if (inputValue.includes('canb') && locationLower.includes('canberra')) return true;
+          if (inputValue.includes('hobart') && locationLower.includes('hobart')) return true;
+          if (inputValue.includes('well') && locationLower.includes('wellington')) return true;
+          if (inputValue.includes('christ') && locationLower.includes('christchurch')) return true;
+          
+          // Asia - Major Cities
           if (inputValue.includes('sing') && locationLower.includes('singapore')) return true;
           if (inputValue.includes('bangl') && locationLower.includes('bangalore')) return true;
           if (inputValue.includes('bengal') && locationLower.includes('bangalore')) return true;
-          if (inputValue.includes('york') && locationLower.includes('new york')) return true;
-          if (inputValue.includes('angeles') && locationLower.includes('los angeles')) return true;
-          if (inputValue.includes('fran') && locationLower.includes('san francisco')) return true;
           if (inputValue.includes('tokyo') && locationLower.includes('tokyo')) return true;
+          if (inputValue.includes('tokio') && locationLower.includes('tokyo')) return true;
+          if (inputValue.includes('osaka') && locationLower.includes('osaka')) return true;
+          if (inputValue.includes('kyoto') && locationLower.includes('kyoto')) return true;
+          if (inputValue.includes('hk') && locationLower.includes('hong kong')) return true;
+          if (inputValue.includes('hong') && locationLower.includes('hong kong')) return true;
           if (inputValue.includes('dubai') && locationLower.includes('dubai')) return true;
-          if (inputValue.includes('lon') && locationLower.includes('london')) return true;
-          if (inputValue.includes('berl') && locationLower.includes('berlin')) return true;
-          if (inputValue.includes('mad') && locationLower.includes('madrid')) return true;
+          if (inputValue.includes('seoul') && locationLower.includes('seoul')) return true;
           if (inputValue.includes('mum') && locationLower.includes('mumbai')) return true;
           if (inputValue.includes('bomb') && locationLower.includes('mumbai')) return true;
           if (inputValue.includes('del') && locationLower.includes('delhi')) return true;
-          if (inputValue.includes('rio') && locationLower.includes('rio de janeiro')) return true;
-          if (inputValue.includes('chi') && (locationLower.includes('chicago') || locationLower.includes('chiang'))) return true;
           if (inputValue.includes('beij') && locationLower.includes('beijing')) return true;
           if (inputValue.includes('pek') && locationLower.includes('beijing')) return true;
           if (inputValue.includes('shan') && locationLower.includes('shanghai')) return true;
+          if (inputValue.includes('kl') && locationLower.includes('kuala lumpur')) return true;
+          if (inputValue.includes('bang') && locationLower.includes('bangkok')) return true;
+          if (inputValue.includes('taipei') && locationLower.includes('taipei')) return true;
+          if (inputValue.includes('manila') && locationLower.includes('manila')) return true;
+          if (inputValue.includes('jakarta') && locationLower.includes('jakarta')) return true;
+          if (inputValue.includes('hanoi') && locationLower.includes('hanoi')) return true;
+          if (inputValue.includes('saigon') && locationLower.includes('ho chi minh')) return true;
+          if (inputValue.includes('hcm') && locationLower.includes('ho chi minh')) return true;
+          
+          // US Cities
+          if (inputValue.includes('york') && locationLower.includes('new york')) return true;
+          if (inputValue.includes('nyc') && locationLower.includes('new york')) return true;
+          if (inputValue.includes('angeles') && locationLower.includes('los angeles')) return true;
+          if (inputValue.includes('la ') && locationLower.includes('los angeles')) return true;
+          if (inputValue.includes('fran') && locationLower.includes('san francisco')) return true;
+          if (inputValue.includes('sf') && locationLower.includes('san francisco')) return true;
+          if (inputValue.includes('chi') && locationLower.includes('chicago')) return true;
+          if (inputValue.includes('chi town') && locationLower.includes('chicago')) return true;
+          if (inputValue.includes('wash') && locationLower.includes('washington')) return true;
+          if (inputValue.includes('dc') && locationLower.includes('washington, dc')) return true;
+          if (inputValue.includes('philly') && locationLower.includes('philadelphia')) return true;
+          if (inputValue.includes('phil') && locationLower.includes('philadelphia')) return true;
+          if (inputValue.includes('hou') && locationLower.includes('houston')) return true;
+          if (inputValue.includes('bos') && locationLower.includes('boston')) return true;
+          if (inputValue.includes('atl') && locationLower.includes('atlanta')) return true;
+          if (inputValue.includes('sea') && locationLower.includes('seattle')) return true;
+          if (inputValue.includes('vegas') && locationLower.includes('las vegas')) return true;
+          if (inputValue.includes('den') && locationLower.includes('denver')) return true;
+          if (inputValue.includes('aust') && locationLower.includes('austin')) return true;
+          if (inputValue.includes('dall') && locationLower.includes('dallas')) return true;
+          if (inputValue.includes('det') && locationLower.includes('detroit')) return true;
+          if (inputValue.includes('port') && locationLower.includes('portland')) return true;
+          if (inputValue.includes('san d') && locationLower.includes('san diego')) return true;
+          if (inputValue.includes('sd') && locationLower.includes('san diego')) return true;
+          if (inputValue.includes('sd,') && locationLower.includes('san diego')) return true;
+          
+          // Canada Cities
           if (inputValue.includes('toro') && locationLower.includes('toronto')) return true;
+          if (inputValue.includes('mont') && locationLower.includes('montreal')) return true;
+          if (inputValue.includes('vanc') && locationLower.includes('vancouver')) return true;
+          if (inputValue.includes('calg') && locationLower.includes('calgary')) return true;
+          if (inputValue.includes('ott') && locationLower.includes('ottawa')) return true;
+          if (inputValue.includes('edm') && locationLower.includes('edmonton')) return true;
+          if (inputValue.includes('queb') && locationLower.includes('quebec')) return true;
+          if (inputValue.includes('winn') && locationLower.includes('winnipeg')) return true;
+          if (inputValue.includes('hal') && locationLower.includes('halifax')) return true;
+          
+          // European Cities 
+          if (inputValue.includes('lon') && locationLower.includes('london')) return true;
+          if (inputValue.includes('berl') && locationLower.includes('berlin')) return true;
+          if (inputValue.includes('mad') && locationLower.includes('madrid')) return true;
+          if (inputValue.includes('madr') && locationLower.includes('madrid')) return true;
+          if (inputValue.includes('barc') && locationLower.includes('barcelona')) return true;
+          if (inputValue.includes('bar') && locationLower.includes('barcelona')) return true;
+          if (inputValue.includes('pari') && locationLower.includes('paris')) return true;
+          if (inputValue.includes('rome') && locationLower.includes('rome')) return true;
+          if (inputValue.includes('roma') && locationLower.includes('rome')) return true;
+          if (inputValue.includes('ams') && locationLower.includes('amsterdam')) return true;
+          if (inputValue.includes('amst') && locationLower.includes('amsterdam')) return true;
+          if (inputValue.includes('vien') && locationLower.includes('vienna')) return true;
+          if (inputValue.includes('wien') && locationLower.includes('vienna')) return true;
+          if (inputValue.includes('copenh') && locationLower.includes('copenhagen')) return true;
+          if (inputValue.includes('zuri') && locationLower.includes('zurich')) return true;
+          if (inputValue.includes('stoc') && locationLower.includes('stockholm')) return true;
           if (inputValue.includes('istan') && locationLower.includes('istanbul')) return true;
           if (inputValue.includes('const') && locationLower.includes('istanbul')) return true;
+          if (inputValue.includes('athen') && locationLower.includes('athens')) return true;
+          if (inputValue.includes('dub') && locationLower.includes('dublin')) return true;
+          if (inputValue.includes('osio') && locationLower.includes('oslo')) return true;
+          if (inputValue.includes('lisb') && locationLower.includes('lisbon')) return true;
+          if (inputValue.includes('lisbo') && locationLower.includes('lisbon')) return true;
+          if (inputValue.includes('prag') && locationLower.includes('prague')) return true;
+          if (inputValue.includes('buda') && locationLower.includes('budapest')) return true;
+          if (inputValue.includes('buch') && locationLower.includes('bucharest')) return true;
+          if (inputValue.includes('wars') && locationLower.includes('warsaw')) return true;
+          if (inputValue.includes('bruss') && locationLower.includes('brussels')) return true;
+          if (inputValue.includes('frankf') && locationLower.includes('frankfurt')) return true;
+          if (inputValue.includes('manch') && locationLower.includes('manchester')) return true;
+          if (inputValue.includes('glasg') && locationLower.includes('glasgow')) return true;
+          if (inputValue.includes('birm') && locationLower.includes('birmingham')) return true;
+          if (inputValue.includes('edinb') && locationLower.includes('edinburgh')) return true;
+          if (inputValue.includes('edin') && locationLower.includes('edinburgh')) return true;
+          
+          // South America
+          if (inputValue.includes('rio') && locationLower.includes('rio de janeiro')) return true;
+          if (inputValue.includes('sao') && locationLower.includes('são paulo')) return true;
+          if (inputValue.includes('paulo') && locationLower.includes('são paulo')) return true;
+          if (inputValue.includes('bue') && locationLower.includes('buenos aires')) return true;
+          if (inputValue.includes('sant') && locationLower.includes('santiago')) return true;
+          if (inputValue.includes('lima') && locationLower.includes('lima')) return true;
+          if (inputValue.includes('bog') && locationLower.includes('bogotá')) return true;
+          if (inputValue.includes('med') && locationLower.includes('medellín')) return true;
+          
+          // Middle East & Africa
+          if (inputValue.includes('cairo') && locationLower.includes('cairo')) return true;
+          if (inputValue.includes('riyad') && locationLower.includes('riyadh')) return true;
+          if (inputValue.includes('tel') && locationLower.includes('tel aviv')) return true;
+          if (inputValue.includes('doha') && locationLower.includes('doha')) return true;
+          if (inputValue.includes('johan') && locationLower.includes('johannesburg')) return true;
+          if (inputValue.includes('cape') && locationLower.includes('cape town')) return true;
+          if (inputValue.includes('lagos') && locationLower.includes('lagos')) return true;
+          if (inputValue.includes('nair') && locationLower.includes('nairobi')) return true;
+          if (inputValue.includes('casa') && locationLower.includes('casablanca')) return true;
+          
+          // Countries (to match country names in locations)
+          if (inputValue.includes('us') && (locationLower.includes('usa') || locationLower.includes('united states'))) return true;
+          if (inputValue.includes('uk') && (locationLower.includes('uk') || locationLower.includes('united kingdom'))) return true;
+          if (inputValue.includes('can') && locationLower.includes('canada')) return true;
+          if (inputValue.includes('aus') && locationLower.includes('australia')) return true;
+          if (inputValue.includes('nz') && locationLower.includes('new zealand')) return true;
+          if (inputValue.includes('india') && locationLower.includes('india')) return true;
+          if (inputValue.includes('chin') && locationLower.includes('china')) return true;
+          if (inputValue.includes('jap') && locationLower.includes('japan')) return true;
+          if (inputValue.includes('ger') && locationLower.includes('germany')) return true;
+          if (inputValue.includes('deut') && locationLower.includes('germany')) return true;
+          if (inputValue.includes('fra') && locationLower.includes('france')) return true;
+          if (inputValue.includes('ital') && locationLower.includes('italy')) return true;
+          if (inputValue.includes('spain') && locationLower.includes('spain')) return true;
+          if (inputValue.includes('esp') && locationLower.includes('spain')) return true;
+          if (inputValue.includes('rus') && locationLower.includes('russia')) return true;
+          if (inputValue.includes('braz') && locationLower.includes('brazil')) return true;
+          if (inputValue.includes('brasil') && locationLower.includes('brazil')) return true;
+          if (inputValue.includes('mex') && locationLower.includes('mexico')) return true;
+          if (inputValue.includes('thai') && locationLower.includes('thailand')) return true;
+          if (inputValue.includes('indo') && locationLower.includes('indonesia')) return true;
+          if (inputValue.includes('malay') && locationLower.includes('malaysia')) return true;
+          if (inputValue.includes('sau') && locationLower.includes('saudi')) return true;
+          if (inputValue.includes('tur') && locationLower.includes('turkey')) return true;
+          if (inputValue.includes('turk') && locationLower.includes('türkiye')) return true;
+          
+          // Remote and Digital Nomad
+          if (inputValue.includes('remote') && locationLower.includes('remote')) return true;
+          if (inputValue.includes('wfh') && locationLower.includes('remote')) return true;
+          if (inputValue.includes('work from home') && locationLower.includes('remote')) return true;
+          if (inputValue.includes('nomad') && locationLower.includes('nomad')) return true;
+          if (inputValue.includes('digit') && locationLower.includes('digital')) return true;
           
           return false;
         });
