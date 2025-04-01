@@ -26,13 +26,28 @@ export default function Education() {
     staleTime: 0, // Always consider data stale to force refresh
     refetchOnMount: 'always', // Always refetch when component mounts
     refetchOnWindowFocus: true, // Refetch when window regains focus
+    refetchInterval: 1000, // Poll every second to keep data fresh
   });
   
-  // Force refetch when the component mounts
+  // Force a direct fetch every time the component renders
   useEffect(() => {
-    console.log("Education component mounted - forcing data refresh");
-    refetch();
-  }, [refetch]);
+    async function directFetch() {
+      console.log("Education - Directly fetching latest education data");
+      try {
+        const response = await fetch(`/api/users/${userId}/educations`, {
+          method: 'GET',
+          headers: { 'Cache-Control': 'no-cache, no-store' }
+        });
+        const freshData = await response.json();
+        console.log("Education - Got direct fetch data:", freshData);
+        setEducations(freshData || []);
+      } catch (error) {
+        console.error("Error during direct education fetch:", error);
+      }
+    }
+    
+    directFetch();
+  }, [userId]); // Only re-run when userId changes
   
   // Use fetched data if available, otherwise use empty array
   const [educations, setEducations] = useState<EducationItem[]>([]);

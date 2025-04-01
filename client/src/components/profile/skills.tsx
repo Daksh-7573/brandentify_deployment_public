@@ -24,13 +24,28 @@ export default function Skills() {
     staleTime: 0, // Always consider data stale to force refresh
     refetchOnMount: 'always', // Always refetch when component mounts
     refetchOnWindowFocus: true, // Refetch when window regains focus
+    refetchInterval: 1000, // Poll every second to keep data fresh
   });
   
-  // Force refetch when the component mounts
+  // Force a direct fetch every time the component renders
   useEffect(() => {
-    console.log("Skills component mounted - forcing data refresh");
-    refetch();
-  }, [refetch]);
+    async function directFetch() {
+      console.log("Skills - Directly fetching latest skills data");
+      try {
+        const response = await fetch(`/api/users/${userId}/skills`, {
+          method: 'GET',
+          headers: { 'Cache-Control': 'no-cache, no-store' }
+        });
+        const freshData = await response.json();
+        console.log("Skills - Got direct fetch data:", freshData);
+        setSkills(freshData || []);
+      } catch (error) {
+        console.error("Error during direct skills fetch:", error);
+      }
+    }
+    
+    directFetch();
+  }, [userId]); // Only re-run when userId changes
   
   // Use fetched data if available, otherwise use empty array
   const [skills, setSkills] = useState<SkillItem[]>([]);

@@ -28,13 +28,28 @@ export default function WorkExperience() {
     staleTime: 0, // Always consider data stale to force refresh
     refetchOnMount: 'always', // Always refetch when component mounts
     refetchOnWindowFocus: true, // Refetch when window regains focus
+    refetchInterval: 1000, // Poll every second to keep data fresh
   });
   
-  // Force refetch when the component mounts
+  // Force a direct fetch every time the component renders
   useEffect(() => {
-    console.log("WorkExperience component mounted - forcing data refresh");
-    refetch();
-  }, [refetch]);
+    async function directFetch() {
+      console.log("Work Experience - Directly fetching latest experiences data");
+      try {
+        const response = await fetch(`/api/users/${userId}/experiences`, {
+          method: 'GET',
+          headers: { 'Cache-Control': 'no-cache, no-store' }
+        });
+        const freshData = await response.json();
+        console.log("Work Experience - Got direct fetch data:", freshData);
+        setExperiences(freshData || []);
+      } catch (error) {
+        console.error("Error during direct fetch:", error);
+      }
+    }
+    
+    directFetch();
+  }, [userId]); // Only re-run when userId changes
   
   // Use fetched data if available, otherwise use empty array
   const [experiences, setExperiences] = useState<WorkExperienceItem[]>([]);
