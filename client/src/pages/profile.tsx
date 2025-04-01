@@ -1454,8 +1454,8 @@ export default function Profile() {
                 </div>
                 <div className="pl-0 sm:pl-32 mt-12 sm:mt-2">
                   <div className="flex justify-between items-center group">
-                    <h2 className="text-xl font-bold text-gray-900">
-                      Hey there! {userData?.name || user?.name || 'User'} here,
+                    <h2 className="text-xl text-gray-900">
+                      Hey there! <span className="font-bold text-2xl text-primary">{userData?.name || user?.name || 'User'}</span> here,
                     </h2>
                     <button 
                       onClick={() => setShowEditBasicInfo(true)}
