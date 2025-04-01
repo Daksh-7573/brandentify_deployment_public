@@ -11,6 +11,7 @@ import Skills from "@/components/profile/skills";
 import ResumeUpload from "@/components/profile/resume-upload";
 import LinkedInImport from "@/components/profile/linkedin-import";
 import { useQuery } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient";
 
 export default function Profile() {
   const { user, isAuthenticated, isLoading, isDemoMode } = useAuth();
@@ -133,8 +134,29 @@ export default function Profile() {
             {/* Skills */}
             <Skills />
             
-            {/* Save Button */}
-            <div className="flex justify-end mb-6">
+            {/* Action Buttons */}
+            <div className="flex justify-between mb-6">
+              <Button 
+                variant="outline" 
+                className="px-6"
+                onClick={() => {
+                  // Invalidate all queries to force fresh refetches
+                  console.log("Manual refresh triggered");
+                  
+                  // Refresh all profile data queries
+                  queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/experiences`] });
+                  queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/educations`] });
+                  queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/skills`] });
+                  queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
+                  
+                  // Show toast notification
+                  window.alert("Profile data refreshed. If you still don't see your updated profile data, please try uploading your resume or LinkedIn profile again.");
+                }}
+              >
+                <i className="fas fa-sync-alt mr-2"></i>
+                Refresh Data
+              </Button>
+              
               <Button className="px-6">
                 Save Profile
               </Button>

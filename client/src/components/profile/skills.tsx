@@ -61,33 +61,37 @@ export default function Skills() {
     return () => clearInterval(interval);
   }, [userId]); // Only re-run when userId changes
   
-  // Use fetched data if available, otherwise use empty array
+  // Initialize with an empty array, but use the ref for the actual display data
   const [skills, setSkills] = useState<SkillItem[]>([]);
   
   // Reference to hold the most recent data
   const latestDataRef = useRef<SkillItem[]>([]);
   
-  // Update skills state when server data changes - improved approach
+  // CRITICAL IMPROVEMENT: Initialize skills from serverSkills on first load
+  useEffect(() => {
+    if (serverSkills && Array.isArray(serverSkills) && serverSkills.length > 0) {
+      console.log("Skills: Initial data from server:", serverSkills);
+      setSkills(serverSkills);
+      latestDataRef.current = serverSkills;
+    }
+  }, []);
+  
+  // Update skills state when server data changes
   useEffect(() => {
     if (serverSkills && Array.isArray(serverSkills)) {
-      console.log("Skills received new data:", serverSkills);
+      console.log("Skills received updated data:", serverSkills);
       
-      // Store the latest data in our ref
+      // Always update our reference with the latest data
       latestDataRef.current = [...serverSkills];
       
-      // Force state update by creating a new array
-      setSkills(latestDataRef.current);
-      
-      // Aggressive approach: render directly from the latest data
-      if (serverSkills.length > 0 && skills.length === 0) {
-        console.log("Using direct data rendering for skills");
-        setTimeout(() => setSkills([...serverSkills]), 50);
-      }
+      // Update the state too to trigger re-renders
+      setSkills([...serverSkills]);
     }
   }, [serverSkills]);
   
-  // Direct data access - if state hasn't updated, use the latest data from ref
-  const displaySkills = skills.length > 0 ? skills : latestDataRef.current;
+  // Always use the latest data for display, using direct ref access as a fallback
+  const displaySkills = skills.length > 0 ? skills : 
+                       (latestDataRef.current.length > 0 ? latestDataRef.current : []);
 
   const handleAdd = () => {
     // In a real app, this would open a form modal

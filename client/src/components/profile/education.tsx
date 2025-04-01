@@ -63,33 +63,37 @@ export default function Education() {
     return () => clearInterval(interval);
   }, [userId]); // Only re-run when userId changes
   
-  // Use fetched data if available, otherwise use empty array
+  // Initialize with an empty array, but use the ref for the actual display data
   const [educations, setEducations] = useState<EducationItem[]>([]);
   
   // Reference to hold the most recent data
   const latestDataRef = useRef<EducationItem[]>([]);
   
-  // Update educations state when server data changes - improved approach
+  // CRITICAL IMPROVEMENT: Initialize educations from serverEducations on first load
+  useEffect(() => {
+    if (serverEducations && Array.isArray(serverEducations) && serverEducations.length > 0) {
+      console.log("Education: Initial data from server:", serverEducations);
+      setEducations(serverEducations);
+      latestDataRef.current = serverEducations;
+    }
+  }, []);
+  
+  // Update educations state when server data changes
   useEffect(() => {
     if (serverEducations && Array.isArray(serverEducations)) {
-      console.log("Education received new data:", serverEducations);
+      console.log("Education received updated data:", serverEducations);
       
-      // Store the latest data in our ref
+      // Always update our reference with the latest data
       latestDataRef.current = [...serverEducations];
       
-      // Force state update by creating a new array
-      setEducations(latestDataRef.current);
-      
-      // Aggressive approach: render directly from the latest data
-      if (serverEducations.length > 0 && educations.length === 0) {
-        console.log("Using direct data rendering for education");
-        setTimeout(() => setEducations([...serverEducations]), 50);
-      }
+      // Update the state too to trigger re-renders
+      setEducations([...serverEducations]);
     }
   }, [serverEducations]);
   
-  // Direct data access - if state hasn't updated, use the latest data from ref
-  const displayEducations = educations.length > 0 ? educations : latestDataRef.current;
+  // Always use the latest data for display, using direct ref access as a fallback
+  const displayEducations = educations.length > 0 ? educations : 
+                          (latestDataRef.current.length > 0 ? latestDataRef.current : []);
 
   const handleAdd = () => {
     // In a real app, this would open a form modal

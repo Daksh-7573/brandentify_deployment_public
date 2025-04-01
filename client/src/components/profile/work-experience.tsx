@@ -65,8 +65,11 @@ export default function WorkExperience() {
     return () => clearInterval(interval);
   }, [userId]); // Only re-run when userId changes
   
-  // Use fetched data if available, otherwise use empty array
+  // Initialize with an empty array, but use the ref for the actual display data
   const [experiences, setExperiences] = useState<WorkExperienceItem[]>([]);
+  
+  // Reference to hold the most recent data
+  const latestDataRef = useRef<WorkExperienceItem[]>([]);
 
   const handleAdd = () => {
     // In a real app, this would open a form modal
@@ -82,31 +85,32 @@ export default function WorkExperience() {
     // In a real app, this would show a confirmation dialog
     setExperiences(experiences.filter(exp => exp.id !== id));
   };
-
-  // Reference to hold the most recent data
-  const latestDataRef = useRef<WorkExperienceItem[]>([]);
   
-  // Update experiences state when server data changes - improved approach
+  // CRITICAL IMPROVEMENT: Initialize experiences from serverExperiences on first load
+  useEffect(() => {
+    if (serverExperiences && Array.isArray(serverExperiences) && serverExperiences.length > 0) {
+      console.log("WorkExperience: Initial data from server:", serverExperiences);
+      setExperiences(serverExperiences);
+      latestDataRef.current = serverExperiences;
+    }
+  }, []);
+  
+  // Update experiences state when server data changes
   useEffect(() => {
     if (serverExperiences && Array.isArray(serverExperiences)) {
-      console.log("WorkExperience received new data:", serverExperiences);
+      console.log("WorkExperience received updated data:", serverExperiences);
       
-      // Store the latest data in our ref
+      // Always update our reference with the latest data
       latestDataRef.current = [...serverExperiences];
       
-      // Force state update by creating a new array
-      setExperiences(latestDataRef.current);
-      
-      // Aggressive approach: render directly from the latest data
-      if (serverExperiences.length > 0 && experiences.length === 0) {
-        console.log("Using direct data rendering for work experience");
-        setTimeout(() => setExperiences([...serverExperiences]), 50);
-      }
+      // Update the state too to trigger re-renders
+      setExperiences([...serverExperiences]);
     }
   }, [serverExperiences]);
   
-  // Direct data access - if state hasn't updated, use the latest data from ref
-  const displayExperiences = experiences.length > 0 ? experiences : latestDataRef.current;
+  // Always use the latest data for display, using direct ref access as a fallback
+  const displayExperiences = experiences.length > 0 ? experiences : 
+                           (latestDataRef.current.length > 0 ? latestDataRef.current : []);
 
   return (
     <Card className="mb-6">
