@@ -33,6 +33,7 @@ import {
   SelectLabel,
   SelectSeparator
 } from "@/components/ui/select";
+import { JobTitleCombobox } from "@/components/ui/job-title-combobox";
 
 // Define "I am looking for" categories
 const LOOKING_FOR_CATEGORIES = [
@@ -1240,12 +1241,10 @@ export default function Profile() {
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="title">Job Title</Label>
-                <Input
-                  id="title"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleInputChange}
-                  placeholder="Your job title"
+                <JobTitleCombobox
+                  value={formData.title || ''}
+                  onChange={(value) => setFormData({ ...formData, title: value })}
+                  placeholder="Select or type your job title"
                 />
               </div>
               <div className="grid gap-2 relative">

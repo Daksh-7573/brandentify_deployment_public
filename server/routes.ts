@@ -12,6 +12,7 @@ import {
   insertChatMessageSchema
 } from "@shared/schema";
 import { generateCareerAdvice } from "./services/ai-service";
+import { getJobTitleSuggestions } from "./services/title-suggestions";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const apiRouter = express.Router();
@@ -359,6 +360,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Profile data parsing endpoints
   apiRouter.post("/parse-resume", handleParseResume);
+  
+  // Job title suggestions endpoint
+  apiRouter.get("/job-title-suggestions", async (req: Request, res: Response) => {
+    try {
+      const query = req.query.q as string;
+      
+      if (!query || query.trim().length < 2) {
+        return res.status(200).json({ suggestions: [] });
+      }
+      
+      console.log(`Getting job title suggestions for query: "${query}"`);
+      
+      // Check if OpenAI API key is available
+      if (!process.env.OPENAI_API_KEY) {
+        console.error("OPENAI_API_KEY is not set. Cannot generate job title suggestions.");
+        return res.status(500).json({
+          error: "OpenAI API key not configured",
+          message: "Unable to generate suggestions without OpenAI API key configuration",
+          suggestions: []
+        });
+      }
+      
+      const suggestions = await getJobTitleSuggestions(query);
+      res.status(200).json({ suggestions });
+    } catch (error) {
+      console.error('Error getting job title suggestions:', error);
+      res.status(500).json({ 
+        message: "Failed to generate job title suggestions", 
+        suggestions: [] 
+      });
+    }
+  });
   
   // Keep old implementation as a backup, but it's not used anymore
   apiRouter.post("/parse-resume-old", async (req: Request, res: Response) => {
