@@ -10,6 +10,7 @@ import Landing from "@/pages/landing";
 import Dashboard from "@/pages/dashboard";
 import Profile from "@/pages/profile";
 import AICareer from "@/pages/ai-career";
+import SmartConnect from "@/pages/smart-connect";
 
 // Protected route component that checks if the user is authenticated
 function ProtectedRoute({ component: Component, ...rest }: { component: React.ComponentType, path: string }) {
@@ -45,6 +46,9 @@ function Router() {
       </Route>
       <Route path="/ai-career">
         <ProtectedRoute path="/ai-career" component={AICareer} />
+      </Route>
+      <Route path="/smart-connect">
+        <ProtectedRoute path="/smart-connect" component={SmartConnect} />
       </Route>
       <Route component={NotFound} />
     </Switch>
