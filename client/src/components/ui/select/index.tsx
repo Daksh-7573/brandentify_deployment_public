@@ -43,7 +43,7 @@ const SelectScrollUpButton = React.forwardRef<
     // Start a recurring throttled scroll
     intervalRef.current = setInterval(() => {
       // This is just to keep the button active - the actual scrolling is managed by Radix
-    }, 100); // Adjusted scroll speed (100ms between actions)
+    }, 50); // Fast scroll speed (50ms between actions)
   };
   
   const handleMouseUp = () => {
@@ -94,7 +94,7 @@ const SelectScrollDownButton = React.forwardRef<
     // Start a recurring throttled scroll
     intervalRef.current = setInterval(() => {
       // This is just to keep the button active - the actual scrolling is managed by Radix
-    }, 100); // Adjusted scroll speed (100ms between actions)
+    }, 50); // Fast scroll speed (50ms between actions)
   };
   
   const handleMouseUp = () => {
