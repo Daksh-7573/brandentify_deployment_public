@@ -104,6 +104,7 @@ export default function Profile() {
     "Toronto, Canada",
     "Vancouver, Canada",
     "Montreal, Canada",
+    "Hamilton, Canada",
     "Mexico City, Mexico",
     
     // Europe
@@ -162,6 +163,8 @@ export default function Profile() {
     "Bangalore, India",
     "Chennai, India",
     "Kolkata, India",
+    "Ahmedabad, India",
+    "Gandhinagar, India",
     "Dubai, UAE",
     "Abu Dhabi, UAE",
     "Istanbul, Turkey",
