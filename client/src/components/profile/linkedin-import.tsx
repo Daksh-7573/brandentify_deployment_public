@@ -37,6 +37,17 @@ export default function LinkedInImport() {
       
       const profileData = await response.json();
       
+      // Check if the response contains an error message
+      if (profileData.error) {
+        console.log("LinkedIn import error:", profileData.error);
+        toast({
+          title: "LinkedIn Import Unavailable",
+          description: profileData.message || profileData.error,
+          variant: "destructive"
+        });
+        return;
+      }
+      
       // Process the extracted data - add work experiences
       if (profileData.experiences && profileData.experiences.length > 0) {
         for (const exp of profileData.experiences) {
@@ -218,10 +229,11 @@ export default function LinkedInImport() {
       <CardContent className="pt-6">
         <h2 className="text-lg font-medium text-gray-900 mb-4">Import from LinkedIn</h2>
         
-        <Alert className="mb-4">
-          <AlertTitle>LinkedIn Profile Data Import</AlertTitle>
+        <Alert className="mb-4" variant="warning">
+          <AlertTitle>LinkedIn Profile Data Import (Demo Only)</AlertTitle>
           <AlertDescription>
-            Enter your LinkedIn profile URL to import your professional experience, education, and skills.
+            <p>This feature is currently in demonstration mode. Due to LinkedIn API limitations, actual profile data cannot be imported.</p>
+            <p className="mt-2">Please upload a resume or manually enter your professional information instead.</p>
           </AlertDescription>
         </Alert>
         
