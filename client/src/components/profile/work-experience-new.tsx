@@ -520,7 +520,7 @@ export default function WorkExperience() {
                     <SelectTrigger id="startYear">
                       <SelectValue placeholder="Year" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="max-h-[200px] overflow-y-auto">
                       {years.map(year => (
                         <SelectItem key={year} value={year}>
                           {year}
@@ -568,7 +568,7 @@ export default function WorkExperience() {
                         <SelectTrigger id="endYear">
                           <SelectValue placeholder="Year" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="max-h-[200px] overflow-y-auto">
                           {years.map(year => (
                             <SelectItem key={year} value={year}>
                               {year}

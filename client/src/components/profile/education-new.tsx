@@ -502,7 +502,7 @@ export default function Education() {
                     <SelectTrigger id="startYear">
                       <SelectValue placeholder="Year" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="max-h-[200px] overflow-y-auto">
                       {years.map(year => (
                         <SelectItem key={year} value={year}>
                           {year}
@@ -550,7 +550,7 @@ export default function Education() {
                         <SelectTrigger id="endYear">
                           <SelectValue placeholder="Year" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="max-h-[200px] overflow-y-auto">
                           {years.map(year => (
                             <SelectItem key={year} value={year}>
                               {year}
