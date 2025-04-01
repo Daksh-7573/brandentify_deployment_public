@@ -31,8 +31,15 @@ export function JobTitleCombobox({
   placeholder = "Select job title...",
   className,
   defaultSuggestions = [
+    // C-Suite Executive Titles
+    "Chief Executive Officer",
+    "Chief Operating Officer",
+    "Chief Financial Officer",
+    "Chief Technology Officer",
+    "Chief Marketing Officer",
+    // Common Professional Titles
     "Software Engineer",
-    "Product Manager",
+    "Product Manager", 
     "UX Designer",
     "Data Scientist",
     "Marketing Manager",

@@ -104,6 +104,13 @@ export async function getJobTitleSuggestions(input: string): Promise<string[]> {
     // Return filtered common titles as fallback
     const lowerInput = input.toLowerCase();
     const commonJobTitles = [
+      // C-Suite Executive Titles
+      "Chief Executive Officer",
+      "Chief Operating Officer",
+      "Chief Financial Officer",
+      "Chief Technology Officer",
+      "Chief Marketing Officer",
+      // Common Professional Titles
       "Software Engineer",
       "Product Manager",
       "Data Scientist",
