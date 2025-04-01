@@ -24,44 +24,74 @@ type CareerGoal = {
 // Define career goals for the dropdown
 const CAREER_GOALS: CareerGoal[] = [
   { 
-    value: "skill_development", 
-    label: "Skill Development", 
-    prompt: "What skills should I focus on developing to advance my career?"
+    value: "boost_career", 
+    label: "📈 Boost My Career", 
+    prompt: "What are the best strategies to boost my career right now?"
   },
   { 
-    value: "career_transition", 
-    label: "Career Transition", 
-    prompt: "How can I successfully transition to a new role or industry?"
+    value: "career_change", 
+    label: "💼 Career Change / Switch Industry", 
+    prompt: "How can I successfully transition to a new industry or role?"
   },
   { 
-    value: "career_advancement", 
-    label: "Career Advancement", 
-    prompt: "What strategies should I use to get promoted or advance to a senior position?"
+    value: "get_promotion", 
+    label: "🚀 Get a Promotion", 
+    prompt: "What strategies should I use to get promoted to the next level?"
   },
   { 
-    value: "education_planning", 
-    label: "Education Planning", 
-    prompt: "What certifications or education should I pursue for my career goals?"
+    value: "international_jobs", 
+    label: "🌍 Find International Job Opportunities", 
+    prompt: "How can I find and secure international job opportunities in my field?"
   },
   { 
-    value: "networking", 
-    label: "Networking Strategies", 
-    prompt: "How can I build a professional network that advances my career?"
+    value: "profile_visibility", 
+    label: "🔥 Boost My Profile Visibility", 
+    prompt: "What are the best ways to increase my professional visibility online?"
   },
   { 
-    value: "interview_preparation", 
-    label: "Interview Preparation", 
-    prompt: "How should I prepare for job interviews in my field?"
+    value: "thought_leadership", 
+    label: "🎤 Become a Thought Leader in My Industry", 
+    prompt: "How can I establish myself as a thought leader in my industry?"
   },
   { 
-    value: "salary_negotiation", 
-    label: "Salary Negotiation", 
-    prompt: "What's the best approach to negotiate my salary or compensation package?"
+    value: "personal_brand", 
+    label: "📝 Publish Articles & Build Personal Brand", 
+    prompt: "What's the most effective way to publish content and build my personal brand?"
   },
   { 
-    value: "market_trends", 
-    label: "Industry Trends", 
-    prompt: "What are the current trends in my industry that I should be aware of?"
+    value: "expand_network", 
+    label: "🤝 Expand My Professional Network", 
+    prompt: "What are the most effective strategies for expanding my professional network?"
+  },
+  { 
+    value: "launch_startup", 
+    label: "🚀 Launch My Startup", 
+    prompt: "What should I focus on when launching a startup in my industry?"
+  },
+  { 
+    value: "scale_business", 
+    label: "🏗 Scale My Business", 
+    prompt: "What are the key strategies for scaling my business to the next level?"
+  },
+  { 
+    value: "learn_skills", 
+    label: "🎓 Learn New Skills", 
+    prompt: "What new skills should I focus on learning for career advancement?"
+  },
+  { 
+    value: "certifications", 
+    label: "🏆 Get Industry Certifications", 
+    prompt: "Which industry certifications would be most valuable for my career progression?"
+  },
+  { 
+    value: "upskill", 
+    label: "🛠 Upskill for a Better Job", 
+    prompt: "What specific skills should I develop to qualify for a better position?"
+  },
+  { 
+    value: "become_consultant", 
+    label: "📊 Become a Consultant / Advisor", 
+    prompt: "How can I transition into consulting or advisory roles in my field?"
   }
 ];
 
@@ -74,7 +104,7 @@ export default function ChatInterface({ initialQuestion }: ChatInterfaceProps = 
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      message: `Hi ${user?.name?.split(' ')[0] || 'there'}! I'm Musk, your AI career advisor. Based on your profile, I see you're interested in advancing your career. Select a career goal below or ask me a question to get started!`,
+      message: `Hi ${user?.name?.split(' ')[0] || 'there'}! I'm Musk, your AI career advisor. 👋\n\nI can help with career strategy, skill development, and professional growth tailored to your profile. Select one of the goals from the dropdown below to get started with specific advice, or type your own question!`,
       sender: 'ai',
       timestamp: new Date()
     }
@@ -200,7 +230,7 @@ export default function ChatInterface({ initialQuestion }: ChatInterfaceProps = 
       {/* Chat Input */}
       <CardContent className="border-t border-gray-200 p-4">
         <div className="mb-4">
-          <Label htmlFor="career-goal" className="mb-2 block text-sm font-medium">Select your career goal:</Label>
+          <Label htmlFor="career-goal" className="mb-2 block text-sm font-medium">What are you trying to achieve? (Select a goal)</Label>
           <Select
             value={selectedGoal}
             onValueChange={(value) => {
@@ -220,7 +250,7 @@ export default function ChatInterface({ initialQuestion }: ChatInterfaceProps = 
             }}
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Choose a career goal" />
+              <SelectValue placeholder="Select a goal to get tailored advice" />
             </SelectTrigger>
             <SelectContent>
               {CAREER_GOALS.map((goal) => (
