@@ -14,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { AuthContext } from "@/context/auth-context";
 import { useLocation } from "wouter";
 import { MobileSignupForm } from "./mobile-signup-form";
@@ -255,9 +256,10 @@ export function PhoneAuth() {
               <FormItem>
                 <FormLabel>Phone Number</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="+1234567890"
-                    {...field}
+                  <PhoneInput
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Mobile number"
                     disabled={isSubmitting}
                   />
                 </FormControl>
