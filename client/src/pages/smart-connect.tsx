@@ -112,35 +112,68 @@ const EXPERIENCE_LEVELS = [
 ];
 
 // Define "I am looking for" categories
-const LOOKING_FOR_OPTIONS = [
+// Define complementary relationship mapping for Smart Connect algorithm
+// Each key maps to its complementary value(s) for cross-matching
+const COMPLEMENTARY_RELATIONS = {
   // Career & Job Seeking category
-  { value: "job_opportunities", label: "💼 Job Opportunities" },
-  { value: "job_seekers", label: "💼 Job Seekers / Candidates" },
-  { value: "internships", label: "💼 Internships" },
-  { value: "interns", label: "💼 Interns" },
-  { value: "mentors", label: "💼 Career Mentors" },
-  { value: "mentees", label: "💼 Career Mentees" },
+  "job_opportunities": ["job_seekers"],
+  "job_seekers": ["job_opportunities"],
+  "internships": ["interns"],
+  "interns": ["internships"],
+  "mentors": ["mentees"],
+  "mentees": ["mentors"],
   
-  // Business & Investment category  
-  { value: "investors", label: "🚀 Investors" },
-  { value: "startups", label: "🚀 Startups" },
-  { value: "co_founders", label: "🚀 Co-Founders" },
-  { value: "business_partners", label: "🚀 Business Partners" },
-  { value: "advisors", label: "🚀 Legal/Financial Advisors" },
-  { value: "tech_partners", label: "🚀 Technical Partners" },
+  // Business & Investment category
+  "investors": ["startups"],
+  "startups": ["investors", "tech_partners", "advisors"],
+  "co_founders": ["business_partners", "co_founders"],
+  "business_partners": ["co_founders", "business_partners"],
+  "advisors": ["startups"],
+  "tech_partners": ["startups"],
   
   // Learning & Upskilling category
-  { value: "skill_trainers", label: "🎓 Skill Trainers" },
-  { value: "learners", label: "🎓 Students/Learners" },
-  { value: "study_groups", label: "🎓 Study Groups" },
+  "skill_trainers": ["learners"],
+  "learners": ["skill_trainers", "study_groups"],
+  "study_groups": ["learners", "study_groups"],
   
   // Networking & Collaborations category
-  { value: "industry_experts", label: "🤝 Industry Experts" },
-  { value: "share_expertise", label: "🤝 Sharing My Expertise" },
+  "industry_experts": ["share_expertise"],
+  "share_expertise": ["industry_experts"],
   
   // Freelance & Side Hustle category
-  { value: "freelance_gigs", label: "💰 Freelance Gigs" },
-  { value: "hiring_freelancers", label: "💰 Hiring Freelancers" },
+  "freelance_gigs": ["hiring_freelancers"],
+  "hiring_freelancers": ["freelance_gigs"]
+};
+
+const LOOKING_FOR_OPTIONS = [
+  // Career & Job Seeking category
+  { value: "job_opportunities", label: "💼 Job Opportunities", category: "Career & Job Seeking" },
+  { value: "job_seekers", label: "💼 Job Seekers / Candidates", category: "Career & Job Seeking" },
+  { value: "internships", label: "💼 Internships", category: "Career & Job Seeking" },
+  { value: "interns", label: "💼 Interns", category: "Career & Job Seeking" },
+  { value: "mentors", label: "💼 Career Mentors", category: "Career & Job Seeking" },
+  { value: "mentees", label: "💼 Career Mentees", category: "Career & Job Seeking" },
+  
+  // Business & Investment category  
+  { value: "investors", label: "🚀 Investors", category: "Business & Investment" },
+  { value: "startups", label: "🚀 Startups", category: "Business & Investment" },
+  { value: "co_founders", label: "🚀 Co-Founders", category: "Business & Investment" },
+  { value: "business_partners", label: "🚀 Business Partners", category: "Business & Investment" },
+  { value: "advisors", label: "🚀 Legal/Financial Advisors", category: "Business & Investment" },
+  { value: "tech_partners", label: "🚀 Technical Partners", category: "Business & Investment" },
+  
+  // Learning & Upskilling category
+  { value: "skill_trainers", label: "🎓 Skill Trainers", category: "Learning & Upskilling" },
+  { value: "learners", label: "🎓 Students/Learners", category: "Learning & Upskilling" },
+  { value: "study_groups", label: "🎓 Study Groups", category: "Learning & Upskilling" },
+  
+  // Networking & Collaborations category
+  { value: "industry_experts", label: "🤝 Industry Experts", category: "Networking & Collaborations" },
+  { value: "share_expertise", label: "🤝 Sharing My Expertise", category: "Networking & Collaborations" },
+  
+  // Freelance & Side Hustle category
+  { value: "freelance_gigs", label: "💰 Freelance Gigs", category: "Freelance & Side Hustle" },
+  { value: "hiring_freelancers", label: "💰 Hiring Freelancers", category: "Freelance & Side Hustle" },
 ];
 
 // Popular locations for suggestions
@@ -705,15 +738,31 @@ const popularLocations = [
     "Digital Nomad, Latin America"
 ];
 
-// Mock function to simulate AI matchmaking process
-// In a real implementation, this would be a backend API call
+// Smart Connect algorithm with complementary matching logic
+// This version matches profiles based on complementary needs
 const findMatches = async (formData: MatchmakingFormData) => {
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 1500));
   
-  // For now, we'll return mock profiles as matches
-  // In the actual implementation, this would be replaced with real API calls
-  return [
+  // First, determine the complementary match types for the user's selection
+  const userLookingFor = formData.lookingFor;
+  let complementaryTypes: string[] = [];
+  
+  // Check if there are complementary types defined for this lookingFor value
+  // Using type assertion to fix TypeScript issue with indexing
+  if (COMPLEMENTARY_RELATIONS[userLookingFor as keyof typeof COMPLEMENTARY_RELATIONS]) {
+    complementaryTypes = COMPLEMENTARY_RELATIONS[userLookingFor as keyof typeof COMPLEMENTARY_RELATIONS];
+  }
+  
+  // For a real implementation, this would query the database for users with matching complementary lookingFor values
+  // For now, we'll simulate this with mock profiles
+  
+  // Get the category for the user's selection (for showing in the match details)
+  const userCategory = LOOKING_FOR_OPTIONS.find(opt => opt.value === userLookingFor)?.category || "";
+  
+  // Sample professional profiles with complementary needs
+  // In a real implementation, these would be fetched from the database where lookingFor is in complementaryTypes
+  const matchProfiles = [
     {
       id: 101,
       name: "Alex Johnson",
@@ -721,14 +770,16 @@ const findMatches = async (formData: MatchmakingFormData) => {
       location: "San Francisco, CA, USA",
       industry: "IT & Software",
       domain: "AI/ML Development",
+      lookingFor: "job_opportunities", // This is complementary to job_seekers
       matchPercentage: 95,
       profilePictureUrl: "https://randomuser.me/api/portraits/men/32.jpg",
       skills: ["Python", "TensorFlow", "Machine Learning", "React", "AWS"],
       matchDetails: {
-        industryMatch: 100,
-        domainMatch: 100,
-        experienceMatch: 90,
-        locationMatch: 90
+        complementaryMatch: userLookingFor === "job_seekers" ? 100 : 0,
+        industryMatch: formData.industry === "IT & Software" ? 100 : 60,
+        domainMatch: formData.domain === "AI/ML Development" ? 100 : 70,
+        experienceMatch: formData.experienceLevel === "Senior" ? 100 : 80,
+        locationMatch: formData.location.includes("San Francisco") || formData.location.includes("CA") ? 100 : 60
       }
     },
     {
@@ -738,14 +789,16 @@ const findMatches = async (formData: MatchmakingFormData) => {
       location: "New York City, USA",
       industry: "IT & Software",
       domain: "Software Development",
+      lookingFor: "mentees", // This is complementary to mentors
       matchPercentage: 87,
       profilePictureUrl: "https://randomuser.me/api/portraits/women/68.jpg",
       skills: ["Product Strategy", "Agile", "UX/UI", "Data Analysis", "Technical Requirements"],
       matchDetails: {
-        industryMatch: 100,
-        domainMatch: 80,
-        experienceMatch: 85,
-        locationMatch: 75
+        complementaryMatch: userLookingFor === "mentors" ? 100 : 0,
+        industryMatch: formData.industry === "IT & Software" ? 100 : 60,
+        domainMatch: formData.domain === "Software Development" ? 100 : 70,
+        experienceMatch: formData.experienceLevel === "Senior" ? 90 : 70,
+        locationMatch: formData.location.includes("New York") || formData.location.includes("NYC") ? 100 : 60
       }
     },
     {
@@ -755,17 +808,114 @@ const findMatches = async (formData: MatchmakingFormData) => {
       location: "Seattle, WA, USA",
       industry: "IT & Software",
       domain: "UI/UX Design",
+      lookingFor: "startups", // This is complementary to investors or tech_partners
       matchPercentage: 82,
       profilePictureUrl: "https://randomuser.me/api/portraits/men/75.jpg",
       skills: ["Figma", "Adobe XD", "User Research", "Wireframing", "Prototyping"],
       matchDetails: {
-        industryMatch: 100,
-        domainMatch: 80,
-        experienceMatch: 80,
-        locationMatch: 70
+        complementaryMatch: (userLookingFor === "investors" || userLookingFor === "tech_partners") ? 100 : 0,
+        industryMatch: formData.industry === "IT & Software" ? 100 : 60,
+        domainMatch: formData.domain === "UI/UX Design" ? 100 : 70,
+        experienceMatch: formData.experienceLevel === "Senior" ? 90 : 80,
+        locationMatch: formData.location.includes("Seattle") || formData.location.includes("WA") ? 100 : 60
+      }
+    },
+    {
+      id: 104,
+      name: "Priya Sharma",
+      title: "Startup Founder",
+      location: "Bangalore, India",
+      industry: "Finance & Banking",
+      domain: "Fintech",
+      lookingFor: "investors", // This is complementary to startups
+      matchPercentage: 89,
+      profilePictureUrl: "https://randomuser.me/api/portraits/women/45.jpg",
+      skills: ["Business Development", "Entrepreneurship", "Finance", "Leadership", "Fundraising"],
+      matchDetails: {
+        complementaryMatch: userLookingFor === "investors" ? 100 : 0,
+        industryMatch: formData.industry === "Finance & Banking" ? 100 : 60,
+        domainMatch: formData.domain === "Fintech" ? 100 : 70,
+        experienceMatch: formData.experienceLevel === "Director" ? 90 : 70,
+        locationMatch: formData.location.includes("India") || formData.location.includes("Bangalore") ? 100 : 60
+      }
+    },
+    {
+      id: 105,
+      name: "James Wilson",
+      title: "Freelance Developer",
+      location: "Remote, Worldwide",
+      industry: "IT & Software",
+      domain: "Mobile App Development",
+      lookingFor: "freelance_gigs", // This is complementary to hiring_freelancers
+      matchPercentage: 91,
+      profilePictureUrl: "https://randomuser.me/api/portraits/men/52.jpg",
+      skills: ["iOS", "Android", "React Native", "Flutter", "UI Design"],
+      matchDetails: {
+        complementaryMatch: userLookingFor === "hiring_freelancers" ? 100 : 0,
+        industryMatch: formData.industry === "IT & Software" ? 100 : 60,
+        domainMatch: formData.domain === "Mobile App Development" ? 100 : 70,
+        experienceMatch: formData.experienceLevel === "Senior" ? 90 : 70,
+        locationMatch: formData.location.includes("Remote") ? 100 : 60
       }
     }
   ];
+  
+  // Calculate match percentages based on weighted criteria (50% industry/domain, 25% experience, 15% location, 10% other)
+  // And with complementary matching as a key factor
+  const weightedMatches = matchProfiles.map(profile => {
+    // Check if this profile's lookingFor is in the complementary types for the user
+    const isComplementaryMatch = complementaryTypes.includes(profile.lookingFor);
+    
+    // If there are complementary types defined and this isn't a match, significantly reduce the match score
+    if (complementaryTypes.length > 0 && !isComplementaryMatch) {
+      // Still return the profile but with reduced match percentage
+      return {
+        ...profile,
+        matchPercentage: Math.round(profile.matchPercentage * 0.4), // 60% reduction for non-complementary matches
+        matchDetails: {
+          ...profile.matchDetails,
+          complementaryMatch: 0
+        }
+      };
+    }
+    
+    // For complementary matches, calculate a weighted score
+    // The weights match our requirements: Industry/Domain (50%), Experience (25%), Location (15%), Profile Completeness (10%)
+    const industryDomainWeight = 0.5;
+    const experienceWeight = 0.25;
+    const locationWeight = 0.15;
+    const profileCompletenessWeight = 0.10;
+    
+    const industryDomainScore = (profile.matchDetails.industryMatch + profile.matchDetails.domainMatch) / 2;
+    const experienceScore = profile.matchDetails.experienceMatch;
+    const locationScore = profile.matchDetails.locationMatch;
+    
+    // For profile completeness, we'll use a fixed value for now
+    // In a real implementation, this would be calculated based on the profile's completeness
+    const profileCompletenessScore = 85;
+    
+    // Calculate the weighted score
+    const weightedScore = 
+      (industryDomainScore * industryDomainWeight) +
+      (experienceScore * experienceWeight) +
+      (locationScore * locationWeight) +
+      (profileCompletenessScore * profileCompletenessWeight);
+    
+    // Boost score for complementary matches
+    const finalScore = isComplementaryMatch ? Math.min(100, weightedScore * 1.15) : weightedScore;
+    
+    return {
+      ...profile,
+      matchPercentage: Math.round(finalScore),
+      matchDetails: {
+        ...profile.matchDetails,
+        complementaryMatch: isComplementaryMatch ? 100 : 0
+      }
+    };
+  });
+  
+  // Sort matches by matchPercentage in descending order
+  return weightedMatches.sort((a, b) => b.matchPercentage - a.matchPercentage);
 };
 
 interface MatchmakingFormData {
@@ -784,10 +934,12 @@ interface ProfileMatch {
   location: string;
   industry: string;
   domain: string;
+  lookingFor?: string; // The user's "I am looking for" value
   matchPercentage: number;
   profilePictureUrl: string;
   skills: string[];
   matchDetails: {
+    complementaryMatch?: number; // Matching score for complementary lookingFor values
     industryMatch: number;
     domainMatch: number;
     experienceMatch: number;
@@ -1416,8 +1568,8 @@ export default function SmartConnectPage() {
                     </CardTitle>
                     <CardDescription>
                       {showMatchResults
-                        ? "Based on your criteria, here are your top matches"
-                        : "Complete the form to find your ideal matches"}
+                        ? "Based on your criteria, here are professionals with complementary needs that match your requirements"
+                        : "Complete the form to find your ideal complementary matches"}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="min-h-[400px]">
@@ -1429,8 +1581,8 @@ export default function SmartConnectPage() {
                         <div>
                           <h3 className="font-medium text-lg">Find Your Perfect Professional Match</h3>
                           <p className="text-gray-500 text-sm mt-2">
-                            Fill out the criteria on the left to discover professionals who match your requirements.
-                            Our AI will analyze profiles and present you with the best matches.
+                            Fill out the criteria on the left to discover professionals with complementary needs.
+                            Our AI will analyze profiles to match you with the right people based on what you're looking for and what they can offer.
                           </p>
                         </div>
                       </div>
@@ -1479,6 +1631,29 @@ export default function SmartConnectPage() {
                             </div>
                             <div className="flex flex-col justify-between gap-2 min-w-[120px]">
                               <div className="space-y-2">
+                                {/* Show complementary match information if available */}
+                                {match.lookingFor && (
+                                  <div>
+                                    <div className="text-xs font-medium mb-1">Looking For:</div>
+                                    <Badge variant={match.matchDetails.complementaryMatch && match.matchDetails.complementaryMatch > 0 ? "default" : "outline"} className="w-full justify-center mb-2">
+                                      {LOOKING_FOR_OPTIONS.find(opt => opt.value === match.lookingFor)?.label.replace(/^[^a-zA-Z]+/, '') || match.lookingFor}
+                                    </Badge>
+                                  </div>
+                                )}
+                                
+                                {match.matchDetails.complementaryMatch !== undefined && (
+                                  <>
+                                    <div className="flex items-center justify-between text-xs">
+                                      <span>Complementary Match</span>
+                                      <span className={`font-medium ${match.matchDetails.complementaryMatch > 0 ? "text-green-600" : ""}`}>
+                                        {match.matchDetails.complementaryMatch}%
+                                        {match.matchDetails.complementaryMatch > 0 && ' ✓'}
+                                      </span>
+                                    </div>
+                                    <Progress value={match.matchDetails.complementaryMatch} className={`h-1 ${match.matchDetails.complementaryMatch > 0 ? "bg-green-100" : ""}`} />
+                                  </>
+                                )}
+                                
                                 <div className="flex items-center justify-between text-xs">
                                   <span>Industry</span>
                                   <span className="font-medium">{match.matchDetails.industryMatch}%</span>
