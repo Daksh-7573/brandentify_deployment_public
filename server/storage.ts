@@ -382,6 +382,7 @@ export class MemStorage implements IStorage {
       const updatedVerification: OtpVerification = {
         ...existingVerification,
         otp: insertVerification.otp,
+        expiresAt: insertVerification.expiresAt,
         verified: false,
         createdAt: new Date()
       };
@@ -412,10 +413,9 @@ export class MemStorage implements IStorage {
     const verification = await this.getOtpVerificationByPhoneNumber(phoneNumber);
     if (!verification) return false;
     
-    // Check if the OTP has expired (10 minutes validity)
+    // Check if the OTP has expired using the expiresAt field
     const now = new Date();
-    const expiryTime = new Date(verification.createdAt.getTime() + 10 * 60 * 1000); // 10 minutes in milliseconds
-    if (now > expiryTime) return false;
+    if (now > verification.expiresAt) return false;
     
     // Check if the OTP matches
     if (verification.otp !== otp) return false;

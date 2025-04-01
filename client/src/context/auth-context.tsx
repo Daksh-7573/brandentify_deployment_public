@@ -10,6 +10,7 @@ import {
 import { auth, googleProvider } from "../lib/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { User } from "@shared/schema";
 
 type AuthUser = {
   uid: string;
@@ -26,9 +27,10 @@ type AuthContextType = {
   isLoading: boolean;
   isDemoMode: boolean;
   signInWithGoogle: () => Promise<void>;
+  signInWithPhone: (user: User) => void; // New function for phone authentication
   signOut: () => Promise<void>;
   enterDemoMode: () => void;
-  refreshUserData: () => Promise<void>; // New function to refresh user data
+  refreshUserData: () => Promise<void>;
 };
 
 export const AuthContext = createContext<AuthContextType>({
@@ -37,6 +39,7 @@ export const AuthContext = createContext<AuthContextType>({
   isLoading: true,
   isDemoMode: false,
   signInWithGoogle: async () => {},
+  signInWithPhone: () => {},
   signOut: async () => {},
   enterDemoMode: () => {},
   refreshUserData: async () => {},
@@ -165,6 +168,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Phone auth implementation
+  const signInWithPhone = (userData: User) => {
+    setIsLoading(true);
+    
+    try {
+      // Convert database user to our AuthUser type
+      setUser({
+        uid: userData.id.toString(),
+        email: userData.email,
+        name: userData.name,
+        photoURL: userData.photoURL,
+        title: userData.title || undefined,
+        location: userData.location || undefined
+      });
+      
+      toast({
+        title: "Phone verified successfully",
+        description: "Welcome to Brandentifier"
+      });
+    } catch (error) {
+      console.error("Error signing in with phone:", error);
+      toast({
+        title: "Sign in failed",
+        description: "There was a problem signing in with phone verification",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
   const signOut = async () => {
     try {
       if (isDemoMode) {
@@ -310,6 +344,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isLoading,
         isDemoMode,
         signInWithGoogle,
+        signInWithPhone,
         signOut,
         enterDemoMode,
         refreshUserData

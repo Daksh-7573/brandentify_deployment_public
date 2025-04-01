@@ -938,6 +938,88 @@ ${extractedText.substring(0, 5000)}
       });
     }
   });
+  
+  // Phone authentication routes
+  apiRouter.post("/request-otp", async (req: Request, res: Response) => {
+    try {
+      const { phoneNumber } = req.body;
+      
+      if (!phoneNumber) {
+        return res.status(400).json({ message: "Phone number is required" });
+      }
+      
+      // Generate a random 6-digit OTP
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      
+      // Store the OTP in our storage with expiry time (10 minutes from now)
+      const expiresAt = new Date();
+      expiresAt.setMinutes(expiresAt.getMinutes() + 10);
+      
+      await storage.createOtpVerification({
+        phoneNumber,
+        otp,
+        expiresAt
+      });
+      
+      // In a real application, you would send the OTP via SMS here
+      // For development purposes, we'll just return success
+      console.log(`OTP generated for ${phoneNumber}: ${otp}`);
+      
+      return res.status(200).json({ 
+        message: "OTP sent successfully",
+        // Include the OTP in the response for testing purposes only
+        // In production, this would be removed
+        otp 
+      });
+    } catch (error) {
+      console.error("Error generating OTP:", error);
+      return res.status(500).json({ message: "Failed to generate OTP" });
+    }
+  });
+  
+  apiRouter.post("/verify-otp", async (req: Request, res: Response) => {
+    try {
+      const { phoneNumber, otp } = req.body;
+      
+      if (!phoneNumber || !otp) {
+        return res.status(400).json({ message: "Phone number and OTP are required" });
+      }
+      
+      // Verify the OTP
+      const isValid = await storage.verifyOtp(phoneNumber, otp);
+      
+      if (!isValid) {
+        return res.status(400).json({ message: "Invalid or expired OTP" });
+      }
+      
+      // Get or create a user for this phone number
+      let user = await storage.getUserByPhoneNumber(phoneNumber);
+      
+      if (!user) {
+        // Create a new user if one doesn't exist
+        user = await storage.createUser({
+          username: `user_${Date.now()}`, // Generate a unique username
+          email: `${Date.now()}@example.com`, // Generate a unique email (placeholder)
+          phoneNumber,
+          name: null,
+          photoURL: null,
+          title: null,
+          location: null,
+          industry: null,
+          lookingFor: null,
+          profileCompleted: 10, // Start with low completion
+        });
+      }
+      
+      return res.status(200).json({ 
+        message: "OTP verified successfully",
+        user 
+      });
+    } catch (error) {
+      console.error("Error verifying OTP:", error);
+      return res.status(500).json({ message: "Failed to verify OTP" });
+    }
+  });
 
   app.use("/api", apiRouter);
 

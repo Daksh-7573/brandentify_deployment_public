@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
 
 export default function Landing() {
-  const { signInWithGoogle, enterDemoMode, isLoading, isAuthenticated } = useAuth();
+  const { enterDemoMode, isLoading, isAuthenticated } = useAuth();
   const [_, setLocation] = useLocation();
 
   // Redirect to dashboard if already authenticated - using useEffect to avoid state updates during render
@@ -37,10 +37,10 @@ export default function Landing() {
               <Button 
                 variant="default" 
                 className="ml-4"
-                onClick={signInWithGoogle}
+                onClick={() => setLocation('/auth')}
                 disabled={isLoading}
               >
-                {isLoading ? "Signing in..." : "Sign in"}
+                {isLoading ? "Loading..." : "Sign in"}
               </Button>
             </div>
           </div>
@@ -65,10 +65,10 @@ export default function Landing() {
                     <Button 
                       size="lg"
                       className="w-full flex items-center justify-center px-8 py-3 md:py-4 md:text-lg md:px-10"
-                      onClick={signInWithGoogle}
+                      onClick={() => setLocation('/auth')}
                       disabled={isLoading}
                     >
-                      <i className="fab fa-google mr-2"></i> Sign up with Google
+                      Sign up now
                     </Button>
                   </div>
                   <div className="mt-3 sm:mt-0 sm:ml-3">
