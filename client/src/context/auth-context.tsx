@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect, ReactNode } from "react";
 import { 
-  signInWithRedirect, 
+  signInWithRedirect,
+  signInWithPopup,
   getRedirectResult,
   signOut as firebaseSignOut, 
   onAuthStateChanged, 
@@ -182,9 +183,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       googleProvider.addScope('email');
       googleProvider.addScope('profile');
       
-      // Use redirect instead of popup for better compatibility
-      await signInWithRedirect(auth, googleProvider);
-      // Note: We won't reach this point immediately as the page will redirect
+      // Try popup instead of redirect
+      console.log("Attempting Google sign-in with popup...");
+      const result = await signInWithPopup(auth, googleProvider);
+      
+      // If we get here, popup was successful
+      console.log("Google sign-in successful:", result.user);
+      
+      // Convert Firebase user to our AuthUser type
+      if (result.user) {
+        setUser({
+          uid: result.user.uid,
+          email: result.user.email,
+          name: result.user.displayName,
+          photoURL: result.user.photoURL
+        });
+        
+        // Create or update user in our backend
+        await createOrUpdateUserInBackend(result.user);
+        
+        toast({
+          title: "Successfully signed in!",
+          description: "Welcome to Brandentifier"
+        });
+      }
     } catch (error: any) {
       console.error("Error signing in with Google:", error);
       
@@ -193,10 +215,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       if (error.code === 'auth/configuration-not-found') {
         errorMessage = "Firebase authentication is not properly configured. Please check your Firebase setup in the console.";
+        console.log("Detailed error:", error);
       } else if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
         errorMessage = "Sign-in popup was blocked or closed. Please try again.";
       } else if (error.code === 'auth/unauthorized-domain') {
-        errorMessage = "This domain is not authorized for Firebase authentication. Please add it to your Firebase configuration.";
+        errorMessage = "This domain is not authorized for Firebase authentication. Please add it to your Firebase console under Auth > Settings > Authorized domains.";
+        console.log("Current domain:", window.location.hostname);
       } else if (error.message) {
         errorMessage = `Error: ${error.message}`;
       }
@@ -206,6 +230,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         description: errorMessage,
         variant: "destructive"
       });
+    } finally {
       setIsLoading(false);
     }
   };
