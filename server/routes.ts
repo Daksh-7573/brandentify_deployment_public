@@ -16,6 +16,29 @@ import { generateCareerAdvice } from "./services/ai-service";
 export async function registerRoutes(app: Express): Promise<Server> {
   const apiRouter = express.Router();
   
+  // Add a special endpoint to clear demo user experiences (for development purposes)
+  apiRouter.get("/debug/reset-demo-experience", async (req: Request, res: Response) => {
+    try {
+      console.log("Clearing all demo user experiences");
+      // Get all existing experiences for user 1
+      const experiences = await storage.getWorkExperiencesByUserId(1);
+      
+      // Delete all existing experiences
+      for (const exp of experiences) {
+        await storage.deleteWorkExperience(exp.id);
+      }
+      
+      console.log(`Deleted ${experiences.length} work experiences from user 1`);
+      res.status(200).json({ 
+        message: "Successfully cleared all work experiences for the demo user",
+        deletedCount: experiences.length 
+      });
+    } catch (error) {
+      console.error("Error clearing demo experiences:", error);
+      res.status(500).json({ message: "Failed to clear demo experiences" });
+    }
+  });
+  
   // User routes
   apiRouter.post("/users", async (req: Request, res: Response) => {
     try {

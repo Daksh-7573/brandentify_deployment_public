@@ -82,30 +82,33 @@ export class MemStorage implements IStorage {
    * Initialize demo data for development and testing
    */
   private initializeDemoData() {
-    // Create demo user 
+    // Create demo user with proper photoURL and other required fields
     const demoUser: User = {
       id: 1,
       username: "user1",
       email: "user1@example.com",
       name: "Senior Professional",
+      photoURL: null,
       title: "Senior Software Engineer",
       location: "San Francisco, CA, USA",
+      profileCompleted: 65,
       createdAt: new Date()
     };
     this.users.set(demoUser.id, demoUser);
     this.currentUserId++;
     
-    // No default work experiences - these should be added by the resume parser
+    // Clear any existing work experiences for the demo user
+    this.workExperiences.clear();
     
     // Add baseline education entries (empty by default)
     const education: Education = {
       id: 1,
       userId: 1,
-      degree: "Not specified",
-      institution: "Not specified",
-      location: "Not specified",
-      startDate: "Not specified",
-      endDate: "Not specified"
+      degree: "Bachelor of Science",
+      institution: "University",
+      location: "San Francisco, CA",
+      startDate: "2014",
+      endDate: "2018"
     };
     this.educations.set(education.id, education);
     this.currentEducationId++;
@@ -128,6 +131,21 @@ export class MemStorage implements IStorage {
     this.skills.set(skill1.id, skill1);
     this.skills.set(skill2.id, skill2);
     this.currentSkillId += 2;
+  }
+  
+  /**
+   * Clears all work experience data for a user
+   * Used for debugging and resetting demo data
+   */
+  async clearUserWorkExperiences(userId: number): Promise<number> {
+    let deleted = 0;
+    for (const [id, exp] of this.workExperiences.entries()) {
+      if (exp.userId === userId) {
+        this.workExperiences.delete(id);
+        deleted++;
+      }
+    }
+    return deleted;
   }
 
   // User operations
