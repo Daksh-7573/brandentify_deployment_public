@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { format, isValid, parse } from "date-fns";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
 type SimpleDatePickerProps = {
@@ -40,8 +39,11 @@ export function SimpleDatePicker({
   };
 
   const [dateValues, setDateValues] = useState(parseInitialDate());
-  const [monthOpen, setMonthOpen] = useState(false);
-  const [yearOpen, setYearOpen] = useState(false);
+  const [monthDropdownOpen, setMonthDropdownOpen] = useState(false);
+  const [yearDropdownOpen, setYearDropdownOpen] = useState(false);
+  
+  const monthRef = useRef<HTMLDivElement>(null);
+  const yearRef = useRef<HTMLDivElement>(null);
   
   // Month and year suggestions
   const months = [
@@ -82,6 +84,23 @@ export function SimpleDatePicker({
     );
   };
 
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (monthRef.current && !monthRef.current.contains(event.target as Node)) {
+        setMonthDropdownOpen(false);
+      }
+      if (yearRef.current && !yearRef.current.contains(event.target as Node)) {
+        setYearDropdownOpen(false);
+      }
+    }
+    
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   // Update the component when the value prop changes
   useEffect(() => {
     setDateValues(parseInitialDate());
@@ -112,45 +131,37 @@ export function SimpleDatePicker({
   // Handle input changes
   const handleMonthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value;
-    // Allow typing
     setDateValues(prev => ({ ...prev, month: input }));
     
     // Show suggestions when typing
-    if (input && !disabled) {
-      setMonthOpen(true);
+    if (!disabled) {
+      setMonthDropdownOpen(true);
     }
     
-    // Handle validation on blur
+    // Handle validation and update date value
     const newMonth = validateMonth(input);
-    if (newMonth !== input) {
-      setDateValues(prev => ({ ...prev, month: newMonth }));
-    }
-    
     updateDateValue({ ...dateValues, month: newMonth });
   };
 
   const handleDayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newDay = validateDay(e.target.value);
-    setDateValues({ ...dateValues, day: newDay });
+    const input = e.target.value;
+    setDateValues(prev => ({ ...prev, day: input }));
+    
+    const newDay = validateDay(input);
     updateDateValue({ ...dateValues, day: newDay });
   };
 
   const handleYearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value;
-    // Allow typing
     setDateValues(prev => ({ ...prev, year: input }));
     
     // Show suggestions when typing
-    if (input && !disabled) {
-      setYearOpen(true);
+    if (!disabled) {
+      setYearDropdownOpen(true);
     }
     
-    // Handle validation on blur
+    // Handle validation and update date value
     const newYear = validateYear(input);
-    if (newYear !== input) {
-      setDateValues(prev => ({ ...prev, year: newYear }));
-    }
-    
     updateDateValue({ ...dateValues, year: newYear });
   };
 
@@ -174,41 +185,39 @@ export function SimpleDatePicker({
   };
 
   // Handle suggestion selection
-  const selectMonth = (value: string) => {
+  const selectMonth = (value: string, label: string) => {
     setDateValues(prev => ({ ...prev, month: value }));
     updateDateValue({ ...dateValues, month: value });
-    setMonthOpen(false);
+    setMonthDropdownOpen(false);
   };
 
   const selectYear = (value: string) => {
     setDateValues(prev => ({ ...prev, year: value }));
     updateDateValue({ ...dateValues, year: value });
-    setYearOpen(false);
+    setYearDropdownOpen(false);
   };
 
   return (
     <div className={`flex items-center space-x-2 ${className}`}>
-      <div className="relative">
+      <div className="relative" ref={monthRef}>
         <Input
           className="w-16"
           placeholder="MM"
           value={dateValues.month}
           onChange={handleMonthChange}
+          onFocus={() => !disabled && setMonthDropdownOpen(true)}
+          onBlur={() => setTimeout(() => setMonthDropdownOpen(false), 200)}
           maxLength={2}
           disabled={disabled}
-          onFocus={() => !disabled && setMonthOpen(true)}
-          onClick={() => !disabled && setMonthOpen(true)}
         />
-        <Popover open={monthOpen && !disabled} onOpenChange={setMonthOpen}>
-          <PopoverTrigger className="sr-only">
-            <span>Month</span>
-          </PopoverTrigger>
-          <PopoverContent className="p-0 w-40 max-h-60 overflow-auto" align="start">
-            <div className="grid gap-1">
+        {monthDropdownOpen && !disabled && (
+          <div className="absolute z-50 w-40 max-h-60 overflow-auto bg-white border border-gray-200 rounded-md shadow-md mt-1">
+            <div className="grid gap-1 p-1">
               {getFilteredMonths().map((month) => (
                 <button
                   key={month.value}
-                  onClick={() => selectMonth(month.value)}
+                  type="button"
+                  onClick={() => selectMonth(month.value, month.label)}
                   className="px-2 py-1 text-left hover:bg-accent rounded-sm flex items-center"
                 >
                   <span className="mr-2">{month.value}</span>
@@ -219,8 +228,8 @@ export function SimpleDatePicker({
                 <div className="px-2 py-1 text-muted-foreground">No matches</div>
               )}
             </div>
-          </PopoverContent>
-        </Popover>
+          </div>
+        )}
       </div>
       
       <span className="text-gray-500">/</span>
@@ -236,26 +245,24 @@ export function SimpleDatePicker({
       
       <span className="text-gray-500">/</span>
       
-      <div className="relative">
+      <div className="relative" ref={yearRef}>
         <Input
           className="w-20"
           placeholder="YYYY"
           value={dateValues.year}
           onChange={handleYearChange}
+          onFocus={() => !disabled && setYearDropdownOpen(true)}
+          onBlur={() => setTimeout(() => setYearDropdownOpen(false), 200)}
           maxLength={4}
           disabled={disabled}
-          onFocus={() => !disabled && setYearOpen(true)}
-          onClick={() => !disabled && setYearOpen(true)}
         />
-        <Popover open={yearOpen && !disabled} onOpenChange={setYearOpen}>
-          <PopoverTrigger className="sr-only">
-            <span>Year</span>
-          </PopoverTrigger>
-          <PopoverContent className="p-0 w-24 max-h-60 overflow-auto" align="start">
-            <div className="grid gap-1">
+        {yearDropdownOpen && !disabled && (
+          <div className="absolute z-50 w-24 max-h-60 overflow-auto bg-white border border-gray-200 rounded-md shadow-md mt-1">
+            <div className="grid gap-1 p-1">
               {getFilteredYears().map((year) => (
                 <button
                   key={year.value}
+                  type="button"
                   onClick={() => selectYear(year.value)}
                   className="px-2 py-1 text-left hover:bg-accent rounded-sm"
                 >
@@ -266,8 +273,8 @@ export function SimpleDatePicker({
                 <div className="px-2 py-1 text-muted-foreground">No matches</div>
               )}
             </div>
-          </PopoverContent>
-        </Popover>
+          </div>
+        )}
       </div>
     </div>
   );
