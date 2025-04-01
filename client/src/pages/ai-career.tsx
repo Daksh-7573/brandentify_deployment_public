@@ -75,9 +75,9 @@ export default function AICareer() {
     if (user?.name) score += 20;
     if (user?.title) score += 20;
     if (user?.location) score += 10;
-    if (skills?.length > 0) score += 20;
-    if (experiences?.length > 0) score += 20;
-    if (educations?.length > 0) score += 10;
+    if (skills && Array.isArray(skills) && skills.length > 0) score += 20;
+    if (experiences && Array.isArray(experiences) && experiences.length > 0) score += 20;
+    if (educations && Array.isArray(educations) && educations.length > 0) score += 10;
     return score;
   };
 
@@ -164,7 +164,7 @@ export default function AICareer() {
                       <Skeleton className="h-6 w-16 rounded-full" />
                       <Skeleton className="h-6 w-24 rounded-full" />
                     </div>
-                  ) : skills?.length ? (
+                  ) : skills && Array.isArray(skills) && skills.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
                       {skills.map((skill: any) => (
                         <Badge key={skill.id} variant="secondary" className="px-2 py-1">
@@ -186,7 +186,7 @@ export default function AICareer() {
                       <Skeleton className="h-4 w-full" />
                       <Skeleton className="h-4 w-3/4" />
                     </div>
-                  ) : experiences?.length ? (
+                  ) : experiences && Array.isArray(experiences) && experiences.length > 0 ? (
                     <div className="text-sm space-y-1">
                       {experiences.slice(0, 2).map((exp: any) => (
                         <p key={exp.id}>
@@ -210,7 +210,7 @@ export default function AICareer() {
                       <Skeleton className="h-4 w-full" />
                       <Skeleton className="h-4 w-2/3" />
                     </div>
-                  ) : educations?.length ? (
+                  ) : educations && Array.isArray(educations) && educations.length > 0 ? (
                     <div className="text-sm">
                       {educations.slice(0, 2).map((edu: any) => (
                         <p key={edu.id}>

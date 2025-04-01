@@ -1,5 +1,6 @@
 import { Skill, WorkExperience, Education } from "@shared/schema";
 import OpenAI from "openai";
+import { storage } from "../storage";
 
 // Initialize OpenAI with your API key
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -9,7 +10,8 @@ export async function generateCareerAdvice(
   skills: Skill[],
   experiences: WorkExperience[],
   educations: Education[],
-  careerGoal?: string
+  careerGoal?: string,
+  userId: number = 1 // Default to demo user ID
 ): Promise<string> {
   try {
     // Format user profile information
@@ -28,31 +30,82 @@ export async function generateCareerAdvice(
       : "No education details provided";
 
     // Create a prompt with user profile and query
-    // Enhance the profile information with more structured details
+    // Format skills as a detailed list with proficiency levels
+    const formattedSkills = skills.length > 0 
+      ? skills.map((skill: any) => {
+          return `- ${skill.name}: ${skill.level || 'Proficiency level not specified'} ${skill.proficiency ? `(${skill.proficiency}% proficient)` : ''}`;
+        }).join('\n')
+      : "No specific skills provided in profile.";
+    
+    // Format experiences with detailed information
+    const formattedExperiences = experiences.length > 0
+      ? experiences.map((exp: any) => {
+          return `- ${exp.title} at ${exp.company} (${exp.startDate} to ${exp.endDate || 'Present'})\n  Description: ${exp.description || 'No detailed description provided'}`;
+        }).join('\n\n')
+      : "No work experience provided in profile.";
+    
+    // Format education with detailed information
+    const formattedEducation = educations.length > 0
+      ? educations.map((edu: any) => {
+          return `- ${edu.degree} from ${edu.institution} (${edu.startDate} to ${edu.endDate || 'Present'})`;
+        }).join('\n')
+      : "No education details provided in profile.";
+    
+    // Extract user information from the query metadata if available
+    let userName = "";
+    let userTitle = "";
+    let userLocation = "";
+    
+    if (userId) {
+      try {
+        // Use the storage to get user info directly instead of fetch
+        const userData = await storage.getUser(userId);
+        if (userData) {
+          userName = userData.name || "";
+          userTitle = userData.title || "";
+          userLocation = userData.location || "";
+        }
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      }
+    }
+    
+    // Create a very detailed profile analysis
     const profileAnalysis = `
       DETAILED PROFILE ANALYSIS:
       
-      Skills: ${skillsText ? skillsText : "No specific skills provided. Focus on identifying core strengths and development areas."}
+      Basic Information:
+      - Name: ${userName || "Not provided"}
+      - Current Role: ${userTitle || "Not specified"}
+      - Location: ${userLocation || "Not specified"}
       
-      Work Experience: ${experiencesText ? experiencesText : "No work experience provided. Consider discussing ways to gain relevant experience or transferable skills."}
+      Skills Analysis:
+      ${formattedSkills}
       
-      Education: ${educationsText ? educationsText : "No education details provided. Consider discussing educational paths that align with career goals."}
+      Work Experience Analysis:
+      ${formattedExperiences}
+      
+      Education Analysis:
+      ${formattedEducation}
       
       Career Goal: ${careerGoal || "No specific career goal provided"}
     `;
     
-    // Create a more comprehensive prompt with detailed instructions
+    // Create a strict step-by-step process for the AI to follow
     let expertContent = `
       ${profileAnalysis}
       
       User Question: ${message}
       
-      As a career expert, first analyze the profile details above thoroughly before providing advice.
-      Make connections between their skills, experience, education, and career aspirations.
-      Identify strengths, gaps, and growth opportunities specific to this individual.
-      Provide industry-specific insights relevant to their field or desired field.
+      ATTENTION! You MUST analyze the specific profile information above in a thorough manner before providing advice.
+      FIRST, explicitly identify the key elements of their profile that inform your analysis.
+      NEXT, reference specific skills, experiences, or background information from their profile in your response.
+      THEN, tailor your advice specifically to this individual's situation.
+      FINALLY, provide industry-specific insights relevant to their field (${userTitle || "technology"}).
       
-      For reference, the current date is April 1, 2025.
+      DO NOT give generic career advice that could apply to anyone. Your response must demonstrate that you analyzed their specific profile.
+      
+      Current date: April 1, 2025
     `;
     
     // Create the OpenAI API call

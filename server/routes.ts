@@ -339,7 +339,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           userSkills,
           userExperiences,
           userEducations,
-          careerGoal
+          careerGoal,
+          userId // Pass the userId to the AI service
         );
         
         // Save the AI response
