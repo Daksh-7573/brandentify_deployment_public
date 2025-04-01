@@ -1,15 +1,19 @@
 import { useState, useEffect, useRef } from "react";
+import { format } from "date-fns";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Loader2 } from "lucide-react";
+import { Loader2, CalendarIcon } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
 type WorkExperienceItem = {
   id: number;
@@ -85,6 +89,10 @@ export default function WorkExperience() {
     endDate: '',
     description: ''
   });
+  
+  // For date pickers
+  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
 
   const handleAdd = () => {
     setIsAddModalOpen(true);
@@ -101,6 +109,9 @@ export default function WorkExperience() {
       endDate: '',
       description: ''
     });
+    // Reset date pickers
+    setStartDate(undefined);
+    setEndDate(undefined);
   };
   
   const handleSaveExperience = async () => {
@@ -145,6 +156,10 @@ export default function WorkExperience() {
           endDate: '',
           description: ''
         });
+        
+        // Reset date pickers
+        setStartDate(undefined);
+        setEndDate(undefined);
       } else {
         throw new Error("Failed to save experience");
       }
@@ -191,8 +206,16 @@ export default function WorkExperience() {
   }, [serverExperiences]);
   
   // Always use the latest data for display, using direct ref access as a fallback
-  const displayExperiences = experiences.length > 0 ? experiences : 
+  const unfilteredExperiences = experiences.length > 0 ? experiences : 
                            (latestDataRef.current.length > 0 ? latestDataRef.current : []);
+  
+  // Sort experiences by start date (newest first)
+  const displayExperiences = [...unfilteredExperiences].sort((a, b) => {
+    // Try to parse dates or use string comparison if parsing fails
+    const dateA = a.startDate;
+    const dateB = b.startDate;
+    return dateB.localeCompare(dateA); // Reverse order for newest first
+  });
 
   const { toast } = useToast();
 
@@ -303,26 +326,81 @@ export default function WorkExperience() {
               <Label htmlFor="startDate" className="text-right">
                 Start Date*
               </Label>
-              <Input
-                id="startDate"
-                value={newExperience.startDate}
-                onChange={(e) => setNewExperience({...newExperience, startDate: e.target.value})}
-                className="col-span-3"
-                placeholder="Jan 2022"
-                required
-              />
+              <div className="col-span-3">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !startDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {startDate ? format(startDate, "PPP") : <span>Pick a date</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={startDate}
+                      onSelect={(date) => {
+                        setStartDate(date);
+                        if (date) {
+                          setNewExperience({
+                            ...newExperience,
+                            startDate: format(date, "MMM yyyy")
+                          });
+                        }
+                      }}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="endDate" className="text-right">
                 End Date
               </Label>
-              <Input
-                id="endDate"
-                value={newExperience.endDate}
-                onChange={(e) => setNewExperience({...newExperience, endDate: e.target.value})}
-                className="col-span-3"
-                placeholder="Present (or leave empty for current job)"
-              />
+              <div className="col-span-3">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !endDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {endDate ? format(endDate, "PPP") : <span>Pick a date or leave empty for 'Present'</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={endDate}
+                      onSelect={(date) => {
+                        setEndDate(date);
+                        if (date) {
+                          setNewExperience({
+                            ...newExperience,
+                            endDate: format(date, "MMM yyyy")
+                          });
+                        } else {
+                          // If date is cleared, set 'Present'
+                          setNewExperience({
+                            ...newExperience,
+                            endDate: 'Present'
+                          });
+                        }
+                      }}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
             </div>
             <div className="grid grid-cols-4 items-start gap-4">
               <Label htmlFor="description" className="text-right pt-2">
