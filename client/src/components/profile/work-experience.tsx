@@ -34,21 +34,35 @@ export default function WorkExperience() {
   // Force a direct fetch every time the component renders
   useEffect(() => {
     async function directFetch() {
-      console.log("Work Experience - Directly fetching latest experiences data");
+      const timestamp = new Date().getTime(); // Add timestamp to prevent caching
+      console.log(`Work Experience - Directly fetching latest experiences data (${timestamp})`);
       try {
-        const response = await fetch(`/api/users/${userId}/experiences`, {
+        const response = await fetch(`/api/users/${userId}/experiences?_=${timestamp}`, {
           method: 'GET',
-          headers: { 'Cache-Control': 'no-cache, no-store' }
+          headers: { 
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
         });
         const freshData = await response.json();
         console.log("Work Experience - Got direct fetch data:", freshData);
-        setExperiences(freshData || []);
+        // Force update
+        if (freshData && Array.isArray(freshData)) {
+          setExperiences([...freshData]);
+          // Update the ref as well
+          latestDataRef.current = [...freshData];
+        }
       } catch (error) {
         console.error("Error during direct fetch:", error);
       }
     }
     
     directFetch();
+    
+    // Poll every second
+    const interval = setInterval(directFetch, 1000);
+    return () => clearInterval(interval);
   }, [userId]); // Only re-run when userId changes
   
   // Use fetched data if available, otherwise use empty array

@@ -32,21 +32,35 @@ export default function Education() {
   // Force a direct fetch every time the component renders
   useEffect(() => {
     async function directFetch() {
-      console.log("Education - Directly fetching latest education data");
+      const timestamp = new Date().getTime(); // Add timestamp to prevent caching
+      console.log(`Education - Directly fetching latest education data (${timestamp})`);
       try {
-        const response = await fetch(`/api/users/${userId}/educations`, {
+        const response = await fetch(`/api/users/${userId}/educations?_=${timestamp}`, {
           method: 'GET',
-          headers: { 'Cache-Control': 'no-cache, no-store' }
+          headers: { 
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
         });
         const freshData = await response.json();
         console.log("Education - Got direct fetch data:", freshData);
-        setEducations(freshData || []);
+        // Force update
+        if (freshData && Array.isArray(freshData)) {
+          setEducations([...freshData]);
+          // Update the ref as well
+          latestDataRef.current = [...freshData];
+        }
       } catch (error) {
         console.error("Error during direct education fetch:", error);
       }
     }
     
     directFetch();
+    
+    // Poll every second
+    const interval = setInterval(directFetch, 1000);
+    return () => clearInterval(interval);
   }, [userId]); // Only re-run when userId changes
   
   // Use fetched data if available, otherwise use empty array

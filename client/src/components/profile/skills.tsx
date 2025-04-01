@@ -30,21 +30,35 @@ export default function Skills() {
   // Force a direct fetch every time the component renders
   useEffect(() => {
     async function directFetch() {
-      console.log("Skills - Directly fetching latest skills data");
+      const timestamp = new Date().getTime(); // Add timestamp to prevent caching
+      console.log(`Skills - Directly fetching latest skills data (${timestamp})`);
       try {
-        const response = await fetch(`/api/users/${userId}/skills`, {
+        const response = await fetch(`/api/users/${userId}/skills?_=${timestamp}`, {
           method: 'GET',
-          headers: { 'Cache-Control': 'no-cache, no-store' }
+          headers: { 
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
         });
         const freshData = await response.json();
         console.log("Skills - Got direct fetch data:", freshData);
-        setSkills(freshData || []);
+        // Force update
+        if (freshData && Array.isArray(freshData)) {
+          setSkills([...freshData]);
+          // Update the ref as well
+          latestDataRef.current = [...freshData];
+        }
       } catch (error) {
         console.error("Error during direct skills fetch:", error);
       }
     }
     
     directFetch();
+    
+    // Poll every second
+    const interval = setInterval(directFetch, 1000);
+    return () => clearInterval(interval);
   }, [userId]); // Only re-run when userId changes
   
   // Use fetched data if available, otherwise use empty array
