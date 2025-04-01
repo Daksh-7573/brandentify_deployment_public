@@ -5,6 +5,211 @@ import OpenAI from "openai";
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 /**
+ * Parse structured resume text (output from GPT-based processing)
+ */
+function parseStructuredResumeText(text: string): {
+  experiences: InsertWorkExperience[];
+  educations: InsertEducation[];
+  skills: InsertSkill[];
+  title?: string;
+  location?: string;
+  error?: string;
+} {
+  console.log("Parsing structured resume text");
+  
+  try {
+    // Extract work experience section
+    const workExpSection = text.match(/WORK EXPERIENCE|EMPLOYMENT HISTORY|PROFESSIONAL EXPERIENCE[\s\S]*?(?=EDUCATION|SKILLS|BASIC INFO|$)/i)?.[0] || '';
+    
+    // Extract education section
+    const educationSection = text.match(/EDUCATION[\s\S]*?(?=WORK EXPERIENCE|EMPLOYMENT HISTORY|SKILLS|BASIC INFO|$)/i)?.[0] || '';
+    
+    // Extract skills section
+    const skillsSection = text.match(/SKILLS[\s\S]*?(?=WORK EXPERIENCE|EMPLOYMENT HISTORY|EDUCATION|BASIC INFO|$)/i)?.[0] || '';
+    
+    // Extract basic info section
+    const basicInfoSection = text.match(/BASIC INFO[\s\S]*?(?=WORK EXPERIENCE|EMPLOYMENT HISTORY|EDUCATION|SKILLS|$)/i)?.[0] || '';
+    
+    console.log(`Found sections: 
+      - Work Experience: ${workExpSection.length > 0 ? 'Yes' : 'No'}
+      - Education: ${educationSection.length > 0 ? 'Yes' : 'No'}
+      - Skills: ${skillsSection.length > 0 ? 'Yes' : 'No'}
+      - Basic Info: ${basicInfoSection.length > 0 ? 'Yes' : 'No'}`);
+    
+    // Parse Work Experience
+    const experiences: InsertWorkExperience[] = [];
+    const expBlocks = workExpSection.split(/\n(?=[A-Z])/g).filter(block => 
+      block.trim().length > 10 && !block.trim().startsWith('WORK EXPERIENCE') && 
+      !block.trim().startsWith('EMPLOYMENT HISTORY'));
+    
+    for (const block of expBlocks) {
+      const lines = block.trim().split('\n').filter(line => line.trim().length > 0);
+      if (lines.length < 2) continue;
+      
+      // First line often contains title and company
+      const titleCompanyLine = lines[0];
+      const titleMatch = titleCompanyLine.match(/(.*?)(?:at|@|\s-\s|\sat\s)(.*)/i);
+      
+      let title = titleCompanyLine;
+      let company = '';
+      
+      if (titleMatch) {
+        title = titleMatch[1].trim();
+        company = titleMatch[2].trim();
+      } else if (lines.length > 1) {
+        // Try second line for company if not in first
+        company = lines[1].trim();
+      }
+      
+      // Look for dates
+      const dateMatch = block.match(/(\w+ \d{4})\s*(?:-|–|to)\s*(\w+ \d{4}|Present|Current)/i) || 
+                        block.match(/(\d{4})\s*(?:-|–|to)\s*(\d{4}|Present|Current)/i);
+      
+      const startDate = dateMatch ? dateMatch[1] : 'Unknown';
+      const endDate = dateMatch ? dateMatch[2] : null;
+      
+      // Look for location
+      const locationMatch = block.match(/(?:^|\n)([A-Za-z]+,\s*[A-Za-z]+|\w+\s+\w+,\s*[A-Z]{2})/);
+      const location = locationMatch ? locationMatch[1] : null;
+      
+      // Description is everything else
+      let description = lines.slice(2).join('\n').trim();
+      if (description.length === 0) description = null;
+      
+      if (title && company) {
+        experiences.push({
+          userId: 0,
+          title,
+          company,
+          startDate,
+          endDate,
+          location,
+          description
+        });
+      }
+    }
+    
+    // Parse Education
+    const educations: InsertEducation[] = [];
+    const eduBlocks = educationSection.split(/\n(?=[A-Z])/g).filter(block => 
+      block.trim().length > 10 && !block.trim().startsWith('EDUCATION'));
+    
+    for (const block of eduBlocks) {
+      const lines = block.trim().split('\n').filter(line => line.trim().length > 0);
+      if (lines.length < 1) continue;
+      
+      // First line often contains degree or institution
+      let degree = '';
+      let institution = '';
+      
+      const firstLine = lines[0].trim();
+      
+      if (firstLine.match(/Bachelor|Master|PhD|Doctorate|B\.S\.|M\.S\.|B\.A\.|M\.A\.|MBA|Associate/i)) {
+        degree = firstLine;
+        institution = lines.length > 1 ? lines[1].trim() : '';
+      } else {
+        institution = firstLine;
+        // Look for degree in subsequent lines
+        const degreeMatch = block.match(/Bachelor|Master|PhD|Doctorate|B\.S\.|M\.S\.|B\.A\.|M\.A\.|MBA|Associate/i);
+        if (degreeMatch && lines.length > 1) {
+          for (let i = 1; i < lines.length; i++) {
+            if (lines[i].match(degreeMatch[0])) {
+              degree = lines[i].trim();
+              break;
+            }
+          }
+        }
+      }
+      
+      // Look for dates
+      const dateMatch = block.match(/(\w+ \d{4})\s*(?:-|–|to)\s*(\w+ \d{4}|Present|Current)/i) || 
+                        block.match(/(\d{4})\s*(?:-|–|to)\s*(\d{4}|Present|Current)/i);
+      
+      const startDate = dateMatch ? dateMatch[1] : 'Unknown';
+      const endDate = dateMatch ? dateMatch[2] : null;
+      
+      // Look for location
+      const locationMatch = block.match(/(?:^|\n)([A-Za-z]+,\s*[A-Za-z]+|\w+\s+\w+,\s*[A-Z]{2})/);
+      const location = locationMatch ? locationMatch[1] : null;
+      
+      if (degree && institution) {
+        educations.push({
+          userId: 0,
+          degree,
+          institution,
+          startDate,
+          endDate,
+          location
+        });
+      }
+    }
+    
+    // Parse Skills
+    const skills: InsertSkill[] = [];
+    const skillMatches = skillsSection.replace(/^SKILLS:?\s*/i, '').match(/[^,\n]+/g) || [];
+    
+    for (const skill of skillMatches) {
+      const trimmedSkill = skill.trim();
+      if (trimmedSkill.length > 0 && !trimmedSkill.match(/^SKILLS$/i)) {
+        skills.push({
+          userId: 0,
+          name: trimmedSkill,
+          level: "Intermediate",
+          proficiency: 60
+        });
+      }
+    }
+    
+    // Parse Basic Info
+    let title: string | undefined = undefined;
+    let location: string | undefined = undefined;
+    
+    const titleMatch = basicInfoSection.match(/Title:?\s*([^\n]+)/i);
+    if (titleMatch) {
+      title = titleMatch[1].trim();
+    }
+    
+    const locationMatch = basicInfoSection.match(/Location:?\s*([^\n]+)/i);
+    if (locationMatch) {
+      location = locationMatch[1].trim();
+    }
+    
+    console.log(`Structured parsing complete:
+      - Work Experiences: ${experiences.length}
+      - Educations: ${educations.length}
+      - Skills: ${skills.length}
+      - Title: ${title || 'None'}
+      - Location: ${location || 'None'}`);
+    
+    if (experiences.length === 0 && educations.length === 0 && skills.length === 0) {
+      return {
+        experiences: [],
+        educations: [],
+        skills: [],
+        error: "No information could be extracted from the structured resume data"
+      };
+    }
+    
+    return {
+      experiences,
+      educations,
+      skills,
+      title,
+      location
+    };
+    
+  } catch (error: any) {
+    console.error("Error parsing structured resume data:", error);
+    return {
+      experiences: [],
+      educations: [],
+      skills: [],
+      error: `Failed to parse structured resume data: ${error.message}`
+    };
+  }
+}
+
+/**
  * Rule-based resume parser following algorithm from requirements
  * This implementation focuses on extracting only data that's clearly present
  * and providing empty fields when data cannot be confidently extracted
@@ -18,7 +223,7 @@ export async function parseResumeText(resumeText: string): Promise<{
   error?: string;
 }> {
   try {
-    console.log("Starting rule-based resume parsing with text length:", resumeText.length);
+    console.log("Starting resume parsing with text length:", resumeText.length);
     console.log("First 200 characters of text:", resumeText.substring(0, 200));
     
     // Safeguard against empty or very short text
@@ -30,6 +235,22 @@ export async function parseResumeText(resumeText: string): Promise<{
         skills: [],
         error: "Resume text is too short or empty to analyze"
       };
+    }
+    
+    // Check if this is structured output from the GPT parser
+    // GPT parsers typically include section headers like WORK EXPERIENCE, EDUCATION, SKILLS, etc.
+    const hasStructuredSections = 
+      resumeText.includes("WORK EXPERIENCE") || 
+      resumeText.includes("EMPLOYMENT HISTORY") ||
+      resumeText.includes("EDUCATION") || 
+      resumeText.includes("SKILLS") ||
+      resumeText.includes("BASIC INFO");
+    
+    console.log(`Resume format check: ${hasStructuredSections ? 'Structured' : 'Unstructured'} format detected`);
+    
+    if (hasStructuredSections) {
+      console.log("Using structured section parser for GPT-formatted resume data");
+      return parseStructuredResumeText(resumeText);
     }
     
     try {

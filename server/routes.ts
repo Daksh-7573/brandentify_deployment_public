@@ -416,36 +416,118 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.log("OPENAI_API_KEY is available, proceeding with binary file processing");
           
           try {
-            // We'll use OpenAI to extract and process the information directly
-            const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+            // First, let's try to extract text from the PDF directly
+            console.log("Attempting to convert base64 PDF data to buffer");
+            const fileBuffer = Buffer.from(fileData, 'base64');
+            console.log(`File buffer size: ${fileBuffer.length} bytes`);
             
-            // Only use a portion of the data to stay within token limits
-            // Don't double-encode the base64 - that's causing binary corruption
-            const truncatedContent = fileData.substring(0, 25000);
-            console.log(`Truncated content length for API: ${truncatedContent.length} characters`);
+            // Let's check if it's a PDF by looking at magic numbers
+            const isPdf = fileBuffer.length > 4 && 
+                          fileBuffer[0] === 0x25 && // %
+                          fileBuffer[1] === 0x50 && // P
+                          fileBuffer[2] === 0x44 && // D
+                          fileBuffer[3] === 0x46;   // F
             
-            console.log("Sending request to OpenAI API...");
-            const response = await openai.chat.completions.create({
-              model: "gpt-4o",
-              messages: [
-                { 
-                  role: "system", 
-                  content: "You are an expert resume analyzer looking at a resume binary file. Extract professional information in a structured format." 
-                },
-                { 
-                  role: "user", 
-                  content: "I have a resume in base64 format. Please extract any professional information such as work experience, education, skills, job title, and location. Format your response in plain text that I can parse later.\n\nHere's the beginning of the base64 content (truncated):\n" + truncatedContent.substring(0, 200)
+            if (isPdf) {
+              console.log("PDF format confirmed by file signature");
+              try {
+                // Process PDF data using pdf.js
+                const pdfjsLib = await import('pdfjs-dist/legacy/build/pdf.js');
+                const pdfjsWorker = await import('pdfjs-dist/legacy/build/pdf.worker.js');
+                
+                pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
+                
+                console.log("Loading PDF document with pdf.js");
+                const pdf = await pdfjsLib.getDocument({ data: fileBuffer }).promise;
+                console.log(`PDF loaded successfully. Pages: ${pdf.numPages}`);
+                
+                let extractedText = '';
+                
+                for (let i = 1; i <= pdf.numPages; i++) {
+                  console.log(`Extracting text from page ${i} of ${pdf.numPages}`);
+                  const page = await pdf.getPage(i);
+                  const content = await page.getTextContent();
+                  const strings = content.items.map((item: any) => item.str);
+                  extractedText += strings.join(' ') + '\n';
                 }
-              ],
-              temperature: 0.1,
-            });
-            
-            console.log("OpenAI API response received successfully");
-            
-            // Now we use the response text as our input for further processing
-            resumeText = "Resume extracted from binary file:\n\n" + response.choices[0].message.content;
-            console.log("GPT extracted text from binary file for further processing");
-            console.log("Extracted text sample (first 200 chars):", resumeText.substring(0, 200));
+                
+                console.log(`Text extraction complete. Extracted ${extractedText.length} characters`);
+                console.log("Sample (first 300 chars):", extractedText.substring(0, 300).replace(/\n/g, ' '));
+                
+                // Now pass this extracted text to OpenAI for structured parsing
+                const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+                
+                console.log("Sending extracted text to OpenAI for structured parsing");
+                const response = await openai.chat.completions.create({
+                  model: "gpt-4o",
+                  messages: [
+                    { 
+                      role: "system", 
+                      content: `You are an expert resume parser that extracts structured information.
+                      Follow these guidelines strictly:
+                      1. Only extract information that is EXPLICITLY present in the resume
+                      2. Do not invent or infer missing information
+                      3. For work experience, extract job title, company, dates, and descriptions
+                      4. For education, extract degrees, institutions, and dates
+                      5. Extract all skills mentioned in the resume
+                      6. Extract current job title and location if present
+                      7. If a section is not found, return an empty array for it`
+                    },
+                    { 
+                      role: "user", 
+                      content: `Extract structured information from this resume text into clearly labeled sections.
+                      Include WORK EXPERIENCE, EDUCATION, SKILLS, and BASIC INFO (job title and location).
+                      
+                      Here is the resume text:
+                      
+                      ${extractedText}`
+                    }
+                  ],
+                  temperature: 0.1,
+                });
+                
+                console.log("OpenAI API response received successfully");
+                
+                // Now we use the response text as our input for further processing
+                resumeText = response.choices[0].message.content;
+                console.log("GPT parsed structured information from PDF");
+                console.log("Extracted text sample (first 300 chars):", resumeText.substring(0, 300).replace(/\n/g, ' '));
+              } catch (pdfError: any) {
+                console.error("Error extracting text from PDF:", pdfError);
+                throw new Error(`PDF extraction failed: ${pdfError.message}`);
+              }
+            } else {
+              // Not a PDF, try the original approach with OpenAI
+              console.log("Not a PDF, attempting direct OpenAI parsing of binary data");
+              const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+              
+              // Only use a portion of the data to stay within token limits
+              const truncatedContent = fileData.substring(0, 25000);
+              console.log(`Truncated content length for API: ${truncatedContent.length} characters`);
+              
+              console.log("Sending request to OpenAI API...");
+              const response = await openai.chat.completions.create({
+                model: "gpt-4o",
+                messages: [
+                  { 
+                    role: "system", 
+                    content: "You are an expert resume analyzer. Extract professional information in a structured format."
+                  },
+                  { 
+                    role: "user", 
+                    content: "I have a resume in base64 format. Please extract any professional information such as work experience, education, skills, job title, and location. Format your response in structured text with clear section headings."
+                  }
+                ],
+                temperature: 0.1,
+              });
+              
+              console.log("OpenAI API response received successfully");
+              
+              // Now we use the response text as our input for further processing
+              resumeText = "Resume extracted from binary file:\n\n" + response.choices[0].message.content;
+              console.log("GPT extracted text from binary file for further processing");
+              console.log("Extracted text sample (first 300 chars):", resumeText.substring(0, 300).replace(/\n/g, ' '));
+            }
           } catch (openaiError: any) {
             console.error("Error in OpenAI processing:", openaiError);
             return res.status(500).json({
