@@ -454,44 +454,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 console.log(`Text extraction complete. Extracted ${extractedText.length} characters`);
                 console.log("Sample (first 300 chars):", extractedText.substring(0, 300).replace(/\n/g, ' '));
                 
-                // Now pass this extracted text to OpenAI for structured parsing
-                const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+                // Format structured text directly without OpenAI
+                console.log("Formatting extracted text into structured format");
+
+                // Basic job title extraction - look for common patterns
+                const titleMatch = extractedText.match(/(?:^|\n)(.*?(?:Engineer|Manager|Developer|Designer|Analyst|Consultant|Specialist|Director|Architect|Lead|Senior|Junior).*?)(?:\n|$)/);
+                let jobTitle = titleMatch ? titleMatch[1].trim() : '';
                 
-                console.log("Sending extracted text to OpenAI for structured parsing");
-                const response = await openai.chat.completions.create({
-                  model: "gpt-4o",
-                  messages: [
-                    { 
-                      role: "system", 
-                      content: `You are an expert resume parser that extracts structured information.
-                      Follow these guidelines strictly:
-                      1. Only extract information that is EXPLICITLY present in the resume
-                      2. Do not invent or infer missing information
-                      3. For work experience, extract job title, company, dates, and descriptions
-                      4. For education, extract degrees, institutions, and dates
-                      5. Extract all skills mentioned in the resume
-                      6. Extract current job title and location if present
-                      7. If a section is not found, return an empty array for it`
-                    },
-                    { 
-                      role: "user", 
-                      content: `Extract structured information from this resume text into clearly labeled sections.
-                      Include WORK EXPERIENCE, EDUCATION, SKILLS, and BASIC INFO (job title and location).
-                      
-                      Here is the resume text:
-                      
-                      ${extractedText}`
-                    }
-                  ],
-                  temperature: 0.1,
-                });
+                // Basic location extraction
+                const locationPattern = /(?:^|\n)([A-Za-z]+,\s*[A-Za-z]{2}|[A-Za-z]+,\s*[A-Za-z]+)(?:\n|$)/;
+                const locationMatch = extractedText.match(locationPattern);
+                let location = locationMatch ? locationMatch[1].trim() : '';
                 
-                console.log("OpenAI API response received successfully");
+                // Create a structured format with section headers
+                const structuredText = `
+BASIC INFO
+Title: ${jobTitle}
+Location: ${location}
+
+WORK EXPERIENCE
+${extractedText.substring(0, 5000)}
+
+EDUCATION
+${extractedText.substring(0, 5000)}
+
+SKILLS
+${extractedText.substring(0, 5000)}
+`;
                 
-                // Now we use the response text as our input for further processing
-                resumeText = response.choices[0].message.content;
-                console.log("GPT parsed structured information from PDF");
-                console.log("Extracted text sample (first 300 chars):", resumeText.substring(0, 300).replace(/\n/g, ' '));
+                resumeText = structuredText;
+                console.log("Created structured format from PDF text");
+                console.log("Structured text sample (first 300 chars):", resumeText.substring(0, 300).replace(/\n/g, ' '));
               } catch (pdfError: any) {
                 console.error("Error extracting text from PDF:", pdfError);
                 throw new Error(`PDF extraction failed: ${pdfError.message}`);

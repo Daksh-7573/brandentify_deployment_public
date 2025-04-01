@@ -253,133 +253,55 @@ export async function parseResumeText(resumeText: string): Promise<{
       return parseStructuredResumeText(resumeText);
     }
     
-    try {
-      // Try to use OpenAI to enhance the resume parsing
-      console.log("Attempting to use OpenAI to enhance resume parsing");
+    // Skip using OpenAI to avoid 500 errors - use rule-based parsing only
+    console.log("Skipping OpenAI processing and using direct rule-based parsing");
+    
+    // Instead, add some fake structure if needed to help with rule-based parsing
+    if (!resumeText.includes("WORK EXPERIENCE") && 
+        !resumeText.includes("EDUCATION") && 
+        !resumeText.includes("SKILLS")) {
       
-      const completion = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content: `You are a resume parsing expert. Extract structured data from the resume text.
-Follow these strict guidelines:
-1. Only extract information that is EXPLICITLY present in the resume
-2. Do not make up or infer information that isn't clearly stated
-3. If a field isn't present, leave it as null
-4. Be strict about formatting dates exactly as they appear in the resume
-5. For skills, only include clearly mentioned skills
-6. If there's no data to extract, return empty arrays
-7. Maintain the exact formatting, capitalization and wording from the original resume
-8. DON'T CREATE ANY PLACEHOLDER OR FAKE DATA`
-          },
-          {
-            role: "user",
-            content: `Extract structured data from this resume in JSON format. 
-Only extract information that is EXPLICITLY present in the resume text.
-If you cannot find certain information, use null or empty arrays as appropriate.
-DO NOT create any placeholder or inferred data.
-
-The JSON format should be:
-{
-  "experiences": [
-    {
-      "title": "exact job title as written", 
-      "company": "exact company name as written",
-      "location": "location or null if not specified",
-      "startDate": "start date exactly as written",
-      "endDate": "end date exactly as written or null if not specified", 
-      "description": "full description or null if not specified"
-    }
-  ],
-  "educations": [
-    {
-      "degree": "exact degree name as written",
-      "institution": "exact institution name as written",
-      "location": "location or null if not specified",
-      "startDate": "start date exactly as written",
-      "endDate": "end date exactly as written or null"
-    }
-  ],
-  "skills": ["skill1", "skill2", "skill3"],
-  "basicInfo": {
-    "title": "job title or null if not clearly specified",
-    "location": "location or null if not clearly specified"
-  }
-}
-
-Here's the resume text:
-
-${resumeText ? resumeText.substring(0, 25000) : ""}`
-          }
-        ],
-        temperature: 0.1,
-        response_format: { type: "json_object" },
-      });
+      console.log("Adding section headers to improve rule-based parsing");
+      const sections = resumeText.split(/\n\s*\n/);
+      let structuredText = "";
       
-      console.log("Received OpenAI response for resume parsing");
+      // Try to guess what sections might be work experience, education, skills
+      const possibleExpKeywords = ["work", "experience", "employment", "career", "job", "position"];
+      const possibleEduKeywords = ["education", "university", "college", "degree", "school"];
+      const possibleSkillKeywords = ["skill", "proficiency", "competency", "ability"];
       
-      try {
-        // Parse the JSON response
-        const messageContent = completion.choices[0].message.content || "{}";
-        const jsonResponse = JSON.parse(messageContent);
-        console.log("Successfully parsed JSON from OpenAI response");
+      // Go through each section and try to label it
+      for (const section of sections) {
+        if (section.trim().length < 20) continue; // Skip very short sections
         
-        // Map to our schema
-        const experiences: InsertWorkExperience[] = (jsonResponse.experiences || [])
-          .filter((exp: any) => exp.title && exp.company)
-          .map((exp: any) => ({
-            userId: 0,
-            title: exp.title,
-            company: exp.company,
-            startDate: exp.startDate || "Unknown",
-            location: exp.location || null,
-            endDate: exp.endDate || null,
-            description: exp.description || null
-          }));
+        const lowerSection = section.toLowerCase();
         
-        const educations: InsertEducation[] = (jsonResponse.educations || [])
-          .filter((edu: any) => edu.degree && edu.institution)
-          .map((edu: any) => ({
-            userId: 0,
-            degree: edu.degree,
-            institution: edu.institution,
-            startDate: edu.startDate || "Unknown",
-            location: edu.location || null,
-            endDate: edu.endDate || null
-          }));
-        
-        const skills: InsertSkill[] = (jsonResponse.skills || [])
-          .filter((skill: string) => skill && typeof skill === 'string')
-          .map((skill: string) => ({
-            userId: 0,
-            name: skill,
-            level: "Intermediate",
-            proficiency: 60
-          }));
-        
-        console.log("Resume parsing with OpenAI complete", {
-          experienceCount: experiences.length,
-          educationCount: educations.length,
-          skillsCount: skills.length
-        });
-        
-        return {
-          experiences,
-          educations,
-          skills,
-          title: jsonResponse.basicInfo?.title,
-          location: jsonResponse.basicInfo?.location
-        };
-      } catch (jsonError: any) {
-        console.error("Error parsing JSON from OpenAI response:", jsonError);
-        console.log("Falling back to rule-based parsing due to JSON error");
-        // Continue with rule-based parsing below
+        // Check if this looks like work experience
+        if (possibleExpKeywords.some(keyword => lowerSection.includes(keyword))) {
+          structuredText += "\n\nWORK EXPERIENCE\n" + section + "\n";
+        }
+        // Check if this looks like education
+        else if (possibleEduKeywords.some(keyword => lowerSection.includes(keyword))) {
+          structuredText += "\n\nEDUCATION\n" + section + "\n";
+        }
+        // Check if this looks like skills
+        else if (possibleSkillKeywords.some(keyword => lowerSection.includes(keyword)) ||
+                 section.split(/[,•·⋅‣⁃⚬⦁◦▸►⟩▹▻∙]/g).length > 3) {
+          structuredText += "\n\nSKILLS\n" + section + "\n";
+        }
+        // Otherwise just add the section
+        else {
+          structuredText += "\n\n" + section + "\n";
+        }
       }
-    } catch (openaiError: any) {
-      console.error("Error using OpenAI for resume parsing:", openaiError);
-      console.log("Falling back to rule-based parsing due to OpenAI error");
-      // Continue with rule-based parsing below
+      
+      // If we've added some structure, use it
+      if (structuredText.includes("WORK EXPERIENCE") || 
+          structuredText.includes("EDUCATION") || 
+          structuredText.includes("SKILLS")) {
+        resumeText = structuredText;
+        console.log("Added structure to text for better parsing");
+      }
     }
     
     // Fallback: Parse the resume using structured extraction
