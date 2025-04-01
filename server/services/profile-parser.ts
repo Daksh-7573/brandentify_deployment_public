@@ -18,9 +18,106 @@ export async function parseResumeText(resumeText: string): Promise<{
   error?: string;
 }> {
   try {
-    console.log("Starting rule-based resume parsing");
+    console.log("Starting rule-based resume parsing with text length:", resumeText.length);
+    console.log("First 200 characters of text:", resumeText.substring(0, 200));
     
-    // Parse the resume using structured extraction
+    // Safeguard against empty or very short text
+    if (!resumeText || resumeText.length < 50) {
+      console.error("Resume text too short or empty:", resumeText);
+      return {
+        experiences: [],
+        educations: [],
+        skills: [],
+        error: "Resume text is too short or empty to analyze"
+      };
+    }
+    
+    try {
+      // Try to use OpenAI to enhance the resume parsing
+      console.log("Attempting to use OpenAI to enhance resume parsing");
+      
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: "You are a resume parsing expert. Extract structured data from the resume text."
+          },
+          {
+            role: "user",
+            content: `Extract structured data from this resume in JSON format. Format should include experiences (list of work experiences with title, company, location, startDate, endDate, description), educations (list with degree, institution, location, startDate, endDate), skills (list of skill names), and basic info (title, location). Here's the resume:\n\n${resumeText.substring(0, 10000)}`
+          }
+        ],
+        temperature: 0.1,
+        response_format: { type: "json_object" },
+      });
+      
+      console.log("Received OpenAI response for resume parsing");
+      
+      try {
+        // Parse the JSON response
+        const jsonResponse = JSON.parse(completion.choices[0].message.content);
+        console.log("Successfully parsed JSON from OpenAI response");
+        
+        // Map to our schema
+        const experiences: InsertWorkExperience[] = (jsonResponse.experiences || [])
+          .filter((exp: any) => exp.title && exp.company)
+          .map((exp: any) => ({
+            userId: 0,
+            title: exp.title,
+            company: exp.company,
+            startDate: exp.startDate || "Unknown",
+            location: exp.location || null,
+            endDate: exp.endDate || null,
+            description: exp.description || null
+          }));
+        
+        const educations: InsertEducation[] = (jsonResponse.educations || [])
+          .filter((edu: any) => edu.degree && edu.institution)
+          .map((edu: any) => ({
+            userId: 0,
+            degree: edu.degree,
+            institution: edu.institution,
+            startDate: edu.startDate || "Unknown",
+            location: edu.location || null,
+            endDate: edu.endDate || null
+          }));
+        
+        const skills: InsertSkill[] = (jsonResponse.skills || [])
+          .filter((skill: string) => skill && typeof skill === 'string')
+          .map((skill: string) => ({
+            userId: 0,
+            name: skill,
+            level: "Intermediate",
+            proficiency: 60
+          }));
+        
+        console.log("Resume parsing with OpenAI complete", {
+          experienceCount: experiences.length,
+          educationCount: educations.length,
+          skillsCount: skills.length
+        });
+        
+        return {
+          experiences,
+          educations,
+          skills,
+          title: jsonResponse.basicInfo?.title,
+          location: jsonResponse.basicInfo?.location
+        };
+      } catch (jsonError: any) {
+        console.error("Error parsing JSON from OpenAI response:", jsonError);
+        console.log("Falling back to rule-based parsing due to JSON error");
+        // Continue with rule-based parsing below
+      }
+    } catch (openaiError: any) {
+      console.error("Error using OpenAI for resume parsing:", openaiError);
+      console.log("Falling back to rule-based parsing due to OpenAI error");
+      // Continue with rule-based parsing below
+    }
+    
+    // Fallback: Parse the resume using structured extraction
+    console.log("Using rule-based parsing as fallback");
     const experienceBlocks = extractExperienceBlocks(resumeText);
     const educationBlocks = extractEducationBlocks(resumeText);
     const skillsList = extractSkills(resumeText);
@@ -58,19 +155,30 @@ export async function parseResumeText(resumeText: string): Promise<{
       proficiency: 60 // Default value
     }));
 
-    console.log("Resume parsing complete", {
+    console.log("Resume parsing complete with rule-based method", {
       experienceCount: experiences.length,
       educationCount: educations.length,
       skillsCount: skills.length
     });
 
-    return {
-      experiences,
-      educations,
-      skills,
-      title: basicInfo.title,
-      location: basicInfo.location
-    };
+    // Only return successful response if we have at least some data
+    if (experiences.length > 0 || educations.length > 0 || skills.length > 0) {
+      return {
+        experiences,
+        educations,
+        skills,
+        title: basicInfo.title,
+        location: basicInfo.location
+      };
+    } else {
+      console.error("No data extracted from resume");
+      return {
+        experiences: [],
+        educations: [],
+        skills: [],
+        error: "Could not extract any valid data from the resume"
+      };
+    }
   } catch (error: any) {
     console.error("Error in rule-based resume parsing:", error);
     return {
