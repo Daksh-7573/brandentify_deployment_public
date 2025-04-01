@@ -82,6 +82,44 @@ export default function Profile() {
     }
   });
 
+  // List of popular cities for location suggestions
+  const popularLocations = [
+    "New York, NY, USA",
+    "San Francisco, CA, USA",
+    "Los Angeles, CA, USA",
+    "Chicago, IL, USA",
+    "Seattle, WA, USA",
+    "Austin, TX, USA",
+    "Boston, MA, USA",
+    "Denver, CO, USA",
+    "Atlanta, GA, USA",
+    "Portland, OR, USA",
+    "Washington, DC, USA",
+    "San Diego, CA, USA",
+    "Miami, FL, USA",
+    "Dallas, TX, USA",
+    "Houston, TX, USA",
+    "Phoenix, AZ, USA",
+    "London, UK",
+    "Toronto, Canada",
+    "Vancouver, Canada",
+    "Sydney, Australia",
+    "Berlin, Germany",
+    "Paris, France",
+    "Amsterdam, Netherlands",
+    "Tokyo, Japan",
+    "Singapore",
+    "Hong Kong",
+    "Dublin, Ireland",
+    "Stockholm, Sweden",
+    "Zurich, Switzerland",
+    "Mumbai, India",
+    "Bangalore, India",
+  ];
+  
+  // State for location suggestions
+  const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
+  
   // Initialize form data when user data changes
   useEffect(() => {
     if (userData) {
@@ -100,6 +138,40 @@ export default function Profile() {
       ...prev,
       [name]: value
     }));
+    
+    // Handle location suggestions
+    if (name === 'location' && value.trim()) {
+      // Filter locations that match the input value
+      const inputValue = value.toLowerCase();
+      const filtered = popularLocations.filter(location => 
+        location.toLowerCase().includes(inputValue)
+      );
+      setLocationSuggestions(filtered.slice(0, 5)); // Limit to 5 suggestions
+    } else if (name === 'location' && !value.trim()) {
+      setLocationSuggestions([]);
+    }
+  };
+  
+  // Handle suggestion selection
+  const handleSuggestionSelect = (suggestion: string) => {
+    setFormData(prev => ({
+      ...prev,
+      location: suggestion
+    }));
+    setLocationSuggestions([]);
+  };
+  
+  // Reset suggestions when dialog closes
+  useEffect(() => {
+    if (!showEditBasicInfo) {
+      setLocationSuggestions([]);
+    }
+  }, [showEditBasicInfo]);
+  
+  // Event handler for location suggestion div to prevent bubbling
+  const handleSuggestionClick = (event: React.MouseEvent) => {
+    // Prevent event bubbling to keep dropdown open until selection
+    event.stopPropagation();
   };
 
   // Handle form submission
@@ -153,7 +225,7 @@ export default function Profile() {
                   placeholder="Your job title"
                 />
               </div>
-              <div className="grid gap-2">
+              <div className="grid gap-2 relative">
                 <Label htmlFor="location">Location</Label>
                 <Input
                   id="location"
@@ -161,7 +233,24 @@ export default function Profile() {
                   value={formData.location}
                   onChange={handleInputChange}
                   placeholder="Your location"
+                  autoComplete="off"
                 />
+                {locationSuggestions.length > 0 && (
+                  <div 
+                    className="absolute top-full left-0 right-0 z-10 bg-white border border-gray-200 rounded-md shadow-md mt-1 max-h-60 overflow-auto"
+                    onClick={handleSuggestionClick}
+                  >
+                    {locationSuggestions.map((suggestion, index) => (
+                      <div 
+                        key={index}
+                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                        onClick={() => handleSuggestionSelect(suggestion)}
+                      >
+                        {suggestion}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
             <DialogFooter>
