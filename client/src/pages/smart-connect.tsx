@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
@@ -1383,15 +1383,54 @@ export default function SmartConnectPage() {
                             value={formData.lookingFor}
                             onValueChange={(value) => setFormData({...formData, lookingFor: value})}
                           >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select what you're looking for" />
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="What are you looking for?" />
                             </SelectTrigger>
-                            <SelectContent>
-                              {LOOKING_FOR_OPTIONS.map(option => (
-                                <SelectItem key={option.value} value={option.value}>
-                                  {option.label}
-                                </SelectItem>
-                              ))}
+                            <SelectContent className="max-h-80">
+                              <SelectGroup>
+                                <SelectLabel>Career & Job Seeking</SelectLabel>
+                                {LOOKING_FOR_OPTIONS.filter(opt => opt.category === "Career & Job Seeking").map(option => (
+                                  <SelectItem key={option.value} value={option.value}>
+                                    {option.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectGroup>
+                              <SelectSeparator />
+                              <SelectGroup>
+                                <SelectLabel>Business & Investment</SelectLabel>
+                                {LOOKING_FOR_OPTIONS.filter(opt => opt.category === "Business & Investment").map(option => (
+                                  <SelectItem key={option.value} value={option.value}>
+                                    {option.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectGroup>
+                              <SelectSeparator />
+                              <SelectGroup>
+                                <SelectLabel>Learning & Upskilling</SelectLabel>
+                                {LOOKING_FOR_OPTIONS.filter(opt => opt.category === "Learning & Upskilling").map(option => (
+                                  <SelectItem key={option.value} value={option.value}>
+                                    {option.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectGroup>
+                              <SelectSeparator />
+                              <SelectGroup>
+                                <SelectLabel>Networking & Collaborations</SelectLabel>
+                                {LOOKING_FOR_OPTIONS.filter(opt => opt.category === "Networking & Collaborations").map(option => (
+                                  <SelectItem key={option.value} value={option.value}>
+                                    {option.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectGroup>
+                              <SelectSeparator />
+                              <SelectGroup>
+                                <SelectLabel>Freelance & Side Hustle</SelectLabel>
+                                {LOOKING_FOR_OPTIONS.filter(opt => opt.category === "Freelance & Side Hustle").map(option => (
+                                  <SelectItem key={option.value} value={option.value}>
+                                    {option.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectGroup>
                             </SelectContent>
                           </Select>
                         </div>
@@ -1411,7 +1450,7 @@ export default function SmartConnectPage() {
                             value={formData.experienceLevel}
                             onValueChange={(value) => setFormData({...formData, experienceLevel: value})}
                           >
-                            <SelectTrigger>
+                            <SelectTrigger className="w-full">
                               <SelectValue placeholder="Select experience level" />
                             </SelectTrigger>
                             <SelectContent>
@@ -1436,7 +1475,7 @@ export default function SmartConnectPage() {
                               });
                             }}
                           >
-                            <SelectTrigger>
+                            <SelectTrigger className="w-full">
                               <SelectValue placeholder="Select industry" />
                             </SelectTrigger>
                             <SelectContent>
@@ -1456,7 +1495,7 @@ export default function SmartConnectPage() {
                               value={formData.domain}
                               onValueChange={(value) => setFormData({...formData, domain: value})}
                             >
-                              <SelectTrigger>
+                              <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Select domain expertise" />
                               </SelectTrigger>
                               <SelectContent>
