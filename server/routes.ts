@@ -420,7 +420,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
             const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
             
             // Only use a portion of the data to stay within token limits
-            const truncatedContent = Buffer.from(fileData, 'base64').toString('base64').substring(0, 10000);
+            // Don't double-encode the base64 - that's causing binary corruption
+            const truncatedContent = fileData.substring(0, 25000);
             console.log(`Truncated content length for API: ${truncatedContent.length} characters`);
             
             console.log("Sending request to OpenAI API...");
@@ -434,9 +435,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 { 
                   role: "user", 
                   content: [
-                    "Here is a resume file in base64 format (truncated). Please analyze this data and extract the person's work experience, education, skills, job title, and location. This is the binary content of a resume file:",
-                    truncatedContent
-                  ].join("\n\n")
+                    {
+                      type: "text", 
+                      text: "Please analyze this resume file and extract the person's work experience, education, skills, job title, and location. Format your response as plain text that can be parsed later. Focus on extracting the actual text content from the document first."
+                    },
+                    {
+                      type: "image_url", 
+                      image_url: {
+                        url: `data:application/pdf;base64,${truncatedContent}`
+                      }
+                    }
+                  ]
                 }
               ],
               temperature: 0.1,
