@@ -16,6 +16,13 @@ export async function getJobTitleSuggestions(input: string): Promise<string[]> {
   try {
     // Standard common job titles as fallback if OpenAI fails
     const commonJobTitles = [
+      // Executive titles
+      "Chief Executive Officer",
+      "Chief Operating Officer",
+      "Chief Financial Officer", 
+      "Chief Technology Officer",
+      "Chief Marketing Officer",
+      // Regular professional titles
       "Software Engineer",
       "Product Manager",
       "Data Scientist",

@@ -402,6 +402,7 @@ export default function Profile() {
   const [formData, setFormData] = useState({
     name: '',
     title: '',
+    jobLevel: '',
     location: '',
     industry: '',
     domain: '',
@@ -1103,9 +1104,40 @@ export default function Profile() {
       setSelectedIndustry(mainIndustry);
       setSelectedDomain(domain);
       
+      // Parse job level from title if possible
+      let jobLevel = '';
+      let title = userData.title || '';
+      
+      // Check if the title starts with any of our job levels
+      const jobLevels = ['Senior', 'Junior', 'Director', 'Vice President', 'President', 'Consultant'];
+      for (const level of jobLevels) {
+        if (title.startsWith(level + ' ')) {
+          jobLevel = level;
+          title = title.substring(level.length + 1); // +1 for the space
+          break;
+        }
+      }
+      
+      // Special case for C-level executives
+      const cLevelTitles = [
+        'Chief Executive Officer', 
+        'Chief Operating Officer', 
+        'Chief Financial Officer', 
+        'Chief Technology Officer', 
+        'Chief Marketing Officer'
+      ];
+      
+      for (const cTitle of cLevelTitles) {
+        if (title === cTitle || title.includes(cTitle)) {
+          title = cTitle;
+          break;
+        }
+      }
+      
       setFormData({
         name: userData.name || '',
-        title: userData.title || '',
+        title: title,
+        jobLevel: jobLevel,
         location: userData.location || '',
         industry: mainIndustry || '',
         domain: domain || '',
@@ -1198,6 +1230,11 @@ export default function Profile() {
       updatedFormData.industry = `${formData.industry}: ${formData.domain}`;
     }
     
+    // Combine job level and title if both are present
+    if (formData.jobLevel && formData.title) {
+      updatedFormData.title = `${formData.jobLevel} ${formData.title}`;
+    }
+    
     // Log what we're sending to the server
     console.log("Submitting profile data:", updatedFormData);
     
@@ -1241,11 +1278,38 @@ export default function Profile() {
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="title">Job Title</Label>
-                <JobTitleCombobox
-                  value={formData.title || ''}
-                  onChange={(value) => setFormData({ ...formData, title: value })}
-                  placeholder="Select or type your job title"
-                />
+                <div className="flex gap-2">
+                  <div className="w-1/3">
+                    <Select
+                      value={formData.jobLevel}
+                      onValueChange={(value) => {
+                        setFormData(prev => ({
+                          ...prev,
+                          jobLevel: value
+                        }));
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Level" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Senior">Senior</SelectItem>
+                        <SelectItem value="Junior">Junior</SelectItem>
+                        <SelectItem value="Director">Director</SelectItem>
+                        <SelectItem value="Vice President">Vice President</SelectItem>
+                        <SelectItem value="President">President</SelectItem>
+                        <SelectItem value="Consultant">Consultant</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="w-2/3">
+                    <JobTitleCombobox
+                      value={formData.title || ''}
+                      onChange={(value) => setFormData({ ...formData, title: value })}
+                      placeholder="Select or type your job title"
+                    />
+                  </div>
+                </div>
               </div>
               <div className="grid gap-2 relative">
                 <Label htmlFor="location">Location</Label>
