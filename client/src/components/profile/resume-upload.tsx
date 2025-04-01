@@ -128,24 +128,36 @@ export default function ResumeUpload() {
         if (extractProfileData) {
           setIsParsing(true);
           try {
+            console.log("Starting resume parsing...");
+            
             // Call the parse-resume endpoint to get extracted data
             const response = await apiRequest('POST', '/api/parse-resume', {
               userId,
               fileData: base64Data
             });
             
+            console.log("Resume parsing response received, status:", response.status);
+            
             // Get the extracted data
             const extractedData = await response.json();
+            
+            console.log("Extracted data:", JSON.stringify(extractedData, null, 2));
+            
+            // Check for API error
+            if (extractedData.error) {
+              throw new Error(extractedData.message || extractedData.error || "Error processing resume");
+            }
             
             // If no data was extracted, show error
             if (!extractedData || 
                 (!extractedData.experiences?.length && 
                  !extractedData.educations?.length && 
                  !extractedData.skills?.length)) {
-              throw new Error("No profile data could be extracted from your resume.");
+              throw new Error("No profile data could be extracted from your resume. The file may be in an unsupported format or not contain recognizable text.");
             }
             
             // Store the parsed data
+            console.log("Setting parsed data and showing confirmation dialog");
             setParsedData(extractedData);
             
             // Show the confirmation dialog

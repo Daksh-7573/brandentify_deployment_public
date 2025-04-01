@@ -363,17 +363,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { userId, fileData } = req.body;
       
       if (!fileData) {
+        console.error("No file data provided in request");
         return res.status(400).json({ 
           error: "No file data provided",
           message: "Please upload a resume file"
         });
       }
+      
+      console.log(`===== Starting resume parsing for user ${userId} =====`);
+      console.log(`File data length: ${fileData.length} characters`);
 
       // Convert base64 to text (assuming PDF text extraction is handled by a hypothetical library)
       // In a real implementation, you would use a PDF parsing library
       let resumeText: string;
       try {
         resumeText = Buffer.from(fileData, 'base64').toString('utf-8');
+        console.log("Successfully decoded base64 data to text");
       } catch (error) {
         console.error("Error converting file to text:", error);
         return res.status(400).json({ 
@@ -391,46 +396,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const binaryDataIndicators = ['\0', '\x01', '\x02', '\x03', '%PDF'];
         const hasBinaryIndicators = binaryDataIndicators.some(indicator => resumeText.includes(indicator));
         
+        console.log(`File format detection: ${hasBinaryIndicators ? 'Binary (PDF/DOCX)' : 'Text'}`);
+        
         if (hasBinaryIndicators) {
           console.log("Detected likely binary file format (PDF/DOCX)");
           
           // For binary files, use OpenAI to extract text content from binary
           if (!process.env.OPENAI_API_KEY) {
+            console.error("OPENAI_API_KEY is not set. Cannot process binary resume.");
             return res.status(500).json({
               error: "OpenAI API key not configured",
-              message: "Unable to process binary files without OpenAI API key configuration"
+              message: "Unable to process binary files without OpenAI API key configuration",
+              experiences: [],
+              educations: [],
+              skills: []
             });
           }
           
-          // We'll use OpenAI to extract and process the information directly
-          const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+          console.log("OPENAI_API_KEY is available, proceeding with binary file processing");
           
-          // Only use a portion of the data to stay within token limits
-          const truncatedContent = Buffer.from(fileData, 'base64').toString('base64').substring(0, 10000);
-          
-          const response = await openai.chat.completions.create({
-            model: "gpt-4o",
-            messages: [
-              { 
-                role: "system", 
-                content: "You are an expert resume analyzer looking at a resume binary file. Extract professional information in a structured format." 
-              },
-              { 
-                role: "user", 
-                content: [
-                  "Here is a resume file in base64 format (truncated). Please analyze this data and extract the person's work experience, education, skills, job title, and location. This is the binary content of a resume file:",
-                  truncatedContent
-                ].join("\n\n")
-              }
-            ],
-            temperature: 0.1,
-          });
-          
-          // Now we use the response text as our input for further processing
-          resumeText = "Resume extracted from binary file:\n\n" + response.choices[0].message.content;
-          console.log("GPT extracted text from binary file for further processing");
+          try {
+            // We'll use OpenAI to extract and process the information directly
+            const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+            
+            // Only use a portion of the data to stay within token limits
+            const truncatedContent = Buffer.from(fileData, 'base64').toString('base64').substring(0, 10000);
+            console.log(`Truncated content length for API: ${truncatedContent.length} characters`);
+            
+            console.log("Sending request to OpenAI API...");
+            const response = await openai.chat.completions.create({
+              model: "gpt-4o",
+              messages: [
+                { 
+                  role: "system", 
+                  content: "You are an expert resume analyzer looking at a resume binary file. Extract professional information in a structured format." 
+                },
+                { 
+                  role: "user", 
+                  content: [
+                    "Here is a resume file in base64 format (truncated). Please analyze this data and extract the person's work experience, education, skills, job title, and location. This is the binary content of a resume file:",
+                    truncatedContent
+                  ].join("\n\n")
+                }
+              ],
+              temperature: 0.1,
+            });
+            
+            console.log("OpenAI API response received successfully");
+            
+            // Now we use the response text as our input for further processing
+            resumeText = "Resume extracted from binary file:\n\n" + response.choices[0].message.content;
+            console.log("GPT extracted text from binary file for further processing");
+            console.log("Extracted text sample (first 200 chars):", resumeText.substring(0, 200));
+          } catch (openaiError: any) {
+            console.error("Error in OpenAI processing:", openaiError);
+            return res.status(500).json({
+              error: "OPENAI_PROCESSING_ERROR",
+              message: `Failed to process resume with OpenAI: ${openaiError.message || "Unknown error"}`,
+              experiences: [],
+              educations: [],
+              skills: []
+            });
+          }
         } else {
-          // Log a snippet of text content for debugging
+          // Plain text resume
+          console.log("Plain text resume detected");
           console.log("Resume text sample (first 200 chars):", resumeText.substring(0, 200));
         }
         
