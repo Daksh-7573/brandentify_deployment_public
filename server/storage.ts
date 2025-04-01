@@ -60,6 +60,7 @@ export interface IStorage {
   
   // Debug and maintenance operations
   reinitializeDemoData(): Promise<void>;
+  clearAllUsers(): Promise<void>;
 }
 
 // In-memory implementation of the storage
@@ -560,6 +561,36 @@ export class MemStorage implements IStorage {
     }
     
     return true;
+  }
+  
+  /**
+   * Clears all users except the demo user (id: 1)
+   * This is primarily for development and testing purposes
+   */
+  async clearAllUsers(): Promise<void> {
+    console.log("[storage] clearAllUsers: Clearing all registered users except the demo user");
+    
+    // Create a list of IDs to remove
+    const idsToRemove: number[] = [];
+    
+    // Find all users except the demo user (ID 1)
+    for (const [id, user] of this.users.entries()) {
+      if (id !== 1) {
+        idsToRemove.push(id);
+      }
+    }
+    
+    // Remove users
+    for (const id of idsToRemove) {
+      this.users.delete(id);
+      console.log(`[storage] clearAllUsers: Removed user with ID ${id}`);
+    }
+    
+    // Also clear related verifications
+    this.emailVerifications.clear();
+    this.otpVerifications.clear();
+    
+    console.log(`[storage] clearAllUsers: Removed ${idsToRemove.length} users and cleared all verifications`);
   }
 }
 

@@ -65,6 +65,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Debug endpoint to clear all users (only for development/testing)
+  apiRouter.get("/debug/clear-all-users", async (req: Request, res: Response) => {
+    try {
+      console.log("Clearing all registered users except the demo user");
+      
+      // We'll implement this functionality in the storage layer
+      await storage.clearAllUsers();
+      
+      console.log("Successfully cleared all users");
+      
+      res.status(200).json({ message: "All users (except demo) have been cleared successfully" });
+    } catch (error) {
+      console.error("Error clearing all users:", error);
+      res.status(500).json({ message: "Failed to clear all users" });
+    }
+  });
+  
   // User routes
   apiRouter.post("/users", async (req: Request, res: Response) => {
     try {
