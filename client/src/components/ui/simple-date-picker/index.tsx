@@ -189,19 +189,19 @@ export function SimpleDatePicker({
   return (
     <div className={`flex items-center space-x-2 ${className}`}>
       <div className="relative">
+        <Input
+          className="w-16"
+          placeholder="MM"
+          value={dateValues.month}
+          onChange={handleMonthChange}
+          maxLength={2}
+          disabled={disabled}
+          onFocus={() => !disabled && setMonthOpen(true)}
+          onClick={() => !disabled && setMonthOpen(true)}
+        />
         <Popover open={monthOpen && !disabled} onOpenChange={setMonthOpen}>
-          <PopoverTrigger asChild>
-            <div>
-              <Input
-                className="w-16"
-                placeholder="MM"
-                value={dateValues.month}
-                onChange={handleMonthChange}
-                maxLength={2}
-                disabled={disabled}
-                onFocus={() => !disabled && setMonthOpen(true)}
-              />
-            </div>
+          <PopoverTrigger className="sr-only">
+            <span>Month</span>
           </PopoverTrigger>
           <PopoverContent className="p-0 w-40 max-h-60 overflow-auto" align="start">
             <div className="grid gap-1">
@@ -237,19 +237,19 @@ export function SimpleDatePicker({
       <span className="text-gray-500">/</span>
       
       <div className="relative">
+        <Input
+          className="w-20"
+          placeholder="YYYY"
+          value={dateValues.year}
+          onChange={handleYearChange}
+          maxLength={4}
+          disabled={disabled}
+          onFocus={() => !disabled && setYearOpen(true)}
+          onClick={() => !disabled && setYearOpen(true)}
+        />
         <Popover open={yearOpen && !disabled} onOpenChange={setYearOpen}>
-          <PopoverTrigger asChild>
-            <div>
-              <Input
-                className="w-20"
-                placeholder="YYYY"
-                value={dateValues.year}
-                onChange={handleYearChange}
-                maxLength={4}
-                disabled={disabled}
-                onFocus={() => !disabled && setYearOpen(true)}
-              />
-            </div>
+          <PopoverTrigger className="sr-only">
+            <span>Year</span>
           </PopoverTrigger>
           <PopoverContent className="p-0 w-24 max-h-60 overflow-auto" align="start">
             <div className="grid gap-1">
