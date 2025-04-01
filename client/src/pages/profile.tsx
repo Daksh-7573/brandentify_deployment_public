@@ -1465,11 +1465,23 @@ export default function Profile() {
                   <p className="text-sm text-gray-500">{userData?.title || user?.title || 'Professional'}</p>
                   <p className="text-sm text-gray-500 mt-1">{userData?.location || user?.location || 'Location not specified'}</p>
                   {userData?.industry && (
-                    <p className="text-sm text-gray-500 mt-1">
-                      <span className="font-medium">Industry:</span> {userData.industry}
-                      {/* Debug info */}
-                      {console.log("Industry display value:", userData.industry)}
-                    </p>
+                    <>
+                      {/* Parse industry and domain if they're combined with ": " */}
+                      {userData.industry.includes(': ') ? (
+                        <>
+                          <p className="text-sm text-gray-500 mt-1">
+                            <span className="font-medium">Industry:</span> {userData.industry.split(': ')[0]}
+                          </p>
+                          <p className="text-sm text-gray-500 mt-1">
+                            <span className="font-medium">Domain:</span> {userData.industry.split(': ')[1]}
+                          </p>
+                        </>
+                      ) : (
+                        <p className="text-sm text-gray-500 mt-1">
+                          <span className="font-medium">Industry:</span> {userData.industry}
+                        </p>
+                      )}
+                    </>
                   )}
                   {userData?.lookingFor && (
                     <p className="text-sm text-gray-500 mt-1">
