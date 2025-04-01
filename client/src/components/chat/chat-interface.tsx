@@ -16,6 +16,7 @@ type Message = {
   message: string;
   sender: 'user' | 'ai';
   timestamp: Date;
+  quickResponses?: string[]; // Quick response options extracted from AI messages
 };
 
 type CareerGoal = {
@@ -128,6 +129,69 @@ export default function ChatInterface({ initialQuestion }: ChatInterfaceProps = 
   // Using a ref for tracking if the initial question has been processed
   const initialQuestionProcessed = useRef(false);
 
+  // Function to extract quick response options from AI messages and process the message
+  const extractQuickResponses = (message: string): string[] | undefined => {
+    try {
+      // Look for the follow-up question section
+      if (!message.includes("## Let me ask you a follow-up question:")) {
+        return undefined;
+      }
+      
+      // Extract the options using regex to find lines starting with "- "
+      const optionSection = message.split("**Quick Response Options:**")[1];
+      if (!optionSection) return undefined;
+      
+      const optionLines = optionSection.split("\n")
+        .filter(line => line.trim().startsWith("- "))
+        .map(line => line.trim().substring(2).trim());  // Remove the "- " prefix
+      
+      return optionLines.length > 0 ? optionLines : undefined;
+    } catch (error) {
+      console.error("Error extracting quick responses:", error);
+      return undefined;
+    }
+  };
+  
+  // Modify the message to emphasize the follow-up question
+  const processMessage = (message: string): string => {
+    if (!message.includes("## Let me ask you a follow-up question:")) {
+      return message;
+    }
+    
+    try {
+      // Split the message at the follow-up question to add emphasis styling
+      const [mainContent, questionSection] = message.split("## Let me ask you a follow-up question:");
+      
+      // Split the question section at the quick response options
+      const [question, options] = questionSection.split("**Quick Response Options:**");
+      
+      // Remove the quick response options from the displayed message for cleaner UI
+      // (they'll be shown as buttons instead)
+      return `${mainContent}\n\n## Let me ask you a follow-up question:${question}\n`;
+    } catch (error) {
+      console.error("Error processing message:", error);
+      return message;
+    }
+  };
+
+  const handleQuickResponse = (response: string) => {
+    if (response === "Tell me more about something else") {
+      // Just focus the input field for a new question
+      setInputMessage("");
+      document.querySelector("input")?.focus();
+    } else {
+      // Submit the quick response
+      setInputMessage(response);
+      
+      // Use a timeout to ensure the state update has completed
+      setTimeout(() => {
+        const submitEvent = new Event('submit', { cancelable: true }) as unknown as React.FormEvent;
+        submitEvent.preventDefault = () => {}; // Mock preventDefault
+        handleSubmit(submitEvent);
+      }, 100);
+    }
+  };
+
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -156,12 +220,16 @@ export default function ChatInterface({ initialQuestion }: ChatInterfaceProps = 
       const data = await response.json();
       
       if (data.aiMessage) {
+        // Extract quick response options if available
+        const quickResponses = extractQuickResponses(data.aiMessage.message);
+        
         // Add AI response to chat
         setMessages(prev => [...prev, {
           id: data.aiMessage.id.toString(),
           message: data.aiMessage.message,
           sender: 'ai',
-          timestamp: new Date(data.aiMessage.timestamp)
+          timestamp: new Date(data.aiMessage.timestamp),
+          quickResponses
         }]);
       }
     } catch (error) {
@@ -222,7 +290,7 @@ export default function ChatInterface({ initialQuestion }: ChatInterfaceProps = 
         {messages.map(message => (
           <div 
             key={message.id} 
-            className={`flex mb-4 ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+            className={`flex flex-col mb-4 ${message.sender === 'user' ? 'items-end' : 'items-start'}`}
           >
             <div className={`px-4 py-3 rounded-lg ${
               message.sender === 'user' 
@@ -236,11 +304,32 @@ export default function ChatInterface({ initialQuestion }: ChatInterfaceProps = 
                   <ReactMarkdown 
                     remarkPlugins={[remarkGfm]}
                   >
-                    {message.message}
+                    {processMessage(message.message)}
                   </ReactMarkdown>
                 </div>
               )}
             </div>
+            
+            {/* Quick Response Buttons */}
+            {message.sender === 'ai' && message.quickResponses && message.quickResponses.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-2 max-w-[85%]">
+                {message.quickResponses.map((response, index) => (
+                  <Button
+                    key={index}
+                    size="sm"
+                    variant={response === "Tell me more about something else" ? "outline" : "secondary"}
+                    className={`text-xs rounded-full px-4 py-1 h-auto ${
+                      response === "Tell me more about something else"
+                        ? "border-primary text-primary hover:bg-primary/10"
+                        : "bg-primary/10 text-primary hover:bg-primary/20"
+                    }`}
+                    onClick={() => handleQuickResponse(response)}
+                  >
+                    {response}
+                  </Button>
+                ))}
+              </div>
+            )}
           </div>
         ))}
         <div ref={messagesEndRef} />
