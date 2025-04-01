@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Mail, Phone, Check } from "lucide-react";
 import { GoogleAuth } from "@/components/auth/google-auth";
 import { PhoneAuth } from "@/components/auth/phone-auth";
+import { EmailAuth } from "@/components/auth/email-auth";
 
 export default function AuthPage() {
   const { isAuthenticated, isLoading, enterDemoMode } = useAuth();
@@ -53,9 +54,22 @@ export default function AuthPage() {
                 </TabsTrigger>
               </TabsList>
 
-              {/* Email/Google Authentication */}
+              {/* Email Authentication */}
               <TabsContent value="email">
-                <GoogleAuth />
+                <div className="space-y-6">
+                  <EmailAuth />
+                  
+                  <div className="relative w-full">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t border-gray-300" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-white px-2 text-gray-500">or</span>
+                    </div>
+                  </div>
+                  
+                  <GoogleAuth />
+                </div>
               </TabsContent>
 
               {/* Phone Authentication */}

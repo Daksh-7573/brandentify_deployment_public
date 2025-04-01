@@ -939,6 +939,37 @@ ${extractedText.substring(0, 5000)}
     }
   });
   
+  // Email/Password authentication routes
+  apiRouter.post("/login", async (req: Request, res: Response) => {
+    try {
+      const { email, password } = req.body;
+      
+      console.log(`Login attempt for email: ${email}`);
+      
+      if (!email || !password) {
+        return res.status(400).json({ message: "Email and password are required" });
+      }
+      
+      // Find user by email
+      const user = await storage.getUserByEmail(email);
+      
+      if (!user) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+      
+      // Simple password check for development (in a real app we'd use bcrypt)
+      if (user.password !== password) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+      
+      return res.status(200).json(user);
+      
+    } catch (error) {
+      console.error("Error during login:", error);
+      return res.status(500).json({ message: "Failed to log in" });
+    }
+  });
+  
   // Phone authentication routes
   apiRouter.post("/request-otp", async (req: Request, res: Response) => {
     try {

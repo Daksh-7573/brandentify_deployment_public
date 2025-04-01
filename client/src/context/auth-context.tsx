@@ -27,7 +27,8 @@ type AuthContextType = {
   isLoading: boolean;
   isDemoMode: boolean;
   signInWithGoogle: () => Promise<void>;
-  signInWithPhone: (user: User) => void; // New function for phone authentication
+  signInWithPhone: (user: User) => void; // Function for phone authentication
+  signInWithEmail: (user: User) => void; // Function for email authentication
   signOut: () => Promise<void>;
   enterDemoMode: () => void;
   refreshUserData: () => Promise<void>;
@@ -40,6 +41,7 @@ export const AuthContext = createContext<AuthContextType>({
   isDemoMode: false,
   signInWithGoogle: async () => {},
   signInWithPhone: () => {},
+  signInWithEmail: () => {},
   signOut: async () => {},
   enterDemoMode: () => {},
   refreshUserData: async () => {},
@@ -199,6 +201,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
   
+  // Email auth implementation
+  const signInWithEmail = (userData: User) => {
+    setIsLoading(true);
+    
+    try {
+      // Convert database user to our AuthUser type
+      setUser({
+        uid: userData.id.toString(),
+        email: userData.email,
+        name: userData.name,
+        photoURL: userData.photoURL,
+        title: userData.title || undefined,
+        location: userData.location || undefined
+      });
+      
+      toast({
+        title: "Login successful",
+        description: "Welcome to Brandentifier"
+      });
+    } catch (error) {
+      console.error("Error signing in with email:", error);
+      toast({
+        title: "Sign in failed",
+        description: "There was a problem signing in with email and password",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
   const signOut = async () => {
     try {
       if (isDemoMode) {
@@ -345,6 +378,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isDemoMode,
         signInWithGoogle,
         signInWithPhone,
+        signInWithEmail,
         signOut,
         enterDemoMode,
         refreshUserData
