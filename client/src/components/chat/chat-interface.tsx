@@ -7,6 +7,9 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 
 type Message = {
   id: string;
@@ -196,15 +199,21 @@ export default function ChatInterface({ initialQuestion }: ChatInterfaceProps = 
   }, [initialQuestion, handleSubmit, setInputMessage]);
 
   return (
-    <Card className="flex-1 flex flex-col overflow-hidden">
+    <Card className="flex-1 flex flex-col overflow-hidden shadow-lg border-0">
       {/* Chat Header */}
-      <div className="bg-primary text-white px-6 py-4 flex items-center">
-        <div className="flex-shrink-0 mr-3 bg-white rounded-full p-1">
-          <i className="fas fa-robot text-primary text-lg"></i>
+      <div className="bg-gradient-to-r from-primary to-primary-600 text-white px-6 py-4 flex items-center">
+        <div className="flex-shrink-0 mr-3 bg-white rounded-full p-2 shadow-md">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
+            <rect x="3" y="11" width="18" height="10" rx="2" />
+            <circle cx="12" cy="5" r="2" />
+            <path d="M12 7v4" />
+            <line x1="8" y1="16" x2="8" y2="16" />
+            <line x1="16" y1="16" x2="16" y2="16" />
+          </svg>
         </div>
         <div>
-          <h2 className="font-medium">Musk - AI Career Coach</h2>
-          <p className="text-xs text-primary-100">Powered by advanced AI to help you reach your career goals</p>
+          <h2 className="font-semibold text-lg">Musk - AI Career Coach</h2>
+          <p className="text-xs opacity-90">Powered by advanced AI to help you reach your career goals</p>
         </div>
       </div>
       
@@ -215,12 +224,22 @@ export default function ChatInterface({ initialQuestion }: ChatInterfaceProps = 
             key={message.id} 
             className={`flex mb-4 ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
           >
-            <div className={`px-4 py-2 rounded-lg max-w-[80%] ${
+            <div className={`px-4 py-3 rounded-lg ${
               message.sender === 'user' 
-                ? 'bg-primary text-white' 
-                : 'bg-gray-100 text-gray-800'
+                ? 'bg-primary text-white max-w-[70%]' 
+                : 'bg-white border border-gray-200 shadow-sm max-w-[85%] prose prose-sm'
             }`}>
-              {message.message}
+              {message.sender === 'user' ? (
+                <div>{message.message}</div>
+              ) : (
+                <div className="prose prose-sm max-w-none">
+                  <ReactMarkdown 
+                    remarkPlugins={[remarkGfm]}
+                  >
+                    {message.message}
+                  </ReactMarkdown>
+                </div>
+              )}
             </div>
           </div>
         ))}
@@ -263,19 +282,36 @@ export default function ChatInterface({ initialQuestion }: ChatInterfaceProps = 
         </div>
 
         <form onSubmit={handleSubmit} className="flex">
-          <Input
-            className="flex-1 rounded-l-lg border-gray-300 focus:ring-primary focus:border-primary"
-            placeholder="Ask me about career paths, skills to develop, or job trends..."
-            value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
-            disabled={isLoading}
-          />
+          <div className="relative flex-grow">
+            <Input
+              className="flex-1 w-full px-4 py-2 rounded-l-lg shadow-sm border-gray-300 focus:ring-primary focus:border-primary pl-4 pr-10"
+              placeholder="Ask me about career paths, skills to develop, or job trends..."
+              value={inputMessage}
+              onChange={(e) => setInputMessage(e.target.value)}
+              disabled={isLoading}
+            />
+          </div>
           <Button 
             type="submit" 
-            className="rounded-l-none"
+            className="rounded-l-none bg-gradient-to-r from-primary to-primary-600 hover:from-primary-600 hover:to-primary-700 transition-all"
             disabled={isLoading}
           >
-            <i className="fas fa-paper-plane mr-2"></i> {isLoading ? 'Sending...' : 'Send'}
+            {isLoading ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Processing...
+              </>
+            ) : (
+              <>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
+                Send
+              </>
+            )}
           </Button>
         </form>
       </CardContent>
