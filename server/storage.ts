@@ -4,7 +4,8 @@ import {
   workExperiences, WorkExperience, InsertWorkExperience,
   educations, Education, InsertEducation,
   skills, Skill, InsertSkill,
-  chatMessages, ChatMessage, InsertChatMessage
+  chatMessages, ChatMessage, InsertChatMessage,
+  otpVerifications, OtpVerification, InsertOtpVerification
 } from "@shared/schema";
 
 // Interface for all storage operations
@@ -12,6 +13,7 @@ export interface IStorage {
   // User operations
   getUser(id: number): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
+  getUserByPhoneNumber(phoneNumber: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, user: Partial<User>): Promise<User | undefined>;
   
@@ -43,6 +45,11 @@ export interface IStorage {
   getChatMessagesByUserId(userId: number): Promise<ChatMessage[]>;
   createChatMessage(message: InsertChatMessage): Promise<ChatMessage>;
   
+  // OTP verification operations for phone login
+  createOtpVerification(verification: InsertOtpVerification): Promise<OtpVerification>;
+  getOtpVerificationByPhoneNumber(phoneNumber: string): Promise<OtpVerification | undefined>;
+  verifyOtp(phoneNumber: string, otp: string): Promise<boolean>;
+  
   // Debug and maintenance operations
   reinitializeDemoData(): Promise<void>;
 }
@@ -55,6 +62,7 @@ export class MemStorage implements IStorage {
   private educations: Map<number, Education>;
   private skills: Map<number, Skill>;
   private chatMessages: Map<number, ChatMessage>;
+  private otpVerifications: Map<number, OtpVerification>;
   
   private currentUserId: number;
   private currentResumeId: number;
@@ -62,6 +70,7 @@ export class MemStorage implements IStorage {
   private currentEducationId: number;
   private currentSkillId: number;
   private currentChatMessageId: number;
+  private currentOtpVerificationId: number;
 
   constructor() {
     this.users = new Map();
@@ -70,6 +79,7 @@ export class MemStorage implements IStorage {
     this.educations = new Map();
     this.skills = new Map();
     this.chatMessages = new Map();
+    this.otpVerifications = new Map();
     
     this.currentUserId = 1;
     this.currentResumeId = 1;
@@ -77,6 +87,7 @@ export class MemStorage implements IStorage {
     this.currentEducationId = 1;
     this.currentSkillId = 1;
     this.currentChatMessageId = 1;
+    this.currentOtpVerificationId = 1;
     
     // Initialize with a default user for development/demo
     this.initializeDemoData();
@@ -91,6 +102,7 @@ export class MemStorage implements IStorage {
       id: 1,
       username: "user1",
       email: "user1@example.com",
+      phoneNumber: null,
       name: "Senior Professional",
       photoURL: null,
       title: "Senior Software Engineer",
@@ -183,6 +195,10 @@ export class MemStorage implements IStorage {
   async getUserByEmail(email: string): Promise<User | undefined> {
     return Array.from(this.users.values()).find(user => user.email === email);
   }
+  
+  async getUserByPhoneNumber(phoneNumber: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(user => user.phoneNumber === phoneNumber);
+  }
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentUserId++;
@@ -193,6 +209,7 @@ export class MemStorage implements IStorage {
       ...insertUser, 
       id, 
       createdAt, 
+      phoneNumber: insertUser.phoneNumber ?? null,
       name: insertUser.name ?? null,
       photoURL: insertUser.photoURL ?? null,
       title: insertUser.title ?? null,
@@ -353,6 +370,64 @@ export class MemStorage implements IStorage {
     const message: ChatMessage = { ...insertMessage, id, timestamp };
     this.chatMessages.set(id, message);
     return message;
+  }
+  
+  // OTP Verification operations
+  async createOtpVerification(insertVerification: InsertOtpVerification): Promise<OtpVerification> {
+    // First, check if there's an existing verification for this phone number
+    const existingVerification = await this.getOtpVerificationByPhoneNumber(insertVerification.phoneNumber);
+    
+    // If there is, update it instead of creating a new one
+    if (existingVerification) {
+      const updatedVerification: OtpVerification = {
+        ...existingVerification,
+        otp: insertVerification.otp,
+        verified: false,
+        createdAt: new Date()
+      };
+      this.otpVerifications.set(existingVerification.id, updatedVerification);
+      return updatedVerification;
+    }
+    
+    // Otherwise, create a new verification
+    const id = this.currentOtpVerificationId++;
+    const createdAt = new Date();
+    const verification: OtpVerification = {
+      ...insertVerification,
+      id,
+      verified: false,
+      createdAt
+    };
+    
+    this.otpVerifications.set(id, verification);
+    return verification;
+  }
+  
+  async getOtpVerificationByPhoneNumber(phoneNumber: string): Promise<OtpVerification | undefined> {
+    return Array.from(this.otpVerifications.values())
+      .find(verification => verification.phoneNumber === phoneNumber);
+  }
+  
+  async verifyOtp(phoneNumber: string, otp: string): Promise<boolean> {
+    const verification = await this.getOtpVerificationByPhoneNumber(phoneNumber);
+    if (!verification) return false;
+    
+    // Check if the OTP has expired (10 minutes validity)
+    const now = new Date();
+    const expiryTime = new Date(verification.createdAt.getTime() + 10 * 60 * 1000); // 10 minutes in milliseconds
+    if (now > expiryTime) return false;
+    
+    // Check if the OTP matches
+    if (verification.otp !== otp) return false;
+    
+    // Mark the verification as verified
+    const updatedVerification: OtpVerification = {
+      ...verification,
+      verified: true
+    };
+    this.otpVerifications.set(verification.id, updatedVerification);
+    
+    return true;
   }
 }
 

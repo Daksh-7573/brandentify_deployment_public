@@ -7,6 +7,7 @@ export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   email: text("email").notNull().unique(),
+  phoneNumber: text("phone_number").unique(), // Added phone number for mobile login
   name: text("name"),
   photoURL: text("photo_url"),
   title: text("title"), // Job title
@@ -68,6 +69,16 @@ export const chatMessages = pgTable("chat_messages", {
   timestamp: timestamp("timestamp").defaultNow(),
 });
 
+// OTP verification model for phone login
+export const otpVerifications = pgTable("otp_verifications", {
+  id: serial("id").primaryKey(),
+  phoneNumber: text("phone_number").notNull(),
+  otp: text("otp").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  verified: boolean("verified").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true });
 export const insertResumeSchema = createInsertSchema(resumes).omit({ id: true, uploadedAt: true });
@@ -75,6 +86,7 @@ export const insertWorkExperienceSchema = createInsertSchema(workExperiences).om
 export const insertEducationSchema = createInsertSchema(educations).omit({ id: true });
 export const insertSkillSchema = createInsertSchema(skills).omit({ id: true });
 export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({ id: true, timestamp: true });
+export const insertOtpVerificationSchema = createInsertSchema(otpVerifications).omit({ id: true, verified: true, createdAt: true });
 
 // Export types
 export type User = typeof users.$inferSelect;
@@ -94,3 +106,6 @@ export type InsertSkill = z.infer<typeof insertSkillSchema>;
 
 export type ChatMessage = typeof chatMessages.$inferSelect;
 export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
+
+export type OtpVerification = typeof otpVerifications.$inferSelect;
+export type InsertOtpVerification = z.infer<typeof insertOtpVerificationSchema>;
