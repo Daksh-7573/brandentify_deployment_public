@@ -1084,6 +1084,9 @@ export default function Profile() {
   // Initialize form data when user data changes
   useEffect(() => {
     if (userData) {
+      // Log userData for debugging
+      console.log("Current userData:", userData);
+      
       // Parse industry and domain from userData.industry if it contains a colon
       let mainIndustry = '';
       let domain = '';
@@ -1193,6 +1196,9 @@ export default function Profile() {
     if (formData.industry && formData.domain) {
       updatedFormData.industry = `${formData.industry}: ${formData.domain}`;
     }
+    
+    // Log what we're sending to the server
+    console.log("Submitting profile data:", updatedFormData);
     
     updateUserMutation.mutate(updatedFormData);
   };
@@ -1461,6 +1467,8 @@ export default function Profile() {
                   {userData?.industry && (
                     <p className="text-sm text-gray-500 mt-1">
                       <span className="font-medium">Industry:</span> {userData.industry}
+                      {/* Debug info */}
+                      {console.log("Industry display value:", userData.industry)}
                     </p>
                   )}
                   {userData?.lookingFor && (
