@@ -407,7 +407,8 @@ const popularLocations = [
     "Yangon, Myanmar",
     
     // Asia - South & Central
-    "Mumbai, India",
+    // India - Major Cities & Tech Hubs
+    "Mumbai, India", 
     "New Delhi, India",
     "Bangalore, India",
     "Hyderabad, India",
@@ -418,6 +419,45 @@ const popularLocations = [
     "Jaipur, India",
     "Goa, India",
     "Kochi, India",
+    "Chandigarh, India",
+    "Lucknow, India",
+    "Coimbatore, India",
+    "Indore, India",
+    "Bhubaneswar, India",
+    "Nagpur, India",
+    "Surat, India",
+    "Visakhapatnam, India",
+    "Vadodara, India",
+    "Thiruvananthapuram, India",
+    "Bhopal, India",
+    "Patna, India",
+    "Ludhiana, India",
+    "Agra, India",
+    "Nashik, India",
+    "Varanasi, India",
+    "Kanpur, India",
+    "Mysore, India",
+    "Guwahati, India",
+    "Dehradun, India",
+    "Pondicherry, India",
+    "Ranchi, India",
+    "Mangalore, India",
+    "Trivandrum, India",
+    "Raipur, India",
+    "Noida, India",
+    "Gurgaon, India",
+    "Faridabad, India",
+    "Jodhpur, India",
+    "Udaipur, India",
+    "Aurangabad, India",
+    "Rajkot, India",
+    "Amritsar, India",
+    "Allahabad, India",
+    "Vijayawada, India",
+    "Bhubaneshwar, India",
+    "Gwalior, India",
+    "Kota, India",
+    "Jalandhar, India",
     "Kathmandu, Nepal",
     "Pokhara, Nepal",
     "Colombo, Sri Lanka",
@@ -887,9 +927,41 @@ export default function SmartConnectPage() {
           if (inputValue.includes('hong') && locationLower.includes('hong kong')) return true;
           if (inputValue.includes('dubai') && locationLower.includes('dubai')) return true;
           if (inputValue.includes('seoul') && locationLower.includes('seoul')) return true;
+          // Indian Cities
           if (inputValue.includes('mum') && locationLower.includes('mumbai')) return true;
           if (inputValue.includes('bomb') && locationLower.includes('mumbai')) return true;
           if (inputValue.includes('del') && locationLower.includes('delhi')) return true;
+          if (inputValue.includes('ncr') && locationLower.includes('delhi')) return true;
+          if (inputValue.includes('banga') && locationLower.includes('bangalore')) return true;
+          if (inputValue.includes('bengaluru') && locationLower.includes('bangalore')) return true;
+          if (inputValue.includes('hyd') && locationLower.includes('hyderabad')) return true;
+          if (inputValue.includes('chen') && locationLower.includes('chennai')) return true;
+          if (inputValue.includes('madr') && locationLower.includes('chennai')) return true;
+          if (inputValue.includes('kol') && locationLower.includes('kolkata')) return true;
+          if (inputValue.includes('calc') && locationLower.includes('kolkata')) return true;
+          if (inputValue.includes('pune') && locationLower.includes('pune')) return true;
+          if (inputValue.includes('poona') && locationLower.includes('pune')) return true;
+          if (inputValue.includes('ahm') && locationLower.includes('ahmedabad')) return true;
+          if (inputValue.includes('jai') && locationLower.includes('jaipur')) return true;
+          if (inputValue.includes('luck') && locationLower.includes('lucknow')) return true;
+          if (inputValue.includes('chan') && locationLower.includes('chandigarh')) return true;
+          if (inputValue.includes('coi') && locationLower.includes('coimbatore')) return true;
+          if (inputValue.includes('indor') && locationLower.includes('indore')) return true;
+          if (inputValue.includes('cochin') && locationLower.includes('kochi')) return true;
+          if (inputValue.includes('bhub') && locationLower.includes('bhubaneswar')) return true;
+          if (inputValue.includes('nag') && locationLower.includes('nagpur')) return true;
+          if (inputValue.includes('sur') && locationLower.includes('surat')) return true;
+          if (inputValue.includes('vizag') && locationLower.includes('visakhapatnam')) return true;
+          if (inputValue.includes('vado') && locationLower.includes('vadodara')) return true;
+          if (inputValue.includes('baro') && locationLower.includes('vadodara')) return true;
+          if (inputValue.includes('thiru') && locationLower.includes('thiruvananthapuram')) return true;
+          if (inputValue.includes('triv') && locationLower.includes('trivandrum')) return true;
+          if (inputValue.includes('bhop') && locationLower.includes('bhopal')) return true;
+          if (inputValue.includes('pat') && locationLower.includes('patna')) return true;
+          if (inputValue.includes('gur') && locationLower.includes('gurgaon')) return true;
+          if (inputValue.includes('noida') && locationLower.includes('noida')) return true;
+          if (inputValue.includes('sector') && (locationLower.includes('noida') || locationLower.includes('gurgaon') || locationLower.includes('chandigarh'))) return true;
+          if (inputValue.includes('guwah') && locationLower.includes('guwahati')) return true;
           if (inputValue.includes('beij') && locationLower.includes('beijing')) return true;
           if (inputValue.includes('pek') && locationLower.includes('beijing')) return true;
           if (inputValue.includes('shan') && locationLower.includes('shanghai')) return true;
@@ -1003,7 +1075,22 @@ export default function SmartConnectPage() {
           if (inputValue.includes('can') && locationLower.includes('canada')) return true;
           if (inputValue.includes('aus') && locationLower.includes('australia')) return true;
           if (inputValue.includes('nz') && locationLower.includes('new zealand')) return true;
+          // India and Indian states
           if (inputValue.includes('india') && locationLower.includes('india')) return true;
+          if (inputValue.includes('mh') && (locationLower.includes('maharashtra') || locationLower.includes('mumbai'))) return true;
+          if (inputValue.includes('up') && (locationLower.includes('uttar pradesh') || locationLower.includes('lucknow'))) return true;
+          if (inputValue.includes('tn') && (locationLower.includes('tamil nadu') || locationLower.includes('chennai'))) return true;
+          if (inputValue.includes('ka') && (locationLower.includes('karnataka') || locationLower.includes('bangalore'))) return true;
+          if (inputValue.includes('ap') && (locationLower.includes('andhra pradesh') || locationLower.includes('hyderabad'))) return true;
+          if (inputValue.includes('ts') && (locationLower.includes('telangana') || locationLower.includes('hyderabad'))) return true;
+          if (inputValue.includes('wb') && (locationLower.includes('west bengal') || locationLower.includes('kolkata'))) return true;
+          if (inputValue.includes('gj') && (locationLower.includes('gujarat') || locationLower.includes('ahmedabad'))) return true;
+          if (inputValue.includes('rj') && (locationLower.includes('rajasthan') || locationLower.includes('jaipur'))) return true;
+          if (inputValue.includes('kl') && (locationLower.includes('kerala') || locationLower.includes('kochi') || locationLower.includes('trivandrum'))) return true;
+          if (inputValue.includes('pb') && (locationLower.includes('punjab') || locationLower.includes('chandigarh'))) return true;
+          if (inputValue.includes('hr') && (locationLower.includes('haryana') || locationLower.includes('chandigarh') || locationLower.includes('gurgaon'))) return true;
+          if (inputValue.includes('delhi') && (locationLower.includes('delhi') || locationLower.includes('new delhi'))) return true;
+          if (inputValue.includes('ncr') && (locationLower.includes('delhi') || locationLower.includes('gurgaon') || locationLower.includes('noida') || locationLower.includes('faridabad'))) return true;
           if (inputValue.includes('chin') && locationLower.includes('china')) return true;
           if (inputValue.includes('jap') && locationLower.includes('japan')) return true;
           if (inputValue.includes('ger') && locationLower.includes('germany')) return true;
