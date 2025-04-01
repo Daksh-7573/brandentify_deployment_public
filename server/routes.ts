@@ -15,9 +15,13 @@ import {
 } from "@shared/schema";
 import { generateCareerAdvice } from "./services/ai-service";
 import { getJobTitleSuggestions } from "./services/title-suggestions";
+import { initEmailService, sendVerificationEmail, sendWelcomeEmail } from "./services/email-service";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const apiRouter = express.Router();
+  
+  // Initialize the email service
+  await initEmailService();
   
   // Add a special endpoint to clear all demo user profile data (for development purposes)
   apiRouter.get("/debug/reset-demo-profile", async (req: Request, res: Response) => {
@@ -123,16 +127,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log(`Created verification token for user ${user.email}: ${token}`);
       
-      // In a real app, we would send an email with the verification link
-      // The verification URL would be:
-      // ${req.protocol}://${req.get('host')}/api/verify-email/${token}
-      
-      // For development, just return the token in the response
-      res.status(201).json({
-        user,
-        verificationToken: token,
-        message: "User registered successfully. Please verify your email."
-      });
+      // Send a verification email using Ethereal
+      try {
+        const previewUrl = await sendVerificationEmail(
+          user.email, 
+          token, 
+          req.get('host') || 'localhost:5000'
+        );
+        
+        // Return success response with preview URL for development
+        res.status(201).json({
+          user,
+          message: "User registered successfully. Please verify your email.",
+          emailPreview: previewUrl // This is for development to view the email
+        });
+      } catch (emailError) {
+        console.error("Error sending verification email:", emailError);
+        // Even if email sending fails, the user is created, so return success
+        res.status(201).json({
+          user,
+          verificationToken: token, // Fallback for development
+          message: "User registered successfully, but verification email could not be sent. Please try again later."
+        });
+      }
     } catch (error) {
       if (error instanceof z.ZodError) {
         res.status(400).json({ message: error.errors });
@@ -1083,6 +1100,22 @@ ${extractedText.substring(0, 5000)}
       const user = await storage.getUserByEmail(verification.email);
       if (user) {
         await storage.updateUser(user.id, { emailVerified: true });
+        
+        // Send a welcome email
+        try {
+          const previewUrl = await sendWelcomeEmail(verification.email);
+          console.log(`Welcome email sent to ${verification.email}`);
+          
+          // Redirect to success page with email preview for development
+          return res.status(200).json({ 
+            message: "Email verified successfully",
+            user,
+            welcomeEmailPreview: previewUrl
+          });
+        } catch (emailError) {
+          console.error("Error sending welcome email:", emailError);
+          // Continue with success response even if welcome email fails
+        }
       }
       
       return res.status(200).json({ message: "Email verified successfully" });
@@ -1151,12 +1184,27 @@ ${extractedText.substring(0, 5000)}
       
       console.log(`Created new verification token for user ${email}: ${token}`);
       
-      // In a real app, we would send an email with the verification link
-      // For development, just return the token in the response
-      res.status(200).json({
-        message: "Verification email sent successfully",
-        verificationToken: token
-      });
+      // Send a verification email using Ethereal
+      try {
+        const previewUrl = await sendVerificationEmail(
+          email, 
+          token, 
+          req.get('host') || 'localhost:5000'
+        );
+        
+        // Return success response with preview URL for development
+        res.status(200).json({
+          message: "Verification email sent successfully",
+          emailPreview: previewUrl // This is for development to view the email
+        });
+      } catch (emailError) {
+        console.error("Error sending verification email:", emailError);
+        // Even if email sending fails, return success with the token for dev purposes
+        res.status(200).json({
+          message: "Verification email requested, but could not be sent. Please try again later.",
+          verificationToken: token // Fallback for development
+        });
+      }
       
     } catch (error) {
       console.error("Error resending verification email:", error);

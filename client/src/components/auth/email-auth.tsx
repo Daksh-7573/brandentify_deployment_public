@@ -105,7 +105,14 @@ export function EmailAuth() {
       }
       
       setSuccessMessage(`Verification email sent to ${unverifiedEmail}. Please check your inbox.`);
-      console.log("Verification token (for dev testing):", data.verificationToken);
+      
+      // If we have a preview URL, show it in the console for development
+      if (data.emailPreview) {
+        console.log("Email preview:", data.emailPreview);
+      } else if (data.verificationToken) {
+        // Fallback for development
+        console.log("Verification token (for dev testing):", data.verificationToken);
+      }
       
     } catch (err: any) {
       setError(err.message || "Failed to resend verification email");
@@ -191,10 +198,15 @@ export function EmailAuth() {
       
       // Use the user data from the registration response
       const userData = responseData.user;
-      const verificationToken = responseData.verificationToken;
       
       console.log("Registration successful:", userData);
-      console.log("Verification token (for dev testing):", verificationToken);
+      
+      // Log email preview or verification token for development
+      if (responseData.emailPreview) {
+        console.log("Email preview URL:", responseData.emailPreview);
+      } else if (responseData.verificationToken) {
+        console.log("Verification token (for dev testing):", responseData.verificationToken);
+      }
       
       // Set the unverified email for potential resend
       setUnverifiedEmail(userData.email);

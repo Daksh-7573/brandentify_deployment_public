@@ -8,6 +8,7 @@ export default function EmailVerification() {
   const [_, setLocation] = useLocation();
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
   const [message, setMessage] = useState<string>("Verifying your email...");
+  const [welcomeEmailPreview, setWelcomeEmailPreview] = useState<string | null>(null);
   
   // Get the token from URL parameters
   const searchParams = new URLSearchParams(window.location.search);
@@ -28,6 +29,12 @@ export default function EmailVerification() {
         if (response.ok) {
           setStatus("success");
           setMessage(data.message || "Email verified successfully!");
+          
+          // If we have a welcome email preview URL, store it
+          if (data.welcomeEmailPreview) {
+            setWelcomeEmailPreview(data.welcomeEmailPreview);
+            console.log("Welcome email preview URL:", data.welcomeEmailPreview);
+          }
         } else {
           setStatus("error");
           setMessage(data.message || "Failed to verify email. Please try again.");
@@ -67,6 +74,21 @@ export default function EmailVerification() {
               <p className="text-center text-muted-foreground mt-2">
                 Your email has been verified. You can now login to your account.
               </p>
+              
+              {/* Show welcome email preview link in development */}
+              {welcomeEmailPreview && (
+                <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded text-sm text-blue-700">
+                  <p className="mb-1 font-medium">Development: Welcome Email Preview</p>
+                  <a 
+                    href={welcomeEmailPreview} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline break-all"
+                  >
+                    View welcome email
+                  </a>
+                </div>
+              )}
             </div>
           )}
           
