@@ -41,11 +41,55 @@ export async function parseResumeText(resumeText: string): Promise<{
         messages: [
           {
             role: "system",
-            content: "You are a resume parsing expert. Extract structured data from the resume text."
+            content: `You are a resume parsing expert. Extract structured data from the resume text.
+Follow these strict guidelines:
+1. Only extract information that is EXPLICITLY present in the resume
+2. Do not make up or infer information that isn't clearly stated
+3. If a field isn't present, leave it as null
+4. Be strict about formatting dates exactly as they appear in the resume
+5. For skills, only include clearly mentioned skills
+6. If there's no data to extract, return empty arrays
+7. Maintain the exact formatting, capitalization and wording from the original resume
+8. DON'T CREATE ANY PLACEHOLDER OR FAKE DATA`
           },
           {
             role: "user",
-            content: `Extract structured data from this resume in JSON format. Format should include experiences (list of work experiences with title, company, location, startDate, endDate, description), educations (list with degree, institution, location, startDate, endDate), skills (list of skill names), and basic info (title, location). Here's the resume:\n\n${resumeText.substring(0, 10000)}`
+            content: `Extract structured data from this resume in JSON format. 
+Only extract information that is EXPLICITLY present in the resume text.
+If you cannot find certain information, use null or empty arrays as appropriate.
+DO NOT create any placeholder or inferred data.
+
+The JSON format should be:
+{
+  "experiences": [
+    {
+      "title": "exact job title as written", 
+      "company": "exact company name as written",
+      "location": "location or null if not specified",
+      "startDate": "start date exactly as written",
+      "endDate": "end date exactly as written or null if not specified", 
+      "description": "full description or null if not specified"
+    }
+  ],
+  "educations": [
+    {
+      "degree": "exact degree name as written",
+      "institution": "exact institution name as written",
+      "location": "location or null if not specified",
+      "startDate": "start date exactly as written",
+      "endDate": "end date exactly as written or null"
+    }
+  ],
+  "skills": ["skill1", "skill2", "skill3"],
+  "basicInfo": {
+    "title": "job title or null if not clearly specified",
+    "location": "location or null if not clearly specified"
+  }
+}
+
+Here's the resume text:
+
+${resumeText ? resumeText.substring(0, 10000) : ""}`
           }
         ],
         temperature: 0.1,
@@ -56,7 +100,8 @@ export async function parseResumeText(resumeText: string): Promise<{
       
       try {
         // Parse the JSON response
-        const jsonResponse = JSON.parse(completion.choices[0].message.content);
+        const messageContent = completion.choices[0].message.content || "{}";
+        const jsonResponse = JSON.parse(messageContent);
         console.log("Successfully parsed JSON from OpenAI response");
         
         // Map to our schema
