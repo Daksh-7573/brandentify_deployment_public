@@ -7,6 +7,7 @@ export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   email: text("email").notNull().unique(),
+  password: text("password"),
   phoneNumber: text("phone_number").unique(), // Added phone number for mobile login
   name: text("name"),
   photoURL: text("photo_url"),
@@ -15,6 +16,9 @@ export const users = pgTable("users", {
   industry: text("industry"), // User's industry
   lookingFor: text("looking_for"), // What the user is looking for (networking type)
   profileCompleted: integer("profile_completed").default(0), // Percentage
+  emailVerified: boolean("email_verified").default(false), // Whether email is verified
+  emailVerificationToken: text("email_verification_token"), // Token for email verification
+  emailVerificationExpires: timestamp("email_verification_expires"), // When token expires
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -79,14 +83,25 @@ export const otpVerifications = pgTable("otp_verifications", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Email verification model
+export const emailVerifications = pgTable("email_verifications", {
+  id: serial("id").primaryKey(),
+  email: text("email").notNull(),
+  token: text("token").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  verified: boolean("verified").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Insert schemas
-export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true });
+export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true, emailVerified: true, emailVerificationToken: true, emailVerificationExpires: true });
 export const insertResumeSchema = createInsertSchema(resumes).omit({ id: true, uploadedAt: true });
 export const insertWorkExperienceSchema = createInsertSchema(workExperiences).omit({ id: true });
 export const insertEducationSchema = createInsertSchema(educations).omit({ id: true });
 export const insertSkillSchema = createInsertSchema(skills).omit({ id: true });
 export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({ id: true, timestamp: true });
 export const insertOtpVerificationSchema = createInsertSchema(otpVerifications).omit({ id: true, verified: true, createdAt: true });
+export const insertEmailVerificationSchema = createInsertSchema(emailVerifications).omit({ id: true, verified: true, createdAt: true });
 
 // Export types
 export type User = typeof users.$inferSelect;
@@ -109,3 +124,6 @@ export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
 
 export type OtpVerification = typeof otpVerifications.$inferSelect;
 export type InsertOtpVerification = z.infer<typeof insertOtpVerificationSchema>;
+
+export type EmailVerification = typeof emailVerifications.$inferSelect;
+export type InsertEmailVerification = z.infer<typeof insertEmailVerificationSchema>;

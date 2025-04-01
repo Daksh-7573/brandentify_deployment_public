@@ -5,7 +5,8 @@ import {
   educations, Education, InsertEducation,
   skills, Skill, InsertSkill,
   chatMessages, ChatMessage, InsertChatMessage,
-  otpVerifications, OtpVerification, InsertOtpVerification
+  otpVerifications, OtpVerification, InsertOtpVerification,
+  emailVerifications, EmailVerification, InsertEmailVerification
 } from "@shared/schema";
 
 // Interface for all storage operations
@@ -50,6 +51,13 @@ export interface IStorage {
   getOtpVerificationByPhoneNumber(phoneNumber: string): Promise<OtpVerification | undefined>;
   verifyOtp(phoneNumber: string, otp: string): Promise<boolean>;
   
+  // Email verification operations
+  createEmailVerification(verification: InsertEmailVerification): Promise<EmailVerification>;
+  getEmailVerificationByEmail(email: string): Promise<EmailVerification | undefined>;
+  getEmailVerificationByToken(token: string): Promise<EmailVerification | undefined>;
+  updateEmailVerification(id: number, verification: Partial<EmailVerification>): Promise<EmailVerification | undefined>;
+  verifyEmail(email: string, token: string): Promise<boolean>;
+  
   // Debug and maintenance operations
   reinitializeDemoData(): Promise<void>;
 }
@@ -63,6 +71,7 @@ export class MemStorage implements IStorage {
   private skills: Map<number, Skill>;
   private chatMessages: Map<number, ChatMessage>;
   private otpVerifications: Map<number, OtpVerification>;
+  private emailVerifications: Map<number, EmailVerification>;
   
   private currentUserId: number;
   private currentResumeId: number;
@@ -71,6 +80,7 @@ export class MemStorage implements IStorage {
   private currentSkillId: number;
   private currentChatMessageId: number;
   private currentOtpVerificationId: number;
+  private currentEmailVerificationId: number;
 
   constructor() {
     this.users = new Map();
@@ -80,6 +90,7 @@ export class MemStorage implements IStorage {
     this.skills = new Map();
     this.chatMessages = new Map();
     this.otpVerifications = new Map();
+    this.emailVerifications = new Map();
     
     this.currentUserId = 1;
     this.currentResumeId = 1;
@@ -88,6 +99,7 @@ export class MemStorage implements IStorage {
     this.currentSkillId = 1;
     this.currentChatMessageId = 1;
     this.currentOtpVerificationId = 1;
+    this.currentEmailVerificationId = 1;
     
     // Initialize with a default user for development/demo
     this.initializeDemoData();
@@ -102,6 +114,7 @@ export class MemStorage implements IStorage {
       id: 1,
       username: "user1",
       email: "user1@example.com",
+      password: null,
       phoneNumber: null,
       name: "Senior Professional",
       photoURL: null,
@@ -110,6 +123,9 @@ export class MemStorage implements IStorage {
       industry: "Technology",
       lookingFor: "A Career Mentor",
       profileCompleted: 65,
+      emailVerified: true,
+      emailVerificationToken: null,
+      emailVerificationExpires: null,
       createdAt: new Date()
     };
     this.users.set(demoUser.id, demoUser);
@@ -209,6 +225,7 @@ export class MemStorage implements IStorage {
       ...insertUser, 
       id, 
       createdAt, 
+      password: insertUser.password ?? null,
       phoneNumber: insertUser.phoneNumber ?? null,
       name: insertUser.name ?? null,
       photoURL: insertUser.photoURL ?? null,
@@ -216,7 +233,10 @@ export class MemStorage implements IStorage {
       location: insertUser.location ?? null,
       industry: insertUser.industry ?? null,
       lookingFor: insertUser.lookingFor ?? null,
-      profileCompleted: insertUser.profileCompleted ?? null
+      profileCompleted: insertUser.profileCompleted ?? null,
+      emailVerified: false,
+      emailVerificationToken: null,
+      emailVerificationExpires: null
     };
     
     this.users.set(id, user);
@@ -441,6 +461,103 @@ export class MemStorage implements IStorage {
       verified: true
     };
     this.otpVerifications.set(verification.id, updatedVerification);
+    
+    return true;
+  }
+  
+  // Email Verification operations
+  async createEmailVerification(insertVerification: InsertEmailVerification): Promise<EmailVerification> {
+    // First, check if there's an existing verification for this email
+    const existingVerification = await this.getEmailVerificationByEmail(insertVerification.email);
+    
+    // If there is, update it instead of creating a new one
+    if (existingVerification) {
+      const updatedVerification: EmailVerification = {
+        ...existingVerification,
+        token: insertVerification.token,
+        expiresAt: insertVerification.expiresAt,
+        verified: false,
+        createdAt: new Date()
+      };
+      this.emailVerifications.set(existingVerification.id, updatedVerification);
+      return updatedVerification;
+    }
+    
+    // Otherwise, create a new verification
+    const id = this.currentEmailVerificationId++;
+    const createdAt = new Date();
+    const verification: EmailVerification = {
+      ...insertVerification,
+      id,
+      verified: false,
+      createdAt
+    };
+    
+    this.emailVerifications.set(id, verification);
+    return verification;
+  }
+  
+  async getEmailVerificationByEmail(email: string): Promise<EmailVerification | undefined> {
+    return Array.from(this.emailVerifications.values())
+      .find(verification => verification.email === email);
+  }
+  
+  async getEmailVerificationByToken(token: string): Promise<EmailVerification | undefined> {
+    return Array.from(this.emailVerifications.values())
+      .find(verification => verification.token === token);
+  }
+  
+  async updateEmailVerification(id: number, verificationData: Partial<EmailVerification>): Promise<EmailVerification | undefined> {
+    const verification = this.emailVerifications.get(id);
+    if (!verification) return undefined;
+    
+    const updatedVerification = { ...verification, ...verificationData };
+    this.emailVerifications.set(id, updatedVerification);
+    return updatedVerification;
+  }
+  
+  async verifyEmail(email: string, token: string): Promise<boolean> {
+    console.log(`[storage] verifyEmail: Verifying ${email} with token ${token}`);
+    
+    const verification = await this.getEmailVerificationByEmail(email);
+    if (!verification) {
+      console.log(`[storage] verifyEmail: No verification found for ${email}`);
+      return false;
+    }
+    
+    console.log(`[storage] verifyEmail: Found verification:`, verification);
+    
+    // Check if the token has expired using the expiresAt field
+    const now = new Date();
+    if (now > verification.expiresAt) {
+      console.log(`[storage] verifyEmail: Token expired. Current time: ${now}, Expires at: ${verification.expiresAt}`);
+      return false;
+    }
+    
+    // Check if the token matches
+    if (verification.token !== token) {
+      console.log(`[storage] verifyEmail: Token mismatch. Expected: ${verification.token}, Received: ${token}`);
+      return false;
+    }
+    
+    console.log(`[storage] verifyEmail: Token validated successfully`);
+    
+    // Mark the verification as verified
+    const updatedVerification: EmailVerification = {
+      ...verification,
+      verified: true
+    };
+    this.emailVerifications.set(verification.id, updatedVerification);
+    
+    // Also update the user's emailVerified status
+    const user = await this.getUserByEmail(email);
+    if (user) {
+      await this.updateUser(user.id, { 
+        emailVerified: true,
+        emailVerificationToken: null,
+        emailVerificationExpires: null
+      });
+    }
     
     return true;
   }

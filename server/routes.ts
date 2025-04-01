@@ -2,6 +2,7 @@ import express, { type Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { z } from "zod";
+import crypto from "crypto";
 import { handleParseResume } from './routes-parse-resume';
 import { 
   insertUserSchema, 
@@ -9,7 +10,8 @@ import {
   insertWorkExperienceSchema,
   insertEducationSchema,
   insertSkillSchema,
-  insertChatMessageSchema
+  insertChatMessageSchema,
+  insertEmailVerificationSchema
 } from "@shared/schema";
 import { generateCareerAdvice } from "./services/ai-service";
 import { getJobTitleSuggestions } from "./services/title-suggestions";
@@ -67,12 +69,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
   apiRouter.post("/users", async (req: Request, res: Response) => {
     try {
       const userData = insertUserSchema.parse(req.body);
+      
+      // Check if email is already registered
+      const existingUser = await storage.getUserByEmail(userData.email);
+      if (existingUser) {
+        return res.status(400).json({ message: "Email already registered" });
+      }
+      
+      // Create the user
       const user = await storage.createUser(userData);
-      res.status(201).json(user);
+      
+      // Generate a random verification token
+      const token = crypto.randomBytes(32).toString('hex');
+      
+      // Set expiration time (24 hours from now)
+      const expiresAt = new Date();
+      expiresAt.setHours(expiresAt.getHours() + 24);
+      
+      // Store the token in the email verification storage
+      await storage.createEmailVerification({
+        email: user.email,
+        token,
+        expiresAt
+      });
+      
+      // Update the user with the verification token
+      await storage.updateUser(user.id, {
+        emailVerificationToken: token,
+        emailVerificationExpires: expiresAt
+      });
+      
+      console.log(`Created verification token for user ${user.email}: ${token}`);
+      
+      // In a real app, we would send an email with the verification link
+      // For development, just return the token in the response
+      res.status(201).json({
+        user,
+        verificationToken: token,
+        message: "User registered successfully. Please verify your email."
+      });
     } catch (error) {
       if (error instanceof z.ZodError) {
         res.status(400).json({ message: error.errors });
       } else {
+        console.error("Error registering user:", error);
         res.status(500).json({ message: "Internal server error" });
       }
     }
@@ -967,6 +1007,126 @@ ${extractedText.substring(0, 5000)}
     } catch (error) {
       console.error("Error during login:", error);
       return res.status(500).json({ message: "Failed to log in" });
+    }
+  });
+  
+  // Email verification endpoint
+  apiRouter.get("/verify-email/:token", async (req: Request, res: Response) => {
+    try {
+      const { token } = req.params;
+      
+      console.log(`Email verification attempt with token: ${token}`);
+      
+      if (!token) {
+        return res.status(400).json({ message: "Verification token is required" });
+      }
+      
+      // Find verification by token
+      const verification = await storage.getEmailVerificationByToken(token);
+      
+      if (!verification) {
+        return res.status(400).json({ message: "Invalid verification token" });
+      }
+      
+      // Check if token is expired
+      if (verification.expiresAt < new Date()) {
+        return res.status(400).json({ message: "Verification token has expired. Please request a new one." });
+      }
+      
+      // Check if already verified
+      if (verification.verified) {
+        return res.status(200).json({ message: "Email already verified" });
+      }
+      
+      // Verify the email
+      const success = await storage.verifyEmail(verification.email, token);
+      
+      if (!success) {
+        return res.status(500).json({ message: "Failed to verify email" });
+      }
+      
+      // Update the user's emailVerified status
+      const user = await storage.getUserByEmail(verification.email);
+      if (user) {
+        await storage.updateUser(user.id, { emailVerified: true });
+      }
+      
+      return res.status(200).json({ message: "Email verified successfully" });
+      
+    } catch (error) {
+      console.error("Error during email verification:", error);
+      return res.status(500).json({ message: "Failed to verify email" });
+    }
+  });
+  
+  // Resend email verification token
+  apiRouter.post("/resend-verification", async (req: Request, res: Response) => {
+    try {
+      const { email } = req.body;
+      
+      console.log(`Resending verification email to: ${email}`);
+      
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+      
+      // Find the user by email
+      const user = await storage.getUserByEmail(email);
+      
+      if (!user) {
+        return res.status(400).json({ message: "User not found with this email" });
+      }
+      
+      // Check if already verified
+      if (user.emailVerified) {
+        return res.status(400).json({ message: "Email is already verified" });
+      }
+      
+      // Generate a new verification token
+      const token = crypto.randomBytes(32).toString('hex');
+      
+      // Set expiration time (24 hours from now)
+      const expiresAt = new Date();
+      expiresAt.setHours(expiresAt.getHours() + 24);
+      
+      // Get existing verification
+      const existingVerification = await storage.getEmailVerificationByEmail(email);
+      
+      // Create or update the verification
+      if (existingVerification) {
+        // Update existing verification
+        await storage.updateEmailVerification(existingVerification.id, {
+          token,
+          expiresAt,
+          verified: false
+        });
+      } else {
+        // Create new verification
+        await storage.createEmailVerification({
+          email,
+          token,
+          expiresAt
+        });
+      }
+      
+      // Update user with new token
+      await storage.updateUser(user.id, {
+        emailVerificationToken: token,
+        emailVerificationExpires: expiresAt
+      });
+      
+      console.log(`Created new verification token for user ${email}: ${token}`);
+      
+      // In a real app, we would send an email with the verification link
+      // For development, just return the token in the response
+      res.status(200).json({
+        message: "Verification email sent successfully",
+        verificationToken: token
+      });
+      
+    } catch (error) {
+      console.error("Error resending verification email:", error);
+      return res.status(500).json({ message: "Failed to resend verification email" });
     }
   });
   
