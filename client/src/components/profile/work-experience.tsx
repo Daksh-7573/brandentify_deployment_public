@@ -15,7 +15,6 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { IndustrySelector } from "./industry-selector";
 
 type WorkExperienceItem = {
   id: number;
@@ -421,11 +420,36 @@ export default function WorkExperience() {
               />
             </div>
             
-            {/* Use the dedicated IndustrySelector component */}
-            <IndustrySelector 
-              value={newExperience.industry || ""} 
-              onChange={(value) => setNewExperience({...newExperience, industry: value})}
-            />
+            {/* INDUSTRY FIELD - DIRECT IMPLEMENTATION */}
+            <div className="grid grid-cols-4 items-center gap-4 p-4 bg-blue-100 border-2 border-blue-500 rounded-lg my-4">
+              <Label htmlFor="industry" className="text-right font-bold text-blue-800">
+                Industry*
+              </Label>
+              <div className="col-span-3">
+                <Select
+                  value={newExperience.industry}
+                  onValueChange={(value) => setNewExperience({...newExperience, industry: value})}
+                >
+                  <SelectTrigger id="industry" className="w-full bg-white border-blue-400">
+                    <SelectValue placeholder="Choose an industry" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Technology">Technology</SelectItem>
+                    <SelectItem value="Healthcare">Healthcare</SelectItem>
+                    <SelectItem value="Finance">Finance</SelectItem>
+                    <SelectItem value="Education">Education</SelectItem>
+                    <SelectItem value="Manufacturing">Manufacturing</SelectItem>
+                    <SelectItem value="Retail">Retail</SelectItem>
+                    <SelectItem value="Media">Media</SelectItem>
+                    <SelectItem value="Consulting">Consulting</SelectItem>
+                    <SelectItem value="Government">Government</SelectItem>
+                    <SelectItem value="Non-profit">Non-profit</SelectItem>
+                    <SelectItem value="Other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-blue-700 mt-1">Required for analyzing career patterns</p>
+              </div>
+            </div>
             
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="location" className="text-right">
