@@ -1,14 +1,8 @@
 import * as React from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Check, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface DegreeComboboxProps {
@@ -60,89 +54,105 @@ export function DegreeCombobox({
   className,
   disabled = false
 }: DegreeComboboxProps) {
-  // For custom degree input
-  const [customDegree, setCustomDegree] = React.useState("");
-  const [showCustomInput, setShowCustomInput] = React.useState(false);
+  const [useCustomDegree, setUseCustomDegree] = React.useState(false);
+  const [isOpen, setIsOpen] = React.useState(false);
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
 
-  // Handle selection of a regular degree
-  const handleSelectChange = (selectedValue: string) => {
-    if (selectedValue === "custom") {
-      setShowCustomInput(true);
-    } else {
-      onChange(selectedValue);
-      setShowCustomInput(false);
+  // Check if current value is in list of predefined options
+  const isCustomValue = !DEGREE_OPTIONS.includes(value);
+
+  // Handle click outside of dropdown
+  React.useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
     }
-  };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
-  // Handle submission of custom degree
-  const handleCustomDegreeSubmit = () => {
-    if (customDegree.trim()) {
-      onChange(customDegree);
-      setShowCustomInput(false);
-      setCustomDegree("");
-    }
-  };
+  // Set useCustomDegree based on whether the value is custom or not
+  React.useEffect(() => {
+    setUseCustomDegree(isCustomValue && value !== "");
+  }, [value, isCustomValue]);
 
-  // Handle pressing enter in custom degree input
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleCustomDegreeSubmit();
-    }
-  };
-
-  return (
-    <div className={className}>
-      {!showCustomInput ? (
-        <Select 
-          value={value} 
-          onValueChange={handleSelectChange}
-          disabled={disabled}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder={placeholder} />
-          </SelectTrigger>
-          <SelectContent>
-            {DEGREE_OPTIONS.map((degree) => (
-              <SelectItem key={degree} value={degree}>
-                {degree}
-              </SelectItem>
-            ))}
-            <SelectItem value="custom" className="text-blue-500">
-              <div className="flex items-center">
-                <Plus className="mr-2 h-4 w-4" />
-                Add custom degree
-              </div>
-            </SelectItem>
-          </SelectContent>
-        </Select>
-      ) : (
+  if (useCustomDegree) {
+    return (
+      <div className={className}>
         <div className="flex gap-2">
           <Input
-            value={customDegree}
-            onChange={(e) => setCustomDegree(e.target.value)}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
             placeholder="Enter custom degree"
-            onKeyDown={handleKeyDown}
-            autoFocus
+            disabled={disabled}
+            className="flex-1"
           />
-          <Button 
-            onClick={handleCustomDegreeSubmit}
-            type="button"
-            size="sm"
-          >
-            Add
-          </Button>
-          <Button 
-            onClick={() => {
-              setShowCustomInput(false);
-              setCustomDegree("");
-            }}
+          <Button
             type="button"
             variant="outline"
-            size="sm"
+            size="icon"
+            onClick={() => setUseCustomDegree(false)}
+            className="h-10 w-10"
+            disabled={disabled}
           >
-            Cancel
+            <ChevronDown className="h-4 w-4" />
           </Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={cn(className, "relative")} ref={dropdownRef}>
+      <div 
+        className={cn(
+          "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background",
+          "focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2",
+          "cursor-pointer",
+          disabled && "cursor-not-allowed opacity-50"
+        )}
+        onClick={() => !disabled && setIsOpen(!isOpen)}
+      >
+        <span className={cn("flex-1 truncate", !value && "text-muted-foreground")}>
+          {value || placeholder}
+        </span>
+        <ChevronDown className="h-4 w-4 opacity-50" />
+      </div>
+      
+      {isOpen && (
+        <div className="absolute top-full left-0 z-50 mt-1 w-full rounded-md border bg-popover p-1 shadow-md">
+          <div className="max-h-60 overflow-y-auto">
+            {DEGREE_OPTIONS.map((option) => (
+              <div
+                key={option}
+                className={cn(
+                  "flex cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm outline-none",
+                  "hover:bg-accent hover:text-accent-foreground",
+                  value === option && "bg-accent text-accent-foreground"
+                )}
+                onClick={() => {
+                  onChange(option);
+                  setIsOpen(false);
+                }}
+              >
+                <span className="flex-1">{option}</span>
+                {value === option && <Check className="h-4 w-4" />}
+              </div>
+            ))}
+            <div
+              className="flex cursor-pointer items-center rounded-sm border-t px-2 py-1.5 text-sm text-blue-500 outline-none hover:bg-accent hover:text-accent-foreground"
+              onClick={() => {
+                setUseCustomDegree(true);
+                setIsOpen(false);
+                onChange("");
+              }}
+            >
+              Enter custom degree...
+            </div>
+          </div>
         </div>
       )}
     </div>
