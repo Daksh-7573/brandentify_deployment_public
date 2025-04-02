@@ -1044,6 +1044,12 @@ export default function WorkExperience() {
                       captionLayout="dropdown-buttons"
                       fromYear={1980}
                       toYear={2035}
+                      formatters={{ 
+                        formatCaption: (date, options) => {
+                          // Only show the month name without any dropdown label
+                          return date.toLocaleString('default', { month: 'long', year: 'numeric' });
+                        }
+                      }}
                     />
                   </PopoverContent>
                 </Popover>
@@ -1076,6 +1082,12 @@ export default function WorkExperience() {
                       captionLayout="dropdown-buttons"
                       fromYear={1980}
                       toYear={2035}
+                      formatters={{ 
+                        formatCaption: (date, options) => {
+                          // Only show the month name without any dropdown label
+                          return date.toLocaleString('default', { month: 'long', year: 'numeric' });
+                        }
+                      }}
                     />
                   </PopoverContent>
                 </Popover>
@@ -1278,6 +1290,12 @@ export default function WorkExperience() {
                       captionLayout="dropdown-buttons"
                       fromYear={1980}
                       toYear={2035}
+                      formatters={{ 
+                        formatCaption: (date, options) => {
+                          // Only show the month name without any dropdown label
+                          return date.toLocaleString('default', { month: 'long', year: 'numeric' });
+                        }
+                      }}
                     />
                   </PopoverContent>
                 </Popover>
@@ -1310,6 +1328,12 @@ export default function WorkExperience() {
                       captionLayout="dropdown-buttons"
                       fromYear={1980}
                       toYear={2035}
+                      formatters={{ 
+                        formatCaption: (date, options) => {
+                          // Only show the month name without any dropdown label
+                          return date.toLocaleString('default', { month: 'long', year: 'numeric' });
+                        }
+                      }}
                     />
                   </PopoverContent>
                 </Popover>
