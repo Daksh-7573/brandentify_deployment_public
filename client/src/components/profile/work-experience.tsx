@@ -121,11 +121,21 @@ export default function WorkExperience() {
   
   const handleSaveExperience = async () => {
     try {
-      // Validate form - only require title, company, and either startDate or presentation dates
+      // Validate form - require title, company, industry, and start date
       if (!newExperience.title || !newExperience.company) {
         toast({
           title: "Missing information",
           description: "Please provide at least the job title and company name",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      // Check if industry is provided
+      if (!newExperience.industry) {
+        toast({
+          title: "Missing industry",
+          description: "Please select an industry for this work experience",
           variant: "destructive"
         });
         return;
@@ -446,16 +456,16 @@ export default function WorkExperience() {
               </div>
             </div>
             
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="industry" className="text-right">
-                Industry
+            <div className="grid grid-cols-4 items-center gap-4 mb-2 border-b border-gray-100 pb-2">
+              <Label htmlFor="industry" className="text-right font-medium">
+                Industry*
               </Label>
               <div className="col-span-3">
                 <Select
                   value={newExperience.industry}
                   onValueChange={(value) => setNewExperience({...newExperience, industry: value})}
                 >
-                  <SelectTrigger id="industry" className="w-full">
+                  <SelectTrigger id="industry" className="w-full bg-blue-50">
                     <SelectValue placeholder="Select an industry" />
                   </SelectTrigger>
                   <SelectContent>
