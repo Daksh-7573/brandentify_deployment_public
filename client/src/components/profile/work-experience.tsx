@@ -497,6 +497,9 @@ export default function WorkExperience() {
     userId
   });
   
+  // State for location suggestions
+  const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
+  
   // State for form validation
   const [formErrors, setFormErrors] = useState({
     title: false,
@@ -656,8 +659,60 @@ export default function WorkExperience() {
         [name]: false
       }));
     }
+    
+    // Handle location suggestions
+    if (name === 'location' && value.trim()) {
+      // Filter locations that match the input value
+      const inputValue = value.toLowerCase();
+      
+      // First try exact matches (most relevant)
+      let filtered = popularLocations.filter(location => 
+        location.toLowerCase().includes(inputValue)
+      );
+      
+      // If no exact matches or very few, try fuzzy matching for spelling variations
+      if (filtered.length < 3) {
+        // Try alternative spellings and common misspellings
+        const alternativeMatches = popularLocations.filter(location => {
+          const locationLower = location.toLowerCase();
+          
+          // Handle common spelling variations for major cities
+          if (inputValue.includes('melb') && locationLower.includes('melbourne')) return true;
+          if (inputValue.includes('malb') && locationLower.includes('melbourne')) return true;
+          if (inputValue.includes('syd') && locationLower.includes('sydney')) return true;
+          if (inputValue.includes('bris') && locationLower.includes('brisbane')) return true;
+          if (inputValue.includes('auck') && locationLower.includes('auckland')) return true;
+          if (inputValue.includes('sing') && locationLower.includes('singapore')) return true;
+          if (inputValue.includes('bangl') && locationLower.includes('bangalore')) return true;
+          if (inputValue.includes('bengal') && locationLower.includes('bangalore')) return true;
+          if (inputValue.includes('york') && locationLower.includes('new york')) return true;
+          if (inputValue.includes('angeles') && locationLower.includes('los angeles')) return true;
+          if (inputValue.includes('fran') && locationLower.includes('san francisco')) return true;
+          if (inputValue.includes('tokyo') && locationLower.includes('tokyo')) return true;
+          if (inputValue.includes('dubai') && locationLower.includes('dubai')) return true;
+          
+          return false;
+        });
+        
+        // Combine both sets of results with exact matches first
+        filtered = [...filtered, ...alternativeMatches];
+      }
+      
+      setLocationSuggestions(filtered.slice(0, 10)); // Show up to 10 suggestions
+    } else if (name === 'location' && !value.trim()) {
+      setLocationSuggestions([]);
+    }
   };
   
+  // Handle suggestion selection
+  const handleSuggestionSelect = (suggestion: string) => {
+    setFormData(prev => ({
+      ...prev,
+      location: suggestion
+    }));
+    setLocationSuggestions([]); // Clear suggestions after selection
+  };
+
   // Handle select changes
   const handleSelectChange = (name: string, value: string) => {
     setFormData(prev => ({
@@ -1002,26 +1057,34 @@ export default function WorkExperience() {
               </div>
             </div>
             
-            <div className="space-y-2">
+            <div className="space-y-2 relative">
               <Label htmlFor="location">Location</Label>
-              <Select
+              <Input
+                id="location"
+                name="location"
                 value={formData.location}
-                onValueChange={(value) => handleSelectChange('location', value)}
+                onChange={handleInputChange}
                 disabled={createExperienceMutation.isPending}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select location (optional)" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {popularLocations.map(location => (
-                      <SelectItem key={location} value={location}>
-                        {location}
-                      </SelectItem>
+                placeholder="Enter location (optional)"
+                className="bg-gray-50"
+              />
+              
+              {/* Location suggestions dropdown */}
+              {locationSuggestions.length > 0 && (
+                <div className="absolute w-full mt-1 p-2 bg-white border rounded-md shadow-lg z-10 max-h-60 overflow-y-auto">
+                  <div className="space-y-1">
+                    {locationSuggestions.map((suggestion) => (
+                      <div
+                        key={suggestion}
+                        className="px-2 py-1.5 text-sm rounded hover:bg-gray-100 cursor-pointer"
+                        onClick={() => handleSuggestionSelect(suggestion)}
+                      >
+                        {suggestion}
+                      </div>
                     ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+                  </div>
+                </div>
+              )}
             </div>
             
             <div className="grid grid-cols-2 gap-4">
@@ -1228,26 +1291,34 @@ export default function WorkExperience() {
               </div>
             </div>
             
-            <div className="space-y-2">
+            <div className="space-y-2 relative">
               <Label htmlFor="location">Location</Label>
-              <Select
+              <Input
+                id="location"
+                name="location"
                 value={formData.location}
-                onValueChange={(value) => handleSelectChange('location', value)}
+                onChange={handleInputChange}
                 disabled={updateExperienceMutation.isPending}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select location (optional)" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {popularLocations.map(location => (
-                      <SelectItem key={location} value={location}>
-                        {location}
-                      </SelectItem>
+                placeholder="Enter location (optional)"
+                className="bg-gray-50"
+              />
+              
+              {/* Location suggestions dropdown */}
+              {locationSuggestions.length > 0 && (
+                <div className="absolute w-full mt-1 p-2 bg-white border rounded-md shadow-lg z-10 max-h-60 overflow-y-auto">
+                  <div className="space-y-1">
+                    {locationSuggestions.map((suggestion) => (
+                      <div
+                        key={suggestion}
+                        className="px-2 py-1.5 text-sm rounded hover:bg-gray-100 cursor-pointer"
+                        onClick={() => handleSuggestionSelect(suggestion)}
+                      >
+                        {suggestion}
+                      </div>
                     ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+                  </div>
+                </div>
+              )}
             </div>
             
             <div className="grid grid-cols-2 gap-4">
