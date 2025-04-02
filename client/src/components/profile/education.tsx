@@ -513,15 +513,6 @@ export default function Education() {
           <div className="py-6 text-center">
             <GraduationCap className="mx-auto h-10 w-10 text-muted-foreground/50" />
             <p className="mt-2 text-muted-foreground">No education added yet.</p>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="mt-2" 
-              onClick={handleAddEducation}
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Add Education
-            </Button>
           </div>
         ) : (
           // Education list
