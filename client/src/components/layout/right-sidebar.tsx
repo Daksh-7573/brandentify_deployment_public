@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import SkillBar from "@/components/common/skill-bar";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
+import { Skill } from "@shared/schema";
 
 export default function RightSidebar() {
   const { user, isDemoMode } = useAuth();
@@ -35,8 +36,22 @@ export default function RightSidebar() {
   // Determine which photo URL to use (prioritize userData if available)
   const photoURL = userData?.photoURL || user?.photoURL;
   const displayName = userData?.name || user?.name || 'User';
-  const userTitle = userData?.title || 'Professional';
+  const userTitle = userData?.title || '';
 
+  // Fetch user's skills to check if any exist
+  const { data: skills } = useQuery<Skill[]>({
+    queryKey: [`/api/users/${userId}/skills`],
+    queryFn: async () => {
+      if (!userId) return [];
+      const response = await apiRequest('GET', `/api/users/${userId}/skills`);
+      return await response.json();
+    },
+    enabled: !!userId
+  });
+
+  const hasSkills = skills && skills.length > 0;
+  const isProfileComplete = userData?.profileCompleted === true;
+  
   return (
     <div className="bg-white w-80 border-l border-gray-200 p-5 overflow-y-auto">
       <div className="mb-6">
@@ -54,54 +69,58 @@ export default function RightSidebar() {
           </div>
           <div className="ml-3">
             <h2 className="text-base font-medium text-gray-900">{displayName}</h2>
-            <p className="text-sm text-gray-500">{userTitle}</p>
+            {userTitle && <p className="text-sm text-gray-500">{userTitle}</p>}
           </div>
         </div>
       </div>
       
-      <div className="border-t border-gray-200 pt-4 mb-6">
-        <h3 className="text-sm font-medium text-gray-900 mb-3">Resume Score</h3>
-        <div className="flex items-center">
-          <div className="flex-1 bg-gray-200 rounded-full h-2">
-            <div className="bg-primary h-2 rounded-full" style={{ width: '72%' }}></div>
-          </div>
-          <span className="ml-3 text-sm font-medium text-gray-900">72/100</span>
+      {!isProfileComplete && (
+        <div className="border-t border-gray-200 pt-4 mb-6">
+          <h3 className="text-sm font-medium text-primary mb-3">Complete Your Profile</h3>
+          <p className="text-xs text-gray-500">
+            To get the most out of Brandentifier, complete your profile with your professional information.
+          </p>
         </div>
-        <p className="mt-2 text-xs text-gray-500">Your resume outperforms 65% of professionals in your field.</p>
-      </div>
+      )}
       
-      <div className="border-t border-gray-200 pt-4 mb-6">
-        <h3 className="text-sm font-medium text-gray-900 mb-3">Skill Development</h3>
-        <div className="space-y-3">
-          <SkillBar name="Data Analysis" level="Advanced" percentage={85} color="green" />
-          <SkillBar name="SQL" level="Intermediate" percentage={60} color="yellow" />
-          <SkillBar name="Data Visualization" level="Beginner" percentage={30} color="red" />
-        </div>
-      </div>
-      
-      <div className="border-t border-gray-200 pt-4">
-        <h3 className="text-sm font-medium text-gray-900 mb-3">Notifications</h3>
-        <div className="space-y-3">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <i className="fas fa-bell text-primary"></i>
+      {isProfileComplete && (
+        <>
+          <div className="border-t border-gray-200 pt-4 mb-6">
+            <h3 className="text-sm font-medium text-gray-900 mb-3">Resume Score</h3>
+            <div className="flex items-center">
+              <div className="flex-1 bg-gray-200 rounded-full h-2">
+                <div className="bg-primary h-2 rounded-full" style={{ width: '72%' }}></div>
+              </div>
+              <span className="ml-3 text-sm font-medium text-gray-900">72/100</span>
             </div>
-            <div className="ml-3">
-              <p className="text-xs text-gray-900">Your profile was viewed by 3 recruiters this week</p>
-              <p className="text-xs text-gray-500 mt-1">2 hours ago</p>
+            <p className="mt-2 text-xs text-gray-500">Your resume outperforms 65% of professionals in your field.</p>
+          </div>
+          
+          {hasSkills && (
+            <div className="border-t border-gray-200 pt-4 mb-6">
+              <h3 className="text-sm font-medium text-gray-900 mb-3">Skill Development</h3>
+              <div className="space-y-3">
+                {skills?.slice(0, 3).map((skill: Skill, index: number) => (
+                  <SkillBar 
+                    key={skill.id} 
+                    name={skill.name} 
+                    level={skill.level || 'Beginner'} 
+                    percentage={skill.proficiency || 0}
+                    color={skill.level === 'Advanced' ? 'green' : skill.level === 'Intermediate' ? 'yellow' : 'red'}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="border-t border-gray-200 pt-4">
+            <h3 className="text-sm font-medium text-gray-900 mb-3">Notifications</h3>
+            <div className="flex flex-col items-center justify-center py-4 text-center text-gray-500">
+              <p className="text-xs">No notifications yet</p>
             </div>
           </div>
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <i className="fas fa-briefcase text-primary"></i>
-            </div>
-            <div className="ml-3">
-              <p className="text-xs text-gray-900">5 new jobs match your profile</p>
-              <p className="text-xs text-gray-500 mt-1">Yesterday</p>
-            </div>
-          </div>
-        </div>
-      </div>
+        </>
+      )}
     </div>
   );
 }
