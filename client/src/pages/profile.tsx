@@ -8,8 +8,7 @@ import { Button } from "@/components/ui/button";
 import WorkExperience from "@/components/profile/work-experience-new";
 import Education from "@/components/profile/education-new";
 import Skills from "@/components/profile/skills";
-import ResumeUpload from "@/components/profile/resume-upload";
-import LinkedInImport from "@/components/profile/linkedin-import";
+// Removed Resume and LinkedIn import components
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useState, useEffect } from "react";
@@ -1614,15 +1613,7 @@ export default function Profile() {
               </CardContent>
             </Card>
             
-            {/* Profile Import Options */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div className="md:col-span-1">
-                <ResumeUpload />
-              </div>
-              <div className="md:col-span-1">
-                <LinkedInImport />
-              </div>
-            </div>
+            {/* Profile Import Options section removed */}
             
             {/* Work Experience */}
             <WorkExperience />

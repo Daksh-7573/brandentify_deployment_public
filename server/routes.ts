@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { z } from "zod";
 import crypto from "crypto";
-import { handleParseResume } from './routes-parse-resume';
+// Resume parsing functionality removed
 import { 
   insertUserSchema, 
   insertResumeSchema, 
@@ -868,7 +868,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Profile data parsing endpoints
-  apiRouter.post("/parse-resume", handleParseResume);
+  // Resume parsing endpoint removed
   
   // Job title suggestions endpoint
   apiRouter.get("/job-title-suggestions", async (req: Request, res: Response) => {
@@ -902,8 +902,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Keep old implementation as a backup, but it's not used anymore
-  apiRouter.post("/parse-resume-old", async (req: Request, res: Response) => {
+  // Old resume parsing endpoint removed
+  /*apiRouter.post("/parse-resume-old", async (req: Request, res: Response) => {
     try {
       const { userId, fileData } = req.body;
       
@@ -1170,6 +1170,8 @@ ${extractedText.substring(0, 5000)}
     }
   });
   
+  */
+  
   // Endpoint to save resume/profile data after user confirmation
   apiRouter.post("/confirm-resume-data", async (req: Request, res: Response) => {
     try {
@@ -1323,8 +1325,8 @@ ${extractedText.substring(0, 5000)}
     }
   });
   
-  // Parse LinkedIn profile and extract data
-  apiRouter.post("/parse-linkedin", async (req: Request, res: Response) => {
+  // LinkedIn parsing endpoint removed
+  /*apiRouter.post("/parse-linkedin", async (req: Request, res: Response) => {
     try {
       const { userId, profileUrl } = req.body;
       
@@ -1741,6 +1743,7 @@ ${extractedText.substring(0, 5000)}
       return res.status(500).json({ message: "Failed to verify OTP" });
     }
   });
+  */
 
   app.use("/api", apiRouter);
 
