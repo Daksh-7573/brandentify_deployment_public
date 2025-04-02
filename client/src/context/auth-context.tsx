@@ -50,36 +50,55 @@ export const AuthContext = createContext<AuthContextType>({
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
-  const [isLoading, setIsLoading] = useState(false); // Set to false initially
+  const [isLoading, setIsLoading] = useState(true); // Set to true initially
   const [isDemoMode, setIsDemoMode] = useState(false);
   const { toast } = useToast();
-  const fetchDemoUserData = async () => {
+
+  // Fetch user data from our backend - used for both initial load and refreshes
+  const fetchUserData = async (userId: string | number, isDemo: boolean = false) => {
     try {
-      const response = await apiRequest('GET', '/api/users/1');
+      console.log(`Fetching user data for user ID: ${userId}, isDemo: ${isDemo}`);
+      const response = await apiRequest('GET', `/api/users/${userId}`);
+      
+      if (response.status === 404) {
+        console.log('User not found in backend');
+        return null;
+      }
+      
       const userData = await response.json();
+      console.log('Backend user data:', userData);
       
-      // Create a demo user with real data if available
-      setUser({
-        uid: '1',
-        email: userData.email || 'demo@brandentifier.com',
-        name: userData.name || 'Demo User',
+      // Create a user with data from our backend
+      return {
+        uid: userId.toString(),
+        email: userData.email || (isDemo ? 'demo@brandentifier.com' : null),
+        name: userData.name || (isDemo ? 'Demo User' : null),
         photoURL: userData.photoURL || null,
-        title: userData.title || 'Software Engineer',
-        location: userData.location || 'San Francisco, CA'
-      });
-      
-      console.log('Successfully fetched demo user data:', userData);
+        title: userData.title || (isDemo ? 'Software Engineer' : undefined),
+        location: userData.location || (isDemo ? 'San Francisco, CA' : undefined)
+      };
     } catch (error) {
-      console.log('Could not fetch user data, using default demo user');
-      // Fallback to default demo user if API fails
-      setUser({
-        uid: '1',
-        email: 'demo@brandentifier.com',
-        name: 'Demo User',
-        photoURL: null,
-        title: 'Software Engineer',
-        location: 'San Francisco, CA'
-      });
+      console.error('Error fetching user data:', error);
+      if (isDemo) {
+        // Fallback to default demo user if API fails
+        return {
+          uid: '1',
+          email: 'demo@brandentifier.com',
+          name: 'Demo User',
+          photoURL: null,
+          title: 'Software Engineer',
+          location: 'San Francisco, CA'
+        };
+      }
+      return null;
+    }
+  };
+
+  // Specialized function for demo user data
+  const fetchDemoUserData = async () => {
+    const demoUser = await fetchUserData(1, true);
+    if (demoUser) {
+      setUser(demoUser);
     }
   };
 
@@ -128,25 +147,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
       
     // Listen for auth state changes
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setIsLoading(true);
-      if (firebaseUser) {
-        // Convert Firebase user to our AuthUser type
-        setUser({
-          uid: firebaseUser.uid,
-          email: firebaseUser.email,
-          name: firebaseUser.displayName,
-          photoURL: firebaseUser.photoURL
-        });
-        
-        // Create or update user in our backend
-        createOrUpdateUserInBackend(firebaseUser).catch(error => {
-          console.error("Failed to create/update user in backend:", error);
-        });
+      
+      if (firebaseUser && !storedDemoMode) {
+        try {
+          // First create or update the user in our backend
+          await createOrUpdateUserInBackend(firebaseUser);
+          
+          // Then fetch the complete user data from our backend to get 
+          // the latest profile picture and other information
+          const backendUserData = await fetchUserData(firebaseUser.uid);
+          
+          // If we got data from backend, use it
+          if (backendUserData) {
+            setUser(backendUserData);
+          } else {
+            // Fallback to Firebase data if backend fetch fails
+            setUser({
+              uid: firebaseUser.uid,
+              email: firebaseUser.email,
+              name: firebaseUser.displayName,
+              photoURL: firebaseUser.photoURL
+            });
+          }
+        } catch (error) {
+          console.error("Error during authentication flow:", error);
+          // Fallback to basic Firebase data
+          setUser({
+            uid: firebaseUser.uid,
+            email: firebaseUser.email,
+            name: firebaseUser.displayName,
+            photoURL: firebaseUser.photoURL
+          });
+        }
       } else if (!storedDemoMode) {
         // Only clear user if we're not in demo mode
         setUser(null);
       }
+      
       setIsLoading(false);
     });
 
@@ -156,15 +195,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const createOrUpdateUserInBackend = async (firebaseUser: FirebaseUser) => {
     try {
       // Check if user exists first
-      // This is a simplified example - in a real app you'd have proper endpoints
-      await apiRequest('POST', '/api/users', {
+      const response = await apiRequest('POST', '/api/users', {
         username: firebaseUser.uid,
         email: firebaseUser.email || `${firebaseUser.uid}@example.com`,
         name: firebaseUser.displayName,
         photoURL: firebaseUser.photoURL
       });
+      
+      return await response.json();
     } catch (error) {
       console.error("Error creating/updating user:", error);
+      return null;
     }
   };
 
@@ -190,17 +231,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // If we get here, popup was successful
       console.log("Google sign-in successful:", result.user);
       
-      // Convert Firebase user to our AuthUser type
       if (result.user) {
-        setUser({
-          uid: result.user.uid,
-          email: result.user.email,
-          name: result.user.displayName,
-          photoURL: result.user.photoURL
-        });
-        
         // Create or update user in our backend
         await createOrUpdateUserInBackend(result.user);
+        
+        // Now fetch the complete user data from our backend
+        const backendUserData = await fetchUserData(result.user.uid);
+        
+        // If we got data from backend, use it
+        if (backendUserData) {
+          setUser(backendUserData);
+        } else {
+          // Fallback to Firebase data if backend fetch fails
+          setUser({
+            uid: result.user.uid,
+            email: result.user.email,
+            name: result.user.displayName,
+            photoURL: result.user.photoURL
+          });
+        }
         
         toast({
           title: "Successfully signed in!",
@@ -336,32 +385,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Store demo mode status in localStorage for persistence across reloads
     localStorage.setItem('demoMode', 'true');
     
-    // Try to fetch the actual user data from the API
-    try {
-      const response = await apiRequest('GET', '/api/users/1');
-      const userData = await response.json();
-      
-      // Create a demo user with real data if available
-      setUser({
-        uid: '1',
-        email: userData.email || 'demo@brandentifier.com',
-        name: userData.name || 'Demo User',
-        photoURL: userData.photoURL || null,
-        title: userData.title || 'Software Engineer',
-        location: userData.location || 'San Francisco, CA'
-      });
-    } catch (error) {
-      console.log('Could not fetch user data, using default demo user');
-      // Fallback to default demo user if API fails
-      setUser({
-        uid: '1',
-        email: 'demo@brandentifier.com',
-        name: 'Demo User',
-        photoURL: null,
-        title: 'Software Engineer',
-        location: 'San Francisco, CA'
-      });
-    }
+    // Try to fetch demo user data
+    await fetchDemoUserData();
     
     setIsDemoMode(true);
     setIsLoading(false);
@@ -375,68 +400,79 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Add the refreshUserData function to update user profile data
   const refreshUserData = async () => {
     // Get the user ID
-    const userId = isDemoMode ? 1 : (user?.uid ? parseInt(user.uid) : null);
+    const userId = isDemoMode ? 1 : (user?.uid ? user.uid : null);
     
-    if (isDemoMode) {
-      console.log("Refreshing demo user data");
-      await fetchDemoUserData();
-      
-      // Also invalidate and immediately refetch all related queries for the profile components
-      if (userId) {
-        console.log("AGGRESSIVE CACHE CLEAR AND DATA REFRESH");
-        
-        // Reset the entire query cache
-        console.log("Completely clearing React Query cache");
-        queryClient.clear();
-        
-        // Manually fetch ALL data directly using fetch API to bypass any caching
-        try {
-          console.log("Manually fetching all profile data using direct API requests");
-          
-          // Add manual fetch to ensure we get the latest data
-          const experiencesResponse = await fetch(`/api/users/${userId}/experiences`, {
-            method: 'GET',
-            headers: { 'Cache-Control': 'no-cache, no-store' }
-          });
-          
-          const educationsResponse = await fetch(`/api/users/${userId}/educations`, {
-            method: 'GET',
-            headers: { 'Cache-Control': 'no-cache, no-store' }
-          });
-          
-          const skillsResponse = await fetch(`/api/users/${userId}/skills`, {
-            method: 'GET',
-            headers: { 'Cache-Control': 'no-cache, no-store' }
-          });
-          
-          // Get the responses as JSON
-          const experiences = await experiencesResponse.json();
-          const educations = await educationsResponse.json();
-          const skills = await skillsResponse.json();
-          
-          // Log the fetched data
-          console.log("Manual fetch experiences:", experiences);
-          console.log("Manual fetch educations:", educations);
-          console.log("Manual fetch skills:", skills);
-          
-          // Explicitly set these in the query cache
-          queryClient.setQueryData([`/api/users/${userId}/experiences`], experiences);
-          queryClient.setQueryData([`/api/users/${userId}/educations`], educations);
-          queryClient.setQueryData([`/api/users/${userId}/skills`], skills);
-          
-          // Give it a small delay to ensure all components receive fresh data
-          await new Promise(resolve => setTimeout(resolve, 500));
-        } catch (error) {
-          console.error("Error during direct manual data refresh:", error);
-        }
-      }
+    if (!userId) {
+      console.log("Cannot refresh user data: No user ID available");
       return;
     }
     
-    // Handle regular user refresh if needed
-    if (user && !isDemoMode) {
-      // For non-demo users, we would fetch their profile from our backend
-      console.log("Regular user data refresh not implemented");
+    setIsLoading(true);
+    
+    try {
+      // Fetch latest user data from the backend
+      if (isDemoMode) {
+        await fetchDemoUserData();
+      } else {
+        const updatedUser = await fetchUserData(userId);
+        if (updatedUser) {
+          setUser(updatedUser);
+        }
+      }
+      
+      // Also invalidate and immediately refetch all related queries for the profile components
+      console.log("Refreshing profile data queries");
+      
+      // Reset the entire query cache
+      queryClient.clear();
+      
+      // Manually fetch ALL data directly using fetch API to bypass any caching
+      try {
+        console.log("Manually fetching all profile data using direct API requests");
+        
+        // Convert user ID to number for API calls (if it's a Firebase UID, use 0 as placeholder)
+        const numericUserId = isDemoMode ? 1 : parseInt(userId) || 0;
+        
+        // Add manual fetch to ensure we get the latest data
+        const experiencesResponse = await fetch(`/api/users/${numericUserId}/experiences`, {
+          method: 'GET',
+          headers: { 'Cache-Control': 'no-cache, no-store' }
+        });
+        
+        const educationsResponse = await fetch(`/api/users/${numericUserId}/educations`, {
+          method: 'GET',
+          headers: { 'Cache-Control': 'no-cache, no-store' }
+        });
+        
+        const skillsResponse = await fetch(`/api/users/${numericUserId}/skills`, {
+          method: 'GET',
+          headers: { 'Cache-Control': 'no-cache, no-store' }
+        });
+        
+        // Get the responses as JSON
+        const experiences = await experiencesResponse.json();
+        const educations = await educationsResponse.json();
+        const skills = await skillsResponse.json();
+        
+        // Log the fetched data
+        console.log("Manual fetch experiences:", experiences);
+        console.log("Manual fetch educations:", educations);
+        console.log("Manual fetch skills:", skills);
+        
+        // Explicitly set these in the query cache
+        queryClient.setQueryData([`/api/users/${numericUserId}/experiences`], experiences);
+        queryClient.setQueryData([`/api/users/${numericUserId}/educations`], educations);
+        queryClient.setQueryData([`/api/users/${numericUserId}/skills`], skills);
+        
+        // Give it a small delay to ensure all components receive fresh data
+        await new Promise(resolve => setTimeout(resolve, 500));
+      } catch (error) {
+        console.error("Error during direct manual data refresh:", error);
+      }
+    } catch (error) {
+      console.error("Error during user data refresh:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
