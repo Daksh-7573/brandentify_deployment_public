@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 
 type EducationItem = {
@@ -106,6 +107,7 @@ export default function Education() {
                           
   // For the modal form
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isCurrentlyStudying, setIsCurrentlyStudying] = useState(false);
   const [newEducation, setNewEducation] = useState<Partial<EducationItem>>({
     degree: '',
     institution: '',
@@ -137,6 +139,8 @@ export default function Education() {
     // Reset date pickers
     setStartDate(undefined);
     setEndDate(undefined);
+    // Reset currently studying checkbox
+    setIsCurrentlyStudying(false);
   };
   
   const handleSaveEducation = async () => {
@@ -146,6 +150,16 @@ export default function Education() {
         toast({
           title: "Missing information",
           description: "Please fill in all required fields",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      // Check if end date is required (not "Currently studying here")
+      if (!isCurrentlyStudying && !newEducation.endDate) {
+        toast({
+          title: "Missing information",
+          description: "Please provide an end date or check 'I currently study here'",
           variant: "destructive"
         });
         return;
@@ -245,12 +259,21 @@ export default function Education() {
         }
       }
       
-      if (educationToEdit.endDate && educationToEdit.endDate !== 'Present') {
+      // Check if "Currently studying here" applies and set state accordingly
+      if (educationToEdit.endDate === 'Present') {
+        setIsCurrentlyStudying(true);
+        setEndDate(undefined);
+      } else if (educationToEdit.endDate) {
+        setIsCurrentlyStudying(false);
         try {
           setEndDate(new Date(educationToEdit.endDate));
         } catch (error) {
           console.error("Failed to parse end date:", error);
         }
+      } else {
+        // Handle null or empty end date as "Currently studying here"
+        setIsCurrentlyStudying(true);
+        setEndDate(undefined);
       }
       
       setIsAddModalOpen(true);
@@ -438,10 +461,10 @@ export default function Education() {
                 <div className="flex space-x-2 items-center">
                   <div className={cn(
                     "flex-1",
-                    newEducation.endDate === 'Present' ? "opacity-50" : ""
+                    isCurrentlyStudying ? "opacity-50" : ""
                   )}>
                     <Popover>
-                      <PopoverTrigger asChild disabled={newEducation.endDate === 'Present'}>
+                      <PopoverTrigger asChild disabled={isCurrentlyStudying}>
                         <Button
                           variant={"outline"}
                           className={cn(
@@ -499,13 +522,14 @@ export default function Education() {
                   </div>
 
                   <div className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
+                    <Checkbox
                       id="currentEducation"
-                      className="rounded border-gray-300 text-primary focus:ring-primary"
-                      checked={newEducation.endDate === 'Present'}
-                      onChange={(e) => {
-                        if (e.target.checked) {
+                      checked={isCurrentlyStudying}
+                      onCheckedChange={(checked) => {
+                        const isChecked = checked === true;
+                        setIsCurrentlyStudying(isChecked);
+                        
+                        if (isChecked) {
                           setNewEducation({
                             ...newEducation,
                             endDate: 'Present'
@@ -519,7 +543,27 @@ export default function Education() {
                         }
                       }}
                     />
-                    <label htmlFor="currentEducation" className="text-sm text-gray-600">
+                    <label 
+                      htmlFor="currentEducation" 
+                      className="text-sm text-gray-600 cursor-pointer"
+                      onClick={() => {
+                        const newValue = !isCurrentlyStudying;
+                        setIsCurrentlyStudying(newValue);
+                        
+                        if (newValue) {
+                          setNewEducation({
+                            ...newEducation,
+                            endDate: 'Present'
+                          });
+                          setEndDate(undefined);
+                        } else {
+                          setNewEducation({
+                            ...newEducation,
+                            endDate: ''
+                          });
+                        }
+                      }}
+                    >
                       I currently study here
                     </label>
                   </div>
