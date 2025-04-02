@@ -54,6 +54,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DegreeCombobox } from "@/components/ui/degree-combobox";
 
 // Define common degree options
 const DEGREES = [
@@ -631,21 +632,11 @@ export default function Education() {
                   <FormItem>
                     <FormLabel>Degree*</FormLabel>
                     <FormControl>
-                      <Select
+                      <DegreeCombobox
                         value={field.value}
-                        onValueChange={field.onChange}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select a degree" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {DEGREES.map((degree) => (
-                            <SelectItem key={degree} value={degree}>
-                              {degree}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                        onChange={field.onChange}
+                        placeholder="Type or select a degree"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
