@@ -1041,15 +1041,8 @@ export default function WorkExperience() {
                       selected={formData.startDate}
                       onSelect={(date) => handleDateChange('startDate', date)}
                       disabled={createExperienceMutation.isPending}
-                      captionLayout="dropdown-buttons"
                       fromYear={1980}
                       toYear={2035}
-                      formatters={{ 
-                        formatCaption: (date, options) => {
-                          // Only show the month name without any dropdown label
-                          return date.toLocaleString('default', { month: 'long', year: 'numeric' });
-                        }
-                      }}
                     />
                   </PopoverContent>
                 </Popover>
@@ -1079,15 +1072,8 @@ export default function WorkExperience() {
                       selected={formData.endDate}
                       onSelect={(date) => handleDateChange('endDate', date)}
                       disabled={createExperienceMutation.isPending}
-                      captionLayout="dropdown-buttons"
                       fromYear={1980}
                       toYear={2035}
-                      formatters={{ 
-                        formatCaption: (date, options) => {
-                          // Only show the month name without any dropdown label
-                          return date.toLocaleString('default', { month: 'long', year: 'numeric' });
-                        }
-                      }}
                     />
                   </PopoverContent>
                 </Popover>
@@ -1287,15 +1273,8 @@ export default function WorkExperience() {
                       selected={formData.startDate}
                       onSelect={(date) => handleDateChange('startDate', date)}
                       disabled={updateExperienceMutation.isPending}
-                      captionLayout="dropdown-buttons"
                       fromYear={1980}
                       toYear={2035}
-                      formatters={{ 
-                        formatCaption: (date, options) => {
-                          // Only show the month name without any dropdown label
-                          return date.toLocaleString('default', { month: 'long', year: 'numeric' });
-                        }
-                      }}
                     />
                   </PopoverContent>
                 </Popover>
@@ -1325,15 +1304,8 @@ export default function WorkExperience() {
                       selected={formData.endDate}
                       onSelect={(date) => handleDateChange('endDate', date)}
                       disabled={updateExperienceMutation.isPending}
-                      captionLayout="dropdown-buttons"
                       fromYear={1980}
                       toYear={2035}
-                      formatters={{ 
-                        formatCaption: (date, options) => {
-                          // Only show the month name without any dropdown label
-                          return date.toLocaleString('default', { month: 'long', year: 'numeric' });
-                        }
-                      }}
                     />
                   </PopoverContent>
                 </Popover>
