@@ -419,42 +419,46 @@ export default function WorkExperience() {
               />
             </div>
             
-            {/* Industry field - Positioned earlier than location for better visibility */}
-            <div className="grid grid-cols-4 items-center gap-4 mb-2 border-b border-gray-100 border-t pt-2 pb-2 bg-blue-50/20">
-              <Label htmlFor="industry" className="text-right font-medium">
-                Industry*
-              </Label>
-              <div className="col-span-3">
-                <Select
-                  value={newExperience.industry}
-                  onValueChange={(value) => setNewExperience({...newExperience, industry: value})}
-                >
-                  <SelectTrigger id="industry" className="w-full bg-blue-50 border-blue-200">
-                    <SelectValue placeholder="Select an industry" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Technology">Technology</SelectItem>
-                    <SelectItem value="Healthcare">Healthcare</SelectItem>
-                    <SelectItem value="Finance">Finance</SelectItem>
-                    <SelectItem value="Education">Education</SelectItem>
-                    <SelectItem value="Manufacturing">Manufacturing</SelectItem>
-                    <SelectItem value="Retail">Retail</SelectItem>
-                    <SelectItem value="Media">Media</SelectItem>
-                    <SelectItem value="Consulting">Consulting</SelectItem>
-                    <SelectItem value="Government">Government</SelectItem>
-                    <SelectItem value="Non-profit">Non-profit</SelectItem>
-                    <SelectItem value="Entertainment">Entertainment</SelectItem>
-                    <SelectItem value="Transportation">Transportation</SelectItem>
-                    <SelectItem value="Energy">Energy</SelectItem>
-                    <SelectItem value="Real Estate">Real Estate</SelectItem>
-                    <SelectItem value="Telecommunications">Telecommunications</SelectItem>
-                    <SelectItem value="Agriculture">Agriculture</SelectItem>
-                    <SelectItem value="Construction">Construction</SelectItem>
-                    <SelectItem value="Hospitality">Hospitality</SelectItem>
-                    <SelectItem value="Legal Services">Legal Services</SelectItem>
-                    <SelectItem value="Biotechnology">Biotechnology</SelectItem>
-                  </SelectContent>
-                </Select>
+            {/* CRITICAL FIELD: Industry selection */}
+            <div className="rounded-md p-3 mt-2 mb-4 border-2 border-blue-300 bg-blue-50">
+              <h3 className="font-bold text-blue-800 mb-2 text-center">Industry Selection*</h3>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="industry" className="text-right font-bold text-blue-800">
+                  Select:
+                </Label>
+                <div className="col-span-3">
+                  <Select
+                    value={newExperience.industry}
+                    onValueChange={(value) => setNewExperience({...newExperience, industry: value})}
+                  >
+                    <SelectTrigger id="industry" className="w-full bg-white border-blue-400 shadow-sm">
+                      <SelectValue placeholder="Choose an industry category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Technology">Technology</SelectItem>
+                      <SelectItem value="Healthcare">Healthcare</SelectItem>
+                      <SelectItem value="Finance">Finance</SelectItem>
+                      <SelectItem value="Education">Education</SelectItem>
+                      <SelectItem value="Manufacturing">Manufacturing</SelectItem>
+                      <SelectItem value="Retail">Retail</SelectItem>
+                      <SelectItem value="Media">Media</SelectItem>
+                      <SelectItem value="Consulting">Consulting</SelectItem>
+                      <SelectItem value="Government">Government</SelectItem>
+                      <SelectItem value="Non-profit">Non-profit</SelectItem>
+                      <SelectItem value="Entertainment">Entertainment</SelectItem>
+                      <SelectItem value="Transportation">Transportation</SelectItem>
+                      <SelectItem value="Energy">Energy</SelectItem>
+                      <SelectItem value="Real Estate">Real Estate</SelectItem>
+                      <SelectItem value="Telecommunications">Telecommunications</SelectItem>
+                      <SelectItem value="Agriculture">Agriculture</SelectItem>
+                      <SelectItem value="Construction">Construction</SelectItem>
+                      <SelectItem value="Hospitality">Hospitality</SelectItem>
+                      <SelectItem value="Legal Services">Legal Services</SelectItem>
+                      <SelectItem value="Biotechnology">Biotechnology</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-blue-600 mt-1">This field is required for analyzing career patterns</p>
+                </div>
               </div>
             </div>
             
