@@ -1,22 +1,60 @@
 import { useAuth } from "@/hooks/use-auth";
 import { Card } from "@/components/ui/card";
 import SkillBar from "@/components/common/skill-bar";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useQuery } from "@tanstack/react-query";
 
 export default function RightSidebar() {
-  const { user } = useAuth();
+  const { user, isDemoMode } = useAuth();
+  
+  // Get the user ID for queries
+  const userId = isDemoMode ? 1 : user?.uid;
+  
+  // Use TanStack Query to fetch and cache user data
+  const { data: userData } = useQuery({
+    queryKey: [`/api/users/${userId}`],
+    queryFn: async () => {
+      if (!userId) return null;
+      
+      console.log(`RightSidebar: Fetching user data with ID: ${userId}`);
+      const response = await apiRequest('GET', `/api/users/${userId}`);
+      
+      if (response.status === 404) {
+        console.error(`User with ID ${userId} not found in backend`);
+        return null;
+      }
+      
+      const data = await response.json();
+      console.log("RightSidebar: Fetched user data:", data);
+      return data;
+    },
+    enabled: !!userId, // Only run query if userId exists
+    staleTime: 10000 // Consider data fresh for 10 seconds
+  });
+
+  // Determine which photo URL to use (prioritize userData if available)
+  const photoURL = userData?.photoURL || user?.photoURL;
+  const displayName = userData?.name || user?.name || 'User';
+  const userTitle = userData?.title || 'Professional';
 
   return (
     <div className="bg-white w-80 border-l border-gray-200 p-5 overflow-y-auto">
       <div className="mb-6">
         <div className="flex items-center">
-          <img 
-            className="h-12 w-12 rounded-full" 
-            src={user?.photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
-            alt="User profile" 
-          />
+          <div className="h-12 w-12 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
+            <img 
+              className="h-full w-full object-cover" 
+              src={photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
+              alt="User profile"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
+              }}
+            />
+          </div>
           <div className="ml-3">
-            <h2 className="text-base font-medium text-gray-900">{user?.name || 'User'}</h2>
-            <p className="text-sm text-gray-500">Data Analyst</p>
+            <h2 className="text-base font-medium text-gray-900">{displayName}</h2>
+            <p className="text-sm text-gray-500">{userTitle}</p>
           </div>
         </div>
       </div>

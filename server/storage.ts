@@ -215,7 +215,24 @@ export class MemStorage implements IStorage {
   }
   
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(user => user.username === username);
+    console.log(`Looking up user by username: ${username}`);
+    
+    // For Firebase UID strings like "0yvB0mlyKfQXGo3j4ueLtAeBREE3"
+    // We can do a more accurate search by storing the UID in the username field
+    // but we also want to warn about any issues in the console for debugging
+    
+    const user = Array.from(this.users.values()).find(user => user.username === username);
+    
+    if (!user) {
+      // Check if this is a Firebase UID and warn about it
+      if (username && username.length > 20) {
+        console.warn(`Firebase UID not found: ${username}. This is likely a Firebase UID that hasn't been properly registered.`);
+      }
+    } else {
+      console.log(`Found user with username "${username}":`, user);
+    }
+    
+    return user;
   }
   
   async getUserByPhoneNumber(phoneNumber: string): Promise<User | undefined> {

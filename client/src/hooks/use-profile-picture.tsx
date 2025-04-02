@@ -2,8 +2,12 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { toast } from "@/hooks/use-toast";
 import { User } from "@shared/schema";
+import { useAuth } from "@/hooks/use-auth";
 
 export function useProfilePicture(userId: number | string = 1) {
+  // Get the refresh function from auth context
+  const { refreshUserData } = useAuth();
+  
   // Mutation for updating the profile picture
   return useMutation({
     mutationFn: async (base64Image: string) => {
@@ -20,9 +24,20 @@ export function useProfilePicture(userId: number | string = 1) {
       
       return await res.json() as User;
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       // Invalidate and refetch user data
       queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
+      
+      // Immediately refresh the auth context
+      await refreshUserData();
+      
+      // Force invalidate all user data queries
+      if (typeof userId === 'number') {
+        queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
+      } else if (typeof userId === 'string') {
+        queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
+      }
+      
       toast({
         title: "Profile picture updated",
         description: "Your profile picture has been updated successfully",

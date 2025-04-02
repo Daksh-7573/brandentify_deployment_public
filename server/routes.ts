@@ -162,25 +162,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   apiRouter.get("/users/:id", async (req: Request, res: Response) => {
     try {
-      // Try to parse as integer for numeric IDs
-      // If it fails (NaN), it might be a Firebase UID
       const idParam = req.params.id;
-      const userId = parseInt(idParam);
+      console.log(`[GET /users/:id] Fetching user with ID: ${idParam}`);
       
       let user;
       
-      if (isNaN(userId)) {
-        // If it's not a number, check by username (which we use for Firebase UIDs)
+      // Improved detection of Firebase UIDs - they're long and contain non-numeric characters
+      const isFirebaseUid = idParam.length > 20 && /[^0-9]/.test(idParam);
+      
+      if (isFirebaseUid) {
+        // If it looks like a Firebase UID, check by username
+        console.log(`[GET /users/:id] ID appears to be a Firebase UID: ${idParam}`);
         user = await storage.getUserByUsername(idParam);
+        
+        if (!user) {
+          console.log(`[GET /users/:id] No existing user found with Firebase UID: ${idParam}`);
+          console.log(`[GET /users/:id] Creating new user for Firebase UID: ${idParam}`);
+          
+          const newUser = await storage.createUser({
+            username: idParam,
+            email: `firebase_${idParam.substring(0, 8)}@example.com`,
+            password: null,
+            name: "Firebase User",
+            phoneNumber: null,
+            photoURL: null,
+            title: null,
+            location: null,
+            industry: null,
+            lookingFor: null,
+            profileCompleted: null
+          });
+          
+          console.log(`[GET /users/:id] Created new user for Firebase UID:`, newUser);
+          return res.status(201).json(newUser);
+        }
+        
+        console.log(`[GET /users/:id] Found existing user with Firebase UID: ${user.id}`);
       } else {
-        // If it's a valid number, get by ID
+        // Try to parse as numeric ID
+        const userId = parseInt(idParam);
+        
+        if (isNaN(userId)) {
+          console.log(`[GET /users/:id] ID is not a valid numeric ID: ${idParam}`);
+          return res.status(400).json({ message: "Invalid user ID format" });
+        }
+        
+        console.log(`[GET /users/:id] Looking up user with numeric ID: ${userId}`);
         user = await storage.getUser(userId);
+        
+        if (!user) {
+          console.log(`[GET /users/:id] No user found with numeric ID: ${userId}`);
+          return res.status(404).json({ message: "User not found" });
+        }
+        
+        console.log(`[GET /users/:id] Found user with numeric ID: ${userId}`);
       }
       
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      
+      console.log(`[GET /users/:id] Returning user data:`, user);
       res.json(user);
     } catch (error) {
       console.error("Error fetching user:", error);
@@ -190,33 +228,76 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   apiRouter.put("/users/:id", async (req: Request, res: Response) => {
     try {
-      // Try to parse as integer for numeric IDs
-      // If it fails (NaN), it might be a Firebase UID
       const idParam = req.params.id;
-      const userId = parseInt(idParam);
       const userData = req.body;
+      
+      console.log(`[PUT /users/:id] Updating user with ID: ${idParam}`);
+      console.log(`[PUT /users/:id] Update data:`, userData);
       
       let user;
       let updatedUser;
       
-      if (isNaN(userId)) {
-        // If it's not a number, check by username (which we use for Firebase UIDs)
+      // Improved detection of Firebase UIDs - they're long and contain non-numeric characters
+      const isFirebaseUid = idParam.length > 20 && /[^0-9]/.test(idParam);
+      
+      if (isFirebaseUid) {
+        // If it looks like a Firebase UID, check by username
+        console.log(`[PUT /users/:id] ID appears to be a Firebase UID: ${idParam}`);
         user = await storage.getUserByUsername(idParam);
+        
         if (!user) {
+          console.log(`[PUT /users/:id] No existing user found with Firebase UID: ${idParam}`);
+          
+          // Create a new user with the Firebase UID if it includes required profile data
+          if (userData.photoURL || userData.name || userData.email) {
+            console.log(`[PUT /users/:id] Creating new user for Firebase UID: ${idParam}`);
+            
+            const newUser = await storage.createUser({
+              username: idParam,
+              email: userData.email || `firebase_${idParam.substring(0, 8)}@example.com`,
+              password: null,
+              name: userData.name || "Firebase User",
+              phoneNumber: userData.phoneNumber || null,
+              photoURL: userData.photoURL || null,
+              title: userData.title || null,
+              location: userData.location || null,
+              industry: userData.industry || null,
+              lookingFor: userData.lookingFor || null,
+              profileCompleted: userData.profileCompleted || null
+            });
+            
+            console.log(`[PUT /users/:id] Created new user for Firebase UID:`, newUser);
+            return res.status(201).json(newUser);
+          }
+          
+          console.log(`[PUT /users/:id] No user found with Firebase UID: ${idParam} and insufficient data to create one`);
           return res.status(404).json({ message: "User not found" });
         }
         
+        console.log(`[PUT /users/:id] Found existing user with Firebase UID: ${idParam}, numeric ID: ${user.id}`);
         updatedUser = await storage.updateUser(user.id, userData);
       } else {
-        // If it's a valid number, get by ID
+        // Try to parse as numeric ID
+        const userId = parseInt(idParam);
+        
+        if (isNaN(userId)) {
+          console.log(`[PUT /users/:id] ID is not a valid numeric ID: ${idParam}`);
+          return res.status(400).json({ message: "Invalid user ID format" });
+        }
+        
+        console.log(`[PUT /users/:id] Looking up user with numeric ID: ${userId}`);
         user = await storage.getUser(userId);
+        
         if (!user) {
+          console.log(`[PUT /users/:id] No user found with numeric ID: ${userId}`);
           return res.status(404).json({ message: "User not found" });
         }
         
+        console.log(`[PUT /users/:id] Found user with numeric ID: ${userId}, updating...`);
         updatedUser = await storage.updateUser(userId, userData);
       }
       
+      console.log(`[PUT /users/:id] Successfully updated user:`, updatedUser);
       res.json(updatedUser);
     } catch (error) {
       console.error("Error updating user:", error);
@@ -227,13 +308,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Resume routes
   apiRouter.post("/resumes", async (req: Request, res: Response) => {
     try {
+      console.log(`[POST /resumes] Creating resume with data:`, req.body);
+      
+      // Check if we have a Firebase UID instead of numeric userId
+      if (typeof req.body.userId === 'string' && req.body.userId.length > 20) {
+        console.log(`[POST /resumes] Received Firebase UID as userId: ${req.body.userId}`);
+        
+        // Look up the numeric userId for this Firebase UID
+        const user = await storage.getUserByUsername(req.body.userId);
+        
+        if (user) {
+          console.log(`[POST /resumes] Found matching user with ID: ${user.id}`);
+          // Replace the Firebase UID with the numeric userId
+          req.body.userId = user.id;
+        } else {
+          console.log(`[POST /resumes] No matching user found for Firebase UID: ${req.body.userId}`);
+          return res.status(404).json({ message: "User not found" });
+        }
+      }
+      
+      console.log(`[POST /resumes] Processing with userId: ${req.body.userId}`);
       const resumeData = insertResumeSchema.parse(req.body);
       const resume = await storage.createResume(resumeData);
+      console.log(`[POST /resumes] Created resume with ID: ${resume.id}`);
       res.status(201).json(resume);
     } catch (error) {
       if (error instanceof z.ZodError) {
+        console.error(`[POST /resumes] Validation error:`, error.errors);
         res.status(400).json({ message: error.errors });
       } else {
+        console.error(`[POST /resumes] Server error:`, error);
         res.status(500).json({ message: "Internal server error" });
       }
     }
@@ -241,15 +345,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   apiRouter.get("/users/:userId/resume", async (req: Request, res: Response) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userIdParam = req.params.userId;
+      console.log(`[GET /users/:userId/resume] Request for resume with userId: ${userIdParam}`);
+      
+      let userId: number;
+      
+      // Improved detection of Firebase UIDs - they're long and contain non-numeric characters
+      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
+      
+      if (isFirebaseUid) {
+        console.log(`[GET /users/:userId/resume] userId appears to be a Firebase UID: ${userIdParam}`);
+        // Try to find user with this username (Firebase UID)
+        const user = await storage.getUserByUsername(userIdParam);
+        
+        if (!user) {
+          console.log(`[GET /users/:userId/resume] No user found with Firebase UID: ${userIdParam}`);
+          return res.status(404).json({ message: "User not found" });
+        }
+        
+        console.log(`[GET /users/:userId/resume] Found user with ID: ${user.id} for Firebase UID: ${userIdParam}`);
+        userId = user.id;
+      } else {
+        // Try to parse as numeric ID
+        userId = parseInt(userIdParam);
+        
+        if (isNaN(userId)) {
+          console.log(`[GET /users/:userId/resume] ID is not a valid numeric ID: ${userIdParam}`);
+          return res.status(400).json({ message: "Invalid user ID format" });
+        }
+        
+        console.log(`[GET /users/:userId/resume] Using numeric userId: ${userId}`);
+      }
+      
       const resume = await storage.getResumeByUserId(userId);
       
       if (!resume) {
+        console.log(`[GET /users/:userId/resume] No resume found for userId: ${userId}`);
         return res.status(404).json({ message: "Resume not found" });
       }
       
+      console.log(`[GET /users/:userId/resume] Found resume:`, resume);
       res.json(resume);
     } catch (error) {
+      console.error("Error fetching resume:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   });
@@ -257,23 +395,79 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Work Experience routes
   apiRouter.get("/users/:userId/experiences", async (req: Request, res: Response) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userIdParam = req.params.userId;
+      console.log(`[GET /users/:userId/experiences] Request for experiences with userId: ${userIdParam}`);
+      
+      let userId: number;
+      
+      // Improved detection of Firebase UIDs - they're long and contain non-numeric characters
+      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
+      
+      if (isFirebaseUid) {
+        console.log(`[GET /users/:userId/experiences] userId appears to be a Firebase UID: ${userIdParam}`);
+        // Try to find user with this username (Firebase UID)
+        const user = await storage.getUserByUsername(userIdParam);
+        
+        if (!user) {
+          console.log(`[GET /users/:userId/experiences] No user found with Firebase UID: ${userIdParam}`);
+          return res.status(404).json({ message: "User not found" });
+        }
+        
+        console.log(`[GET /users/:userId/experiences] Found user with ID: ${user.id} for Firebase UID: ${userIdParam}`);
+        userId = user.id;
+      } else {
+        // Try to parse as numeric ID
+        userId = parseInt(userIdParam);
+        
+        if (isNaN(userId)) {
+          console.log(`[GET /users/:userId/experiences] ID is not a valid numeric ID: ${userIdParam}`);
+          return res.status(400).json({ message: "Invalid user ID format" });
+        }
+        
+        console.log(`[GET /users/:userId/experiences] Using numeric userId: ${userId}`);
+      }
+      
       const experiences = await storage.getWorkExperiencesByUserId(userId);
+      console.log(`[GET /users/:userId/experiences] Found ${experiences.length} experiences for userId: ${userId}`);
       res.json(experiences);
     } catch (error) {
+      console.error("Error fetching experiences:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   });
 
   apiRouter.post("/experiences", async (req: Request, res: Response) => {
     try {
+      console.log(`[POST /experiences] Creating experience with data:`, req.body);
+      
+      // Check if we have a Firebase UID instead of numeric userId
+      if (typeof req.body.userId === 'string' && req.body.userId.length > 20) {
+        console.log(`[POST /experiences] Received Firebase UID as userId: ${req.body.userId}`);
+        
+        // Look up the numeric userId for this Firebase UID
+        const user = await storage.getUserByUsername(req.body.userId);
+        
+        if (user) {
+          console.log(`[POST /experiences] Found matching user with ID: ${user.id}`);
+          // Replace the Firebase UID with the numeric userId
+          req.body.userId = user.id;
+        } else {
+          console.log(`[POST /experiences] No matching user found for Firebase UID: ${req.body.userId}`);
+          return res.status(404).json({ message: "User not found" });
+        }
+      }
+      
+      console.log(`[POST /experiences] Processing with userId: ${req.body.userId}`);
       const experienceData = insertWorkExperienceSchema.parse(req.body);
       const experience = await storage.createWorkExperience(experienceData);
+      console.log(`[POST /experiences] Created experience with ID: ${experience.id}`);
       res.status(201).json(experience);
     } catch (error) {
       if (error instanceof z.ZodError) {
+        console.error(`[POST /experiences] Validation error:`, error.errors);
         res.status(400).json({ message: error.errors });
       } else {
+        console.error(`[POST /experiences] Server error:`, error);
         res.status(500).json({ message: "Internal server error" });
       }
     }
@@ -313,23 +507,79 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Education routes
   apiRouter.get("/users/:userId/educations", async (req: Request, res: Response) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userIdParam = req.params.userId;
+      console.log(`[GET /users/:userId/educations] Request for educations with userId: ${userIdParam}`);
+      
+      let userId: number;
+      
+      // Improved detection of Firebase UIDs - they're long and contain non-numeric characters
+      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
+      
+      if (isFirebaseUid) {
+        console.log(`[GET /users/:userId/educations] userId appears to be a Firebase UID: ${userIdParam}`);
+        // Try to find user with this username (Firebase UID)
+        const user = await storage.getUserByUsername(userIdParam);
+        
+        if (!user) {
+          console.log(`[GET /users/:userId/educations] No user found with Firebase UID: ${userIdParam}`);
+          return res.status(404).json({ message: "User not found" });
+        }
+        
+        console.log(`[GET /users/:userId/educations] Found user with ID: ${user.id} for Firebase UID: ${userIdParam}`);
+        userId = user.id;
+      } else {
+        // Try to parse as numeric ID
+        userId = parseInt(userIdParam);
+        
+        if (isNaN(userId)) {
+          console.log(`[GET /users/:userId/educations] ID is not a valid numeric ID: ${userIdParam}`);
+          return res.status(400).json({ message: "Invalid user ID format" });
+        }
+        
+        console.log(`[GET /users/:userId/educations] Using numeric userId: ${userId}`);
+      }
+      
       const educations = await storage.getEducationsByUserId(userId);
+      console.log(`[GET /users/:userId/educations] Found ${educations.length} educations for userId: ${userId}`);
       res.json(educations);
     } catch (error) {
+      console.error("Error fetching educations:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   });
 
   apiRouter.post("/educations", async (req: Request, res: Response) => {
     try {
+      console.log(`[POST /educations] Creating education with data:`, req.body);
+      
+      // Check if we have a Firebase UID instead of numeric userId
+      if (typeof req.body.userId === 'string' && req.body.userId.length > 20) {
+        console.log(`[POST /educations] Received Firebase UID as userId: ${req.body.userId}`);
+        
+        // Look up the numeric userId for this Firebase UID
+        const user = await storage.getUserByUsername(req.body.userId);
+        
+        if (user) {
+          console.log(`[POST /educations] Found matching user with ID: ${user.id}`);
+          // Replace the Firebase UID with the numeric userId
+          req.body.userId = user.id;
+        } else {
+          console.log(`[POST /educations] No matching user found for Firebase UID: ${req.body.userId}`);
+          return res.status(404).json({ message: "User not found" });
+        }
+      }
+      
+      console.log(`[POST /educations] Processing with userId: ${req.body.userId}`);
       const educationData = insertEducationSchema.parse(req.body);
       const education = await storage.createEducation(educationData);
+      console.log(`[POST /educations] Created education with ID: ${education.id}`);
       res.status(201).json(education);
     } catch (error) {
       if (error instanceof z.ZodError) {
+        console.error(`[POST /educations] Validation error:`, error.errors);
         res.status(400).json({ message: error.errors });
       } else {
+        console.error(`[POST /educations] Server error:`, error);
         res.status(500).json({ message: "Internal server error" });
       }
     }
@@ -369,23 +619,79 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Skills routes
   apiRouter.get("/users/:userId/skills", async (req: Request, res: Response) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userIdParam = req.params.userId;
+      console.log(`[GET /users/:userId/skills] Request for skills with userId: ${userIdParam}`);
+      
+      let userId: number;
+      
+      // Improved detection of Firebase UIDs - they're long and contain non-numeric characters
+      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
+      
+      if (isFirebaseUid) {
+        console.log(`[GET /users/:userId/skills] userId appears to be a Firebase UID: ${userIdParam}`);
+        // Try to find user with this username (Firebase UID)
+        const user = await storage.getUserByUsername(userIdParam);
+        
+        if (!user) {
+          console.log(`[GET /users/:userId/skills] No user found with Firebase UID: ${userIdParam}`);
+          return res.status(404).json({ message: "User not found" });
+        }
+        
+        console.log(`[GET /users/:userId/skills] Found user with ID: ${user.id} for Firebase UID: ${userIdParam}`);
+        userId = user.id;
+      } else {
+        // Try to parse as numeric ID
+        userId = parseInt(userIdParam);
+        
+        if (isNaN(userId)) {
+          console.log(`[GET /users/:userId/skills] ID is not a valid numeric ID: ${userIdParam}`);
+          return res.status(400).json({ message: "Invalid user ID format" });
+        }
+        
+        console.log(`[GET /users/:userId/skills] Using numeric userId: ${userId}`);
+      }
+      
       const skills = await storage.getSkillsByUserId(userId);
+      console.log(`[GET /users/:userId/skills] Found ${skills.length} skills for userId: ${userId}`);
       res.json(skills);
     } catch (error) {
+      console.error("Error fetching skills:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   });
 
   apiRouter.post("/skills", async (req: Request, res: Response) => {
     try {
+      console.log(`[POST /skills] Creating skill with data:`, req.body);
+      
+      // Check if we have a Firebase UID instead of numeric userId
+      if (typeof req.body.userId === 'string' && req.body.userId.length > 20) {
+        console.log(`[POST /skills] Received Firebase UID as userId: ${req.body.userId}`);
+        
+        // Look up the numeric userId for this Firebase UID
+        const user = await storage.getUserByUsername(req.body.userId);
+        
+        if (user) {
+          console.log(`[POST /skills] Found matching user with ID: ${user.id}`);
+          // Replace the Firebase UID with the numeric userId
+          req.body.userId = user.id;
+        } else {
+          console.log(`[POST /skills] No matching user found for Firebase UID: ${req.body.userId}`);
+          return res.status(404).json({ message: "User not found" });
+        }
+      }
+      
+      console.log(`[POST /skills] Processing with userId: ${req.body.userId}`);
       const skillData = insertSkillSchema.parse(req.body);
       const skill = await storage.createSkill(skillData);
+      console.log(`[POST /skills] Created skill with ID: ${skill.id}`);
       res.status(201).json(skill);
     } catch (error) {
       if (error instanceof z.ZodError) {
+        console.error(`[POST /skills] Validation error:`, error.errors);
         res.status(400).json({ message: error.errors });
       } else {
+        console.error(`[POST /skills] Server error:`, error);
         res.status(500).json({ message: "Internal server error" });
       }
     }
@@ -425,29 +731,106 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Chat Message routes
   apiRouter.get("/users/:userId/chat-messages", async (req: Request, res: Response) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userIdParam = req.params.userId;
+      console.log(`[GET /users/:userId/chat-messages] Request for chat messages with userId: ${userIdParam}`);
+      
+      let userId: number;
+      
+      // Improved detection of Firebase UIDs - they're long and contain non-numeric characters
+      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
+      
+      if (isFirebaseUid) {
+        console.log(`[GET /users/:userId/chat-messages] userId appears to be a Firebase UID: ${userIdParam}`);
+        // Try to find user with this username (Firebase UID)
+        const user = await storage.getUserByUsername(userIdParam);
+        
+        if (!user) {
+          console.log(`[GET /users/:userId/chat-messages] No user found with Firebase UID: ${userIdParam}`);
+          return res.status(404).json({ message: "User not found" });
+        }
+        
+        console.log(`[GET /users/:userId/chat-messages] Found user with ID: ${user.id} for Firebase UID: ${userIdParam}`);
+        userId = user.id;
+      } else {
+        // Try to parse as numeric ID
+        userId = parseInt(userIdParam);
+        
+        if (isNaN(userId)) {
+          console.log(`[GET /users/:userId/chat-messages] ID is not a valid numeric ID: ${userIdParam}`);
+          return res.status(400).json({ message: "Invalid user ID format" });
+        }
+        
+        console.log(`[GET /users/:userId/chat-messages] Using numeric userId: ${userId}`);
+      }
+      
       const messages = await storage.getChatMessagesByUserId(userId);
+      console.log(`[GET /users/:userId/chat-messages] Found ${messages.length} chat messages for userId: ${userId}`);
       res.json(messages);
     } catch (error) {
+      console.error("Error fetching chat messages:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   });
 
   apiRouter.post("/chat-messages", async (req: Request, res: Response) => {
     try {
+      // Check if we have a Firebase UID instead of numeric userId
+      if (typeof req.body.userId === 'string' && req.body.userId.length > 20) {
+        console.log(`[POST /chat-messages] Received Firebase UID as userId: ${req.body.userId}`);
+        
+        // Look up the numeric userId for this Firebase UID
+        const user = await storage.getUserByUsername(req.body.userId);
+        
+        if (user) {
+          console.log(`[POST /chat-messages] Found matching user with ID: ${user.id}`);
+          // Replace the Firebase UID with the numeric userId
+          req.body.userId = user.id;
+        } else {
+          console.log(`[POST /chat-messages] No matching user found for Firebase UID: ${req.body.userId}`);
+          console.log(`[POST /chat-messages] Creating temporary user for Firebase UID`);
+          
+          // Create a new user with the Firebase UID
+          const newUser = await storage.createUser({
+            username: req.body.userId,
+            email: `firebase_${req.body.userId.substring(0, 8)}@example.com`,
+            password: null,
+            name: "Firebase User",
+            phoneNumber: null,
+            photoURL: null,
+            title: null,
+            location: null,
+            industry: null,
+            lookingFor: null,
+            profileCompleted: null
+          });
+          
+          console.log(`[POST /chat-messages] Created new user with ID: ${newUser.id}`);
+          req.body.userId = newUser.id;
+        }
+      }
+      
+      console.log(`[POST /chat-messages] Processing message with userId: ${req.body.userId}`);
       const messageData = insertChatMessageSchema.parse(req.body);
       const message = await storage.createChatMessage(messageData);
+      console.log(`[POST /chat-messages] Created message: ${message.id}`);
       
       // If this is a user message, generate an AI response
       if (messageData.sender === 'user') {
+        console.log(`[POST /chat-messages] User message, generating AI response`);
         const userId = messageData.userId;
         const userSkills = await storage.getSkillsByUserId(userId);
         const userExperiences = await storage.getWorkExperiencesByUserId(userId);
         const userEducations = await storage.getEducationsByUserId(userId);
         
+        console.log(`[POST /chat-messages] Retrieved user data: ${userSkills.length} skills, ${userExperiences.length} experiences, ${userEducations.length} educations`);
+        
         // Extract careerGoal if it exists in the request
         const careerGoal = req.body.careerGoal;
+        if (careerGoal) {
+          console.log(`[POST /chat-messages] Career goal: ${careerGoal}`);
+        }
         
+        console.log(`[POST /chat-messages] Generating career advice...`);
         const aiResponse = await generateCareerAdvice(
           messageData.message,
           userSkills,
@@ -457,21 +840,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
           userId // Pass the userId to the AI service
         );
         
+        console.log(`[POST /chat-messages] AI response generated (${aiResponse.length} characters)`);
+        
         // Save the AI response
+        console.log(`[POST /chat-messages] Saving AI response to database`);
         const aiMessage = await storage.createChatMessage({
           userId: messageData.userId,
           message: aiResponse,
           sender: 'ai'
         });
         
+        console.log(`[POST /chat-messages] AI message saved with ID: ${aiMessage.id}`);
         res.status(201).json({ userMessage: message, aiMessage });
       } else {
+        console.log(`[POST /chat-messages] Non-user message, returning directly`);
         res.status(201).json(message);
       }
     } catch (error) {
       if (error instanceof z.ZodError) {
+        console.error(`[POST /chat-messages] Validation error:`, error.errors);
         res.status(400).json({ message: error.errors });
       } else {
+        console.error(`[POST /chat-messages] Server error:`, error);
         res.status(500).json({ message: "Internal server error" });
       }
     }

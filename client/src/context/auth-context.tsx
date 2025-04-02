@@ -410,6 +410,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
     
     try {
+      console.log("Refreshing user data with ID:", userId);
+      
+      // Invalidate the user data query to ensure fresh data on next fetch
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
+      
       // Fetch latest user data from the backend
       if (isDemoMode) {
         await fetchDemoUserData();
@@ -417,14 +422,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const updatedUser = await fetchUserData(userId);
         if (updatedUser) {
           setUser(updatedUser);
+          console.log("Updated user state with fresh data:", updatedUser);
         }
       }
       
-      // Also invalidate and immediately refetch all related queries for the profile components
+      // Also invalidate other related queries for the profile components
       console.log("Refreshing profile data queries");
-      
-      // Reset the entire query cache
-      queryClient.clear();
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/resume`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/experiences`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/educations`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/skills`] });
       
       // Manually fetch ALL data directly using fetch API to bypass any caching
       try {
