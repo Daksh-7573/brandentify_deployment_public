@@ -117,11 +117,21 @@ export default function WorkExperience() {
   
   const handleSaveExperience = async () => {
     try {
-      // Validate form
-      if (!newExperience.title || !newExperience.company || !newExperience.startDate) {
+      // Validate form - only require title, company, and either startDate or presentation dates
+      if (!newExperience.title || !newExperience.company) {
         toast({
           title: "Missing information",
-          description: "Please fill in all required fields",
+          description: "Please provide at least the job title and company name",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      // Check if we have the month and year for the start date
+      if (!startDate && !newExperience.startDate) {
+        toast({
+          title: "Missing start date",
+          description: "Please provide at least the month and year for your start date",
           variant: "destructive"
         });
         return;
@@ -393,13 +403,38 @@ export default function WorkExperience() {
               <Label htmlFor="location" className="text-right">
                 Location
               </Label>
-              <Input
-                id="location"
-                value={newExperience.location}
-                onChange={(e) => setNewExperience({...newExperience, location: e.target.value})}
-                className="col-span-3"
-                placeholder="San Francisco, CA"
-              />
+              <div className="col-span-3">
+                <Select
+                  value={newExperience.location}
+                  onValueChange={(value) => setNewExperience({...newExperience, location: value})}
+                >
+                  <SelectTrigger id="location" className="w-full">
+                    <SelectValue placeholder="Select a location" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Remote">Remote</SelectItem>
+                    <SelectItem value="San Francisco, CA">San Francisco, CA</SelectItem>
+                    <SelectItem value="New York, NY">New York, NY</SelectItem>
+                    <SelectItem value="Seattle, WA">Seattle, WA</SelectItem>
+                    <SelectItem value="Austin, TX">Austin, TX</SelectItem>
+                    <SelectItem value="Chicago, IL">Chicago, IL</SelectItem>
+                    <SelectItem value="Los Angeles, CA">Los Angeles, CA</SelectItem>
+                    <SelectItem value="Boston, MA">Boston, MA</SelectItem>
+                    <SelectItem value="Denver, CO">Denver, CO</SelectItem>
+                    <SelectItem value="Washington, DC">Washington, DC</SelectItem>
+                    <SelectItem value="Atlanta, GA">Atlanta, GA</SelectItem>
+                    <SelectItem value="Toronto, Canada">Toronto, Canada</SelectItem>
+                    <SelectItem value="London, UK">London, UK</SelectItem>
+                    <SelectItem value="Berlin, Germany">Berlin, Germany</SelectItem>
+                    <SelectItem value="Paris, France">Paris, France</SelectItem>
+                    <SelectItem value="Mumbai, India">Mumbai, India</SelectItem>
+                    <SelectItem value="Bangalore, India">Bangalore, India</SelectItem>
+                    <SelectItem value="Sydney, Australia">Sydney, Australia</SelectItem>
+                    <SelectItem value="Tokyo, Japan">Tokyo, Japan</SelectItem>
+                    <SelectItem value="Singapore">Singapore</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="startDate" className="text-right">
@@ -416,7 +451,7 @@ export default function WorkExperience() {
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {startDate ? format(startDate, "PPP") : <span>Pick a date</span>}
+                      {startDate ? format(startDate, "MMM yyyy") : <span>Pick month and year</span>}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
@@ -517,7 +552,7 @@ export default function WorkExperience() {
                           )}
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
-                          {endDate ? format(endDate, "PPP") : <span>Select end date</span>}
+                          {endDate ? format(endDate, "MMM yyyy") : <span>Select month and year</span>}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0">
