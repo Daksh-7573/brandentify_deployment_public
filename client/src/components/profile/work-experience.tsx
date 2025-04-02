@@ -24,8 +24,9 @@ type WorkExperienceItem = {
   userId: number;
   title: string;
   company: string;
-  location: string;
   industry: string;
+  domain: string;
+  location: string;
   startDate: string;
   endDate?: string;
   description: string;
@@ -90,8 +91,9 @@ export default function WorkExperience() {
   const [newExperience, setNewExperience] = useState<Partial<WorkExperienceItem>>({
     title: '',
     company: '',
-    location: '',
     industry: '',
+    domain: '',
+    location: '',
     startDate: '',
     endDate: '',
     description: ''
@@ -111,8 +113,9 @@ export default function WorkExperience() {
     setNewExperience({
       title: '',
       company: '',
-      location: '',
       industry: '',
+      domain: '',
+      location: '',
       startDate: '',
       endDate: '',
       description: ''
@@ -216,8 +219,9 @@ export default function WorkExperience() {
         setNewExperience({
           title: '',
           company: '',
-          location: '',
           industry: '',
+          domain: '',
+          location: '',
           startDate: '',
           endDate: '',
           description: ''
@@ -357,7 +361,12 @@ export default function WorkExperience() {
                     <div>
                       <h3 className="text-base font-medium text-gray-900">{exp.title}</h3>
                       <p className="text-sm text-gray-500 mt-1">{exp.company} • {exp.location}</p>
-                      <p className="text-sm text-gray-500 mt-1">{exp.industry && `${exp.industry} • `}{exp.startDate} - {exp.endDate || 'Present'}</p>
+                      <p className="text-sm text-gray-500 mt-1">
+                        {exp.industry && `${exp.industry}`}
+                        {exp.domain && exp.industry && ` / ${exp.domain}`}
+                        {(exp.industry || exp.domain) && ` • `}
+                        {exp.startDate} - {exp.endDate || 'Present'}
+                      </p>
                     </div>
                     <div className="flex space-x-2">
                       <button 
@@ -382,7 +391,7 @@ export default function WorkExperience() {
             </div>
           ) : (
             <div className="text-center py-6 text-gray-500">
-              No work experience yet. Add your work experience or upload a resume to populate this section.
+              No work experience yet. Add your professional experience using the "Add" button in the top-right corner.
             </div>
           )}
         </CardContent>
@@ -423,7 +432,7 @@ export default function WorkExperience() {
               />
             </div>
             
-            {/* BASIC INDUSTRY FIELD */}
+            {/* INDUSTRY FIELD */}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="industry" className="text-right">
                 Industry*
@@ -435,6 +444,20 @@ export default function WorkExperience() {
                 className="col-span-3"
                 placeholder="Technology, Healthcare, etc."
                 required
+              />
+            </div>
+            
+            {/* DOMAIN FIELD */}
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="domain" className="text-right">
+                Domain
+              </Label>
+              <Input
+                id="domain"
+                value={newExperience.domain}
+                onChange={(e) => setNewExperience({...newExperience, domain: e.target.value})}
+                className="col-span-3"
+                placeholder="Software Development, Data Science, etc."
               />
             </div>
             
