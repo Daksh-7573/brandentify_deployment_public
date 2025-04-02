@@ -16,8 +16,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
-// Log that the file is loading
-console.log("WORK EXPERIENCE FORM VERSION: 2023-04-02-v3 - USING TEXT INPUT FOR INDUSTRY");
+// Log that the file is loading with enhanced Industry and Domain fields
+console.log("WORK EXPERIENCE FORM VERSION: 2023-04-02-v4 - ENHANCED INDUSTRY & DOMAIN FIELDS");
+// Add a startup log specifically for the domain field
+console.log("WORK EXPERIENCE: Industry and Domain fields are active and visually enhanced");
 
 type WorkExperienceItem = {
   id: number;
@@ -362,8 +364,18 @@ export default function WorkExperience() {
                       <h3 className="text-base font-medium text-gray-900">{exp.title}</h3>
                       <p className="text-sm text-gray-500 mt-1">{exp.company} • {exp.location}</p>
                       <p className="text-sm text-gray-500 mt-1">
-                        {exp.industry && `${exp.industry}`}
-                        {exp.domain && exp.industry && ` / ${exp.domain}`}
+                        <span className="inline-flex items-center">
+                          {exp.industry && (
+                            <span className="bg-gray-100 text-gray-800 px-2 py-0.5 rounded-md mr-1">
+                              {exp.industry}
+                            </span>
+                          )}
+                          {exp.domain && (
+                            <span className="bg-gray-100 text-gray-800 px-2 py-0.5 rounded-md">
+                              {exp.domain}
+                            </span>
+                          )}
+                        </span>
                         {(exp.industry || exp.domain) && ` • `}
                         {exp.startDate} - {exp.endDate || 'Present'}
                       </p>
@@ -403,6 +415,15 @@ export default function WorkExperience() {
           <DialogHeader>
             <DialogTitle>{newExperience.id ? 'Edit Work Experience' : 'Add Work Experience'}</DialogTitle>
           </DialogHeader>
+          
+          {/* Info message about Industry and Domain fields */}
+          <div className="bg-blue-50 border border-blue-200 rounded-md p-3 mb-2">
+            <p className="text-sm text-blue-800">
+              <span className="font-semibold">Important:</span> Please provide both Industry (required) and Domain (optional) 
+              information to help with matchmaking and professional connections.
+            </p>
+          </div>
+          
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="title" className="text-right">
@@ -432,31 +453,31 @@ export default function WorkExperience() {
               />
             </div>
             
-            {/* INDUSTRY FIELD */}
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="industry" className="text-right">
+            {/* INDUSTRY FIELD - ENHANCED VISIBILITY */}
+            <div className="grid grid-cols-4 items-center gap-4 p-2 border border-gray-200 rounded-md bg-gray-50">
+              <Label htmlFor="industry" className="text-right font-medium">
                 Industry*
               </Label>
               <Input
                 id="industry"
                 value={newExperience.industry}
                 onChange={(e) => setNewExperience({...newExperience, industry: e.target.value})}
-                className="col-span-3"
+                className="col-span-3 border-primary/50"
                 placeholder="Technology, Healthcare, etc."
                 required
               />
             </div>
             
-            {/* DOMAIN FIELD */}
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="domain" className="text-right">
+            {/* DOMAIN FIELD - ENHANCED VISIBILITY */}
+            <div className="grid grid-cols-4 items-center gap-4 p-2 border border-gray-200 rounded-md bg-gray-50">
+              <Label htmlFor="domain" className="text-right font-medium">
                 Domain
               </Label>
               <Input
                 id="domain"
                 value={newExperience.domain}
                 onChange={(e) => setNewExperience({...newExperience, domain: e.target.value})}
-                className="col-span-3"
+                className="col-span-3 border-primary/50"
                 placeholder="Software Development, Data Science, etc."
               />
             </div>
