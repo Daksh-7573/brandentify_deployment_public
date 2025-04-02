@@ -826,12 +826,7 @@ export default function WorkExperience() {
         ) : sortedExperiences.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             <p>You haven't added any work experience yet.</p>
-            <p className="mt-2">
-              <Button variant="outline" onClick={openAddDialog} size="sm">
-                <Plus className="h-4 w-4 mr-1" />
-                Add Work Experience
-              </Button>
-            </p>
+            <p className="mt-2">Click the "Add" button above to get started.</p>
           </div>
         ) : (
           <div className="space-y-4">
