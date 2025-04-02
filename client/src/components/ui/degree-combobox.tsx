@@ -136,41 +136,54 @@ export function DegreeCombobox({
   const [open, setOpen] = useState(false);
   const [degrees, setDegrees] = useState<string[]>(() => getStoredDegrees());
   const [filteredDegrees, setFilteredDegrees] = useState<string[]>(degrees);
-  const [searchValue, setSearchValue] = useState("");
+  const [inputValue, setInputValue] = useState("");
   const [showAddNew, setShowAddNew] = useState(false);
 
   // Filter degrees based on search value
   useEffect(() => {
-    if (!searchValue) {
+    if (!inputValue) {
       setFilteredDegrees(degrees);
       setShowAddNew(false);
       return;
     }
 
     const filtered = degrees.filter(
-      degree => degree.toLowerCase().includes(searchValue.toLowerCase())
+      degree => degree.toLowerCase().includes(inputValue.toLowerCase())
     );
     
     setFilteredDegrees(filtered);
     
     // Only show "Add New" if it's not an exact match and has at least 3 characters
     const hasExactMatch = degrees.some(
-      degree => degree.toLowerCase() === searchValue.toLowerCase()
+      degree => degree.toLowerCase() === inputValue.toLowerCase()
     );
     
-    setShowAddNew(!hasExactMatch && searchValue.length >= 3);
-  }, [searchValue, degrees]);
+    setShowAddNew(!hasExactMatch && inputValue.length >= 3);
+  }, [inputValue, degrees]);
 
   // Add a new degree to the list
   const addNewDegree = () => {
-    if (!searchValue.trim() || degrees.includes(searchValue)) return;
+    if (!inputValue.trim() || degrees.includes(inputValue)) return;
     
-    const newDegrees = [...degrees, searchValue];
+    const newDegrees = [...degrees, inputValue];
     setDegrees(newDegrees);
     saveDegrees(newDegrees);
     
     // Set the value and close the popover
-    onChange(searchValue);
+    onChange(inputValue);
+    setOpen(false);
+  };
+
+  // Handle direct selection of a degree from the list
+  const handleSelect = (currentValue: string) => {
+    // For the "Add New" option
+    if (currentValue === `add-${inputValue}`) {
+      addNewDegree();
+      return;
+    }
+    
+    // For selecting an existing degree
+    onChange(currentValue);
     setOpen(false);
   };
 
@@ -200,7 +213,8 @@ export function DegreeCombobox({
         <Command onKeyDown={handleKeyDown}>
           <CommandInput 
             placeholder="Search or type a degree..." 
-            onValueChange={setSearchValue}
+            value={inputValue}
+            onValueChange={setInputValue}
             className="h-9"
           />
           <CommandEmpty>
@@ -218,22 +232,19 @@ export function DegreeCombobox({
             {showAddNew && (
               <CommandItem
                 key="add-new"
-                value={`add-${searchValue}`}
-                onSelect={addNewDegree}
+                value={`add-${inputValue}`}
+                onSelect={() => handleSelect(`add-${inputValue}`)}
                 className="text-blue-500 font-medium"
               >
                 <Plus className="mr-2 h-4 w-4" />
-                Add "{searchValue}"
+                Add "{inputValue}"
               </CommandItem>
             )}
             {filteredDegrees.map((degree) => (
               <CommandItem
                 key={degree}
                 value={degree}
-                onSelect={() => {
-                  onChange(degree);
-                  setOpen(false);
-                }}
+                onSelect={() => handleSelect(degree)}
               >
                 <Check
                   className={cn(
