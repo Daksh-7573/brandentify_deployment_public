@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useParams } from "wouter";
-import { Pencil, Plus, Trash2, Check, X, Calendar as CalendarIcon } from "lucide-react";
+import { Pencil, Plus, Trash2, Calendar as CalendarIcon, GraduationCap, Building, MapPin, BookOpen, Briefcase, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
@@ -10,51 +9,51 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
+  CardDescription
 } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
+  DialogDescription
 } from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { Combobox } from "@/components/ui/combobox";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Checkbox } from "@/components/ui/checkbox";
-import { JobTitleCombobox } from "@/components/ui/job-title-combobox";
 import { popularLocations } from "@/lib/location-data";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Textarea } from "@/components/ui/textarea";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { INDUSTRY_DOMAINS, INDUSTRIES } from "@/pages/profile";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // Define common degree options
 const DEGREES = [
@@ -85,6 +84,156 @@ const DEGREES = [
   "Other"
 ];
 
+// Define industry domains map
+interface IndustryDomainMap {
+  [key: string]: string[];
+}
+
+// Define common industries with their domains
+const INDUSTRY_DOMAINS: IndustryDomainMap = {
+  "Technology": [
+    "Artificial Intelligence & Machine Learning",
+    "Blockchain & Cryptocurrency",
+    "Cloud Computing & SaaS",
+    "Cybersecurity",
+    "Data Science & Analytics",
+    "DevOps & Infrastructure",
+    "E-commerce & Retail Tech",
+    "Enterprise Software",
+    "Gaming & Entertainment",
+    "Hardware & IoT",
+    "Mobile Development",
+    "Robotics & Automation",
+    "Web Development & Design"
+  ],
+  "Healthcare": [
+    "Biotechnology",
+    "Digital Health",
+    "Healthcare IT",
+    "Medical Devices",
+    "Mental Health",
+    "Pharmaceuticals",
+    "Telehealth"
+  ],
+  "Finance": [
+    "Banking",
+    "Financial Technology (FinTech)",
+    "Insurance",
+    "Investment Management",
+    "Personal Finance",
+    "Real Estate Finance",
+    "Wealth Management"
+  ],
+  "Education": [
+    "Corporate Training",
+    "EdTech",
+    "Higher Education",
+    "K-12 Education",
+    "Language Learning",
+    "Lifelong Learning",
+    "Vocational Training"
+  ],
+  "Marketing": [
+    "Advertising",
+    "Branding",
+    "Content Marketing",
+    "Digital Marketing",
+    "Market Research",
+    "Public Relations",
+    "Social Media Marketing"
+  ],
+  "Retail & E-commerce": [
+    "Consumer Goods",
+    "Fashion & Apparel",
+    "Food & Beverage",
+    "Luxury Retail",
+    "Online Marketplaces"
+  ],
+  "Media & Entertainment": [
+    "Digital Media",
+    "Film & Television",
+    "Music & Audio",
+    "Publishing",
+    "Streaming Services"
+  ],
+  "Manufacturing": [
+    "Aerospace & Defense",
+    "Automotive",
+    "Chemical",
+    "Electronics",
+    "Food Processing",
+    "Textile"
+  ],
+  "Energy & Utilities": [
+    "Clean Energy",
+    "Electricity",
+    "Environmental Services",
+    "Oil & Gas",
+    "Renewable Energy",
+    "Water & Waste Management"
+  ],
+  "Transportation & Logistics": [
+    "Aviation",
+    "Freight & Shipping",
+    "Public Transportation",
+    "Supply Chain Management",
+    "Warehousing"
+  ],
+  "Consulting": [
+    "Business Consulting",
+    "IT Consulting",
+    "Management Consulting",
+    "Strategy Consulting"
+  ],
+  "Real Estate": [
+    "Commercial Real Estate",
+    "Property Management",
+    "Real Estate Development",
+    "Residential Real Estate"
+  ],
+  "Hospitality & Tourism": [
+    "Accommodation",
+    "Event Planning",
+    "Food Service",
+    "Travel & Tourism"
+  ],
+  "Nonprofit & Social Impact": [
+    "Charities",
+    "Environmental Conservation",
+    "Human Rights",
+    "International Development",
+    "Social Services"
+  ],
+  "Agriculture": [
+    "Agritech",
+    "Farming",
+    "Food Production",
+    "Forestry",
+    "Livestock"
+  ],
+  "Legal": [
+    "Corporate Law",
+    "Intellectual Property",
+    "Legal Tech",
+    "Litigation"
+  ],
+  "Human Resources": [
+    "HR Technology",
+    "Recruitment",
+    "Talent Management",
+    "Training & Development"
+  ],
+  "Government & Public Sector": [
+    "Civic Technology",
+    "Defense",
+    "Public Administration",
+    "Public Policy"
+  ]
+};
+
+// Get all industries as an array
+const INDUSTRIES = Object.keys(INDUSTRY_DOMAINS);
+
 // Create schema for education
 const educationSchema = z.object({
   userId: z.number(),
@@ -109,11 +258,10 @@ const educationSchema = z.object({
   path: ["endDate"]
 });
 
-type Education = z.infer<typeof educationSchema>;
+type Education = z.infer<typeof educationSchema> & { id?: number };
 
 export default function Education() {
-  const { userId } = useParams<{ userId?: string }>();
-  const { user, isAuthenticated } = useAuth();
+  const { user } = useAuth();
   const { toast } = useToast();
   
   // State for edit/create dialog
@@ -123,9 +271,9 @@ export default function Education() {
   const [selectedDomain, setSelectedDomain] = useState<string>("");
   const [domainOptions, setDomainOptions] = useState<string[]>([]);
   
-  // Use ID 1 for development
+  // Use ID 1 for development or demo mode
   // This will be replaced with actual userId in production
-  const effectiveUserId = 1;
+  const effectiveUserId = user?.uid ? parseInt(user.uid) : 1;
   
   // Fetch education data for user
   const { data: educations = [], isLoading } = useQuery<Education[]>({
@@ -240,7 +388,7 @@ export default function Education() {
       setSelectedDomain("");
       form.setValue("domain", "");
     }
-  }, [selectedIndustry, form]);
+  }, [selectedIndustry, form, selectedDomain]);
   
   // Handle form submission
   const onSubmit = (data: Education) => {
@@ -319,11 +467,6 @@ export default function Education() {
     return format(new Date(date), "MMM yyyy");
   };
   
-  // Get domains for a specific industry
-  const getDomainsForIndustry = (industry: string) => {
-    return INDUSTRY_DOMAINS[industry] || [];
-  };
-  
   // Convert domains to combobox format
   const domainOptionsFormatted = domainOptions.map(value => ({
     value,
@@ -335,13 +478,6 @@ export default function Education() {
     value: degree,
     label: degree,
   }));
-  
-  // Handle dialog close
-  const handleDialogClose = () => {
-    setOpenDialog(false);
-    form.reset();
-    setEditingEducation(null);
-  };
   
   return (
     <Card className="mb-6">
@@ -375,7 +511,8 @@ export default function Education() {
         ) : educations.length === 0 ? (
           // Empty state
           <div className="py-6 text-center">
-            <p className="text-muted-foreground">No education added yet.</p>
+            <GraduationCap className="mx-auto h-10 w-10 text-muted-foreground/50" />
+            <p className="mt-2 text-muted-foreground">No education added yet.</p>
             <Button 
               variant="outline" 
               size="sm" 
@@ -390,11 +527,14 @@ export default function Education() {
           // Education list
           <div className="space-y-4">
             {educations.map((education, index) => (
-              <div key={education.id || index} className="relative">
+              <div key={education.id || index} className="relative group">
                 <div className="mb-1">
                   <div className="flex justify-between items-start">
-                    <h3 className="font-medium text-lg">{education.institution}</h3>
-                    <div className="flex gap-1">
+                    <div className="flex items-center">
+                      <GraduationCap className="h-5 w-5 mr-2 text-muted-foreground flex-shrink-0" />
+                      <h3 className="font-medium text-lg">{education.institution}</h3>
+                    </div>
+                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <Button 
                         variant="ghost" 
                         size="icon" 
@@ -408,7 +548,7 @@ export default function Education() {
                         variant="ghost" 
                         size="icon" 
                         className="h-8 w-8 text-destructive"
-                        onClick={() => deleteEducationMutation.mutate(education.id as number)}
+                        onClick={() => education.id && deleteEducationMutation.mutate(education.id)}
                       >
                         <Trash2 className="h-4 w-4" />
                         <span className="sr-only">Delete</span>
@@ -416,32 +556,34 @@ export default function Education() {
                     </div>
                   </div>
                   
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground ml-7">
                     {education.degree}{education.field ? `, ${education.field}` : ""}
                   </p>
                   
-                  <div className="flex flex-wrap gap-y-1 gap-x-4 mt-1 text-sm">
+                  <div className="flex flex-wrap gap-y-1 gap-x-4 mt-1 text-sm ml-7">
                     {education.location && (
                       <span className="flex items-center text-muted-foreground">
-                        📍 {education.location}
+                        <MapPin className="h-3.5 w-3.5 mr-1 flex-shrink-0" />
+                        {education.location}
                       </span>
                     )}
                     <span className="flex items-center text-muted-foreground">
-                      🗓️ {formatDate(education.startDate)} - {education.currentlyEnrolled 
+                      <CalendarIcon className="h-3.5 w-3.5 mr-1 flex-shrink-0" />
+                      {formatDate(education.startDate)} - {education.currentlyEnrolled 
                         ? "Present" 
                         : formatDate(education.endDate)}
                     </span>
                   </div>
                   
                   {(education.industry || education.domain) && (
-                    <div className="flex flex-wrap gap-1 mt-2">
+                    <div className="flex flex-wrap gap-1 mt-2 ml-7">
                       {education.industry && (
-                        <Badge variant="outline" className="bg-secondary/50">
+                        <Badge variant="outline" className="bg-primary/10 text-primary/90">
                           {education.industry}
                         </Badge>
                       )}
                       {education.domain && (
-                        <Badge variant="outline" className="bg-secondary/20">
+                        <Badge variant="outline" className="bg-secondary/10">
                           {education.domain}
                         </Badge>
                       )}
@@ -449,10 +591,10 @@ export default function Education() {
                   )}
                   
                   {education.description && (
-                    <p className="mt-2 text-sm">{education.description}</p>
+                    <p className="mt-2 text-sm ml-7">{education.description}</p>
                   )}
                 </div>
-                {index < educations.length - 1 && <Separator className="my-3" />}
+                {index < educations.length - 1 && <Separator className="my-4" />}
               </div>
             ))}
           </div>
@@ -460,7 +602,7 @@ export default function Education() {
       </CardContent>
       
       {/* Education dialog for adding/editing */}
-      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+      <Dialog open={openDialog} onOpenChange={(open) => !open && setOpenDialog(false)}>
         <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
@@ -498,12 +640,21 @@ export default function Education() {
                   <FormItem>
                     <FormLabel>Degree*</FormLabel>
                     <FormControl>
-                      <Combobox
-                        options={degreeOptions}
+                      <Select
                         value={field.value}
                         onValueChange={field.onChange}
-                        placeholder="Select a degree type..."
-                      />
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select a degree" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {DEGREES.map((degree) => (
+                            <SelectItem key={degree} value={degree}>
+                              {degree}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -520,6 +671,9 @@ export default function Education() {
                     <FormControl>
                       <Input placeholder="Computer Science" {...field} />
                     </FormControl>
+                    <FormDescription>
+                      Your major, specialization, or concentration
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -533,12 +687,21 @@ export default function Education() {
                   <FormItem>
                     <FormLabel>Location</FormLabel>
                     <FormControl>
-                      <Combobox
-                        options={locationOptions}
+                      <Select
                         value={field.value}
                         onValueChange={field.onChange}
-                        placeholder="Select a location..."
-                      />
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select a location" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {popularLocations.map((location) => (
+                            <SelectItem key={location} value={location}>
+                              {location}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -553,25 +716,34 @@ export default function Education() {
                   <FormItem>
                     <FormLabel>Industry</FormLabel>
                     <FormControl>
-                      <Combobox
-                        options={industryOptions}
+                      <Select
                         value={field.value}
                         onValueChange={(value) => {
                           field.onChange(value);
                           setSelectedIndustry(value);
                         }}
-                        placeholder="Select an industry..."
-                      />
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select an industry" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {INDUSTRIES.map((industry) => (
+                            <SelectItem key={industry} value={industry}>
+                              {industry}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </FormControl>
                     <FormDescription>
-                      Select the industry relevant to your education
+                      The primary industry related to your field of study
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
               
-              {/* Domain - Only show if industry is selected */}
+              {/* Domain - only show if industry is selected */}
               {selectedIndustry && (
                 <FormField
                   control={form.control}
@@ -580,18 +752,27 @@ export default function Education() {
                     <FormItem>
                       <FormLabel>Domain</FormLabel>
                       <FormControl>
-                        <Combobox
-                          options={domainOptionsFormatted}
+                        <Select
                           value={field.value}
                           onValueChange={(value) => {
                             field.onChange(value);
                             setSelectedDomain(value);
                           }}
-                          placeholder="Select a domain..."
-                        />
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select a domain" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {domainOptions.map((domain) => (
+                              <SelectItem key={domain} value={domain}>
+                                {domain}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </FormControl>
                       <FormDescription>
-                        Select a specific domain within your industry
+                        The specific field within the selected industry
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -599,29 +780,7 @@ export default function Education() {
                 />
               )}
               
-              {/* Currently Enrolled Checkbox */}
-              <FormField
-                control={form.control}
-                name="currentlyEnrolled"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                    <div className="space-y-0.5">
-                      <FormLabel>Currently Enrolled</FormLabel>
-                      <FormDescription>
-                        Are you currently studying at this institution?
-                      </FormDescription>
-                    </div>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              
-              {/* Date Range */}
+              {/* Dates */}
               <div className="grid grid-cols-2 gap-4">
                 {/* Start Date */}
                 <FormField
@@ -634,16 +793,16 @@ export default function Education() {
                         <PopoverTrigger asChild>
                           <FormControl>
                             <Button
-                              variant="outline"
+                              variant={"outline"}
                               className={cn(
                                 "w-full pl-3 text-left font-normal",
                                 !field.value && "text-muted-foreground"
                               )}
                             >
                               {field.value ? (
-                                format(field.value, "MMMM yyyy")
+                                format(field.value, "MMM yyyy")
                               ) : (
-                                <span>Pick a date</span>
+                                <span>Select date</span>
                               )}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
@@ -654,14 +813,10 @@ export default function Education() {
                             mode="single"
                             selected={field.value}
                             onSelect={field.onChange}
-                            disabled={(date) =>
-                              date > new Date() || date < new Date("1900-01-01")
-                            }
                             initialFocus
                             captionLayout="dropdown-buttons"
                             fromYear={1950}
-                            toYear={new Date().getFullYear()}
-                            defaultMonth={field.value || new Date()}
+                            toYear={2030}
                           />
                         </PopoverContent>
                       </Popover>
@@ -670,7 +825,7 @@ export default function Education() {
                   )}
                 />
                 
-                {/* End Date - Only show if not currently enrolled */}
+                {/* End Date (hidden if currently enrolled) */}
                 {!form.watch("currentlyEnrolled") && (
                   <FormField
                     control={form.control}
@@ -682,16 +837,16 @@ export default function Education() {
                           <PopoverTrigger asChild>
                             <FormControl>
                               <Button
-                                variant="outline"
+                                variant={"outline"}
                                 className={cn(
                                   "w-full pl-3 text-left font-normal",
                                   !field.value && "text-muted-foreground"
                                 )}
                               >
                                 {field.value ? (
-                                  format(field.value, "MMMM yyyy")
+                                  format(field.value, "MMM yyyy")
                                 ) : (
-                                  <span>Pick a date</span>
+                                  <span>Select date</span>
                                 )}
                                 <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                               </Button>
@@ -702,14 +857,10 @@ export default function Education() {
                               mode="single"
                               selected={field.value}
                               onSelect={field.onChange}
-                              disabled={(date) =>
-                                date > new Date() || date < new Date("1900-01-01")
-                              }
                               initialFocus
                               captionLayout="dropdown-buttons"
                               fromYear={1950}
-                              toYear={new Date().getFullYear()}
-                              defaultMonth={field.value || new Date()}
+                              toYear={2030}
                             />
                           </PopoverContent>
                         </Popover>
@@ -720,6 +871,33 @@ export default function Education() {
                 )}
               </div>
               
+              {/* Currently Enrolled */}
+              <FormField
+                control={form.control}
+                name="currentlyEnrolled"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                    <div className="space-y-0.5">
+                      <FormLabel>Currently Enrolled</FormLabel>
+                      <FormDescription>
+                        Are you currently studying at this institution?
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={(checked) => {
+                          field.onChange(checked);
+                          if (checked) {
+                            form.setValue("endDate", undefined);
+                          }
+                        }}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              
               {/* Description */}
               <FormField
                 control={form.control}
@@ -728,33 +906,20 @@ export default function Education() {
                   <FormItem>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <Input placeholder="Brief description of your studies, achievements, etc." {...field} />
+                      <Textarea 
+                        placeholder="Describe your education, achievements, or activities" 
+                        className="resize-none min-h-[100px]"
+                        {...field} 
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
               
-              <DialogFooter className="flex gap-2 pt-4">
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  onClick={handleDialogClose}
-                >
-                  Cancel
-                </Button>
-                <Button 
-                  type="submit" 
-                  disabled={createEducationMutation.isPending || updateEducationMutation.isPending}
-                >
-                  {(createEducationMutation.isPending || updateEducationMutation.isPending) ? (
-                    <div className="flex items-center">
-                      <span className="mr-2">Saving...</span>
-                      <span className="animate-spin">⏳</span>
-                    </div>
-                  ) : (
-                    editingEducation ? "Update" : "Add"
-                  )}
+              <DialogFooter>
+                <Button type="submit" disabled={createEducationMutation.isPending || updateEducationMutation.isPending}>
+                  {editingEducation ? "Update" : "Add"} Education
                 </Button>
               </DialogFooter>
             </form>

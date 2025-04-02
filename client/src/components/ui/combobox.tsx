@@ -1,63 +1,48 @@
-import * as React from "react"
-import { Check, ChevronsUpDown } from "lucide-react"
+import { useState, useEffect } from "react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { cn } from "@/lib/utils";
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "@/components/ui/command"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-
-export type ComboboxOption = {
-  value: string
-  label: string
-}
-
-interface ComboboxProps {
-  options: ComboboxOption[]
-  value: string
-  onValueChange: (value: string) => void
-  placeholder?: string
-  disabled?: boolean
-  className?: string
-  emptyMessage?: string
+export interface ComboboxProps {
+  options: { value: string; label: string }[];
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  emptyMessage?: string;
+  searchPlaceholder?: string;
+  className?: string;
+  disabled?: boolean;
+  width?: string;
 }
 
 export function Combobox({
   options,
   value,
-  onValueChange,
-  placeholder = "Select an option...",
-  disabled = false,
+  onChange,
+  placeholder = "Select an option",
+  emptyMessage = "No results found",
+  searchPlaceholder = "Search...",
   className,
-  emptyMessage = "No results found."
+  disabled = false,
+  width = "w-[200px]"
 }: ComboboxProps) {
-  const [open, setOpen] = React.useState(false)
-  const [searchTerm, setSearchTerm] = React.useState("")
+  const [open, setOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+  const [filteredOptions, setFilteredOptions] = useState(options);
 
-  // Filter options by search term - case insensitive matching
-  const filteredOptions = React.useMemo(() => {
-    if (!searchTerm) return options
-    
-    const lowercasedSearchTerm = searchTerm.toLowerCase()
-    return options.filter(option => 
-      option.label.toLowerCase().includes(lowercasedSearchTerm) ||
-      option.value.toLowerCase().includes(lowercasedSearchTerm)
-    )
-  }, [options, searchTerm])
+  useEffect(() => {
+    if (!searchValue) {
+      setFilteredOptions(options);
+      return;
+    }
 
-  // Find the selected option to display
-  const selectedOption = React.useMemo(() => {
-    return options.find(option => option.value === value)
-  }, [options, value])
+    const filtered = options.filter(option => 
+      option.label.toLowerCase().includes(searchValue.toLowerCase())
+    );
+    setFilteredOptions(filtered);
+  }, [searchValue, options]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -66,32 +51,53 @@ export function Combobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={cn("w-full justify-between", className)}
+          className={cn(
+            "justify-between", 
+            width, 
+            className
+          )}
           disabled={disabled}
         >
-          {value && selectedOption
-            ? selectedOption.label
-            : placeholder}
+          {value 
+            ? options.find(option => option.value === value)?.label || value
+            : <span className="text-muted-foreground">{placeholder}</span>
+          }
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0">
+      <PopoverContent className={cn("p-0", width)}>
         <Command shouldFilter={false}>
           <CommandInput 
-            placeholder={`Search ${placeholder.toLowerCase()}`} 
-            value={searchTerm}
-            onValueChange={setSearchTerm}
+            placeholder={searchPlaceholder} 
+            onValueChange={setSearchValue}
+            value={searchValue}
+            className="h-9"
           />
-          <CommandEmpty>{emptyMessage}</CommandEmpty>
+          {filteredOptions.length === 0 && (
+            <CommandEmpty>
+              {emptyMessage}
+              {searchValue && (
+                <Button
+                  variant="ghost"
+                  className="mt-2 w-full justify-start text-left"
+                  onClick={() => {
+                    onChange(searchValue);
+                    setOpen(false);
+                  }}
+                >
+                  Use "{searchValue}"
+                </Button>
+              )}
+            </CommandEmpty>
+          )}
           <CommandGroup className="max-h-60 overflow-auto">
             {filteredOptions.map((option) => (
               <CommandItem
                 key={option.value}
                 value={option.value}
-                onSelect={(currentValue) => {
-                  onValueChange(currentValue)
-                  setOpen(false)
-                  setSearchTerm("")
+                onSelect={() => {
+                  onChange(option.value);
+                  setOpen(false);
                 }}
               >
                 <Check
@@ -107,5 +113,5 @@ export function Combobox({
         </Command>
       </PopoverContent>
     </Popover>
-  )
+  );
 }
