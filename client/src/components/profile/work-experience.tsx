@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { JobTitleCombobox } from "@/components/ui/job-title-combobox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
@@ -423,7 +424,8 @@ export default function WorkExperience() {
     startDate: undefined as Date | undefined,
     endDate: undefined as Date | undefined,
     description: '',
-    userId
+    userId,
+    isCurrentlyWorking: false
   });
   
   // State for location suggestions
@@ -435,7 +437,8 @@ export default function WorkExperience() {
     company: false,
     industry: false,
     domain: false,
-    startDate: false
+    startDate: false,
+    endDate: false
   });
   
   // Reset form data
@@ -450,14 +453,16 @@ export default function WorkExperience() {
       startDate: undefined,
       endDate: undefined,
       description: '',
-      userId
+      userId,
+      isCurrentlyWorking: false
     });
     setFormErrors({
       title: false,
       company: false,
       industry: false,
       domain: false,
-      startDate: false
+      startDate: false,
+      endDate: false
     });
   };
   
@@ -567,6 +572,9 @@ export default function WorkExperience() {
       startDate = new Date(experience.startDate);
     }
     
+    // Check if end date is missing, which means "Currently working here" is true
+    const isCurrentlyWorking = !experience.endDate;
+    
     if (experience.endDate) {
       endDate = new Date(experience.endDate);
     }
@@ -575,6 +583,7 @@ export default function WorkExperience() {
       ...experience,
       startDate,
       endDate,
+      isCurrentlyWorking
     });
     
     setShowEditDialog(true);
@@ -706,7 +715,8 @@ export default function WorkExperience() {
       company: !formData.company,
       industry: !formData.industry,
       domain: !formData.domain,
-      startDate: !formData.startDate
+      startDate: !formData.startDate,
+      endDate: !formData.isCurrentlyWorking ? !formData.endDate : false
     };
     
     setFormErrors(errors);
@@ -735,7 +745,7 @@ export default function WorkExperience() {
     const payload = {
       ...formData,
       startDate: formData.startDate ? formData.startDate.toISOString() : null,
-      endDate: formData.endDate ? formData.endDate.toISOString() : null
+      endDate: formData.isCurrentlyWorking ? null : (formData.endDate ? formData.endDate.toISOString() : null)
     };
     
     createExperienceMutation.mutate(payload);
@@ -749,7 +759,8 @@ export default function WorkExperience() {
       company: !formData.company,
       industry: !formData.industry,
       domain: !formData.domain,
-      startDate: !formData.startDate
+      startDate: !formData.startDate,
+      endDate: !formData.isCurrentlyWorking ? !formData.endDate : false
     };
     
     setFormErrors(errors);
@@ -778,7 +789,7 @@ export default function WorkExperience() {
     const payload = {
       ...formData,
       startDate: formData.startDate ? formData.startDate.toISOString() : null,
-      endDate: formData.endDate ? formData.endDate.toISOString() : null
+      endDate: formData.isCurrentlyWorking ? null : (formData.endDate ? formData.endDate.toISOString() : null)
     };
     
     updateExperienceMutation.mutate(payload);
@@ -1089,7 +1100,7 @@ export default function WorkExperience() {
               
               <div className="space-y-2">
                 <Label htmlFor="endDate" className="flex items-center">
-                  End Date <span className="text-transparent ml-1">*</span>
+                  End Date {!formData.isCurrentlyWorking && <span className="text-red-500 ml-1">*</span>}
                 </Label>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -1097,8 +1108,10 @@ export default function WorkExperience() {
                       variant="outline"
                       className={cn(
                         "w-full justify-start text-left font-normal",
-                        !formData.endDate && "text-muted-foreground"
+                        !formData.endDate && "text-muted-foreground",
+                        formErrors.endDate && "border-red-500"
                       )}
+                      disabled={formData.isCurrentlyWorking || createExperienceMutation.isPending}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
                       {formData.endDate ? format(formData.endDate, "MMM yyyy") : "Present"}
@@ -1109,16 +1122,47 @@ export default function WorkExperience() {
                       mode="single"
                       selected={formData.endDate}
                       onSelect={(date) => handleDateChange('endDate', date)}
-                      disabled={createExperienceMutation.isPending}
+                      disabled={formData.isCurrentlyWorking || createExperienceMutation.isPending}
                       fromYear={1980}
                       toYear={2035}
                     />
                   </PopoverContent>
                 </Popover>
                 <div className="h-5">
+                  {formErrors.endDate && (
+                    <p className="text-sm text-red-500">End date is required</p>
+                  )}
                   {formData.startDate && formData.endDate && formData.endDate < formData.startDate && (
                     <p className="text-sm text-red-500">End date must be after start date</p>
                   )}
+                </div>
+                <div className="flex items-center space-x-2 mt-1">
+                  <Checkbox 
+                    id="currentlyWorking"
+                    checked={formData.isCurrentlyWorking}
+                    onCheckedChange={(checked) => {
+                      setFormData(prev => ({
+                        ...prev,
+                        isCurrentlyWorking: checked === true,
+                        // Clear end date if currently working
+                        endDate: checked === true ? undefined : prev.endDate
+                      }));
+                      // Clear end date validation error if currently working
+                      if (checked === true) {
+                        setFormErrors(prev => ({
+                          ...prev,
+                          endDate: false
+                        }));
+                      }
+                    }}
+                    disabled={createExperienceMutation.isPending}
+                  />
+                  <Label
+                    htmlFor="currentlyWorking"
+                    className="text-sm font-normal cursor-pointer"
+                  >
+                    I am currently working here
+                  </Label>
                 </div>
               </div>
             </div>
@@ -1328,7 +1372,7 @@ export default function WorkExperience() {
               
               <div className="space-y-2">
                 <Label htmlFor="endDate" className="flex items-center">
-                  End Date <span className="text-transparent ml-1">*</span>
+                  End Date {!formData.isCurrentlyWorking && <span className="text-red-500 ml-1">*</span>}
                 </Label>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -1336,8 +1380,10 @@ export default function WorkExperience() {
                       variant="outline"
                       className={cn(
                         "w-full justify-start text-left font-normal",
-                        !formData.endDate && "text-muted-foreground"
+                        !formData.endDate && "text-muted-foreground",
+                        formErrors.endDate && "border-red-500"
                       )}
+                      disabled={formData.isCurrentlyWorking || updateExperienceMutation.isPending}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
                       {formData.endDate ? format(formData.endDate, "MMM yyyy") : "Present"}
@@ -1348,16 +1394,47 @@ export default function WorkExperience() {
                       mode="single"
                       selected={formData.endDate}
                       onSelect={(date) => handleDateChange('endDate', date)}
-                      disabled={updateExperienceMutation.isPending}
+                      disabled={formData.isCurrentlyWorking || updateExperienceMutation.isPending}
                       fromYear={1980}
                       toYear={2035}
                     />
                   </PopoverContent>
                 </Popover>
                 <div className="h-5">
+                  {formErrors.endDate && (
+                    <p className="text-sm text-red-500">End date is required</p>
+                  )}
                   {formData.startDate && formData.endDate && formData.endDate < formData.startDate && (
                     <p className="text-sm text-red-500">End date must be after start date</p>
                   )}
+                </div>
+                <div className="flex items-center space-x-2 mt-1">
+                  <Checkbox 
+                    id="currentlyWorkingEdit"
+                    checked={formData.isCurrentlyWorking}
+                    onCheckedChange={(checked) => {
+                      setFormData(prev => ({
+                        ...prev,
+                        isCurrentlyWorking: checked === true,
+                        // Clear end date if currently working
+                        endDate: checked === true ? undefined : prev.endDate
+                      }));
+                      // Clear end date validation error if currently working
+                      if (checked === true) {
+                        setFormErrors(prev => ({
+                          ...prev,
+                          endDate: false
+                        }));
+                      }
+                    }}
+                    disabled={updateExperienceMutation.isPending}
+                  />
+                  <Label
+                    htmlFor="currentlyWorkingEdit"
+                    className="text-sm font-normal cursor-pointer"
+                  >
+                    I am currently working here
+                  </Label>
                 </div>
               </div>
             </div>
