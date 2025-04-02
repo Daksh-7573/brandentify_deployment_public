@@ -53,21 +53,25 @@ async function extractTextFromPdf(fileBuffer: Buffer): Promise<string> {
       pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
     
       console.log("Loading PDF document with pdf.js");
-    const pdf = await pdfjsLib.getDocument({ data: fileBuffer }).promise;
-    console.log(`PDF loaded successfully. Pages: ${pdf.numPages}`);
-    
-    let extractedText = '';
-    
-    for (let i = 1; i <= pdf.numPages; i++) {
-      console.log(`Extracting text from page ${i} of ${pdf.numPages}`);
-      const page = await pdf.getPage(i);
-      const content = await page.getTextContent();
-      const strings = content.items.map((item: any) => item.str);
-      extractedText += strings.join(' ') + '\n';
+      const pdf = await pdfjsLib.getDocument({ data: fileBuffer }).promise;
+      console.log(`PDF loaded successfully. Pages: ${pdf.numPages}`);
+      
+      let extractedText = '';
+      
+      for (let i = 1; i <= pdf.numPages; i++) {
+        console.log(`Extracting text from page ${i} of ${pdf.numPages}`);
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+        const strings = content.items.map((item: any) => item.str);
+        extractedText += strings.join(' ') + '\n';
+      }
+      
+      console.log(`Extracted ${extractedText.length} characters of text from PDF`);
+      return extractedText;
+    } catch (innerError: unknown) {
+      console.error("Error with pdf.js extraction:", innerError);
+      throw innerError; // Re-throw to outer catch
     }
-    
-    console.log(`Extracted ${extractedText.length} characters of text from PDF`);
-    return extractedText;
   } catch (error: unknown) {
     console.error("Error in PDF text extraction:", error);
     

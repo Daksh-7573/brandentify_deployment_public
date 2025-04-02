@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -432,13 +432,51 @@ const popularLocations = [
 ];
 
 export default function WorkExperience() {
-  console.log("Work Experience - Form fields include Job Title, Industry, Domain, Company, Location, Start/End Dates, and Description");
-  
-  const { user, isAuthenticated, isDemoMode } = useAuth();
+  const { user, isDemoMode } = useAuth();
   const { toast } = useToast();
   
   // Get user ID (use demo ID if in demo mode)
-  const userId = isDemoMode ? 1 : user?.id || 0;
+  const userId = isDemoMode ? 1 : (user?.uid ? parseInt(user.uid) : 1);
+  
+  // Force a direct fetch every time the component renders
+  useEffect(() => {
+    async function directFetch() {
+      const timestamp = new Date().getTime(); // Add timestamp to prevent caching
+      console.log(`Work Experience - Directly fetching latest experiences data`, timestamp);
+      try {
+        const response = await fetch(`/api/users/${userId}/experiences?_=${timestamp}`, {
+          method: 'GET',
+          headers: { 
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
+        });
+        const freshData = await response.json();
+        console.log("Work Experience - Got direct fetch data:", freshData);
+        // Force update experiences data with the fetched data
+        if (freshData && Array.isArray(freshData)) {
+          setDirectExperiences([...freshData]);
+          // Update the ref as well
+          latestDataRef.current = [...freshData];
+        }
+      } catch (error) {
+        console.error("Error during direct experience fetch:", error);
+      }
+    }
+    
+    directFetch();
+    
+    // Poll every second
+    const intervalId = setInterval(directFetch, 1000);
+    return () => clearInterval(intervalId);
+  }, [userId]);
+  
+  // Reference to hold the most recent data
+  const latestDataRef = useRef<any[]>([]);
+  
+  // State for storing directly fetched experiences
+  const [directExperiences, setDirectExperiences] = useState<any[]>([]);
   
   // State for the dialog
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -453,8 +491,8 @@ export default function WorkExperience() {
     location: '',
     industry: '',
     domain: '',
-    startDate: null as Date | null,
-    endDate: null as Date | null,
+    startDate: undefined as Date | undefined,
+    endDate: undefined as Date | undefined,
     description: '',
     userId
   });
@@ -477,8 +515,8 @@ export default function WorkExperience() {
       location: '',
       industry: '',
       domain: '',
-      startDate: null,
-      endDate: null,
+      startDate: undefined,
+      endDate: undefined,
       description: '',
       userId
     });
@@ -494,7 +532,7 @@ export default function WorkExperience() {
   // Fetch user experiences
   const { data: experiences = [], isLoading } = useQuery<any[]>({
     queryKey: [`/api/users/${userId}/experiences`],
-    enabled: !!userId && isAuthenticated,
+    enabled: !!userId,
     staleTime: 1000, // Consider data stale after 1 second to force refresh
     refetchOnMount: true,
     refetchOnWindowFocus: true,
@@ -583,8 +621,8 @@ export default function WorkExperience() {
     setEditId(experience.id);
     
     // Parse date strings into Date objects
-    let startDate = null;
-    let endDate = null;
+    let startDate: Date | undefined = undefined;
+    let endDate: Date | undefined = undefined;
     
     if (experience.startDate) {
       startDate = new Date(experience.startDate);
@@ -645,7 +683,7 @@ export default function WorkExperience() {
   };
   
   // Handle date changes
-  const handleDateChange = (name: string, value: Date | null) => {
+  const handleDateChange = (name: string, value: Date | undefined) => {
     setFormData(prev => ({
       ...prev,
       [name]: value
@@ -733,13 +771,6 @@ export default function WorkExperience() {
     }
   };
   
-  // Sort experiences by date (newest first)
-  const sortedExperiences = [...experiences].sort((a, b) => {
-    const dateA = new Date(a.startDate);
-    const dateB = new Date(b.startDate);
-    return dateB.getTime() - dateA.getTime();
-  });
-  
   // For direct debugging
   useEffect(() => {
     const logData = () => {
@@ -756,19 +787,41 @@ export default function WorkExperience() {
     return () => clearInterval(intervalId);
   }, [experiences]);
   
+  // Combine data sources for better reliability
+  const displayExperiences = directExperiences.length > 0 
+    ? directExperiences 
+    : (latestDataRef.current.length > 0 
+        ? latestDataRef.current 
+        : experiences);
+  
+  // Sort experiences by date (newest first)
+  const sortedExperiences = [...displayExperiences].sort((a, b) => {
+    if (!a.startDate) return 1;
+    if (!b.startDate) return -1;
+    const dateA = new Date(a.startDate);
+    const dateB = new Date(b.startDate);
+    return dateB.getTime() - dateA.getTime();
+  });
+  
   return (
     <Card className="mb-6">
-      <CardHeader className="flex flex-row items-center justify-between py-4">
-        <CardTitle>Work Experience</CardTitle>
-        <Button onClick={openAddDialog} size="sm">
-          <Plus className="h-4 w-4 mr-1" />
-          Add
-        </Button>
-      </CardHeader>
-      <CardContent>
+      <CardContent className="pt-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-medium text-gray-900">Work Experience</h2>
+          <Button 
+            variant="ghost" 
+            className="text-primary hover:text-primary-600 hover:bg-transparent"
+            onClick={openAddDialog}
+          >
+            <i className="fas fa-plus mr-1"></i> Add
+          </Button>
+        </div>
+        
         {isLoading ? (
-          <div className="flex justify-center py-4">
-            <p>Loading work experiences...</p>
+          <div className="flex justify-center py-6">
+            <div className="animate-spin h-6 w-6 text-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-loader-2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            </div>
           </div>
         ) : sortedExperiences.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
@@ -998,13 +1051,12 @@ export default function WorkExperience() {
                   <PopoverContent className="w-auto p-0">
                     <Calendar
                       mode="single"
-                      selected={formData.startDate || undefined}
+                      selected={formData.startDate}
                       onSelect={(date) => handleDateChange('startDate', date)}
                       disabled={createExperienceMutation.isPending}
                       captionLayout="dropdown-buttons"
                       fromYear={1980}
                       toYear={2035}
-                      view="month"
                     />
                   </PopoverContent>
                 </Popover>
@@ -1031,13 +1083,12 @@ export default function WorkExperience() {
                   <PopoverContent className="w-auto p-0">
                     <Calendar
                       mode="single"
-                      selected={formData.endDate || undefined}
+                      selected={formData.endDate}
                       onSelect={(date) => handleDateChange('endDate', date)}
                       disabled={createExperienceMutation.isPending}
                       captionLayout="dropdown-buttons"
                       fromYear={1980}
                       toYear={2035}
-                      view="month"
                     />
                   </PopoverContent>
                 </Popover>
@@ -1226,13 +1277,12 @@ export default function WorkExperience() {
                   <PopoverContent className="w-auto p-0">
                     <Calendar
                       mode="single"
-                      selected={formData.startDate || undefined}
+                      selected={formData.startDate}
                       onSelect={(date) => handleDateChange('startDate', date)}
                       disabled={updateExperienceMutation.isPending}
                       captionLayout="dropdown-buttons"
                       fromYear={1980}
                       toYear={2035}
-                      view="month"
                     />
                   </PopoverContent>
                 </Popover>
@@ -1259,13 +1309,12 @@ export default function WorkExperience() {
                   <PopoverContent className="w-auto p-0">
                     <Calendar
                       mode="single"
-                      selected={formData.endDate || undefined}
+                      selected={formData.endDate}
                       onSelect={(date) => handleDateChange('endDate', date)}
                       disabled={updateExperienceMutation.isPending}
                       captionLayout="dropdown-buttons"
                       fromYear={1980}
                       toYear={2035}
-                      view="month"
                     />
                   </PopoverContent>
                 </Popover>
