@@ -6,6 +6,7 @@ import { Plus, Trash2, Edit, CalendarIcon, Building, MapPin, Briefcase, TagIcon 
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { popularLocations } from "@/lib/location-data";
 import { 
   Dialog, 
   DialogContent, 
@@ -357,79 +358,7 @@ const INDUSTRIES = [
   "Arts & Design",
 ];
 
-// List of popular cities for location suggestions
-const popularLocations = [
-  // North America - USA
-  "New York, NY, USA",
-  "San Francisco, CA, USA",
-  "Los Angeles, CA, USA",
-  "Chicago, IL, USA",
-  "Seattle, WA, USA",
-  "Austin, TX, USA",
-  "Boston, MA, USA",
-  "Denver, CO, USA",
-  "Atlanta, GA, USA",
-  "Portland, OR, USA",
-  "Washington, DC, USA",
-  "San Diego, CA, USA",
-  "Miami, FL, USA",
-  "Dallas, TX, USA",
-  "Houston, TX, USA",
-  "Phoenix, AZ, USA",
-  "Philadelphia, PA, USA",
-  "Las Vegas, NV, USA",
-  "Detroit, MI, USA",
-  "Minneapolis, MN, USA",
-  "Nashville, TN, USA",
-  "Charlotte, NC, USA",
-  "Raleigh, NC, USA",
-  "Indianapolis, IN, USA",
-  "Columbus, OH, USA",
-  "Cleveland, OH, USA",
-  "Pittsburgh, PA, USA",
-  "Kansas City, MO, USA",
-  "St. Louis, MO, USA",
-  "Salt Lake City, UT, USA",
-  "Orlando, FL, USA",
-  "Tampa, FL, USA",
-  "New Orleans, LA, USA",
-  "Honolulu, HI, USA",
-  "Anchorage, AK, USA",
-  "San Jose, CA, USA",
-  "Sacramento, CA, USA",
-  "Oakland, CA, USA",
-  "Cincinnati, OH, USA",
-  "Buffalo, NY, USA",
-  "Baltimore, MD, USA",
-  "San Antonio, TX, USA",
-  "Milwaukee, WI, USA",
-  "Albuquerque, NM, USA",
-  "Tucson, AZ, USA",
-  "Fresno, CA, USA",
-  "Long Beach, CA, USA",
-  "Omaha, NE, USA",
-  "Oklahoma City, OK, USA",
-  "Louisville, KY, USA",
-  "Toronto, Canada",
-  "Vancouver, Canada",
-  "Montreal, Canada",
-  "London, UK",
-  "Paris, France",
-  "Berlin, Germany",
-  "Sydney, Australia",
-  "Tokyo, Japan",
-  "Singapore",
-  "Mumbai, India",
-  "Dubai, UAE",
-  "Bangalore, India",
-  "Hyderabad, India",
-  "Chennai, India",
-  "Pune, India",
-  "Delhi, India",
-  "New Delhi, India",
-  "Kolkata, India",
-  "Remote"
-];
+// Locations are imported at the top of the file
 
 export default function WorkExperience() {
   const { user, isDemoMode } = useAuth();

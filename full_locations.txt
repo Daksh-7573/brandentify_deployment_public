@@ -1,0 +1,1090 @@
+466:  const popularLocations = [
+467-    // North America - USA
+468-    "New York, NY, USA",
+469-    "San Francisco, CA, USA",
+470-    "Los Angeles, CA, USA",
+471-    "Chicago, IL, USA",
+472-    "Seattle, WA, USA",
+473-    "Austin, TX, USA",
+474-    "Boston, MA, USA",
+475-    "Denver, CO, USA",
+476-    "Atlanta, GA, USA",
+477-    "Portland, OR, USA",
+478-    "Washington, DC, USA",
+479-    "San Diego, CA, USA",
+480-    "Miami, FL, USA",
+481-    "Dallas, TX, USA",
+482-    "Houston, TX, USA",
+483-    "Phoenix, AZ, USA",
+484-    "Philadelphia, PA, USA",
+485-    "Las Vegas, NV, USA",
+486-    "Detroit, MI, USA",
+487-    "Minneapolis, MN, USA",
+488-    "Nashville, TN, USA",
+489-    "Charlotte, NC, USA",
+490-    "Raleigh, NC, USA",
+491-    "Indianapolis, IN, USA",
+492-    "Columbus, OH, USA",
+493-    "Cleveland, OH, USA",
+494-    "Pittsburgh, PA, USA",
+495-    "Kansas City, MO, USA",
+496-    "St. Louis, MO, USA",
+497-    "Salt Lake City, UT, USA",
+498-    "Orlando, FL, USA",
+499-    "Tampa, FL, USA",
+500-    "New Orleans, LA, USA",
+501-    "Honolulu, HI, USA",
+502-    "Anchorage, AK, USA",
+503-    "San Jose, CA, USA",
+504-    "Sacramento, CA, USA",
+505-    "Oakland, CA, USA",
+506-    "Cincinnati, OH, USA",
+507-    "Buffalo, NY, USA",
+508-    "Baltimore, MD, USA",
+509-    "San Antonio, TX, USA",
+510-    "Milwaukee, WI, USA",
+511-    "Albuquerque, NM, USA",
+512-    "Tucson, AZ, USA",
+513-    "Fresno, CA, USA",
+514-    "Long Beach, CA, USA",
+515-    "Omaha, NE, USA",
+516-    "Oklahoma City, OK, USA",
+517-    "Louisville, KY, USA",
+518-    "Memphis, TN, USA",
+519-    "Tulsa, OK, USA",
+520-    "Fort Worth, TX, USA",
+521-    "El Paso, TX, USA",
+522-    "Boise, ID, USA",
+523-    "Richmond, VA, USA",
+524-    "Birmingham, AL, USA",
+525-    "Providence, RI, USA",
+526-    "Jacksonville, FL, USA",
+527-    "Albany, NY, USA",
+528-    "Rochester, NY, USA",
+529-    "Baton Rouge, LA, USA",
+530-    "Des Moines, IA, USA",
+531-    "Charleston, SC, USA",
+532-    "Savannah, GA, USA",
+533-    "Madison, WI, USA",
+534-    "Boulder, CO, USA",
+535-    "Ann Arbor, MI, USA",
+536-    "Eugene, OR, USA",
+537-    "Santa Fe, NM, USA",
+538-    "Asheville, NC, USA",
+539-    "Spokane, WA, USA",
+540-    "Tacoma, WA, USA",
+541-    // Canada
+542-    "Toronto, Canada",
+543-    "Vancouver, Canada",
+544-    "Montreal, Canada",
+545-    "Calgary, Canada",
+546-    "Ottawa, Canada",
+547-    "Edmonton, Canada",
+548-    "Winnipeg, Canada",
+549-    "Quebec City, Canada",
+550-    "Hamilton, Canada",
+551-    "Halifax, Canada",
+552-    "Victoria, Canada",
+553-    "London, Canada",
+554-    "Kitchener, Canada",
+555-    "Windsor, Canada",
+556-    "Oshawa, Canada",
+557-    "Saskatoon, Canada",
+558-    "Regina, Canada",
+559-    "St. John's, Canada",
+560-    "Kelowna, Canada",
+561-    "Abbotsford, Canada",
+562-    "Kingston, Canada",
+563-    "Guelph, Canada",
+564-    "Barrie, Canada",
+565-    "Moncton, Canada",
+566-    "Thunder Bay, Canada",
+567-    "Fredericton, Canada",
+568-    "Sherbrooke, Canada",
+569-    "Red Deer, Canada",
+570-    "Sudbury, Canada",
+571-    "Kamloops, Canada",
+572-    "Chilliwack, Canada",
+573-    "Niagara Falls, Canada",
+574-    "Gatineau, Canada",
+575-    "Lethbridge, Canada",
+576-    "Saint John, Canada",
+577-    "Nanaimo, Canada",
+578-    "Burnaby, Canada",
+579-    "Richmond, Canada",
+580-    "Surrey, Canada",
+581-    "Mississauga, Canada",
+582-    "Brampton, Canada",
+583-    "Markham, Canada",
+584-    "Vaughan, Canada",
+585-    "Burlington, Canada",
+586-    "Oakville, Canada",
+587-    "Richmond Hill, Canada",
+588-    "Mexico City, Mexico",
+589-    "Guadalajara, Mexico",
+590-    "Monterrey, Mexico",
+591-    "Cancun, Mexico",
+592-    "Tijuana, Mexico",
+593-    
+594-    // Europe
+595-    "London, UK",
+596-    "Manchester, UK",
+597-    "Edinburgh, UK",
+598-    "Glasgow, UK",
+599-    "Birmingham, UK",
+600-    "Liverpool, UK",
+601-    "Bristol, UK",
+602-    "Leeds, UK",
+603-    "Cardiff, UK",
+604-    "Dublin, Ireland",
+605-    "Cork, Ireland",
+606-    "Galway, Ireland",
+607-    "Paris, France",
+608-    "Lyon, France",
+609-    "Nice, France",
+610-    "Marseille, France",
+611-    "Bordeaux, France",
+612-    "Toulouse, France",
+613-    "Strasbourg, France",
+614-    "Berlin, Germany",
+615-    "Munich, Germany",
+616-    "Hamburg, Germany",
+617-    "Cologne, Germany",
+618-    "Frankfurt, Germany",
+619-    "Stuttgart, Germany",
+620-    "Düsseldorf, Germany",
+621-    "Dresden, Germany",
+622-    "Leipzig, Germany",
+623-    "Amsterdam, Netherlands",
+624-    "Rotterdam, Netherlands",
+625-    "Utrecht, Netherlands",
+626-    "The Hague, Netherlands",
+627-    "Eindhoven, Netherlands",
+628-    "Madrid, Spain",
+629-    "Barcelona, Spain",
+630-    "Valencia, Spain",
+631-    "Seville, Spain",
+632-    "Malaga, Spain",
+633-    "Bilbao, Spain",
+634-    "Lisbon, Portugal",
+635-    "Porto, Portugal",
+636-    "Rome, Italy",
+637-    "Milan, Italy",
+638-    "Florence, Italy",
+639-    "Naples, Italy",
+640-    "Turin, Italy",
+641-    "Bologna, Italy",
+642-    "Venice, Italy",
+643-    "Palermo, Italy",
+644-    "Vienna, Austria",
+645-    "Salzburg, Austria",
+646-    "Innsbruck, Austria",
+647-    "Graz, Austria",
+648-    "Zurich, Switzerland",
+649-    "Geneva, Switzerland",
+650-    "Basel, Switzerland",
+651-    "Bern, Switzerland",
+652-    "Lausanne, Switzerland",
+653-    "Brussels, Belgium",
+654-    "Antwerp, Belgium",
+655-    "Ghent, Belgium",
+656-    "Bruges, Belgium",
+657-    "Copenhagen, Denmark",
+658-    "Aarhus, Denmark",
+659-    "Odense, Denmark",
+660-    "Oslo, Norway",
+661-    "Bergen, Norway",
+662-    "Trondheim, Norway",
+663-    "Stockholm, Sweden",
+664-    "Gothenburg, Sweden",
+665-    "Malmö, Sweden",
+666-    "Helsinki, Finland",
+667-    "Tampere, Finland",
+668-    "Turku, Finland",
+669-    "Reykjavik, Iceland",
+670-    "Prague, Czech Republic",
+671-    "Brno, Czech Republic",
+672-    "Warsaw, Poland",
+673-    "Krakow, Poland",
+674-    "Gdansk, Poland",
+675-    "Wroclaw, Poland",
+676-    "Poznan, Poland",
+677-    "Budapest, Hungary",
+678-    "Debrecen, Hungary",
+679-    "Bratislava, Slovakia",
+680-    "Ljubljana, Slovenia",
+681-    "Zagreb, Croatia",
+682-    "Split, Croatia",
+683-    "Dubrovnik, Croatia",
+684-    "Belgrade, Serbia",
+685-    "Sarajevo, Bosnia and Herzegovina",
+686-    "Skopje, North Macedonia",
+687-    "Tirana, Albania",
+688-    "Sofia, Bulgaria",
+689-    "Bucharest, Romania",
+690-    "Cluj-Napoca, Romania",
+691-    "Athens, Greece",
+692-    "Thessaloniki, Greece",
+693-    "Heraklion, Greece",
+694-    "Nicosia, Cyprus",
+695-    "Valletta, Malta",
+696-    "Tallinn, Estonia",
+697-    "Riga, Latvia",
+698-    "Vilnius, Lithuania",
+699-    "Minsk, Belarus",
+700-    "Kiev, Ukraine",
+701-    "Lviv, Ukraine",
+702-    "Odessa, Ukraine",
+703-    "Moscow, Russia",
+704-    "Saint Petersburg, Russia",
+705-    "Kazan, Russia",
+706-    "Yekaterinburg, Russia",
+707-    
+708-    // Asia - East Asia
+709-    "Tokyo, Japan",
+710-    "Osaka, Japan",
+711-    "Kyoto, Japan",
+712-    "Sapporo, Japan",
+713-    "Fukuoka, Japan",
+714-    "Nagoya, Japan",
+715-    "Yokohama, Japan",
+716-    "Kobe, Japan",
+717-    "Hiroshima, Japan",
+718-    "Nara, Japan",
+719-    "Sendai, Japan",
+720-    "Kawasaki, Japan",
+721-    "Okinawa, Japan",
+722-    "Seoul, South Korea",
+723-    "Busan, South Korea",
+724-    "Incheon, South Korea",
+725-    "Daegu, South Korea",
+726-    "Daejeon, South Korea",
+727-    "Gwangju, South Korea",
+728-    "Suwon, South Korea",
+729-    "Ulsan, South Korea",
+730-    "Jeju, South Korea",
+731-    "Beijing, China",
+732-    "Shanghai, China",
+733-    "Guangzhou, China",
+734-    "Shenzhen, China",
+735-    "Chengdu, China",
+736-    "Hangzhou, China",
+737-    "Nanjing, China",
+738-    "Wuhan, China",
+739-    "Tianjin, China",
+740-    "Xian, China",
+741-    "Chongqing, China",
+742-    "Suzhou, China",
+743-    "Qingdao, China",
+744-    "Dalian, China",
+745-    "Xiamen, China",
+746-    "Kunming, China",
+747-    "Changsha, China",
+748-    "Zhengzhou, China",
+749-    "Hong Kong",
+750-    "Macau",
+751-    "Taipei, Taiwan",
+752-    "Kaohsiung, Taiwan",
+753-    "Taichung, Taiwan",
+754-    "Tainan, Taiwan",
+755-    "Hsinchu, Taiwan",
+756-    "Ulaanbaatar, Mongolia",
+757-    
+758-    // Asia - Southeast Asia
+759-    "Singapore",
+760-    "Kuala Lumpur, Malaysia",
+761-    "Penang, Malaysia",
+762-    "Johor Bahru, Malaysia",
+763-    "Ipoh, Malaysia",
+764-    "Kuching, Malaysia",
+765-    "Kota Kinabalu, Malaysia",
+766-    "Bangkok, Thailand",
+767-    "Chiang Mai, Thailand",
+768-    "Phuket, Thailand",
+769-    "Pattaya, Thailand",
+770-    "Krabi, Thailand",
+771-    "Hua Hin, Thailand",
+772-    "Jakarta, Indonesia",
+773-    "Bali, Indonesia",
+774-    "Surabaya, Indonesia",
+775-    "Bandung, Indonesia",
+776-    "Yogyakarta, Indonesia",
+777-    "Medan, Indonesia",
+778-    "Makassar, Indonesia",
+779-    "Manila, Philippines",
+780-    "Cebu, Philippines",
+781-    "Davao, Philippines",
+782-    "Boracay, Philippines",
+783-    "Baguio, Philippines",
+784-    "Ho Chi Minh City, Vietnam",
+785-    "Hanoi, Vietnam",
+786-    "Da Nang, Vietnam",
+787-    "Hoi An, Vietnam",
+788-    "Nha Trang, Vietnam",
+789-    "Hue, Vietnam",
+790-    "Phnom Penh, Cambodia",
+791-    "Siem Reap, Cambodia",
+792-    "Vientiane, Laos",
+793-    "Luang Prabang, Laos",
+794-    "Yangon, Myanmar",
+795-    "Mandalay, Myanmar",
+796-    "Brunei",
+797-    // India
+798-    "Mumbai, India",
+799-    "Delhi, India",
+800-    "Bangalore, India",
+801-    "Chennai, India",
+802-    "Kolkata, India",
+803-    "Hyderabad, India",
+804-    "Pune, India",
+805-    "Ahmedabad, India",
+806-    "Gandhinagar, India",
+807-    "Jaipur, India",
+808-    "Lucknow, India",
+809-    "Chandigarh, India",
+810-    "Kochi, India",
+811-    "Goa, India",
+812-    "Nagpur, India",
+813-    "Indore, India",
+814-    "Thane, India",
+815-    "Bhopal, India",
+816-    "Visakhapatnam, India",
+817-    "Surat, India",
+818-    "Vadodara, India",
+819-    "Ludhiana, India",
+820-    "Agra, India",
+821-    "Nashik, India",
+822-    "Faridabad, India",
+823-    "Meerut, India",
+824-    "Rajkot, India",
+825-    "Varanasi, India",
+826-    "Srinagar, India",
+827-    "Aurangabad, India",
+828-    "Dhanbad, India",
+829-    "Amritsar, India",
+830-    "Allahabad, India",
+831-    "Ranchi, India",
+832-    "Coimbatore, India",
+833-    "Jabalpur, India",
+834-    "Gwalior, India",
+835-    "Vijayawada, India",
+836-    "Jodhpur, India",
+837-    "Madurai, India",
+838-    "Raipur, India",
+839-    "Kota, India",
+840-    "Guwahati, India",
+841-    "Trivandrum, India",
+842-    "Tiruchirapalli, India",
+843-    "Hubli, India",
+844-    "Mangalore, India",
+845-    "Mysore, India",
+846-    "Dehradun, India",
+847-    "Bhubaneswar, India",
+848-    "Salem, India",
+849-    "Warangal, India",
+850-    "Jamshedpur, India",
+851-    "Noida, India",
+852-    "Gurgaon, India",
+853-    "Thiruvananthapuram, India",
+854-    "Patna, India",
+855-    "Pimpri-Chinchwad, India",
+856-    "Durgapur, India",
+857-    "Gangtok, India",
+858-    "Shimla, India",
+859-    "Ooty, India",
+860-    "Rishikesh, India",
+861-    "Udaipur, India",
+862-    "Haridwar, India",
+863-    "Jammu, India",
+864-    "Mussoorie, India",
+865-    "Nainital, India",
+866-    "Darjeeling, India",
+867-    "Panaji, India",
+868-    "Dharamshala, India",
+869-    "Shillong, India",
+870-    "Port Blair, India",
+871-    "Manali, India",
+872-    "Kanpur, India",
+873-    // West Asia & Middle East
+874-    "Dubai, UAE",
+875-    "Abu Dhabi, UAE",
+876-    "Sharjah, UAE",
+877-    "Al Ain, UAE",
+878-    "Ras Al Khaimah, UAE",
+879-    "Fujairah, UAE",
+880-    "Ajman, UAE",
+881-    "Umm Al Quwain, UAE",
+882-    "Istanbul, Turkey",
+883-    "Ankara, Turkey",
+884-    "Antalya, Turkey",
+885-    "Izmir, Turkey",
+886-    "Bursa, Turkey",
+887-    "Adana, Turkey",
+888-    "Konya, Turkey",
+889-    "Bodrum, Turkey",
+890-    "Cappadocia, Turkey",
+891-    "Tel Aviv, Israel",
+892-    "Jerusalem, Israel",
+893-    "Haifa, Israel",
+894-    "Eilat, Israel",
+895-    "Amman, Jordan",
+896-    "Petra, Jordan",
+897-    "Aqaba, Jordan",
+898-    "Beirut, Lebanon",
+899-    "Byblos, Lebanon",
+900-    "Tripoli, Lebanon",
+901-    "Doha, Qatar",
+902-    "Riyadh, Saudi Arabia",
+903-    "Jeddah, Saudi Arabia",
+904-    "Mecca, Saudi Arabia",
+905-    "Medina, Saudi Arabia",
+906-    "Dammam, Saudi Arabia",
+907-    "Muscat, Oman",
+908-    "Salalah, Oman",
+909-    "Kuwait City, Kuwait",
+910-    "Manama, Bahrain",
+911-    
+912-    // South Asia
+913-    "Lahore, Pakistan",
+914-    "Karachi, Pakistan",
+915-    "Islamabad, Pakistan",
+916-    "Peshawar, Pakistan",
+917-    "Faisalabad, Pakistan",
+918-    "Multan, Pakistan",
+919-    "Rawalpindi, Pakistan",
+920-    "Quetta, Pakistan",
+921-    "Kathmandu, Nepal",
+922-    "Pokhara, Nepal",
+923-    "Dhaka, Bangladesh",
+924-    "Chittagong, Bangladesh",
+925-    "Sylhet, Bangladesh",
+926-    "Khulna, Bangladesh",
+927-    "Colombo, Sri Lanka",
+928-    "Kandy, Sri Lanka",
+929-    "Galle, Sri Lanka",
+930-    "Male, Maldives",
+931-    "Thimphu, Bhutan",
+932-    
+933-    // Australia
+934-    "Sydney, Australia",
+935-    "Melbourne, Australia",
+936-    "Brisbane, Australia",
+937-    "Perth, Australia",
+938-    "Adelaide, Australia",
+939-    "Gold Coast, Australia",
+940-    "Canberra, Australia",
+941-    "Hobart, Australia",
+942-    "Darwin, Australia",
+943-    "Newcastle, Australia",
+944-    "Wollongong, Australia",
+945-    "Geelong, Australia",
+946-    "Cairns, Australia",
+947-    "Townsville, Australia",
+948-    "Alice Springs, Australia",
+949-    "Sunshine Coast, Australia",
+950-    "Toowoomba, Australia",
+951-    "Ballarat, Australia",
+952-    "Bendigo, Australia",
+953-    "Mandurah, Australia",
+954-    "Albury, Australia",
+955-    "Wodonga, Australia",
+956-    "Launceston, Australia",
+957-    "Mackay, Australia",
+958-    "Rockhampton, Australia",
+959-    "Bunbury, Australia",
+960-    "Bundaberg, Australia",
+961-    "Hervey Bay, Australia",
+962-    "Wagga Wagga, Australia",
+963-    "Coffs Harbour, Australia",
+964-    "Gladstone, Australia",
+965-    "Mildura, Australia",
+966-    "Shepparton, Australia",
+967-    "Port Macquarie, Australia",
+968-    "Tamworth, Australia",
+969-    "Orange, Australia",
+970-    "Dubbo, Australia",
+971-    "Geraldton, Australia",
+972-    // New Zealand
+973-    "Auckland, New Zealand",
+974-    "Wellington, New Zealand",
+975-    "Christchurch, New Zealand",
+976-    "Queenstown, New Zealand",
+977-    "Dunedin, New Zealand",
+978-    "Hamilton, New Zealand",
+979-    "Tauranga, New Zealand",
+980-    "Napier-Hastings, New Zealand",
+981-    "Palmerston North, New Zealand",
+982-    "Nelson, New Zealand",
+983-    "Rotorua, New Zealand",
+984-    "New Plymouth, New Zealand",
+985-    "Whangarei, New Zealand",
+986-    "Invercargill, New Zealand",
+987-    "Whanganui, New Zealand",
+988-    "Gisborne, New Zealand",
+989-    "Timaru, New Zealand",
+990-    "Taupo, New Zealand",
+991-    "Blenheim, New Zealand",
+992-    "Pukekohe, New Zealand",
+993-    "Cambridge, New Zealand",
+994-    "Te Awamutu, New Zealand",
+995-    "Oamaru, New Zealand",
+996-    "Whakatane, New Zealand",
+997-    "Kerikeri, New Zealand",
+998-    "Ashburton, New Zealand",
+999-    "Rangiora, New Zealand",
+1000-    "Paraparaumu, New Zealand",
+1001-    "Motueka, New Zealand",
+1002-    "Suva, Fiji",
+1003-    "Port Moresby, Papua New Guinea",
+1004-    "Nouméa, New Caledonia",
+1005-    "Port Vila, Vanuatu",
+1006-    "Apia, Samoa",
+1007-    "Nuku'alofa, Tonga",
+1008-    "Honolulu, Hawaii, USA",
+1009-    
+1010-    // Africa
+1011-    "Cairo, Egypt",
+1012-    "Alexandria, Egypt",
+1013-    "Johannesburg, South Africa",
+1014-    "Cape Town, South Africa",
+1015-    "Durban, South Africa",
+1016-    "Pretoria, South Africa",
+1017-    "Lagos, Nigeria",
+1018-    "Abuja, Nigeria",
+1019-    "Nairobi, Kenya",
+1020-    "Mombasa, Kenya",
+1021-    "Casablanca, Morocco",
+1022-    "Marrakech, Morocco",
+1023-    "Rabat, Morocco",
+1024-    "Accra, Ghana",
+1025-    "Kumasi, Ghana",
+1026-    "Addis Ababa, Ethiopia",
+1027-    "Tunis, Tunisia",
+1028-    "Algiers, Algeria",
+1029-    "Dakar, Senegal",
+1030-    "Dar es Salaam, Tanzania",
+1031-    "Kampala, Uganda",
+1032-    "Lusaka, Zambia",
+1033-    "Harare, Zimbabwe",
+1034-    "Kigali, Rwanda",
+1035-    "Windhoek, Namibia",
+1036-    "Gaborone, Botswana",
+1037-    "Maputo, Mozambique",
+1038-    "Libreville, Gabon",
+1039-    "Luanda, Angola",
+1040-    "Antananarivo, Madagascar",
+1041-    "Port Louis, Mauritius",
+1042-    "Victoria, Seychelles",
+1043-    "Tripoli, Libya",
+1044-    "Khartoum, Sudan",
+1045-    "Abidjan, Ivory Coast",
+1046-    "Bamako, Mali",
+1047-    "Ouagadougou, Burkina Faso",
+1048-    "Cotonou, Benin",
+1049-    "Lomé, Togo",
+1050-    "Yaoundé, Cameroon",
+1051-    
+1052-    // South America
+1053-    "São Paulo, Brazil",
+1054-    "Rio de Janeiro, Brazil",
+1055-    "Brasília, Brazil",
+1056-    "Salvador, Brazil",
+1057-    "Recife, Brazil",
+1058-    "Fortaleza, Brazil",
+1059-    "Curitiba, Brazil",
+1060-    "Manaus, Brazil",
+1061-    "Porto Alegre, Brazil",
+1062-    "Buenos Aires, Argentina",
+1063-    "Córdoba, Argentina",
+1064-    "Rosario, Argentina",
+1065-    "Mendoza, Argentina",
+1066-    "Santiago, Chile",
+1067-    "Valparaíso, Chile",
+1068-    "Concepción, Chile",
+1069-    "Lima, Peru",
+1070-    "Cusco, Peru",
+1071-    "Arequipa, Peru",
+1072-    "Bogotá, Colombia",
+1073-    "Medellín, Colombia",
+1074-    "Cali, Colombia",
+1075-    "Cartagena, Colombia",
+1076-    "Caracas, Venezuela",
+1077-    "Maracaibo, Venezuela",
+1078-    "Valencia, Venezuela",
+1079-    "Montevideo, Uruguay",
+1080-    "Punta del Este, Uruguay",
+1081-    "Quito, Ecuador",
+1082-    "Guayaquil, Ecuador",
+1083-    "Asunción, Paraguay",
+1084-    "La Paz, Bolivia",
+1085-    "Santa Cruz, Bolivia",
+1086-    "Georgetown, Guyana",
+1087-    "Paramaribo, Suriname",
+1088-    "Cayenne, French Guiana"
+1089-  ];
+1090-  
+1091-  // State for location suggestions
+1092-  const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
+1093-  
+1094-  // Initialize form data when user data changes
+1095-  useEffect(() => {
+1096-    if (userData) {
+1097-      // Log userData for debugging
+1098-      console.log("Current userData:", userData);
+1099-      
+1100-      // Parse industry and domain from userData.industry if it contains a colon
+1101-      let mainIndustry = '';
+1102-      let domain = '';
+1103-      
+1104-      if (userData.industry && userData.industry.includes(': ')) {
+1105-        const parts = userData.industry.split(': ');
+1106-        mainIndustry = parts[0];
+1107-        domain = parts[1];
+1108-      } else {
+1109-        mainIndustry = userData.industry || '';
+1110-      }
+1111-      
+1112-      setSelectedIndustry(mainIndustry);
+1113-      setSelectedDomain(domain);
+1114-      
+1115-      // Parse job level from title if possible
+1116-      let jobLevel = '';
+1117-      let title = userData.title || '';
+1118-      
+1119-      // Check if the title starts with any of our job levels
+1120-      const jobLevels = ['Senior', 'Junior', 'Director', 'Vice President', 'President', 'Consultant'];
+1121-      for (const level of jobLevels) {
+1122-        if (title.startsWith(level + ' ')) {
+1123-          jobLevel = level;
+1124-          title = title.substring(level.length + 1); // +1 for the space
+1125-          break;
+1126-        }
+1127-      }
+1128-      
+1129-      // Special case for C-level executives
+1130-      const cLevelTitles = [
+1131-        'Chief Executive Officer', 
+1132-        'Chief Operating Officer', 
+1133-        'Chief Financial Officer', 
+1134-        'Chief Technology Officer', 
+1135-        'Chief Marketing Officer'
+1136-      ];
+1137-      
+1138-      for (const cTitle of cLevelTitles) {
+1139-        if (title === cTitle || title.includes(cTitle)) {
+1140-          title = cTitle;
+1141-          break;
+1142-        }
+1143-      }
+1144-      
+1145-      setFormData({
+1146-        name: userData.name || '',
+1147-        title: title,
+1148-        jobLevel: jobLevel,
+1149-        location: userData.location || '',
+1150-        industry: mainIndustry || '',
+1151-        domain: domain || '',
+1152-        lookingFor: userData.lookingFor || ''
+1153-      });
+1154-    }
+1155-  }, [userData]);
+1156-
+1157-  // Handle form input changes
+1158-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+1159-    const { name, value } = e.target;
+1160-    setFormData(prev => ({
+1161-      ...prev,
+1162-      [name]: value
+1163-    }));
+1164-    
+1165-    // Handle location suggestions
+1166-    if (name === 'location' && value.trim()) {
+1167-      // Filter locations that match the input value
+1168-      const inputValue = value.toLowerCase();
+1169-      
+1170-      // First try exact matches (most relevant)
+1171-      let filtered = popularLocations.filter(location => 
+1172-        location.toLowerCase().includes(inputValue)
+1173-      );
+1174-      
+1175-      // If no exact matches or very few, try fuzzy matching for spelling variations
+1176-      if (filtered.length < 3) {
+1177-        // Try alternative spellings and common misspellings
+1178-        const alternativeMatches = popularLocations.filter(location => {
+1179-          const locationLower = location.toLowerCase();
+1180-          
+1181-          // Handle common spelling variations for major cities
+1182-          if (inputValue.includes('melb') && locationLower.includes('melbourne')) return true;
+1183-          if (inputValue.includes('malb') && locationLower.includes('melbourne')) return true;
+1184-          if (inputValue.includes('syd') && locationLower.includes('sydney')) return true;
+1185-          if (inputValue.includes('bris') && locationLower.includes('brisbane')) return true;
+1186-          if (inputValue.includes('auck') && locationLower.includes('auckland')) return true;
+1187-          if (inputValue.includes('sing') && locationLower.includes('singapore')) return true;
+1188-          if (inputValue.includes('bangl') && locationLower.includes('bangalore')) return true;
+1189-          if (inputValue.includes('bengal') && locationLower.includes('bangalore')) return true;
+1190-          if (inputValue.includes('york') && locationLower.includes('new york')) return true;
+1191-          if (inputValue.includes('angeles') && locationLower.includes('los angeles')) return true;
+1192-          if (inputValue.includes('fran') && locationLower.includes('san francisco')) return true;
+1193-          if (inputValue.includes('tokyo') && locationLower.includes('tokyo')) return true;
+1194-          if (inputValue.includes('dubai') && locationLower.includes('dubai')) return true;
+1195-          
+1196-          return false;
+1197-        });
+1198-        
+1199-        // Combine both sets of results with exact matches first
+1200-        filtered = [...filtered, ...alternativeMatches];
+1201-      }
+1202-      
+1203-      setLocationSuggestions(filtered.slice(0, 10)); // Show up to 10 suggestions
+1204-    } else if (name === 'location' && !value.trim()) {
+1205-      setLocationSuggestions([]);
+1206-    }
+1207-  };
+1208-  
+1209-  // Handle suggestion selection
+1210-  const handleSuggestionSelect = (suggestion: string) => {
+1211-    setFormData(prev => ({
+1212-      ...prev,
+1213-      location: suggestion
+1214-    }));
+1215-    setLocationSuggestions([]);
+1216-  };
+1217-  
+1218-  // Reset suggestions when dialog closes
+1219-  useEffect(() => {
+1220-    if (!showEditBasicInfo) {
+1221-      setLocationSuggestions([]);
+1222-    }
+1223-  }, [showEditBasicInfo]);
+1224-  
+1225-  // Event handler for location suggestion div to prevent bubbling
+1226-  const handleSuggestionClick = (event: React.MouseEvent) => {
+1227-    // Prevent event bubbling to keep dropdown open until selection
+1228-    event.stopPropagation();
+1229-  };
+1230-
+1231-  // Handle form submission
+1232-  const handleSubmit = (e: React.FormEvent) => {
+1233-    e.preventDefault();
+1234-    
+1235-    // Combine industry and domain if both are selected
+1236-    const updatedFormData = { ...formData };
+1237-    if (formData.industry && formData.domain) {
+1238-      updatedFormData.industry = `${formData.industry}: ${formData.domain}`;
+1239-    }
+1240-    
+1241-    // Combine job level and title if both are present
+1242-    if (formData.jobLevel && formData.title) {
+1243-      updatedFormData.title = `${formData.jobLevel} ${formData.title}`;
+1244-    }
+1245-    
+1246-    // Log what we're sending to the server
+1247-    console.log("Submitting profile data:", updatedFormData);
+1248-    
+1249-    updateUserMutation.mutate(updatedFormData);
+1250-  };
+1251-
+1252-  // Redirect to landing if not authenticated
+1253-  if (!isLoading && !isAuthenticated) {
+1254-    setLocation('/');
+1255-    return null;
+1256-  }
+1257-
+1258-  // Loading state
+1259-  if (isLoading) {
+1260-    return (
+1261-      <div className="min-h-screen flex items-center justify-center">
+1262-        <p className="text-lg">Loading...</p>
+1263-      </div>
+1264-    );
+1265-  }
+1266-
+1267-  // Handle profile picture update
+1268-  const handleProfilePictureUpdate = (base64Image: string) => {
+1269-    profilePictureMutation.mutate(base64Image);
+1270-  };
+1271-  
+1272-  return (
+1273-    <div className="min-h-screen flex flex-col">
+1274-      {/* Profile Picture Dialog */}
+1275-      <ProfilePictureDialog 
+1276-        open={showProfilePictureDialog}
+1277-        onOpenChange={setShowProfilePictureDialog}
+1278-        currentPhotoURL={userData?.photoURL || user?.photoURL}
+1279-        onSave={handleProfilePictureUpdate}
+1280-      />
+1281-      
+1282-      {/* Edit Basic Info Dialog */}
+1283-      <Dialog open={showEditBasicInfo} onOpenChange={setShowEditBasicInfo}>
+1284-        <DialogContent className="sm:max-w-[425px]">
+1285-          <DialogHeader>
+1286-            <DialogTitle>Edit Profile Info</DialogTitle>
+1287-          </DialogHeader>
+1288-          <form onSubmit={handleSubmit}>
+1289-            <div className="grid gap-4 py-4">
+1290-              <div className="grid gap-2">
+1291-                <Label htmlFor="name">Name</Label>
+1292-                <Input
+1293-                  id="name"
+1294-                  name="name"
+1295-                  value={formData.name}
+1296-                  onChange={handleInputChange}
+1297-                  placeholder="Your name"
+1298-                />
+1299-              </div>
+1300-              <div className="grid gap-2">
+1301-                <Label htmlFor="title">Job Title</Label>
+1302-                <div className="flex gap-2">
+1303-                  <div className="w-1/3">
+1304-                    <Select
+1305-                      value={formData.jobLevel}
+1306-                      onValueChange={(value) => {
+1307-                        setFormData(prev => ({
+1308-                          ...prev,
+1309-                          jobLevel: value
+1310-                        }));
+1311-                      }}
+1312-                    >
+1313-                      <SelectTrigger>
+1314-                        <SelectValue placeholder="Level" />
+1315-                      </SelectTrigger>
+1316-                      <SelectContent>
+1317-                        <SelectItem value="Fresher">Fresher</SelectItem>
+1318-                        <SelectItem value="Student">Student</SelectItem>
+1319-                        <SelectItem value="Junior">Junior</SelectItem>
+1320-                        <SelectItem value="Senior">Senior</SelectItem>
+1321-                        <SelectItem value="Consultant">Consultant</SelectItem>
+1322-                        <SelectItem value="Director">Director</SelectItem>
+1323-                        <SelectItem value="Vice President">Vice President</SelectItem>
+1324-                        <SelectItem value="President">President</SelectItem>
+1325-                      </SelectContent>
+1326-                    </Select>
+1327-                  </div>
+1328-                  <div className="w-2/3">
+1329-                    <JobTitleCombobox
+1330-                      value={formData.title || ''}
+1331-                      onChange={(value) => setFormData({ ...formData, title: value })}
+1332-                      placeholder="Select or type your job title"
+1333-                    />
+1334-                  </div>
+1335-                </div>
+1336-              </div>
+1337-              <div className="grid gap-2 relative">
+1338-                <Label htmlFor="location">Location</Label>
+1339-                <Input
+1340-                  id="location"
+1341-                  name="location"
+1342-                  value={formData.location}
+1343-                  onChange={handleInputChange}
+1344-                  placeholder="Your location"
+1345-                  autoComplete="off"
+1346-                />
+1347-                {locationSuggestions.length > 0 && (
+1348-                  <div 
+1349-                    className="absolute top-full left-0 right-0 z-10 bg-white border border-gray-200 rounded-md shadow-md mt-1 max-h-60 overflow-auto"
+1350-                    onClick={handleSuggestionClick}
+1351-                  >
+1352-                    {locationSuggestions.map((suggestion, index) => (
+1353-                      <div 
+1354-                        key={index}
+1355-                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+1356-                        onClick={() => handleSuggestionSelect(suggestion)}
+1357-                      >
+1358-                        {suggestion}
+1359-                      </div>
+1360-                    ))}
+1361-                  </div>
+1362-                )}
+1363-              </div>
+1364-              <div className="grid gap-2">
+1365-                <Label htmlFor="industry">Industry</Label>
+1366-                <Select
+1367-                  value={formData.industry}
+1368-                  onValueChange={(value) => {
+1369-                    setSelectedIndustry(value);
+1370-                    setSelectedDomain('');
+1371-                    setFormData(prev => ({
+1372-                      ...prev,
+1373-                      industry: value,
+1374-                      domain: ''
+1375-                    }));
+1376-                  }}
+1377-                >
+1378-                  <SelectTrigger className="w-full">
+1379-                    <SelectValue placeholder="Select your industry" />
+1380-                  </SelectTrigger>
+1381-                  <SelectContent className="max-h-80">
+1382-                    {INDUSTRIES.map((industry) => (
+1383-                      <SelectItem key={industry} value={industry}>
+1384-                        {industry}
+1385-                      </SelectItem>
+1386-                    ))}
+1387-                  </SelectContent>
+1388-                </Select>
+1389-              </div>
+1390-              
+1391-              {/* Domain selector - only show when an industry is selected */}
+1392-              {formData.industry && (
+1393-                <div className="grid gap-2">
+1394-                  <Label htmlFor="domain">Specific Domain</Label>
+1395-                  <Select
+1396-                    value={formData.domain}
+1397-                    onValueChange={(value) => {
+1398-                      setSelectedDomain(value);
+1399-                      setFormData(prev => ({
+1400-                        ...prev,
+1401-                        domain: value
+1402-                      }));
+1403-                    }}
+1404-                  >
+1405-                    <SelectTrigger className="w-full">
+1406-                      <SelectValue placeholder="Select your domain" />
+1407-                    </SelectTrigger>
+1408-                    <SelectContent className="max-h-80">
+1409-                      {INDUSTRY_DOMAINS[formData.industry]?.map((domain: string) => (
+1410-                        <SelectItem key={domain} value={domain}>
+1411-                          {domain}
+1412-                        </SelectItem>
+1413-                      ))}
+1414-                    </SelectContent>
+1415-                  </Select>
+1416-                </div>
+1417-              )}
+1418-              <div className="grid gap-2">
+1419-                <Label htmlFor="lookingFor">I am looking for</Label>
+1420-                <Select
+1421-                  value={formData.lookingFor}
+1422-                  onValueChange={(value) => {
+1423-                    setFormData(prev => ({
+1424-                      ...prev,
+1425-                      lookingFor: value
+1426-                    }));
+1427-                  }}
+1428-                >
+1429-                  <SelectTrigger className="w-full">
+1430-                    <SelectValue placeholder="What are you looking for?" />
+1431-                  </SelectTrigger>
+1432-                  <SelectContent className="max-h-80">
+1433-                    <SelectGroup>
+1434-                      <SelectLabel>Career & Job Seeking</SelectLabel>
+1435-                      {LOOKING_FOR_CATEGORIES.filter(cat => cat.label.includes("💼")).map(category => (
+1436-                        <SelectItem key={category.value} value={category.value}>
+1437-                          {category.label}
+1438-                        </SelectItem>
+1439-                      ))}
+1440-                    </SelectGroup>
+1441-                    <SelectSeparator />
+1442-                    <SelectGroup>
+1443-                      <SelectLabel>Business & Investment</SelectLabel>
+1444-                      {LOOKING_FOR_CATEGORIES.filter(cat => cat.label.includes("🚀")).map(category => (
+1445-                        <SelectItem key={category.value} value={category.value}>
+1446-                          {category.label}
+1447-                        </SelectItem>
+1448-                      ))}
+1449-                    </SelectGroup>
+1450-                    <SelectSeparator />
+1451-                    <SelectGroup>
+1452-                      <SelectLabel>Learning & Upskilling</SelectLabel>
+1453-                      {LOOKING_FOR_CATEGORIES.filter(cat => cat.label.includes("🎓")).map(category => (
+1454-                        <SelectItem key={category.value} value={category.value}>
+1455-                          {category.label}
+1456-                        </SelectItem>
+1457-                      ))}
+1458-                    </SelectGroup>
+1459-                    <SelectSeparator />
+1460-                    <SelectGroup>
+1461-                      <SelectLabel>Networking & Collaborations</SelectLabel>
+1462-                      {LOOKING_FOR_CATEGORIES.filter(cat => cat.label.includes("🤝")).map(category => (
+1463-                        <SelectItem key={category.value} value={category.value}>
+1464-                          {category.label}
+1465-                        </SelectItem>
+1466-                      ))}
+1467-                    </SelectGroup>
+1468-                    <SelectSeparator />
+1469-                    <SelectGroup>
+1470-                      <SelectLabel>Freelance & Side Hustle</SelectLabel>
+1471-                      {LOOKING_FOR_CATEGORIES.filter(cat => cat.label.includes("💰")).map(category => (
+1472-                        <SelectItem key={category.value} value={category.value}>
+1473-                          {category.label}
+1474-                        </SelectItem>
+1475-                      ))}
+1476-                    </SelectGroup>
+1477-                  </SelectContent>
+1478-                </Select>
+1479-              </div>
+1480-            </div>
+1481-            <DialogFooter>
+1482-              <Button 
+1483-                type="button" 
+1484-                variant="outline" 
+1485-                onClick={() => setShowEditBasicInfo(false)}
+1486-              >
+1487-                Cancel
+1488-              </Button>
+1489-              <Button 
+1490-                type="submit"
+1491-                disabled={updateUserMutation.isPending}
+1492-              >
+1493-                {updateUserMutation.isPending ? 'Saving...' : 'Save Changes'}
+1494-              </Button>
+1495-            </DialogFooter>
+1496-          </form>
+1497-        </DialogContent>
+1498-      </Dialog>
+1499-      
+1500-      {/* Top Navigation */}
+1501-      <Header />
+1502-
+1503-      {/* Main Content */}
+1504-      <div className="flex-1 flex overflow-hidden">
+1505-        {/* Sidebar */}
+1506-        <Sidebar activePage="profile" />
+1507-
+1508-        {/* Center content */}
+1509-        <div className="flex-1 overflow-auto p-6 bg-gray-50">
+1510-          <div className="mx-auto max-w-3xl">
+1511-            <div className="flex items-center justify-between mb-6">
+1512-              <h1 className="text-2xl font-semibold text-gray-900">Profile</h1>
+1513-              <div className="text-right">
+1514-                <p className="text-sm text-gray-500">Profile Completion</p>
+1515-                <div className="flex items-center mt-1">
+1516-                  <div className="w-36 bg-gray-200 rounded-full h-2.5 mr-2">
+1517-                    <div id="profile-completion-bar" className="bg-primary h-2.5 rounded-full" style={{ width: '65%' }}></div>
+1518-                  </div>
+1519-                  <span className="text-sm font-medium text-gray-900">65%</span>
+1520-                </div>
+1521-              </div>
+1522-            </div>
+1523-            
+1524-            {/* Profile Header */}
+1525-            <Card className="mb-6 overflow-hidden">
+1526-              <div className="h-32 bg-gradient-to-r from-primary to-purple-600"></div>
+1527-              <CardContent className="relative pt-16 pb-4">
+1528-                <div className="absolute -top-16 left-1/2 sm:left-6 transform -translate-x-1/2 sm:translate-x-0">
+1529-                  <div className="relative group">
+1530-                    <div className="h-24 w-24 overflow-hidden rounded-full bg-white ring-4 ring-white flex items-center justify-center">
+1531-                      <img 
+1532-                        className="h-full w-full object-cover" 
+1533-                        src={userData?.photoURL || user?.photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
+1534-                        alt="User profile"
+1535-                        onError={(e) => {
+1536-                          const target = e.target as HTMLImageElement;
+1537-                          target.src = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
+1538-                        }}
+1539-                      />
+1540-                    </div>
+1541-                    <button 
+1542-                      onClick={() => setShowProfilePictureDialog(true)}
+1543-                      className="absolute bottom-0 right-0 bg-primary hover:bg-primary/90 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+1544-                      aria-label="Change profile picture"
+1545-                    >
+1546-                      <Camera size={16} />
+1547-                    </button>
+1548-                  </div>
+1549-                </div>
+1550-                <div className="pl-0 sm:pl-32 mt-12 sm:mt-2">
+1551-                  <div className="flex justify-between items-center group">
+1552-                    <h2 className="text-xl text-gray-900">
+1553-                      Hey there! <span className="font-bold text-2xl text-primary">{userData?.name || user?.name || 'User'}</span> here,
+1554-                    </h2>
+1555-                    <button 

@@ -1,0 +1,1090 @@
+  const popularLocations = [
+    // North America - USA
+    "New York, NY, USA",
+    "San Francisco, CA, USA",
+    "Los Angeles, CA, USA",
+    "Chicago, IL, USA",
+    "Seattle, WA, USA",
+    "Austin, TX, USA",
+    "Boston, MA, USA",
+    "Denver, CO, USA",
+    "Atlanta, GA, USA",
+    "Portland, OR, USA",
+    "Washington, DC, USA",
+    "San Diego, CA, USA",
+    "Miami, FL, USA",
+    "Dallas, TX, USA",
+    "Houston, TX, USA",
+    "Phoenix, AZ, USA",
+    "Philadelphia, PA, USA",
+    "Las Vegas, NV, USA",
+    "Detroit, MI, USA",
+    "Minneapolis, MN, USA",
+    "Nashville, TN, USA",
+    "Charlotte, NC, USA",
+    "Raleigh, NC, USA",
+    "Indianapolis, IN, USA",
+    "Columbus, OH, USA",
+    "Cleveland, OH, USA",
+    "Pittsburgh, PA, USA",
+    "Kansas City, MO, USA",
+    "St. Louis, MO, USA",
+    "Salt Lake City, UT, USA",
+    "Orlando, FL, USA",
+    "Tampa, FL, USA",
+    "New Orleans, LA, USA",
+    "Honolulu, HI, USA",
+    "Anchorage, AK, USA",
+    "San Jose, CA, USA",
+    "Sacramento, CA, USA",
+    "Oakland, CA, USA",
+    "Cincinnati, OH, USA",
+    "Buffalo, NY, USA",
+    "Baltimore, MD, USA",
+    "San Antonio, TX, USA",
+    "Milwaukee, WI, USA",
+    "Albuquerque, NM, USA",
+    "Tucson, AZ, USA",
+    "Fresno, CA, USA",
+    "Long Beach, CA, USA",
+    "Omaha, NE, USA",
+    "Oklahoma City, OK, USA",
+    "Louisville, KY, USA",
+    "Memphis, TN, USA",
+    "Tulsa, OK, USA",
+    "Fort Worth, TX, USA",
+    "El Paso, TX, USA",
+    "Boise, ID, USA",
+    "Richmond, VA, USA",
+    "Birmingham, AL, USA",
+    "Providence, RI, USA",
+    "Jacksonville, FL, USA",
+    "Albany, NY, USA",
+    "Rochester, NY, USA",
+    "Baton Rouge, LA, USA",
+    "Des Moines, IA, USA",
+    "Charleston, SC, USA",
+    "Savannah, GA, USA",
+    "Madison, WI, USA",
+    "Boulder, CO, USA",
+    "Ann Arbor, MI, USA",
+    "Eugene, OR, USA",
+    "Santa Fe, NM, USA",
+    "Asheville, NC, USA",
+    "Spokane, WA, USA",
+    "Tacoma, WA, USA",
+    // Canada
+    "Toronto, Canada",
+    "Vancouver, Canada",
+    "Montreal, Canada",
+    "Calgary, Canada",
+    "Ottawa, Canada",
+    "Edmonton, Canada",
+    "Winnipeg, Canada",
+    "Quebec City, Canada",
+    "Hamilton, Canada",
+    "Halifax, Canada",
+    "Victoria, Canada",
+    "London, Canada",
+    "Kitchener, Canada",
+    "Windsor, Canada",
+    "Oshawa, Canada",
+    "Saskatoon, Canada",
+    "Regina, Canada",
+    "St. John's, Canada",
+    "Kelowna, Canada",
+    "Abbotsford, Canada",
+    "Kingston, Canada",
+    "Guelph, Canada",
+    "Barrie, Canada",
+    "Moncton, Canada",
+    "Thunder Bay, Canada",
+    "Fredericton, Canada",
+    "Sherbrooke, Canada",
+    "Red Deer, Canada",
+    "Sudbury, Canada",
+    "Kamloops, Canada",
+    "Chilliwack, Canada",
+    "Niagara Falls, Canada",
+    "Gatineau, Canada",
+    "Lethbridge, Canada",
+    "Saint John, Canada",
+    "Nanaimo, Canada",
+    "Burnaby, Canada",
+    "Richmond, Canada",
+    "Surrey, Canada",
+    "Mississauga, Canada",
+    "Brampton, Canada",
+    "Markham, Canada",
+    "Vaughan, Canada",
+    "Burlington, Canada",
+    "Oakville, Canada",
+    "Richmond Hill, Canada",
+    "Mexico City, Mexico",
+    "Guadalajara, Mexico",
+    "Monterrey, Mexico",
+    "Cancun, Mexico",
+    "Tijuana, Mexico",
+    
+    // Europe
+    "London, UK",
+    "Manchester, UK",
+    "Edinburgh, UK",
+    "Glasgow, UK",
+    "Birmingham, UK",
+    "Liverpool, UK",
+    "Bristol, UK",
+    "Leeds, UK",
+    "Cardiff, UK",
+    "Dublin, Ireland",
+    "Cork, Ireland",
+    "Galway, Ireland",
+    "Paris, France",
+    "Lyon, France",
+    "Nice, France",
+    "Marseille, France",
+    "Bordeaux, France",
+    "Toulouse, France",
+    "Strasbourg, France",
+    "Berlin, Germany",
+    "Munich, Germany",
+    "Hamburg, Germany",
+    "Cologne, Germany",
+    "Frankfurt, Germany",
+    "Stuttgart, Germany",
+    "Düsseldorf, Germany",
+    "Dresden, Germany",
+    "Leipzig, Germany",
+    "Amsterdam, Netherlands",
+    "Rotterdam, Netherlands",
+    "Utrecht, Netherlands",
+    "The Hague, Netherlands",
+    "Eindhoven, Netherlands",
+    "Madrid, Spain",
+    "Barcelona, Spain",
+    "Valencia, Spain",
+    "Seville, Spain",
+    "Malaga, Spain",
+    "Bilbao, Spain",
+    "Lisbon, Portugal",
+    "Porto, Portugal",
+    "Rome, Italy",
+    "Milan, Italy",
+    "Florence, Italy",
+    "Naples, Italy",
+    "Turin, Italy",
+    "Bologna, Italy",
+    "Venice, Italy",
+    "Palermo, Italy",
+    "Vienna, Austria",
+    "Salzburg, Austria",
+    "Innsbruck, Austria",
+    "Graz, Austria",
+    "Zurich, Switzerland",
+    "Geneva, Switzerland",
+    "Basel, Switzerland",
+    "Bern, Switzerland",
+    "Lausanne, Switzerland",
+    "Brussels, Belgium",
+    "Antwerp, Belgium",
+    "Ghent, Belgium",
+    "Bruges, Belgium",
+    "Copenhagen, Denmark",
+    "Aarhus, Denmark",
+    "Odense, Denmark",
+    "Oslo, Norway",
+    "Bergen, Norway",
+    "Trondheim, Norway",
+    "Stockholm, Sweden",
+    "Gothenburg, Sweden",
+    "Malmö, Sweden",
+    "Helsinki, Finland",
+    "Tampere, Finland",
+    "Turku, Finland",
+    "Reykjavik, Iceland",
+    "Prague, Czech Republic",
+    "Brno, Czech Republic",
+    "Warsaw, Poland",
+    "Krakow, Poland",
+    "Gdansk, Poland",
+    "Wroclaw, Poland",
+    "Poznan, Poland",
+    "Budapest, Hungary",
+    "Debrecen, Hungary",
+    "Bratislava, Slovakia",
+    "Ljubljana, Slovenia",
+    "Zagreb, Croatia",
+    "Split, Croatia",
+    "Dubrovnik, Croatia",
+    "Belgrade, Serbia",
+    "Sarajevo, Bosnia and Herzegovina",
+    "Skopje, North Macedonia",
+    "Tirana, Albania",
+    "Sofia, Bulgaria",
+    "Bucharest, Romania",
+    "Cluj-Napoca, Romania",
+    "Athens, Greece",
+    "Thessaloniki, Greece",
+    "Heraklion, Greece",
+    "Nicosia, Cyprus",
+    "Valletta, Malta",
+    "Tallinn, Estonia",
+    "Riga, Latvia",
+    "Vilnius, Lithuania",
+    "Minsk, Belarus",
+    "Kiev, Ukraine",
+    "Lviv, Ukraine",
+    "Odessa, Ukraine",
+    "Moscow, Russia",
+    "Saint Petersburg, Russia",
+    "Kazan, Russia",
+    "Yekaterinburg, Russia",
+    
+    // Asia - East Asia
+    "Tokyo, Japan",
+    "Osaka, Japan",
+    "Kyoto, Japan",
+    "Sapporo, Japan",
+    "Fukuoka, Japan",
+    "Nagoya, Japan",
+    "Yokohama, Japan",
+    "Kobe, Japan",
+    "Hiroshima, Japan",
+    "Nara, Japan",
+    "Sendai, Japan",
+    "Kawasaki, Japan",
+    "Okinawa, Japan",
+    "Seoul, South Korea",
+    "Busan, South Korea",
+    "Incheon, South Korea",
+    "Daegu, South Korea",
+    "Daejeon, South Korea",
+    "Gwangju, South Korea",
+    "Suwon, South Korea",
+    "Ulsan, South Korea",
+    "Jeju, South Korea",
+    "Beijing, China",
+    "Shanghai, China",
+    "Guangzhou, China",
+    "Shenzhen, China",
+    "Chengdu, China",
+    "Hangzhou, China",
+    "Nanjing, China",
+    "Wuhan, China",
+    "Tianjin, China",
+    "Xian, China",
+    "Chongqing, China",
+    "Suzhou, China",
+    "Qingdao, China",
+    "Dalian, China",
+    "Xiamen, China",
+    "Kunming, China",
+    "Changsha, China",
+    "Zhengzhou, China",
+    "Hong Kong",
+    "Macau",
+    "Taipei, Taiwan",
+    "Kaohsiung, Taiwan",
+    "Taichung, Taiwan",
+    "Tainan, Taiwan",
+    "Hsinchu, Taiwan",
+    "Ulaanbaatar, Mongolia",
+    
+    // Asia - Southeast Asia
+    "Singapore",
+    "Kuala Lumpur, Malaysia",
+    "Penang, Malaysia",
+    "Johor Bahru, Malaysia",
+    "Ipoh, Malaysia",
+    "Kuching, Malaysia",
+    "Kota Kinabalu, Malaysia",
+    "Bangkok, Thailand",
+    "Chiang Mai, Thailand",
+    "Phuket, Thailand",
+    "Pattaya, Thailand",
+    "Krabi, Thailand",
+    "Hua Hin, Thailand",
+    "Jakarta, Indonesia",
+    "Bali, Indonesia",
+    "Surabaya, Indonesia",
+    "Bandung, Indonesia",
+    "Yogyakarta, Indonesia",
+    "Medan, Indonesia",
+    "Makassar, Indonesia",
+    "Manila, Philippines",
+    "Cebu, Philippines",
+    "Davao, Philippines",
+    "Boracay, Philippines",
+    "Baguio, Philippines",
+    "Ho Chi Minh City, Vietnam",
+    "Hanoi, Vietnam",
+    "Da Nang, Vietnam",
+    "Hoi An, Vietnam",
+    "Nha Trang, Vietnam",
+    "Hue, Vietnam",
+    "Phnom Penh, Cambodia",
+    "Siem Reap, Cambodia",
+    "Vientiane, Laos",
+    "Luang Prabang, Laos",
+    "Yangon, Myanmar",
+    "Mandalay, Myanmar",
+    "Brunei",
+    // India
+    "Mumbai, India",
+    "Delhi, India",
+    "Bangalore, India",
+    "Chennai, India",
+    "Kolkata, India",
+    "Hyderabad, India",
+    "Pune, India",
+    "Ahmedabad, India",
+    "Gandhinagar, India",
+    "Jaipur, India",
+    "Lucknow, India",
+    "Chandigarh, India",
+    "Kochi, India",
+    "Goa, India",
+    "Nagpur, India",
+    "Indore, India",
+    "Thane, India",
+    "Bhopal, India",
+    "Visakhapatnam, India",
+    "Surat, India",
+    "Vadodara, India",
+    "Ludhiana, India",
+    "Agra, India",
+    "Nashik, India",
+    "Faridabad, India",
+    "Meerut, India",
+    "Rajkot, India",
+    "Varanasi, India",
+    "Srinagar, India",
+    "Aurangabad, India",
+    "Dhanbad, India",
+    "Amritsar, India",
+    "Allahabad, India",
+    "Ranchi, India",
+    "Coimbatore, India",
+    "Jabalpur, India",
+    "Gwalior, India",
+    "Vijayawada, India",
+    "Jodhpur, India",
+    "Madurai, India",
+    "Raipur, India",
+    "Kota, India",
+    "Guwahati, India",
+    "Trivandrum, India",
+    "Tiruchirapalli, India",
+    "Hubli, India",
+    "Mangalore, India",
+    "Mysore, India",
+    "Dehradun, India",
+    "Bhubaneswar, India",
+    "Salem, India",
+    "Warangal, India",
+    "Jamshedpur, India",
+    "Noida, India",
+    "Gurgaon, India",
+    "Thiruvananthapuram, India",
+    "Patna, India",
+    "Pimpri-Chinchwad, India",
+    "Durgapur, India",
+    "Gangtok, India",
+    "Shimla, India",
+    "Ooty, India",
+    "Rishikesh, India",
+    "Udaipur, India",
+    "Haridwar, India",
+    "Jammu, India",
+    "Mussoorie, India",
+    "Nainital, India",
+    "Darjeeling, India",
+    "Panaji, India",
+    "Dharamshala, India",
+    "Shillong, India",
+    "Port Blair, India",
+    "Manali, India",
+    "Kanpur, India",
+    // West Asia & Middle East
+    "Dubai, UAE",
+    "Abu Dhabi, UAE",
+    "Sharjah, UAE",
+    "Al Ain, UAE",
+    "Ras Al Khaimah, UAE",
+    "Fujairah, UAE",
+    "Ajman, UAE",
+    "Umm Al Quwain, UAE",
+    "Istanbul, Turkey",
+    "Ankara, Turkey",
+    "Antalya, Turkey",
+    "Izmir, Turkey",
+    "Bursa, Turkey",
+    "Adana, Turkey",
+    "Konya, Turkey",
+    "Bodrum, Turkey",
+    "Cappadocia, Turkey",
+    "Tel Aviv, Israel",
+    "Jerusalem, Israel",
+    "Haifa, Israel",
+    "Eilat, Israel",
+    "Amman, Jordan",
+    "Petra, Jordan",
+    "Aqaba, Jordan",
+    "Beirut, Lebanon",
+    "Byblos, Lebanon",
+    "Tripoli, Lebanon",
+    "Doha, Qatar",
+    "Riyadh, Saudi Arabia",
+    "Jeddah, Saudi Arabia",
+    "Mecca, Saudi Arabia",
+    "Medina, Saudi Arabia",
+    "Dammam, Saudi Arabia",
+    "Muscat, Oman",
+    "Salalah, Oman",
+    "Kuwait City, Kuwait",
+    "Manama, Bahrain",
+    
+    // South Asia
+    "Lahore, Pakistan",
+    "Karachi, Pakistan",
+    "Islamabad, Pakistan",
+    "Peshawar, Pakistan",
+    "Faisalabad, Pakistan",
+    "Multan, Pakistan",
+    "Rawalpindi, Pakistan",
+    "Quetta, Pakistan",
+    "Kathmandu, Nepal",
+    "Pokhara, Nepal",
+    "Dhaka, Bangladesh",
+    "Chittagong, Bangladesh",
+    "Sylhet, Bangladesh",
+    "Khulna, Bangladesh",
+    "Colombo, Sri Lanka",
+    "Kandy, Sri Lanka",
+    "Galle, Sri Lanka",
+    "Male, Maldives",
+    "Thimphu, Bhutan",
+    
+    // Australia
+    "Sydney, Australia",
+    "Melbourne, Australia",
+    "Brisbane, Australia",
+    "Perth, Australia",
+    "Adelaide, Australia",
+    "Gold Coast, Australia",
+    "Canberra, Australia",
+    "Hobart, Australia",
+    "Darwin, Australia",
+    "Newcastle, Australia",
+    "Wollongong, Australia",
+    "Geelong, Australia",
+    "Cairns, Australia",
+    "Townsville, Australia",
+    "Alice Springs, Australia",
+    "Sunshine Coast, Australia",
+    "Toowoomba, Australia",
+    "Ballarat, Australia",
+    "Bendigo, Australia",
+    "Mandurah, Australia",
+    "Albury, Australia",
+    "Wodonga, Australia",
+    "Launceston, Australia",
+    "Mackay, Australia",
+    "Rockhampton, Australia",
+    "Bunbury, Australia",
+    "Bundaberg, Australia",
+    "Hervey Bay, Australia",
+    "Wagga Wagga, Australia",
+    "Coffs Harbour, Australia",
+    "Gladstone, Australia",
+    "Mildura, Australia",
+    "Shepparton, Australia",
+    "Port Macquarie, Australia",
+    "Tamworth, Australia",
+    "Orange, Australia",
+    "Dubbo, Australia",
+    "Geraldton, Australia",
+    // New Zealand
+    "Auckland, New Zealand",
+    "Wellington, New Zealand",
+    "Christchurch, New Zealand",
+    "Queenstown, New Zealand",
+    "Dunedin, New Zealand",
+    "Hamilton, New Zealand",
+    "Tauranga, New Zealand",
+    "Napier-Hastings, New Zealand",
+    "Palmerston North, New Zealand",
+    "Nelson, New Zealand",
+    "Rotorua, New Zealand",
+    "New Plymouth, New Zealand",
+    "Whangarei, New Zealand",
+    "Invercargill, New Zealand",
+    "Whanganui, New Zealand",
+    "Gisborne, New Zealand",
+    "Timaru, New Zealand",
+    "Taupo, New Zealand",
+    "Blenheim, New Zealand",
+    "Pukekohe, New Zealand",
+    "Cambridge, New Zealand",
+    "Te Awamutu, New Zealand",
+    "Oamaru, New Zealand",
+    "Whakatane, New Zealand",
+    "Kerikeri, New Zealand",
+    "Ashburton, New Zealand",
+    "Rangiora, New Zealand",
+    "Paraparaumu, New Zealand",
+    "Motueka, New Zealand",
+    "Suva, Fiji",
+    "Port Moresby, Papua New Guinea",
+    "Nouméa, New Caledonia",
+    "Port Vila, Vanuatu",
+    "Apia, Samoa",
+    "Nuku'alofa, Tonga",
+    "Honolulu, Hawaii, USA",
+    
+    // Africa
+    "Cairo, Egypt",
+    "Alexandria, Egypt",
+    "Johannesburg, South Africa",
+    "Cape Town, South Africa",
+    "Durban, South Africa",
+    "Pretoria, South Africa",
+    "Lagos, Nigeria",
+    "Abuja, Nigeria",
+    "Nairobi, Kenya",
+    "Mombasa, Kenya",
+    "Casablanca, Morocco",
+    "Marrakech, Morocco",
+    "Rabat, Morocco",
+    "Accra, Ghana",
+    "Kumasi, Ghana",
+    "Addis Ababa, Ethiopia",
+    "Tunis, Tunisia",
+    "Algiers, Algeria",
+    "Dakar, Senegal",
+    "Dar es Salaam, Tanzania",
+    "Kampala, Uganda",
+    "Lusaka, Zambia",
+    "Harare, Zimbabwe",
+    "Kigali, Rwanda",
+    "Windhoek, Namibia",
+    "Gaborone, Botswana",
+    "Maputo, Mozambique",
+    "Libreville, Gabon",
+    "Luanda, Angola",
+    "Antananarivo, Madagascar",
+    "Port Louis, Mauritius",
+    "Victoria, Seychelles",
+    "Tripoli, Libya",
+    "Khartoum, Sudan",
+    "Abidjan, Ivory Coast",
+    "Bamako, Mali",
+    "Ouagadougou, Burkina Faso",
+    "Cotonou, Benin",
+    "Lomé, Togo",
+    "Yaoundé, Cameroon",
+    
+    // South America
+    "São Paulo, Brazil",
+    "Rio de Janeiro, Brazil",
+    "Brasília, Brazil",
+    "Salvador, Brazil",
+    "Recife, Brazil",
+    "Fortaleza, Brazil",
+    "Curitiba, Brazil",
+    "Manaus, Brazil",
+    "Porto Alegre, Brazil",
+    "Buenos Aires, Argentina",
+    "Córdoba, Argentina",
+    "Rosario, Argentina",
+    "Mendoza, Argentina",
+    "Santiago, Chile",
+    "Valparaíso, Chile",
+    "Concepción, Chile",
+    "Lima, Peru",
+    "Cusco, Peru",
+    "Arequipa, Peru",
+    "Bogotá, Colombia",
+    "Medellín, Colombia",
+    "Cali, Colombia",
+    "Cartagena, Colombia",
+    "Caracas, Venezuela",
+    "Maracaibo, Venezuela",
+    "Valencia, Venezuela",
+    "Montevideo, Uruguay",
+    "Punta del Este, Uruguay",
+    "Quito, Ecuador",
+    "Guayaquil, Ecuador",
+    "Asunción, Paraguay",
+    "La Paz, Bolivia",
+    "Santa Cruz, Bolivia",
+    "Georgetown, Guyana",
+    "Paramaribo, Suriname",
+    "Cayenne, French Guiana"
+  ];
+  
+  // State for location suggestions
+  const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
+  
+  // Initialize form data when user data changes
+  useEffect(() => {
+    if (userData) {
+      // Log userData for debugging
+      console.log("Current userData:", userData);
+      
+      // Parse industry and domain from userData.industry if it contains a colon
+      let mainIndustry = '';
+      let domain = '';
+      
+      if (userData.industry && userData.industry.includes(': ')) {
+        const parts = userData.industry.split(': ');
+        mainIndustry = parts[0];
+        domain = parts[1];
+      } else {
+        mainIndustry = userData.industry || '';
+      }
+      
+      setSelectedIndustry(mainIndustry);
+      setSelectedDomain(domain);
+      
+      // Parse job level from title if possible
+      let jobLevel = '';
+      let title = userData.title || '';
+      
+      // Check if the title starts with any of our job levels
+      const jobLevels = ['Senior', 'Junior', 'Director', 'Vice President', 'President', 'Consultant'];
+      for (const level of jobLevels) {
+        if (title.startsWith(level + ' ')) {
+          jobLevel = level;
+          title = title.substring(level.length + 1); // +1 for the space
+          break;
+        }
+      }
+      
+      // Special case for C-level executives
+      const cLevelTitles = [
+        'Chief Executive Officer', 
+        'Chief Operating Officer', 
+        'Chief Financial Officer', 
+        'Chief Technology Officer', 
+        'Chief Marketing Officer'
+      ];
+      
+      for (const cTitle of cLevelTitles) {
+        if (title === cTitle || title.includes(cTitle)) {
+          title = cTitle;
+          break;
+        }
+      }
+      
+      setFormData({
+        name: userData.name || '',
+        title: title,
+        jobLevel: jobLevel,
+        location: userData.location || '',
+        industry: mainIndustry || '',
+        domain: domain || '',
+        lookingFor: userData.lookingFor || ''
+      });
+    }
+  }, [userData]);
+
+  // Handle form input changes
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    
+    // Handle location suggestions
+    if (name === 'location' && value.trim()) {
+      // Filter locations that match the input value
+      const inputValue = value.toLowerCase();
+      
+      // First try exact matches (most relevant)
+      let filtered = popularLocations.filter(location => 
+        location.toLowerCase().includes(inputValue)
+      );
+      
+      // If no exact matches or very few, try fuzzy matching for spelling variations
+      if (filtered.length < 3) {
+        // Try alternative spellings and common misspellings
+        const alternativeMatches = popularLocations.filter(location => {
+          const locationLower = location.toLowerCase();
+          
+          // Handle common spelling variations for major cities
+          if (inputValue.includes('melb') && locationLower.includes('melbourne')) return true;
+          if (inputValue.includes('malb') && locationLower.includes('melbourne')) return true;
+          if (inputValue.includes('syd') && locationLower.includes('sydney')) return true;
+          if (inputValue.includes('bris') && locationLower.includes('brisbane')) return true;
+          if (inputValue.includes('auck') && locationLower.includes('auckland')) return true;
+          if (inputValue.includes('sing') && locationLower.includes('singapore')) return true;
+          if (inputValue.includes('bangl') && locationLower.includes('bangalore')) return true;
+          if (inputValue.includes('bengal') && locationLower.includes('bangalore')) return true;
+          if (inputValue.includes('york') && locationLower.includes('new york')) return true;
+          if (inputValue.includes('angeles') && locationLower.includes('los angeles')) return true;
+          if (inputValue.includes('fran') && locationLower.includes('san francisco')) return true;
+          if (inputValue.includes('tokyo') && locationLower.includes('tokyo')) return true;
+          if (inputValue.includes('dubai') && locationLower.includes('dubai')) return true;
+          
+          return false;
+        });
+        
+        // Combine both sets of results with exact matches first
+        filtered = [...filtered, ...alternativeMatches];
+      }
+      
+      setLocationSuggestions(filtered.slice(0, 10)); // Show up to 10 suggestions
+    } else if (name === 'location' && !value.trim()) {
+      setLocationSuggestions([]);
+    }
+  };
+  
+  // Handle suggestion selection
+  const handleSuggestionSelect = (suggestion: string) => {
+    setFormData(prev => ({
+      ...prev,
+      location: suggestion
+    }));
+    setLocationSuggestions([]);
+  };
+  
+  // Reset suggestions when dialog closes
+  useEffect(() => {
+    if (!showEditBasicInfo) {
+      setLocationSuggestions([]);
+    }
+  }, [showEditBasicInfo]);
+  
+  // Event handler for location suggestion div to prevent bubbling
+  const handleSuggestionClick = (event: React.MouseEvent) => {
+    // Prevent event bubbling to keep dropdown open until selection
+    event.stopPropagation();
+  };
+
+  // Handle form submission
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Combine industry and domain if both are selected
+    const updatedFormData = { ...formData };
+    if (formData.industry && formData.domain) {
+      updatedFormData.industry = `${formData.industry}: ${formData.domain}`;
+    }
+    
+    // Combine job level and title if both are present
+    if (formData.jobLevel && formData.title) {
+      updatedFormData.title = `${formData.jobLevel} ${formData.title}`;
+    }
+    
+    // Log what we're sending to the server
+    console.log("Submitting profile data:", updatedFormData);
+    
+    updateUserMutation.mutate(updatedFormData);
+  };
+
+  // Redirect to landing if not authenticated
+  if (!isLoading && !isAuthenticated) {
+    setLocation('/');
+    return null;
+  }
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-lg">Loading...</p>
+      </div>
+    );
+  }
+
+  // Handle profile picture update
+  const handleProfilePictureUpdate = (base64Image: string) => {
+    profilePictureMutation.mutate(base64Image);
+  };
+  
+  return (
+    <div className="min-h-screen flex flex-col">
+      {/* Profile Picture Dialog */}
+      <ProfilePictureDialog 
+        open={showProfilePictureDialog}
+        onOpenChange={setShowProfilePictureDialog}
+        currentPhotoURL={userData?.photoURL || user?.photoURL}
+        onSave={handleProfilePictureUpdate}
+      />
+      
+      {/* Edit Basic Info Dialog */}
+      <Dialog open={showEditBasicInfo} onOpenChange={setShowEditBasicInfo}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Edit Profile Info</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit}>
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label htmlFor="name">Name</Label>
+                <Input
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  placeholder="Your name"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="title">Job Title</Label>
+                <div className="flex gap-2">
+                  <div className="w-1/3">
+                    <Select
+                      value={formData.jobLevel}
+                      onValueChange={(value) => {
+                        setFormData(prev => ({
+                          ...prev,
+                          jobLevel: value
+                        }));
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Level" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Fresher">Fresher</SelectItem>
+                        <SelectItem value="Student">Student</SelectItem>
+                        <SelectItem value="Junior">Junior</SelectItem>
+                        <SelectItem value="Senior">Senior</SelectItem>
+                        <SelectItem value="Consultant">Consultant</SelectItem>
+                        <SelectItem value="Director">Director</SelectItem>
+                        <SelectItem value="Vice President">Vice President</SelectItem>
+                        <SelectItem value="President">President</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="w-2/3">
+                    <JobTitleCombobox
+                      value={formData.title || ''}
+                      onChange={(value) => setFormData({ ...formData, title: value })}
+                      placeholder="Select or type your job title"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="grid gap-2 relative">
+                <Label htmlFor="location">Location</Label>
+                <Input
+                  id="location"
+                  name="location"
+                  value={formData.location}
+                  onChange={handleInputChange}
+                  placeholder="Your location"
+                  autoComplete="off"
+                />
+                {locationSuggestions.length > 0 && (
+                  <div 
+                    className="absolute top-full left-0 right-0 z-10 bg-white border border-gray-200 rounded-md shadow-md mt-1 max-h-60 overflow-auto"
+                    onClick={handleSuggestionClick}
+                  >
+                    {locationSuggestions.map((suggestion, index) => (
+                      <div 
+                        key={index}
+                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                        onClick={() => handleSuggestionSelect(suggestion)}
+                      >
+                        {suggestion}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="industry">Industry</Label>
+                <Select
+                  value={formData.industry}
+                  onValueChange={(value) => {
+                    setSelectedIndustry(value);
+                    setSelectedDomain('');
+                    setFormData(prev => ({
+                      ...prev,
+                      industry: value,
+                      domain: ''
+                    }));
+                  }}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select your industry" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-80">
+                    {INDUSTRIES.map((industry) => (
+                      <SelectItem key={industry} value={industry}>
+                        {industry}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {/* Domain selector - only show when an industry is selected */}
+              {formData.industry && (
+                <div className="grid gap-2">
+                  <Label htmlFor="domain">Specific Domain</Label>
+                  <Select
+                    value={formData.domain}
+                    onValueChange={(value) => {
+                      setSelectedDomain(value);
+                      setFormData(prev => ({
+                        ...prev,
+                        domain: value
+                      }));
+                    }}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select your domain" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-80">
+                      {INDUSTRY_DOMAINS[formData.industry]?.map((domain: string) => (
+                        <SelectItem key={domain} value={domain}>
+                          {domain}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+              <div className="grid gap-2">
+                <Label htmlFor="lookingFor">I am looking for</Label>
+                <Select
+                  value={formData.lookingFor}
+                  onValueChange={(value) => {
+                    setFormData(prev => ({
+                      ...prev,
+                      lookingFor: value
+                    }));
+                  }}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="What are you looking for?" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-80">
+                    <SelectGroup>
+                      <SelectLabel>Career & Job Seeking</SelectLabel>
+                      {LOOKING_FOR_CATEGORIES.filter(cat => cat.label.includes("💼")).map(category => (
+                        <SelectItem key={category.value} value={category.value}>
+                          {category.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                    <SelectSeparator />
+                    <SelectGroup>
+                      <SelectLabel>Business & Investment</SelectLabel>
+                      {LOOKING_FOR_CATEGORIES.filter(cat => cat.label.includes("🚀")).map(category => (
+                        <SelectItem key={category.value} value={category.value}>
+                          {category.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                    <SelectSeparator />
+                    <SelectGroup>
+                      <SelectLabel>Learning & Upskilling</SelectLabel>
+                      {LOOKING_FOR_CATEGORIES.filter(cat => cat.label.includes("🎓")).map(category => (
+                        <SelectItem key={category.value} value={category.value}>
+                          {category.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                    <SelectSeparator />
+                    <SelectGroup>
+                      <SelectLabel>Networking & Collaborations</SelectLabel>
+                      {LOOKING_FOR_CATEGORIES.filter(cat => cat.label.includes("🤝")).map(category => (
+                        <SelectItem key={category.value} value={category.value}>
+                          {category.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                    <SelectSeparator />
+                    <SelectGroup>
+                      <SelectLabel>Freelance & Side Hustle</SelectLabel>
+                      {LOOKING_FOR_CATEGORIES.filter(cat => cat.label.includes("💰")).map(category => (
+                        <SelectItem key={category.value} value={category.value}>
+                          {category.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setShowEditBasicInfo(false)}
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="submit"
+                disabled={updateUserMutation.isPending}
+              >
+                {updateUserMutation.isPending ? 'Saving...' : 'Save Changes'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Top Navigation */}
+      <Header />
+
+      {/* Main Content */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Sidebar */}
+        <Sidebar activePage="profile" />
+
+        {/* Center content */}
+        <div className="flex-1 overflow-auto p-6 bg-gray-50">
+          <div className="mx-auto max-w-3xl">
+            <div className="flex items-center justify-between mb-6">
+              <h1 className="text-2xl font-semibold text-gray-900">Profile</h1>
+              <div className="text-right">
+                <p className="text-sm text-gray-500">Profile Completion</p>
+                <div className="flex items-center mt-1">
+                  <div className="w-36 bg-gray-200 rounded-full h-2.5 mr-2">
+                    <div id="profile-completion-bar" className="bg-primary h-2.5 rounded-full" style={{ width: '65%' }}></div>
+                  </div>
+                  <span className="text-sm font-medium text-gray-900">65%</span>
+                </div>
+              </div>
+            </div>
+            
+            {/* Profile Header */}
+            <Card className="mb-6 overflow-hidden">
+              <div className="h-32 bg-gradient-to-r from-primary to-purple-600"></div>
+              <CardContent className="relative pt-16 pb-4">
+                <div className="absolute -top-16 left-1/2 sm:left-6 transform -translate-x-1/2 sm:translate-x-0">
+                  <div className="relative group">
+                    <div className="h-24 w-24 overflow-hidden rounded-full bg-white ring-4 ring-white flex items-center justify-center">
+                      <img 
+                        className="h-full w-full object-cover" 
+                        src={userData?.photoURL || user?.photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
+                        alt="User profile"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
+                        }}
+                      />
+                    </div>
+                    <button 
+                      onClick={() => setShowProfilePictureDialog(true)}
+                      className="absolute bottom-0 right-0 bg-primary hover:bg-primary/90 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      aria-label="Change profile picture"
+                    >
+                      <Camera size={16} />
+                    </button>
+                  </div>
+                </div>
+                <div className="pl-0 sm:pl-32 mt-12 sm:mt-2">
+                  <div className="flex justify-between items-center group">
+                    <h2 className="text-xl text-gray-900">
+                      Hey there! <span className="font-bold text-2xl text-primary">{userData?.name || user?.name || 'User'}</span> here,
+                    </h2>
+                    <button 
