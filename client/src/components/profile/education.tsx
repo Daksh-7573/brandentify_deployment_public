@@ -633,11 +633,14 @@ export default function Education() {
                     <FormLabel>Degree*</FormLabel>
                     <FormControl>
                       <DegreeCombobox
-                        value={field.value}
+                        value={field.value || ""}
                         onChange={field.onChange}
                         placeholder="Type or select a degree"
                       />
                     </FormControl>
+                    <FormDescription>
+                      Type to filter suggestions (e.g., "bach" for Bachelor degrees)
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}

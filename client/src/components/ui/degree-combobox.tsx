@@ -1,13 +1,10 @@
 import * as React from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
 
 export interface DegreeComboboxProps {
   value: string;
@@ -47,90 +44,92 @@ const DEGREE_OPTIONS = [
   "Diploma",
   "Certificate",
   "High School Diploma",
-  "Associate Degree",
-  "Other",
-  "Other Custom..." // Special option for custom entry
+  "Associate Degree"
 ];
 
 export function DegreeCombobox({
   value,
   onChange,
-  placeholder = "Select a degree",
+  placeholder = "Type to search degrees...",
   className,
   disabled = false
 }: DegreeComboboxProps) {
-  const [showCustomInput, setShowCustomInput] = React.useState(false);
-  const [customValue, setCustomValue] = React.useState("");
+  const [open, setOpen] = React.useState(false);
+  const [inputValue, setInputValue] = React.useState(value);
   
-  // Check if value is in predefined options
-  const isCustomValue = !DEGREE_OPTIONS.includes(value) && value !== "";
-  
-  // Initialize custom input state if value is custom
-  React.useEffect(() => {
-    if (isCustomValue) {
-      setShowCustomInput(true);
-      setCustomValue(value);
-    }
-  }, [isCustomValue, value]);
+  // Filter the options based on input value
+  const filteredOptions = DEGREE_OPTIONS.filter(
+    option => option.toLowerCase().includes(inputValue.toLowerCase())
+  );
 
-  const handleSelectChange = (newValue: string) => {
-    if (newValue === "Other Custom...") {
-      // Switch to custom input mode
-      setShowCustomInput(true);
-      setCustomValue("");
-    } else {
-      // Standard selection
-      onChange(newValue);
-      setShowCustomInput(false);
-    }
+  // Handle selection from dropdown
+  const handleSelect = (currentValue: string) => {
+    // If user selects the same value that's already selected, clear it
+    setInputValue(currentValue);
+    onChange(currentValue);
+    setOpen(false);
   };
-
-  const handleCustomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  
+  // When value changes from outside, update the input value
+  React.useEffect(() => {
+    setInputValue(value);
+  }, [value]);
+  
+  // Handle input change directly (for custom entry)
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
-    setCustomValue(newValue);
+    setInputValue(newValue);
     onChange(newValue);
   };
 
   return (
-    <div className={className}>
-      {showCustomInput ? (
-        <div className="flex gap-2">
-          <Input
-            value={customValue}
-            onChange={handleCustomInputChange}
-            placeholder="Enter custom degree"
-            disabled={disabled}
-            className="flex-1"
-          />
-          <button 
-            onClick={() => {
-              setShowCustomInput(false);
-              onChange("");
-            }}
-            className="px-3 py-2 rounded border border-gray-300 hover:bg-gray-50"
-            type="button"
+    <div className={cn("relative w-full", className)}>
+      <Input
+        disabled={disabled}
+        placeholder={placeholder}
+        value={inputValue}
+        onChange={handleInputChange}
+        onFocus={() => setOpen(true)}
+        className="w-full"
+      />
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            className="absolute inset-y-0 right-0 flex items-center px-2 opacity-50"
+            onClick={() => setOpen(!open)}
+            tabIndex={-1}
           >
-            Cancel
-          </button>
-        </div>
-      ) : (
-        <Select 
-          value={isCustomValue ? undefined : (value || undefined)}
-          onValueChange={handleSelectChange}
-          disabled={disabled}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder={placeholder} />
-          </SelectTrigger>
-          <SelectContent>
-            {DEGREE_OPTIONS.map((degree) => (
-              <SelectItem key={degree} value={degree}>
-                {degree}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      )}
+            <ChevronsUpDown className="h-4 w-4 shrink-0" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
+          <Command>
+            <CommandInput placeholder="Search degrees..." className="h-9" value={inputValue} onValueChange={setInputValue} />
+            <CommandEmpty>No degree found. You can use your custom entry.</CommandEmpty>
+            <CommandGroup className="max-h-[300px] overflow-auto">
+              {filteredOptions.map((option) => (
+                <CommandItem
+                  key={option}
+                  value={option}
+                  onSelect={() => handleSelect(option)}
+                  className="flex items-center"
+                >
+                  <Check
+                    className={cn(
+                      "mr-2 h-4 w-4",
+                      option === value ? "opacity-100" : "opacity-0"
+                    )}
+                  />
+                  {option}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </Command>
+        </PopoverContent>
+      </Popover>
     </div>
   );
 }
