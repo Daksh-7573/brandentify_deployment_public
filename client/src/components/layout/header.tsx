@@ -6,7 +6,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useState, useEffect } from "react";
 
 export default function Header() {
-  const { user, isDemoMode, signOut } = useAuth();
+  const { user, isDemoMode, signOut, refreshUserData } = useAuth();
   const [_, setLocation] = useLocation();
   const [userData, setUserData] = useState<any>(null);
 
@@ -15,8 +15,15 @@ export default function Header() {
     const fetchUserData = async () => {
       if (user?.uid) {
         try {
-          const userId = isDemoMode ? 1 : user.uid;
+          // For demo mode, use numeric ID; for regular users use their actual UID string
+          const userId = isDemoMode ? 1 : user.uid; 
           const response = await apiRequest('GET', `/api/users/${userId}`);
+          
+          if (response.status === 404) {
+            console.log(`User with ID ${userId} not found in backend`);
+            return;
+          }
+          
           const data = await response.json();
           setUserData(data);
         } catch (error) {

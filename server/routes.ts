@@ -162,8 +162,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   apiRouter.get("/users/:id", async (req: Request, res: Response) => {
     try {
-      const userId = parseInt(req.params.id);
-      const user = await storage.getUser(userId);
+      // Try to parse as integer for numeric IDs
+      // If it fails (NaN), it might be a Firebase UID
+      const idParam = req.params.id;
+      const userId = parseInt(idParam);
+      
+      let user;
+      
+      if (isNaN(userId)) {
+        // If it's not a number, check by username (which we use for Firebase UIDs)
+        user = await storage.getUserByUsername(idParam);
+      } else {
+        // If it's a valid number, get by ID
+        user = await storage.getUser(userId);
+      }
       
       if (!user) {
         return res.status(404).json({ message: "User not found" });
@@ -171,23 +183,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(user);
     } catch (error) {
+      console.error("Error fetching user:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   });
 
   apiRouter.put("/users/:id", async (req: Request, res: Response) => {
     try {
-      const userId = parseInt(req.params.id);
+      // Try to parse as integer for numeric IDs
+      // If it fails (NaN), it might be a Firebase UID
+      const idParam = req.params.id;
+      const userId = parseInt(idParam);
       const userData = req.body;
       
-      const user = await storage.getUser(userId);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
+      let user;
+      let updatedUser;
+      
+      if (isNaN(userId)) {
+        // If it's not a number, check by username (which we use for Firebase UIDs)
+        user = await storage.getUserByUsername(idParam);
+        if (!user) {
+          return res.status(404).json({ message: "User not found" });
+        }
+        
+        updatedUser = await storage.updateUser(user.id, userData);
+      } else {
+        // If it's a valid number, get by ID
+        user = await storage.getUser(userId);
+        if (!user) {
+          return res.status(404).json({ message: "User not found" });
+        }
+        
+        updatedUser = await storage.updateUser(userId, userData);
       }
       
-      const updatedUser = await storage.updateUser(userId, userData);
       res.json(updatedUser);
     } catch (error) {
+      console.error("Error updating user:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   });

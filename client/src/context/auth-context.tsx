@@ -431,7 +431,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.log("Manually fetching all profile data using direct API requests");
         
         // Convert user ID to number for API calls (if it's a Firebase UID, use 0 as placeholder)
-        const numericUserId = isDemoMode ? 1 : parseInt(userId) || 0;
+        const numericUserId = isDemoMode ? 1 : (userId && typeof userId === 'string' ? parseInt(userId) || 0 : 0);
         
         // Add manual fetch to ensure we get the latest data
         const experiencesResponse = await fetch(`/api/users/${numericUserId}/experiences`, {
