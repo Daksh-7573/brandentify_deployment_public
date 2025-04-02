@@ -1077,6 +1077,8 @@ export default function WorkExperience() {
                     />
                   </PopoverContent>
                 </Popover>
+                {/* Empty space to match start date error message height */}
+                <p className="text-sm text-transparent h-5">Placeholder</p>
               </div>
             </div>
             
@@ -1309,6 +1311,8 @@ export default function WorkExperience() {
                     />
                   </PopoverContent>
                 </Popover>
+                {/* Empty space to match start date error message height */}
+                <p className="text-sm text-transparent h-5">Placeholder</p>
               </div>
             </div>
             
