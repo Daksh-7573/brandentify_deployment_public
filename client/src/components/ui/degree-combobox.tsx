@@ -13,28 +13,6 @@ export interface DegreeComboboxProps {
   disabled?: boolean;
 }
 
-// Get degrees from local storage or use default list
-const getStoredDegrees = (): string[] => {
-  try {
-    const stored = localStorage.getItem('degreeSuggestions');
-    if (stored) {
-      return JSON.parse(stored);
-    }
-  } catch (error) {
-    console.error("Error loading stored degrees:", error);
-  }
-  return DEFAULT_DEGREES;
-};
-
-// Save degrees to local storage
-const saveDegrees = (degrees: string[]) => {
-  try {
-    localStorage.setItem('degreeSuggestions', JSON.stringify(degrees));
-  } catch (error) {
-    console.error("Error saving degrees:", error);
-  }
-};
-
 // Common degree options that will be used as default suggestions
 const DEFAULT_DEGREES = [
   // Bachelor Degrees
@@ -134,65 +112,58 @@ export function DegreeCombobox({
   disabled = false
 }: DegreeComboboxProps) {
   const [open, setOpen] = useState(false);
-  const [degrees, setDegrees] = useState<string[]>(() => getStoredDegrees());
-  const [filteredDegrees, setFilteredDegrees] = useState<string[]>(degrees);
-  const [inputValue, setInputValue] = useState("");
-  const [showAddNew, setShowAddNew] = useState(false);
-
-  // Filter degrees based on search value
-  useEffect(() => {
-    if (!inputValue) {
-      setFilteredDegrees(degrees);
-      setShowAddNew(false);
-      return;
+  const [searchTerm, setSearchTerm] = useState("");
+  
+  // Get all custom degrees from localStorage
+  const getCustomDegrees = (): string[] => {
+    try {
+      const customDegrees = localStorage.getItem("customDegrees");
+      return customDegrees ? JSON.parse(customDegrees) : [];
+    } catch (error) {
+      console.error("Error getting custom degrees:", error);
+      return [];
     }
-
-    const filtered = degrees.filter(
-      degree => degree.toLowerCase().includes(inputValue.toLowerCase())
-    );
-    
-    setFilteredDegrees(filtered);
-    
-    // Only show "Add New" if it's not an exact match and has at least 3 characters
-    const hasExactMatch = degrees.some(
-      degree => degree.toLowerCase() === inputValue.toLowerCase()
-    );
-    
-    setShowAddNew(!hasExactMatch && inputValue.length >= 3);
-  }, [inputValue, degrees]);
-
-  // Add a new degree to the list
-  const addNewDegree = () => {
-    if (!inputValue.trim() || degrees.includes(inputValue)) return;
-    
-    const newDegrees = [...degrees, inputValue];
-    setDegrees(newDegrees);
-    saveDegrees(newDegrees);
-    
-    // Set the value and close the popover
-    onChange(inputValue);
-    setOpen(false);
   };
-
-  // Handle direct selection of a degree from the list
-  const handleSelect = (currentValue: string) => {
-    // For the "Add New" option
-    if (currentValue === `add-${inputValue}`) {
-      addNewDegree();
-      return;
+  
+  // All degrees (default + custom)
+  const allDegrees = [...DEFAULT_DEGREES, ...getCustomDegrees()];
+  
+  // Filtered degrees based on search term
+  const filteredDegrees = searchTerm === "" 
+    ? allDegrees 
+    : allDegrees.filter(degree => 
+        degree.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+  
+  // Save a custom degree
+  const saveCustomDegree = (newDegree: string) => {
+    try {
+      const existingCustomDegrees = getCustomDegrees();
+      if (!existingCustomDegrees.includes(newDegree) && 
+          !DEFAULT_DEGREES.includes(newDegree)) {
+        const updatedDegrees = [...existingCustomDegrees, newDegree];
+        localStorage.setItem("customDegrees", JSON.stringify(updatedDegrees));
+      }
+    } catch (error) {
+      console.error("Error saving custom degree:", error);
     }
-    
-    // For selecting an existing degree
-    onChange(currentValue);
-    setOpen(false);
   };
-
-  // Handle custom entry by pressing Enter
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && showAddNew) {
-      e.preventDefault();
-      addNewDegree();
+  
+  // Check if we should show the "Add new" option
+  const showAddNew = 
+    searchTerm.length >= 3 && 
+    !allDegrees.some(d => d.toLowerCase() === searchTerm.toLowerCase());
+  
+  // Handle selecting an item
+  const onSelect = (selectedValue: string) => {
+    if (selectedValue === "add-new") {
+      // Save the custom degree
+      saveCustomDegree(searchTerm);
+      onChange(searchTerm);
+    } else {
+      onChange(selectedValue);
     }
+    setOpen(false);
   };
 
   return (
@@ -210,49 +181,46 @@ export function DegreeCombobox({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
-        <Command onKeyDown={handleKeyDown}>
+        <Command>
           <CommandInput 
             placeholder="Search or type a degree..." 
-            value={inputValue}
-            onValueChange={setInputValue}
-            className="h-9"
+            value={searchTerm}
+            onValueChange={setSearchTerm}
           />
           <CommandEmpty>
             {showAddNew ? (
-              <div className="py-2 px-1">
-                <p className="text-sm text-muted-foreground">No matches found</p>
+              <div className="px-2 py-1 text-sm">
+                Type Enter to add this degree
               </div>
             ) : (
-              <div className="py-2 px-1">
-                <p className="text-sm text-muted-foreground">No degree found. Type to add custom degree.</p>
+              <div className="px-2 py-1 text-sm">
+                No degree found
               </div>
             )}
           </CommandEmpty>
-          <CommandGroup className="max-h-64 overflow-y-auto">
+          <CommandGroup className="max-h-60 overflow-y-auto">
             {showAddNew && (
               <CommandItem
-                key="add-new"
-                value={`add-${inputValue}`}
-                onSelect={() => handleSelect(`add-${inputValue}`)}
-                className="text-blue-500 font-medium"
+                onSelect={() => onSelect("add-new")}
+                className="cursor-pointer text-blue-500"
               >
                 <Plus className="mr-2 h-4 w-4" />
-                Add "{inputValue}"
+                Add "{searchTerm}"
               </CommandItem>
             )}
             {filteredDegrees.map((degree) => (
               <CommandItem
                 key={degree}
-                value={degree}
-                onSelect={() => handleSelect(degree)}
+                onSelect={() => onSelect(degree)}
+                className="cursor-pointer"
               >
-                <Check
-                  className={cn(
-                    "mr-2 h-4 w-4",
-                    value === degree ? "opacity-100" : "opacity-0"
+                <div className="flex items-center">
+                  {value === degree && (
+                    <Check className="mr-2 h-4 w-4 text-green-500" />
                   )}
-                />
-                {degree}
+                  {value !== degree && <span className="mr-2 w-4" />}
+                  {degree}
+                </div>
               </CommandItem>
             ))}
           </CommandGroup>
