@@ -430,8 +430,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         console.log("Manually fetching all profile data using direct API requests");
         
+        // First, let's try to get the user's profile data directly
+        try {
+          const userResponse = await fetch(`/api/users/${userId}`, {
+            method: 'GET',
+            headers: { 'Cache-Control': 'no-cache, no-store' }
+          });
+          
+          // If the user is found, update the cache
+          if (userResponse.ok) {
+            const userData = await userResponse.json();
+            console.log(`Successfully fetched user data:`, userData);
+            
+            // Update the user data cache
+            queryClient.setQueryData([`/api/users/${userId}`], userData);
+          } else {
+            console.error(`Failed to fetch user data for ID ${userId}:`, userResponse.statusText);
+          }
+        } catch (userFetchError) {
+          console.error("Error fetching user profile data:", userFetchError);
+        }
+        
+        // For other data, use numeric user ID
         // Convert user ID to number for API calls (if it's a Firebase UID, use 0 as placeholder)
-        const numericUserId = isDemoMode ? 1 : (userId && typeof userId === 'string' ? parseInt(userId) || 0 : 0);
+        const numericUserId = isDemoMode ? 1 : 0;
         
         // Add manual fetch to ensure we get the latest data
         const experiencesResponse = await fetch(`/api/users/${numericUserId}/experiences`, {

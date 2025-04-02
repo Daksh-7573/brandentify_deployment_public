@@ -3,13 +3,13 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { toast } from "@/hooks/use-toast";
 import { User } from "@shared/schema";
 
-export function useProfilePicture(userId: number = 1) {
+export function useProfilePicture(userId: number | string = 1) {
   // Mutation for updating the profile picture
   return useMutation({
     mutationFn: async (base64Image: string) => {
       console.log(`Updating profile picture for user ID: ${userId}`);
       // Ensure we have a valid user ID
-      if (!userId || userId === 0) {
+      if (!userId || (typeof userId === 'number' && userId === 0)) {
         throw new Error("Invalid user ID. Please log in again.");
       }
       

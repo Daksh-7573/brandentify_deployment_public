@@ -13,18 +13,21 @@ export default function Header() {
   // Fetch the latest user data
   useEffect(() => {
     const fetchUserData = async () => {
-      if (user?.uid) {
+      if (user?.uid || isDemoMode) {
         try {
           // For demo mode, use numeric ID; for regular users use their actual UID string
-          const userId = isDemoMode ? 1 : user.uid; 
+          const userId = isDemoMode ? 1 : user?.uid; 
+          
+          console.log(`Fetching user data for header with ID: ${userId}`);
           const response = await apiRequest('GET', `/api/users/${userId}`);
           
           if (response.status === 404) {
-            console.log(`User with ID ${userId} not found in backend`);
+            console.error(`User with ID ${userId} not found in backend`);
             return;
           }
           
           const data = await response.json();
+          console.log("Fetched user data for header:", data);
           setUserData(data);
         } catch (error) {
           console.error("Error fetching user data for header:", error);

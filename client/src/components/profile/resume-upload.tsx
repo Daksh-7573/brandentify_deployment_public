@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -7,50 +6,9 @@ import { useAuth } from "@/hooks/use-auth";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Loader2, Check, X } from "lucide-react";
-import { Dialog, DialogContent, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-// Define types for parsed resume data
-type ParsedExperience = {
-  title: string;
-  company: string;
-  location: string | null;
-  startDate: string;
-  endDate: string | null;
-  description: string | null;
-};
-
-type ParsedEducation = {
-  degree: string;
-  institution: string;
-  location: string | null;
-  startDate: string;
-  endDate: string | null;
-};
-
-type ParsedSkill = {
-  name: string;
-  level: string;
-  proficiency: number | null;
-};
-
-type ParsedResumeData = {
-  title?: string;
-  location?: string;
-  experiences: ParsedExperience[];
-  educations: ParsedEducation[];
-  skills: ParsedSkill[];
-  counts: {
-    experiences: number;
-    educations: number;
-    skills: number;
-  };
-  status: string;
-  message: string;
-};
+import { Loader2 } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { ProfileReviewDialog, ParsedProfileData } from "./profile-review-dialog";
 
 export default function ResumeUpload() {
   const [isUploading, setIsUploading] = useState(false);
@@ -58,7 +16,7 @@ export default function ResumeUpload() {
   const [isConfirming, setIsConfirming] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [extractProfileData, setExtractProfileData] = useState(true);
-  const [parsedData, setParsedData] = useState<ParsedResumeData | null>(null);
+  const [parsedData, setParsedData] = useState<ParsedProfileData | null>(null);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   
   const { toast } = useToast();
@@ -289,7 +247,7 @@ export default function ResumeUpload() {
           <h2 className="text-lg font-medium text-gray-900 mb-4">Resume</h2>
           <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary transition-colors">
             <div className="flex flex-col items-center">
-              <i className="fas fa-file-upload text-4xl text-gray-400 mb-4"></i>
+              <Loader2 className="h-10 w-10 text-gray-400 mb-4" />
               <p className="text-sm text-gray-500 mb-2">
                 {file ? `Selected file: ${file.name}` : "Drag and drop your resume here or click to browse"}
               </p>
@@ -362,148 +320,16 @@ export default function ResumeUpload() {
         </CardContent>
       </Card>
 
-      {/* Confirmation Dialog */}
-      <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <DialogContent className="sm:max-w-3xl">
-          <DialogTitle>Confirm Resume Data</DialogTitle>
-          <DialogDescription>
-            Please review the information extracted from your resume. This data will replace your current profile information.
-          </DialogDescription>
-
-          {parsedData && (
-            <div className="mt-4">
-              {/* Title and Location */}
-              {(parsedData.title || parsedData.location) && (
-                <div className="mb-4">
-                  <h3 className="text-sm font-medium text-gray-500 mb-2">Basic Information</h3>
-                  {parsedData.title && (
-                    <p className="text-sm"><span className="font-medium">Position:</span> {parsedData.title}</p>
-                  )}
-                  {parsedData.location && (
-                    <p className="text-sm"><span className="font-medium">Location:</span> {parsedData.location}</p>
-                  )}
-                </div>
-              )}
-
-              <Tabs defaultValue="experience" className="mt-4">
-                <TabsList className="grid grid-cols-3 mb-4">
-                  <TabsTrigger value="experience">
-                    Work Experience {parsedData.counts.experiences > 0 && <Badge variant="secondary" className="ml-2">{parsedData.counts.experiences}</Badge>}
-                  </TabsTrigger>
-                  <TabsTrigger value="education">
-                    Education {parsedData.counts.educations > 0 && <Badge variant="secondary" className="ml-2">{parsedData.counts.educations}</Badge>}
-                  </TabsTrigger>
-                  <TabsTrigger value="skills">
-                    Skills {parsedData.counts.skills > 0 && <Badge variant="secondary" className="ml-2">{parsedData.counts.skills}</Badge>}
-                  </TabsTrigger>
-                </TabsList>
-                
-                {/* Experience Tab */}
-                <TabsContent value="experience">
-                  {parsedData.experiences.length === 0 ? (
-                    <Alert>
-                      <AlertDescription>No work experience could be extracted from your resume.</AlertDescription>
-                    </Alert>
-                  ) : (
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Title</TableHead>
-                          <TableHead>Company</TableHead>
-                          <TableHead>Location</TableHead>
-                          <TableHead>Duration</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {parsedData.experiences.map((exp, index) => (
-                          <TableRow key={index}>
-                            <TableCell className="font-medium">{exp.title}</TableCell>
-                            <TableCell>{exp.company}</TableCell>
-                            <TableCell>{exp.location || 'N/A'}</TableCell>
-                            <TableCell>
-                              {exp.startDate} {exp.endDate ? `- ${exp.endDate}` : '- Present'}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  )}
-                </TabsContent>
-                
-                {/* Education Tab */}
-                <TabsContent value="education">
-                  {parsedData.educations.length === 0 ? (
-                    <Alert>
-                      <AlertDescription>No education details could be extracted from your resume.</AlertDescription>
-                    </Alert>
-                  ) : (
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Degree</TableHead>
-                          <TableHead>Institution</TableHead>
-                          <TableHead>Location</TableHead>
-                          <TableHead>Duration</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {parsedData.educations.map((edu, index) => (
-                          <TableRow key={index}>
-                            <TableCell className="font-medium">{edu.degree}</TableCell>
-                            <TableCell>{edu.institution}</TableCell>
-                            <TableCell>{edu.location || 'N/A'}</TableCell>
-                            <TableCell>
-                              {edu.startDate} {edu.endDate ? `- ${edu.endDate}` : '- Present'}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  )}
-                </TabsContent>
-                
-                {/* Skills Tab */}
-                <TabsContent value="skills">
-                  {parsedData.skills.length === 0 ? (
-                    <Alert>
-                      <AlertDescription>No skills could be extracted from your resume.</AlertDescription>
-                    </Alert>
-                  ) : (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                      {parsedData.skills.map((skill, index) => (
-                        <Badge key={index} variant="outline" className="p-2 justify-between">
-                          <span>{skill.name}</span>
-                          {skill.level && <span className="ml-2 text-xs bg-gray-100 text-gray-700 px-1 rounded">{skill.level}</span>}
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
-                </TabsContent>
-              </Tabs>
-            </div>
-          )}
-
-          <DialogFooter className="gap-2 sm:gap-0 mt-4">
-            <Button variant="outline" onClick={cancelConfirmation} disabled={isConfirming}>
-              <X className="w-4 h-4 mr-2" />
-              Cancel
-            </Button>
-            <Button onClick={confirmAndSaveData} disabled={isConfirming}>
-              {isConfirming ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <Check className="w-4 h-4 mr-2" />
-                  Save to Profile
-                </>
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Use the ProfileReviewDialog component */}
+      <ProfileReviewDialog 
+        open={showConfirmDialog}
+        onOpenChange={setShowConfirmDialog}
+        parsedData={parsedData}
+        onConfirm={confirmAndSaveData}
+        onCancel={cancelConfirmation}
+        isConfirming={isConfirming}
+        source="resume"
+      />
     </>
   );
 }

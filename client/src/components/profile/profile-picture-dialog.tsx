@@ -8,7 +8,7 @@ import { ProfileUpload } from "./profile-upload";
 import { useProfilePicture } from "@/hooks/use-profile-picture";
 
 interface ProfilePictureDialogProps {
-  userId?: number; // Optional userId, will use hook's default if not provided
+  userId?: number | string; // Optional userId, will use hook's default if not provided
   open: boolean;
   onOpenChange: (open: boolean) => void;
   currentPhotoURL?: string | null;
