@@ -29,7 +29,8 @@ type WorkExperienceItem = {
 
 export default function WorkExperience() {
   const { user, isDemoMode } = useAuth();
-  const userId = isDemoMode ? 1 : (user?.uid ? parseInt(user.uid) : 1);
+  // Use the UID directly as a string instead of trying to parse it as an integer
+  const userId = isDemoMode ? 1 : (user?.uid || "");
   
   // Fetch work experiences from the API with advanced options
   const { data: serverExperiences, isLoading, refetch } = useQuery({
@@ -156,11 +157,15 @@ export default function WorkExperience() {
         }
       }
       
-      // Add userId to the experience if it's not already there
+      // Add userId to the experience
+      // For Firebase users, this will be a string UID, for demo users it will be a number
       const experienceToSave = {
         ...newExperience,
         userId: userId
       };
+      
+      console.log("Saving experience with userId:", userId);
+      console.log("Experience data to save:", experienceToSave);
       
       let response;
       let successMessage;
