@@ -16,6 +16,9 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
+// Log that the file is loading
+console.log("WORK EXPERIENCE FORM VERSION: 2023-04-02-v3 - USING TEXT INPUT FOR INDUSTRY");
+
 type WorkExperienceItem = {
   id: number;
   userId: number;
