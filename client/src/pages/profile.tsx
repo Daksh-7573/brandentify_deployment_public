@@ -5,7 +5,6 @@ import Header from "@/components/layout/header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import WorkExperience from "@/components/profile/work-experience-new";
 import Education from "@/components/profile/education-new";
 import Skills from "@/components/profile/skills";
 // Removed Resume and LinkedIn import components
@@ -1614,9 +1613,6 @@ export default function Profile() {
             </Card>
             
             {/* Profile Import Options section removed */}
-            
-            {/* Work Experience */}
-            <WorkExperience />
             
             {/* Education */}
             <Education />
