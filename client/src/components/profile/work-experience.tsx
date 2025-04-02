@@ -15,6 +15,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { IndustrySelector } from "./industry-selector";
 
 type WorkExperienceItem = {
   id: number;
@@ -119,6 +120,8 @@ export default function WorkExperience() {
     setEndDate(undefined);
   };
   
+  const { toast } = useToast();
+
   const handleSaveExperience = async () => {
     try {
       // Validate form - require title, company, industry, and start date
@@ -325,8 +328,6 @@ export default function WorkExperience() {
     return dateB.localeCompare(dateA); // Reverse order for newest first
   });
 
-  const { toast } = useToast();
-
   return (
     <>
       <Card className="mb-6">
@@ -405,6 +406,7 @@ export default function WorkExperience() {
                 required
               />
             </div>
+            
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="company" className="text-right">
                 Company*
@@ -419,48 +421,11 @@ export default function WorkExperience() {
               />
             </div>
             
-            {/* CRITICAL FIELD: Industry selection */}
-            <div className="rounded-md p-3 mt-2 mb-4 border-2 border-blue-300 bg-blue-50">
-              <h3 className="font-bold text-blue-800 mb-2 text-center">Industry Selection*</h3>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="industry" className="text-right font-bold text-blue-800">
-                  Select:
-                </Label>
-                <div className="col-span-3">
-                  <Select
-                    value={newExperience.industry}
-                    onValueChange={(value) => setNewExperience({...newExperience, industry: value})}
-                  >
-                    <SelectTrigger id="industry" className="w-full bg-white border-blue-400 shadow-sm">
-                      <SelectValue placeholder="Choose an industry category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Technology">Technology</SelectItem>
-                      <SelectItem value="Healthcare">Healthcare</SelectItem>
-                      <SelectItem value="Finance">Finance</SelectItem>
-                      <SelectItem value="Education">Education</SelectItem>
-                      <SelectItem value="Manufacturing">Manufacturing</SelectItem>
-                      <SelectItem value="Retail">Retail</SelectItem>
-                      <SelectItem value="Media">Media</SelectItem>
-                      <SelectItem value="Consulting">Consulting</SelectItem>
-                      <SelectItem value="Government">Government</SelectItem>
-                      <SelectItem value="Non-profit">Non-profit</SelectItem>
-                      <SelectItem value="Entertainment">Entertainment</SelectItem>
-                      <SelectItem value="Transportation">Transportation</SelectItem>
-                      <SelectItem value="Energy">Energy</SelectItem>
-                      <SelectItem value="Real Estate">Real Estate</SelectItem>
-                      <SelectItem value="Telecommunications">Telecommunications</SelectItem>
-                      <SelectItem value="Agriculture">Agriculture</SelectItem>
-                      <SelectItem value="Construction">Construction</SelectItem>
-                      <SelectItem value="Hospitality">Hospitality</SelectItem>
-                      <SelectItem value="Legal Services">Legal Services</SelectItem>
-                      <SelectItem value="Biotechnology">Biotechnology</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-blue-600 mt-1">This field is required for analyzing career patterns</p>
-                </div>
-              </div>
-            </div>
+            {/* Use the dedicated IndustrySelector component */}
+            <IndustrySelector 
+              value={newExperience.industry || ""} 
+              onChange={(value) => setNewExperience({...newExperience, industry: value})}
+            />
             
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="location" className="text-right">
@@ -499,6 +464,7 @@ export default function WorkExperience() {
                 </Select>
               </div>
             </div>
+            
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="startDate" className="text-right">
                 Start Date*
@@ -595,6 +561,7 @@ export default function WorkExperience() {
                 </Popover>
               </div>
             </div>
+            
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="endDate" className="text-right">
                 End Date
@@ -717,55 +684,56 @@ export default function WorkExperience() {
                       </PopoverContent>
                     </Popover>
                   </div>
-
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      id="currentJob"
-                      className="rounded border-gray-300 text-primary focus:ring-primary"
-                      checked={newExperience.endDate === 'Present'}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setNewExperience({
-                            ...newExperience,
-                            endDate: 'Present'
-                          });
-                          setEndDate(undefined);
-                        } else {
-                          setNewExperience({
-                            ...newExperience,
-                            endDate: ''
-                          });
-                        }
-                      }}
-                    />
-                    <label htmlFor="currentJob" className="text-sm text-gray-600">
-                      I currently work here
-                    </label>
+                  <div className="ml-2">
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="currentPosition"
+                        checked={newExperience.endDate === 'Present'}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setEndDate(undefined);
+                            setNewExperience({
+                              ...newExperience,
+                              endDate: 'Present'
+                            });
+                          } else {
+                            setNewExperience({
+                              ...newExperience,
+                              endDate: ''
+                            });
+                          }
+                        }}
+                        className="h-4 w-4 border-gray-300 rounded text-primary focus:ring-primary"
+                      />
+                      <Label htmlFor="currentPosition" className="text-sm font-medium text-gray-700">
+                        Current Position
+                      </Label>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
+            
             <div className="grid grid-cols-4 items-start gap-4">
               <Label htmlFor="description" className="text-right pt-2">
                 Description
               </Label>
               <Textarea
                 id="description"
-                value={newExperience.description}
+                value={newExperience.description || ''}
                 onChange={(e) => setNewExperience({...newExperience, description: e.target.value})}
-                className="col-span-3"
-                placeholder="Describe your responsibilities and achievements..."
-                rows={4}
+                className="col-span-3 min-h-[100px]"
+                placeholder="Describe your responsibilities, achievements, and the technologies or tools you worked with..."
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={handleCloseModal}>
+            <Button type="button" variant="outline" onClick={handleCloseModal}>
               Cancel
             </Button>
-            <Button onClick={handleSaveExperience}>
-              Save
+            <Button type="button" onClick={handleSaveExperience}>
+              {newExperience.id ? 'Update' : 'Save'}
             </Button>
           </DialogFooter>
         </DialogContent>
