@@ -1,8 +1,5 @@
 import * as React from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Check, ChevronDown, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 
@@ -54,25 +51,19 @@ export function DegreeCombobox({
   className,
   disabled = false
 }: DegreeComboboxProps) {
-  const [open, setOpen] = React.useState(false);
-  const [inputValue, setInputValue] = React.useState(value);
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [inputValue, setInputValue] = React.useState(value || "");
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
   
   // Filter the options based on input value
   const filteredOptions = DEGREE_OPTIONS.filter(
     option => option.toLowerCase().includes(inputValue.toLowerCase())
   );
-
-  // Handle selection from dropdown
-  const handleSelect = (currentValue: string) => {
-    // If user selects the same value that's already selected, clear it
-    setInputValue(currentValue);
-    onChange(currentValue);
-    setOpen(false);
-  };
   
   // When value changes from outside, update the input value
   React.useEffect(() => {
-    setInputValue(value);
+    setInputValue(value || "");
   }, [value]);
   
   // Handle input change directly (for custom entry)
@@ -80,56 +71,113 @@ export function DegreeCombobox({
     const newValue = e.target.value;
     setInputValue(newValue);
     onChange(newValue);
+    
+    // If we're typing, make sure the dropdown is open
+    if (!isOpen && newValue) {
+      setIsOpen(true);
+    }
+  };
+  
+  // Handle selection from dropdown
+  const handleSelect = (selectedValue: string) => {
+    setInputValue(selectedValue);
+    onChange(selectedValue);
+    setIsOpen(false);
+    
+    // Focus the input after selection
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  };
+  
+  // Handle click outside to close dropdown
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current && 
+        !dropdownRef.current.contains(event.target as Node) &&
+        inputRef.current &&
+        !inputRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+    
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+  
+  // Clear input and focus
+  const handleClear = () => {
+    setInputValue("");
+    onChange("");
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
   };
 
   return (
     <div className={cn("relative w-full", className)}>
-      <Input
-        disabled={disabled}
-        placeholder={placeholder}
-        value={inputValue}
-        onChange={handleInputChange}
-        onFocus={() => setOpen(true)}
-        className="w-full"
-      />
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            aria-expanded={open}
-            className="absolute inset-y-0 right-0 flex items-center px-2 opacity-50"
-            onClick={() => setOpen(!open)}
-            tabIndex={-1}
-          >
-            <ChevronsUpDown className="h-4 w-4 shrink-0" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
-          <Command>
-            <CommandInput placeholder="Search degrees..." className="h-9" value={inputValue} onValueChange={setInputValue} />
-            <CommandEmpty>No degree found. You can use your custom entry.</CommandEmpty>
-            <CommandGroup className="max-h-[300px] overflow-auto">
+      <div className="relative">
+        <Input
+          ref={inputRef}
+          disabled={disabled}
+          placeholder={placeholder}
+          value={inputValue}
+          onChange={handleInputChange}
+          onFocus={() => setIsOpen(true)}
+          className="w-full pr-10"
+        />
+        <div className="absolute inset-y-0 right-0 flex items-center pr-2">
+          {inputValue ? (
+            <button 
+              type="button"
+              onClick={handleClear}
+              className="p-1 rounded-full hover:bg-gray-100 focus:outline-none"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          ) : (
+            <ChevronDown 
+              className="h-4 w-4 cursor-pointer"
+              onClick={() => setIsOpen(!isOpen)}
+            />
+          )}
+        </div>
+      </div>
+      
+      {isOpen && (
+        <div 
+          ref={dropdownRef}
+          className="absolute w-full z-50 mt-1 bg-white rounded-md shadow-lg border border-gray-200 max-h-60 overflow-auto"
+        >
+          {filteredOptions.length === 0 ? (
+            <div className="py-2 px-4 text-sm text-gray-500">
+              No matches found. Your custom entry will be used.
+            </div>
+          ) : (
+            <ul>
               {filteredOptions.map((option) => (
-                <CommandItem
+                <li 
                   key={option}
-                  value={option}
-                  onSelect={() => handleSelect(option)}
-                  className="flex items-center"
+                  onClick={() => handleSelect(option)}
+                  className={cn(
+                    "py-2 px-4 text-sm cursor-pointer flex items-center",
+                    option === value ? "bg-primary/10 text-primary" : "hover:bg-gray-100"
+                  )}
                 >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      option === value ? "opacity-100" : "opacity-0"
-                    )}
-                  />
+                  <span className="w-5 h-5 mr-2 flex items-center justify-center">
+                    {option === value && <Check className="h-4 w-4" />}
+                  </span>
                   {option}
-                </CommandItem>
+                </li>
               ))}
-            </CommandGroup>
-          </Command>
-        </PopoverContent>
-      </Popover>
+            </ul>
+          )}
+        </div>
+      )}
     </div>
   );
 }
