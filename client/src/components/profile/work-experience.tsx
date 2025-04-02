@@ -420,35 +420,19 @@ export default function WorkExperience() {
               />
             </div>
             
-            {/* INDUSTRY FIELD - DIRECT IMPLEMENTATION */}
-            <div className="grid grid-cols-4 items-center gap-4 p-4 bg-blue-100 border-2 border-blue-500 rounded-lg my-4">
-              <Label htmlFor="industry" className="text-right font-bold text-blue-800">
+            {/* BASIC INDUSTRY FIELD */}
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="industry" className="text-right">
                 Industry*
               </Label>
-              <div className="col-span-3">
-                <Select
-                  value={newExperience.industry}
-                  onValueChange={(value) => setNewExperience({...newExperience, industry: value})}
-                >
-                  <SelectTrigger id="industry" className="w-full bg-white border-blue-400">
-                    <SelectValue placeholder="Choose an industry" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Technology">Technology</SelectItem>
-                    <SelectItem value="Healthcare">Healthcare</SelectItem>
-                    <SelectItem value="Finance">Finance</SelectItem>
-                    <SelectItem value="Education">Education</SelectItem>
-                    <SelectItem value="Manufacturing">Manufacturing</SelectItem>
-                    <SelectItem value="Retail">Retail</SelectItem>
-                    <SelectItem value="Media">Media</SelectItem>
-                    <SelectItem value="Consulting">Consulting</SelectItem>
-                    <SelectItem value="Government">Government</SelectItem>
-                    <SelectItem value="Non-profit">Non-profit</SelectItem>
-                    <SelectItem value="Other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-blue-700 mt-1">Required for analyzing career patterns</p>
-              </div>
+              <Input
+                id="industry"
+                value={newExperience.industry}
+                onChange={(e) => setNewExperience({...newExperience, industry: e.target.value})}
+                className="col-span-3"
+                placeholder="Technology, Healthcare, etc."
+                required
+              />
             </div>
             
             <div className="grid grid-cols-4 items-center gap-4">
