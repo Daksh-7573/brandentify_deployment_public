@@ -2,10 +2,34 @@ import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import { Badge } from "@/components/ui/badge";
+import { apiRequest } from "@/lib/queryClient";
+import { useState, useEffect } from "react";
 
 export default function Header() {
   const { user, isDemoMode, signOut } = useAuth();
   const [_, setLocation] = useLocation();
+  const [userData, setUserData] = useState<any>(null);
+
+  // Fetch the latest user data
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (user?.uid) {
+        try {
+          const userId = isDemoMode ? 1 : user.uid;
+          const response = await apiRequest('GET', `/api/users/${userId}`);
+          const data = await response.json();
+          setUserData(data);
+        } catch (error) {
+          console.error("Error fetching user data for header:", error);
+        }
+      }
+    };
+
+    fetchUserData();
+  }, [user, isDemoMode]);
+
+  // Determine which photo URL to use (prioritize userData if available)
+  const photoURL = userData?.photoURL || user?.photoURL;
 
   return (
     <nav className="bg-white shadow-sm">
@@ -31,11 +55,14 @@ export default function Header() {
           <div className="flex items-center">
             <div className="ml-3 relative">
               <div>
-                <button className="max-w-xs bg-white flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                <button 
+                  className="max-w-xs bg-white flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                  onClick={() => setLocation('/profile')}
+                >
                   <span className="sr-only">Open user menu</span>
                   <img 
-                    className="h-8 w-8 rounded-full" 
-                    src={user?.photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
+                    className="h-8 w-8 rounded-full object-cover" 
+                    src={photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
                     alt="User profile" 
                   />
                 </button>
