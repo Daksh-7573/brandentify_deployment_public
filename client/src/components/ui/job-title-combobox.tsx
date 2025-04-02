@@ -1,6 +1,7 @@
 import * as React from "react"
+import { Check, ChevronsUpDown } from "lucide-react"
+
 import { cn } from "@/lib/utils"
-import { Check, ChevronsUpDown, Briefcase } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Command,
@@ -14,258 +15,364 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { Input } from "@/components/ui/input"
 
-// Common job titles for the combobox
-const commonJobTitles = [
-  // Technology & IT
+export interface JobTitleComboboxProps {
+  value: string
+  onChange: (value: string) => void
+}
+
+const JOB_TITLES = [
   "Software Engineer",
   "Senior Software Engineer",
-  "Full Stack Developer",
   "Frontend Developer",
   "Backend Developer",
-  "DevOps Engineer",
-  "Data Scientist",
-  "Data Engineer",
-  "Machine Learning Engineer",
-  "AI Researcher",
-  "UI/UX Designer",
-  "Product Designer",
-  "Product Manager",
-  "Project Manager",
-  "Scrum Master",
-  "QA Engineer",
-  "Systems Administrator",
-  "Cloud Engineer",
-  "Security Engineer",
-  "Database Administrator",
+  "Full Stack Developer",
   "Mobile Developer",
   "iOS Developer",
   "Android Developer",
-  "CTO",
-  "VP of Engineering",
-  "Technical Lead",
-  "Engineering Manager",
-  "IT Support Specialist",
+  "DevOps Engineer",
+  "Site Reliability Engineer",
+  "Data Scientist",
+  "Data Engineer",
+  "Data Analyst",
+  "Machine Learning Engineer",
+  "AI Researcher",
+  "Product Manager",
+  "Project Manager",
+  "Program Manager",
+  "UX Designer",
+  "UI Designer",
+  "Graphic Designer",
+  "Web Designer",
+  "QA Engineer",
+  "Test Engineer",
+  "Technical Writer",
+  "System Administrator",
   "Network Engineer",
-  
-  // Business & Finance
-  "CEO",
-  "COO",
-  "CFO",
+  "Security Engineer",
+  "Cloud Engineer",
+  "Database Administrator",
+  "Scrum Master",
+  "Agile Coach",
+  "IT Support Specialist",
   "Business Analyst",
-  "Financial Analyst",
-  "Investment Banker",
-  "Accountant",
-  "Financial Controller",
-  "Auditor",
-  "Tax Specialist",
-  "Management Consultant",
-  "Strategy Consultant",
-  "Business Development Manager",
   "Sales Representative",
-  "Account Executive",
-  "Account Manager",
-  "Customer Success Manager",
-  "Operations Manager",
-  "Supply Chain Manager",
-  "Procurement Specialist",
-  
-  // Marketing & Communications
+  "Sales Manager",
   "Marketing Manager",
   "Digital Marketing Specialist",
-  "SEO Specialist",
-  "Content Marketing Manager",
-  "Social Media Manager",
-  "Brand Manager",
-  "Public Relations Specialist",
-  "Communications Manager",
-  "Copywriter",
   "Content Writer",
-  "Graphic Designer",
-  "Creative Director",
-  "Art Director",
-  "UX Writer",
-  "Marketing Analyst",
-  
-  // Healthcare
-  "Medical Doctor",
-  "Physician",
-  "Nurse",
-  "Nurse Practitioner",
-  "Pharmacist",
-  "Physical Therapist",
-  "Occupational Therapist",
-  "Dentist",
-  "Dental Hygienist",
-  "Veterinarian",
-  "Medical Researcher",
-  "Healthcare Administrator",
-  "Medical Assistant",
-  "Clinical Research Associate",
-  
-  // Education
-  "Teacher",
-  "Professor",
-  "Tutor",
-  "School Principal",
-  "Dean",
-  "Academic Advisor",
-  "Education Consultant",
-  "Curriculum Developer",
-  "Special Education Teacher",
-  "School Counselor",
-  
-  // Legal
-  "Lawyer",
-  "Attorney",
-  "Legal Counsel",
-  "Paralegal",
-  "Judge",
-  "Legal Consultant",
-  "Compliance Officer",
-  
-  // Engineering & Construction
-  "Mechanical Engineer",
-  "Civil Engineer",
-  "Electrical Engineer",
-  "Structural Engineer",
-  "Architect",
-  "Construction Manager",
-  "Project Engineer",
-  "Environmental Engineer",
-  "Aerospace Engineer",
-  
-  // Arts & Entertainment
-  "Graphic Designer",
-  "Illustrator",
-  "Photographer",
-  "Videographer",
-  "Film Director",
-  "Actor",
-  "Musician",
-  "Writer",
-  "Journalist",
-  "Editor",
-  
-  // Human Resources
+  "SEO Specialist",
   "HR Manager",
   "Recruiter",
   "Talent Acquisition Specialist",
-  "HR Generalist",
-  "Learning & Development Specialist",
-  "Compensation Analyst",
-  "Employee Relations Manager",
-  
-  // Customer Service
-  "Customer Service Representative",
-  "Customer Support Specialist",
-  "Help Desk Support",
-  "Call Center Agent",
-  
-  // Others
+  "Operations Manager",
+  "Finance Manager",
+  "Accountant",
+  "Customer Support Representative",
+  "Executive Assistant",
+  "Office Manager",
+  "Chief Executive Officer (CEO)",
+  "Chief Technology Officer (CTO)",
+  "Chief Information Officer (CIO)",
+  "Chief Financial Officer (CFO)",
+  "Chief Operating Officer (COO)",
+  "Chief Marketing Officer (CMO)",
+  "Chief Product Officer (CPO)",
+  "Chief Human Resources Officer (CHRO)",
+  "Vice President (VP) of Engineering",
+  "Vice President (VP) of Sales",
+  "Vice President (VP) of Marketing",
+  "Vice President (VP) of Product",
+  "Director of Engineering",
+  "Director of Product",
+  "Director of Marketing",
+  "Director of Sales",
+  "Engineering Manager",
+  "Product Manager",
+  "Technical Project Manager",
+  "Student",
+  "Graduate Student",
+  "PhD Candidate",
+  "Postdoctoral Researcher",
+  "Professor",
+  "Teacher",
+  "Lecturer",
+  "Research Scientist",
+  "Physician",
+  "Nurse",
+  "Pharmacist",
+  "Lawyer",
+  "Attorney",
   "Consultant",
+  "Management Consultant",
   "Freelancer",
-  "Intern",
-  "Researcher",
+  "Entrepreneur",
+  "Founder",
+  "Co-Founder",
+  "Small Business Owner",
+  "Architect",
+  "Civil Engineer",
+  "Mechanical Engineer",
+  "Electrical Engineer",
+  "Chemical Engineer",
+  "Industrial Designer",
+  "Construction Manager",
+  "Real Estate Agent",
+  "Insurance Agent",
+  "Financial Advisor",
+  "Investment Banker",
+  "Portfolio Manager",
+  "Trader",
+  "Broker",
+  "Bank Teller",
+  "Loan Officer",
+  "Accountant",
+  "CPA",
+  "Tax Preparer",
+  "Bookkeeper",
+  "Auditor",
+  "Compliance Officer",
+  "Risk Manager",
+  "Underwriter",
+  "Actuary",
+  "Chef",
+  "Baker",
+  "Bartender",
+  "Barista",
+  "Server",
+  "Host/Hostess",
+  "Restaurant Manager",
+  "Hotel Manager",
+  "Flight Attendant",
+  "Pilot",
+  "Driver",
+  "Truck Driver",
+  "Delivery Driver",
+  "Logistics Coordinator",
+  "Supply Chain Manager",
+  "Warehouse Manager",
+  "Inventory Specialist",
+  "Retail Sales Associate",
+  "Store Manager",
+  "Cashier",
+  "Customer Service Representative",
+  "Call Center Agent",
+  "Technical Support Representative",
+  "Help Desk Technician",
+  "Social Media Manager",
+  "Content Creator",
+  "Influencer",
+  "Blogger",
+  "Vlogger",
+  "Podcast Host",
+  "Journalist",
+  "Editor",
+  "Writer",
+  "Translator",
+  "Interpreter",
+  "Actor",
+  "Actress",
+  "Director",
+  "Producer",
+  "Filmmaker",
+  "Animator",
+  "Game Developer",
+  "Video Game Designer",
+  "Musician",
+  "Singer",
+  "Composer",
+  "Sound Engineer",
+  "DJ",
+  "Dancer",
+  "Choreographer",
+  "Photographer",
+  "Videographer",
+  "Artist",
+  "Illustrator",
+  "Interior Designer",
+  "Fashion Designer",
+  "Stylist",
+  "Makeup Artist",
+  "Hair Stylist",
+  "Personal Trainer",
+  "Fitness Instructor",
+  "Yoga Teacher",
+  "Coach",
+  "Sports Instructor",
+  "Professional Athlete",
+  "Therapist",
+  "Counselor",
+  "Psychologist",
+  "Psychiatrist",
+  "Social Worker",
+  "Dietitian",
+  "Nutritionist",
+  "Physical Therapist",
+  "Occupational Therapist",
+  "Speech Therapist",
+  "Massage Therapist",
+  "Chiropractor",
+  "Dentist",
+  "Dental Hygienist",
+  "Optometrist",
+  "Optician",
+  "Veterinarian",
+  "Veterinary Technician",
+  "Zoologist",
+  "Wildlife Biologist",
+  "Marine Biologist",
+  "Environmental Scientist",
+  "Conservation Scientist",
+  "Geologist",
+  "Meteorologist",
+  "Astronomer",
+  "Physicist",
+  "Chemist",
+  "Biologist",
+  "Biochemist",
+  "Microbiologist",
+  "Geneticist",
+  "Botanist",
+  "Horticulturist",
+  "Landscape Architect",
+  "Urban Planner",
+  "Surveyor",
+  "Carpenter",
+  "Electrician",
+  "Plumber",
+  "Welder",
+  "Mechanic",
+  "HVAC Technician",
+  "Auto Mechanic",
+  "Aircraft Mechanic",
+  "Machinist",
+  "Blacksmith",
+  "Jeweler",
+  "Tailor",
+  "Seamstress",
+  "Woodworker",
+  "Craftsman",
+  "Artisan",
+  "Farmer",
+  "Rancher",
+  "Agricultural Manager",
+  "Agricultural Scientist",
+  "Fisherman",
+  "Logger",
+  "Miner",
+  "Oil Rig Worker",
+  "Wind Turbine Technician",
+  "Solar Panel Installer",
+  "Firefighter",
+  "Police Officer",
+  "Security Guard",
+  "Military Officer",
+  "Military Enlisted",
+  "Paramedic",
+  "EMT",
+  "Lifeguard",
+  "Park Ranger",
+  "Government Official",
+  "Diplomat",
+  "Foreign Service Officer",
+  "Intelligence Officer",
   "Analyst",
+  "Policy Advisor",
+  "Lobbyist",
+  "Community Organizer",
+  "Non-Profit Director",
+  "Volunteer Coordinator",
+  "Fundraiser",
+  "Grant Writer",
+  "Archivist",
+  "Librarian",
+  "Curator",
+  "Museum Director",
+  "Historian",
+  "Archaeologist",
+  "Anthropologist",
+  "Sociologist",
+  "Economist",
+  "Political Scientist",
+  "Linguist",
+  "Philosopher",
+  "Theologian",
+  "Clergy",
+  "Religious Leader",
+  "Life Coach",
+  "Career Coach",
+  "Executive Coach",
+  "Travel Agent",
+  "Tour Guide",
+  "Event Planner",
+  "Wedding Planner",
+  "Party Planner",
+  "Florist",
+  "Mortician",
+  "Funeral Director",
 ];
 
-interface JobTitleComboboxProps {
-  value: string;
-  onChange: (value: string) => void;
-  disabled?: boolean;
-  error?: boolean;
-}
-
-export function JobTitleCombobox({ value, onChange, disabled = false, error = false }: JobTitleComboboxProps) {
+export function JobTitleCombobox({
+  value,
+  onChange,
+}: JobTitleComboboxProps) {
   const [open, setOpen] = React.useState(false)
   const [searchTerm, setSearchTerm] = React.useState("")
-  
-  // Filter job titles based on search
-  const filteredJobTitles = React.useMemo(() => {
-    if (!searchTerm) return commonJobTitles;
+
+  // Filter job titles based on search term
+  const filteredTitles = React.useMemo(() => {
+    if (!searchTerm) return JOB_TITLES
     
-    return commonJobTitles.filter((title) =>
-      title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [searchTerm]);
-  
-  // Handle custom job title input
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const customValue = e.target.value;
-    setSearchTerm(customValue);
-    onChange(customValue);
-  };
-  
+    const lowercasedSearchTerm = searchTerm.toLowerCase()
+    return JOB_TITLES.filter(title => 
+      title.toLowerCase().includes(lowercasedSearchTerm)
+    )
+  }, [searchTerm])
+
   return (
-    <div>
-      <div className="relative">
-        <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              role="combobox"
-              aria-expanded={open}
-              className={cn(
-                "w-full justify-between",
-                !value && "text-muted-foreground",
-                error && "border-red-500"
-              )}
-              disabled={disabled}
-            >
-              <div className="flex items-center">
-                <Briefcase className="mr-2 h-4 w-4" />
-                {value || "Select job title..."}
-              </div>
-              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-full p-0">
-            <Command>
-              <CommandInput 
-                placeholder="Search job title..." 
-                className="h-9" 
-                value={searchTerm}
-                onValueChange={setSearchTerm}
-              />
-              <CommandEmpty>
-                <div className="p-2 text-sm">
-                  <p className="text-muted-foreground">No job title found</p>
-                  <p className="text-muted-foreground text-xs mt-1">You can enter a custom job title</p>
-                  <Input
-                    value={searchTerm}
-                    onChange={handleInputChange}
-                    className="mt-2"
-                    placeholder="Enter custom job title"
-                  />
-                </div>
-              </CommandEmpty>
-              <CommandGroup className="max-h-60 overflow-y-auto">
-                {filteredJobTitles.map((title) => (
-                  <CommandItem
-                    key={title}
-                    value={title}
-                    onSelect={() => {
-                      onChange(title);
-                      setSearchTerm("");
-                      setOpen(false);
-                    }}
-                  >
-                    {title}
-                    <Check
-                      className={cn(
-                        "ml-auto h-4 w-4",
-                        value === title ? "opacity-100" : "opacity-0"
-                      )}
-                    />
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </Command>
-          </PopoverContent>
-        </Popover>
-      </div>
-    </div>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className="w-full justify-between"
+        >
+          {value || "Select job title..."}
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-full p-0">
+        <Command shouldFilter={false}>
+          <CommandInput 
+            placeholder="Search job title..." 
+            value={searchTerm}
+            onValueChange={setSearchTerm}
+          />
+          <CommandEmpty>No job title found.</CommandEmpty>
+          <CommandGroup className="max-h-60 overflow-auto">
+            {filteredTitles.map((title) => (
+              <CommandItem
+                key={title}
+                value={title}
+                onSelect={(currentValue) => {
+                  onChange(currentValue)
+                  setOpen(false)
+                  setSearchTerm("")
+                }}
+              >
+                <Check
+                  className={cn(
+                    "mr-2 h-4 w-4",
+                    value === title ? "opacity-100" : "opacity-0"
+                  )}
+                />
+                {title}
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        </Command>
+      </PopoverContent>
+    </Popover>
   )
 }

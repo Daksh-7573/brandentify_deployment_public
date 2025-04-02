@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import WorkExperience from "@/components/profile/work-experience";
+import Education from "@/components/profile/education";
 // Education component removed as requested
 import Skills from "@/components/profile/skills";
 // Removed Resume and LinkedIn import components
@@ -75,7 +76,7 @@ interface IndustryDomainMap {
 }
 
 // Define common industries with their domains
-const INDUSTRY_DOMAINS: IndustryDomainMap = {
+export const INDUSTRY_DOMAINS: IndustryDomainMap = {
   "Technology": [
     "Artificial Intelligence & Machine Learning",
     "Blockchain & Cryptocurrency",
@@ -362,7 +363,7 @@ const INDUSTRY_DOMAINS: IndustryDomainMap = {
 };
 
 // Get list of main industries
-const INDUSTRIES = [
+export const INDUSTRIES = [
   "Technology",
   "Healthcare",
   "Finance",
@@ -1617,6 +1618,7 @@ export default function Profile() {
             
             {/* Work Experience */}
             <WorkExperience />
+            <Education />
             
             {/* Education section removed as requested */}
             
