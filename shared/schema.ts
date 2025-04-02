@@ -39,6 +39,7 @@ export const workExperiences = pgTable("work_experiences", {
   title: text("title").notNull(),
   company: text("company").notNull(),
   location: text("location"),
+  industry: text("industry"),
   startDate: text("start_date").notNull(),
   endDate: text("end_date"),
   description: text("description"),

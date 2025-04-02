@@ -314,6 +314,7 @@ export class MemStorage implements IStorage {
       ...insertExperience, 
       id,
       location: insertExperience.location ?? null,
+      industry: insertExperience.industry ?? null,
       endDate: insertExperience.endDate ?? null,
       description: insertExperience.description ?? null
     };

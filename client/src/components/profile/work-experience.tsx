@@ -22,6 +22,7 @@ type WorkExperienceItem = {
   title: string;
   company: string;
   location: string;
+  industry: string;
   startDate: string;
   endDate?: string;
   description: string;
@@ -87,6 +88,7 @@ export default function WorkExperience() {
     title: '',
     company: '',
     location: '',
+    industry: '',
     startDate: '',
     endDate: '',
     description: ''
@@ -107,6 +109,7 @@ export default function WorkExperience() {
       title: '',
       company: '',
       location: '',
+      industry: '',
       startDate: '',
       endDate: '',
       description: ''
@@ -199,6 +202,7 @@ export default function WorkExperience() {
           title: '',
           company: '',
           location: '',
+          industry: '',
           startDate: '',
           endDate: '',
           description: ''
@@ -340,7 +344,7 @@ export default function WorkExperience() {
                     <div>
                       <h3 className="text-base font-medium text-gray-900">{exp.title}</h3>
                       <p className="text-sm text-gray-500 mt-1">{exp.company} • {exp.location}</p>
-                      <p className="text-sm text-gray-500 mt-1">{exp.startDate} - {exp.endDate || 'Present'}</p>
+                      <p className="text-sm text-gray-500 mt-1">{exp.industry && `${exp.industry} • `}{exp.startDate} - {exp.endDate || 'Present'}</p>
                     </div>
                     <div className="flex space-x-2">
                       <button 
@@ -437,6 +441,44 @@ export default function WorkExperience() {
                     <SelectItem value="Sydney, Australia">Sydney, Australia</SelectItem>
                     <SelectItem value="Tokyo, Japan">Tokyo, Japan</SelectItem>
                     <SelectItem value="Singapore">Singapore</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="industry" className="text-right">
+                Industry
+              </Label>
+              <div className="col-span-3">
+                <Select
+                  value={newExperience.industry}
+                  onValueChange={(value) => setNewExperience({...newExperience, industry: value})}
+                >
+                  <SelectTrigger id="industry" className="w-full">
+                    <SelectValue placeholder="Select an industry" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Technology">Technology</SelectItem>
+                    <SelectItem value="Healthcare">Healthcare</SelectItem>
+                    <SelectItem value="Finance">Finance</SelectItem>
+                    <SelectItem value="Education">Education</SelectItem>
+                    <SelectItem value="Manufacturing">Manufacturing</SelectItem>
+                    <SelectItem value="Retail">Retail</SelectItem>
+                    <SelectItem value="Media">Media</SelectItem>
+                    <SelectItem value="Consulting">Consulting</SelectItem>
+                    <SelectItem value="Government">Government</SelectItem>
+                    <SelectItem value="Non-profit">Non-profit</SelectItem>
+                    <SelectItem value="Entertainment">Entertainment</SelectItem>
+                    <SelectItem value="Transportation">Transportation</SelectItem>
+                    <SelectItem value="Energy">Energy</SelectItem>
+                    <SelectItem value="Real Estate">Real Estate</SelectItem>
+                    <SelectItem value="Telecommunications">Telecommunications</SelectItem>
+                    <SelectItem value="Agriculture">Agriculture</SelectItem>
+                    <SelectItem value="Construction">Construction</SelectItem>
+                    <SelectItem value="Hospitality">Hospitality</SelectItem>
+                    <SelectItem value="Legal Services">Legal Services</SelectItem>
+                    <SelectItem value="Biotechnology">Biotechnology</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
