@@ -104,6 +104,34 @@ const DEFAULT_DEGREES = [
   "Other"
 ];
 
+// Get stored custom degrees
+const getCustomDegrees = (): string[] => {
+  try {
+    const stored = localStorage.getItem("customDegrees");
+    return stored ? JSON.parse(stored) : [];
+  } catch (error) {
+    console.error("Error loading custom degrees:", error);
+    return [];
+  }
+};
+
+// Save custom degree
+const addCustomDegree = (degree: string) => {
+  if (!degree.trim()) return;
+  
+  try {
+    const existing = getCustomDegrees();
+    // Check if degree already exists (case insensitive)
+    if (!existing.some(d => d.toLowerCase() === degree.toLowerCase()) && 
+        !DEFAULT_DEGREES.some(d => d.toLowerCase() === degree.toLowerCase())) {
+      const updated = [...existing, degree];
+      localStorage.setItem("customDegrees", JSON.stringify(updated));
+    }
+  } catch (error) {
+    console.error("Error saving custom degree:", error);
+  }
+};
+
 export function DegreeCombobox({ 
   value, 
   onChange, 
@@ -112,58 +140,69 @@ export function DegreeCombobox({
   disabled = false
 }: DegreeComboboxProps) {
   const [open, setOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [inputValue, setInputValue] = useState("");
+  const [customDegrees, setCustomDegrees] = useState<string[]>(getCustomDegrees());
   
-  // Get all custom degrees from localStorage
-  const getCustomDegrees = (): string[] => {
-    try {
-      const customDegrees = localStorage.getItem("customDegrees");
-      return customDegrees ? JSON.parse(customDegrees) : [];
-    } catch (error) {
-      console.error("Error getting custom degrees:", error);
-      return [];
+  // All available degrees (default + custom)
+  const allDegrees = [...DEFAULT_DEGREES, ...customDegrees];
+  
+  // Keep popover open when user is typing
+  useEffect(() => {
+    if (inputValue.length > 0) {
+      setOpen(true);
     }
-  };
+  }, [inputValue]);
   
-  // All degrees (default + custom)
-  const allDegrees = [...DEFAULT_DEGREES, ...getCustomDegrees()];
+  // Filter degrees based on input
+  const filteredDegrees = allDegrees.filter(degree => 
+    degree.toLowerCase().includes(inputValue.toLowerCase())
+  );
   
-  // Filtered degrees based on search term
-  const filteredDegrees = searchTerm === "" 
-    ? allDegrees 
-    : allDegrees.filter(degree => 
-        degree.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+  // Sort filtered degrees to bring matching ones to the top
+  const sortedDegrees = filteredDegrees.sort((a, b) => {
+    // Exact matches first
+    if (a.toLowerCase() === inputValue.toLowerCase()) return -1;
+    if (b.toLowerCase() === inputValue.toLowerCase()) return 1;
+    
+    // Then starts with matches
+    const aStartsWith = a.toLowerCase().startsWith(inputValue.toLowerCase());
+    const bStartsWith = b.toLowerCase().startsWith(inputValue.toLowerCase());
+    
+    if (aStartsWith && !bStartsWith) return -1;
+    if (!aStartsWith && bStartsWith) return 1;
+    
+    // Finally alphabetical order
+    return a.localeCompare(b);
+  });
   
-  // Save a custom degree
-  const saveCustomDegree = (newDegree: string) => {
-    try {
-      const existingCustomDegrees = getCustomDegrees();
-      if (!existingCustomDegrees.includes(newDegree) && 
-          !DEFAULT_DEGREES.includes(newDegree)) {
-        const updatedDegrees = [...existingCustomDegrees, newDegree];
-        localStorage.setItem("customDegrees", JSON.stringify(updatedDegrees));
-      }
-    } catch (error) {
-      console.error("Error saving custom degree:", error);
-    }
-  };
+  // Show "Add New" only if we have input and no exact match
+  const hasExactMatch = allDegrees.some(
+    d => d.toLowerCase() === inputValue.toLowerCase()
+  );
   
-  // Check if we should show the "Add new" option
-  const showAddNew = 
-    searchTerm.length >= 3 && 
-    !allDegrees.some(d => d.toLowerCase() === searchTerm.toLowerCase());
+  const showAddNew = inputValue.length >= 2 && !hasExactMatch;
   
-  // Handle selecting an item
-  const onSelect = (selectedValue: string) => {
+  // Handle selection
+  const handleSelect = (selectedValue: string) => {
     if (selectedValue === "add-new") {
-      // Save the custom degree
-      saveCustomDegree(searchTerm);
-      onChange(searchTerm);
+      // Add as custom degree and set as value
+      addCustomDegree(inputValue);
+      setCustomDegrees(getCustomDegrees());
+      onChange(inputValue);
     } else {
       onChange(selectedValue);
     }
     setOpen(false);
+  };
+  
+  // Click handler for button to show all options
+  const handleButtonClick = () => {
+    if (!disabled) {
+      setOpen(!open);
+      if (!open) {
+        setInputValue(""); // Clear input when opening to show all options
+      }
+    }
   };
 
   return (
@@ -175,6 +214,7 @@ export function DegreeCombobox({
           aria-expanded={open}
           className={cn("w-full justify-between", className)}
           disabled={disabled}
+          onClick={handleButtonClick}
         >
           {value ? value : <span className="text-muted-foreground">{placeholder}</span>}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -183,44 +223,47 @@ export function DegreeCombobox({
       <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
         <Command>
           <CommandInput 
-            placeholder="Search or type a degree..." 
-            value={searchTerm}
-            onValueChange={setSearchTerm}
+            placeholder="Type to search degrees..." 
+            value={inputValue}
+            onValueChange={setInputValue}
+            className="h-9"
+            autoFocus={true}
           />
           <CommandEmpty>
             {showAddNew ? (
-              <div className="px-2 py-1 text-sm">
-                Type Enter to add this degree
+              <div className="px-2 py-2 text-sm">
+                No matches found
               </div>
             ) : (
-              <div className="px-2 py-1 text-sm">
-                No degree found
+              <div className="px-2 py-2 text-sm">
+                No degrees found
               </div>
             )}
           </CommandEmpty>
           <CommandGroup className="max-h-60 overflow-y-auto">
             {showAddNew && (
               <CommandItem
-                onSelect={() => onSelect("add-new")}
-                className="cursor-pointer text-blue-500"
+                value={`add-${inputValue}`} 
+                onSelect={() => handleSelect("add-new")}
+                className="text-blue-500 font-medium"
               >
                 <Plus className="mr-2 h-4 w-4" />
-                Add "{searchTerm}"
+                Add "{inputValue}"
               </CommandItem>
             )}
-            {filteredDegrees.map((degree) => (
+            {sortedDegrees.map((degree) => (
               <CommandItem
                 key={degree}
-                onSelect={() => onSelect(degree)}
-                className="cursor-pointer"
+                value={degree}
+                onSelect={() => handleSelect(degree)}
               >
-                <div className="flex items-center">
-                  {value === degree && (
-                    <Check className="mr-2 h-4 w-4 text-green-500" />
+                <Check
+                  className={cn(
+                    "mr-2 h-4 w-4",
+                    value === degree ? "opacity-100" : "opacity-0"
                   )}
-                  {value !== degree && <span className="mr-2 w-4" />}
-                  {degree}
-                </div>
+                />
+                {degree}
               </CommandItem>
             ))}
           </CommandGroup>
