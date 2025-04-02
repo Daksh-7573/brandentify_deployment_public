@@ -272,14 +272,15 @@ export default function Education() {
   const [selectedDomain, setSelectedDomain] = useState<string>("");
   const [domainOptions, setDomainOptions] = useState<string[]>([]);
   
-  // Use ID 1 for development or demo mode
+  // Use ID 0 for development or demo mode
   // This will be replaced with actual userId in production
-  const effectiveUserId = user?.uid ? parseInt(user.uid) : 1;
+  // Hardcoded to be consistent with Profile component and for development
+  const effectiveUserId = 0;
   
   // Fetch education data for user
   const { data: educations = [], isLoading } = useQuery<Education[]>({
     queryKey: [`/api/users/${effectiveUserId}/educations`],
-    enabled: !!effectiveUserId,
+    enabled: true,
     staleTime: 1000, 
     refetchOnMount: true,
     refetchOnWindowFocus: true,
