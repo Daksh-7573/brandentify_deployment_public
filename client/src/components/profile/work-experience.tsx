@@ -668,10 +668,19 @@ export default function WorkExperience() {
   
   // Handle date changes
   const handleDateChange = (name: string, value: Date | undefined) => {
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => {
+      const updatedData = {
+        ...prev,
+        [name]: value
+      };
+      
+      // If we're setting the start date and it's after the end date, clear the end date
+      if (name === 'startDate' && updatedData.startDate && updatedData.endDate && updatedData.startDate > updatedData.endDate) {
+        updatedData.endDate = undefined;
+      }
+      
+      return updatedData;
+    });
     
     // Clear validation error when user selects a date
     if (name in formErrors) {
@@ -705,6 +714,16 @@ export default function WorkExperience() {
       return;
     }
     
+    // Check if end date is before start date
+    if (formData.startDate && formData.endDate && formData.endDate < formData.startDate) {
+      toast({
+        title: "Validation Error",
+        description: "End date must be after or equal to the start date",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     // Format dates to strings
     const payload = {
       ...formData,
@@ -733,6 +752,16 @@ export default function WorkExperience() {
       toast({
         title: "Validation Error",
         description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Check if end date is before start date
+    if (formData.startDate && formData.endDate && formData.endDate < formData.startDate) {
+      toast({
+        title: "Validation Error",
+        description: "End date must be after or equal to the start date",
         variant: "destructive",
       });
       return;
@@ -1052,7 +1081,9 @@ export default function WorkExperience() {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="endDate">End Date</Label>
+                <Label htmlFor="endDate" className="flex items-center">
+                  End Date <span className="text-transparent ml-1">*</span>
+                </Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -1077,8 +1108,11 @@ export default function WorkExperience() {
                     />
                   </PopoverContent>
                 </Popover>
-                {/* Empty space to match start date error message height */}
-                <p className="text-sm text-transparent h-5">Placeholder</p>
+                <div className="h-5">
+                  {formData.startDate && formData.endDate && formData.endDate < formData.startDate && (
+                    <p className="text-sm text-red-500">End date must be after start date</p>
+                  )}
+                </div>
               </div>
             </div>
             
@@ -1286,7 +1320,9 @@ export default function WorkExperience() {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="endDate">End Date</Label>
+                <Label htmlFor="endDate" className="flex items-center">
+                  End Date <span className="text-transparent ml-1">*</span>
+                </Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -1311,8 +1347,11 @@ export default function WorkExperience() {
                     />
                   </PopoverContent>
                 </Popover>
-                {/* Empty space to match start date error message height */}
-                <p className="text-sm text-transparent h-5">Placeholder</p>
+                <div className="h-5">
+                  {formData.startDate && formData.endDate && formData.endDate < formData.startDate && (
+                    <p className="text-sm text-red-500">End date must be after start date</p>
+                  )}
+                </div>
               </div>
             </div>
             
