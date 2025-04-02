@@ -1,6 +1,6 @@
 import * as React from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { DayPicker, CaptionProps as DayPickerCaptionProps } from "react-day-picker"
+import { DayPicker } from "react-day-picker"
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
@@ -14,16 +14,38 @@ function Calendar({
   ...props
 }: CalendarProps) {
   // Create a custom caption component that simplifies the header
-  const CustomCaption = (props: DayPickerCaptionProps) => {
-    const { displayMonth } = props;
+  const CustomCaption = (props: any) => {
+    const { displayMonth, goToMonth, nextMonth, previousMonth } = props;
     const monthName = displayMonth.toLocaleString('default', { month: 'long' });
     const year = displayMonth.getFullYear();
-    
+
     return (
-      <div className="flex justify-center items-center w-full py-2 relative">
+      <div className="flex justify-between items-center w-full py-2 px-1">
+        <button
+          className={cn(
+            buttonVariants({ variant: "outline", size: "icon" }),
+            "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100"
+          )}
+          onClick={() => previousMonth && goToMonth(previousMonth)}
+          disabled={!previousMonth}
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </button>
+        
         <span className="text-sm font-medium">
           {monthName} {year}
         </span>
+        
+        <button
+          className={cn(
+            buttonVariants({ variant: "outline", size: "icon" }),
+            "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100"
+          )}
+          onClick={() => nextMonth && goToMonth(nextMonth)}
+          disabled={!nextMonth}
+        >
+          <ChevronRight className="h-4 w-4" />
+        </button>
       </div>
     );
   };
