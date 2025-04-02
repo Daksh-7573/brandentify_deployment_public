@@ -6,6 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 export interface DegreeComboboxProps {
@@ -47,7 +48,8 @@ const DEGREE_OPTIONS = [
   "Certificate",
   "High School Diploma",
   "Associate Degree",
-  "Other"
+  "Other",
+  "Other Custom..." // Special option for custom entry
 ];
 
 export function DegreeCombobox({
@@ -57,24 +59,78 @@ export function DegreeCombobox({
   className,
   disabled = false
 }: DegreeComboboxProps) {
+  const [showCustomInput, setShowCustomInput] = React.useState(false);
+  const [customValue, setCustomValue] = React.useState("");
+  
+  // Check if value is in predefined options
+  const isCustomValue = !DEGREE_OPTIONS.includes(value) && value !== "";
+  
+  // Initialize custom input state if value is custom
+  React.useEffect(() => {
+    if (isCustomValue) {
+      setShowCustomInput(true);
+      setCustomValue(value);
+    }
+  }, [isCustomValue, value]);
+
+  const handleSelectChange = (newValue: string) => {
+    if (newValue === "Other Custom...") {
+      // Switch to custom input mode
+      setShowCustomInput(true);
+      setCustomValue("");
+    } else {
+      // Standard selection
+      onChange(newValue);
+      setShowCustomInput(false);
+    }
+  };
+
+  const handleCustomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setCustomValue(newValue);
+    onChange(newValue);
+  };
+
   return (
     <div className={className}>
-      <Select 
-        value={value || undefined}
-        onValueChange={onChange}
-        disabled={disabled}
-      >
-        <SelectTrigger>
-          <SelectValue placeholder={placeholder} />
-        </SelectTrigger>
-        <SelectContent>
-          {DEGREE_OPTIONS.map((degree) => (
-            <SelectItem key={degree} value={degree}>
-              {degree}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      {showCustomInput ? (
+        <div className="flex gap-2">
+          <Input
+            value={customValue}
+            onChange={handleCustomInputChange}
+            placeholder="Enter custom degree"
+            disabled={disabled}
+            className="flex-1"
+          />
+          <button 
+            onClick={() => {
+              setShowCustomInput(false);
+              onChange("");
+            }}
+            className="px-3 py-2 rounded border border-gray-300 hover:bg-gray-50"
+            type="button"
+          >
+            Cancel
+          </button>
+        </div>
+      ) : (
+        <Select 
+          value={isCustomValue ? undefined : (value || undefined)}
+          onValueChange={handleSelectChange}
+          disabled={disabled}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder={placeholder} />
+          </SelectTrigger>
+          <SelectContent>
+            {DEGREE_OPTIONS.map((degree) => (
+              <SelectItem key={degree} value={degree}>
+                {degree}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
     </div>
   );
 }
