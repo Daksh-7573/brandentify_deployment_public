@@ -8,24 +8,32 @@ import { ProfileUpload } from "./profile-upload";
 import { useProfilePicture } from "@/hooks/use-profile-picture";
 
 interface ProfilePictureDialogProps {
-  userId: number;
+  userId?: number; // Optional userId, will use hook's default if not provided
   open: boolean;
   onOpenChange: (open: boolean) => void;
   currentPhotoURL?: string | null;
+  onSave?: (base64Image: string) => void; // Optional onSave callback
 }
 
 export function ProfilePictureDialog({
-  userId,
+  userId = 1, // Default to user ID 1 (demo user)
   open,
   onOpenChange,
   currentPhotoURL,
+  onSave,
 }: ProfilePictureDialogProps) {
   // Use the profile picture mutation hook
   const profilePictureMutation = useProfilePicture(userId);
 
   // Handle saving the updated profile picture
   const handleSaveProfilePicture = (base64Image: string) => {
-    profilePictureMutation.mutate(base64Image);
+    // If onSave callback is provided, use it
+    if (onSave) {
+      onSave(base64Image);
+    } else {
+      // Otherwise use the default mutation
+      profilePictureMutation.mutate(base64Image);
+    }
     onOpenChange(false);
   };
 

@@ -398,8 +398,9 @@ export default function Profile() {
   const { toast } = useToast();
   
   // Get user ID (use demo ID if in demo mode)
-  // Using 1 as a valid fallback ID since we know it exists in the database
-  const userId = isDemoMode ? 1 : user?.uid ? 1 : 1;
+  // Always use ID 1 for now which we know exists in the database
+  // This provides a consistent experience during development
+  const userId = 1;
   
   // State for edit dialogs
   const [showEditBasicInfo, setShowEditBasicInfo] = useState(false);

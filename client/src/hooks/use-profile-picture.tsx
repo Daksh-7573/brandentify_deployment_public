@@ -3,7 +3,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { toast } from "@/hooks/use-toast";
 import { User } from "@shared/schema";
 
-export function useProfilePicture(userId: number) {
+export function useProfilePicture(userId: number = 1) {
   // Mutation for updating the profile picture
   return useMutation({
     mutationFn: async (base64Image: string) => {
