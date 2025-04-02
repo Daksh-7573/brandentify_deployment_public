@@ -387,7 +387,7 @@ export default function WorkExperience() {
 
       {/* Add Experience Modal */}
       <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-        <DialogContent className="sm:max-w-[550px]">
+        <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{newExperience.id ? 'Edit Work Experience' : 'Add Work Experience'}</DialogTitle>
           </DialogHeader>
@@ -418,6 +418,46 @@ export default function WorkExperience() {
                 required
               />
             </div>
+            
+            {/* Industry field - Positioned earlier than location for better visibility */}
+            <div className="grid grid-cols-4 items-center gap-4 mb-2 border-b border-gray-100 border-t pt-2 pb-2 bg-blue-50/20">
+              <Label htmlFor="industry" className="text-right font-medium">
+                Industry*
+              </Label>
+              <div className="col-span-3">
+                <Select
+                  value={newExperience.industry}
+                  onValueChange={(value) => setNewExperience({...newExperience, industry: value})}
+                >
+                  <SelectTrigger id="industry" className="w-full bg-blue-50 border-blue-200">
+                    <SelectValue placeholder="Select an industry" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Technology">Technology</SelectItem>
+                    <SelectItem value="Healthcare">Healthcare</SelectItem>
+                    <SelectItem value="Finance">Finance</SelectItem>
+                    <SelectItem value="Education">Education</SelectItem>
+                    <SelectItem value="Manufacturing">Manufacturing</SelectItem>
+                    <SelectItem value="Retail">Retail</SelectItem>
+                    <SelectItem value="Media">Media</SelectItem>
+                    <SelectItem value="Consulting">Consulting</SelectItem>
+                    <SelectItem value="Government">Government</SelectItem>
+                    <SelectItem value="Non-profit">Non-profit</SelectItem>
+                    <SelectItem value="Entertainment">Entertainment</SelectItem>
+                    <SelectItem value="Transportation">Transportation</SelectItem>
+                    <SelectItem value="Energy">Energy</SelectItem>
+                    <SelectItem value="Real Estate">Real Estate</SelectItem>
+                    <SelectItem value="Telecommunications">Telecommunications</SelectItem>
+                    <SelectItem value="Agriculture">Agriculture</SelectItem>
+                    <SelectItem value="Construction">Construction</SelectItem>
+                    <SelectItem value="Hospitality">Hospitality</SelectItem>
+                    <SelectItem value="Legal Services">Legal Services</SelectItem>
+                    <SelectItem value="Biotechnology">Biotechnology</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="location" className="text-right">
                 Location
@@ -451,44 +491,6 @@ export default function WorkExperience() {
                     <SelectItem value="Sydney, Australia">Sydney, Australia</SelectItem>
                     <SelectItem value="Tokyo, Japan">Tokyo, Japan</SelectItem>
                     <SelectItem value="Singapore">Singapore</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-4 items-center gap-4 mb-2 border-b border-gray-100 pb-2">
-              <Label htmlFor="industry" className="text-right font-medium">
-                Industry*
-              </Label>
-              <div className="col-span-3">
-                <Select
-                  value={newExperience.industry}
-                  onValueChange={(value) => setNewExperience({...newExperience, industry: value})}
-                >
-                  <SelectTrigger id="industry" className="w-full bg-blue-50">
-                    <SelectValue placeholder="Select an industry" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Technology">Technology</SelectItem>
-                    <SelectItem value="Healthcare">Healthcare</SelectItem>
-                    <SelectItem value="Finance">Finance</SelectItem>
-                    <SelectItem value="Education">Education</SelectItem>
-                    <SelectItem value="Manufacturing">Manufacturing</SelectItem>
-                    <SelectItem value="Retail">Retail</SelectItem>
-                    <SelectItem value="Media">Media</SelectItem>
-                    <SelectItem value="Consulting">Consulting</SelectItem>
-                    <SelectItem value="Government">Government</SelectItem>
-                    <SelectItem value="Non-profit">Non-profit</SelectItem>
-                    <SelectItem value="Entertainment">Entertainment</SelectItem>
-                    <SelectItem value="Transportation">Transportation</SelectItem>
-                    <SelectItem value="Energy">Energy</SelectItem>
-                    <SelectItem value="Real Estate">Real Estate</SelectItem>
-                    <SelectItem value="Telecommunications">Telecommunications</SelectItem>
-                    <SelectItem value="Agriculture">Agriculture</SelectItem>
-                    <SelectItem value="Construction">Construction</SelectItem>
-                    <SelectItem value="Hospitality">Hospitality</SelectItem>
-                    <SelectItem value="Legal Services">Legal Services</SelectItem>
-                    <SelectItem value="Biotechnology">Biotechnology</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
