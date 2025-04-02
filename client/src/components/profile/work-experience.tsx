@@ -525,6 +525,13 @@ export default function WorkExperience() {
     mutationFn: async (id: number) => {
       console.log("Deleting work experience:", id);
       const res = await apiRequest('DELETE', `/api/experiences/${id}`);
+      
+      // For 204 No Content responses, just return a success value without trying to parse JSON
+      if (res.status === 204) {
+        return { success: true };
+      }
+      
+      // For other responses, try to parse JSON
       return await res.json();
     },
     onSuccess: () => {
