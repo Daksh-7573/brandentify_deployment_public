@@ -1,798 +1,1308 @@
-import { useState, useEffect, useRef } from "react";
-import { format } from "date-fns";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
-import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Loader2, CalendarIcon } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Plus, Trash2, Edit, CalendarIcon, Building, MapPin, Briefcase, TagIcon } from "lucide-react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { queryClient, apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogFooter,
+  DialogDescription
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue,
+  SelectGroup,
+  SelectLabel
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
-import { Calendar } from "@/components/ui/calendar";
+import { Badge } from "@/components/ui/badge";
+import { JobTitleCombobox } from "@/components/ui/job-title-combobox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
-// Log that the file is loading with enhanced Industry and Domain fields
-console.log("WORK EXPERIENCE FORM VERSION: 2023-04-02-v4 - ENHANCED INDUSTRY & DOMAIN FIELDS");
-// Add a startup log specifically for the domain field
-console.log("WORK EXPERIENCE: Industry and Domain fields are active and visually enhanced");
+// Define interface for the industry domains map
+interface IndustryDomainMap {
+  [key: string]: string[];
+}
 
-type WorkExperienceItem = {
-  id: number;
-  userId: number;
-  title: string;
-  company: string;
-  industry: string;
-  domain: string;
-  location: string;
-  startDate: string;
-  endDate?: string;
-  description: string;
+// Define common industries with their domains
+const INDUSTRY_DOMAINS: IndustryDomainMap = {
+  "Technology": [
+    "Artificial Intelligence & Machine Learning",
+    "Blockchain & Cryptocurrency",
+    "Cloud Computing & SaaS",
+    "Cybersecurity",
+    "Data Science & Analytics",
+    "DevOps & Infrastructure",
+    "E-commerce Technology",
+    "Enterprise Software",
+    "Gaming & Entertainment",
+    "Hardware & IoT",
+    "Mobile Development",
+    "Quantum Computing",
+    "Robotics & Automation",
+    "Software Development",
+    "Web3 & Decentralized Tech",
+  ],
+  "Healthcare": [
+    "Biotechnology",
+    "Digital Health",
+    "Healthcare IT",
+    "Medical Devices",
+    "Pharmaceuticals",
+    "Research & Development",
+    "Telemedicine",
+    "Healthcare Services",
+    "Mental Health",
+    "Public Health",
+  ],
+  "Finance": [
+    "Banking",
+    "Financial Services",
+    "FinTech",
+    "Investment Management",
+    "Insurance",
+    "Wealth Management",
+    "Payments & Transactions",
+    "Cryptocurrency & DeFi",
+    "Lending & Credit",
+    "Regulatory Compliance",
+  ],
+  "Education": [
+    "EdTech",
+    "Higher Education",
+    "K-12 Education",
+    "Professional Development",
+    "Online Learning",
+    "Educational Content",
+    "Tutoring & Coaching",
+    "Educational Administration",
+    "Research & Development",
+  ],
+  "Manufacturing": [
+    "Advanced Manufacturing",
+    "Automotive Manufacturing",
+    "Chemical Manufacturing",
+    "Electronics Manufacturing",
+    "Food & Beverage Production",
+    "Industrial Automation",
+    "Textiles & Apparel",
+    "Machinery & Equipment",
+    "Quality Assurance",
+    "Supply Chain Management",
+  ],
+  "Retail": [
+    "E-commerce",
+    "Brick & Mortar Retail",
+    "Consumer Goods",
+    "Fashion & Apparel",
+    "Grocery & Food Retail",
+    "Luxury Retail",
+    "Retail Technology",
+    "Omnichannel Retail",
+    "Supply Chain & Logistics",
+  ],
+  "Media & Entertainment": [
+    "Advertising",
+    "Content Creation",
+    "Digital Media",
+    "Film & Television",
+    "Gaming",
+    "Music & Audio",
+    "Publishing",
+    "Social Media",
+    "Sports & Recreation",
+    "Streaming Services",
+  ],
+  "Construction": [
+    "Architecture",
+    "Construction Management",
+    "Engineering",
+    "Infrastructure Development",
+    "Residential Construction",
+    "Commercial Construction",
+    "Sustainable Building",
+    "Project Management",
+    "Construction Technology",
+  ],
+  "Transportation": [
+    "Automotive",
+    "Aviation",
+    "Logistics",
+    "Maritime",
+    "Public Transportation",
+    "Ride-sharing & Mobility",
+    "Transportation Technology",
+    "Supply Chain",
+    "Fleet Management",
+  ],
+  "Energy": [
+    "Renewable Energy",
+    "Oil & Gas",
+    "Utilities",
+    "Energy Storage",
+    "Clean Technology",
+    "Energy Efficiency",
+    "Nuclear Energy",
+    "Smart Grid",
+    "Energy Management",
+  ],
+  "Hospitality": [
+    "Accommodations",
+    "Food & Beverage Service",
+    "Travel & Tourism",
+    "Event Management",
+    "Hospitality Technology",
+    "Cruises & Resorts",
+    "Customer Experience",
+    "Hospitality Management",
+  ],
+  "Agriculture": [
+    "AgTech",
+    "Crop Production",
+    "Livestock",
+    "Sustainable Agriculture",
+    "Food Processing",
+    "Forestry",
+    "Aquaculture",
+    "Agricultural Research",
+    "Agricultural Supply Chain",
+  ],
+  "Telecommunications": [
+    "Wireless Communications",
+    "Network Infrastructure",
+    "Telecom Services",
+    "Internet Service Providers",
+    "Telecom Equipment",
+    "Mobile & Voice",
+    "Data Services",
+    "Satellite Communications",
+    "5G & Next-Gen Networks",
+  ],
+  "Real Estate": [
+    "Commercial Real Estate",
+    "Residential Real Estate",
+    "Property Management",
+    "Real Estate Development",
+    "Real Estate Technology",
+    "Facilities Management",
+    "Property Investment",
+    "Real Estate Services",
+  ],
+  "Consulting": [
+    "Management Consulting",
+    "Technology Consulting",
+    "Strategy Consulting",
+    "Financial Advisory",
+    "HR Consulting",
+    "Business Transformation",
+    "Digital Consulting",
+    "Operations Consulting",
+    "Industry-Specific Consulting",
+  ],
+  "Legal Services": [
+    "Corporate Law",
+    "Intellectual Property",
+    "Litigation",
+    "Legal Technology",
+    "Compliance",
+    "Criminal Law",
+    "Family Law",
+    "Environmental Law",
+    "International Law",
+  ],
+  "Marketing & Advertising": [
+    "Digital Marketing",
+    "Content Marketing",
+    "Social Media Marketing",
+    "Brand Management",
+    "Marketing Technology",
+    "Advertising Technology",
+    "Performance Marketing",
+    "Creative Services",
+    "Market Research",
+  ],
+  "Aerospace": [
+    "Aircraft Manufacturing",
+    "Space Technology",
+    "Defense Aerospace",
+    "Avionics",
+    "Aerospace Engineering",
+    "Unmanned Aerial Systems",
+    "Space Exploration",
+    "Satellite Systems",
+    "Aviation Services",
+  ],
+  "Automotive": [
+    "Vehicle Manufacturing",
+    "Auto Parts & Components",
+    "Electric Vehicles",
+    "Autonomous Driving",
+    "Automotive Technology",
+    "Automotive Design",
+    "Fleet Management",
+    "Mobility Services",
+    "Automotive Retail",
+  ],
+  "Biotechnology": [
+    "Biopharmaceuticals",
+    "Genomics",
+    "Medical Biotechnology",
+    "Agricultural Biotechnology",
+    "Bioinformatics",
+    "Biotech R&D",
+    "Bioprocessing",
+    "Molecular Diagnostics",
+    "Synthetic Biology",
+  ],
+  "Nonprofit": [
+    "Charitable Organizations",
+    "Foundations",
+    "Social Services",
+    "Healthcare Nonprofits",
+    "Educational Nonprofits",
+    "Environmental Organizations",
+    "Arts & Cultural Organizations",
+    "Religious Organizations",
+    "International Development",
+  ],
+  "Government": [
+    "Federal Government",
+    "State/Provincial Government",
+    "Local Government",
+    "Public Administration",
+    "Public Policy",
+    "Government Technology",
+    "Defense & Security",
+    "Public Services",
+    "Government Relations",
+  ],
+  "Food & Beverage": [
+    "Food Production",
+    "Beverage Production",
+    "Food Technology",
+    "Restaurants & Catering",
+    "Food Service",
+    "Specialty Foods",
+    "Functional Foods & Beverages",
+    "Food Safety & Quality",
+    "Food & Beverage Distribution",
+  ],
+  "Fashion": [
+    "Apparel Manufacturing",
+    "Fashion Retail",
+    "Luxury Fashion",
+    "Sustainable Fashion",
+    "Fashion Technology",
+    "Accessories & Footwear",
+    "Textile Development",
+    "Fashion Design",
+    "Fashion Marketing",
+  ],
+  "Arts & Design": [
+    "Graphic Design",
+    "Industrial Design",
+    "UX/UI Design",
+    "Architecture",
+    "Fine Arts",
+    "Digital Arts",
+    "Interior Design",
+    "Design Technology",
+    "Creative Services",
+  ],
 };
 
-export default function WorkExperience() {
-  const { user, isDemoMode } = useAuth();
-  // Use the UID directly as a string instead of trying to parse it as an integer
-  const userId = isDemoMode ? 1 : (user?.uid || "");
-  
-  // Fetch work experiences from the API with advanced options
-  const { data: serverExperiences, isLoading, refetch } = useQuery({
-    queryKey: [`/api/users/${userId}/experiences`],
-    enabled: !!userId,
-    staleTime: 0, // Always consider data stale to force refresh
-    refetchOnMount: 'always', // Always refetch when component mounts
-    refetchOnWindowFocus: true, // Refetch when window regains focus
-    refetchInterval: 1000, // Poll every second to keep data fresh
-  });
-  
-  // Force a direct fetch every time the component renders
-  useEffect(() => {
-    async function directFetch() {
-      const timestamp = new Date().getTime(); // Add timestamp to prevent caching
-      console.log(`Work Experience - Directly fetching latest experiences data (${timestamp})`);
-      try {
-        const response = await fetch(`/api/users/${userId}/experiences?_=${timestamp}`, {
-          method: 'GET',
-          headers: { 
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-          }
-        });
-        const freshData = await response.json();
-        console.log("Work Experience - Got direct fetch data:", freshData);
-        // Force update
-        if (freshData && Array.isArray(freshData)) {
-          setExperiences([...freshData]);
-          // Update the ref as well
-          latestDataRef.current = [...freshData];
-        }
-      } catch (error) {
-        console.error("Error during direct fetch:", error);
-      }
-    }
-    
-    directFetch();
-    
-    // Poll every second
-    const interval = setInterval(directFetch, 1000);
-    return () => clearInterval(interval);
-  }, [userId]); // Only re-run when userId changes
-  
-  // Initialize with an empty array, but use the ref for the actual display data
-  const [experiences, setExperiences] = useState<WorkExperienceItem[]>([]);
-  
-  // Reference to hold the most recent data
-  const latestDataRef = useRef<WorkExperienceItem[]>([]);
+// Get list of main industries
+const INDUSTRIES = [
+  "Technology",
+  "Healthcare",
+  "Finance",
+  "Education",
+  "Manufacturing",
+  "Retail",
+  "Media & Entertainment",
+  "Construction",
+  "Transportation",
+  "Energy",
+  "Hospitality",
+  "Agriculture",
+  "Telecommunications",
+  "Real Estate",
+  "Consulting",
+  "Pharmaceuticals",
+  "Legal Services",
+  "Marketing & Advertising",
+  "Aerospace",
+  "Automotive",
+  "Biotechnology",
+  "Nonprofit",
+  "Government",
+  "Food & Beverage",
+  "Fashion",
+  "Arts & Design",
+];
 
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [newExperience, setNewExperience] = useState<Partial<WorkExperienceItem>>({
+// List of popular cities for location suggestions
+const popularLocations = [
+  // North America - USA
+  "New York, NY, USA",
+  "San Francisco, CA, USA",
+  "Los Angeles, CA, USA",
+  "Chicago, IL, USA",
+  "Seattle, WA, USA",
+  "Austin, TX, USA",
+  "Boston, MA, USA",
+  "Denver, CO, USA",
+  "Atlanta, GA, USA",
+  "Portland, OR, USA",
+  "Washington, DC, USA",
+  "San Diego, CA, USA",
+  "Miami, FL, USA",
+  "Dallas, TX, USA",
+  "Houston, TX, USA",
+  "Phoenix, AZ, USA",
+  "Philadelphia, PA, USA",
+  "Las Vegas, NV, USA",
+  "Detroit, MI, USA",
+  "Minneapolis, MN, USA",
+  "Nashville, TN, USA",
+  "Charlotte, NC, USA",
+  "Raleigh, NC, USA",
+  "Indianapolis, IN, USA",
+  "Columbus, OH, USA",
+  "Cleveland, OH, USA",
+  "Pittsburgh, PA, USA",
+  "Kansas City, MO, USA",
+  "St. Louis, MO, USA",
+  "Salt Lake City, UT, USA",
+  "Orlando, FL, USA",
+  "Tampa, FL, USA",
+  "New Orleans, LA, USA",
+  "Honolulu, HI, USA",
+  "Anchorage, AK, USA",
+  "San Jose, CA, USA",
+  "Sacramento, CA, USA",
+  "Oakland, CA, USA",
+  "Cincinnati, OH, USA",
+  "Buffalo, NY, USA",
+  "Baltimore, MD, USA",
+  "San Antonio, TX, USA",
+  "Milwaukee, WI, USA",
+  "Albuquerque, NM, USA",
+  "Tucson, AZ, USA",
+  "Fresno, CA, USA",
+  "Long Beach, CA, USA",
+  "Omaha, NE, USA",
+  "Oklahoma City, OK, USA",
+  "Louisville, KY, USA",
+  "Toronto, Canada",
+  "Vancouver, Canada",
+  "Montreal, Canada",
+  "London, UK",
+  "Paris, France",
+  "Berlin, Germany",
+  "Sydney, Australia",
+  "Tokyo, Japan",
+  "Singapore",
+  "Mumbai, India",
+  "Dubai, UAE",
+  "Bangalore, India",
+  "Hyderabad, India",
+  "Chennai, India",
+  "Pune, India",
+  "Delhi, India",
+  "New Delhi, India",
+  "Kolkata, India",
+  "Remote"
+];
+
+export default function WorkExperience() {
+  console.log("Work Experience - Form fields include Job Title, Industry, Domain, Company, Location, Start/End Dates, and Description");
+  
+  const { user, isAuthenticated, isDemoMode } = useAuth();
+  const { toast } = useToast();
+  
+  // Get user ID (use demo ID if in demo mode)
+  const userId = isDemoMode ? 1 : user?.id || 0;
+  
+  // State for the dialog
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [editId, setEditId] = useState<number | null>(null);
+  
+  // Form data state
+  const [formData, setFormData] = useState({
+    id: 0,
     title: '',
     company: '',
+    location: '',
     industry: '',
     domain: '',
-    location: '',
-    startDate: '',
-    endDate: '',
-    description: ''
+    startDate: null as Date | null,
+    endDate: null as Date | null,
+    description: '',
+    userId
   });
   
-  // For date pickers
-  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
-  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
-
-  const handleAdd = () => {
-    setIsAddModalOpen(true);
-  };
+  // State for form validation
+  const [formErrors, setFormErrors] = useState({
+    title: false,
+    company: false,
+    industry: false,
+    domain: false,
+    startDate: false
+  });
   
-  const handleCloseModal = () => {
-    setIsAddModalOpen(false);
-    // Reset form
-    setNewExperience({
+  // Reset form data
+  const resetForm = () => {
+    setFormData({
+      id: 0,
       title: '',
       company: '',
+      location: '',
       industry: '',
       domain: '',
-      location: '',
-      startDate: '',
-      endDate: '',
-      description: ''
+      startDate: null,
+      endDate: null,
+      description: '',
+      userId
     });
-    // Reset date pickers
-    setStartDate(undefined);
-    setEndDate(undefined);
+    setFormErrors({
+      title: false,
+      company: false,
+      industry: false,
+      domain: false,
+      startDate: false
+    });
   };
   
-  const { toast } = useToast();
-
-  const handleSaveExperience = async () => {
-    try {
-      // Validate form - require title, company, industry, and start date
-      if (!newExperience.title || !newExperience.company) {
-        toast({
-          title: "Missing information",
-          description: "Please provide at least the job title and company name",
-          variant: "destructive"
-        });
-        return;
-      }
-      
-      // Check if industry is provided
-      if (!newExperience.industry) {
-        toast({
-          title: "Missing industry",
-          description: "Please select an industry for this work experience",
-          variant: "destructive"
-        });
-        return;
-      }
-      
-      // Check if we have the month and year for the start date
-      if (!startDate && !newExperience.startDate) {
-        toast({
-          title: "Missing start date",
-          description: "Please provide at least the month and year for your start date",
-          variant: "destructive"
-        });
-        return;
-      }
-      
-      // Validate that end date is after start date if both are provided and end date is not "Present"
-      if (
-        newExperience.startDate && 
-        newExperience.endDate && 
-        newExperience.endDate !== 'Present'
-      ) {
-        const startDateObj = new Date(newExperience.startDate);
-        const endDateObj = new Date(newExperience.endDate);
-        
-        if (endDateObj < startDateObj) {
-          toast({
-            title: "Invalid date range",
-            description: "End date must be after start date",
-            variant: "destructive"
-          });
-          return;
-        }
-      }
-      
-      // Add userId to the experience
-      // For Firebase users, this will be a string UID, for demo users it will be a number
-      const experienceToSave = {
-        ...newExperience,
-        userId: userId
-      };
-      
-      console.log("Saving experience with userId:", userId);
-      console.log("Experience data to save:", experienceToSave);
-      
-      let response;
-      let successMessage;
-      
-      // Check if we're editing an existing experience (has an id) or creating a new one
-      if (newExperience.id) {
-        // Update existing experience
-        response = await apiRequest('PUT', `/api/experiences/${newExperience.id}`, experienceToSave);
-        successMessage = "Your work experience has been updated successfully";
-      } else {
-        // Create new experience
-        response = await apiRequest('POST', '/api/experiences', experienceToSave);
-        successMessage = "Your work experience has been added successfully";
-      }
-      
-      if (response.ok) {
-        // Close modal
-        setIsAddModalOpen(false);
-        
-        // Refresh data
-        refetch();
-        
-        // Show success message
-        toast({
-          title: newExperience.id ? "Experience updated" : "Experience added",
-          description: successMessage,
-        });
-        
-        // Reset form
-        setNewExperience({
-          title: '',
-          company: '',
-          industry: '',
-          domain: '',
-          location: '',
-          startDate: '',
-          endDate: '',
-          description: ''
-        });
-        
-        // Reset date pickers
-        setStartDate(undefined);
-        setEndDate(undefined);
-      } else {
-        throw new Error(`Failed to ${newExperience.id ? 'update' : 'save'} experience`);
-      }
-    } catch (error) {
-      console.error("Error saving experience:", error);
-      toast({
-        title: "Error",
-        description: `Failed to ${newExperience.id ? 'update' : 'save'} your work experience. Please try again.`,
-        variant: "destructive"
-      });
-    }
-  };
-
-  const handleEdit = (id: number) => {
-    // Find the experience to edit
-    const experienceToEdit = displayExperiences.find(exp => exp.id === id);
-    if (experienceToEdit) {
-      setNewExperience({
-        ...experienceToEdit
-      });
-      
-      // Set the date pickers
-      if (experienceToEdit.startDate) {
-        try {
-          setStartDate(new Date(experienceToEdit.startDate));
-        } catch (error) {
-          console.error("Failed to parse start date:", error);
-        }
-      }
-      
-      if (experienceToEdit.endDate && experienceToEdit.endDate !== 'Present') {
-        try {
-          setEndDate(new Date(experienceToEdit.endDate));
-        } catch (error) {
-          console.error("Failed to parse end date:", error);
-        }
-      }
-      
-      setIsAddModalOpen(true);
-    }
-  };
-
-  const handleDelete = async (id: number) => {
-    try {
-      const response = await apiRequest('DELETE', `/api/experiences/${id}`);
-      if (response.ok) {
-        // Update local state immediately for responsiveness
-        setExperiences(experiences.filter(exp => exp.id !== id));
-        
-        // Show success message
-        toast({
-          title: "Experience deleted",
-          description: "Your work experience has been deleted successfully",
-        });
-        
-        // Refresh data
-        refetch();
-      } else {
-        throw new Error("Failed to delete experience");
-      }
-    } catch (error) {
-      console.error("Error deleting experience:", error);
-      toast({
-        title: "Error",
-        description: "Failed to delete your work experience. Please try again.",
-        variant: "destructive"
-      });
-    }
-  };
-  
-  // CRITICAL IMPROVEMENT: Initialize experiences from serverExperiences on first load
-  useEffect(() => {
-    if (serverExperiences && Array.isArray(serverExperiences) && serverExperiences.length > 0) {
-      console.log("WorkExperience: Initial data from server:", serverExperiences);
-      setExperiences(serverExperiences);
-      latestDataRef.current = serverExperiences;
-    }
-  }, []);
-  
-  // Update experiences state when server data changes
-  useEffect(() => {
-    if (serverExperiences && Array.isArray(serverExperiences)) {
-      console.log("WorkExperience received updated data:", serverExperiences);
-      
-      // Always update our reference with the latest data
-      latestDataRef.current = [...serverExperiences];
-      
-      // Update the state too to trigger re-renders
-      setExperiences([...serverExperiences]);
-    }
-  }, [serverExperiences]);
-  
-  // Always use the latest data for display, using direct ref access as a fallback
-  const unfilteredExperiences = experiences.length > 0 ? experiences : 
-                           (latestDataRef.current.length > 0 ? latestDataRef.current : []);
-  
-  // Sort experiences by start date (newest first)
-  const displayExperiences = [...unfilteredExperiences].sort((a, b) => {
-    // Try to parse dates or use string comparison if parsing fails
-    const dateA = a.startDate;
-    const dateB = b.startDate;
-    return dateB.localeCompare(dateA); // Reverse order for newest first
+  // Fetch user experiences
+  const { data: experiences = [], isLoading } = useQuery<any[]>({
+    queryKey: [`/api/users/${userId}/experiences`],
+    enabled: !!userId && isAuthenticated,
+    staleTime: 1000, // Consider data stale after 1 second to force refresh
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
-
+  
+  // Create experience mutation
+  const createExperienceMutation = useMutation({
+    mutationFn: async (data: any) => {
+      console.log("Creating work experience:", data);
+      const res = await apiRequest('POST', '/api/experiences', data);
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/experiences`] });
+      toast({
+        title: "Work experience added",
+        description: "Your work experience has been added successfully",
+      });
+      setShowAddDialog(false);
+      resetForm();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error adding work experience",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+  
+  // Update experience mutation
+  const updateExperienceMutation = useMutation({
+    mutationFn: async (data: any) => {
+      console.log("Updating work experience:", data);
+      const res = await apiRequest('PUT', `/api/experiences/${data.id}`, data);
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/experiences`] });
+      toast({
+        title: "Work experience updated",
+        description: "Your work experience has been updated successfully",
+      });
+      setShowEditDialog(false);
+      resetForm();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error updating work experience",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+  
+  // Delete experience mutation
+  const deleteExperienceMutation = useMutation({
+    mutationFn: async (id: number) => {
+      console.log("Deleting work experience:", id);
+      const res = await apiRequest('DELETE', `/api/experiences/${id}`);
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/experiences`] });
+      toast({
+        title: "Work experience deleted",
+        description: "Your work experience has been deleted successfully",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error deleting work experience",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+  
+  // Handle dialog visibility
+  const openAddDialog = () => {
+    resetForm();
+    setShowAddDialog(true);
+  };
+  
+  const openEditDialog = (experience: any) => {
+    setEditId(experience.id);
+    
+    // Parse date strings into Date objects
+    let startDate = null;
+    let endDate = null;
+    
+    if (experience.startDate) {
+      startDate = new Date(experience.startDate);
+    }
+    
+    if (experience.endDate) {
+      endDate = new Date(experience.endDate);
+    }
+    
+    setFormData({
+      ...experience,
+      startDate,
+      endDate,
+    });
+    
+    setShowEditDialog(true);
+  };
+  
+  // Handle form input changes
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    
+    // Clear validation error when user types
+    if (name in formErrors) {
+      setFormErrors(prev => ({
+        ...prev,
+        [name]: false
+      }));
+    }
+  };
+  
+  // Handle select changes
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    
+    // Clear validation error when user selects
+    if (name in formErrors) {
+      setFormErrors(prev => ({
+        ...prev,
+        [name]: false
+      }));
+    }
+    
+    // If industry changes, reset domain
+    if (name === 'industry') {
+      setFormData(prev => ({
+        ...prev,
+        domain: ''
+      }));
+    }
+  };
+  
+  // Handle date changes
+  const handleDateChange = (name: string, value: Date | null) => {
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    
+    // Clear validation error when user selects a date
+    if (name in formErrors) {
+      setFormErrors(prev => ({
+        ...prev,
+        [name]: false
+      }));
+    }
+  };
+  
+  // Handle form submission for adding experience
+  const handleAddSubmit = () => {
+    // Validate required fields
+    const errors = {
+      title: !formData.title,
+      company: !formData.company,
+      industry: !formData.industry,
+      domain: !formData.domain,
+      startDate: !formData.startDate
+    };
+    
+    setFormErrors(errors);
+    
+    // Check if any required field is empty
+    if (Object.values(errors).some(error => error)) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Format dates to strings
+    const payload = {
+      ...formData,
+      startDate: formData.startDate ? formData.startDate.toISOString() : null,
+      endDate: formData.endDate ? formData.endDate.toISOString() : null
+    };
+    
+    createExperienceMutation.mutate(payload);
+  };
+  
+  // Handle form submission for editing experience
+  const handleEditSubmit = () => {
+    // Validate required fields
+    const errors = {
+      title: !formData.title,
+      company: !formData.company,
+      industry: !formData.industry,
+      domain: !formData.domain,
+      startDate: !formData.startDate
+    };
+    
+    setFormErrors(errors);
+    
+    // Check if any required field is empty
+    if (Object.values(errors).some(error => error)) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Format dates to strings
+    const payload = {
+      ...formData,
+      startDate: formData.startDate ? formData.startDate.toISOString() : null,
+      endDate: formData.endDate ? formData.endDate.toISOString() : null
+    };
+    
+    updateExperienceMutation.mutate(payload);
+  };
+  
+  // Handle delete confirmation
+  const handleDelete = (id: number) => {
+    if (window.confirm("Are you sure you want to delete this work experience?")) {
+      deleteExperienceMutation.mutate(id);
+    }
+  };
+  
+  // Sort experiences by date (newest first)
+  const sortedExperiences = [...experiences].sort((a, b) => {
+    const dateA = new Date(a.startDate);
+    const dateB = new Date(b.startDate);
+    return dateB.getTime() - dateA.getTime();
+  });
+  
+  // For direct debugging
+  useEffect(() => {
+    const logData = () => {
+      console.log("Work Experience - Directly fetching latest experiences data", Date.now());
+      
+      setTimeout(() => {
+        console.log("Work Experience - Got direct fetch data:", experiences);
+      }, 100);
+    };
+    
+    logData();
+    const intervalId = setInterval(logData, 1000);
+    
+    return () => clearInterval(intervalId);
+  }, [experiences]);
+  
   return (
-    <>
-      <Card className="mb-6">
-        <CardContent className="pt-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-medium text-gray-900">Work Experience</h2>
-            <Button 
-              variant="ghost" 
-              className="text-primary hover:text-primary-600 hover:bg-transparent"
-              onClick={handleAdd}
-            >
-              <i className="fas fa-plus mr-1"></i> Add
-            </Button>
+    <Card className="mb-6">
+      <CardHeader className="flex flex-row items-center justify-between py-4">
+        <CardTitle>Work Experience</CardTitle>
+        <Button onClick={openAddDialog} size="sm">
+          <Plus className="h-4 w-4 mr-1" />
+          Add
+        </Button>
+      </CardHeader>
+      <CardContent>
+        {isLoading ? (
+          <div className="flex justify-center py-4">
+            <p>Loading work experiences...</p>
           </div>
-          
-          {isLoading ? (
-            <div className="flex justify-center py-6">
-              <Loader2 className="h-6 w-6 animate-spin text-primary" />
-            </div>
-          ) : displayExperiences && displayExperiences.length > 0 ? (
-            <div className="space-y-6">
-              {displayExperiences.map((exp) => (
-                <div key={exp.id} className="border-b border-gray-200 pb-6">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="text-base font-medium text-gray-900">{exp.title}</h3>
-                      <p className="text-sm text-gray-500 mt-1">{exp.company} • {exp.location}</p>
-                      <p className="text-sm text-gray-500 mt-1">
-                        <span className="inline-flex items-center">
-                          {exp.industry && (
-                            <span className="bg-gray-100 text-gray-800 px-2 py-0.5 rounded-md mr-1">
-                              {exp.industry}
-                            </span>
-                          )}
-                          {exp.domain && (
-                            <span className="bg-gray-100 text-gray-800 px-2 py-0.5 rounded-md">
-                              {exp.domain}
-                            </span>
-                          )}
-                        </span>
-                        {(exp.industry || exp.domain) && ` • `}
-                        {exp.startDate} - {exp.endDate || 'Present'}
-                      </p>
-                    </div>
-                    <div className="flex space-x-2">
-                      <button 
-                        className="text-gray-400 hover:text-gray-500 focus:outline-none"
-                        onClick={() => handleEdit(exp.id)}
-                      >
-                        <i className="fas fa-edit"></i>
-                      </button>
-                      <button 
-                        className="text-gray-400 hover:text-gray-500 focus:outline-none"
-                        onClick={() => handleDelete(exp.id)}
-                      >
-                        <i className="fas fa-trash"></i>
-                      </button>
-                    </div>
-                  </div>
-                  <p className="mt-2 text-sm text-gray-600">
-                    {exp.description}
-                  </p>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-6 text-gray-500">
-              No work experience yet. Add your professional experience using the "Add" button in the top-right corner.
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Add Experience Modal */}
-      <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-        <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>{newExperience.id ? 'Edit Work Experience' : 'Add Work Experience'}</DialogTitle>
-          </DialogHeader>
-          
-          {/* Info message about Industry and Domain fields */}
-          <div className="bg-blue-50 border border-blue-200 rounded-md p-3 mb-2">
-            <p className="text-sm text-blue-800">
-              <span className="font-semibold">Important:</span> Please provide both Industry (required) and Domain (optional) 
-              information to help with matchmaking and professional connections.
+        ) : sortedExperiences.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            <p>You haven't added any work experience yet.</p>
+            <p className="mt-2">
+              <Button variant="outline" onClick={openAddDialog} size="sm">
+                <Plus className="h-4 w-4 mr-1" />
+                Add Work Experience
+              </Button>
             </p>
           </div>
+        ) : (
+          <div className="space-y-4">
+            {sortedExperiences.map((experience: any) => (
+              <div key={experience.id} className="rounded-md border p-4">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="font-medium">{experience.title}</h3>
+                    <p className="text-sm text-muted-foreground flex items-center mt-1">
+                      <Building className="h-3.5 w-3.5 mr-1.5" />
+                      {experience.company}
+                      {experience.location && (
+                        <>
+                          <span className="mx-1">•</span>
+                          <MapPin className="h-3.5 w-3.5 mr-1.5" />
+                          {experience.location}
+                        </>
+                      )}
+                    </p>
+                    <p className="text-sm text-muted-foreground flex items-center mt-1">
+                      <CalendarIcon className="h-3.5 w-3.5 mr-1.5" />
+                      {experience.startDate ? format(new Date(experience.startDate), 'MMM yyyy') : 'Present'} - 
+                      {experience.endDate ? format(new Date(experience.endDate), 'MMM yyyy') : 'Present'}
+                    </p>
+                    
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                      {experience.industry && (
+                        <Badge variant="outline" className="bg-gray-50 flex items-center">
+                          <Briefcase className="h-3 w-3 mr-1" />
+                          {experience.industry}
+                        </Badge>
+                      )}
+                      
+                      {experience.domain && (
+                        <Badge variant="outline" className="bg-gray-50 flex items-center">
+                          <TagIcon className="h-3 w-3 mr-1" />
+                          {experience.domain}
+                        </Badge>
+                      )}
+                    </div>
+                    
+                    {experience.description && (
+                      <p className="mt-2 text-sm">{experience.description}</p>
+                    )}
+                  </div>
+                  
+                  <div className="flex space-x-1">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => openEditDialog(experience)}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => handleDelete(experience.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </CardContent>
+      
+      {/* Add Experience Dialog */}
+      <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add Work Experience</DialogTitle>
+            <DialogDescription>
+              Add details about your work experience
+            </DialogDescription>
+          </DialogHeader>
           
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="title" className="text-right">
-                Job Title*
+          <Alert className="mb-4 bg-blue-50 border-blue-100">
+            <AlertCircle className="h-4 w-4 text-blue-500" />
+            <AlertDescription className="text-blue-700 font-medium">
+              Industry and Domain fields are essential for accurate job matching and smart networking recommendations.
+            </AlertDescription>
+          </Alert>
+          
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="title" className="flex items-center">
+                Job Title <span className="text-red-500 ml-1">*</span>
               </Label>
-              <Input
-                id="title"
-                value={newExperience.title}
-                onChange={(e) => setNewExperience({...newExperience, title: e.target.value})}
-                className="col-span-3"
-                placeholder="Software Engineer"
-                required
+              <JobTitleCombobox 
+                value={formData.title}
+                onChange={(value) => handleSelectChange('title', value)}
+                disabled={createExperienceMutation.isPending}
+                error={formErrors.title}
               />
+              {formErrors.title && (
+                <p className="text-sm text-red-500">Job title is required</p>
+              )}
             </div>
             
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="company" className="text-right">
-                Company*
+            <div className="space-y-2">
+              <Label htmlFor="company" className="flex items-center">
+                Company <span className="text-red-500 ml-1">*</span>
               </Label>
               <Input
                 id="company"
-                value={newExperience.company}
-                onChange={(e) => setNewExperience({...newExperience, company: e.target.value})}
-                className="col-span-3"
-                placeholder="Acme Inc."
-                required
+                name="company"
+                value={formData.company}
+                onChange={handleInputChange}
+                disabled={createExperienceMutation.isPending}
+                className={formErrors.company ? "border-red-500" : ""}
               />
+              {formErrors.company && (
+                <p className="text-sm text-red-500">Company is required</p>
+              )}
             </div>
             
-            {/* INDUSTRY FIELD - ENHANCED VISIBILITY */}
-            <div className="grid grid-cols-4 items-center gap-4 p-2 border border-gray-200 rounded-md bg-gray-50">
-              <Label htmlFor="industry" className="text-right font-medium">
-                Industry*
-              </Label>
-              <Input
-                id="industry"
-                value={newExperience.industry}
-                onChange={(e) => setNewExperience({...newExperience, industry: e.target.value})}
-                className="col-span-3 border-primary/50"
-                placeholder="Technology, Healthcare, etc."
-                required
-              />
-            </div>
-            
-            {/* DOMAIN FIELD - ENHANCED VISIBILITY */}
-            <div className="grid grid-cols-4 items-center gap-4 p-2 border border-gray-200 rounded-md bg-gray-50">
-              <Label htmlFor="domain" className="text-right font-medium">
-                Domain
-              </Label>
-              <Input
-                id="domain"
-                value={newExperience.domain}
-                onChange={(e) => setNewExperience({...newExperience, domain: e.target.value})}
-                className="col-span-3 border-primary/50"
-                placeholder="Software Development, Data Science, etc."
-              />
-            </div>
-            
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="location" className="text-right">
-                Location
-              </Label>
-              <div className="col-span-3">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="industry" className="flex items-center">
+                  Industry <span className="text-red-500 ml-1">*</span>
+                </Label>
                 <Select
-                  value={newExperience.location}
-                  onValueChange={(value) => setNewExperience({...newExperience, location: value})}
+                  value={formData.industry}
+                  onValueChange={(value) => handleSelectChange('industry', value)}
+                  disabled={createExperienceMutation.isPending}
                 >
-                  <SelectTrigger id="location" className="w-full">
-                    <SelectValue placeholder="Select a location" />
+                  <SelectTrigger className={cn(formErrors.industry ? "border-red-500" : "", "bg-gray-50")}>
+                    <SelectValue placeholder="Select industry" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Remote">Remote</SelectItem>
-                    <SelectItem value="San Francisco, CA">San Francisco, CA</SelectItem>
-                    <SelectItem value="New York, NY">New York, NY</SelectItem>
-                    <SelectItem value="Seattle, WA">Seattle, WA</SelectItem>
-                    <SelectItem value="Austin, TX">Austin, TX</SelectItem>
-                    <SelectItem value="Chicago, IL">Chicago, IL</SelectItem>
-                    <SelectItem value="Los Angeles, CA">Los Angeles, CA</SelectItem>
-                    <SelectItem value="Boston, MA">Boston, MA</SelectItem>
-                    <SelectItem value="Denver, CO">Denver, CO</SelectItem>
-                    <SelectItem value="Washington, DC">Washington, DC</SelectItem>
-                    <SelectItem value="Atlanta, GA">Atlanta, GA</SelectItem>
-                    <SelectItem value="Toronto, Canada">Toronto, Canada</SelectItem>
-                    <SelectItem value="London, UK">London, UK</SelectItem>
-                    <SelectItem value="Berlin, Germany">Berlin, Germany</SelectItem>
-                    <SelectItem value="Paris, France">Paris, France</SelectItem>
-                    <SelectItem value="Mumbai, India">Mumbai, India</SelectItem>
-                    <SelectItem value="Bangalore, India">Bangalore, India</SelectItem>
-                    <SelectItem value="Sydney, Australia">Sydney, Australia</SelectItem>
-                    <SelectItem value="Tokyo, Japan">Tokyo, Japan</SelectItem>
-                    <SelectItem value="Singapore">Singapore</SelectItem>
+                    <SelectGroup>
+                      {INDUSTRIES.map(industry => (
+                        <SelectItem key={industry} value={industry}>
+                          {industry}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
                   </SelectContent>
                 </Select>
+                {formErrors.industry && (
+                  <p className="text-sm text-red-500">Industry is required</p>
+                )}
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="domain" className="flex items-center">
+                  Domain <span className="text-red-500 ml-1">*</span>
+                </Label>
+                <Select
+                  value={formData.domain}
+                  onValueChange={(value) => handleSelectChange('domain', value)}
+                  disabled={!formData.industry || createExperienceMutation.isPending}
+                >
+                  <SelectTrigger className={cn(formErrors.domain ? "border-red-500" : "", "bg-gray-50")}>
+                    <SelectValue placeholder="Select domain" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {formData.industry && INDUSTRY_DOMAINS[formData.industry]?.map(domain => (
+                        <SelectItem key={domain} value={domain}>
+                          {domain}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                {formErrors.domain && (
+                  <p className="text-sm text-red-500">Domain is required</p>
+                )}
               </div>
             </div>
             
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="startDate" className="text-right">
-                Start Date*
-              </Label>
-              <div className="col-span-3">
+            <div className="space-y-2">
+              <Label htmlFor="location">Location</Label>
+              <Select
+                value={formData.location}
+                onValueChange={(value) => handleSelectChange('location', value)}
+                disabled={createExperienceMutation.isPending}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select location (optional)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {popularLocations.map(location => (
+                      <SelectItem key={location} value={location}>
+                        {location}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="startDate" className="flex items-center">
+                  Start Date <span className="text-red-500 ml-1">*</span>
+                </Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
-                      variant={"outline"}
+                      variant="outline"
                       className={cn(
                         "w-full justify-start text-left font-normal",
-                        !startDate && "text-muted-foreground"
+                        !formData.startDate && "text-muted-foreground",
+                        formErrors.startDate && "border-red-500"
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {startDate ? format(startDate, "MMM yyyy") : <span>Pick month and year</span>}
+                      {formData.startDate ? format(formData.startDate, "MMM yyyy") : "Select date"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
-                    <div className="p-3">
-                      <div className="flex flex-col gap-2">
-                        <div className="grid grid-cols-2 gap-2">
-                          <div>
-                            <Label htmlFor="startMonth">Month</Label>
-                            <Select 
-                              value={startDate ? format(startDate, "MM") : ""} 
-                              onValueChange={(value) => {
-                                try {
-                                  const month = parseInt(value, 10) - 1; // JavaScript months are 0-indexed
-                                  const year = startDate ? startDate.getFullYear() : new Date().getFullYear();
-                                  const newDate = new Date(year, month, 1);
-                                  setStartDate(newDate);
-                                  setNewExperience({
-                                    ...newExperience,
-                                    startDate: format(newDate, "MMM yyyy")
-                                  });
-                                } catch (error) {
-                                  console.error("Error setting month:", error);
-                                }
-                              }}
-                            >
-                              <SelectTrigger id="startMonth" className="w-full">
-                                <SelectValue placeholder="Month" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="01">January</SelectItem>
-                                <SelectItem value="02">February</SelectItem>
-                                <SelectItem value="03">March</SelectItem>
-                                <SelectItem value="04">April</SelectItem>
-                                <SelectItem value="05">May</SelectItem>
-                                <SelectItem value="06">June</SelectItem>
-                                <SelectItem value="07">July</SelectItem>
-                                <SelectItem value="08">August</SelectItem>
-                                <SelectItem value="09">September</SelectItem>
-                                <SelectItem value="10">October</SelectItem>
-                                <SelectItem value="11">November</SelectItem>
-                                <SelectItem value="12">December</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div>
-                            <Label htmlFor="startYear">Year</Label>
-                            <Select 
-                              value={startDate ? startDate.getFullYear().toString() : ""} 
-                              onValueChange={(value) => {
-                                try {
-                                  const year = parseInt(value, 10);
-                                  const month = startDate ? startDate.getMonth() : 0;
-                                  const newDate = new Date(year, month, 1);
-                                  setStartDate(newDate);
-                                  setNewExperience({
-                                    ...newExperience,
-                                    startDate: format(newDate, "MMM yyyy")
-                                  });
-                                } catch (error) {
-                                  console.error("Error setting year:", error);
-                                }
-                              }}
-                            >
-                              <SelectTrigger id="startYear" className="w-full">
-                                <SelectValue placeholder="Year" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {Array.from({ length: 41 }, (_, i) => 1990 + i).map(year => (
-                                  <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                    <Calendar
+                      mode="single"
+                      selected={formData.startDate || undefined}
+                      onSelect={(date) => handleDateChange('startDate', date)}
+                      disabled={createExperienceMutation.isPending}
+                      captionLayout="dropdown-buttons"
+                      fromYear={1980}
+                      toYear={2035}
+                      view="month"
+                    />
+                  </PopoverContent>
+                </Popover>
+                {formErrors.startDate && (
+                  <p className="text-sm text-red-500">Start date is required</p>
+                )}
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="endDate">End Date</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !formData.endDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {formData.endDate ? format(formData.endDate, "MMM yyyy") : "Present"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={formData.endDate || undefined}
+                      onSelect={(date) => handleDateChange('endDate', date)}
+                      disabled={createExperienceMutation.isPending}
+                      captionLayout="dropdown-buttons"
+                      fromYear={1980}
+                      toYear={2035}
+                      view="month"
+                    />
                   </PopoverContent>
                 </Popover>
               </div>
             </div>
             
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="endDate" className="text-right">
-                End Date
-              </Label>
-              <div className="col-span-3">
-                <div className="flex space-x-2 items-center">
-                  <div className={cn(
-                    "flex-1",
-                    newExperience.endDate === 'Present' ? "opacity-50" : ""
-                  )}>
-                    <Popover>
-                      <PopoverTrigger asChild disabled={newExperience.endDate === 'Present'}>
-                        <Button
-                          variant={"outline"}
-                          className={cn(
-                            "w-full justify-start text-left font-normal",
-                            !endDate && "text-muted-foreground"
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {endDate ? format(endDate, "MMM yyyy") : <span>Select month and year</span>}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
-                        <div className="p-3">
-                          <div className="flex flex-col gap-2">
-                            <div className="grid grid-cols-2 gap-2">
-                              <div>
-                                <Label htmlFor="endMonth">Month</Label>
-                                <Select 
-                                  value={endDate ? format(endDate, "MM") : ""} 
-                                  onValueChange={(value) => {
-                                    try {
-                                      const month = parseInt(value, 10) - 1; // JavaScript months are 0-indexed
-                                      const year = endDate ? endDate.getFullYear() : new Date().getFullYear();
-                                      const newDate = new Date(year, month, 1);
-                                      
-                                      // Validate that end date is after start date
-                                      if (startDate && newDate < startDate) {
-                                        toast({
-                                          title: "Invalid date",
-                                          description: "End date must be after start date",
-                                          variant: "destructive"
-                                        });
-                                        return;
-                                      }
-                                      
-                                      setEndDate(newDate);
-                                      setNewExperience({
-                                        ...newExperience,
-                                        endDate: format(newDate, "MMM yyyy")
-                                      });
-                                    } catch (error) {
-                                      console.error("Error setting month:", error);
-                                    }
-                                  }}
-                                >
-                                  <SelectTrigger id="endMonth" className="w-full">
-                                    <SelectValue placeholder="Month" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="01">January</SelectItem>
-                                    <SelectItem value="02">February</SelectItem>
-                                    <SelectItem value="03">March</SelectItem>
-                                    <SelectItem value="04">April</SelectItem>
-                                    <SelectItem value="05">May</SelectItem>
-                                    <SelectItem value="06">June</SelectItem>
-                                    <SelectItem value="07">July</SelectItem>
-                                    <SelectItem value="08">August</SelectItem>
-                                    <SelectItem value="09">September</SelectItem>
-                                    <SelectItem value="10">October</SelectItem>
-                                    <SelectItem value="11">November</SelectItem>
-                                    <SelectItem value="12">December</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                              <div>
-                                <Label htmlFor="endYear">Year</Label>
-                                <Select 
-                                  value={endDate ? endDate.getFullYear().toString() : ""} 
-                                  onValueChange={(value) => {
-                                    try {
-                                      const year = parseInt(value, 10);
-                                      const month = endDate ? endDate.getMonth() : 0;
-                                      const newDate = new Date(year, month, 1);
-                                      
-                                      // Validate that end date is after start date
-                                      if (startDate && newDate < startDate) {
-                                        toast({
-                                          title: "Invalid date",
-                                          description: "End date must be after start date",
-                                          variant: "destructive"
-                                        });
-                                        return;
-                                      }
-                                      
-                                      setEndDate(newDate);
-                                      setNewExperience({
-                                        ...newExperience,
-                                        endDate: format(newDate, "MMM yyyy")
-                                      });
-                                    } catch (error) {
-                                      console.error("Error setting year:", error);
-                                    }
-                                  }}
-                                >
-                                  <SelectTrigger id="endYear" className="w-full">
-                                    <SelectValue placeholder="Year" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {Array.from({ length: 41 }, (_, i) => 1990 + i).map(year => (
-                                      <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                  <div className="ml-2">
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id="currentPosition"
-                        checked={newExperience.endDate === 'Present'}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setEndDate(undefined);
-                            setNewExperience({
-                              ...newExperience,
-                              endDate: 'Present'
-                            });
-                          } else {
-                            setNewExperience({
-                              ...newExperience,
-                              endDate: ''
-                            });
-                          }
-                        }}
-                        className="h-4 w-4 border-gray-300 rounded text-primary focus:ring-primary"
-                      />
-                      <Label htmlFor="currentPosition" className="text-sm font-medium text-gray-700">
-                        Current Position
-                      </Label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-4 items-start gap-4">
-              <Label htmlFor="description" className="text-right pt-2">
-                Description
-              </Label>
+            <div className="space-y-2">
+              <Label htmlFor="description">Description</Label>
               <Textarea
                 id="description"
-                value={newExperience.description || ''}
-                onChange={(e) => setNewExperience({...newExperience, description: e.target.value})}
-                className="col-span-3 min-h-[100px]"
-                placeholder="Describe your responsibilities, achievements, and the technologies or tools you worked with..."
+                name="description"
+                value={formData.description}
+                onChange={handleInputChange}
+                disabled={createExperienceMutation.isPending}
+                placeholder="Describe your responsibilities and achievements..."
+                rows={3}
               />
             </div>
           </div>
+          
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={handleCloseModal}>
+            <Button 
+              variant="outline" 
+              onClick={() => setShowAddDialog(false)}
+              disabled={createExperienceMutation.isPending}
+            >
               Cancel
             </Button>
-            <Button type="button" onClick={handleSaveExperience}>
-              {newExperience.id ? 'Update' : 'Save'}
+            <Button 
+              onClick={handleAddSubmit}
+              disabled={createExperienceMutation.isPending}
+            >
+              {createExperienceMutation.isPending ? "Adding..." : "Add Experience"}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </>
+      
+      {/* Edit Experience Dialog */}
+      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Work Experience</DialogTitle>
+            <DialogDescription>
+              Update details about your work experience
+            </DialogDescription>
+          </DialogHeader>
+          
+          <Alert className="mb-4 bg-blue-50 border-blue-100">
+            <AlertCircle className="h-4 w-4 text-blue-500" />
+            <AlertDescription className="text-blue-700 font-medium">
+              Industry and Domain fields are essential for accurate job matching and smart networking recommendations.
+            </AlertDescription>
+          </Alert>
+          
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="title" className="flex items-center">
+                Job Title <span className="text-red-500 ml-1">*</span>
+              </Label>
+              <JobTitleCombobox 
+                value={formData.title}
+                onChange={(value) => handleSelectChange('title', value)}
+                disabled={updateExperienceMutation.isPending}
+                error={formErrors.title}
+              />
+              {formErrors.title && (
+                <p className="text-sm text-red-500">Job title is required</p>
+              )}
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="company" className="flex items-center">
+                Company <span className="text-red-500 ml-1">*</span>
+              </Label>
+              <Input
+                id="company"
+                name="company"
+                value={formData.company}
+                onChange={handleInputChange}
+                disabled={updateExperienceMutation.isPending}
+                className={formErrors.company ? "border-red-500" : ""}
+              />
+              {formErrors.company && (
+                <p className="text-sm text-red-500">Company is required</p>
+              )}
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="industry" className="flex items-center">
+                  Industry <span className="text-red-500 ml-1">*</span>
+                </Label>
+                <Select
+                  value={formData.industry}
+                  onValueChange={(value) => handleSelectChange('industry', value)}
+                  disabled={updateExperienceMutation.isPending}
+                >
+                  <SelectTrigger className={cn(formErrors.industry ? "border-red-500" : "", "bg-gray-50")}>
+                    <SelectValue placeholder="Select industry" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {INDUSTRIES.map(industry => (
+                        <SelectItem key={industry} value={industry}>
+                          {industry}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                {formErrors.industry && (
+                  <p className="text-sm text-red-500">Industry is required</p>
+                )}
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="domain" className="flex items-center">
+                  Domain <span className="text-red-500 ml-1">*</span>
+                </Label>
+                <Select
+                  value={formData.domain}
+                  onValueChange={(value) => handleSelectChange('domain', value)}
+                  disabled={!formData.industry || updateExperienceMutation.isPending}
+                >
+                  <SelectTrigger className={cn(formErrors.domain ? "border-red-500" : "", "bg-gray-50")}>
+                    <SelectValue placeholder="Select domain" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {formData.industry && INDUSTRY_DOMAINS[formData.industry]?.map(domain => (
+                        <SelectItem key={domain} value={domain}>
+                          {domain}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                {formErrors.domain && (
+                  <p className="text-sm text-red-500">Domain is required</p>
+                )}
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="location">Location</Label>
+              <Select
+                value={formData.location}
+                onValueChange={(value) => handleSelectChange('location', value)}
+                disabled={updateExperienceMutation.isPending}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select location (optional)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {popularLocations.map(location => (
+                      <SelectItem key={location} value={location}>
+                        {location}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="startDate" className="flex items-center">
+                  Start Date <span className="text-red-500 ml-1">*</span>
+                </Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !formData.startDate && "text-muted-foreground",
+                        formErrors.startDate && "border-red-500"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {formData.startDate ? format(formData.startDate, "MMM yyyy") : "Select date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={formData.startDate || undefined}
+                      onSelect={(date) => handleDateChange('startDate', date)}
+                      disabled={updateExperienceMutation.isPending}
+                      captionLayout="dropdown-buttons"
+                      fromYear={1980}
+                      toYear={2035}
+                      view="month"
+                    />
+                  </PopoverContent>
+                </Popover>
+                {formErrors.startDate && (
+                  <p className="text-sm text-red-500">Start date is required</p>
+                )}
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="endDate">End Date</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !formData.endDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {formData.endDate ? format(formData.endDate, "MMM yyyy") : "Present"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={formData.endDate || undefined}
+                      onSelect={(date) => handleDateChange('endDate', date)}
+                      disabled={updateExperienceMutation.isPending}
+                      captionLayout="dropdown-buttons"
+                      fromYear={1980}
+                      toYear={2035}
+                      view="month"
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                name="description"
+                value={formData.description}
+                onChange={handleInputChange}
+                disabled={updateExperienceMutation.isPending}
+                placeholder="Describe your responsibilities and achievements..."
+                rows={3}
+              />
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setShowEditDialog(false)}
+              disabled={updateExperienceMutation.isPending}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleEditSubmit}
+              disabled={updateExperienceMutation.isPending}
+            >
+              {updateExperienceMutation.isPending ? "Updating..." : "Update Experience"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </Card>
   );
 }
