@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import WorkExperience from "@/components/profile/work-experience";
-import Education from "@/components/profile/education-new";
+// Education component removed as requested
 import Skills from "@/components/profile/skills";
 // Removed Resume and LinkedIn import components
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -1618,8 +1618,7 @@ export default function Profile() {
             {/* Work Experience */}
             <WorkExperience />
             
-            {/* Education */}
-            <Education />
+            {/* Education section removed as requested */}
             
             {/* Skills */}
             <Skills />
