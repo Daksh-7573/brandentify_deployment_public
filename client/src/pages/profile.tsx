@@ -13,6 +13,9 @@ import LinkedInImport from "@/components/profile/linkedin-import";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useState, useEffect } from "react";
+import { Camera } from "lucide-react";
+import { useProfilePicture } from "@/hooks/use-profile-picture";
+import { ProfilePictureDialog } from "@/components/profile/profile-picture-dialog";
 import { 
   Dialog,
   DialogContent,
@@ -394,10 +397,17 @@ export default function Profile() {
   const [_, setLocation] = useLocation();
   const { toast } = useToast();
   
+  // Get user ID (use demo ID if in demo mode)
+  const userId = isDemoMode ? 1 : (user?.uid ? parseInt(user.uid) : 1);
+  
   // State for edit dialogs
   const [showEditBasicInfo, setShowEditBasicInfo] = useState(false);
+  const [showProfilePictureDialog, setShowProfilePictureDialog] = useState(false);
   const [selectedIndustry, setSelectedIndustry] = useState<string>('');
   const [selectedDomain, setSelectedDomain] = useState<string>('');
+  
+  // Profile picture update mutation
+  const profilePictureMutation = useProfilePicture(userId);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -408,9 +418,6 @@ export default function Profile() {
     domain: '',
     lookingFor: ''
   });
-  
-  // Get user ID (use demo ID if in demo mode)
-  const userId = isDemoMode ? 1 : (user?.uid ? parseInt(user.uid) : 1);
   
   // Also fetch current user data for the profile
   const { data: userData, isLoading: isLoadingUser } = useQuery<any>({
@@ -1256,8 +1263,21 @@ export default function Profile() {
     );
   }
 
+  // Handle profile picture update
+  const handleProfilePictureUpdate = (base64Image: string) => {
+    profilePictureMutation.mutate(base64Image);
+  };
+  
   return (
     <div className="min-h-screen flex flex-col">
+      {/* Profile Picture Dialog */}
+      <ProfilePictureDialog 
+        open={showProfilePictureDialog}
+        onOpenChange={setShowProfilePictureDialog}
+        currentPhotoURL={userData?.photoURL || user?.photoURL}
+        onSave={handleProfilePictureUpdate}
+      />
+      
       {/* Edit Basic Info Dialog */}
       <Dialog open={showEditBasicInfo} onOpenChange={setShowEditBasicInfo}>
         <DialogContent className="sm:max-w-[425px]">
@@ -1505,16 +1525,25 @@ export default function Profile() {
               <div className="h-32 bg-gradient-to-r from-primary to-purple-600"></div>
               <CardContent className="relative pt-16 pb-4">
                 <div className="absolute -top-16 left-1/2 sm:left-6 transform -translate-x-1/2 sm:translate-x-0">
-                  <div className="h-24 w-24 overflow-hidden rounded-full bg-white ring-4 ring-white flex items-center justify-center">
-                    <img 
-                      className="h-full w-full object-cover" 
-                      src={user?.photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
-                      alt="User profile"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
-                      }}
-                    />
+                  <div className="relative group">
+                    <div className="h-24 w-24 overflow-hidden rounded-full bg-white ring-4 ring-white flex items-center justify-center">
+                      <img 
+                        className="h-full w-full object-cover" 
+                        src={user?.photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
+                        alt="User profile"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
+                        }}
+                      />
+                    </div>
+                    <button 
+                      onClick={() => setShowProfilePictureDialog(true)}
+                      className="absolute bottom-0 right-0 bg-primary hover:bg-primary/90 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      aria-label="Change profile picture"
+                    >
+                      <Camera size={16} />
+                    </button>
                   </div>
                 </div>
                 <div className="pl-0 sm:pl-32 mt-12 sm:mt-2">
