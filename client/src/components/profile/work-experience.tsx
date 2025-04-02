@@ -898,7 +898,7 @@ export default function WorkExperience() {
       
       {/* Add Experience Dialog */}
       <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Add Work Experience</DialogTitle>
             <DialogDescription>
@@ -1124,7 +1124,7 @@ export default function WorkExperience() {
       
       {/* Edit Experience Dialog */}
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Work Experience</DialogTitle>
             <DialogDescription>
