@@ -24,6 +24,7 @@ export default function AICareerPage() {
   const [resumeText, setResumeText] = useState("");
   const [targetIndustry, setTargetIndustry] = useState("");
   const [networkingPurpose, setNetworkingPurpose] = useState("mentorship");
+  const [activeTab, setActiveTab] = useState("career");
   const { user, isAuthenticated, isLoading } = useAuth();
   const [_, setLocation] = useLocation();
 
@@ -134,13 +135,20 @@ export default function AICareerPage() {
     }
   });
 
-  // Get recent AI messages for display
-  const getRecentAIMessages = () => {
+  // Get recent AI messages for display based on active tab
+  const getRecentAIMessages = (messageType?: string) => {
     if (!chatMessages) return [];
     
-    return chatMessages
-      .filter((msg: any) => msg.sender === "ai")
-      .sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    let filteredMessages = chatMessages.filter((msg: any) => msg.sender === "ai");
+    
+    // If a specific message type is requested, filter by that type
+    if (messageType) {
+      filteredMessages = filteredMessages.filter((msg: any) => msg.messageType === messageType);
+    }
+    
+    return filteredMessages.sort((a: any, b: any) => 
+      new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    );
   };
 
   // Format timestamp for display
@@ -197,7 +205,16 @@ export default function AICareerPage() {
       
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
               <div className="lg:col-span-1">
-                <Tabs defaultValue="career" className="w-full">
+                <Tabs defaultValue="career" className="w-full" onValueChange={(value) => {
+                    // Update active tab and reset appropriate state
+                    setActiveTab(value);
+                    
+                    if (value === 'resume') {
+                      setResumeText("");
+                    } else if (value === 'networking') {
+                      setTargetIndustry("");
+                    }
+                  }}>
                   <TabsList className="grid w-full grid-cols-3 mb-4">
                     <TabsTrigger value="career">Career Advice</TabsTrigger>
                     <TabsTrigger value="resume">Resume Analysis</TabsTrigger>
@@ -310,36 +327,57 @@ export default function AICareerPage() {
                   <div className="flex justify-center py-8 sm:py-12 border rounded-lg bg-muted/10">
                     <Loader2 className="h-8 w-8 animate-spin text-primary" />
                   </div>
-                ) : getRecentAIMessages().length === 0 ? (
-                  <div className="text-center py-8 sm:py-12 border rounded-lg bg-muted/10">
-                    <h3 className="text-base sm:text-lg font-medium">No AI insights yet</h3>
-                    <p className="text-sm text-muted-foreground mt-2 max-w-md mx-auto">
-                      Generate career advice, analyze your resume, or get networking recommendations to see AI insights here.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-4 sm:space-y-6">
-                    {getRecentAIMessages().map((message: any) => (
-                      <Card key={message.id} className="p-4 sm:p-6 overflow-hidden">
-                        <div className="flex justify-between items-start mb-3 sm:mb-4">
-                          <div>
-                            <h3 className="font-medium">{getMessageTypeLabel(message.messageType)}</h3>
-                            <p className="text-xs text-muted-foreground">
-                              {formatTimestamp(message.timestamp)}
-                            </p>
+                ) : (() => {
+                  // Get messages filtered by the active tab's type
+                  let messageType;
+                  
+                  if (activeTab === "career") {
+                    messageType = "career_advice";
+                  } else if (activeTab === "resume") {
+                    messageType = "resume_analysis";
+                  } else if (activeTab === "networking") {
+                    messageType = "networking_recommendations";
+                  }
+                  
+                  const filteredMessages = getRecentAIMessages(messageType);
+                  
+                  if (filteredMessages.length === 0) {
+                    return (
+                      <div className="text-center py-8 sm:py-12 border rounded-lg bg-muted/10">
+                        <h3 className="text-base sm:text-lg font-medium">No AI insights yet</h3>
+                        <p className="text-sm text-muted-foreground mt-2 max-w-md mx-auto">
+                          {activeTab === "career" ? "Generate career advice to see insights here." :
+                           activeTab === "resume" ? "Analyze your resume to see insights here." :
+                           "Generate networking recommendations to see insights here."}
+                        </p>
+                      </div>
+                    );
+                  }
+                  
+                  return (
+                    <div className="space-y-4 sm:space-y-6">
+                      {filteredMessages.map((message: any) => (
+                        <Card key={message.id} className="p-4 sm:p-6 overflow-hidden">
+                          <div className="flex justify-between items-start mb-3 sm:mb-4">
+                            <div>
+                              <h3 className="font-medium">{getMessageTypeLabel(message.messageType)}</h3>
+                              <p className="text-xs text-muted-foreground">
+                                {formatTimestamp(message.timestamp)}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                        <div className="prose max-w-none dark:prose-invert prose-sm overflow-x-auto">
-                          {message.content.split('\n').map((line: string, i: number) => (
-                            <p key={i} className={line.trim() === '' ? 'my-3 sm:my-4' : ''}>
-                              {line}
-                            </p>
-                          ))}
-                        </div>
-                      </Card>
-                    ))}
-                  </div>
-                )}
+                          <div className="prose max-w-none dark:prose-invert prose-sm overflow-x-auto">
+                            {message.content.split('\n').map((line: string, i: number) => (
+                              <p key={i} className={line.trim() === '' ? 'my-3 sm:my-4' : ''}>
+                                {line}
+                              </p>
+                            ))}
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+                  );
+                })()}
               </div>
             </div>
           </div>
