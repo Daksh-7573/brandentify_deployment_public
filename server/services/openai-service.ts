@@ -95,35 +95,71 @@ export async function generateCareerAdvice(userProfile: {
 
 /**
  * Analyze resume text to extract professional insights
- * @param resumeText The text content of the resume
+ * @param resumeText The text content of the resume or link to resume
  * @returns Analysis and suggestions based on the resume
  */
 export async function analyzeResume(resumeText: string) {
   try {
+    // Check if the input is likely a file or link
+    const isLink = resumeText.startsWith('http://') || resumeText.startsWith('https://');
+    const isBase64 = resumeText.startsWith('This is base64 encoded resume data:');
+    
+    let systemPrompt = "You are an expert resume analyzer with deep knowledge of professional development and hiring practices. Provide constructive feedback and actionable insights.";
+    let userPrompt = "";
+    
+    if (isLink) {
+      systemPrompt += " You cannot access the content of external links directly, but you can provide general guidance for resume improvement.";
+      userPrompt = `
+      The user has provided a link to their resume: ${resumeText.replace('This is a link to a resume: ', '')}
+      
+      Since I cannot directly access external links, please provide:
+      1. An explanation that you cannot access the content directly
+      2. General best practices for creating a strong resume
+      3. Common mistakes to avoid in resumes
+      4. Tips for tailoring resumes to specific industries
+      5. Advice on how to highlight achievements effectively
+      
+      Format your response in a clear, professional tone with section headings.
+      `;
+    } else if (isBase64) {
+      systemPrompt += " You cannot directly decode base64 data, but you can provide general guidance for resume improvement.";
+      userPrompt = `
+      The user has uploaded a resume file, but I cannot decode the file content directly. Please provide:
+      1. An explanation that you cannot access the content directly
+      2. General best practices for creating a strong resume
+      3. Common mistakes to avoid in resumes
+      4. Tips for tailoring resumes to specific industries
+      5. Advice on how to highlight achievements effectively
+      
+      Format your response in a clear, professional tone with section headings.
+      `;
+    } else {
+      userPrompt = `
+      I need a professional analysis of this resume text:
+      
+      ${resumeText}
+      
+      Please provide:
+      1. Overall assessment of the resume's strengths and weaknesses
+      2. Specific suggestions for improvement in content, structure, and formatting
+      3. Industry-specific advice for the target role(s)
+      4. Key skills that are evident and skills that may be missing
+      5. Recommendations for how to better position this professional profile
+      
+      Format the analysis in a clear, professional tone with section headings.
+      `;
+    }
+    
     const response = await openai.chat.completions.create({
       model: MODEL,
       messages: [
         {
           role: "system",
-          content:
-            "You are an expert resume analyzer with deep knowledge of professional development and hiring practices. Provide constructive feedback and actionable insights.",
+          content: systemPrompt,
         },
         {
           role: "user",
-          content: `
-          I need a professional analysis of this resume text:
-          
-          ${resumeText}
-          
-          Please provide:
-          1. Overall assessment of the resume's strengths and weaknesses
-          2. Specific suggestions for improvement in content, structure, and formatting
-          3. Industry-specific advice for the target role(s)
-          4. Key skills that are evident and skills that may be missing
-          5. Recommendations for how to better position this professional profile
-          
-          Format the analysis in a clear, professional tone with section headings.
-          `,
+          content: userPrompt,
         },
       ],
       temperature: 0.7,

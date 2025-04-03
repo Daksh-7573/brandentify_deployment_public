@@ -242,7 +242,7 @@ export default function AICareerPage() {
                     <Card className="p-4 sm:p-6">
                       <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Resume Analysis</h2>
                       <p className="text-sm text-muted-foreground mb-4">
-                        Upload your resume file or paste a link to your resume to get AI-powered analysis with suggestions for improvement by Musk.
+                        Upload your resume file or paste a link to your resume to get AI-powered analysis with suggestions for improvement by Musk. Please note that while Musk can provide general resume advice, it cannot directly download content from external links.
                       </p>
                       
                       {/* File Upload Section */}
@@ -350,7 +350,7 @@ export default function AICareerPage() {
                         <p className="text-sm text-gray-500 mb-2">Paste your resume link</p>
                         <Textarea 
                           className="min-h-[100px] sm:min-h-[120px] mb-4 w-full" 
-                          placeholder="Paste a link to your resume (e.g., Google Drive, Dropbox, OneDrive link)..."
+                          placeholder="Paste a link to your resume (e.g., Google Drive, Dropbox, OneDrive link). Note: Musk will provide general resume advice but cannot directly access the linked content."
                           value={resumeText}
                           onChange={(e) => setResumeText(e.target.value)}
                         />
