@@ -3,7 +3,6 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
 import { apiRequest } from '@/lib/queryClient';
-import { ThumbnailFormField } from './thumbnail-form-field';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -31,7 +30,6 @@ const projectSchema = z.object({
   category: z.string().nullable().optional(),
   startDate: z.string().min(1, { message: "Start date is required" }),
   projectUrl: z.string().url().nullable().optional().or(z.literal('')),
-  thumbnailUrl: z.string().url().nullable().optional().or(z.literal('')),
   mediaUrls: z.array(z.string()).nullable().optional(),
   isVisible: z.boolean().default(true),
 });
@@ -67,7 +65,6 @@ interface Project {
   category: string | null;
   startDate: string;
   projectUrl: string | null;
-  thumbnailUrl: string | null;
   mediaUrls: string[] | null;
   isVisible: boolean;
   userId: number;
@@ -97,13 +94,12 @@ interface Endorsement {
 
 interface AuthUser {
   id?: number;
-  uid?: string;
   username?: string;
   email?: string;
 }
 
 export default function Projects() {
-  const { user, isDemoMode } = useAuth();
+  const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
@@ -124,7 +120,6 @@ export default function Projects() {
       category: '',
       startDate: format(new Date(), 'yyyy-MM-dd'),
       projectUrl: '',
-      thumbnailUrl: '',
       mediaUrls: [],
       isVisible: true,
     },
@@ -170,7 +165,7 @@ export default function Projects() {
     if (!user) return;
     
     // Use actual user id if available
-    const userId = isDemoMode ? 1 : (user?.uid ? parseInt(user.uid) : 0);
+    const userId = user?.id || 0;
     
     setLoading(true);
     try {
@@ -213,7 +208,7 @@ export default function Projects() {
     if (!user) return;
     
     // Use actual user id if available
-    const userId = isDemoMode ? 1 : (user?.uid ? parseInt(user.uid) : 0);
+    const userId = user?.id || 0;
     
     setLoading(true);
     try {
@@ -407,7 +402,6 @@ export default function Projects() {
       category: project.category || '',
       startDate: project.startDate || format(new Date(), 'yyyy-MM-dd'),
       projectUrl: project.projectUrl || '',
-      thumbnailUrl: project.thumbnailUrl || '',
       mediaUrls: project.mediaUrls || [],
       isVisible: project.isVisible !== undefined ? project.isVisible : true,
     });
