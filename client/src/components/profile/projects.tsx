@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
@@ -30,7 +30,6 @@ const projectSchema = z.object({
   category: z.string().nullable().optional(),
   startDate: z.string().min(1, { message: "Start date is required" }),
   projectUrl: z.string().url().nullable().optional().or(z.literal('')),
-  thumbnailUrl: z.string().url().nullable().optional().or(z.literal('')),
   mediaUrls: z.array(z.string()).nullable().optional(),
   isVisible: z.boolean().default(true),
 });
@@ -113,6 +112,8 @@ export default function Projects() {
   const [collaborators, setCollaborators] = useState<Collaborator[]>([]);
   const [endorsements, setEndorsements] = useState<Endorsement[]>([]);
   const [activeTab, setActiveTab] = useState('details');
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const projectForm = useForm<ProjectFormValues>({
     resolver: zodResolver(projectSchema),
@@ -122,7 +123,6 @@ export default function Projects() {
       category: '',
       startDate: format(new Date(), 'yyyy-MM-dd'),
       projectUrl: '',
-      thumbnailUrl: '',
       mediaUrls: [],
       isVisible: true,
     },
@@ -220,12 +220,35 @@ export default function Projects() {
         userId,
       };
       
+      // First create the project
       const response = await apiRequest('POST', '/api/projects', projectData);
-      const data = await response.json();
+      const project = await response.json();
       
-      setProjects([...projects, data as Project]);
+      // If we have a thumbnail file, upload it
+      if (thumbnailFile) {
+        const formData = new FormData();
+        formData.append('thumbnail', thumbnailFile);
+        formData.append('projectId', project.id.toString());
+        
+        // Use fetch directly as apiRequest doesn't handle FormData
+        const uploadResponse = await fetch('/api/projects/upload-thumbnail', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        if (!uploadResponse.ok) {
+          throw new Error('Failed to upload thumbnail');
+        }
+        
+        const uploadResult = await uploadResponse.json();
+        // Update the project with the thumbnail URL
+        project.thumbnailUrl = uploadResult.thumbnailUrl;
+      }
+      
+      setProjects([...projects, project as Project]);
       setIsAddDialogOpen(false);
       projectForm.reset();
+      setThumbnailFile(null);
       
       toast({
         title: 'Success',
@@ -249,10 +272,32 @@ export default function Projects() {
     setLoading(true);
     try {
       const response = await apiRequest('PUT', `/api/projects/${currentProject.id}`, values);
-      const updatedProject = await response.json();
+      let updatedProject = await response.json();
+      
+      // If we have a thumbnail file, upload it
+      if (thumbnailFile) {
+        const formData = new FormData();
+        formData.append('thumbnail', thumbnailFile);
+        formData.append('projectId', updatedProject.id.toString());
+        
+        // Use fetch directly as apiRequest doesn't handle FormData
+        const uploadResponse = await fetch('/api/projects/upload-thumbnail', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        if (!uploadResponse.ok) {
+          throw new Error('Failed to upload thumbnail');
+        }
+        
+        const uploadResult = await uploadResponse.json();
+        // Update the project with the thumbnail URL
+        updatedProject.thumbnailUrl = uploadResult.thumbnailUrl;
+      }
       
       setProjects(projects.map(p => p.id === updatedProject.id ? updatedProject : p));
       setIsEditDialogOpen(false);
+      setThumbnailFile(null);
       
       toast({
         title: 'Success',
@@ -405,10 +450,14 @@ export default function Projects() {
       category: project.category || '',
       startDate: project.startDate || format(new Date(), 'yyyy-MM-dd'),
       projectUrl: project.projectUrl || '',
-      thumbnailUrl: project.thumbnailUrl || '',
       mediaUrls: project.mediaUrls || [],
       isVisible: project.isVisible !== undefined ? project.isVisible : true,
     });
+    // Reset the thumbnail file when editing
+    setThumbnailFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
     setIsEditDialogOpen(true);
   };
 
@@ -552,22 +601,49 @@ export default function Projects() {
                   )}
                 />
                 
-                <FormField
-                  control={projectForm.control}
-                  name="thumbnailUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Thumbnail URL</FormLabel>
-                      <FormControl>
-                        <Input placeholder="https://example.com/image.jpg" {...field} value={field.value || ''} />
-                      </FormControl>
-                      <FormDescription>
-                        URL to an image that represents your project
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="space-y-2">
+                  <div className="flex flex-col space-y-1">
+                    <FormLabel>Project Thumbnail</FormLabel>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        ref={fileInputRef}
+                        onChange={(e) => {
+                          const file = e.target.files && e.target.files[0];
+                          if (file) {
+                            setThumbnailFile(file);
+                          }
+                        }}
+                        className="flex-1"
+                      />
+                      {thumbnailFile && (
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            setThumbnailFile(null);
+                            if (fileInputRef.current) {
+                              fileInputRef.current.value = '';
+                            }
+                          }}
+                        >
+                          Clear
+                        </Button>
+                      )}
+                    </div>
+                    <FormDescription>
+                      Upload an image that represents your project (max 2MB)
+                    </FormDescription>
+                    {thumbnailFile && (
+                      <div className="mt-2 p-2 border rounded-md">
+                        <p className="text-sm font-medium">Selected file:</p>
+                        <p className="text-sm text-muted-foreground">{thumbnailFile.name}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
                 
                 <FormField
                   control={projectForm.control}
@@ -1154,6 +1230,51 @@ export default function Projects() {
                     </FormItem>
                   )}
                 />
+                
+                <div className="flex flex-col space-y-1">
+                  <FormLabel>Project Thumbnail</FormLabel>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      ref={fileInputRef}
+                      onChange={(e) => {
+                        const file = e.target.files && e.target.files[0];
+                        if (file) {
+                          setThumbnailFile(file);
+                        }
+                      }}
+                      className="flex-1"
+                    />
+                    {thumbnailFile && (
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => {
+                          setThumbnailFile(null);
+                          if (fileInputRef.current) {
+                            fileInputRef.current.value = '';
+                          }
+                        }}
+                      >
+                        Clear
+                      </Button>
+                    )}
+                  </div>
+                  {currentProject?.thumbnailUrl && !thumbnailFile && (
+                    <div className="mt-2">
+                      <p className="text-sm text-muted-foreground">Current thumbnail:</p>
+                      <div className="mt-1 relative w-24 h-24 rounded overflow-hidden">
+                        <img 
+                          src={currentProject.thumbnailUrl} 
+                          alt="Current thumbnail" 
+                          className="object-cover w-full h-full"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
                 
                 <DialogFooter>
                   <Button type="submit" disabled={loading}>

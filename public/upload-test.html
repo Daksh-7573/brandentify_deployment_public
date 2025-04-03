@@ -54,7 +54,7 @@
   </form>
   
   <h2>Create Project</h2>
-  <form action="/api/projects" method="post">
+  <form action="/api/projects" method="post" enctype="multipart/form-data">
     <label for="title">Title:</label>
     <input type="text" name="title" id="title" required><br><br>
     
@@ -69,11 +69,8 @@
       <option value="Data Science">Data Science</option>
     </select><br><br>
     
-    <label for="thumbnailFile">Thumbnail File (from upload):</label>
-    <input type="text" name="thumbnailFile" id="thumbnailFile"><br><br>
-    
-    <label for="thumbnailUrl">Thumbnail URL (from upload):</label>
-    <input type="text" name="thumbnailUrl" id="thumbnailUrl"><br><br>
+    <label for="thumbnail">Project Thumbnail:</label>
+    <input type="file" name="thumbnail" id="thumbnail" accept="image/*"><br><br>
     
     <input type="hidden" name="userId" value="1">
     <input type="hidden" name="mediaUrls" value="[]">
