@@ -118,10 +118,10 @@ export const projects = pgTable("projects", {
 export const projectCollaborators = pgTable("project_collaborators", {
   id: serial("id").primaryKey(),
   projectId: integer("project_id").references(() => projects.id).notNull(),
-  name: text("name").notNull(),
+  name: text("name").notNull().default("Team Member"), // Default name for all team members
   email: text("email"),
-  role: text("role").notNull(), // Such as "Lead Developer", "UI Designer"
-  profileLink: text("profile_link"), // Brandentifier profile link for connecting users
+  role: text("role").notNull().default("Collaborator"), // Default role for all team members
+  profileLink: text("profile_link").notNull(), // Required Brandentifier profile link for connecting users
   userId: integer("user_id").references(() => users.id), // Optional: if the collaborator is on the platform
   inviteStatus: text("invite_status").default("Pending"), // Pending, Accepted, Declined
   inviteToken: text("invite_token"),

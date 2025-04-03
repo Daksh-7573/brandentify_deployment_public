@@ -38,10 +38,7 @@ const projectSchema = z.object({
 });
 
 const collaboratorSchema = z.object({
-  name: z.string().min(1, { message: "Name is required" }),
-  email: z.string().email().nullable().optional(),
-  role: z.string().min(1, { message: "Role is required" }),
-  profileLink: z.string().nullable().optional(),
+  profileLink: z.string().min(1, { message: "Profile Link is required" }).url({ message: "Please enter a valid URL" }),
 });
 
 const endorsementSchema = z.object({
@@ -201,9 +198,6 @@ export default function Projects() {
   const collaboratorForm = useForm<CollaboratorFormValues>({
     resolver: zodResolver(collaboratorSchema),
     defaultValues: {
-      name: '',
-      email: '',
-      role: 'Contributor',
       profileLink: '',
     },
   });
@@ -425,8 +419,11 @@ export default function Projects() {
     if (!currentProject) return;
     
     try {
+      // Create a collaborator with just the profile link
       const collaboratorData = {
-        ...values,
+        profileLink: values.profileLink,
+        name: "Team Member", // Default name for all team members
+        role: "Collaborator", // Default role
         projectId: currentProject.id,
       };
       
@@ -438,13 +435,13 @@ export default function Projects() {
       
       toast({
         title: "Success",
-        description: "Collaborator added successfully!",
+        description: "Team member added successfully!",
       });
     } catch (error) {
-      console.error('Error adding collaborator:', error);
+      console.error('Error adding team member:', error);
       toast({
         title: "Error",
-        description: "Failed to add collaborator. Please try again.",
+        description: "Failed to add team member. Please try again.",
         variant: "destructive",
       });
     }
@@ -767,54 +764,12 @@ export default function Projects() {
                         <div className="space-y-4 border rounded-lg p-4">
                           <FormField
                             control={collaboratorForm.control}
-                            name="name"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Name*</FormLabel>
-                                <FormControl>
-                                  <Input placeholder="Collaborator name" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          
-                          <FormField
-                            control={collaboratorForm.control}
-                            name="email"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Email</FormLabel>
-                                <FormControl>
-                                  <Input placeholder="email@example.com" {...field} value={field.value || ''} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          
-                          <FormField
-                            control={collaboratorForm.control}
-                            name="role"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Role*</FormLabel>
-                                <FormControl>
-                                  <Input placeholder="Developer, Designer, PM, etc." {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          
-                          <FormField
-                            control={collaboratorForm.control}
                             name="profileLink"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Profile Link</FormLabel>
+                                <FormLabel>Profile Link*</FormLabel>
                                 <FormControl>
-                                  <Input placeholder="Brandentifier profile link" {...field} value={field.value || ''} />
+                                  <Input placeholder="https://brandentifier.replit.app/profile/username" {...field} value={field.value || ''} />
                                 </FormControl>
                                 <FormDescription>
                                   Add Brandentifier profile link to connect with users
@@ -1024,54 +979,12 @@ export default function Projects() {
                           <div className="space-y-4 border rounded-lg p-4">
                             <FormField
                               control={collaboratorForm.control}
-                              name="name"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Name*</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="Collaborator name" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <FormField
-                              control={collaboratorForm.control}
-                              name="email"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Email</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="email@example.com" {...field} value={field.value || ''} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <FormField
-                              control={collaboratorForm.control}
-                              name="role"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Role*</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="Developer, Designer, PM, etc." {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <FormField
-                              control={collaboratorForm.control}
                               name="profileLink"
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel>Profile Link</FormLabel>
+                                  <FormLabel>Profile Link*</FormLabel>
                                   <FormControl>
-                                    <Input placeholder="Brandentifier profile link" {...field} value={field.value || ''} />
+                                    <Input placeholder="https://brandentifier.replit.app/profile/username" {...field} value={field.value || ''} />
                                   </FormControl>
                                   <FormDescription>
                                     Add Brandentifier profile link to connect with users
@@ -1095,10 +1008,11 @@ export default function Projects() {
                             {collaborators.map((collaborator) => (
                               <div key={collaborator.id} className="flex items-center justify-between p-2 bg-muted rounded">
                                 <div>
-                                  <div className="font-medium">{collaborator.name}</div>
+                                  <div className="font-medium">Team Member</div>
                                   <div className="text-xs text-muted-foreground">
-                                    {collaborator.role}
-                                    {collaborator.email && ` • ${collaborator.email}`}
+                                    <a href={collaborator.profileLink} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                                      {collaborator.profileLink}
+                                    </a>
                                   </div>
                                 </div>
                                 <Button 
@@ -1385,20 +1299,16 @@ export default function Projects() {
                     {collaborators.map((collaborator) => (
                       <div key={collaborator.id} className="p-3 bg-muted rounded-md flex justify-between items-start">
                         <div>
-                          <div className="font-medium">{collaborator.name}</div>
-                          <div className="text-sm text-muted-foreground">{collaborator.role}</div>
-                          {collaborator.email && (
-                            <div className="text-sm text-muted-foreground">{collaborator.email}</div>
-                          )}
+                          <div className="font-medium">Team Member</div>
                           {collaborator.profileLink && (
                             <a 
                               href={collaborator.profileLink}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-xs text-primary hover:underline flex items-center mt-1"
+                              className="text-sm text-primary hover:underline flex items-center mt-1"
                             >
                               <ExternalLinkIcon className="h-3 w-3 mr-1" />
-                              View Profile
+                              {collaborator.profileLink}
                             </a>
                           )}
                         </div>

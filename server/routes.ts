@@ -1032,6 +1032,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log(`[POST /project-collaborators] Creating collaborator with data:`, req.body);
       
+      // Validate that profileLink is present
+      if (!req.body.profileLink) {
+        return res.status(400).json({ message: "Profile link is required" });
+      }
+
+      // Set default values
+      if (!req.body.name) {
+        req.body.name = "Team Member";
+      }
+      
+      if (!req.body.role) {
+        req.body.role = "Collaborator";
+      }
+      
       // Check if we have a Firebase UID instead of numeric userId
       if (typeof req.body.userId === 'string' && req.body.userId?.length > 20) {
         console.log(`[POST /project-collaborators] Received Firebase UID as userId: ${req.body.userId}`);
