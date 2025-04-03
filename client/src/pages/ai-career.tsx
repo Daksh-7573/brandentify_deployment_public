@@ -1,263 +1,322 @@
-import { useState, useEffect } from "react";
-import { useAuth } from "@/hooks/use-auth";
-import { useLocation } from "wouter";
-import Sidebar from "@/components/layout/sidebar";
-import Header from "@/components/layout/header";
-import ChatInterface from "@/components/chat/chat-interface";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { apiRequest } from "@/lib/queryClient";
+import { useState } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import { useQuery } from "@tanstack/react-query";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Card } from "@/components/ui/card";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-export default function AICareer() {
-  const { isAuthenticated, isLoading, user, isDemoMode } = useAuth();
-  const [_, setLocation] = useLocation();
-  const [activeQuestion, setActiveQuestion] = useState<string | undefined>(undefined);
+// Demo user ID for development
+const DEMO_USER_ID = 1;
+
+export default function AICareerPage() {
   const { toast } = useToast();
-  const userId = isDemoMode ? 1 : user?.uid ? parseInt(user.uid) : null;
+  const [resumeText, setResumeText] = useState("");
+  const [targetIndustry, setTargetIndustry] = useState("");
+  const [networkingPurpose, setNetworkingPurpose] = useState("mentorship");
 
-  // Fetch user's skills, experiences, and education
-  const { data: skills, isLoading: skillsLoading } = useQuery({
-    queryKey: [`/api/users/${userId}/skills`],
-    enabled: !!userId && isAuthenticated,
+  // Fetch existing chat messages for the user
+  const { data: chatMessages, isLoading: messagesLoading } = useQuery({
+    queryKey: ["/api/users", DEMO_USER_ID, "chat-messages"],
+    queryFn: async () => {
+      const res = await apiRequest(
+        "GET",
+        `/api/users/${DEMO_USER_ID}/chat-messages`
+      );
+      return res.json();
+    }
   });
 
-  const { data: experiences, isLoading: experiencesLoading } = useQuery({
-    queryKey: [`/api/users/${userId}/experiences`],
-    enabled: !!userId && isAuthenticated,
+  // Career advice mutation
+  const careerAdviceMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", "/api/ai/career-advice", {
+        userId: DEMO_USER_ID
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Career advice generated",
+        description: "Your personalized career advice has been generated."
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["/api/users", DEMO_USER_ID, "chat-messages"]
+      });
+    },
+    onError: (error: Error) => {
+      const isApiKeyMissing = error.message.includes("API key");
+      
+      toast({
+        title: "Error generating career advice",
+        description: isApiKeyMissing 
+          ? "OpenAI API key is missing. Please check your environment variables."
+          : "Failed to generate career advice. Please try again later.",
+        variant: "destructive"
+      });
+    }
   });
 
-  const { data: educations, isLoading: educationsLoading } = useQuery({
-    queryKey: [`/api/users/${userId}/educations`],
-    enabled: !!userId && isAuthenticated,
+  // Resume analysis mutation
+  const resumeAnalysisMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", "/api/ai/analyze-resume", {
+        resumeText,
+        userId: DEMO_USER_ID
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Resume analysis complete",
+        description: "Your resume has been analyzed."
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["/api/users", DEMO_USER_ID, "chat-messages"]
+      });
+      setResumeText("");
+    },
+    onError: (error: Error) => {
+      const isApiKeyMissing = error.message.includes("API key");
+      
+      toast({
+        title: "Error analyzing resume",
+        description: isApiKeyMissing 
+          ? "OpenAI API key is missing. Please check your environment variables."
+          : "Failed to analyze resume. Please try again later.",
+        variant: "destructive"
+      });
+    }
   });
 
-  // Redirect to landing if not authenticated
-  if (!isLoading && !isAuthenticated) {
-    setLocation('/');
-    return null;
-  }
+  // Networking recommendations mutation
+  const networkingMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", "/api/ai/networking-recommendations", {
+        userId: DEMO_USER_ID,
+        targetIndustry,
+        purpose: networkingPurpose
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Networking recommendations generated",
+        description: "Your personalized networking recommendations have been generated."
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["/api/users", DEMO_USER_ID, "chat-messages"]
+      });
+      setTargetIndustry("");
+    },
+    onError: (error: Error) => {
+      const isApiKeyMissing = error.message.includes("API key");
+      
+      toast({
+        title: "Error generating recommendations",
+        description: isApiKeyMissing 
+          ? "OpenAI API key is missing. Please check your environment variables."
+          : "Failed to generate networking recommendations. Please try again later.",
+        variant: "destructive"
+      });
+    }
+  });
 
-  // Loading state
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-lg">Loading...</p>
-      </div>
-    );
-  }
-
-  // Personalized suggested questions based on user profile
-  const suggestedQuestions = [
-    user?.title 
-      ? `What skills should I develop as a ${user?.title}?`
-      : "What skills should I develop for my next career move?",
-    user?.title
-      ? `How can I transition from ${user?.title} to a leadership role?`
-      : "How can I transition to a leadership role?",
-    "What certifications would be most valuable for my career?",
-    user?.location
-      ? `What are the current job trends in ${user?.location}?`
-      : "What are the current industry trends I should be aware of?"
-  ];
-
-  const handleQuestionClick = (question: string) => {
-    setActiveQuestion(question);
+  // Get recent AI messages for display
+  const getRecentAIMessages = () => {
+    if (!chatMessages) return [];
+    
+    return chatMessages
+      .filter((msg: any) => msg.sender === "ai")
+      .sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
   };
 
-  // Profile completeness calculation
-  const calculateProfileCompleteness = () => {
-    let score = 0;
-    if (user?.name) score += 20;
-    if (user?.title) score += 20;
-    if (user?.location) score += 10;
-    if (skills && Array.isArray(skills) && skills.length > 0) score += 20;
-    if (experiences && Array.isArray(experiences) && experiences.length > 0) score += 20;
-    if (educations && Array.isArray(educations) && educations.length > 0) score += 10;
-    return score;
+  // Format timestamp for display
+  const formatTimestamp = (timestamp: string) => {
+    const date = new Date(timestamp);
+    return new Intl.DateTimeFormat('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric'
+    }).format(date);
   };
 
-  const profileCompleteness = calculateProfileCompleteness();
+  // Message type to human-readable format
+  const getMessageTypeLabel = (type: string) => {
+    const types: Record<string, string> = {
+      'career_advice': 'Career Advice',
+      'resume_analysis': 'Resume Analysis',
+      'networking_recommendations': 'Networking Recommendations',
+      'general': 'General'
+    };
+    return types[type] || 'AI Message';
+  };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Top Navigation */}
-      <Header />
-
-      {/* Main Content */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Sidebar */}
-        <Sidebar activePage="ai-career" />
-
-        {/* Center content */}
-        <div className="flex-1 overflow-auto p-6 bg-gray-50 flex flex-col">
-          <div className="mx-auto w-full max-w-3xl flex-1 flex flex-col">
-            <div className="flex items-center justify-between mb-6">
-              <h1 className="text-2xl font-semibold text-gray-900">AI Career Booster</h1>
-              <Badge variant="outline" className="px-3 py-1 text-sm">
-                {profileCompleteness < 40 
-                  ? "Limited Profile Analysis" 
-                  : profileCompleteness < 70 
-                    ? "Partial Profile Analysis" 
-                    : "Full Profile Analysis"}
-              </Badge>
-            </div>
+    <div className="container py-8">
+      <h1 className="text-3xl font-bold mb-6">AI Career Assistant</h1>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-1">
+          <Tabs defaultValue="career">
+            <TabsList className="w-full mb-4">
+              <TabsTrigger value="career" className="flex-1">Career Advice</TabsTrigger>
+              <TabsTrigger value="resume" className="flex-1">Resume Analysis</TabsTrigger>
+              <TabsTrigger value="networking" className="flex-1">Networking</TabsTrigger>
+            </TabsList>
             
-            {/* Profile Snapshot Card */}
-            <Card className="mb-6 shadow-sm">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary mr-2">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
-                  </svg>
-                  Profile Being Analyzed by Musk
-                </CardTitle>
-                <CardDescription>
-                  Musk uses this information to provide personalized career advice
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {/* Basic Info */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium text-gray-500">Name</p>
-                    <p className="font-medium">{user?.name || "Not specified"}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium text-gray-500">Title</p>
-                    <p className="font-medium">{user?.title || "Not specified"}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium text-gray-500">Location</p>
-                    <p className="font-medium">{user?.location || "Not specified"}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium text-gray-500">Profile Completeness</p>
-                    <div className="w-full bg-gray-200 rounded-full h-2.5">
-                      <div 
-                        className={`h-2.5 rounded-full ${
-                          profileCompleteness < 40 ? 'bg-red-500' : 
-                          profileCompleteness < 70 ? 'bg-yellow-500' : 
-                          'bg-green-500'
-                        }`} 
-                        style={{ width: `${profileCompleteness}%` }}
-                      ></div>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {profileCompleteness}% complete
-                      {profileCompleteness < 70 && " (add more details for better advice)"}
-                    </p>
-                  </div>
-                </div>
-                
-                {/* Skills */}
-                <div className="mb-4">
-                  <h3 className="text-sm font-medium text-gray-700 mb-2">Skills</h3>
-                  {skillsLoading ? (
-                    <div className="flex gap-2">
-                      <Skeleton className="h-6 w-20 rounded-full" />
-                      <Skeleton className="h-6 w-16 rounded-full" />
-                      <Skeleton className="h-6 w-24 rounded-full" />
-                    </div>
-                  ) : skills && Array.isArray(skills) && skills.length > 0 ? (
-                    <div className="flex flex-wrap gap-2">
-                      {skills.map((skill: any) => (
-                        <Badge key={skill.id} variant="secondary" className="px-2 py-1">
-                          {skill.name}
-                          {skill.level && ` (${skill.level})`}
-                        </Badge>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-sm text-gray-500 italic">No skills specified</p>
+            <TabsContent value="career">
+              <Card className="p-4">
+                <h2 className="text-xl font-semibold mb-4">Get Career Advice</h2>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Generate personalized career advice based on your profile. 
+                  We'll analyze your work experience, skills, and education to provide tailored recommendations.
+                </p>
+                <Button 
+                  className="w-full"
+                  onClick={() => careerAdviceMutation.mutate()}
+                  disabled={careerAdviceMutation.isPending}
+                >
+                  {careerAdviceMutation.isPending && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
-                </div>
-                
-                {/* Experience Summary */}
-                <div className="mb-4">
-                  <h3 className="text-sm font-medium text-gray-700 mb-2">Experience</h3>
-                  {experiencesLoading ? (
-                    <div className="space-y-2">
-                      <Skeleton className="h-4 w-full" />
-                      <Skeleton className="h-4 w-3/4" />
-                    </div>
-                  ) : experiences && Array.isArray(experiences) && experiences.length > 0 ? (
-                    <div className="text-sm space-y-1">
-                      {experiences.slice(0, 2).map((exp: any) => (
-                        <p key={exp.id}>
-                          <span className="font-medium">{exp.title}</span> at {exp.company}
-                        </p>
-                      ))}
-                      {experiences.length > 2 && (
-                        <p className="text-xs text-gray-500">+ {experiences.length - 2} more experiences</p>
-                      )}
-                    </div>
-                  ) : (
-                    <p className="text-sm text-gray-500 italic">No work experience specified</p>
-                  )}
-                </div>
-                
-                {/* Education Summary */}
-                <div>
-                  <h3 className="text-sm font-medium text-gray-700 mb-2">Education</h3>
-                  {educationsLoading ? (
-                    <div className="space-y-2">
-                      <Skeleton className="h-4 w-full" />
-                      <Skeleton className="h-4 w-2/3" />
-                    </div>
-                  ) : educations && Array.isArray(educations) && educations.length > 0 ? (
-                    <div className="text-sm">
-                      {educations.slice(0, 2).map((edu: any) => (
-                        <p key={edu.id}>
-                          <span className="font-medium">{edu.degree}</span> from {edu.institution}
-                        </p>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-sm text-gray-500 italic">No education specified</p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+                  Generate Career Advice
+                </Button>
+              </Card>
+            </TabsContent>
             
-            {/* AI Chat Interface */}
-            <ChatInterface initialQuestion={activeQuestion} />
+            <TabsContent value="resume">
+              <Card className="p-4">
+                <h2 className="text-xl font-semibold mb-4">Resume Analysis</h2>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Paste your resume text to get an AI-powered analysis with suggestions for improvement.
+                </p>
+                <Textarea 
+                  className="min-h-[200px] mb-4" 
+                  placeholder="Paste your resume text here..."
+                  value={resumeText}
+                  onChange={(e) => setResumeText(e.target.value)}
+                />
+                <Button 
+                  className="w-full"
+                  onClick={() => resumeAnalysisMutation.mutate()}
+                  disabled={resumeAnalysisMutation.isPending || !resumeText.trim()}
+                >
+                  {resumeAnalysisMutation.isPending && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Analyze Resume
+                </Button>
+              </Card>
+            </TabsContent>
             
-            {/* Suggested Questions */}
-            <Card className="mt-6 shadow-sm">
-              <CardContent className="pt-6">
-                <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary mr-2">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                  </svg>
-                  Personalized Suggested Questions
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {suggestedQuestions.map((question, index) => (
-                    <Button
-                      key={index}
-                      variant="outline"
-                      className={`justify-start text-left ${
-                        activeQuestion === question 
-                          ? 'bg-primary/10 text-primary border-primary' 
-                          : 'text-gray-700 hover:bg-gray-50'
-                      }`}
-                      onClick={() => handleQuestionClick(question)}
+            <TabsContent value="networking">
+              <Card className="p-4">
+                <h2 className="text-xl font-semibold mb-4">Networking Recommendations</h2>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Get personalized networking recommendations for your career goals.
+                </p>
+                
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="industry">Target Industry</Label>
+                    <Input 
+                      id="industry" 
+                      placeholder="e.g. Technology, Healthcare, Finance"
+                      value={targetIndustry}
+                      onChange={(e) => setTargetIndustry(e.target.value)}
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="purpose">Networking Purpose</Label>
+                    <Select 
+                      value={networkingPurpose} 
+                      onValueChange={setNetworkingPurpose}
                     >
-                      {question}
-                    </Button>
-                  ))}
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select purpose" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="mentorship">Find a Mentor</SelectItem>
+                        <SelectItem value="job_search">Job Search</SelectItem>
+                        <SelectItem value="collaboration">Find Collaborators</SelectItem>
+                        <SelectItem value="industry_insights">Industry Insights</SelectItem>
+                        <SelectItem value="career_change">Career Change</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <Button 
+                    className="w-full"
+                    onClick={() => networkingMutation.mutate()}
+                    disabled={networkingMutation.isPending || !targetIndustry.trim()}
+                  >
+                    {networkingMutation.isPending && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    Get Recommendations
+                  </Button>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+              </Card>
+            </TabsContent>
+          </Tabs>
+          
+          {!process.env.OPENAI_API_KEY && (
+            <Alert className="mt-4" variant="destructive">
+              <AlertTitle>OpenAI API Key Required</AlertTitle>
+              <AlertDescription>
+                An OpenAI API key is required to use the AI Career Assistant features.
+                Please add your API key to the environment variables.
+              </AlertDescription>
+            </Alert>
+          )}
+        </div>
+        
+        <div className="lg:col-span-2">
+          <h2 className="text-xl font-semibold mb-4">Your AI Insights</h2>
+          
+          {messagesLoading ? (
+            <div className="flex justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : getRecentAIMessages().length === 0 ? (
+            <div className="text-center py-12 border rounded-lg bg-muted/20">
+              <h3 className="text-lg font-medium">No AI insights yet</h3>
+              <p className="text-sm text-muted-foreground mt-2">
+                Generate career advice, analyze your resume, or get networking recommendations to see AI insights here.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {getRecentAIMessages().map((message: any) => (
+                <Card key={message.id} className="p-6">
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <h3 className="font-medium">{getMessageTypeLabel(message.messageType)}</h3>
+                      <p className="text-xs text-muted-foreground">
+                        {formatTimestamp(message.timestamp)}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="prose max-w-none dark:prose-invert prose-sm">
+                    {message.content.split('\n').map((line: string, i: number) => (
+                      <p key={i} className={line.trim() === '' ? 'my-4' : ''}>
+                        {line}
+                      </p>
+                    ))}
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

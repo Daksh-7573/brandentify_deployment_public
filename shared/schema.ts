@@ -70,8 +70,9 @@ export const skills = pgTable("skills", {
 export const chatMessages = pgTable("chat_messages", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
-  message: text("message").notNull(),
+  content: text("content").notNull(), // actual message content
   sender: text("sender").notNull(), // user or ai
+  messageType: text("message_type").default("general"), // general, career_advice, resume_analysis, networking_recommendations
   timestamp: timestamp("timestamp").defaultNow(),
 });
 

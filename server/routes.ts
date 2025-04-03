@@ -11,7 +11,10 @@ import {
   insertEducationSchema,
   insertSkillSchema,
   insertChatMessageSchema,
-  insertEmailVerificationSchema
+  insertEmailVerificationSchema,
+  InsertWorkExperience,
+  InsertEducation,
+  InsertSkill
 } from "@shared/schema";
 import { generateCareerAdvice } from "./services/ai-service";
 import { getJobTitleSuggestions } from "./services/title-suggestions";
@@ -833,7 +836,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         console.log(`[POST /chat-messages] Generating career advice...`);
         const aiResponse = await generateCareerAdvice(
-          messageData.message,
+          messageData.content,
           userSkills,
           userExperiences,
           userEducations,
@@ -847,8 +850,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log(`[POST /chat-messages] Saving AI response to database`);
         const aiMessage = await storage.createChatMessage({
           userId: messageData.userId,
-          message: aiResponse,
-          sender: 'ai'
+          content: aiResponse,
+          sender: 'ai',
+          messageType: 'career_advice'
         });
         
         console.log(`[POST /chat-messages] AI message saved with ID: ${aiMessage.id}`);
@@ -903,13 +907,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // XAI Career Advice endpoint
-  apiRouter.post("/xai/career-advice", async (req: Request, res: Response) => {
+  // AI Career Advice endpoint
+  apiRouter.post("/ai/career-advice", async (req: Request, res: Response) => {
     try {
-      // Check if XAI_API_KEY is present
-      if (!process.env.XAI_API_KEY) {
+      // Check if OPENAI_API_KEY is present
+      if (!process.env.OPENAI_API_KEY) {
         return res.status(503).json({ 
-          message: "XAI service unavailable. API key is missing.",
+          message: "OpenAI service unavailable. API key is missing.",
           requiresApiKey: true
         });
       }
@@ -932,8 +936,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         educations
       };
       
+      // Import OpenAI service
+      const { generateCareerAdvice } = await import('./services/openai-service');
+      
       // Generate advice
-      const advice = await xaiService.generateCareerAdvice(userProfile);
+      const advice = await generateCareerAdvice(userProfile);
       
       // Save the advice as a chat message
       await storage.createChatMessage({
@@ -945,18 +952,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json({ advice });
     } catch (error) {
-      console.error("Error generating XAI career advice:", error);
+      console.error("Error generating AI career advice:", error);
       res.status(500).json({ message: "Error generating career advice" });
     }
   });
   
-  // XAI Resume Analysis endpoint
-  apiRouter.post("/xai/analyze-resume", async (req: Request, res: Response) => {
+  // AI Resume Analysis endpoint
+  apiRouter.post("/ai/analyze-resume", async (req: Request, res: Response) => {
     try {
-      // Check if XAI_API_KEY is present
-      if (!process.env.XAI_API_KEY) {
+      // Check if OPENAI_API_KEY is present
+      if (!process.env.OPENAI_API_KEY) {
         return res.status(503).json({ 
-          message: "XAI service unavailable. API key is missing.",
+          message: "OpenAI service unavailable. API key is missing.",
           requiresApiKey: true
         });
       }
@@ -967,8 +974,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Resume text is required" });
       }
       
+      // Import OpenAI service
+      const { analyzeResume } = await import('./services/openai-service');
+      
       // Analyze the resume
-      const analysis = await xaiService.analyzeResume(resumeText);
+      const analysis = await analyzeResume(resumeText);
       
       // If userId is provided, save the analysis as a chat message
       if (userId) {
@@ -982,18 +992,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json({ analysis });
     } catch (error) {
-      console.error("Error analyzing resume with XAI:", error);
+      console.error("Error analyzing resume with OpenAI:", error);
       res.status(500).json({ message: "Error analyzing resume" });
     }
   });
   
-  // XAI Networking Recommendations endpoint
-  apiRouter.post("/xai/networking-recommendations", async (req: Request, res: Response) => {
+  // AI Networking Recommendations endpoint
+  apiRouter.post("/ai/networking-recommendations", async (req: Request, res: Response) => {
     try {
-      // Check if XAI_API_KEY is present
-      if (!process.env.XAI_API_KEY) {
+      // Check if OPENAI_API_KEY is present
+      if (!process.env.OPENAI_API_KEY) {
         return res.status(503).json({ 
-          message: "XAI service unavailable. API key is missing.",
+          message: "OpenAI service unavailable. API key is missing.",
           requiresApiKey: true
         });
       }
@@ -1010,8 +1020,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const workExperiences = await storage.getWorkExperiencesByUserId(userId);
       const skills = await storage.getSkillsByUserId(userId);
       
+      // Import OpenAI service
+      const { generateNetworkingRecommendations } = await import('./services/openai-service');
+      
       // Generate networking recommendations
-      const recommendations = await xaiService.generateNetworkingRecommendations(
+      const recommendations = await generateNetworkingRecommendations(
         { workExperiences, skills }, 
         targetIndustry, 
         purpose
@@ -1027,7 +1040,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json({ recommendations });
     } catch (error) {
-      console.error("Error generating networking recommendations with XAI:", error);
+      console.error("Error generating networking recommendations with OpenAI:", error);
       res.status(500).json({ message: "Error generating networking recommendations" });
     }
   });
@@ -1401,11 +1414,12 @@ ${extractedText.substring(0, 5000)}
       // Save work experiences
       if (experiences && experiences.length > 0) {
         for (const exp of experiences) {
-          // Cast to InsertWorkExperience to fix type error
-          const savedExp = await storage.createWorkExperience({
+          // Properly type the object as InsertWorkExperience
+          const insertExp: InsertWorkExperience = {
             ...exp,
             userId: userIdNum
-          } as any);
+          };
+          const savedExp = await storage.createWorkExperience(insertExp);
           savedItems.experiences.push(savedExp);
         }
         console.log(`Saved ${savedItems.experiences.length} work experiences`);
@@ -1414,11 +1428,12 @@ ${extractedText.substring(0, 5000)}
       // Save educations
       if (educations && educations.length > 0) {
         for (const edu of educations) {
-          // Cast to InsertEducation to fix type error
-          const savedEdu = await storage.createEducation({
+          // Properly type the object as InsertEducation
+          const insertEdu: InsertEducation = {
             ...edu,
             userId: userIdNum
-          } as any);
+          };
+          const savedEdu = await storage.createEducation(insertEdu);
           savedItems.educations.push(savedEdu);
         }
         console.log(`Saved ${savedItems.educations.length} education items`);
@@ -1427,11 +1442,12 @@ ${extractedText.substring(0, 5000)}
       // Save skills
       if (skills && skills.length > 0) {
         for (const skill of skills) {
-          // Cast to InsertSkill to fix type error
-          const savedSkill = await storage.createSkill({
+          // Properly type the object as InsertSkill
+          const insertSkill: InsertSkill = {
             ...skill,
             userId: userIdNum
-          } as any);
+          };
+          const savedSkill = await storage.createSkill(insertSkill);
           savedItems.skills.push(savedSkill);
         }
         console.log(`Saved ${savedItems.skills.length} skills`);
