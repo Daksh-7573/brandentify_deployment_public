@@ -1,10 +1,16 @@
 import { useState, useEffect, useRef } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { 
+  Card, 
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription 
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Loader2, Pencil, Trash2 } from "lucide-react";
+import { Loader2, Pencil, Trash2, Plus, Lightbulb } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -293,18 +299,23 @@ export default function Skills() {
   return (
     <>
       <Card className="mb-6">
-        <CardContent className="pt-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-medium text-gray-900">Skills</h2>
-            <Button 
-              variant="ghost" 
-              className="text-primary hover:text-primary-600 hover:bg-transparent"
-              onClick={handleAdd}
-            >
-              <i className="fas fa-plus mr-1"></i> Add
-            </Button>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <div>
+            <CardTitle className="text-xl font-bold">Skills</CardTitle>
+            <CardDescription>Add your professional skills</CardDescription>
           </div>
-          
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="h-8 gap-1" 
+            onClick={handleAdd}
+          >
+            <Plus className="h-3.5 w-3.5" />
+            <span>Add</span>
+          </Button>
+        </CardHeader>
+        
+        <CardContent>
           {isLoading ? (
             <div className="flex justify-center py-6">
               <Loader2 className="h-6 w-6 animate-spin text-primary" />
@@ -341,8 +352,9 @@ export default function Skills() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-6 text-gray-500">
-              No skills added yet. Add your skills or upload a resume to populate this section.
+            <div className="py-6 text-center">
+              <Lightbulb className="mx-auto h-10 w-10 text-muted-foreground/50" />
+              <p className="mt-2 text-muted-foreground">No skills added yet.</p>
             </div>
           )}
         </CardContent>
