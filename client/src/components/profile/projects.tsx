@@ -41,6 +41,7 @@ const collaboratorSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
   email: z.string().email().nullable().optional(),
   role: z.string().min(1, { message: "Role is required" }),
+  profileLink: z.string().nullable().optional(),
 });
 
 type CollaboratorFormValues = z.infer<typeof collaboratorSchema>;
@@ -75,6 +76,7 @@ interface Collaborator {
   name: string;
   email: string | null;
   role: string;
+  profileLink: string | null; // Added profileLink field
   userId: number | null;
   projectId: number;
   inviteStatus: string | null;
@@ -136,6 +138,7 @@ export default function Projects() {
       name: '',
       email: '',
       role: 'Contributor',
+      profileLink: '',
     },
   });
 
@@ -509,8 +512,6 @@ export default function Projects() {
     setActiveTab('details');
   };
 
-
-
   const formatDate = (dateString: string | null) => {
     if (!dateString) return 'Present';
     try {
@@ -543,167 +544,141 @@ export default function Projects() {
             </DialogHeader>
             <Form {...projectForm}>
               <form onSubmit={projectForm.handleSubmit(handleAddProject)} className="space-y-4">
-                <FormField
-                  control={projectForm.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Project Title*</FormLabel>
-                      <FormControl>
-                        <Input placeholder="My Amazing Project" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={projectForm.control}
-                  name="category"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Category</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Web Development, Design, etc." {...field} value={field.value || ''} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={projectForm.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Description</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                          placeholder="Describe your project, its goals, and your contributions" 
-                          className="resize-none" 
-                          {...field} 
-                          value={field.value || ''} 
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={projectForm.control}
-                  name="startDate"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>Project Date*</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className={cn(
-                                "pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
-                              )}
-                            >
-                              {field.value ? (
-                                format(new Date(field.value), "MMMM yyyy")
-                              ) : (
-                                <span>Select month and year</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value ? new Date(field.value) : undefined}
-                            onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={projectForm.control}
-                  name="projectUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Project URL</FormLabel>
-                      <FormControl>
-                        <Input placeholder="https://project-website.com" {...field} value={field.value || ''} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <div className="space-y-2">
-                  <div className="flex flex-col space-y-1">
-                    <FormLabel>Project Thumbnail</FormLabel>
-                    <div className="flex items-center gap-2">
-                      <Input
-                        type="file"
-                        accept="image/*"
-                        ref={fileInputRef}
-                        onChange={(e) => {
-                          const file = e.target.files && e.target.files[0];
-                          if (file) {
-                            setThumbnailFile(file);
-                          }
-                        }}
-                        className="flex-1"
-                      />
-                      {thumbnailFile && (
-                        <Button 
-                          type="button" 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => {
-                            setThumbnailFile(null);
-                            if (fileInputRef.current) {
-                              fileInputRef.current.value = '';
-                            }
-                          }}
-                        >
-                          Clear
-                        </Button>
-                      )}
-                    </div>
-                    <FormDescription>
-                      Upload an image that represents your project (max 2MB)
-                    </FormDescription>
-                    {thumbnailFile && (
-                      <div className="mt-2 p-2 border rounded-md">
-                        <p className="text-sm font-medium">Selected file:</p>
-                        <p className="text-sm text-muted-foreground">{thumbnailFile.name}</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                
-                {/* Public Visibility option removed as requested */}
-                
-                <Separator className="my-4" />
-                
-                <Tabs defaultValue="collaborators" className="w-full mt-6">
-                  <TabsList className="grid grid-cols-2 mb-4">
-                    <TabsTrigger value="collaborators" className="flex items-center gap-1">
-                      <Users2Icon className="h-4 w-4" />
-                      Team Members
-                    </TabsTrigger>
-                    <TabsTrigger value="endorsements" className="flex items-center gap-1">
-                      <AwardIcon className="h-4 w-4" />
-                      Endorsements
-                    </TabsTrigger>
+                <Tabs defaultValue="details" className="w-full" onValueChange={setActiveTab} value={activeTab}>
+                  <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="details">Details</TabsTrigger>
+                    <TabsTrigger value="team">Team</TabsTrigger>
+                    <TabsTrigger value="endorsements">Endorsements</TabsTrigger>
                   </TabsList>
                   
-                  <TabsContent value="collaborators" className="space-y-4">
+                  <TabsContent value="details" className="space-y-4 pt-4">
+                    <FormField
+                      control={projectForm.control}
+                      name="title"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Project Title*</FormLabel>
+                          <FormControl>
+                            <Input placeholder="My Amazing Project" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={projectForm.control}
+                      name="category"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Category</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Web Development, Design, etc." {...field} value={field.value || ''} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={projectForm.control}
+                      name="description"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Description</FormLabel>
+                          <FormControl>
+                            <Textarea 
+                              placeholder="Describe your project, its goals, and your contributions" 
+                              className="resize-none" 
+                              {...field} 
+                              value={field.value || ''} 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={projectForm.control}
+                      name="startDate"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                          <FormLabel>Project Date*</FormLabel>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <FormControl>
+                                <Button
+                                  variant={"outline"}
+                                  className={cn(
+                                    "pl-3 text-left font-normal",
+                                    !field.value && "text-muted-foreground"
+                                  )}
+                                >
+                                  {field.value ? (
+                                    format(new Date(field.value), "PPP")
+                                  ) : (
+                                    <span>Pick a date</span>
+                                  )}
+                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                </Button>
+                              </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                              <Calendar
+                                mode="single"
+                                selected={new Date(field.value)}
+                                onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
+                                disabled={(date) => date > new Date()}
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={projectForm.control}
+                      name="projectUrl"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Project URL</FormLabel>
+                          <FormControl>
+                            <Input type="url" placeholder="https://example.com" {...field} value={field.value || ''} />
+                          </FormControl>
+                          <FormDescription>
+                            Link to your project (GitHub, website, etc.)
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormItem>
+                      <FormLabel>Project Thumbnail</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="file" 
+                          ref={fileInputRef}
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              setThumbnailFile(file);
+                            }
+                          }} 
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Upload a preview image for your project
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  </TabsContent>
+                  
+                  <TabsContent value="team" className="space-y-4 pt-4">
                     <div className="space-y-4">
                       <h3 className="text-sm font-medium">Add Team Members</h3>
                       <Form {...collaboratorForm}>
@@ -751,6 +726,23 @@ export default function Projects() {
                               )}
                             />
                             
+                            <FormField
+                              control={collaboratorForm.control}
+                              name="profileLink"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Profile Link</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="Brandentifier profile link" {...field} value={field.value || ''} />
+                                  </FormControl>
+                                  <FormDescription>
+                                    Add Brandentifier profile link to connect with users
+                                  </FormDescription>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
                             <Button type="submit" size="sm" className="mt-2">
                               Add Team Member
                             </Button>
@@ -758,32 +750,42 @@ export default function Projects() {
                         </form>
                       </Form>
                       
-                      {collaborators.length > 0 && (
-                        <div className="mt-4 space-y-3">
-                          <h3 className="text-sm font-medium">Added Team Members</h3>
+                      {collaborators.length > 0 ? (
+                        <div className="border rounded-lg p-4 space-y-4">
+                          <h3 className="text-sm font-medium">Current Team Members</h3>
                           <div className="space-y-2">
                             {collaborators.map((collaborator) => (
-                              <div key={collaborator.id} className="flex justify-between items-center p-2 hover:bg-muted/50 rounded-md">
+                              <div key={collaborator.id} className="flex items-center justify-between p-2 bg-muted rounded">
                                 <div>
-                                  <p className="font-medium">{collaborator.name}</p>
-                                  <div className="flex items-center text-sm text-muted-foreground">
-                                    <span className="mr-2">{collaborator.role}</span>
+                                  <div className="font-medium">{collaborator.name}</div>
+                                  <div className="text-xs text-muted-foreground">
+                                    {collaborator.role}
+                                    {collaborator.email && ` • ${collaborator.email}`}
                                   </div>
                                 </div>
-                                <Button variant="ghost" size="icon" onClick={() => handleDeleteCollaborator(collaborator.id)}>
+                                <Button 
+                                  size="icon" 
+                                  variant="ghost" 
+                                  onClick={() => handleDeleteCollaborator(collaborator.id)}
+                                >
                                   <TrashIcon className="h-4 w-4" />
                                 </Button>
                               </div>
                             ))}
                           </div>
                         </div>
+                      ) : (
+                        <div className="text-center p-4 text-muted-foreground">
+                          <Users2Icon className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                          <p>No team members added yet</p>
+                        </div>
                       )}
                     </div>
                   </TabsContent>
                   
-                  <TabsContent value="endorsements" className="space-y-4">
+                  <TabsContent value="endorsements" className="space-y-4 pt-4">
                     <div className="space-y-4">
-                      <h3 className="text-sm font-medium">Add Client Endorsements</h3>
+                      <h3 className="text-sm font-medium">Add Testimonials & Endorsements</h3>
                       <Form {...endorsementForm}>
                         <form onSubmit={endorsementForm.handleSubmit(handleAddEndorsement)} className="space-y-4">
                           <div className="space-y-4 border rounded-lg p-4">
@@ -792,9 +794,9 @@ export default function Projects() {
                               name="clientName"
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel>Client Name*</FormLabel>
+                                  <FormLabel>Client/Reviewer Name*</FormLabel>
                                   <FormControl>
-                                    <Input placeholder="Client name" {...field} />
+                                    <Input placeholder="John Smith" {...field} />
                                   </FormControl>
                                   <FormMessage />
                                 </FormItem>
@@ -850,13 +852,13 @@ export default function Projects() {
                               name="message"
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel>Testimonial</FormLabel>
+                                  <FormLabel>Endorsement Message</FormLabel>
                                   <FormControl>
                                     <Textarea 
-                                      placeholder="Client's testimonial about your work" 
-                                      className="resize-none"
-                                      {...field}
-                                      value={field.value || ''}
+                                      placeholder="Share what the client said about your work" 
+                                      className="resize-none" 
+                                      {...field} 
+                                      value={field.value || ''} 
                                     />
                                   </FormControl>
                                   <FormMessage />
@@ -870,23 +872,23 @@ export default function Projects() {
                               render={({ field }) => (
                                 <FormItem>
                                   <FormLabel>Rating (1-5)</FormLabel>
-                                  <Select
-                                    onValueChange={(value) => field.onChange(parseInt(value))}
-                                    defaultValue={field.value?.toString() || "5"}
-                                  >
-                                    <FormControl>
+                                  <FormControl>
+                                    <Select
+                                      onValueChange={(value) => field.onChange(parseInt(value))}
+                                      defaultValue={field.value?.toString() || "5"}
+                                    >
                                       <SelectTrigger>
                                         <SelectValue placeholder="Select a rating" />
                                       </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                      <SelectItem value="1">1 - Poor</SelectItem>
-                                      <SelectItem value="2">2 - Fair</SelectItem>
-                                      <SelectItem value="3">3 - Good</SelectItem>
-                                      <SelectItem value="4">4 - Very Good</SelectItem>
-                                      <SelectItem value="5">5 - Excellent</SelectItem>
-                                    </SelectContent>
-                                  </Select>
+                                      <SelectContent>
+                                        <SelectItem value="1">1 Star</SelectItem>
+                                        <SelectItem value="2">2 Stars</SelectItem>
+                                        <SelectItem value="3">3 Stars</SelectItem>
+                                        <SelectItem value="4">4 Stars</SelectItem>
+                                        <SelectItem value="5">5 Stars</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </FormControl>
                                   <FormMessage />
                                 </FormItem>
                               )}
@@ -899,48 +901,52 @@ export default function Projects() {
                         </form>
                       </Form>
                       
-                      {endorsements.length > 0 && (
-                        <div className="mt-4 space-y-3">
-                          <h3 className="text-sm font-medium">Added Endorsements</h3>
-                          <div className="space-y-3">
+                      {endorsements.length > 0 ? (
+                        <div className="border rounded-lg p-4 space-y-4">
+                          <h3 className="text-sm font-medium">Current Endorsements</h3>
+                          <div className="space-y-2">
                             {endorsements.map((endorsement) => (
-                              <div key={endorsement.id} className="border rounded-lg p-3 relative">
-                                <div className="absolute top-2 right-2">
-                                  <Button variant="ghost" size="icon" onClick={() => handleDeleteEndorsement(endorsement.id)}>
-                                    <TrashIcon className="h-4 w-4" />
-                                  </Button>
-                                </div>
-                                
-                                <div className="flex items-center mb-2">
-                                  {/* Rating stars */}
-                                  <div className="flex">
-                                    {Array.from({ length: 5 }).map((_, i) => (
-                                      <svg
-                                        key={i}
-                                        className={`h-4 w-4 ${i < (endorsement.rating || 0) ? "text-yellow-400 fill-yellow-400" : "text-gray-300 fill-gray-300"}`}
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 24 24"
-                                      >
-                                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                                      </svg>
-                                    ))}
+                              <div key={endorsement.id} className="p-3 bg-muted rounded">
+                                <div className="flex items-center justify-between">
+                                  <div>
+                                    <div className="font-medium">{endorsement.clientName}</div>
+                                    <div className="text-xs text-muted-foreground">
+                                      {endorsement.clientTitle && `${endorsement.clientTitle}`}
+                                      {endorsement.clientTitle && endorsement.clientCompany && ` at `}
+                                      {endorsement.clientCompany && `${endorsement.clientCompany}`}
+                                    </div>
+                                  </div>
+                                  <div className="flex space-x-2">
+                                    <div className="flex items-center">
+                                      {[...Array(5)].map((_, index) => (
+                                        <span 
+                                          key={index} 
+                                          className={`text-sm ${index < (endorsement.rating || 0) ? 'text-yellow-500' : 'text-gray-300'}`}
+                                        >
+                                          ★
+                                        </span>
+                                      ))}
+                                    </div>
+                                    <Button 
+                                      size="icon" 
+                                      variant="ghost" 
+                                      onClick={() => handleDeleteEndorsement(endorsement.id)}
+                                    >
+                                      <TrashIcon className="h-4 w-4" />
+                                    </Button>
                                   </div>
                                 </div>
-                                
                                 {endorsement.message && (
-                                  <p className="italic text-sm mb-2 line-clamp-2">"{endorsement.message}"</p>
+                                  <div className="mt-2 text-sm italic">"{endorsement.message}"</div>
                                 )}
-                                
-                                <div>
-                                  <p className="font-medium text-sm">{endorsement.clientName}</p>
-                                  <p className="text-xs text-muted-foreground">
-                                    {endorsement.clientTitle && `${endorsement.clientTitle}, `}
-                                    {endorsement.clientCompany}
-                                  </p>
-                                </div>
                               </div>
                             ))}
                           </div>
+                        </div>
+                      ) : (
+                        <div className="text-center p-4 text-muted-foreground">
+                          <AwardIcon className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                          <p>No endorsements added yet</p>
                         </div>
                       )}
                     </div>
@@ -948,8 +954,11 @@ export default function Projects() {
                 </Tabs>
                 
                 <DialogFooter>
-                  <Button type="submit" disabled={loading}>
-                    {loading ? 'Saving...' : 'Save Project'}
+                  <Button type="button" variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button type="submit" isLoading={loading}>
+                    Save Project
                   </Button>
                 </DialogFooter>
               </form>
@@ -957,523 +966,292 @@ export default function Projects() {
           </DialogContent>
         </Dialog>
       </CardHeader>
-
+      
       <CardContent>
         {loading ? (
-          <div className="flex justify-center py-6">
-            <div className="animate-spin h-6 w-6 text-primary">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-loader-2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-            </div>
+          <div className="text-center py-6">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-current"></div>
           </div>
         ) : projects.length === 0 ? (
-          <div className="py-6 text-center">
-            <FolderKanban className="mx-auto h-10 w-10 text-muted-foreground/50" />
-            <p className="mt-2 text-muted-foreground">No projects added yet.</p>
+          <div className="text-center py-10">
+            <FolderKanban className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2">No projects yet</h3>
+            <p className="text-muted-foreground max-w-md mx-auto mb-6">
+              Showcase your professional projects to highlight your skills and experience.
+            </p>
+            <Button variant="outline" size="sm" onClick={() => setIsAddDialogOpen(true)}>
+              <PlusIcon className="h-4 w-4 mr-2" />
+              Add Your First Project
+            </Button>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-4">
             {projects.map((project) => (
-              <Card key={project.id} className="overflow-hidden">
-                <CardContent className="p-0">
-                  <div className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="text-lg font-medium leading-none">{project.title}</h3>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="icon" onClick={() => openEditDialog(project)}>
-                          <PencilIcon className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleDeleteProject(project.id)}>
-                          <TrashIcon className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                    
-                    <div className="mt-2 flex items-center text-sm text-muted-foreground">
-                      <CalendarIcon className="mr-1 h-3 w-3" />
-                      <span>{formatDate(project.startDate)}</span>
-                      {project.category && (
-                        <>
-                          <span className="mx-1">•</span>
-                          <span>{project.category}</span>
-                        </>
-                      )}
-                    </div>
-                    
-                    {project.thumbnailUrl && (
-                      <div className="mt-2 mb-2">
-                        <img 
-                          src={project.thumbnailUrl} 
-                          alt={project.title}
-                          className="w-full max-h-40 object-cover rounded-md" 
-                        />
-                      </div>
-                    )}
-                    
-                    {project.description && (
-                      <p className="mt-2 text-sm line-clamp-2">{project.description}</p>
-                    )}
-                    
-                    <div className="mt-3 flex gap-2">
-                      <Button variant="outline" size="sm" onClick={() => openDetailDialog(project)}>
-                        View Details
+              <Card key={project.id} className="overflow-hidden flex flex-col h-full">
+                {project.thumbnailUrl && (
+                  <div className="w-full h-32 overflow-hidden bg-muted">
+                    <img 
+                      src={project.thumbnailUrl} 
+                      alt={project.title} 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+                <CardHeader className="pb-2">
+                  <div className="flex justify-between items-start">
+                    <CardTitle className="text-base font-semibold">{project.title}</CardTitle>
+                    <div className="flex space-x-1">
+                      <Button 
+                        size="icon" 
+                        variant="ghost" 
+                        className="h-7 w-7" 
+                        onClick={() => openEditDialog(project)}
+                      >
+                        <PencilIcon className="h-3.5 w-3.5" />
                       </Button>
+                      <Button 
+                        size="icon" 
+                        variant="ghost" 
+                        className="h-7 w-7" 
+                        onClick={() => handleDeleteProject(project.id)}
+                      >
+                        <TrashIcon className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  </div>
+                  {project.category && (
+                    <Badge variant="outline" className="inline-flex mt-1">
+                      {project.category}
+                    </Badge>
+                  )}
+                </CardHeader>
+                <CardContent className="pb-2 flex-grow">
+                  {project.description && (
+                    <p className="text-sm text-muted-foreground line-clamp-3">
+                      {project.description}
+                    </p>
+                  )}
+                </CardContent>
+                <CardFooter className="flex flex-col items-start space-y-2 pt-0">
+                  <div className="text-xs text-muted-foreground w-full">
+                    <div className="flex justify-between w-full">
+                      <span className="inline-flex items-center">
+                        <CalendarIcon className="mr-1 h-3 w-3" /> 
+                        {formatDate(project.startDate)}
+                      </span>
                       {project.projectUrl && (
-                        <Button variant="outline" size="sm" asChild>
-                          <a href={project.projectUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1">
-                            <ExternalLinkIcon className="h-3 w-3" />
-                            Visit Project
-                          </a>
-                        </Button>
+                        <a 
+                          href={project.projectUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center hover:underline"
+                        >
+                          <ExternalLinkIcon className="h-3 w-3 mr-1" />
+                          View Project
+                        </a>
                       )}
                     </div>
                   </div>
-                </CardContent>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full" 
+                    onClick={() => openDetailDialog(project)}
+                  >
+                    View Details
+                  </Button>
+                </CardFooter>
               </Card>
             ))}
           </div>
         )}
+      </CardContent>
 
-        {/* Detail dialog */}
-        <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
-          <DialogContent className="sm:max-w-[650px] max-h-[90vh] overflow-y-auto">
-            {currentProject && (
-              <>
-                <DialogHeader>
-                  <DialogTitle className="text-xl">{currentProject.title}</DialogTitle>
-                  <DialogDescription>
-                    {formatDate(currentProject.startDate)}
-                    {currentProject.category && ` • ${currentProject.category}`}
-                  </DialogDescription>
-                </DialogHeader>
-                
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-2">
-                  <TabsList className="grid grid-cols-3 mb-4">
-                    <TabsTrigger value="details">Details</TabsTrigger>
-                    <TabsTrigger value="team" className="flex items-center gap-1">
-                      <Users2Icon className="h-4 w-4" />
-                      Team
-                    </TabsTrigger>
-                    <TabsTrigger value="endorsements" className="flex items-center gap-1">
-                      <AwardIcon className="h-4 w-4" />
-                      Endorsements
-                    </TabsTrigger>
-                  </TabsList>
-                  
-                  <TabsContent value="details" className="space-y-4">
-                    {currentProject.thumbnailUrl && (
-                      <div>
-                        <h3 className="text-sm font-medium mb-1">Project Thumbnail</h3>
-                        <div className="mt-2">
-                          <img 
-                            src={currentProject.thumbnailUrl} 
-                            alt={currentProject.title}
-                            className="max-w-full max-h-64 object-contain rounded-md border" 
+      {currentProject && (
+        <>
+          {/* Edit Dialog */}
+          <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+            <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Edit Project</DialogTitle>
+                <DialogDescription>
+                  Update your project information and showcase.
+                </DialogDescription>
+              </DialogHeader>
+              <Form {...projectForm}>
+                <form onSubmit={projectForm.handleSubmit(handleEditProject)} className="space-y-4">
+                  <Tabs defaultValue="details" className="w-full" onValueChange={setActiveTab} value={activeTab}>
+                    <TabsList className="grid w-full grid-cols-3">
+                      <TabsTrigger value="details">Details</TabsTrigger>
+                      <TabsTrigger value="team">Team</TabsTrigger>
+                      <TabsTrigger value="endorsements">Endorsements</TabsTrigger>
+                    </TabsList>
+                    
+                    <TabsContent value="details" className="space-y-4 pt-4">
+                      <FormField
+                        control={projectForm.control}
+                        name="title"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Project Title*</FormLabel>
+                            <FormControl>
+                              <Input placeholder="My Amazing Project" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={projectForm.control}
+                        name="category"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Category</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Web Development, Design, etc." {...field} value={field.value || ''} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={projectForm.control}
+                        name="description"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Description</FormLabel>
+                            <FormControl>
+                              <Textarea 
+                                placeholder="Describe your project, its goals, and your contributions" 
+                                className="resize-none" 
+                                {...field} 
+                                value={field.value || ''} 
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={projectForm.control}
+                        name="startDate"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col">
+                            <FormLabel>Project Date*</FormLabel>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <FormControl>
+                                  <Button
+                                    variant={"outline"}
+                                    className={cn(
+                                      "pl-3 text-left font-normal",
+                                      !field.value && "text-muted-foreground"
+                                    )}
+                                  >
+                                    {field.value ? (
+                                      format(new Date(field.value), "PPP")
+                                    ) : (
+                                      <span>Pick a date</span>
+                                    )}
+                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                  </Button>
+                                </FormControl>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar
+                                  mode="single"
+                                  selected={field.value ? new Date(field.value) : undefined}
+                                  onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
+                                  disabled={(date) => date > new Date()}
+                                  initialFocus
+                                />
+                              </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={projectForm.control}
+                        name="projectUrl"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Project URL</FormLabel>
+                            <FormControl>
+                              <Input type="url" placeholder="https://example.com" {...field} value={field.value || ''} />
+                            </FormControl>
+                            <FormDescription>
+                              Link to your project (GitHub, website, etc.)
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormItem>
+                        <FormLabel>Project Thumbnail</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="file" 
+                            ref={fileInputRef}
+                            accept="image/*"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                setThumbnailFile(file);
+                              }
+                            }} 
                           />
-                        </div>
-                      </div>
-                    )}
+                        </FormControl>
+                        <FormDescription className="flex items-center gap-2">
+                          {currentProject.thumbnailUrl ? (
+                            <>
+                              <span>Current thumbnail:</span>
+                              <img 
+                                src={currentProject.thumbnailUrl} 
+                                alt="Current thumbnail" 
+                                className="h-8 w-8 object-cover rounded"
+                              />
+                              <span className="text-xs text-muted-foreground">(Upload a new one to replace)</span>
+                            </>
+                          ) : (
+                            "Upload a preview image for your project"
+                          )}
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    </TabsContent>
                     
-                    {currentProject.description && (
-                      <div>
-                        <h3 className="text-sm font-medium mb-1">Description</h3>
-                        <p className="text-sm">{currentProject.description}</p>
-                      </div>
-                    )}
-                    
-                    {currentProject.projectUrl && (
-                      <div>
-                        <h3 className="text-sm font-medium mb-1">Project URL</h3>
-                        <a href={currentProject.projectUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-primary inline-flex items-center">
-                          Visit Project <ExternalLinkIcon className="ml-1 h-3 w-3" />
-                        </a>
-                      </div>
-                    )}
-                    
-                    {/* Additional metadata could go here */}
-                  </TabsContent>
-                  
-                  <TabsContent value="team">
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <h3 className="text-sm font-medium">Project Collaborators</h3>
-                      </div>
-                      
-                      <Separator />
-                      
-                      {collaborators.length > 0 ? (
-                        <div className="space-y-3">
-                          {collaborators.map((collaborator) => (
-                            <div key={collaborator.id} className="flex justify-between items-center p-2 hover:bg-muted/50 rounded-md">
-                              <div>
-                                <p className="font-medium">{collaborator.name}</p>
-                                <div className="flex items-center text-sm text-muted-foreground">
-                                  <span className="mr-2">{collaborator.role}</span>
-                                  {collaborator.inviteStatus === 'accepted' && (
-                                    <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300">Verified</Badge>
-                                  )}
-                                </div>
-                              </div>
-                              <Button variant="ghost" size="icon" onClick={() => handleDeleteCollaborator(collaborator.id)}>
-                                <TrashIcon className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="text-center py-4">
-                          <p className="text-muted-foreground mb-2">No collaborators added yet</p>
-                          <p className="text-sm">Add team members when creating or editing the project.</p>
-                        </div>
-                      )}
-                    </div>
-                  </TabsContent>
-                  
-                  <TabsContent value="endorsements">
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <h3 className="text-sm font-medium">Client Endorsements</h3>
-                      </div>
-                      
-                      <Separator />
-                      
-                      {endorsements.length > 0 ? (
-                        <div className="space-y-4">
-                          {endorsements.map((endorsement) => (
-                            <div key={endorsement.id} className="border rounded-lg p-4 relative">
-                              <div className="absolute top-4 right-4 flex space-x-1">
-                                <Button variant="ghost" size="icon" onClick={() => handleDeleteEndorsement(endorsement.id)}>
-                                  <TrashIcon className="h-4 w-4" />
-                                </Button>
-                                {endorsement.isVerified ? (
-                                  <CheckCircleIcon className="h-5 w-5 text-green-600" />
-                                ) : (
-                                  <Badge variant="outline" className="text-xs">Pending Verification</Badge>
-                                )}
-                              </div>
-                              
-                              <div className="flex items-center mb-3">
-                                {/* Rating stars */}
-                                <div className="flex">
-                                  {Array.from({ length: 5 }).map((_, i) => (
-                                    <svg
-                                      key={i}
-                                      className={`h-4 w-4 ${i < (endorsement.rating || 0) ? "text-yellow-400 fill-yellow-400" : "text-gray-300 fill-gray-300"}`}
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                                    </svg>
-                                  ))}
-                                </div>
-                              </div>
-                              
-                              {endorsement.message && (
-                                <p className="italic text-sm mb-3">"{endorsement.message}"</p>
-                              )}
-                              
-                              <div>
-                                <p className="font-medium text-sm">{endorsement.clientName}</p>
-                                <p className="text-xs text-muted-foreground">
-                                  {endorsement.clientTitle && `${endorsement.clientTitle}, `}
-                                  {endorsement.clientCompany}
-                                </p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="text-center py-4">
-                          <p className="text-muted-foreground mb-2">No endorsements added yet</p>
-                          <p className="text-sm">Add endorsements when creating or editing the project.</p>
-                        </div>
-                      )}
-                    </div>
-                  </TabsContent>
-                </Tabs>
-              </>
-            )}
-          </DialogContent>
-        </Dialog>
-
-        {/* Edit dialog */}
-        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Edit Project</DialogTitle>
-              <DialogDescription>
-                Update your project details and information.
-              </DialogDescription>
-            </DialogHeader>
-            <Form {...projectForm}>
-              <form onSubmit={projectForm.handleSubmit(handleEditProject)} className="space-y-4">
-                <FormField
-                  control={projectForm.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Project Title*</FormLabel>
-                      <FormControl>
-                        <Input placeholder="My Amazing Project" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={projectForm.control}
-                  name="category"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Category</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Web Development, Design, etc." {...field} value={field.value || ''} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={projectForm.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Description</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                          placeholder="Describe your project, its goals, and your contributions" 
-                          className="resize-none" 
-                          {...field} 
-                          value={field.value || ''} 
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={projectForm.control}
-                  name="startDate"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>Project Date*</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className={cn(
-                                "pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
-                              )}
-                            >
-                              {field.value ? (
-                                format(new Date(field.value), "MMMM yyyy")
-                              ) : (
-                                <span>Select month and year</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value ? new Date(field.value) : undefined}
-                            onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={projectForm.control}
-                  name="projectUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Project URL</FormLabel>
-                      <FormControl>
-                        <Input placeholder="https://project-website.com" {...field} value={field.value || ''} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                {/* Public Visibility option removed as requested */}
-                
-                <div className="flex flex-col space-y-1">
-                  <FormLabel>Project Thumbnail</FormLabel>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      ref={fileInputRef}
-                      onChange={(e) => {
-                        const file = e.target.files && e.target.files[0];
-                        if (file) {
-                          setThumbnailFile(file);
-                        }
-                      }}
-                      className="flex-1"
-                    />
-                    {thumbnailFile && (
-                      <Button 
-                        type="button" 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => {
-                          setThumbnailFile(null);
-                          if (fileInputRef.current) {
-                            fileInputRef.current.value = '';
-                          }
-                        }}
-                      >
-                        Clear
-                      </Button>
-                    )}
-                  </div>
-                  {currentProject?.thumbnailUrl && !thumbnailFile && (
-                    <div className="mt-2">
-                      <p className="text-sm text-muted-foreground">Current thumbnail:</p>
-                      <div className="mt-1 relative w-24 h-24 rounded overflow-hidden">
-                        <img 
-                          src={currentProject.thumbnailUrl} 
-                          alt="Current thumbnail" 
-                          className="object-cover w-full h-full"
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
-                
-                <Separator className="my-4" />
-                
-                <Tabs defaultValue="collaborators" className="w-full mt-6">
-                  <TabsList className="grid grid-cols-2 mb-4">
-                    <TabsTrigger value="collaborators" className="flex items-center gap-1">
-                      <Users2Icon className="h-4 w-4" />
-                      Team Members
-                    </TabsTrigger>
-                    <TabsTrigger value="endorsements" className="flex items-center gap-1">
-                      <AwardIcon className="h-4 w-4" />
-                      Endorsements
-                    </TabsTrigger>
-                  </TabsList>
-                  
-                  <TabsContent value="collaborators" className="space-y-4">
-                    <div className="space-y-4">
-                      <h3 className="text-sm font-medium">Add Team Members</h3>
-                      <Form {...collaboratorForm}>
-                        <form onSubmit={collaboratorForm.handleSubmit(handleAddCollaborator)} className="space-y-4">
-                          <div className="space-y-4 border rounded-lg p-4">
-                            <FormField
-                              control={collaboratorForm.control}
-                              name="name"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Name*</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="Collaborator name" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <FormField
-                              control={collaboratorForm.control}
-                              name="email"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Email</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="email@example.com" {...field} value={field.value || ''} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <FormField
-                              control={collaboratorForm.control}
-                              name="role"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Role*</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="Developer, Designer, PM, etc." {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <Button type="submit" size="sm" className="mt-2">
-                              Add Team Member
-                            </Button>
-                          </div>
-                        </form>
-                      </Form>
-                      
-                      {collaborators.length > 0 && (
-                        <div className="mt-4 space-y-3">
-                          <h3 className="text-sm font-medium">Added Team Members</h3>
-                          <div className="space-y-2">
-                            {collaborators.map((collaborator) => (
-                              <div key={collaborator.id} className="flex justify-between items-center p-2 hover:bg-muted/50 rounded-md">
-                                <div>
-                                  <p className="font-medium">{collaborator.name}</p>
-                                  <div className="flex items-center text-sm text-muted-foreground">
-                                    <span className="mr-2">{collaborator.role}</span>
-                                  </div>
-                                </div>
-                                <Button variant="ghost" size="icon" onClick={() => handleDeleteCollaborator(collaborator.id)}>
-                                  <TrashIcon className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </TabsContent>
-                  
-                  <TabsContent value="endorsements" className="space-y-4">
-                    <div className="space-y-4">
-                      <h3 className="text-sm font-medium">Add Client Endorsements</h3>
-                      <Form {...endorsementForm}>
-                        <form onSubmit={endorsementForm.handleSubmit(handleAddEndorsement)} className="space-y-4">
-                          <div className="space-y-4 border rounded-lg p-4">
-                            <FormField
-                              control={endorsementForm.control}
-                              name="clientName"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Client Name*</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="Client name" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <TabsContent value="team" className="space-y-4 pt-4">
+                      <div className="space-y-4">
+                        <h3 className="text-sm font-medium">Add Team Members</h3>
+                        <Form {...collaboratorForm}>
+                          <form onSubmit={collaboratorForm.handleSubmit(handleAddCollaborator)} className="space-y-4">
+                            <div className="space-y-4 border rounded-lg p-4">
                               <FormField
-                                control={endorsementForm.control}
-                                name="clientEmail"
+                                control={collaboratorForm.control}
+                                name="name"
                                 render={({ field }) => (
                                   <FormItem>
-                                    <FormLabel>Client Email</FormLabel>
+                                    <FormLabel>Name*</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="Collaborator name" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <FormField
+                                control={collaboratorForm.control}
+                                name="email"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Email</FormLabel>
                                     <FormControl>
                                       <Input placeholder="email@example.com" {...field} value={field.value || ''} />
                                     </FormControl>
@@ -1483,146 +1261,425 @@ export default function Projects() {
                               />
                               
                               <FormField
-                                control={endorsementForm.control}
-                                name="clientTitle"
+                                control={collaboratorForm.control}
+                                name="role"
                                 render={({ field }) => (
                                   <FormItem>
-                                    <FormLabel>Client Title</FormLabel>
+                                    <FormLabel>Role*</FormLabel>
                                     <FormControl>
-                                      <Input placeholder="CEO, Manager, etc." {...field} value={field.value || ''} />
+                                      <Input placeholder="Developer, Designer, PM, etc." {...field} />
                                     </FormControl>
                                     <FormMessage />
                                   </FormItem>
                                 )}
                               />
-                            </div>
-                            
-                            <FormField
-                              control={endorsementForm.control}
-                              name="clientCompany"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Client Company</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="Company name" {...field} value={field.value || ''} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <FormField
-                              control={endorsementForm.control}
-                              name="message"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Testimonial</FormLabel>
-                                  <FormControl>
-                                    <Textarea 
-                                      placeholder="Client's testimonial about your work" 
-                                      className="resize-none"
-                                      {...field}
-                                      value={field.value || ''}
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <FormField
-                              control={endorsementForm.control}
-                              name="rating"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Rating (1-5)</FormLabel>
-                                  <Select
-                                    onValueChange={(value) => field.onChange(parseInt(value))}
-                                    defaultValue={field.value?.toString() || "5"}
-                                  >
+                              
+                              <FormField
+                                control={collaboratorForm.control}
+                                name="profileLink"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Profile Link</FormLabel>
                                     <FormControl>
-                                      <SelectTrigger>
-                                        <SelectValue placeholder="Select a rating" />
-                                      </SelectTrigger>
+                                      <Input placeholder="Brandentifier profile link" {...field} value={field.value || ''} />
                                     </FormControl>
-                                    <SelectContent>
-                                      <SelectItem value="1">1 - Poor</SelectItem>
-                                      <SelectItem value="2">2 - Fair</SelectItem>
-                                      <SelectItem value="3">3 - Good</SelectItem>
-                                      <SelectItem value="4">4 - Very Good</SelectItem>
-                                      <SelectItem value="5">5 - Excellent</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <Button type="submit" size="sm" className="mt-2">
-                              Add Endorsement
-                            </Button>
-                          </div>
-                        </form>
-                      </Form>
-                      
-                      {endorsements.length > 0 && (
-                        <div className="mt-4 space-y-3">
-                          <h3 className="text-sm font-medium">Added Endorsements</h3>
-                          <div className="space-y-3">
-                            {endorsements.map((endorsement) => (
-                              <div key={endorsement.id} className="border rounded-lg p-3 relative">
-                                <div className="absolute top-2 right-2">
-                                  <Button variant="ghost" size="icon" onClick={() => handleDeleteEndorsement(endorsement.id)}>
+                                    <FormDescription>
+                                      Add Brandentifier profile link to connect with users
+                                    </FormDescription>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <Button type="submit" size="sm" className="mt-2">
+                                Add Team Member
+                              </Button>
+                            </div>
+                          </form>
+                        </Form>
+                        
+                        {collaborators.length > 0 ? (
+                          <div className="border rounded-lg p-4 space-y-4">
+                            <h3 className="text-sm font-medium">Current Team Members</h3>
+                            <div className="space-y-2">
+                              {collaborators.map((collaborator) => (
+                                <div key={collaborator.id} className="flex items-center justify-between p-2 bg-muted rounded">
+                                  <div>
+                                    <div className="font-medium">{collaborator.name}</div>
+                                    <div className="text-xs text-muted-foreground">
+                                      {collaborator.role}
+                                      {collaborator.email && ` • ${collaborator.email}`}
+                                    </div>
+                                  </div>
+                                  <Button 
+                                    size="icon" 
+                                    variant="ghost" 
+                                    onClick={() => handleDeleteCollaborator(collaborator.id)}
+                                  >
                                     <TrashIcon className="h-4 w-4" />
                                   </Button>
                                 </div>
-                                
-                                <div className="flex items-center mb-2">
-                                  {/* Rating stars */}
-                                  <div className="flex">
-                                    {Array.from({ length: 5 }).map((_, i) => (
-                                      <svg
-                                        key={i}
-                                        className={`h-4 w-4 ${i < (endorsement.rating || 0) ? "text-yellow-400 fill-yellow-400" : "text-gray-300 fill-gray-300"}`}
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 24 24"
-                                      >
-                                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                                      </svg>
-                                    ))}
-                                  </div>
-                                </div>
-                                
-                                {endorsement.message && (
-                                  <p className="italic text-sm mb-2 line-clamp-2">"{endorsement.message}"</p>
-                                )}
-                                
-                                <div>
-                                  <p className="font-medium text-sm">{endorsement.clientName}</p>
-                                  <p className="text-xs text-muted-foreground">
-                                    {endorsement.clientTitle && `${endorsement.clientTitle}, `}
-                                    {endorsement.clientCompany}
-                                  </p>
-                                </div>
-                              </div>
-                            ))}
+                              ))}
+                            </div>
                           </div>
+                        ) : (
+                          <div className="text-center p-4 text-muted-foreground">
+                            <Users2Icon className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                            <p>No team members added yet</p>
+                          </div>
+                        )}
+                      </div>
+                    </TabsContent>
+                    
+                    <TabsContent value="endorsements" className="space-y-4 pt-4">
+                      <div className="space-y-4">
+                        <h3 className="text-sm font-medium">Add Testimonials & Endorsements</h3>
+                        <Form {...endorsementForm}>
+                          <form onSubmit={endorsementForm.handleSubmit(handleAddEndorsement)} className="space-y-4">
+                            <div className="space-y-4 border rounded-lg p-4">
+                              <FormField
+                                control={endorsementForm.control}
+                                name="clientName"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Client/Reviewer Name*</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="John Smith" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <FormField
+                                  control={endorsementForm.control}
+                                  name="clientEmail"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Client Email</FormLabel>
+                                      <FormControl>
+                                        <Input placeholder="email@example.com" {...field} value={field.value || ''} />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                
+                                <FormField
+                                  control={endorsementForm.control}
+                                  name="clientTitle"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Client Title</FormLabel>
+                                      <FormControl>
+                                        <Input placeholder="CEO, Manager, etc." {...field} value={field.value || ''} />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                              </div>
+                              
+                              <FormField
+                                control={endorsementForm.control}
+                                name="clientCompany"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Client Company</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="Company name" {...field} value={field.value || ''} />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <FormField
+                                control={endorsementForm.control}
+                                name="message"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Endorsement Message</FormLabel>
+                                    <FormControl>
+                                      <Textarea 
+                                        placeholder="Share what the client said about your work" 
+                                        className="resize-none" 
+                                        {...field} 
+                                        value={field.value || ''} 
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <FormField
+                                control={endorsementForm.control}
+                                name="rating"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Rating (1-5)</FormLabel>
+                                    <FormControl>
+                                      <Select
+                                        onValueChange={(value) => field.onChange(parseInt(value))}
+                                        defaultValue={field.value?.toString() || "5"}
+                                      >
+                                        <SelectTrigger>
+                                          <SelectValue placeholder="Select a rating" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="1">1 Star</SelectItem>
+                                          <SelectItem value="2">2 Stars</SelectItem>
+                                          <SelectItem value="3">3 Stars</SelectItem>
+                                          <SelectItem value="4">4 Stars</SelectItem>
+                                          <SelectItem value="5">5 Stars</SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <Button type="submit" size="sm" className="mt-2">
+                                Add Endorsement
+                              </Button>
+                            </div>
+                          </form>
+                        </Form>
+                        
+                        {endorsements.length > 0 ? (
+                          <div className="border rounded-lg p-4 space-y-4">
+                            <h3 className="text-sm font-medium">Current Endorsements</h3>
+                            <div className="space-y-2">
+                              {endorsements.map((endorsement) => (
+                                <div key={endorsement.id} className="p-3 bg-muted rounded">
+                                  <div className="flex items-center justify-between">
+                                    <div>
+                                      <div className="font-medium">{endorsement.clientName}</div>
+                                      <div className="text-xs text-muted-foreground">
+                                        {endorsement.clientTitle && `${endorsement.clientTitle}`}
+                                        {endorsement.clientTitle && endorsement.clientCompany && ` at `}
+                                        {endorsement.clientCompany && `${endorsement.clientCompany}`}
+                                      </div>
+                                    </div>
+                                    <div className="flex space-x-2">
+                                      <div className="flex items-center">
+                                        {[...Array(5)].map((_, index) => (
+                                          <span 
+                                            key={index} 
+                                            className={`text-sm ${index < (endorsement.rating || 0) ? 'text-yellow-500' : 'text-gray-300'}`}
+                                          >
+                                            ★
+                                          </span>
+                                        ))}
+                                      </div>
+                                      <Button 
+                                        size="icon" 
+                                        variant="ghost" 
+                                        onClick={() => handleDeleteEndorsement(endorsement.id)}
+                                      >
+                                        <TrashIcon className="h-4 w-4" />
+                                      </Button>
+                                    </div>
+                                  </div>
+                                  {endorsement.message && (
+                                    <div className="mt-2 text-sm italic">"{endorsement.message}"</div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="text-center p-4 text-muted-foreground">
+                            <AwardIcon className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                            <p>No endorsements added yet</p>
+                          </div>
+                        )}
+                      </div>
+                    </TabsContent>
+                  </Tabs>
+                  
+                  <DialogFooter>
+                    <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+                      Cancel
+                    </Button>
+                    <Button type="submit" isLoading={loading}>
+                      Update Project
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </Form>
+            </DialogContent>
+          </Dialog>
+
+          {/* Detail Dialog */}
+          <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
+            <DialogContent className="sm:max-w-[650px] max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <div className="flex justify-between items-center">
+                  <DialogTitle className="text-xl">{currentProject.title}</DialogTitle>
+                  <div className="flex space-x-1">
+                    <Button 
+                      size="icon" 
+                      variant="ghost" 
+                      className="h-8 w-8" 
+                      onClick={() => {
+                        setIsDetailDialogOpen(false);
+                        openEditDialog(currentProject);
+                      }}
+                    >
+                      <PencilIcon className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+                {currentProject.category && (
+                  <Badge className="mt-1">{currentProject.category}</Badge>
+                )}
+              </DialogHeader>
+              
+              <Tabs defaultValue="details" className="w-full" onValueChange={setActiveTab} value={activeTab}>
+                <TabsList className="grid w-full grid-cols-3">
+                  <TabsTrigger value="details">Details</TabsTrigger>
+                  <TabsTrigger value="team">Team</TabsTrigger>
+                  <TabsTrigger value="endorsements">Endorsements</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="details" className="space-y-4 pt-4">
+                  {currentProject.thumbnailUrl && (
+                    <div className="w-full h-48 overflow-hidden bg-muted rounded-md mb-4">
+                      <img 
+                        src={currentProject.thumbnailUrl} 
+                        alt={currentProject.title} 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-sm font-medium">Description</h3>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {currentProject.description || "No description provided."}
+                      </p>
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-4">
+                      <div>
+                        <h3 className="text-sm font-medium">Project Date</h3>
+                        <p className="text-sm text-muted-foreground">{formatDate(currentProject.startDate)}</p>
+                      </div>
+                      
+                      {currentProject.projectUrl && (
+                        <div>
+                          <h3 className="text-sm font-medium">Project URL</h3>
+                          <a 
+                            href={currentProject.projectUrl} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-sm text-primary hover:underline flex items-center"
+                          >
+                            <ExternalLinkIcon className="h-3 w-3 mr-1" />
+                            View Project
+                          </a>
                         </div>
                       )}
                     </div>
-                  </TabsContent>
-                </Tabs>
+                  </div>
+                </TabsContent>
                 
-                <DialogFooter>
-                  <Button type="submit" disabled={loading}>
-                    {loading ? 'Saving...' : 'Update Project'}
-                  </Button>
-                </DialogFooter>
-              </form>
-            </Form>
-          </DialogContent>
-        </Dialog>
-      </CardContent>
+                <TabsContent value="team" className="space-y-4 pt-4">
+                  {collaborators.length > 0 ? (
+                    <div className="grid gap-3">
+                      {collaborators.map((collaborator) => (
+                        <div key={collaborator.id} className="p-3 bg-muted rounded-md flex justify-between items-start">
+                          <div>
+                            <div className="font-medium">{collaborator.name}</div>
+                            <div className="text-sm text-muted-foreground">{collaborator.role}</div>
+                            {collaborator.email && (
+                              <div className="text-sm text-muted-foreground">{collaborator.email}</div>
+                            )}
+                            {collaborator.profileLink && (
+                              <a 
+                                href={collaborator.profileLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-xs text-primary hover:underline flex items-center mt-1"
+                              >
+                                <ExternalLinkIcon className="h-3 w-3 mr-1" />
+                                View Profile
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center p-4 text-muted-foreground">
+                      <Users2Icon className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                      <p>No team members added yet</p>
+                    </div>
+                  )}
+                </TabsContent>
+                
+                <TabsContent value="endorsements" className="space-y-4 pt-4">
+                  {endorsements.length > 0 ? (
+                    <div className="grid gap-4">
+                      {endorsements.map((endorsement) => (
+                        <div key={endorsement.id} className="p-4 bg-muted rounded-md">
+                          <div className="flex justify-between items-start mb-2">
+                            <div>
+                              <div className="font-medium">{endorsement.clientName}</div>
+                              <div className="text-sm text-muted-foreground">
+                                {endorsement.clientTitle && `${endorsement.clientTitle}`}
+                                {endorsement.clientTitle && endorsement.clientCompany && ` at `}
+                                {endorsement.clientCompany && `${endorsement.clientCompany}`}
+                              </div>
+                            </div>
+                            <div className="flex items-center">
+                              {[...Array(5)].map((_, index) => (
+                                <span 
+                                  key={index} 
+                                  className={`text-sm ${index < (endorsement.rating || 0) ? 'text-yellow-500' : 'text-gray-300'}`}
+                                >
+                                  ★
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                          {endorsement.message && (
+                            <div className="text-sm italic mt-2 pl-4 border-l-2 border-muted-foreground/20">
+                              "{endorsement.message}"
+                            </div>
+                          )}
+                          {endorsement.isVerified && (
+                            <div className="mt-2 flex items-center text-xs text-green-600">
+                              <CheckCircleIcon className="h-3 w-3 mr-1" />
+                              Verified Endorsement
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center p-4 text-muted-foreground">
+                      <AwardIcon className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                      <p>No endorsements added yet</p>
+                    </div>
+                  )}
+                </TabsContent>
+              </Tabs>
+              
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setIsDetailDialogOpen(false)}>
+                  Close
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </>
+      )}
     </Card>
   );
 }
