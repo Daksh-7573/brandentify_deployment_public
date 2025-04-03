@@ -809,26 +809,78 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Handle file uploads for project thumbnails
   apiRouter.post("/projects/upload-thumbnail", (req: Request, res: Response) => {
-    projectThumbnailUpload(req, res, (err) => {
-      if (err) {
-        console.error(`[POST /projects/upload-thumbnail] Upload error:`, err);
-        return res.status(400).json({ message: err.message });
+    try {
+      console.log(`[POST /projects/upload-thumbnail] Received upload request:`, req.files);
+      
+      // Handle express-fileupload first (which should be active based on middleware)
+      if (req.files && req.files.thumbnail) {
+        const thumbnailFile = req.files.thumbnail;
+        
+        // If it's an array, take the first file
+        const file = Array.isArray(thumbnailFile) ? thumbnailFile[0] : thumbnailFile;
+        
+        console.log(`[POST /projects/upload-thumbnail] Processing file:`, file.name);
+        
+        // Generate a unique filename
+        const timestamp = Date.now();
+        const ext = path.extname(file.name);
+        const filename = `project_${req.body.projectId || 'new'}_${timestamp}${ext}`;
+        
+        // Define the upload path
+        const uploadPath = path.join(process.cwd(), 'public', 'uploads', 'projects', filename);
+        
+        // Move the file to the upload directory
+        file.mv(uploadPath, (err) => {
+          if (err) {
+            console.error(`[POST /projects/upload-thumbnail] File move error:`, err);
+            return res.status(500).json({ 
+              message: `Error saving file: ${err.message}`,
+              error: err 
+            });
+          }
+          
+          console.log(`[POST /projects/upload-thumbnail] File saved to:`, uploadPath);
+          
+          // Generate the public URL for the file
+          const fileUrl = getFileUrl(filename);
+          
+          res.status(200).json({
+            thumbnailFile: filename,
+            thumbnailUrl: fileUrl,
+            message: "File uploaded successfully"
+          });
+        });
+      } 
+      // Fallback to multer if express-fileupload didn't pick up the file
+      else {
+        projectThumbnailUpload(req, res, (err) => {
+          if (err) {
+            console.error(`[POST /projects/upload-thumbnail] Multer upload error:`, err);
+            return res.status(400).json({ message: err.message });
+          }
+          
+          if (!req.file) {
+            console.error(`[POST /projects/upload-thumbnail] No file provided in the request`);
+            return res.status(400).json({ message: "No file uploaded" });
+          }
+          
+          console.log(`[POST /projects/upload-thumbnail] File uploaded with multer:`, req.file.filename);
+          const fileUrl = getFileUrl(req.file.filename);
+          
+          res.status(200).json({ 
+            thumbnailFile: req.file.filename,
+            thumbnailUrl: fileUrl,
+            message: "File uploaded successfully with multer" 
+          });
+        });
       }
-      
-      if (!req.file) {
-        console.error(`[POST /projects/upload-thumbnail] No file provided`);
-        return res.status(400).json({ message: "No file uploaded" });
-      }
-      
-      console.log(`[POST /projects/upload-thumbnail] File uploaded:`, req.file.filename);
-      const fileUrl = getFileUrl(req.file.filename);
-      
-      res.status(200).json({ 
-        thumbnailFile: req.file.filename,
-        thumbnailUrl: fileUrl,
-        message: "File uploaded successfully" 
+    } catch (error) {
+      console.error(`[POST /projects/upload-thumbnail] Unexpected error:`, error);
+      res.status(500).json({ 
+        message: "Failed to process file upload",
+        error: error instanceof Error ? error.message : String(error)
       });
-    });
+    }
   });
 
   apiRouter.post("/projects", async (req: Request, res: Response) => {

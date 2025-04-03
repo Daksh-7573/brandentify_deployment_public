@@ -228,23 +228,40 @@ export default function Projects() {
       
       // If we have a thumbnail file, upload it
       if (thumbnailFile) {
-        const formData = new FormData();
-        formData.append('thumbnail', thumbnailFile);
-        formData.append('projectId', project.id.toString());
-        
-        // Use fetch directly as apiRequest doesn't handle FormData
-        const uploadResponse = await fetch('/api/projects/upload-thumbnail', {
-          method: 'POST',
-          body: formData,
-        });
-        
-        if (!uploadResponse.ok) {
-          throw new Error('Failed to upload thumbnail');
+        try {
+          console.log('Uploading thumbnail file for project ID:', project.id);
+          const formData = new FormData();
+          formData.append('thumbnail', thumbnailFile);
+          formData.append('projectId', project.id.toString());
+          
+          // Use fetch directly as apiRequest doesn't handle FormData
+          const uploadResponse = await fetch('/api/projects/upload-thumbnail', {
+            method: 'POST',
+            body: formData,
+          });
+          
+          if (!uploadResponse.ok) {
+            // Try to get error details
+            const errorData = await uploadResponse.json().catch(() => ({}));
+            console.error('Thumbnail upload failed with status:', uploadResponse.status, errorData);
+            throw new Error(`Failed to upload thumbnail: ${errorData.message || uploadResponse.statusText}`);
+          }
+          
+          const uploadResult = await uploadResponse.json();
+          console.log('Thumbnail upload successful:', uploadResult);
+          
+          // Update the project with the thumbnail URL
+          project.thumbnailUrl = uploadResult.thumbnailUrl;
+        } catch (uploadError) {
+          console.error('Error uploading thumbnail:', uploadError);
+          // Don't fail the whole operation, just show a toast for the upload error
+          toast({
+            title: 'Thumbnail Upload Failed',
+            description: uploadError instanceof Error ? uploadError.message : 'Unable to upload thumbnail image',
+            variant: 'destructive',
+          });
+          // Continue with the project creation even if thumbnail fails
         }
-        
-        const uploadResult = await uploadResponse.json();
-        // Update the project with the thumbnail URL
-        project.thumbnailUrl = uploadResult.thumbnailUrl;
       }
       
       setProjects([...projects, project as Project]);
@@ -284,23 +301,40 @@ export default function Projects() {
       
       // If we have a thumbnail file, upload it
       if (thumbnailFile) {
-        const formData = new FormData();
-        formData.append('thumbnail', thumbnailFile);
-        formData.append('projectId', updatedProject.id.toString());
-        
-        // Use fetch directly as apiRequest doesn't handle FormData
-        const uploadResponse = await fetch('/api/projects/upload-thumbnail', {
-          method: 'POST',
-          body: formData,
-        });
-        
-        if (!uploadResponse.ok) {
-          throw new Error('Failed to upload thumbnail');
+        try {
+          console.log('Uploading thumbnail file for project ID:', updatedProject.id);
+          const formData = new FormData();
+          formData.append('thumbnail', thumbnailFile);
+          formData.append('projectId', updatedProject.id.toString());
+          
+          // Use fetch directly as apiRequest doesn't handle FormData
+          const uploadResponse = await fetch('/api/projects/upload-thumbnail', {
+            method: 'POST',
+            body: formData,
+          });
+          
+          if (!uploadResponse.ok) {
+            // Try to get error details
+            const errorData = await uploadResponse.json().catch(() => ({}));
+            console.error('Thumbnail upload failed with status:', uploadResponse.status, errorData);
+            throw new Error(`Failed to upload thumbnail: ${errorData.message || uploadResponse.statusText}`);
+          }
+          
+          const uploadResult = await uploadResponse.json();
+          console.log('Thumbnail upload successful:', uploadResult);
+          
+          // Update the project with the thumbnail URL
+          updatedProject.thumbnailUrl = uploadResult.thumbnailUrl;
+        } catch (uploadError) {
+          console.error('Error uploading thumbnail:', uploadError);
+          // Don't fail the whole operation, just show a toast for the upload error
+          toast({
+            title: 'Thumbnail Upload Failed',
+            description: uploadError instanceof Error ? uploadError.message : 'Unable to upload thumbnail image',
+            variant: 'destructive',
+          });
+          // Continue with the project update even if thumbnail fails
         }
-        
-        const uploadResult = await uploadResponse.json();
-        // Update the project with the thumbnail URL
-        updatedProject.thumbnailUrl = uploadResult.thumbnailUrl;
       }
       
       setProjects(projects.map(p => p.id === updatedProject.id ? updatedProject : p));
