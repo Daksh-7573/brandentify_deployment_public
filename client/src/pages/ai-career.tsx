@@ -160,22 +160,22 @@ export default function AICareerPage() {
   };
 
   return (
-    <div className="container py-8">
-      <h1 className="text-3xl font-bold mb-6">AI Career Assistant</h1>
+    <div className="container py-6 px-4 sm:px-6 md:py-8">
+      <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">AI Career Assistant</h1>
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
         <div className="lg:col-span-1">
-          <Tabs defaultValue="career">
-            <TabsList className="w-full mb-4">
-              <TabsTrigger value="career" className="flex-1">Career Advice</TabsTrigger>
-              <TabsTrigger value="resume" className="flex-1">Resume Analysis</TabsTrigger>
-              <TabsTrigger value="networking" className="flex-1">Networking</TabsTrigger>
+          <Tabs defaultValue="career" className="w-full">
+            <TabsList className="grid w-full grid-cols-3 mb-4">
+              <TabsTrigger value="career">Career Advice</TabsTrigger>
+              <TabsTrigger value="resume">Resume Analysis</TabsTrigger>
+              <TabsTrigger value="networking">Networking</TabsTrigger>
             </TabsList>
             
-            <TabsContent value="career">
-              <Card className="p-4">
-                <h2 className="text-xl font-semibold mb-4">Get Career Advice</h2>
-                <p className="text-sm text-muted-foreground mb-4">
+            <TabsContent value="career" className="mt-2">
+              <Card className="p-4 sm:p-6">
+                <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Get Career Advice</h2>
+                <p className="text-sm text-muted-foreground mb-5">
                   Generate personalized career advice based on your profile. 
                   We'll analyze your work experience, skills, and education to provide tailored recommendations.
                 </p>
@@ -192,14 +192,14 @@ export default function AICareerPage() {
               </Card>
             </TabsContent>
             
-            <TabsContent value="resume">
-              <Card className="p-4">
-                <h2 className="text-xl font-semibold mb-4">Resume Analysis</h2>
+            <TabsContent value="resume" className="mt-2">
+              <Card className="p-4 sm:p-6">
+                <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Resume Analysis</h2>
                 <p className="text-sm text-muted-foreground mb-4">
                   Paste your resume text to get an AI-powered analysis with suggestions for improvement.
                 </p>
                 <Textarea 
-                  className="min-h-[200px] mb-4" 
+                  className="min-h-[150px] sm:min-h-[200px] mb-4 w-full" 
                   placeholder="Paste your resume text here..."
                   value={resumeText}
                   onChange={(e) => setResumeText(e.target.value)}
@@ -217,31 +217,32 @@ export default function AICareerPage() {
               </Card>
             </TabsContent>
             
-            <TabsContent value="networking">
-              <Card className="p-4">
-                <h2 className="text-xl font-semibold mb-4">Networking Recommendations</h2>
+            <TabsContent value="networking" className="mt-2">
+              <Card className="p-4 sm:p-6">
+                <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Networking Recommendations</h2>
                 <p className="text-sm text-muted-foreground mb-4">
                   Get personalized networking recommendations for your career goals.
                 </p>
                 
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="industry">Target Industry</Label>
+                    <Label htmlFor="industry" className="mb-1.5 block">Target Industry</Label>
                     <Input 
                       id="industry" 
                       placeholder="e.g. Technology, Healthcare, Finance"
                       value={targetIndustry}
                       onChange={(e) => setTargetIndustry(e.target.value)}
+                      className="w-full"
                     />
                   </div>
                   
                   <div>
-                    <Label htmlFor="purpose">Networking Purpose</Label>
+                    <Label htmlFor="purpose" className="mb-1.5 block">Networking Purpose</Label>
                     <Select 
                       value={networkingPurpose} 
                       onValueChange={setNetworkingPurpose}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger id="purpose" className="w-full">
                         <SelectValue placeholder="Select purpose" />
                       </SelectTrigger>
                       <SelectContent>
@@ -255,7 +256,7 @@ export default function AICareerPage() {
                   </div>
                   
                   <Button 
-                    className="w-full"
+                    className="w-full mt-2"
                     onClick={() => networkingMutation.mutate()}
                     disabled={networkingMutation.isPending || !targetIndustry.trim()}
                   >
@@ -273,24 +274,24 @@ export default function AICareerPage() {
         </div>
         
         <div className="lg:col-span-2">
-          <h2 className="text-xl font-semibold mb-4">Your AI Insights</h2>
+          <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Your AI Insights</h2>
           
           {messagesLoading ? (
-            <div className="flex justify-center py-12">
+            <div className="flex justify-center py-8 sm:py-12 border rounded-lg bg-muted/10">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
           ) : getRecentAIMessages().length === 0 ? (
-            <div className="text-center py-12 border rounded-lg bg-muted/20">
-              <h3 className="text-lg font-medium">No AI insights yet</h3>
-              <p className="text-sm text-muted-foreground mt-2">
+            <div className="text-center py-8 sm:py-12 border rounded-lg bg-muted/10">
+              <h3 className="text-base sm:text-lg font-medium">No AI insights yet</h3>
+              <p className="text-sm text-muted-foreground mt-2 max-w-md mx-auto">
                 Generate career advice, analyze your resume, or get networking recommendations to see AI insights here.
               </p>
             </div>
           ) : (
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {getRecentAIMessages().map((message: any) => (
-                <Card key={message.id} className="p-6">
-                  <div className="flex justify-between items-start mb-4">
+                <Card key={message.id} className="p-4 sm:p-6 overflow-hidden">
+                  <div className="flex justify-between items-start mb-3 sm:mb-4">
                     <div>
                       <h3 className="font-medium">{getMessageTypeLabel(message.messageType)}</h3>
                       <p className="text-xs text-muted-foreground">
@@ -298,9 +299,9 @@ export default function AICareerPage() {
                       </p>
                     </div>
                   </div>
-                  <div className="prose max-w-none dark:prose-invert prose-sm">
+                  <div className="prose max-w-none dark:prose-invert prose-sm overflow-x-auto">
                     {message.content.split('\n').map((line: string, i: number) => (
-                      <p key={i} className={line.trim() === '' ? 'my-4' : ''}>
+                      <p key={i} className={line.trim() === '' ? 'my-3 sm:my-4' : ''}>
                         {line}
                       </p>
                     ))}
