@@ -3,6 +3,9 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { z } from "zod";
 import crypto from "crypto";
+import path from "path";
+import fileUpload from "express-fileupload";
+import { projectThumbnailUpload, getFileUrl } from "./utils/upload";
 // Resume parsing functionality removed
 import { 
   insertUserSchema, 
@@ -803,6 +806,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Handle file uploads for project thumbnails
+  apiRouter.post("/projects/upload-thumbnail", (req: Request, res: Response) => {
+    projectThumbnailUpload(req, res, (err) => {
+      if (err) {
+        console.error(`[POST /projects/upload-thumbnail] Upload error:`, err);
+        return res.status(400).json({ message: err.message });
+      }
+      
+      if (!req.file) {
+        console.error(`[POST /projects/upload-thumbnail] No file provided`);
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+      
+      console.log(`[POST /projects/upload-thumbnail] File uploaded:`, req.file.filename);
+      const fileUrl = getFileUrl(req.file.filename);
+      
+      res.status(200).json({ 
+        thumbnailFile: req.file.filename,
+        thumbnailUrl: fileUrl,
+        message: "File uploaded successfully" 
+      });
+    });
+  });
+
   apiRouter.post("/projects", async (req: Request, res: Response) => {
     try {
       console.log(`[POST /projects] Creating project with data:`, req.body);
@@ -825,6 +852,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       console.log(`[POST /projects] Processing with userId: ${req.body.userId}`);
+      
+      // Handle thumbnailFile if provided and create thumbnailUrl
+      if (req.body.thumbnailFile && !req.body.thumbnailUrl) {
+        const thumbnailUrl = getFileUrl(req.body.thumbnailFile);
+        req.body.thumbnailUrl = thumbnailUrl;
+      }
+      
       const projectData = insertProjectSchema.parse(req.body);
       const project = await storage.createProject(projectData);
       console.log(`[POST /projects] Created project with ID: ${project.id}`);
@@ -842,6 +876,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   apiRouter.put("/projects/:id", async (req: Request, res: Response) => {
     try {
+      console.log(`[PUT /projects/:id] Updating project with data:`, req.body);
       const projectId = parseInt(req.params.id);
       
       if (isNaN(projectId)) {
@@ -856,7 +891,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const projectData = req.body;
+      
+      // Handle thumbnailFile if provided and create thumbnailUrl
+      if (projectData.thumbnailFile && !projectData.thumbnailUrl) {
+        const thumbnailUrl = getFileUrl(projectData.thumbnailFile);
+        projectData.thumbnailUrl = thumbnailUrl;
+      }
+      
       const updatedProject = await storage.updateProject(projectId, projectData);
+      console.log(`[PUT /projects/:id] Updated project with ID: ${projectId}`);
       
       res.json(updatedProject);
     } catch (error) {

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test File Upload</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    form {
+      border: 1px solid #ccc;
+      padding: 20px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+    input[type="file"] {
+      margin-bottom: 15px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>Test File Upload for Brandentifier</h1>
+  
+  <h2>Upload Project Thumbnail</h2>
+  <form id="thumbnailForm">
+    <label for="thumbnail">Select Thumbnail Image:</label>
+    <input type="file" id="thumbnail" name="thumbnail" accept="image/*" required>
+    <button type="submit">Upload Thumbnail</button>
+  </form>
+  
+  <h3>Response:</h3>
+  <pre id="thumbnailResponse">No response yet</pre>
+  
+  <h2>Create New Project with Thumbnail</h2>
+  <form id="projectForm">
+    <label for="title">Project Title:</label>
+    <input type="text" id="title" name="title" required><br><br>
+    
+    <label for="description">Description:</label>
+    <textarea id="description" name="description" rows="4" style="width: 100%"></textarea><br><br>
+    
+    <label for="category">Category:</label>
+    <select id="category" name="category">
+      <option value="Web Development">Web Development</option>
+      <option value="Mobile App">Mobile App</option>
+      <option value="UI/UX Design">UI/UX Design</option>
+      <option value="Data Science">Data Science</option>
+      <option value="Machine Learning">Machine Learning</option>
+      <option value="Other">Other</option>
+    </select><br><br>
+    
+    <input type="hidden" id="thumbnailFile" name="thumbnailFile">
+    <input type="hidden" id="thumbnailUrl" name="thumbnailUrl">
+    <input type="hidden" id="userId" name="userId" value="1"> <!-- Default user ID for testing -->
+    
+    <button type="submit">Create Project</button>
+  </form>
+  
+  <h3>Response:</h3>
+  <pre id="projectResponse">No response yet</pre>
+
+  <script>
+    // Handle thumbnail upload
+    document.getElementById('thumbnailForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData();
+      const fileInput = document.getElementById('thumbnail');
+      
+      if (fileInput.files.length === 0) {
+        alert('Please select a file');
+        return;
+      }
+      
+      formData.append('thumbnail', fileInput.files[0]);
+      formData.append('userId', document.getElementById('userId').value);
+      
+      try {
+        const response = await fetch('/api/projects/upload-thumbnail', {
+          method: 'POST',
+          body: formData
+        });
+        
+        const result = await response.json();
+        document.getElementById('thumbnailResponse').textContent = JSON.stringify(result, null, 2);
+        
+        // If successful, populate the hidden fields for the project form
+        if (response.ok) {
+          document.getElementById('thumbnailFile').value = result.thumbnailFile;
+          document.getElementById('thumbnailUrl').value = result.thumbnailUrl;
+        }
+      } catch (error) {
+        document.getElementById('thumbnailResponse').textContent = 'Error: ' + error.message;
+      }
+    });
+    
+    // Handle project creation
+    document.getElementById('projectForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const projectData = {
+        title: document.getElementById('title').value,
+        description: document.getElementById('description').value,
+        category: document.getElementById('category').value,
+        thumbnailFile: document.getElementById('thumbnailFile').value,
+        thumbnailUrl: document.getElementById('thumbnailUrl').value,
+        userId: document.getElementById('userId').value,
+        mediaUrls: []
+      };
+      
+      try {
+        const response = await fetch('/api/projects', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(projectData)
+        });
+        
+        const result = await response.json();
+        document.getElementById('projectResponse').textContent = JSON.stringify(result, null, 2);
+      } catch (error) {
+        document.getElementById('projectResponse').textContent = 'Error: ' + error.message;
+      }
+    });
+  </script>
+</body>
+</html>

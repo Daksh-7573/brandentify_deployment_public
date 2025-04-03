@@ -1,4 +1,6 @@
 import express, { type Request, Response, NextFunction } from "express";
+import path from "path";
+import fileUpload from "express-fileupload";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
@@ -6,6 +8,33 @@ const app = express();
 // Increase body size limit to handle file uploads (10MB)
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));
+
+// Setup express-fileupload middleware
+app.use(fileUpload({
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max file size
+  useTempFiles: true,
+  tempFileDir: path.join(process.cwd(), 'tmp'),
+  createParentPath: true,
+  debug: process.env.NODE_ENV === 'development' // Enable debug mode in development
+}));
+
+// Create uploads directory if it doesn't exist
+const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+const projectDir = path.join(uploadsDir, 'projects');
+
+// Ensure directories exist
+import fs from 'fs';
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+if (!fs.existsSync(projectDir)) {
+  fs.mkdirSync(projectDir, { recursive: true });
+}
+
+// Serve static files from public directory
+app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads')));
+// Serve the public directory directly for things like upload-test.html
+app.use(express.static(path.join(process.cwd(), 'public')));
 
 app.use((req, res, next) => {
   const start = Date.now();

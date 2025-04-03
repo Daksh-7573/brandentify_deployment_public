@@ -107,6 +107,7 @@ export const projects = pgTable("projects", {
   projectUrl: text("project_url"),
   category: text("category"), // Web Development, Mobile App, Design, etc.
   thumbnailUrl: text("thumbnail_url"), // URL to the main thumbnail image for the project
+  thumbnailFile: text("thumbnail_file"), // Filename for uploaded image
   mediaUrls: jsonb("media_urls").default('[]'), // URLs to images, videos, or documents stored as JSON array
   isVisible: boolean("is_visible").default(true), // Whether to show on profile
   createdAt: timestamp("created_at").defaultNow(),
