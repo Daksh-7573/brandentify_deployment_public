@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Pencil, Plus, Trash2, Calendar as CalendarIcon, GraduationCap, Building, MapPin, BookOpen, Briefcase, AlertCircle } from "lucide-react";
-import { format } from "date-fns";
 import * as z from "zod";
+import { formatDate } from "@/lib/utils";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -463,11 +463,7 @@ export default function Education() {
     label: industry,
   }));
   
-  // Format date for display
-  const formatDate = (date?: string | Date) => {
-    if (!date) return "";
-    return format(new Date(date), "MMM yyyy");
-  };
+  // We're now using the global formatDate from @/lib/utils
   
   // Convert domains to combobox format
   const domainOptionsFormatted = domainOptions.map(value => ({
@@ -787,7 +783,7 @@ export default function Education() {
                             >
                               <CalendarIcon className="mr-2 h-4 w-4" />
                               {field.value ? (
-                                format(field.value, "MMM yyyy")
+                                formatDate(field.value)
                               ) : (
                                 "Select date"
                               )}
@@ -829,7 +825,7 @@ export default function Education() {
                               >
                                 <CalendarIcon className="mr-2 h-4 w-4" />
                                 {field.value ? (
-                                  format(field.value, "MMM yyyy")
+                                  formatDate(field.value)
                                 ) : (
                                   "Select date"
                                 )}

@@ -7,6 +7,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { popularLocations } from "@/lib/location-data";
+import { formatDate } from "@/lib/utils";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -62,7 +63,6 @@ import { JobTitleCombobox } from "@/components/ui/job-title-combobox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
 import { Switch } from "@/components/ui/switch";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -599,6 +599,8 @@ export default function WorkExperience() {
     }
   });
   
+  // We're now using the global formatDate from @/lib/utils
+  
   // Handle dialog visibility
   const openAddDialog = () => {
     resetForm();
@@ -880,18 +882,22 @@ export default function WorkExperience() {
   
   return (
     <Card className="mb-6">
-      <CardContent className="pt-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-medium text-gray-900">Work Experience</h2>
-          <Button 
-            variant="ghost" 
-            className="text-primary hover:text-primary-600 hover:bg-transparent"
-            onClick={openAddDialog}
-          >
-            <i className="fas fa-plus mr-1"></i> Add
-          </Button>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <div>
+          <CardTitle className="text-xl font-bold">Work Experience</CardTitle>
+          <CardDescription>Add your professional experience</CardDescription>
         </div>
-        
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="h-8 gap-1" 
+          onClick={openAddDialog}
+        >
+          <Plus className="h-3.5 w-3.5" />
+          <span>Add</span>
+        </Button>
+      </CardHeader>
+      <CardContent>
         {isLoading ? (
           <div className="flex justify-center py-6">
             <div className="animate-spin h-6 w-6 text-primary">
@@ -899,9 +905,9 @@ export default function WorkExperience() {
             </div>
           </div>
         ) : sortedExperiences.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
-            <p>You haven't added any work experience yet.</p>
-            <p className="mt-2">Click the "Add" button above to get started.</p>
+          <div className="py-6 text-center">
+            <Briefcase className="mx-auto h-10 w-10 text-muted-foreground/50" />
+            <p className="mt-2 text-muted-foreground">No work experience added yet.</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -923,8 +929,8 @@ export default function WorkExperience() {
                     </p>
                     <p className="text-sm text-muted-foreground flex items-center mt-1">
                       <CalendarIcon className="h-3.5 w-3.5 mr-1.5" />
-                      {experience.startDate ? format(new Date(experience.startDate), 'MMM yyyy') : 'Present'} - 
-                      {experience.endDate ? format(new Date(experience.endDate), 'MMM yyyy') : 'Present'}
+                      {formatDate(experience.startDate)} - 
+                      {experience.endDate ? formatDate(experience.endDate) : 'Present'}
                     </p>
                     
                     <div className="flex flex-wrap gap-1.5 mt-2">
@@ -1123,7 +1129,7 @@ export default function WorkExperience() {
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {formData.startDate ? format(formData.startDate, "MMM yyyy") : "Select date"}
+                      {formData.startDate ? formatDate(formData.startDate) : "Select date"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
@@ -1158,7 +1164,7 @@ export default function WorkExperience() {
                       disabled={formData.isCurrentlyWorking || createExperienceMutation.isPending}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {formData.endDate ? format(formData.endDate, "MMM yyyy") : "Present"}
+                      {formData.endDate ? formatDate(formData.endDate) : "Present"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
@@ -1395,7 +1401,7 @@ export default function WorkExperience() {
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {formData.startDate ? format(formData.startDate, "MMM yyyy") : "Select date"}
+                      {formData.startDate ? formatDate(formData.startDate) : "Select date"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
@@ -1430,7 +1436,7 @@ export default function WorkExperience() {
                       disabled={formData.isCurrentlyWorking || updateExperienceMutation.isPending}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {formData.endDate ? format(formData.endDate, "MMM yyyy") : "Present"}
+                      {formData.endDate ? formatDate(formData.endDate) : "Present"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
