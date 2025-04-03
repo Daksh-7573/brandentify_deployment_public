@@ -12,9 +12,15 @@ import {
   insertSkillSchema,
   insertChatMessageSchema,
   insertEmailVerificationSchema,
+  insertProjectSchema,
+  insertProjectCollaboratorSchema,
+  insertProjectEndorsementSchema,
   InsertWorkExperience,
   InsertEducation,
-  InsertSkill
+  InsertSkill,
+  InsertProject,
+  InsertProjectCollaborator,
+  InsertProjectEndorsement
 } from "@shared/schema";
 import { generateCareerAdvice } from "./services/ai-service";
 import { getJobTitleSuggestions } from "./services/title-suggestions";
@@ -728,6 +734,374 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.status(204).end();
     } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Project routes
+  apiRouter.get("/users/:userId/projects", async (req: Request, res: Response) => {
+    try {
+      const userIdParam = req.params.userId;
+      console.log(`[GET /users/:userId/projects] Request for projects with userId: ${userIdParam}`);
+      
+      let userId: number;
+      
+      // Improved detection of Firebase UIDs - they're long and contain non-numeric characters
+      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
+      
+      if (isFirebaseUid) {
+        console.log(`[GET /users/:userId/projects] userId appears to be a Firebase UID: ${userIdParam}`);
+        // Try to find user with this username (Firebase UID)
+        const user = await storage.getUserByUsername(userIdParam);
+        
+        if (!user) {
+          console.log(`[GET /users/:userId/projects] No user found with Firebase UID: ${userIdParam}`);
+          return res.status(404).json({ message: "User not found" });
+        }
+        
+        console.log(`[GET /users/:userId/projects] Found user with ID: ${user.id} for Firebase UID: ${userIdParam}`);
+        userId = user.id;
+      } else {
+        // Try to parse as numeric ID
+        userId = parseInt(userIdParam);
+        
+        if (isNaN(userId)) {
+          console.log(`[GET /users/:userId/projects] ID is not a valid numeric ID: ${userIdParam}`);
+          return res.status(400).json({ message: "Invalid user ID format" });
+        }
+        
+        console.log(`[GET /users/:userId/projects] Using numeric userId: ${userId}`);
+      }
+      
+      const projects = await storage.getProjectsByUserId(userId);
+      console.log(`[GET /users/:userId/projects] Found ${projects.length} projects for userId: ${userId}`);
+      res.json(projects);
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  apiRouter.get("/projects/:id", async (req: Request, res: Response) => {
+    try {
+      const projectId = parseInt(req.params.id);
+      
+      if (isNaN(projectId)) {
+        return res.status(400).json({ message: "Invalid project ID format" });
+      }
+      
+      const project = await storage.getProjectById(projectId);
+      
+      if (!project) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+      
+      res.json(project);
+    } catch (error) {
+      console.error("Error fetching project:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  apiRouter.post("/projects", async (req: Request, res: Response) => {
+    try {
+      console.log(`[POST /projects] Creating project with data:`, req.body);
+      
+      // Check if we have a Firebase UID instead of numeric userId
+      if (typeof req.body.userId === 'string' && req.body.userId.length > 20) {
+        console.log(`[POST /projects] Received Firebase UID as userId: ${req.body.userId}`);
+        
+        // Look up the numeric userId for this Firebase UID
+        const user = await storage.getUserByUsername(req.body.userId);
+        
+        if (user) {
+          console.log(`[POST /projects] Found matching user with ID: ${user.id}`);
+          // Replace the Firebase UID with the numeric userId
+          req.body.userId = user.id;
+        } else {
+          console.log(`[POST /projects] No matching user found for Firebase UID: ${req.body.userId}`);
+          return res.status(404).json({ message: "User not found" });
+        }
+      }
+      
+      console.log(`[POST /projects] Processing with userId: ${req.body.userId}`);
+      const projectData = insertProjectSchema.parse(req.body);
+      const project = await storage.createProject(projectData);
+      console.log(`[POST /projects] Created project with ID: ${project.id}`);
+      res.status(201).json(project);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        console.error(`[POST /projects] Validation error:`, error.errors);
+        res.status(400).json({ message: error.errors });
+      } else {
+        console.error(`[POST /projects] Server error:`, error);
+        res.status(500).json({ message: "Internal server error" });
+      }
+    }
+  });
+
+  apiRouter.put("/projects/:id", async (req: Request, res: Response) => {
+    try {
+      const projectId = parseInt(req.params.id);
+      
+      if (isNaN(projectId)) {
+        return res.status(400).json({ message: "Invalid project ID format" });
+      }
+      
+      // Check if project exists
+      const existingProject = await storage.getProjectById(projectId);
+      
+      if (!existingProject) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+      
+      const projectData = req.body;
+      const updatedProject = await storage.updateProject(projectId, projectData);
+      
+      res.json(updatedProject);
+    } catch (error) {
+      console.error("Error updating project:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  apiRouter.delete("/projects/:id", async (req: Request, res: Response) => {
+    try {
+      const projectId = parseInt(req.params.id);
+      
+      if (isNaN(projectId)) {
+        return res.status(400).json({ message: "Invalid project ID format" });
+      }
+      
+      // First, fetch the project to make sure it exists
+      const existingProject = await storage.getProjectById(projectId);
+      
+      if (!existingProject) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+      
+      // Delete the project
+      const success = await storage.deleteProject(projectId);
+      
+      if (!success) {
+        return res.status(500).json({ message: "Failed to delete project" });
+      }
+      
+      res.status(200).json({ message: "Project deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting project:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Project Collaborator routes
+  apiRouter.get("/projects/:projectId/collaborators", async (req: Request, res: Response) => {
+    try {
+      const projectId = parseInt(req.params.projectId);
+      
+      if (isNaN(projectId)) {
+        return res.status(400).json({ message: "Invalid project ID format" });
+      }
+      
+      // Check if project exists
+      const existingProject = await storage.getProjectById(projectId);
+      
+      if (!existingProject) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+      
+      const collaborators = await storage.getProjectCollaboratorsByProjectId(projectId);
+      res.json(collaborators);
+    } catch (error) {
+      console.error("Error fetching project collaborators:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  apiRouter.post("/project-collaborators", async (req: Request, res: Response) => {
+    try {
+      console.log(`[POST /project-collaborators] Creating collaborator with data:`, req.body);
+      
+      // Check if we have a Firebase UID instead of numeric userId
+      if (typeof req.body.userId === 'string' && req.body.userId?.length > 20) {
+        console.log(`[POST /project-collaborators] Received Firebase UID as userId: ${req.body.userId}`);
+        
+        // Look up the numeric userId for this Firebase UID
+        const user = await storage.getUserByUsername(req.body.userId);
+        
+        if (user) {
+          console.log(`[POST /project-collaborators] Found matching user with ID: ${user.id}`);
+          // Replace the Firebase UID with the numeric userId
+          req.body.userId = user.id;
+        } else {
+          console.log(`[POST /project-collaborators] No matching user found for Firebase UID: ${req.body.userId}`);
+          // This is acceptable for collaborators, as they might be invited by email
+          req.body.userId = null;
+        }
+      }
+      
+      const collaboratorData = insertProjectCollaboratorSchema.parse(req.body);
+      const collaborator = await storage.createProjectCollaborator(collaboratorData);
+      console.log(`[POST /project-collaborators] Created collaborator with ID: ${collaborator.id}`);
+      res.status(201).json(collaborator);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        console.error(`[POST /project-collaborators] Validation error:`, error.errors);
+        res.status(400).json({ message: error.errors });
+      } else {
+        console.error(`[POST /project-collaborators] Server error:`, error);
+        res.status(500).json({ message: "Internal server error" });
+      }
+    }
+  });
+
+  apiRouter.put("/project-collaborators/:id", async (req: Request, res: Response) => {
+    try {
+      const collaboratorId = parseInt(req.params.id);
+      
+      if (isNaN(collaboratorId)) {
+        return res.status(400).json({ message: "Invalid collaborator ID format" });
+      }
+      
+      // Check if collaborator exists
+      const existingCollaborator = await storage.getProjectCollaboratorById(collaboratorId);
+      
+      if (!existingCollaborator) {
+        return res.status(404).json({ message: "Collaborator not found" });
+      }
+      
+      const collaboratorData = req.body;
+      const updatedCollaborator = await storage.updateProjectCollaborator(collaboratorId, collaboratorData);
+      
+      res.json(updatedCollaborator);
+    } catch (error) {
+      console.error("Error updating project collaborator:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  apiRouter.delete("/project-collaborators/:id", async (req: Request, res: Response) => {
+    try {
+      const collaboratorId = parseInt(req.params.id);
+      
+      if (isNaN(collaboratorId)) {
+        return res.status(400).json({ message: "Invalid collaborator ID format" });
+      }
+      
+      // First, fetch the collaborator to make sure it exists
+      const existingCollaborator = await storage.getProjectCollaboratorById(collaboratorId);
+      
+      if (!existingCollaborator) {
+        return res.status(404).json({ message: "Collaborator not found" });
+      }
+      
+      // Delete the collaborator
+      const success = await storage.deleteProjectCollaborator(collaboratorId);
+      
+      if (!success) {
+        return res.status(500).json({ message: "Failed to delete collaborator" });
+      }
+      
+      res.status(200).json({ message: "Collaborator deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting project collaborator:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Project Endorsement routes
+  apiRouter.get("/projects/:projectId/endorsements", async (req: Request, res: Response) => {
+    try {
+      const projectId = parseInt(req.params.projectId);
+      
+      if (isNaN(projectId)) {
+        return res.status(400).json({ message: "Invalid project ID format" });
+      }
+      
+      // Check if project exists
+      const existingProject = await storage.getProjectById(projectId);
+      
+      if (!existingProject) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+      
+      const endorsements = await storage.getProjectEndorsementsByProjectId(projectId);
+      res.json(endorsements);
+    } catch (error) {
+      console.error("Error fetching project endorsements:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  apiRouter.post("/project-endorsements", async (req: Request, res: Response) => {
+    try {
+      console.log(`[POST /project-endorsements] Creating endorsement with data:`, req.body);
+      
+      const endorsementData = insertProjectEndorsementSchema.parse(req.body);
+      const endorsement = await storage.createProjectEndorsement(endorsementData);
+      console.log(`[POST /project-endorsements] Created endorsement with ID: ${endorsement.id}`);
+      res.status(201).json(endorsement);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        console.error(`[POST /project-endorsements] Validation error:`, error.errors);
+        res.status(400).json({ message: error.errors });
+      } else {
+        console.error(`[POST /project-endorsements] Server error:`, error);
+        res.status(500).json({ message: "Internal server error" });
+      }
+    }
+  });
+
+  apiRouter.put("/project-endorsements/:id", async (req: Request, res: Response) => {
+    try {
+      const endorsementId = parseInt(req.params.id);
+      
+      if (isNaN(endorsementId)) {
+        return res.status(400).json({ message: "Invalid endorsement ID format" });
+      }
+      
+      // Check if endorsement exists
+      const existingEndorsement = await storage.getProjectEndorsementById(endorsementId);
+      
+      if (!existingEndorsement) {
+        return res.status(404).json({ message: "Endorsement not found" });
+      }
+      
+      const endorsementData = req.body;
+      const updatedEndorsement = await storage.updateProjectEndorsement(endorsementId, endorsementData);
+      
+      res.json(updatedEndorsement);
+    } catch (error) {
+      console.error("Error updating project endorsement:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  apiRouter.delete("/project-endorsements/:id", async (req: Request, res: Response) => {
+    try {
+      const endorsementId = parseInt(req.params.id);
+      
+      if (isNaN(endorsementId)) {
+        return res.status(400).json({ message: "Invalid endorsement ID format" });
+      }
+      
+      // First, fetch the endorsement to make sure it exists
+      const existingEndorsement = await storage.getProjectEndorsementById(endorsementId);
+      
+      if (!existingEndorsement) {
+        return res.status(404).json({ message: "Endorsement not found" });
+      }
+      
+      // Delete the endorsement
+      const success = await storage.deleteProjectEndorsement(endorsementId);
+      
+      if (!success) {
+        return res.status(500).json({ message: "Failed to delete endorsement" });
+      }
+      
+      res.status(200).json({ message: "Endorsement deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting project endorsement:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   });

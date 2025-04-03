@@ -1,0 +1,1477 @@
+import { useState, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/use-auth';
+import { apiRequest } from '@/lib/queryClient';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { CalendarIcon, PencilIcon, TrashIcon, PlusIcon, ExternalLinkIcon, CheckCircleIcon, XCircleIcon, Users2Icon, AwardIcon } from 'lucide-react';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { format } from 'date-fns';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Switch } from '@/components/ui/switch';
+import { cn } from '@/lib/utils';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+// Define the Project schema
+const projectSchema = z.object({
+  title: z.string().min(1, { message: "Title is required" }),
+  description: z.string().nullable().optional(),
+  category: z.string().nullable().optional(),
+  startDate: z.string().min(1, { message: "Start date is required" }),
+  endDate: z.string().nullable().optional(),
+  projectUrl: z.string().url().nullable().optional().or(z.literal('')),
+  clientName: z.string().nullable().optional(),
+  clientUrl: z.string().url().nullable().optional().or(z.literal('')),
+  mediaUrls: z.array(z.string()).nullable().optional(),
+  status: z.enum(['Planned', 'In Progress', 'Completed', 'On Hold']).default('In Progress'),
+  isVisible: z.boolean().default(true),
+});
+
+type ProjectFormValues = z.infer<typeof projectSchema>;
+
+// Define the Collaborator schema
+const collaboratorSchema = z.object({
+  name: z.string().min(1, { message: "Name is required" }),
+  email: z.string().email().nullable().optional(),
+  role: z.string().min(1, { message: "Role is required" }),
+});
+
+type CollaboratorFormValues = z.infer<typeof collaboratorSchema>;
+
+// Define the Endorsement schema
+const endorsementSchema = z.object({
+  clientName: z.string().min(1, { message: "Client name is required" }),
+  clientEmail: z.string().email().nullable().optional(),
+  clientTitle: z.string().nullable().optional(),
+  clientCompany: z.string().nullable().optional(),
+  message: z.string().nullable().optional(),
+  rating: z.number().min(1).max(5).nullable().optional(),
+});
+
+type EndorsementFormValues = z.infer<typeof endorsementSchema>;
+
+// Define interfaces for our project data
+interface Project {
+  id: number;
+  title: string;
+  description: string | null;
+  category: string | null;
+  startDate: string;
+  endDate: string | null;
+  projectUrl: string | null;
+  clientName: string | null;
+  clientUrl: string | null;
+  mediaUrls: string[] | null;
+  status: 'Planned' | 'In Progress' | 'Completed' | 'On Hold';
+  isVisible: boolean;
+  userId: number;
+}
+
+interface Collaborator {
+  id: number;
+  name: string;
+  email: string | null;
+  role: string;
+  userId: number | null;
+  projectId: number;
+  inviteStatus: string | null;
+}
+
+interface Endorsement {
+  id: number;
+  clientName: string;
+  clientEmail: string | null;
+  clientTitle: string | null;
+  clientCompany: string | null;
+  message: string | null;
+  rating: number | null;
+  isVerified: boolean | null;
+  projectId: number;
+}
+
+interface AuthUser {
+  id: number;
+  username: string;
+  email: string;
+}
+
+export default function Projects() {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [loading, setLoading] = useState(false);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [currentProject, setCurrentProject] = useState<Project | null>(null);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
+  const [collaborators, setCollaborators] = useState<Collaborator[]>([]);
+  const [endorsements, setEndorsements] = useState<Endorsement[]>([]);
+  const [activeTab, setActiveTab] = useState('details');
+
+  const projectForm = useForm<ProjectFormValues>({
+    resolver: zodResolver(projectSchema),
+    defaultValues: {
+      title: '',
+      description: '',
+      category: '',
+      startDate: format(new Date(), 'yyyy-MM-dd'),
+      endDate: '',
+      projectUrl: '',
+      clientName: '',
+      clientUrl: '',
+      mediaUrls: [],
+      status: 'In Progress',
+      isVisible: true,
+    },
+  });
+
+  const collaboratorForm = useForm<CollaboratorFormValues>({
+    resolver: zodResolver(collaboratorSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      role: 'Contributor',
+    },
+  });
+
+  const endorsementForm = useForm<EndorsementFormValues>({
+    resolver: zodResolver(endorsementSchema),
+    defaultValues: {
+      clientName: '',
+      clientEmail: '',
+      clientTitle: '',
+      clientCompany: '',
+      message: '',
+      rating: 5,
+    },
+  });
+
+  // Load projects
+  useEffect(() => {
+    if (user) {
+      loadProjects();
+    }
+  }, [user]);
+
+  // Load collaborators and endorsements when viewing a project
+  useEffect(() => {
+    if (currentProject) {
+      loadCollaborators(currentProject.id);
+      loadEndorsements(currentProject.id);
+    }
+  }, [currentProject]);
+
+  const loadProjects = async () => {
+    if (!user) return;
+    
+    // Default to userId 0 for demo mode, otherwise use actual user id
+    const userId = (user as AuthUser).id || 0;
+    
+    setLoading(true);
+    try {
+      const response = await apiRequest('GET', `/api/users/${userId}/projects`);
+      const data = await response.json();
+      setProjects(data as Project[]);
+    } catch (error) {
+      console.error('Error loading projects:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to load projects. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadCollaborators = async (projectId: number) => {
+    try {
+      const response = await apiRequest('GET', `/api/projects/${projectId}/collaborators`);
+      const data = await response.json();
+      setCollaborators(data);
+    } catch (error) {
+      console.error('Error loading collaborators:', error);
+    }
+  };
+
+  const loadEndorsements = async (projectId: number) => {
+    try {
+      const response = await apiRequest('GET', `/api/projects/${projectId}/endorsements`);
+      const data = await response.json();
+      setEndorsements(data);
+    } catch (error) {
+      console.error('Error loading endorsements:', error);
+    }
+  };
+
+  const handleAddProject = async (values: ProjectFormValues) => {
+    if (!user) return;
+    
+    // Default to userId 0 for demo mode, otherwise use actual user id
+    const userId = (user as AuthUser).id || 0;
+    
+    setLoading(true);
+    try {
+      const projectData = {
+        ...values,
+        userId,
+      };
+      
+      const response = await apiRequest('POST', '/api/projects', projectData);
+      const data = await response.json();
+      
+      setProjects([...projects, data as Project]);
+      setIsAddDialogOpen(false);
+      projectForm.reset();
+      
+      toast({
+        title: 'Success',
+        description: 'Project added successfully!',
+      });
+    } catch (error) {
+      console.error('Error adding project:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to add project. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEditProject = async (values: ProjectFormValues) => {
+    if (!currentProject) return;
+    
+    setLoading(true);
+    try {
+      const response = await apiRequest('PUT', `/api/projects/${currentProject.id}`, values);
+      const updatedProject = await response.json();
+      
+      setProjects(projects.map(p => p.id === updatedProject.id ? updatedProject : p));
+      setIsEditDialogOpen(false);
+      
+      toast({
+        title: 'Success',
+        description: 'Project updated successfully!',
+      });
+    } catch (error) {
+      console.error('Error updating project:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to update project. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteProject = async (projectId: number) => {
+    if (!confirm('Are you sure you want to delete this project?')) return;
+    
+    setLoading(true);
+    try {
+      await apiRequest('DELETE', `/api/projects/${projectId}`);
+      
+      setProjects(projects.filter(p => p.id !== projectId));
+      
+      toast({
+        title: 'Success',
+        description: 'Project deleted successfully!',
+      });
+    } catch (error) {
+      console.error('Error deleting project:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to delete project. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddCollaborator = async (values: CollaboratorFormValues) => {
+    if (!currentProject) return;
+    
+    try {
+      const collaboratorData = {
+        ...values,
+        projectId: currentProject.id,
+      };
+      
+      const response = await apiRequest('POST', '/api/project-collaborators', collaboratorData);
+      const data = await response.json();
+      
+      setCollaborators([...collaborators, data]);
+      collaboratorForm.reset();
+      
+      toast({
+        title: 'Success',
+        description: 'Collaborator added successfully!',
+      });
+    } catch (error) {
+      console.error('Error adding collaborator:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to add collaborator. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleDeleteCollaborator = async (collaboratorId: number) => {
+    if (!confirm('Are you sure you want to remove this collaborator?')) return;
+    
+    try {
+      await apiRequest('DELETE', `/api/project-collaborators/${collaboratorId}`);
+      
+      setCollaborators(collaborators.filter(c => c.id !== collaboratorId));
+      
+      toast({
+        title: 'Success',
+        description: 'Collaborator removed successfully!',
+      });
+    } catch (error) {
+      console.error('Error removing collaborator:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to remove collaborator. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleAddEndorsement = async (values: EndorsementFormValues) => {
+    if (!currentProject) return;
+    
+    try {
+      const endorsementData = {
+        ...values,
+        projectId: currentProject.id,
+      };
+      
+      const response = await apiRequest('POST', '/api/project-endorsements', endorsementData);
+      const data = await response.json();
+      
+      setEndorsements([...endorsements, data]);
+      endorsementForm.reset();
+      
+      toast({
+        title: 'Success',
+        description: 'Endorsement added successfully!',
+      });
+    } catch (error) {
+      console.error('Error adding endorsement:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to add endorsement. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleDeleteEndorsement = async (endorsementId: number) => {
+    if (!confirm('Are you sure you want to remove this endorsement?')) return;
+    
+    try {
+      await apiRequest('DELETE', `/api/project-endorsements/${endorsementId}`);
+      
+      setEndorsements(endorsements.filter(e => e.id !== endorsementId));
+      
+      toast({
+        title: 'Success',
+        description: 'Endorsement removed successfully!',
+      });
+    } catch (error) {
+      console.error('Error removing endorsement:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to remove endorsement. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const openEditDialog = (project: Project) => {
+    setCurrentProject(project);
+    projectForm.reset({
+      title: project.title,
+      description: project.description || '',
+      category: project.category || '',
+      startDate: project.startDate || format(new Date(), 'yyyy-MM-dd'),
+      endDate: project.endDate || '',
+      projectUrl: project.projectUrl || '',
+      clientName: project.clientName || '',
+      clientUrl: project.clientUrl || '',
+      mediaUrls: project.mediaUrls || [],
+      status: project.status || 'In Progress',
+      isVisible: project.isVisible !== undefined ? project.isVisible : true,
+    });
+    setIsEditDialogOpen(true);
+  };
+
+  const openDetailDialog = (project: Project) => {
+    setCurrentProject(project);
+    setIsDetailDialogOpen(true);
+    setActiveTab('details');
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'In Progress':
+        return <Badge variant="secondary">In Progress</Badge>;
+      case 'Completed':
+        // Using outline with custom styling instead of 'success' which isn't a valid variant
+        return <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300">Completed</Badge>;
+      case 'Planned':
+        return <Badge variant="outline">Planned</Badge>;
+      case 'On Hold':
+        return <Badge variant="destructive">On Hold</Badge>;
+      default:
+        return <Badge>{status}</Badge>;
+    }
+  };
+
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return 'Present';
+    try {
+      return format(new Date(dateString), 'MMM yyyy');
+    } catch (error) {
+      return dateString;
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold">My Projects</h2>
+        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+          <DialogTrigger asChild>
+            <Button size="sm">
+              <PlusIcon className="h-4 w-4 mr-2" />
+              Add Project
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[550px]">
+            <DialogHeader>
+              <DialogTitle>Add New Project</DialogTitle>
+              <DialogDescription>
+                Showcase your work, contributions, and achievements to enhance your professional profile.
+              </DialogDescription>
+            </DialogHeader>
+            <Form {...projectForm}>
+              <form onSubmit={projectForm.handleSubmit(handleAddProject)} className="space-y-4">
+                <FormField
+                  control={projectForm.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Project Title*</FormLabel>
+                      <FormControl>
+                        <Input placeholder="My Amazing Project" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={projectForm.control}
+                    name="startDate"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Start Date*</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant={"outline"}
+                                className={cn(
+                                  "w-full pl-3 text-left font-normal",
+                                  !field.value && "text-muted-foreground"
+                                )}
+                              >
+                                {field.value ? (
+                                  format(new Date(field.value), "PPP")
+                                ) : (
+                                  <span>Pick a date</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value ? new Date(field.value) : undefined}
+                              onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={projectForm.control}
+                    name="endDate"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>End Date</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant={"outline"}
+                                className={cn(
+                                  "w-full pl-3 text-left font-normal",
+                                  !field.value && "text-muted-foreground"
+                                )}
+                              >
+                                {field.value ? (
+                                  format(new Date(field.value), "PPP")
+                                ) : (
+                                  <span>Ongoing/Not Set</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value ? new Date(field.value) : undefined}
+                              onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                
+                <FormField
+                  control={projectForm.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                        <Textarea 
+                          placeholder="Describe the project, your role, and achievements" 
+                          {...field} 
+                          value={field.value || ''}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={projectForm.control}
+                    name="category"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Category</FormLabel>
+                        <Select 
+                          onValueChange={field.onChange} 
+                          defaultValue={field.value || ''}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select category" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Web Development">Web Development</SelectItem>
+                            <SelectItem value="Mobile App">Mobile App</SelectItem>
+                            <SelectItem value="UI/UX Design">UI/UX Design</SelectItem>
+                            <SelectItem value="Data Science">Data Science</SelectItem>
+                            <SelectItem value="AI/ML">AI/ML</SelectItem>
+                            <SelectItem value="DevOps">DevOps</SelectItem>
+                            <SelectItem value="Marketing">Marketing</SelectItem>
+                            <SelectItem value="Research">Research</SelectItem>
+                            <SelectItem value="Other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={projectForm.control}
+                    name="status"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Status</FormLabel>
+                        <Select 
+                          onValueChange={field.onChange} 
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Planned">Planned</SelectItem>
+                            <SelectItem value="In Progress">In Progress</SelectItem>
+                            <SelectItem value="Completed">Completed</SelectItem>
+                            <SelectItem value="On Hold">On Hold</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                
+                <FormField
+                  control={projectForm.control}
+                  name="projectUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Project URL</FormLabel>
+                      <FormControl>
+                        <Input placeholder="https://myproject.com" {...field} value={field.value || ''} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={projectForm.control}
+                    name="clientName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Client/Company</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Client or company name" {...field} value={field.value || ''} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={projectForm.control}
+                    name="clientUrl"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Client URL</FormLabel>
+                        <FormControl>
+                          <Input placeholder="https://client.com" {...field} value={field.value || ''} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                
+                <FormField
+                  control={projectForm.control}
+                  name="isVisible"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                      <div className="space-y-0.5">
+                        <FormLabel>Public Visibility</FormLabel>
+                        <FormDescription>
+                          Make this project visible on your public profile
+                        </FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                
+                <DialogFooter>
+                  <Button type="submit" disabled={loading}>
+                    {loading ? 'Saving...' : 'Save Project'}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
+      </div>
+      
+      {/* Projects List */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {projects.length > 0 ? (
+          projects.map((project) => (
+            <Card key={project.id} className="overflow-hidden">
+              <CardHeader className="pb-2">
+                <div className="flex justify-between items-start">
+                  <CardTitle className="text-lg">{project.title}</CardTitle>
+                  <div className="flex space-x-1">
+                    <Button variant="ghost" size="icon" onClick={() => openEditDialog(project)}>
+                      <PencilIcon className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={() => handleDeleteProject(project.id)}>
+                      <TrashIcon className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <span className="flex items-center">
+                    <CalendarIcon className="mr-1 h-3 w-3" />
+                    {formatDate(project.startDate)} — {formatDate(project.endDate)}
+                  </span>
+                  <span className="mx-2">•</span>
+                  {getStatusBadge(project.status)}
+                </div>
+                <CardDescription className="mt-2 line-clamp-2">
+                  {project.description || "No description provided."}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pb-2">
+                {project.category && (
+                  <Badge variant="outline" className="mb-2">{project.category}</Badge>
+                )}
+                {project.clientName && (
+                  <div className="text-sm mb-2">
+                    <span className="font-semibold">Client:</span> {project.clientName}
+                  </div>
+                )}
+              </CardContent>
+              <CardFooter className="pt-0">
+                <Button variant="link" className="px-0" onClick={() => openDetailDialog(project)}>
+                  View Details & Collaborators
+                </Button>
+              </CardFooter>
+            </Card>
+          ))
+        ) : (
+          <div className="col-span-2 p-6 text-center border rounded-lg">
+            <h3 className="mb-2 text-lg font-semibold">No projects yet</h3>
+            <p className="text-muted-foreground mb-4">
+              Showcase your work by adding projects to your profile.
+            </p>
+            <Button onClick={() => setIsAddDialogOpen(true)}>
+              <PlusIcon className="h-4 w-4 mr-2" />
+              Add Your First Project
+            </Button>
+          </div>
+        )}
+      </div>
+      
+      {/* Edit Project Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="sm:max-w-[550px]">
+          <DialogHeader>
+            <DialogTitle>Edit Project</DialogTitle>
+            <DialogDescription>
+              Update your project details and showcase your latest achievements.
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...projectForm}>
+            <form onSubmit={projectForm.handleSubmit(handleEditProject)} className="space-y-4">
+              <FormField
+                control={projectForm.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Project Title*</FormLabel>
+                    <FormControl>
+                      <Input placeholder="My Amazing Project" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={projectForm.control}
+                  name="startDate"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Start Date*</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "w-full pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value ? (
+                                format(new Date(field.value), "PPP")
+                              ) : (
+                                <span>Pick a date</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value ? new Date(field.value) : undefined}
+                            onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={projectForm.control}
+                  name="endDate"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>End Date</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "w-full pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value ? (
+                                format(new Date(field.value), "PPP")
+                              ) : (
+                                <span>Ongoing/Not Set</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value ? new Date(field.value) : undefined}
+                            onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              
+              <FormField
+                control={projectForm.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="Describe the project, your role, and achievements" 
+                        {...field} 
+                        value={field.value || ''}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={projectForm.control}
+                  name="category"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Category</FormLabel>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        defaultValue={field.value || ''}
+                        value={field.value || ''}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select category" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Web Development">Web Development</SelectItem>
+                          <SelectItem value="Mobile App">Mobile App</SelectItem>
+                          <SelectItem value="UI/UX Design">UI/UX Design</SelectItem>
+                          <SelectItem value="Data Science">Data Science</SelectItem>
+                          <SelectItem value="AI/ML">AI/ML</SelectItem>
+                          <SelectItem value="DevOps">DevOps</SelectItem>
+                          <SelectItem value="Marketing">Marketing</SelectItem>
+                          <SelectItem value="Research">Research</SelectItem>
+                          <SelectItem value="Other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={projectForm.control}
+                  name="status"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Status</FormLabel>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        defaultValue={field.value}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select status" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Planned">Planned</SelectItem>
+                          <SelectItem value="In Progress">In Progress</SelectItem>
+                          <SelectItem value="Completed">Completed</SelectItem>
+                          <SelectItem value="On Hold">On Hold</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              
+              <FormField
+                control={projectForm.control}
+                name="projectUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Project URL</FormLabel>
+                    <FormControl>
+                      <Input placeholder="https://myproject.com" {...field} value={field.value || ''} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={projectForm.control}
+                  name="clientName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Client/Company</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Client or company name" {...field} value={field.value || ''} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={projectForm.control}
+                  name="clientUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Client URL</FormLabel>
+                      <FormControl>
+                        <Input placeholder="https://client.com" {...field} value={field.value || ''} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              
+              <FormField
+                control={projectForm.control}
+                name="isVisible"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                    <div className="space-y-0.5">
+                      <FormLabel>Public Visibility</FormLabel>
+                      <FormDescription>
+                        Make this project visible on your public profile
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              
+              <DialogFooter>
+                <Button type="submit" disabled={loading}>
+                  {loading ? 'Saving...' : 'Save Changes'}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Project Details Dialog */}
+      <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
+        <DialogContent className="sm:max-w-[650px] max-h-[85vh] overflow-y-auto">
+          {currentProject && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-xl">{currentProject.title}</DialogTitle>
+                <DialogDescription>
+                  <div className="flex items-center mt-1 mb-2">
+                    <span className="text-sm">
+                      {formatDate(currentProject.startDate)} — {formatDate(currentProject.endDate)}
+                    </span>
+                    <span className="mx-2">•</span>
+                    {getStatusBadge(currentProject.status)}
+                  </div>
+                </DialogDescription>
+              </DialogHeader>
+              
+              <Tabs defaultValue="details" value={activeTab} onValueChange={setActiveTab}>
+                <TabsList className="grid w-full grid-cols-3">
+                  <TabsTrigger value="details">Details</TabsTrigger>
+                  <TabsTrigger value="collaborators" className="flex items-center">
+                    <Users2Icon className="w-4 h-4 mr-1" />
+                    Collaborators {collaborators.length > 0 && `(${collaborators.length})`}
+                  </TabsTrigger>
+                  <TabsTrigger value="endorsements" className="flex items-center">
+                    <AwardIcon className="w-4 h-4 mr-1" />
+                    Endorsements {endorsements.length > 0 && `(${endorsements.length})`}
+                  </TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="details" className="mt-4 space-y-4">
+                  {currentProject.description && (
+                    <div>
+                      <h4 className="font-semibold mb-1">Description</h4>
+                      <p className="text-sm text-foreground/80">{currentProject.description}</p>
+                    </div>
+                  )}
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    {currentProject.category && (
+                      <div>
+                        <h4 className="font-semibold text-sm mb-1">Category</h4>
+                        <p className="text-sm text-foreground/80">{currentProject.category}</p>
+                      </div>
+                    )}
+                    
+                    {currentProject.status && (
+                      <div>
+                        <h4 className="font-semibold text-sm mb-1">Status</h4>
+                        <div>{getStatusBadge(currentProject.status)}</div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {(currentProject.clientName || currentProject.clientUrl) && (
+                    <div>
+                      <h4 className="font-semibold mb-1">Client Information</h4>
+                      {currentProject.clientName && (
+                        <p className="text-sm text-foreground/80">Name: {currentProject.clientName}</p>
+                      )}
+                      {currentProject.clientUrl && (
+                        <p className="text-sm text-foreground/80 flex items-center">
+                          Website: 
+                          <a 
+                            href={currentProject.clientUrl} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="ml-1 flex items-center text-primary hover:underline"
+                          >
+                            {currentProject.clientUrl}
+                            <ExternalLinkIcon className="w-3 h-3 ml-1" />
+                          </a>
+                        </p>
+                      )}
+                    </div>
+                  )}
+                  
+                  {currentProject.projectUrl && (
+                    <div>
+                      <h4 className="font-semibold mb-1">Project Link</h4>
+                      <a 
+                        href={currentProject.projectUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-sm text-primary hover:underline flex items-center"
+                      >
+                        {currentProject.projectUrl}
+                        <ExternalLinkIcon className="w-3 h-3 ml-1" />
+                      </a>
+                    </div>
+                  )}
+                </TabsContent>
+                
+                <TabsContent value="collaborators" className="mt-4 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-semibold">Project Team & Collaborators</h4>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button size="sm">
+                          <PlusIcon className="h-4 w-4 mr-1" />
+                          Add Collaborator
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[450px]">
+                        <DialogHeader>
+                          <DialogTitle>Add Collaborator</DialogTitle>
+                          <DialogDescription>
+                            Add team members, partners, or contributors to this project.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <Form {...collaboratorForm}>
+                          <form onSubmit={collaboratorForm.handleSubmit(handleAddCollaborator)} className="space-y-4">
+                            <FormField
+                              control={collaboratorForm.control}
+                              name="name"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Name*</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="Collaborator's name" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={collaboratorForm.control}
+                              name="email"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Email</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      placeholder="email@example.com" 
+                                      type="email"
+                                      {...field} 
+                                      value={field.value || ''}
+                                    />
+                                  </FormControl>
+                                  <FormDescription>
+                                    Optional - Used for verification and invitations
+                                  </FormDescription>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={collaboratorForm.control}
+                              name="role"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Role*</FormLabel>
+                                  <Select 
+                                    onValueChange={field.onChange} 
+                                    defaultValue={field.value}
+                                  >
+                                    <FormControl>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select role" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      <SelectItem value="Project Lead">Project Lead</SelectItem>
+                                      <SelectItem value="Developer">Developer</SelectItem>
+                                      <SelectItem value="Designer">Designer</SelectItem>
+                                      <SelectItem value="Contributor">Contributor</SelectItem>
+                                      <SelectItem value="Advisor">Advisor</SelectItem>
+                                      <SelectItem value="Client">Client</SelectItem>
+                                      <SelectItem value="Other">Other</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <DialogFooter>
+                              <Button type="submit">Add Collaborator</Button>
+                            </DialogFooter>
+                          </form>
+                        </Form>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                  
+                  {collaborators.length > 0 ? (
+                    <div className="space-y-3">
+                      {collaborators.map((collaborator) => (
+                        <div key={collaborator.id} className="flex items-center justify-between p-3 rounded-md border">
+                          <div>
+                            <h5 className="font-medium">{collaborator.name}</h5>
+                            <p className="text-sm text-muted-foreground">{collaborator.role}</p>
+                            {collaborator.email && (
+                              <p className="text-xs text-muted-foreground">{collaborator.email}</p>
+                            )}
+                          </div>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            onClick={() => handleDeleteCollaborator(collaborator.id)}
+                          >
+                            <TrashIcon className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-6">
+                      <p className="text-muted-foreground mb-2">No collaborators added yet</p>
+                      <p className="text-sm">Add team members or contributors to showcase the collaborative nature of this project.</p>
+                    </div>
+                  )}
+                </TabsContent>
+                
+                <TabsContent value="endorsements" className="mt-4 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-semibold">Client Endorsements & Testimonials</h4>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button size="sm">
+                          <PlusIcon className="h-4 w-4 mr-1" />
+                          Add Endorsement
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[450px]">
+                        <DialogHeader>
+                          <DialogTitle>Add Client Endorsement</DialogTitle>
+                          <DialogDescription>
+                            Add testimonials and endorsements from clients, managers, or stakeholders.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <Form {...endorsementForm}>
+                          <form onSubmit={endorsementForm.handleSubmit(handleAddEndorsement)} className="space-y-4">
+                            <FormField
+                              control={endorsementForm.control}
+                              name="clientName"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Client Name*</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="Name of the person providing endorsement" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <div className="grid grid-cols-2 gap-4">
+                              <FormField
+                                control={endorsementForm.control}
+                                name="clientTitle"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Title</FormLabel>
+                                    <FormControl>
+                                      <Input 
+                                        placeholder="Job title" 
+                                        {...field} 
+                                        value={field.value || ''}
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <FormField
+                                control={endorsementForm.control}
+                                name="clientCompany"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Company</FormLabel>
+                                    <FormControl>
+                                      <Input 
+                                        placeholder="Company name" 
+                                        {...field} 
+                                        value={field.value || ''}
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                            
+                            <FormField
+                              control={endorsementForm.control}
+                              name="clientEmail"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Email</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      placeholder="email@example.com" 
+                                      type="email"
+                                      {...field} 
+                                      value={field.value || ''}
+                                    />
+                                  </FormControl>
+                                  <FormDescription>
+                                    Optional - Used for verification (not displayed publicly)
+                                  </FormDescription>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={endorsementForm.control}
+                              name="message"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Testimonial</FormLabel>
+                                  <FormControl>
+                                    <Textarea 
+                                      placeholder="What the client said about your work..." 
+                                      {...field} 
+                                      value={field.value || ''}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={endorsementForm.control}
+                              name="rating"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Rating (1-5)</FormLabel>
+                                  <Select 
+                                    onValueChange={(value) => field.onChange(parseInt(value))} 
+                                    defaultValue={field.value ? field.value.toString() : "5"}
+                                  >
+                                    <FormControl>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select rating" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      <SelectItem value="5">★★★★★ (5) Excellent</SelectItem>
+                                      <SelectItem value="4">★★★★☆ (4) Very Good</SelectItem>
+                                      <SelectItem value="3">★★★☆☆ (3) Good</SelectItem>
+                                      <SelectItem value="2">★★☆☆☆ (2) Fair</SelectItem>
+                                      <SelectItem value="1">★☆☆☆☆ (1) Poor</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <DialogFooter>
+                              <Button type="submit">Add Endorsement</Button>
+                            </DialogFooter>
+                          </form>
+                        </Form>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                  
+                  {endorsements.length > 0 ? (
+                    <div className="space-y-4">
+                      {endorsements.map((endorsement) => (
+                        <div key={endorsement.id} className="p-4 rounded-md border">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <h5 className="font-medium">{endorsement.clientName}</h5>
+                              {(endorsement.clientTitle || endorsement.clientCompany) && (
+                                <p className="text-sm text-muted-foreground">
+                                  {endorsement.clientTitle && endorsement.clientTitle}
+                                  {endorsement.clientTitle && endorsement.clientCompany && ", "}
+                                  {endorsement.clientCompany && endorsement.clientCompany}
+                                </p>
+                              )}
+                            </div>
+                            <div className="flex space-x-2">
+                              {endorsement.isVerified && (
+                                <Badge variant="outline" className="flex items-center">
+                                  <CheckCircleIcon className="h-3 w-3 mr-1 text-green-500" />
+                                  Verified
+                                </Badge>
+                              )}
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                onClick={() => handleDeleteEndorsement(endorsement.id)}
+                              >
+                                <TrashIcon className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                          
+                          {endorsement.message && (
+                            <div className="mt-2">
+                              <p className="text-sm italic">"{endorsement.message}"</p>
+                            </div>
+                          )}
+                          
+                          {endorsement.rating !== null && (
+                            <div className="mt-2 flex">
+                              {Array.from({ length: 5 }, (_, i) => (
+                                <span key={i} className={`text-lg ${i < (endorsement.rating || 0) ? 'text-yellow-500' : 'text-gray-300'}`}>
+                                  ★
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-6">
+                      <p className="text-muted-foreground mb-2">No endorsements added yet</p>
+                      <p className="text-sm">Add testimonials from clients or stakeholders to build credibility.</p>
+                    </div>
+                  )}
+                </TabsContent>
+              </Tabs>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}

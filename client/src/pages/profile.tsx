@@ -7,8 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import WorkExperience from "@/components/profile/work-experience";
 import Education from "@/components/profile/education";
-// Education component removed as requested
 import Skills from "@/components/profile/skills";
+import Projects from "@/components/profile/projects";
 // Removed Resume and LinkedIn import components
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -1624,6 +1624,9 @@ export default function Profile() {
             
             {/* Skills */}
             <Skills />
+            
+            {/* Projects Section */}
+            <Projects />
             
             {/* Action Buttons */}
             <div className="flex justify-between mb-6">

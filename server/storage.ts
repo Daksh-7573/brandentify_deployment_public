@@ -6,7 +6,10 @@ import {
   skills, Skill, InsertSkill,
   chatMessages, ChatMessage, InsertChatMessage,
   otpVerifications, OtpVerification, InsertOtpVerification,
-  emailVerifications, EmailVerification, InsertEmailVerification
+  emailVerifications, EmailVerification, InsertEmailVerification,
+  projects, Project, InsertProject,
+  projectCollaborators, ProjectCollaborator, InsertProjectCollaborator,
+  projectEndorsements, ProjectEndorsement, InsertProjectEndorsement
 } from "@shared/schema";
 
 // Interface for all storage operations
@@ -43,6 +46,27 @@ export interface IStorage {
   updateSkill(id: number, skill: Partial<Skill>): Promise<Skill | undefined>;
   deleteSkill(id: number): Promise<boolean>;
   
+  // Project operations
+  getProjectsByUserId(userId: number): Promise<Project[]>;
+  getProjectById(id: number): Promise<Project | undefined>;
+  createProject(project: InsertProject): Promise<Project>;
+  updateProject(id: number, project: Partial<Project>): Promise<Project | undefined>;
+  deleteProject(id: number): Promise<boolean>;
+  
+  // Project Collaborator operations
+  getProjectCollaboratorsByProjectId(projectId: number): Promise<ProjectCollaborator[]>;
+  getProjectCollaboratorById(id: number): Promise<ProjectCollaborator | undefined>;
+  createProjectCollaborator(collaborator: InsertProjectCollaborator): Promise<ProjectCollaborator>;
+  updateProjectCollaborator(id: number, collaborator: Partial<ProjectCollaborator>): Promise<ProjectCollaborator | undefined>;
+  deleteProjectCollaborator(id: number): Promise<boolean>;
+  
+  // Project Endorsement operations
+  getProjectEndorsementsByProjectId(projectId: number): Promise<ProjectEndorsement[]>;
+  getProjectEndorsementById(id: number): Promise<ProjectEndorsement | undefined>;
+  createProjectEndorsement(endorsement: InsertProjectEndorsement): Promise<ProjectEndorsement>;
+  updateProjectEndorsement(id: number, endorsement: Partial<ProjectEndorsement>): Promise<ProjectEndorsement | undefined>;
+  deleteProjectEndorsement(id: number): Promise<boolean>;
+  
   // Chat Message operations
   getChatMessagesByUserId(userId: number): Promise<ChatMessage[]>;
   createChatMessage(message: InsertChatMessage): Promise<ChatMessage>;
@@ -74,6 +98,9 @@ export class MemStorage implements IStorage {
   private chatMessages: Map<number, ChatMessage>;
   private otpVerifications: Map<number, OtpVerification>;
   private emailVerifications: Map<number, EmailVerification>;
+  private projects: Map<number, Project>;
+  private projectCollaborators: Map<number, ProjectCollaborator>;
+  private projectEndorsements: Map<number, ProjectEndorsement>;
   
   private currentUserId: number;
   private currentResumeId: number;
@@ -83,6 +110,9 @@ export class MemStorage implements IStorage {
   private currentChatMessageId: number;
   private currentOtpVerificationId: number;
   private currentEmailVerificationId: number;
+  private currentProjectId: number;
+  private currentProjectCollaboratorId: number;
+  private currentProjectEndorsementId: number;
 
   constructor() {
     this.users = new Map();
@@ -93,6 +123,9 @@ export class MemStorage implements IStorage {
     this.chatMessages = new Map();
     this.otpVerifications = new Map();
     this.emailVerifications = new Map();
+    this.projects = new Map();
+    this.projectCollaborators = new Map();
+    this.projectEndorsements = new Map();
     
     this.currentUserId = 1;
     this.currentResumeId = 1;
@@ -102,6 +135,9 @@ export class MemStorage implements IStorage {
     this.currentChatMessageId = 1;
     this.currentOtpVerificationId = 1;
     this.currentEmailVerificationId = 1;
+    this.currentProjectId = 1;
+    this.currentProjectCollaboratorId = 1;
+    this.currentProjectEndorsementId = 1;
     
     // Initialize with a default user for development/demo
     this.initializeDemoData();
@@ -175,7 +211,7 @@ export class MemStorage implements IStorage {
   }
   
   /**
-   * Clear all work experience, education, and skills data
+   * Clear all work experience, education, skills, and project data
    */
   private clearDemoDataMaps(): void {
     // Clear all existing work experiences
@@ -186,6 +222,15 @@ export class MemStorage implements IStorage {
     
     // Clear all existing skills
     this.skills.clear();
+    
+    // Clear all existing projects
+    this.projects.clear();
+    
+    // Clear all existing project collaborators
+    this.projectCollaborators.clear();
+    
+    // Clear all existing project endorsements
+    this.projectEndorsements.clear();
   }
   
   /**
@@ -412,7 +457,12 @@ export class MemStorage implements IStorage {
   async createChatMessage(insertMessage: InsertChatMessage): Promise<ChatMessage> {
     const id = this.currentChatMessageId++;
     const timestamp = new Date();
-    const message: ChatMessage = { ...insertMessage, id, timestamp };
+    const message: ChatMessage = { 
+      ...insertMessage, 
+      id, 
+      timestamp,
+      messageType: insertMessage.messageType ?? null
+    };
     this.chatMessages.set(id, message);
     return message;
   }
@@ -587,6 +637,149 @@ export class MemStorage implements IStorage {
     return true;
   }
   
+  // Project operations
+  async getProjectsByUserId(userId: number): Promise<Project[]> {
+    return Array.from(this.projects.values())
+      .filter(project => project.userId === userId);
+  }
+  
+  async getProjectById(id: number): Promise<Project | undefined> {
+    return this.projects.get(id);
+  }
+  
+  async createProject(insertProject: InsertProject): Promise<Project> {
+    const id = this.currentProjectId++;
+    const createdAt = new Date();
+    const updatedAt = new Date();
+    
+    const project: Project = {
+      ...insertProject,
+      id,
+      createdAt,
+      updatedAt,
+      mediaUrls: insertProject.mediaUrls ?? [],
+      isApproved: false,
+      description: insertProject.description ?? null,
+      startDate: insertProject.startDate ?? null,
+      endDate: insertProject.endDate ?? null,
+      projectUrl: insertProject.projectUrl ?? null,
+      clientName: insertProject.clientName ?? null,
+      clientUrl: insertProject.clientUrl ?? null,
+      category: insertProject.category ?? null,
+      status: insertProject.status ?? 'In Progress',
+      isVisible: insertProject.isVisible ?? true
+    };
+    
+    this.projects.set(id, project);
+    return project;
+  }
+  
+  async updateProject(id: number, projectData: Partial<Project>): Promise<Project | undefined> {
+    const project = this.projects.get(id);
+    if (!project) return undefined;
+    
+    const updatedAt = new Date();
+    const updatedProject = { ...project, ...projectData, updatedAt };
+    this.projects.set(id, updatedProject);
+    return updatedProject;
+  }
+  
+  async deleteProject(id: number): Promise<boolean> {
+    // When deleting a project, we should also delete all related collaborators and endorsements
+    
+    // First, delete all collaborators
+    const collaborators = await this.getProjectCollaboratorsByProjectId(id);
+    for (const collaborator of collaborators) {
+      await this.deleteProjectCollaborator(collaborator.id);
+    }
+    
+    // Then, delete all endorsements
+    const endorsements = await this.getProjectEndorsementsByProjectId(id);
+    for (const endorsement of endorsements) {
+      await this.deleteProjectEndorsement(endorsement.id);
+    }
+    
+    // Finally, delete the project itself
+    return this.projects.delete(id);
+  }
+  
+  // Project Collaborator operations
+  async getProjectCollaboratorsByProjectId(projectId: number): Promise<ProjectCollaborator[]> {
+    return Array.from(this.projectCollaborators.values())
+      .filter(collaborator => collaborator.projectId === projectId);
+  }
+  
+  async getProjectCollaboratorById(id: number): Promise<ProjectCollaborator | undefined> {
+    return this.projectCollaborators.get(id);
+  }
+  
+  async createProjectCollaborator(insertCollaborator: InsertProjectCollaborator): Promise<ProjectCollaborator> {
+    const id = this.currentProjectCollaboratorId++;
+    const createdAt = new Date();
+    
+    const collaborator: ProjectCollaborator = {
+      ...insertCollaborator,
+      id,
+      createdAt,
+      status: insertCollaborator.status ?? 'Pending',
+      role: insertCollaborator.role ?? 'Contributor'
+    };
+    
+    this.projectCollaborators.set(id, collaborator);
+    return collaborator;
+  }
+  
+  async updateProjectCollaborator(id: number, collaboratorData: Partial<ProjectCollaborator>): Promise<ProjectCollaborator | undefined> {
+    const collaborator = this.projectCollaborators.get(id);
+    if (!collaborator) return undefined;
+    
+    const updatedCollaborator = { ...collaborator, ...collaboratorData };
+    this.projectCollaborators.set(id, updatedCollaborator);
+    return updatedCollaborator;
+  }
+  
+  async deleteProjectCollaborator(id: number): Promise<boolean> {
+    return this.projectCollaborators.delete(id);
+  }
+  
+  // Project Endorsement operations
+  async getProjectEndorsementsByProjectId(projectId: number): Promise<ProjectEndorsement[]> {
+    return Array.from(this.projectEndorsements.values())
+      .filter(endorsement => endorsement.projectId === projectId);
+  }
+  
+  async getProjectEndorsementById(id: number): Promise<ProjectEndorsement | undefined> {
+    return this.projectEndorsements.get(id);
+  }
+  
+  async createProjectEndorsement(insertEndorsement: InsertProjectEndorsement): Promise<ProjectEndorsement> {
+    const id = this.currentProjectEndorsementId++;
+    const createdAt = new Date();
+    
+    const endorsement: ProjectEndorsement = {
+      ...insertEndorsement,
+      id,
+      createdAt,
+      text: insertEndorsement.text ?? null
+    };
+    
+    this.projectEndorsements.set(id, endorsement);
+    return endorsement;
+  }
+  
+  async updateProjectEndorsement(id: number, endorsementData: Partial<ProjectEndorsement>): Promise<ProjectEndorsement | undefined> {
+    const endorsement = this.projectEndorsements.get(id);
+    if (!endorsement) return undefined;
+    
+    const updatedEndorsement = { ...endorsement, ...endorsementData };
+    this.projectEndorsements.set(id, updatedEndorsement);
+    return updatedEndorsement;
+  }
+  
+  async deleteProjectEndorsement(id: number): Promise<boolean> {
+    return this.projectEndorsements.delete(id);
+  }
+
   /**
    * Clears all users except the demo user (id: 1)
    * This is primarily for development and testing purposes

@@ -1,4 +1,5 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, jsonb, varchar } from "drizzle-orm/pg-core"; 
+import { pgEnum } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -96,6 +97,56 @@ export const emailVerifications = pgTable("email_verifications", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Projects model
+export const projects = pgTable("projects", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  title: text("title").notNull(),
+  description: text("description"),
+  startDate: text("start_date"),
+  endDate: text("end_date"),
+  projectUrl: text("project_url"),
+  clientName: text("client_name"),
+  clientUrl: text("client_url"),
+  status: text("status").default("In Progress"), // In Progress, Completed, On Hold
+  category: text("category"), // Web Development, Mobile App, Design, etc.
+  mediaUrls: jsonb("media_urls").default('[]'), // URLs to images, videos, or documents stored as JSON array
+  isApproved: boolean("is_approved").default(false), // Whether the client has approved it
+  isVisible: boolean("is_visible").default(true), // Whether to show on profile
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Project collaborators model
+export const projectCollaborators = pgTable("project_collaborators", {
+  id: serial("id").primaryKey(),
+  projectId: integer("project_id").references(() => projects.id).notNull(),
+  name: text("name").notNull(),
+  email: text("email"),
+  role: text("role").notNull(), // Such as "Lead Developer", "UI Designer"
+  userId: integer("user_id").references(() => users.id), // Optional: if the collaborator is on the platform
+  inviteStatus: text("invite_status").default("Pending"), // Pending, Accepted, Declined
+  inviteToken: text("invite_token"),
+  inviteExpires: timestamp("invite_expires"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Project endorsements model
+export const projectEndorsements = pgTable("project_endorsements", {
+  id: serial("id").primaryKey(),
+  projectId: integer("project_id").references(() => projects.id).notNull(),
+  clientName: text("client_name").notNull(),
+  clientEmail: text("client_email"),
+  clientTitle: text("client_title"), // Job title of the client
+  clientCompany: text("client_company"),
+  message: text("message"),
+  rating: integer("rating"), // e.g., 1-5 stars
+  isVerified: boolean("is_verified").default(false), // Whether the endorsement has been verified by the client
+  verificationToken: text("verification_token"),
+  verificationExpires: timestamp("verification_expires"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true, emailVerified: true, emailVerificationToken: true, emailVerificationExpires: true });
 export const insertResumeSchema = createInsertSchema(resumes).omit({ id: true, uploadedAt: true });
@@ -105,6 +156,28 @@ export const insertSkillSchema = createInsertSchema(skills).omit({ id: true });
 export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({ id: true, timestamp: true });
 export const insertOtpVerificationSchema = createInsertSchema(otpVerifications).omit({ id: true, verified: true, createdAt: true });
 export const insertEmailVerificationSchema = createInsertSchema(emailVerifications).omit({ id: true, verified: true, createdAt: true });
+
+// Project schemas
+export const insertProjectSchema = createInsertSchema(projects).omit({ 
+  id: true, 
+  createdAt: true, 
+  updatedAt: true, 
+  isApproved: true 
+});
+export const insertProjectCollaboratorSchema = createInsertSchema(projectCollaborators).omit({ 
+  id: true, 
+  createdAt: true, 
+  inviteStatus: true, 
+  inviteToken: true, 
+  inviteExpires: true 
+});
+export const insertProjectEndorsementSchema = createInsertSchema(projectEndorsements).omit({ 
+  id: true, 
+  createdAt: true, 
+  isVerified: true, 
+  verificationToken: true, 
+  verificationExpires: true 
+});
 
 // Export types
 export type User = typeof users.$inferSelect;
@@ -130,3 +203,13 @@ export type InsertOtpVerification = z.infer<typeof insertOtpVerificationSchema>;
 
 export type EmailVerification = typeof emailVerifications.$inferSelect;
 export type InsertEmailVerification = z.infer<typeof insertEmailVerificationSchema>;
+
+// Project related types
+export type Project = typeof projects.$inferSelect;
+export type InsertProject = z.infer<typeof insertProjectSchema>;
+
+export type ProjectCollaborator = typeof projectCollaborators.$inferSelect;
+export type InsertProjectCollaborator = z.infer<typeof insertProjectCollaboratorSchema>;
+
+export type ProjectEndorsement = typeof projectEndorsements.$inferSelect;
+export type InsertProjectEndorsement = z.infer<typeof insertProjectEndorsementSchema>;
