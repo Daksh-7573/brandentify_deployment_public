@@ -781,26 +781,24 @@ export default function Education() {
                             <Button
                               variant={"outline"}
                               className={cn(
-                                "w-full pl-3 text-left font-normal",
+                                "w-full justify-start text-left font-normal",
                                 !field.value && "text-muted-foreground"
                               )}
                             >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
                               {field.value ? (
                                 format(field.value, "MMM yyyy")
                               ) : (
-                                <span>Select date</span>
+                                "Select date"
                               )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
                           </FormControl>
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
+                        <PopoverContent className="w-auto p-0">
                           <Calendar
                             mode="single"
                             selected={field.value}
                             onSelect={field.onChange}
-                            initialFocus
-                            captionLayout="dropdown-buttons"
                             fromYear={1950}
                             toYear={2030}
                           />
@@ -825,26 +823,24 @@ export default function Education() {
                               <Button
                                 variant={"outline"}
                                 className={cn(
-                                  "w-full pl-3 text-left font-normal",
+                                  "w-full justify-start text-left font-normal",
                                   !field.value && "text-muted-foreground"
                                 )}
                               >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
                                 {field.value ? (
                                   format(field.value, "MMM yyyy")
                                 ) : (
-                                  <span>Select date</span>
+                                  "Select date"
                                 )}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                               </Button>
                             </FormControl>
                           </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
+                          <PopoverContent className="w-auto p-0">
                             <Calendar
                               mode="single"
                               selected={field.value}
                               onSelect={field.onChange}
-                              initialFocus
-                              captionLayout="dropdown-buttons"
                               fromYear={1950}
                               toYear={2030}
                             />
