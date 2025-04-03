@@ -96,13 +96,17 @@ export async function generateCareerAdvice(userProfile: {
 /**
  * Analyze resume text to extract professional insights
  * @param resumeText The text content of the resume or link to resume
+ * @param isBase64 Whether the resumeText is a base64-encoded file
+ * @param isLink Whether the resumeText is a URL to a resume
  * @returns Analysis and suggestions based on the resume
  */
-export async function analyzeResume(resumeText: string) {
+export async function analyzeResume(resumeText: string, isBase64: boolean = false, isLink: boolean = false) {
   try {
-    // Check if the input is likely a file or link
-    const isLink = resumeText.startsWith('http://') || resumeText.startsWith('https://');
-    const isBase64 = resumeText.startsWith('This is base64 encoded resume data:');
+    // If parameters are not explicitly provided, try to detect
+    if (!isLink && !isBase64) {
+      isLink = resumeText.startsWith('http://') || resumeText.startsWith('https://');
+      isBase64 = resumeText.startsWith('This is base64 encoded resume data:');
+    }
     
     let systemPrompt = "You are an expert resume analyzer with deep knowledge of professional development and hiring practices. Provide constructive feedback and actionable insights.";
     let userPrompt = "";

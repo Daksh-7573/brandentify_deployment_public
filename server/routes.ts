@@ -1481,15 +1481,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // If this is a link to a resume
       if (resumeText && (resumeText.startsWith('http://') || resumeText.startsWith('https://'))) {
         console.log("Processing resume link:", resumeText);
-        // Pass isLink=true to get the special link-based template
-        analysis = await analyzeResume(`This is a link to a resume: ${resumeText}`, false, true);
+        analysis = await analyzeResume(resumeText, false, true);
       } else if (fileData) {
         // If file data is provided, use that with isBase64=true
         console.log("Processing resume file data");
         analysis = await analyzeResume(fileData, true, false);
       } else {
         // Plain text resume
-        analysis = await analyzeResume(resumeText);
+        console.log("Processing plain text resume");
+        analysis = await analyzeResume(resumeText, false, false);
       }
       
       // If userId is provided, save the analysis as a chat message
