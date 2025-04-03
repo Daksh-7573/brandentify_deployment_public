@@ -31,7 +31,7 @@ const projectSchema = z.object({
   startDate: z.string().min(1, { message: "Start date is required" }),
   projectUrl: z.string().url().nullable().optional().or(z.literal('')),
   mediaUrls: z.array(z.string()).nullable().optional(),
-  isVisible: z.boolean().default(true),
+  // Public visibility option removed as requested
 });
 
 type ProjectFormValues = z.infer<typeof projectSchema>;
@@ -67,7 +67,6 @@ interface Project {
   projectUrl: string | null;
   thumbnailUrl: string | null;
   mediaUrls: string[] | null;
-  isVisible: boolean;
   userId: number;
 }
 
@@ -94,9 +93,12 @@ interface Endorsement {
 }
 
 interface AuthUser {
-  id?: number;
-  username?: string;
-  email?: string;
+  uid: string;
+  email: string | null;
+  name: string | null;
+  photoURL: string | null;
+  title?: string;
+  location?: string;
 }
 
 export default function Projects() {
@@ -124,7 +126,7 @@ export default function Projects() {
       startDate: format(new Date(), 'yyyy-MM-dd'),
       projectUrl: '',
       mediaUrls: [],
-      isVisible: true,
+      // isVisible removed as requested
     },
   });
 
@@ -167,8 +169,8 @@ export default function Projects() {
   const loadProjects = async () => {
     if (!user) return;
     
-    // Use actual user id if available
-    const userId = user?.id || 0;
+    // Use actual user uid if available
+    const userId = user?.uid || 0;
     
     setLoading(true);
     try {
@@ -210,8 +212,8 @@ export default function Projects() {
   const handleAddProject = async (values: ProjectFormValues) => {
     if (!user) return;
     
-    // Use actual user id if available
-    const userId = user?.id || 0;
+    // Use actual user uid if available
+    const userId = user?.uid || 0;
     
     setLoading(true);
     try {
@@ -451,7 +453,7 @@ export default function Projects() {
       startDate: project.startDate || format(new Date(), 'yyyy-MM-dd'),
       projectUrl: project.projectUrl || '',
       mediaUrls: project.mediaUrls || [],
-      isVisible: project.isVisible !== undefined ? project.isVisible : true,
+      // isVisible removed as requested
     });
     // Reset the thumbnail file when editing
     setThumbnailFile(null);
@@ -645,26 +647,7 @@ export default function Projects() {
                   </div>
                 </div>
                 
-                <FormField
-                  control={projectForm.control}
-                  name="isVisible"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                      <div className="space-y-0.5">
-                        <FormLabel>Public Visibility</FormLabel>
-                        <FormDescription>
-                          Make this project visible on your public profile
-                        </FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
+                {/* Public Visibility option removed as requested */}
                 
                 <DialogFooter>
                   <Button type="submit" disabled={loading}>
@@ -1210,26 +1193,7 @@ export default function Projects() {
                   )}
                 />
                 
-                <FormField
-                  control={projectForm.control}
-                  name="isVisible"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                      <div className="space-y-0.5">
-                        <FormLabel>Public Visibility</FormLabel>
-                        <FormDescription>
-                          Make this project visible on your public profile
-                        </FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
+                {/* Public Visibility option removed as requested */}
                 
                 <div className="flex flex-col space-y-1">
                   <FormLabel>Project Thumbnail</FormLabel>
