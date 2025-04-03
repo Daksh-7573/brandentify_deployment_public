@@ -182,11 +182,11 @@ export default function Projects() {
     resolver: zodResolver(projectSchema),
     defaultValues: {
       title: '',
-      description: '',
-      category: '',
+      description: null,  // Changed from '' to null to match schema
+      category: null,     // Changed from '' to null to match schema
       startDate: format(new Date(), 'yyyy-MM-dd'),
-      projectUrl: '',
-      mediaUrls: [],
+      projectUrl: null,   // Changed from '' to null to match schema
+      mediaUrls: null,    // Changed from [] to null to match schema
     },
   });
 
@@ -237,11 +237,11 @@ export default function Projects() {
     setCurrentProject(null);
     projectForm.reset({
       title: '',
-      description: '',
-      category: '',
+      description: null,
+      category: null,
       startDate: format(new Date(), 'yyyy-MM-dd'),
-      projectUrl: '',
-      mediaUrls: [],
+      projectUrl: null,
+      mediaUrls: null,
     });
     setThumbnailFile(null);
     if (fileInputRef.current) {
@@ -255,11 +255,11 @@ export default function Projects() {
     setCurrentProject(project);
     projectForm.reset({
       title: project.title,
-      description: project.description || '',
-      category: project.category || '',
+      description: project.description,
+      category: project.category,
       startDate: project.startDate || format(new Date(), 'yyyy-MM-dd'),
-      projectUrl: project.projectUrl || '',
-      mediaUrls: project.mediaUrls || [],
+      projectUrl: project.projectUrl,
+      mediaUrls: project.mediaUrls,
     });
     // Reset the thumbnail file when editing
     setThumbnailFile(null);
@@ -788,9 +788,41 @@ export default function Projects() {
                 
                 <TabsContent value="endorsements" className="space-y-4 pt-4">
                   <div className="space-y-4">
-                    <h3 className="text-sm font-medium">Add Endorsements</h3>
+                    <h3 className="text-sm font-medium">Add Client</h3>
                     <p className="text-sm text-muted-foreground">
-                      You can add endorsements after saving the project
+                      Add a client's profile link to invite them to endorse your project.
+                    </p>
+                    <Form {...endorsementForm}>
+                      <form onSubmit={endorsementForm.handleSubmit(handleAddEndorsement)} className="space-y-4">
+                        <div className="space-y-4 border rounded-lg p-4">
+                          <FormField
+                            control={endorsementForm.control}
+                            name="profileLink"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Client Profile Link*</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="https://brandentifier.replit.app/profile/username" {...field} />
+                                </FormControl>
+                                <FormDescription>
+                                  Add Brandentifier profile link of your client
+                                </FormDescription>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <Button 
+                            type="submit" 
+                            size="sm" 
+                            className="mt-2"
+                          >
+                            Add Client
+                          </Button>
+                        </div>
+                      </form>
+                    </Form>
+                    <p className="text-xs text-muted-foreground italic">
+                      Note: You'll need to save the project first before client endorsements can be processed.
                     </p>
                   </div>
                 </TabsContent>
@@ -865,8 +897,8 @@ export default function Projects() {
                             <Textarea 
                               placeholder="Describe your project, its goals, and your contributions" 
                               className="resize-none" 
-                              {...field} 
-                              value={field.value || ''} 
+                              {...field}
+                              value={field.value || ''}
                             />
                           </FormControl>
                           <FormMessage />
@@ -978,7 +1010,7 @@ export default function Projects() {
                                 <FormItem>
                                   <FormLabel>Profile Link*</FormLabel>
                                   <FormControl>
-                                    <Input placeholder="https://brandentifier.replit.app/profile/username" {...field} value={field.value || ''} />
+                                    <Input placeholder="https://brandentifier.replit.app/profile/username" {...field} />
                                   </FormControl>
                                   <FormDescription>
                                     Add Brandentifier profile link to connect with users
@@ -1004,8 +1036,8 @@ export default function Projects() {
                                 <div>
                                   <div className="font-medium">Team Member</div>
                                   <div className="text-xs text-muted-foreground">
-                                    <a href={collaborator.profileLink} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                                      {collaborator.profileLink}
+                                    <a href={collaborator.profileLink || '#'} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                                      {collaborator.profileLink || 'No profile link'}
                                     </a>
                                   </div>
                                 </div>
@@ -1224,9 +1256,9 @@ export default function Projects() {
                       <div key={collaborator.id} className="p-3 bg-muted rounded-md flex justify-between items-start">
                         <div>
                           <div className="font-medium">Team Member</div>
-                          {collaborator.profileLink && (
+                          {collaborator.profileLink ? (
                             <a 
-                              href={collaborator.profileLink}
+                              href={collaborator.profileLink || '#'}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="text-sm text-primary hover:underline flex items-center mt-1"
@@ -1234,6 +1266,8 @@ export default function Projects() {
                               <ExternalLinkIcon className="h-3 w-3 mr-1" />
                               {collaborator.profileLink}
                             </a>
+                          ) : (
+                            <span className="text-sm text-muted-foreground mt-1">No profile link provided</span>
                           )}
                         </div>
                       </div>
