@@ -11,6 +11,7 @@ export interface JobTitleComboboxProps {
   placeholder?: string;
   className?: string;
   disabled?: boolean;
+  error?: boolean;
 }
 
 // Common job titles that will be used for suggestions
@@ -50,7 +51,8 @@ export function JobTitleCombobox({
   onChange, 
   placeholder = "Select a job title",
   className,
-  disabled = false
+  disabled = false,
+  error = false
 }: JobTitleComboboxProps) {
   const [open, setOpen] = useState(false);
   const [filteredTitles, setFilteredTitles] = useState<string[]>([]);
@@ -76,7 +78,11 @@ export function JobTitleCombobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={cn("w-full justify-between", className)}
+          className={cn(
+            "w-full justify-between", 
+            className, 
+            error && "border-destructive"
+          )}
           disabled={disabled}
         >
           {value ? value : <span className="text-muted-foreground">{placeholder}</span>}

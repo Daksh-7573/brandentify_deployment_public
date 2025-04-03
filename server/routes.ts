@@ -16,6 +16,7 @@ import {
 import { generateCareerAdvice } from "./services/ai-service";
 import { getJobTitleSuggestions } from "./services/title-suggestions";
 import { initEmailService, sendVerificationEmail, sendWelcomeEmail } from "./services/email-service";
+import * as xaiService from "./services/xai-service";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const apiRouter = express.Router();
@@ -899,6 +900,135 @@ export async function registerRoutes(app: Express): Promise<Server> {
         message: "Failed to generate job title suggestions", 
         suggestions: [] 
       });
+    }
+  });
+  
+  // XAI Career Advice endpoint
+  apiRouter.post("/xai/career-advice", async (req: Request, res: Response) => {
+    try {
+      // Check if XAI_API_KEY is present
+      if (!process.env.XAI_API_KEY) {
+        return res.status(503).json({ 
+          message: "XAI service unavailable. API key is missing.",
+          requiresApiKey: true
+        });
+      }
+      
+      const { userId } = req.body;
+      
+      if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
+      }
+      
+      // Fetch all relevant user data
+      const workExperiences = await storage.getWorkExperiencesByUserId(userId);
+      const skills = await storage.getSkillsByUserId(userId);
+      const educations = await storage.getEducationsByUserId(userId);
+      
+      // Compile user profile
+      const userProfile = {
+        workExperiences,
+        skills,
+        educations
+      };
+      
+      // Generate advice
+      const advice = await xaiService.generateCareerAdvice(userProfile);
+      
+      // Save the advice as a chat message
+      await storage.createChatMessage({
+        userId,
+        sender: "ai",
+        content: advice,
+        messageType: "career_advice"
+      });
+      
+      res.json({ advice });
+    } catch (error) {
+      console.error("Error generating XAI career advice:", error);
+      res.status(500).json({ message: "Error generating career advice" });
+    }
+  });
+  
+  // XAI Resume Analysis endpoint
+  apiRouter.post("/xai/analyze-resume", async (req: Request, res: Response) => {
+    try {
+      // Check if XAI_API_KEY is present
+      if (!process.env.XAI_API_KEY) {
+        return res.status(503).json({ 
+          message: "XAI service unavailable. API key is missing.",
+          requiresApiKey: true
+        });
+      }
+      
+      const { resumeText, userId } = req.body;
+      
+      if (!resumeText) {
+        return res.status(400).json({ message: "Resume text is required" });
+      }
+      
+      // Analyze the resume
+      const analysis = await xaiService.analyzeResume(resumeText);
+      
+      // If userId is provided, save the analysis as a chat message
+      if (userId) {
+        await storage.createChatMessage({
+          userId,
+          sender: "ai",
+          content: analysis,
+          messageType: "resume_analysis"
+        });
+      }
+      
+      res.json({ analysis });
+    } catch (error) {
+      console.error("Error analyzing resume with XAI:", error);
+      res.status(500).json({ message: "Error analyzing resume" });
+    }
+  });
+  
+  // XAI Networking Recommendations endpoint
+  apiRouter.post("/xai/networking-recommendations", async (req: Request, res: Response) => {
+    try {
+      // Check if XAI_API_KEY is present
+      if (!process.env.XAI_API_KEY) {
+        return res.status(503).json({ 
+          message: "XAI service unavailable. API key is missing.",
+          requiresApiKey: true
+        });
+      }
+      
+      const { userId, targetIndustry, purpose } = req.body;
+      
+      if (!userId || !targetIndustry || !purpose) {
+        return res.status(400).json({ 
+          message: "User ID, target industry, and networking purpose are required" 
+        });
+      }
+      
+      // Fetch relevant user data
+      const workExperiences = await storage.getWorkExperiencesByUserId(userId);
+      const skills = await storage.getSkillsByUserId(userId);
+      
+      // Generate networking recommendations
+      const recommendations = await xaiService.generateNetworkingRecommendations(
+        { workExperiences, skills }, 
+        targetIndustry, 
+        purpose
+      );
+      
+      // Save the recommendations as a chat message
+      await storage.createChatMessage({
+        userId,
+        sender: "ai",
+        content: recommendations,
+        messageType: "networking_recommendations"
+      });
+      
+      res.json({ recommendations });
+    } catch (error) {
+      console.error("Error generating networking recommendations with XAI:", error);
+      res.status(500).json({ message: "Error generating networking recommendations" });
     }
   });
   
