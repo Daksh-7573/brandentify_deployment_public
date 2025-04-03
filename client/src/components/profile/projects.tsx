@@ -30,6 +30,7 @@ const projectSchema = z.object({
   category: z.string().nullable().optional(),
   startDate: z.string().min(1, { message: "Start date is required" }),
   projectUrl: z.string().url().nullable().optional().or(z.literal('')),
+  thumbnailUrl: z.string().url().nullable().optional().or(z.literal('')),
   mediaUrls: z.array(z.string()).nullable().optional(),
   isVisible: z.boolean().default(true),
 });
@@ -65,6 +66,7 @@ interface Project {
   category: string | null;
   startDate: string;
   projectUrl: string | null;
+  thumbnailUrl: string | null;
   mediaUrls: string[] | null;
   isVisible: boolean;
   userId: number;
@@ -120,6 +122,7 @@ export default function Projects() {
       category: '',
       startDate: format(new Date(), 'yyyy-MM-dd'),
       projectUrl: '',
+      thumbnailUrl: '',
       mediaUrls: [],
       isVisible: true,
     },
@@ -402,6 +405,7 @@ export default function Projects() {
       category: project.category || '',
       startDate: project.startDate || format(new Date(), 'yyyy-MM-dd'),
       projectUrl: project.projectUrl || '',
+      thumbnailUrl: project.thumbnailUrl || '',
       mediaUrls: project.mediaUrls || [],
       isVisible: project.isVisible !== undefined ? project.isVisible : true,
     });
@@ -550,6 +554,23 @@ export default function Projects() {
                 
                 <FormField
                   control={projectForm.control}
+                  name="thumbnailUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Thumbnail URL</FormLabel>
+                      <FormControl>
+                        <Input placeholder="https://example.com/image.jpg" {...field} value={field.value || ''} />
+                      </FormControl>
+                      <FormDescription>
+                        URL to an image that represents your project
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={projectForm.control}
                   name="isVisible"
                   render={({ field }) => (
                     <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
@@ -623,6 +644,16 @@ export default function Projects() {
                       )}
                     </div>
                     
+                    {project.thumbnailUrl && (
+                      <div className="mt-2 mb-2">
+                        <img 
+                          src={project.thumbnailUrl} 
+                          alt={project.title}
+                          className="w-full max-h-40 object-cover rounded-md" 
+                        />
+                      </div>
+                    )}
+                    
                     {project.description && (
                       <p className="mt-2 text-sm line-clamp-2">{project.description}</p>
                     )}
@@ -674,6 +705,19 @@ export default function Projects() {
                   </TabsList>
                   
                   <TabsContent value="details" className="space-y-4">
+                    {currentProject.thumbnailUrl && (
+                      <div>
+                        <h3 className="text-sm font-medium mb-1">Project Thumbnail</h3>
+                        <div className="mt-2">
+                          <img 
+                            src={currentProject.thumbnailUrl} 
+                            alt={currentProject.title}
+                            className="max-w-full max-h-64 object-contain rounded-md border" 
+                          />
+                        </div>
+                      </div>
+                    )}
+                    
                     {currentProject.description && (
                       <div>
                         <h3 className="text-sm font-medium mb-1">Description</h3>

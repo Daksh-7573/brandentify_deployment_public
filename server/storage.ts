@@ -661,6 +661,7 @@ export class MemStorage implements IStorage {
       description: insertProject.description ?? null,
       startDate: insertProject.startDate ?? null,
       projectUrl: insertProject.projectUrl ?? null,
+      thumbnailUrl: insertProject.thumbnailUrl ?? null,
       category: insertProject.category ?? null,
       isVisible: insertProject.isVisible ?? true
     };
