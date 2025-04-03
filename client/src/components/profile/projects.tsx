@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { CalendarIcon, PencilIcon, TrashIcon, PlusIcon, ExternalLinkIcon, CheckCircleIcon, XCircleIcon, Users2Icon, AwardIcon } from 'lucide-react';
+import { CalendarIcon, PencilIcon, TrashIcon, PlusIcon, ExternalLinkIcon, CheckCircleIcon, XCircleIcon, Users2Icon, AwardIcon, Briefcase, FolderKanban } from 'lucide-react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -707,10 +707,16 @@ export default function Projects() {
       </CardHeader>
 
       <CardContent>
-        {projects.length === 0 ? (
-          <div className="text-center p-4">
-            <p className="text-muted-foreground mb-2">No projects added yet</p>
-            <p className="text-sm">Add your professional projects to showcase your work.</p>
+        {loading ? (
+          <div className="flex justify-center py-6">
+            <div className="animate-spin h-6 w-6 text-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-loader-2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            </div>
+          </div>
+        ) : projects.length === 0 ? (
+          <div className="py-6 text-center">
+            <FolderKanban className="mx-auto h-10 w-10 text-muted-foreground/50" />
+            <p className="mt-2 text-muted-foreground">No projects added yet.</p>
           </div>
         ) : (
           <div className="space-y-4">
