@@ -1476,20 +1476,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Import OpenAI service
       const { analyzeResume } = await import('./services/openai-service');
       
-      let contentToAnalyze = resumeText;
+      let analysis;
       
-      // If this is a link to a resume, add context about it being a link
+      // If this is a link to a resume
       if (resumeText && (resumeText.startsWith('http://') || resumeText.startsWith('https://'))) {
-        contentToAnalyze = `This is a link to a resume: ${resumeText}. Please analyze this resume as if you had direct access to it.`;
         console.log("Processing resume link:", resumeText);
+        // Pass isLink=true to get the special link-based template
+        analysis = await analyzeResume(`This is a link to a resume: ${resumeText}`, false, true);
       } else if (fileData) {
-        // If file data is provided, use that instead
-        contentToAnalyze = `This is base64 encoded resume data: ${fileData.substring(0, 100)}... [truncated]. Please analyze this resume.`;
+        // If file data is provided, use that with isBase64=true
         console.log("Processing resume file data");
+        analysis = await analyzeResume(fileData, true, false);
+      } else {
+        // Plain text resume
+        analysis = await analyzeResume(resumeText);
       }
-      
-      // Analyze the resume
-      const analysis = await analyzeResume(contentToAnalyze);
       
       // If userId is provided, save the analysis as a chat message
       if (userId) {
