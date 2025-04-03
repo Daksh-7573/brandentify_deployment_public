@@ -258,9 +258,15 @@ export default function Projects() {
       });
     } catch (error) {
       console.error('Error adding project:', error);
+      // Show more detailed error message for debugging
+      let errorMessage = 'Failed to add project. Please try again.';
+      if (error instanceof Error) {
+        errorMessage = `Error: ${error.message}`;
+        console.error('Error details:', error.message);
+      }
       toast({
         title: 'Error',
-        description: 'Failed to add project. Please try again.',
+        description: errorMessage,
         variant: 'destructive',
       });
     } finally {

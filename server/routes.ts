@@ -1,3 +1,4 @@
+console.log("Loaded routes.ts");
 import express, { type Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
@@ -832,7 +833,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   apiRouter.post("/projects", async (req: Request, res: Response) => {
     try {
-      console.log(`[POST /projects] Creating project with data:`, req.body);
+      console.log(`[POST /projects] Creating project with data:`, JSON.stringify(req.body));
       
       // Check if we have a Firebase UID instead of numeric userId
       if (typeof req.body.userId === 'string' && req.body.userId.length > 20) {
@@ -840,6 +841,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // Look up the numeric userId for this Firebase UID
         const user = await storage.getUserByUsername(req.body.userId);
+        console.log(`[POST /projects] Looking up user with Firebase UID: ${req.body.userId}, found:`, user);
         
         if (user) {
           console.log(`[POST /projects] Found matching user with ID: ${user.id}`);
@@ -849,6 +851,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.log(`[POST /projects] No matching user found for Firebase UID: ${req.body.userId}`);
           return res.status(404).json({ message: "User not found" });
         }
+      } else {
+        console.log(`[POST /projects] Non-Firebase userId provided: ${req.body.userId}, type: ${typeof req.body.userId}`);
       }
       
       console.log(`[POST /projects] Processing with userId: ${req.body.userId}`);
@@ -859,18 +863,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
         req.body.thumbnailUrl = thumbnailUrl;
       }
       
-      const projectData = insertProjectSchema.parse(req.body);
-      const project = await storage.createProject(projectData);
-      console.log(`[POST /projects] Created project with ID: ${project.id}`);
-      res.status(201).json(project);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        console.error(`[POST /projects] Validation error:`, error.errors);
-        res.status(400).json({ message: error.errors });
-      } else {
-        console.error(`[POST /projects] Server error:`, error);
-        res.status(500).json({ message: "Internal server error" });
+      // Log the schema for debugging
+      console.log(`[POST /projects] Project schema fields:`, Object.keys(insertProjectSchema.shape));
+      
+      try {
+        const projectData = insertProjectSchema.parse(req.body);
+        console.log(`[POST /projects] Validated project data:`, projectData);
+        const project = await storage.createProject(projectData);
+        console.log(`[POST /projects] Created project with ID: ${project.id}`);
+        res.status(201).json(project);
+      } catch (validationError) {
+        if (validationError instanceof z.ZodError) {
+          console.error(`[POST /projects] Validation error:`, validationError.errors);
+          return res.status(400).json({ message: validationError.errors });
+        }
+        throw validationError; // Re-throw if it's not a ZodError
       }
+    } catch (error) {
+      console.error(`[POST /projects] Server error:`, error);
+      let errorMessage = "Internal server error";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      res.status(500).json({ message: errorMessage });
     }
   });
 
