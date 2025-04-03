@@ -108,45 +108,129 @@ export async function analyzeResume(resumeText: string) {
     let userPrompt = "";
     
     if (isLink) {
-      systemPrompt += " You cannot access the content of external links directly, but you can provide general guidance for resume improvement.";
+      systemPrompt += " You cannot access the content of external links directly, but you can provide comprehensive, detailed guidance for resume improvement similar to what an expert resume coach would offer.";
       userPrompt = `
-      The user has provided a link to their resume: ${resumeText.replace('This is a link to a resume: ', '')}
+      The user has provided a link to their resume (${resumeText.replace('This is a link to a resume: ', '')}), but I cannot directly access the content of external links. 
       
-      Since I cannot directly access external links, please provide:
-      1. An explanation that you cannot access the content directly
-      2. General best practices for creating a strong resume
-      3. Common mistakes to avoid in resumes
-      4. Tips for tailoring resumes to specific industries
-      5. Advice on how to highlight achievements effectively
+      Please provide a comprehensive, detailed resume analysis and improvement guide structured like this example:
+
+      Resume Analysis & Improvement Suggestions
       
-      Format your response in a clear, professional tone with section headings.
+      Strengths (common in professional resumes):
+      ✅ List 5-6 common strengths seen in professional resumes (focus on Product Management, AI, SaaS, tech roles)
+      ✅ Include specific areas like quantifiable achievements, technical skills, career progression
+      ✅ Mention industry exposure (tech, fintech, e-commerce, etc.)
+      
+      Areas for Improvement & Recommendations:
+      
+      1️⃣ Improve Profile Summary
+      Show examples of weak vs. strong profile summaries:
+      
+      ❌ Current (example of a generic summary)
+      ✅ Suggested Revision (example of a strong summary with specifics about AI, product management, achievements)
+      
+      2️⃣ Achievements Need More Quantifiable Impact
+      Provide specific examples:
+      
+      ❌ Generic achievement example
+      ✅ Achievement with metrics (e.g., "Led full-cycle product development for 5+ AI-powered products, achieving a 30% reduction in time-to-market")
+      
+      3️⃣ Better Formatting for Readability
+      Specific formatting tips for modern resumes
+      
+      4️⃣ Improve "Skills" Section
+      Suggested structure with modern skills relevant to tech and product roles
+      
+      5️⃣ "Projects" Section Recommendations
+      Show how to structure a projects section with examples
+      
+      6️⃣ ATS Optimization Tips
+      Explain how to make resumes ATS-friendly with examples
+      
+      Make this extremely actionable, detailed, and formatted with emoji bullets (like ✅, 🔹, 📅) to make sections visually distinct. Use a professional yet conversational tone.
       `;
     } else if (isBase64) {
-      systemPrompt += " You cannot directly decode base64 data, but you can provide general guidance for resume improvement.";
+      systemPrompt += " You cannot directly decode base64 data, but you can provide comprehensive, detailed guidance for resume improvement similar to what an expert resume coach would offer.";
       userPrompt = `
-      The user has uploaded a resume file, but I cannot decode the file content directly. Please provide:
-      1. An explanation that you cannot access the content directly
-      2. General best practices for creating a strong resume
-      3. Common mistakes to avoid in resumes
-      4. Tips for tailoring resumes to specific industries
-      5. Advice on how to highlight achievements effectively
+      The user has uploaded a resume file, but I cannot decode the file content directly. Please provide a comprehensive, detailed resume analysis and improvement guide structured like this example:
+
+      Resume Analysis & Improvement Suggestions
       
-      Format your response in a clear, professional tone with section headings.
+      Strengths:
+      ✅ List 5-6 common strengths seen in professional resumes (focus on Product Management, AI, SaaS, tech roles)
+      ✅ Include specific areas like quantifiable achievements, technical skills, career progression
+      ✅ Mention industry exposure (tech, fintech, e-commerce, etc.)
+      
+      Areas for Improvement & Recommendations:
+      
+      1️⃣ Improve Profile Summary
+      Show examples of weak vs. strong profile summaries:
+      
+      ❌ Current (example of a generic summary)
+      ✅ Suggested Revision (example of a strong summary with specifics about AI, product management, achievements)
+      
+      2️⃣ Achievements Need More Quantifiable Impact
+      Provide specific examples:
+      
+      ❌ Generic achievement example
+      ✅ Achievement with metrics (e.g., "Led full-cycle product development for 5+ AI-powered products, achieving a 30% reduction in time-to-market")
+      
+      3️⃣ Better Formatting for Readability
+      Specific formatting tips for modern resumes
+      
+      4️⃣ Improve "Skills" Section
+      Suggested structure with modern skills relevant to tech and product roles
+      
+      5️⃣ "Projects" Section Recommendations
+      Show how to structure a projects section with examples
+      
+      6️⃣ ATS Optimization Tips
+      Explain how to make resumes ATS-friendly with examples
+      
+      Make this extremely actionable, detailed, and formatted with emoji bullets (like ✅, 🔹, 📅) to make sections visually distinct. Use a professional yet conversational tone.
       `;
     } else {
       userPrompt = `
-      I need a professional analysis of this resume text:
+      I need a detailed professional analysis of this resume text:
       
       ${resumeText}
       
-      Please provide:
-      1. Overall assessment of the resume's strengths and weaknesses
-      2. Specific suggestions for improvement in content, structure, and formatting
-      3. Industry-specific advice for the target role(s)
-      4. Key skills that are evident and skills that may be missing
-      5. Recommendations for how to better position this professional profile
+      Please provide a comprehensive resume analysis and improvement suggestions using this structure:
+
+      Resume Analysis & Improvement Suggestions for [Name]
       
-      Format the analysis in a clear, professional tone with section headings.
+      Strengths:
+      ✅ List 5-6 key strengths from the resume (focus on experiences, skills, achievements)
+      ✅ Include areas like quantifiable results, technical proficiency, progression
+      ✅ Highlight industry exposure evident from the resume
+      
+      Areas for Improvement & Recommendations:
+      
+      1️⃣ Improve Profile Summary
+      If the resume has a summary section, critique it and suggest improvements:
+      
+      ❌ Current summary (quoted directly from the resume)
+      ✅ Suggested revision (provide a rewritten version that's more impactful)
+      
+      2️⃣ Achievements Need More Quantifiable Impact
+      Identify weak achievement descriptions and show how to improve them:
+      
+      ❌ Original achievement statement from resume
+      ✅ Improved version with metrics and specific outcomes
+      
+      3️⃣ Formatting and Structure Analysis
+      Suggest specific improvements to organization, layout, and readability
+      
+      4️⃣ Skills Assessment
+      Review existing skills and suggest additional relevant skills that should be added
+      
+      5️⃣ Projects/Portfolio Recommendations
+      Suggest how to better showcase projects or develop a portfolio section if missing
+      
+      6️⃣ ATS Optimization Tips
+      Provide tailored ATS optimization advice specific to the person's field/role
+      
+      Format with emoji bullets (like ✅, 🔹, 📅) to make sections visually distinct. Use a professional yet conversational tone, and make all advice highly actionable.
       `;
     }
     

@@ -334,7 +334,7 @@ export default function AICareerPage() {
                               document.getElementById('resume-file-input')?.click();
                             }}
                           >
-                            Browse Files
+                            Upload Resume for Detailed Analysis
                           </Button>
                         </div>
                       </div>
@@ -362,7 +362,7 @@ export default function AICareerPage() {
                           {resumeAnalysisMutation.isPending && (
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                           )}
-                          Analyze Resume Link
+                          Get General Resume Advice
                         </Button>
                       </div>
                     </Card>
