@@ -658,15 +658,10 @@ export class MemStorage implements IStorage {
       createdAt,
       updatedAt,
       mediaUrls: insertProject.mediaUrls ?? [],
-      isApproved: false,
       description: insertProject.description ?? null,
       startDate: insertProject.startDate ?? null,
-      endDate: insertProject.endDate ?? null,
       projectUrl: insertProject.projectUrl ?? null,
-      clientName: insertProject.clientName ?? null,
-      clientUrl: insertProject.clientUrl ?? null,
       category: insertProject.category ?? null,
-      status: insertProject.status ?? 'In Progress',
       isVisible: insertProject.isVisible ?? true
     };
     
@@ -721,7 +716,11 @@ export class MemStorage implements IStorage {
       ...insertCollaborator,
       id,
       createdAt,
-      status: insertCollaborator.status ?? 'Pending',
+      inviteStatus: 'Pending',
+      inviteToken: null,
+      inviteExpires: null,
+      email: insertCollaborator.email ?? null,
+      userId: insertCollaborator.userId ?? null,
       role: insertCollaborator.role ?? 'Contributor'
     };
     
@@ -760,7 +759,14 @@ export class MemStorage implements IStorage {
       ...insertEndorsement,
       id,
       createdAt,
-      text: insertEndorsement.text ?? null
+      message: insertEndorsement.message ?? null,
+      clientEmail: insertEndorsement.clientEmail ?? null,
+      clientTitle: insertEndorsement.clientTitle ?? null,
+      clientCompany: insertEndorsement.clientCompany ?? null,
+      rating: insertEndorsement.rating ?? null,
+      isVerified: false,
+      verificationToken: null,
+      verificationExpires: null
     };
     
     this.projectEndorsements.set(id, endorsement);

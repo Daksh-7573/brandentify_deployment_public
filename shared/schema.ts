@@ -104,14 +104,9 @@ export const projects = pgTable("projects", {
   title: text("title").notNull(),
   description: text("description"),
   startDate: text("start_date"),
-  endDate: text("end_date"),
   projectUrl: text("project_url"),
-  clientName: text("client_name"),
-  clientUrl: text("client_url"),
-  status: text("status").default("In Progress"), // In Progress, Completed, On Hold
   category: text("category"), // Web Development, Mobile App, Design, etc.
   mediaUrls: jsonb("media_urls").default('[]'), // URLs to images, videos, or documents stored as JSON array
-  isApproved: boolean("is_approved").default(false), // Whether the client has approved it
   isVisible: boolean("is_visible").default(true), // Whether to show on profile
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -161,8 +156,7 @@ export const insertEmailVerificationSchema = createInsertSchema(emailVerificatio
 export const insertProjectSchema = createInsertSchema(projects).omit({ 
   id: true, 
   createdAt: true, 
-  updatedAt: true, 
-  isApproved: true 
+  updatedAt: true 
 });
 export const insertProjectCollaboratorSchema = createInsertSchema(projectCollaborators).omit({ 
   id: true, 

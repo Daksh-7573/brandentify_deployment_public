@@ -29,12 +29,8 @@ const projectSchema = z.object({
   description: z.string().nullable().optional(),
   category: z.string().nullable().optional(),
   startDate: z.string().min(1, { message: "Start date is required" }),
-  endDate: z.string().nullable().optional(),
   projectUrl: z.string().url().nullable().optional().or(z.literal('')),
-  clientName: z.string().nullable().optional(),
-  clientUrl: z.string().url().nullable().optional().or(z.literal('')),
   mediaUrls: z.array(z.string()).nullable().optional(),
-  status: z.enum(['Planned', 'In Progress', 'Completed', 'On Hold']).default('In Progress'),
   isVisible: z.boolean().default(true),
 });
 
@@ -68,12 +64,8 @@ interface Project {
   description: string | null;
   category: string | null;
   startDate: string;
-  endDate: string | null;
   projectUrl: string | null;
-  clientName: string | null;
-  clientUrl: string | null;
   mediaUrls: string[] | null;
-  status: 'Planned' | 'In Progress' | 'Completed' | 'On Hold';
   isVisible: boolean;
   userId: number;
 }
@@ -127,12 +119,8 @@ export default function Projects() {
       description: '',
       category: '',
       startDate: format(new Date(), 'yyyy-MM-dd'),
-      endDate: '',
       projectUrl: '',
-      clientName: '',
-      clientUrl: '',
       mediaUrls: [],
-      status: 'In Progress',
       isVisible: true,
     },
   });
@@ -413,12 +401,8 @@ export default function Projects() {
       description: project.description || '',
       category: project.category || '',
       startDate: project.startDate || format(new Date(), 'yyyy-MM-dd'),
-      endDate: project.endDate || '',
       projectUrl: project.projectUrl || '',
-      clientName: project.clientName || '',
-      clientUrl: project.clientUrl || '',
       mediaUrls: project.mediaUrls || [],
-      status: project.status || 'In Progress',
       isVisible: project.isVisible !== undefined ? project.isVisible : true,
     });
     setIsEditDialogOpen(true);
@@ -430,20 +414,7 @@ export default function Projects() {
     setActiveTab('details');
   };
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'In Progress':
-        return <Badge variant="secondary">In Progress</Badge>;
-      case 'Completed':
-        return <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300">Completed</Badge>;
-      case 'Planned':
-        return <Badge variant="outline">Planned</Badge>;
-      case 'On Hold':
-        return <Badge variant="destructive">On Hold</Badge>;
-      default:
-        return <Badge>{status}</Badge>;
-    }
-  };
+
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return 'Present';
@@ -491,45 +462,19 @@ export default function Projects() {
                   )}
                 />
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={projectForm.control}
-                    name="category"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Category</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Web Development, Design, etc." {...field} value={field.value || ''} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={projectForm.control}
-                    name="status"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Status</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select a status" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="Planned">Planned</SelectItem>
-                            <SelectItem value="In Progress">In Progress</SelectItem>
-                            <SelectItem value="Completed">Completed</SelectItem>
-                            <SelectItem value="On Hold">On Hold</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                <FormField
+                  control={projectForm.control}
+                  name="category"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Category</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Web Development, Design, etc." {...field} value={field.value || ''} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 
                 <FormField
                   control={projectForm.control}
@@ -550,115 +495,44 @@ export default function Projects() {
                   )}
                 />
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={projectForm.control}
-                    name="startDate"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel>Start Date*</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant={"outline"}
-                                className={cn(
-                                  "pl-3 text-left font-normal",
-                                  !field.value && "text-muted-foreground"
-                                )}
-                              >
-                                {field.value ? (
-                                  format(new Date(field.value), "PPP")
-                                ) : (
-                                  <span>Pick a date</span>
-                                )}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                              mode="single"
-                              selected={field.value ? new Date(field.value) : undefined}
-                              onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
-                              initialFocus
-                            />
-                          </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={projectForm.control}
-                    name="endDate"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel>End Date</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant={"outline"}
-                                className={cn(
-                                  "pl-3 text-left font-normal",
-                                  !field.value && "text-muted-foreground"
-                                )}
-                              >
-                                {field.value ? (
-                                  format(new Date(field.value), "PPP")
-                                ) : (
-                                  <span>Present/Ongoing</span>
-                                )}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                              mode="single"
-                              selected={field.value ? new Date(field.value) : undefined}
-                              onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
-                              initialFocus
-                            />
-                          </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={projectForm.control}
-                    name="clientName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Client Name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Client or Company Name" {...field} value={field.value || ''} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={projectForm.control}
-                    name="clientUrl"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Client Website</FormLabel>
-                        <FormControl>
-                          <Input placeholder="https://client-website.com" {...field} value={field.value || ''} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                <FormField
+                  control={projectForm.control}
+                  name="startDate"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Project Date*</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value ? (
+                                format(new Date(field.value), "MMMM yyyy")
+                              ) : (
+                                <span>Select month and year</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value ? new Date(field.value) : undefined}
+                            onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 
                 <FormField
                   control={projectForm.control}
@@ -725,9 +599,8 @@ export default function Projects() {
                 <CardContent className="p-0">
                   <div className="p-4">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
+                      <div>
                         <h3 className="text-lg font-medium leading-none">{project.title}</h3>
-                        {getStatusBadge(project.status)}
                       </div>
                       <div className="flex items-center gap-2">
                         <Button variant="ghost" size="icon" onClick={() => openEditDialog(project)}>
@@ -741,7 +614,7 @@ export default function Projects() {
                     
                     <div className="mt-2 flex items-center text-sm text-muted-foreground">
                       <CalendarIcon className="mr-1 h-3 w-3" />
-                      <span>{formatDate(project.startDate)} - {formatDate(project.endDate)}</span>
+                      <span>{formatDate(project.startDate)}</span>
                       {project.category && (
                         <>
                           <span className="mx-1">•</span>
@@ -780,12 +653,9 @@ export default function Projects() {
             {currentProject && (
               <>
                 <DialogHeader>
-                  <div className="flex items-center justify-between">
-                    <DialogTitle className="text-xl">{currentProject.title}</DialogTitle>
-                    {getStatusBadge(currentProject.status)}
-                  </div>
+                  <DialogTitle className="text-xl">{currentProject.title}</DialogTitle>
                   <DialogDescription>
-                    {formatDate(currentProject.startDate)} - {formatDate(currentProject.endDate)}
+                    {formatDate(currentProject.startDate)}
                     {currentProject.category && ` • ${currentProject.category}`}
                   </DialogDescription>
                 </DialogHeader>
@@ -811,30 +681,14 @@ export default function Projects() {
                       </div>
                     )}
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {currentProject.clientName && (
-                        <div>
-                          <h3 className="text-sm font-medium mb-1">Client</h3>
-                          <p className="text-sm flex items-center">
-                            {currentProject.clientName}
-                            {currentProject.clientUrl && (
-                              <a href={currentProject.clientUrl} target="_blank" rel="noopener noreferrer" className="ml-1 inline-flex items-center text-primary">
-                                <ExternalLinkIcon className="h-3 w-3" />
-                              </a>
-                            )}
-                          </p>
-                        </div>
-                      )}
-                      
-                      {currentProject.projectUrl && (
-                        <div>
-                          <h3 className="text-sm font-medium mb-1">Project URL</h3>
-                          <a href={currentProject.projectUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-primary inline-flex items-center">
-                            Visit Project <ExternalLinkIcon className="ml-1 h-3 w-3" />
-                          </a>
-                        </div>
-                      )}
-                    </div>
+                    {currentProject.projectUrl && (
+                      <div>
+                        <h3 className="text-sm font-medium mb-1">Project URL</h3>
+                        <a href={currentProject.projectUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-primary inline-flex items-center">
+                          Visit Project <ExternalLinkIcon className="ml-1 h-3 w-3" />
+                        </a>
+                      </div>
+                    )}
                     
                     {/* Additional metadata could go here */}
                   </TabsContent>
@@ -1150,45 +1004,19 @@ export default function Projects() {
                   )}
                 />
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={projectForm.control}
-                    name="category"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Category</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Web Development, Design, etc." {...field} value={field.value || ''} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={projectForm.control}
-                    name="status"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Status</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select a status" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="Planned">Planned</SelectItem>
-                            <SelectItem value="In Progress">In Progress</SelectItem>
-                            <SelectItem value="Completed">Completed</SelectItem>
-                            <SelectItem value="On Hold">On Hold</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                <FormField
+                  control={projectForm.control}
+                  name="category"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Category</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Web Development, Design, etc." {...field} value={field.value || ''} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 
                 <FormField
                   control={projectForm.control}
@@ -1209,115 +1037,44 @@ export default function Projects() {
                   )}
                 />
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={projectForm.control}
-                    name="startDate"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel>Start Date*</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant={"outline"}
-                                className={cn(
-                                  "pl-3 text-left font-normal",
-                                  !field.value && "text-muted-foreground"
-                                )}
-                              >
-                                {field.value ? (
-                                  format(new Date(field.value), "PPP")
-                                ) : (
-                                  <span>Pick a date</span>
-                                )}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                              mode="single"
-                              selected={field.value ? new Date(field.value) : undefined}
-                              onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
-                              initialFocus
-                            />
-                          </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={projectForm.control}
-                    name="endDate"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel>End Date</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant={"outline"}
-                                className={cn(
-                                  "pl-3 text-left font-normal",
-                                  !field.value && "text-muted-foreground"
-                                )}
-                              >
-                                {field.value ? (
-                                  format(new Date(field.value), "PPP")
-                                ) : (
-                                  <span>Present/Ongoing</span>
-                                )}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                              mode="single"
-                              selected={field.value ? new Date(field.value) : undefined}
-                              onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
-                              initialFocus
-                            />
-                          </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={projectForm.control}
-                    name="clientName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Client Name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Client or Company Name" {...field} value={field.value || ''} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={projectForm.control}
-                    name="clientUrl"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Client Website</FormLabel>
-                        <FormControl>
-                          <Input placeholder="https://client-website.com" {...field} value={field.value || ''} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                <FormField
+                  control={projectForm.control}
+                  name="startDate"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Project Date*</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value ? (
+                                format(new Date(field.value), "MMMM yyyy")
+                              ) : (
+                                <span>Select month and year</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value ? new Date(field.value) : undefined}
+                            onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 
                 <FormField
                   control={projectForm.control}
