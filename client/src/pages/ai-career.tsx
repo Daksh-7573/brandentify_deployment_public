@@ -269,15 +269,7 @@ export default function AICareerPage() {
             </TabsContent>
           </Tabs>
           
-          {!process.env.OPENAI_API_KEY && (
-            <Alert className="mt-4" variant="destructive">
-              <AlertTitle>OpenAI API Key Required</AlertTitle>
-              <AlertDescription>
-                An OpenAI API key is required to use the AI Career Assistant features.
-                Please add your API key to the environment variables.
-              </AlertDescription>
-            </Alert>
-          )}
+          {/* OpenAI API Key warning shows if server endpoints return specific errors */}
         </div>
         
         <div className="lg:col-span-2">
