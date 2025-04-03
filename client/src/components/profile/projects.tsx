@@ -689,6 +689,264 @@ export default function Projects() {
                 
                 {/* Public Visibility option removed as requested */}
                 
+                <Separator className="my-4" />
+                
+                <Tabs defaultValue="collaborators" className="w-full mt-6">
+                  <TabsList className="grid grid-cols-2 mb-4">
+                    <TabsTrigger value="collaborators" className="flex items-center gap-1">
+                      <Users2Icon className="h-4 w-4" />
+                      Team Members
+                    </TabsTrigger>
+                    <TabsTrigger value="endorsements" className="flex items-center gap-1">
+                      <AwardIcon className="h-4 w-4" />
+                      Endorsements
+                    </TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="collaborators" className="space-y-4">
+                    <div className="space-y-4">
+                      <h3 className="text-sm font-medium">Add Team Members</h3>
+                      <Form {...collaboratorForm}>
+                        <form onSubmit={collaboratorForm.handleSubmit(handleAddCollaborator)} className="space-y-4">
+                          <div className="space-y-4 border rounded-lg p-4">
+                            <FormField
+                              control={collaboratorForm.control}
+                              name="name"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Name*</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="Collaborator name" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={collaboratorForm.control}
+                              name="email"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Email</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="email@example.com" {...field} value={field.value || ''} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={collaboratorForm.control}
+                              name="role"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Role*</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="Developer, Designer, PM, etc." {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <Button type="submit" size="sm" className="mt-2">
+                              Add Team Member
+                            </Button>
+                          </div>
+                        </form>
+                      </Form>
+                      
+                      {collaborators.length > 0 && (
+                        <div className="mt-4 space-y-3">
+                          <h3 className="text-sm font-medium">Added Team Members</h3>
+                          <div className="space-y-2">
+                            {collaborators.map((collaborator) => (
+                              <div key={collaborator.id} className="flex justify-between items-center p-2 hover:bg-muted/50 rounded-md">
+                                <div>
+                                  <p className="font-medium">{collaborator.name}</p>
+                                  <div className="flex items-center text-sm text-muted-foreground">
+                                    <span className="mr-2">{collaborator.role}</span>
+                                  </div>
+                                </div>
+                                <Button variant="ghost" size="icon" onClick={() => handleDeleteCollaborator(collaborator.id)}>
+                                  <TrashIcon className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="endorsements" className="space-y-4">
+                    <div className="space-y-4">
+                      <h3 className="text-sm font-medium">Add Client Endorsements</h3>
+                      <Form {...endorsementForm}>
+                        <form onSubmit={endorsementForm.handleSubmit(handleAddEndorsement)} className="space-y-4">
+                          <div className="space-y-4 border rounded-lg p-4">
+                            <FormField
+                              control={endorsementForm.control}
+                              name="clientName"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Client Name*</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="Client name" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <FormField
+                                control={endorsementForm.control}
+                                name="clientEmail"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Client Email</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="email@example.com" {...field} value={field.value || ''} />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <FormField
+                                control={endorsementForm.control}
+                                name="clientTitle"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Client Title</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="CEO, Manager, etc." {...field} value={field.value || ''} />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                            
+                            <FormField
+                              control={endorsementForm.control}
+                              name="clientCompany"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Client Company</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="Company name" {...field} value={field.value || ''} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={endorsementForm.control}
+                              name="message"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Testimonial</FormLabel>
+                                  <FormControl>
+                                    <Textarea 
+                                      placeholder="Client's testimonial about your work" 
+                                      className="resize-none"
+                                      {...field}
+                                      value={field.value || ''}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={endorsementForm.control}
+                              name="rating"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Rating (1-5)</FormLabel>
+                                  <Select
+                                    onValueChange={(value) => field.onChange(parseInt(value))}
+                                    defaultValue={field.value?.toString() || "5"}
+                                  >
+                                    <FormControl>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select a rating" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      <SelectItem value="1">1 - Poor</SelectItem>
+                                      <SelectItem value="2">2 - Fair</SelectItem>
+                                      <SelectItem value="3">3 - Good</SelectItem>
+                                      <SelectItem value="4">4 - Very Good</SelectItem>
+                                      <SelectItem value="5">5 - Excellent</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <Button type="submit" size="sm" className="mt-2">
+                              Add Endorsement
+                            </Button>
+                          </div>
+                        </form>
+                      </Form>
+                      
+                      {endorsements.length > 0 && (
+                        <div className="mt-4 space-y-3">
+                          <h3 className="text-sm font-medium">Added Endorsements</h3>
+                          <div className="space-y-3">
+                            {endorsements.map((endorsement) => (
+                              <div key={endorsement.id} className="border rounded-lg p-3 relative">
+                                <div className="absolute top-2 right-2">
+                                  <Button variant="ghost" size="icon" onClick={() => handleDeleteEndorsement(endorsement.id)}>
+                                    <TrashIcon className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                                
+                                <div className="flex items-center mb-2">
+                                  {/* Rating stars */}
+                                  <div className="flex">
+                                    {Array.from({ length: 5 }).map((_, i) => (
+                                      <svg
+                                        key={i}
+                                        className={`h-4 w-4 ${i < (endorsement.rating || 0) ? "text-yellow-400 fill-yellow-400" : "text-gray-300 fill-gray-300"}`}
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                                      </svg>
+                                    ))}
+                                  </div>
+                                </div>
+                                
+                                {endorsement.message && (
+                                  <p className="italic text-sm mb-2 line-clamp-2">"{endorsement.message}"</p>
+                                )}
+                                
+                                <div>
+                                  <p className="font-medium text-sm">{endorsement.clientName}</p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {endorsement.clientTitle && `${endorsement.clientTitle}, `}
+                                    {endorsement.clientCompany}
+                                  </p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </TabsContent>
+                </Tabs>
+                
                 <DialogFooter>
                   <Button type="submit" disabled={loading}>
                     {loading ? 'Saving...' : 'Save Project'}
@@ -840,66 +1098,6 @@ export default function Projects() {
                     <div className="space-y-4">
                       <div className="flex justify-between items-center">
                         <h3 className="text-sm font-medium">Project Collaborators</h3>
-                        <Form {...collaboratorForm}>
-                          <form onSubmit={collaboratorForm.handleSubmit(handleAddCollaborator)} className="space-y-4">
-                            <Button 
-                              type="button" 
-                              size="sm" 
-                              variant="outline"
-                              onClick={() => document.getElementById('add-collaborator-form')?.classList.toggle('hidden')}
-                            >
-                              Add Collaborator
-                            </Button>
-                            
-                            <div id="add-collaborator-form" className="hidden mt-4 space-y-4 border rounded-lg p-4">
-                              <FormField
-                                control={collaboratorForm.control}
-                                name="name"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Name*</FormLabel>
-                                    <FormControl>
-                                      <Input placeholder="Collaborator name" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              
-                              <FormField
-                                control={collaboratorForm.control}
-                                name="email"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Email</FormLabel>
-                                    <FormControl>
-                                      <Input placeholder="email@example.com" {...field} value={field.value || ''} />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              
-                              <FormField
-                                control={collaboratorForm.control}
-                                name="role"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Role*</FormLabel>
-                                    <FormControl>
-                                      <Input placeholder="Developer, Designer, PM, etc." {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              
-                              <Button type="submit" size="sm">
-                                Add
-                              </Button>
-                            </div>
-                          </form>
-                        </Form>
                       </div>
                       
                       <Separator />
@@ -926,7 +1124,7 @@ export default function Projects() {
                       ) : (
                         <div className="text-center py-4">
                           <p className="text-muted-foreground mb-2">No collaborators added yet</p>
-                          <p className="text-sm">Add team members or collaborators who worked with you.</p>
+                          <p className="text-sm">Add team members when creating or editing the project.</p>
                         </div>
                       )}
                     </div>
@@ -936,129 +1134,6 @@ export default function Projects() {
                     <div className="space-y-4">
                       <div className="flex justify-between items-center">
                         <h3 className="text-sm font-medium">Client Endorsements</h3>
-                        <Form {...endorsementForm}>
-                          <form onSubmit={endorsementForm.handleSubmit(handleAddEndorsement)} className="space-y-4">
-                            <Button 
-                              type="button" 
-                              size="sm" 
-                              variant="outline"
-                              onClick={() => document.getElementById('add-endorsement-form')?.classList.toggle('hidden')}
-                            >
-                              Add Endorsement
-                            </Button>
-                            
-                            <div id="add-endorsement-form" className="hidden mt-4 space-y-4 border rounded-lg p-4">
-                              <FormField
-                                control={endorsementForm.control}
-                                name="clientName"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Client Name*</FormLabel>
-                                    <FormControl>
-                                      <Input placeholder="Client name" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <FormField
-                                  control={endorsementForm.control}
-                                  name="clientEmail"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <FormLabel>Client Email</FormLabel>
-                                      <FormControl>
-                                        <Input placeholder="email@example.com" {...field} value={field.value || ''} />
-                                      </FormControl>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-                                
-                                <FormField
-                                  control={endorsementForm.control}
-                                  name="clientTitle"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <FormLabel>Client Title</FormLabel>
-                                      <FormControl>
-                                        <Input placeholder="CEO, Manager, etc." {...field} value={field.value || ''} />
-                                      </FormControl>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-                              </div>
-                              
-                              <FormField
-                                control={endorsementForm.control}
-                                name="clientCompany"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Client Company</FormLabel>
-                                    <FormControl>
-                                      <Input placeholder="Company name" {...field} value={field.value || ''} />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              
-                              <FormField
-                                control={endorsementForm.control}
-                                name="message"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Testimonial</FormLabel>
-                                    <FormControl>
-                                      <Textarea 
-                                        placeholder="Client's testimonial about your work" 
-                                        className="resize-none"
-                                        {...field}
-                                        value={field.value || ''}
-                                      />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              
-                              <FormField
-                                control={endorsementForm.control}
-                                name="rating"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Rating (1-5)</FormLabel>
-                                    <Select
-                                      onValueChange={(value) => field.onChange(parseInt(value))}
-                                      defaultValue={field.value?.toString() || "5"}
-                                    >
-                                      <FormControl>
-                                        <SelectTrigger>
-                                          <SelectValue placeholder="Select a rating" />
-                                        </SelectTrigger>
-                                      </FormControl>
-                                      <SelectContent>
-                                        <SelectItem value="1">1 - Poor</SelectItem>
-                                        <SelectItem value="2">2 - Fair</SelectItem>
-                                        <SelectItem value="3">3 - Good</SelectItem>
-                                        <SelectItem value="4">4 - Very Good</SelectItem>
-                                        <SelectItem value="5">5 - Excellent</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              
-                              <Button type="submit" size="sm">
-                                Add
-                              </Button>
-                            </div>
-                          </form>
-                        </Form>
                       </div>
                       
                       <Separator />
@@ -1111,7 +1186,7 @@ export default function Projects() {
                       ) : (
                         <div className="text-center py-4">
                           <p className="text-muted-foreground mb-2">No endorsements added yet</p>
-                          <p className="text-sm">Add testimonials from clients or stakeholders to build credibility.</p>
+                          <p className="text-sm">Add endorsements when creating or editing the project.</p>
                         </div>
                       )}
                     </div>
@@ -1279,6 +1354,264 @@ export default function Projects() {
                     </div>
                   )}
                 </div>
+                
+                <Separator className="my-4" />
+                
+                <Tabs defaultValue="collaborators" className="w-full mt-6">
+                  <TabsList className="grid grid-cols-2 mb-4">
+                    <TabsTrigger value="collaborators" className="flex items-center gap-1">
+                      <Users2Icon className="h-4 w-4" />
+                      Team Members
+                    </TabsTrigger>
+                    <TabsTrigger value="endorsements" className="flex items-center gap-1">
+                      <AwardIcon className="h-4 w-4" />
+                      Endorsements
+                    </TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="collaborators" className="space-y-4">
+                    <div className="space-y-4">
+                      <h3 className="text-sm font-medium">Add Team Members</h3>
+                      <Form {...collaboratorForm}>
+                        <form onSubmit={collaboratorForm.handleSubmit(handleAddCollaborator)} className="space-y-4">
+                          <div className="space-y-4 border rounded-lg p-4">
+                            <FormField
+                              control={collaboratorForm.control}
+                              name="name"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Name*</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="Collaborator name" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={collaboratorForm.control}
+                              name="email"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Email</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="email@example.com" {...field} value={field.value || ''} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={collaboratorForm.control}
+                              name="role"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Role*</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="Developer, Designer, PM, etc." {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <Button type="submit" size="sm" className="mt-2">
+                              Add Team Member
+                            </Button>
+                          </div>
+                        </form>
+                      </Form>
+                      
+                      {collaborators.length > 0 && (
+                        <div className="mt-4 space-y-3">
+                          <h3 className="text-sm font-medium">Added Team Members</h3>
+                          <div className="space-y-2">
+                            {collaborators.map((collaborator) => (
+                              <div key={collaborator.id} className="flex justify-between items-center p-2 hover:bg-muted/50 rounded-md">
+                                <div>
+                                  <p className="font-medium">{collaborator.name}</p>
+                                  <div className="flex items-center text-sm text-muted-foreground">
+                                    <span className="mr-2">{collaborator.role}</span>
+                                  </div>
+                                </div>
+                                <Button variant="ghost" size="icon" onClick={() => handleDeleteCollaborator(collaborator.id)}>
+                                  <TrashIcon className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="endorsements" className="space-y-4">
+                    <div className="space-y-4">
+                      <h3 className="text-sm font-medium">Add Client Endorsements</h3>
+                      <Form {...endorsementForm}>
+                        <form onSubmit={endorsementForm.handleSubmit(handleAddEndorsement)} className="space-y-4">
+                          <div className="space-y-4 border rounded-lg p-4">
+                            <FormField
+                              control={endorsementForm.control}
+                              name="clientName"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Client Name*</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="Client name" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <FormField
+                                control={endorsementForm.control}
+                                name="clientEmail"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Client Email</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="email@example.com" {...field} value={field.value || ''} />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <FormField
+                                control={endorsementForm.control}
+                                name="clientTitle"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Client Title</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="CEO, Manager, etc." {...field} value={field.value || ''} />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                            
+                            <FormField
+                              control={endorsementForm.control}
+                              name="clientCompany"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Client Company</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="Company name" {...field} value={field.value || ''} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={endorsementForm.control}
+                              name="message"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Testimonial</FormLabel>
+                                  <FormControl>
+                                    <Textarea 
+                                      placeholder="Client's testimonial about your work" 
+                                      className="resize-none"
+                                      {...field}
+                                      value={field.value || ''}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={endorsementForm.control}
+                              name="rating"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Rating (1-5)</FormLabel>
+                                  <Select
+                                    onValueChange={(value) => field.onChange(parseInt(value))}
+                                    defaultValue={field.value?.toString() || "5"}
+                                  >
+                                    <FormControl>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select a rating" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      <SelectItem value="1">1 - Poor</SelectItem>
+                                      <SelectItem value="2">2 - Fair</SelectItem>
+                                      <SelectItem value="3">3 - Good</SelectItem>
+                                      <SelectItem value="4">4 - Very Good</SelectItem>
+                                      <SelectItem value="5">5 - Excellent</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <Button type="submit" size="sm" className="mt-2">
+                              Add Endorsement
+                            </Button>
+                          </div>
+                        </form>
+                      </Form>
+                      
+                      {endorsements.length > 0 && (
+                        <div className="mt-4 space-y-3">
+                          <h3 className="text-sm font-medium">Added Endorsements</h3>
+                          <div className="space-y-3">
+                            {endorsements.map((endorsement) => (
+                              <div key={endorsement.id} className="border rounded-lg p-3 relative">
+                                <div className="absolute top-2 right-2">
+                                  <Button variant="ghost" size="icon" onClick={() => handleDeleteEndorsement(endorsement.id)}>
+                                    <TrashIcon className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                                
+                                <div className="flex items-center mb-2">
+                                  {/* Rating stars */}
+                                  <div className="flex">
+                                    {Array.from({ length: 5 }).map((_, i) => (
+                                      <svg
+                                        key={i}
+                                        className={`h-4 w-4 ${i < (endorsement.rating || 0) ? "text-yellow-400 fill-yellow-400" : "text-gray-300 fill-gray-300"}`}
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                                      </svg>
+                                    ))}
+                                  </div>
+                                </div>
+                                
+                                {endorsement.message && (
+                                  <p className="italic text-sm mb-2 line-clamp-2">"{endorsement.message}"</p>
+                                )}
+                                
+                                <div>
+                                  <p className="font-medium text-sm">{endorsement.clientName}</p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {endorsement.clientTitle && `${endorsement.clientTitle}, `}
+                                    {endorsement.clientCompany}
+                                  </p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </TabsContent>
+                </Tabs>
                 
                 <DialogFooter>
                   <Button type="submit" disabled={loading}>
