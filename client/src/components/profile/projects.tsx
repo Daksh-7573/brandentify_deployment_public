@@ -1,63 +1,88 @@
-import { useState, useEffect, useRef } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
-import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/hooks/use-auth';
-import { apiRequest } from '@/lib/queryClient';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { CalendarIcon, PencilIcon, TrashIcon, PlusIcon, ExternalLinkIcon, CheckCircleIcon, XCircleIcon, Users2Icon, AwardIcon, Briefcase, FolderKanban } from 'lucide-react';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { format } from 'date-fns';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Switch } from '@/components/ui/switch';
-import { cn } from '@/lib/utils';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import React, { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { PlusCircle, X, Edit, Trash2, Star, StarHalf, ExternalLink, PlusSquare, Upload, CheckCircle2, Calendar, Link, Users, ThumbsUp } from "lucide-react";
+import { format } from "date-fns";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useQuery, useMutation } from "@tanstack/react-query";
 
-// Define the Project schema
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { formatDate } from "@/lib/utils";
+
+// Define project schema
 const projectSchema = z.object({
-  title: z.string().min(1, { message: "Title is required" }),
-  description: z.string().nullable().optional(),
-  category: z.string().nullable().optional(),
-  startDate: z.string().min(1, { message: "Start date is required" }),
-  projectUrl: z.string().url().nullable().optional().or(z.literal('')),
-  mediaUrls: z.array(z.string()).nullable().optional(),
-  // Public visibility option removed as requested
+  title: z.string().min(2, "Title is required"),
+  description: z.string().optional().nullable(),
+  category: z.string().optional().nullable(),
+  startDate: z.string().min(10, "Date is required"),
+  projectUrl: z.string().url("Must be a valid URL").optional().nullable(),
+  userId: z.number().optional(), // This will be set automatically
 });
 
-type ProjectFormValues = z.infer<typeof projectSchema>;
-
-// Define the Collaborator schema
+// Define collaborator schema
 const collaboratorSchema = z.object({
-  name: z.string().min(1, { message: "Name is required" }),
-  email: z.string().email().nullable().optional(),
-  role: z.string().min(1, { message: "Role is required" }),
+  name: z.string().optional().nullable(), // Made optional
+  email: z.string().email("Invalid email").optional().nullable(),
+  role: z.string().optional().nullable(), // Made optional
+  profileLink: z.string().url("Must be a valid URL").optional().nullable(), // Added profile link
+  projectId: z.number().optional(), // This will be set automatically
+  userId: z.number().optional().nullable(),
 });
 
-type CollaboratorFormValues = z.infer<typeof collaboratorSchema>;
-
-// Define the Endorsement schema
+// Define endorsement schema
 const endorsementSchema = z.object({
-  clientName: z.string().min(1, { message: "Client name is required" }),
-  clientEmail: z.string().email().nullable().optional(),
-  clientTitle: z.string().nullable().optional(),
-  clientCompany: z.string().nullable().optional(),
-  message: z.string().nullable().optional(),
-  rating: z.number().min(1).max(5).nullable().optional(),
+  clientName: z.string().min(2, "Name is required"),
+  clientEmail: z.string().email("Invalid email").optional().nullable(),
+  clientTitle: z.string().optional().nullable(),
+  clientCompany: z.string().optional().nullable(),
+  message: z.string().optional().nullable(),
+  rating: z.number().min(1).max(5),
+  projectId: z.number().optional(), // This will be set automatically
 });
 
-type EndorsementFormValues = z.infer<typeof endorsementSchema>;
-
-// Define interfaces for our project data
+// Define type for project
 interface Project {
   id: number;
   title: string;
@@ -70,16 +95,19 @@ interface Project {
   userId: number;
 }
 
+// Define type for collaborator
 interface Collaborator {
   id: number;
-  name: string;
+  name: string | null;
   email: string | null;
-  role: string;
+  role: string | null;
+  profileLink: string | null;
   userId: number | null;
   projectId: number;
   inviteStatus: string | null;
 }
 
+// Define type for endorsement
 interface Endorsement {
   id: number;
   clientName: string;
@@ -102,489 +130,584 @@ interface AuthUser {
 }
 
 export default function Projects() {
-  const { user } = useAuth();
   const { toast } = useToast();
-  const queryClient = useQueryClient();
-  const [loading, setLoading] = useState(false);
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [currentProject, setCurrentProject] = useState<Project | null>(null);
+  const { user } = useAuth();
+  const [userId, setUserId] = useState<number | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
-  const [collaborators, setCollaborators] = useState<Collaborator[]>([]);
-  const [endorsements, setEndorsements] = useState<Endorsement[]>([]);
-  const [activeTab, setActiveTab] = useState('details');
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [activeTab, setActiveTab] = useState("details");
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const projectForm = useForm<ProjectFormValues>({
+  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  
+  useEffect(() => {
+    // If we have a Firebase user ID (string), we need to find the corresponding numeric ID
+    if (user?.uid) {
+      // Fetch the numeric ID for this user
+      apiRequest("GET", `/api/users/find/${user.uid}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data && data.id) {
+            console.log("Found numeric userId:", data.id);
+            setUserId(data.id);
+          } else {
+            // If the user doesn't exist yet in our DB, create them
+            return apiRequest("POST", "/api/users", {
+              username: user.uid, // Use Firebase UID as username
+              email: user.email || `user-${user.uid}@example.com`,
+              name: user.name || `User ${user.uid.substring(0, 5)}`,
+              phoneNumber: null,
+              photoURL: user.photoURL || null,
+            });
+          }
+        })
+        .then(response => {
+          if (response) return response.json();
+          return null;
+        })
+        .then(newUser => {
+          if (newUser && newUser.id) {
+            console.log("Created new user with ID:", newUser.id);
+            setUserId(newUser.id);
+          }
+        })
+        .catch(error => {
+          console.error("Error getting/creating user:", error);
+        });
+    }
+  }, [user]);
+  
+  // Fetch projects for user
+  const { 
+    data: projects = [], 
+    isLoading: isLoadingProjects,
+    error: projectsError,
+    refetch: refetchProjects
+  } = useQuery({
+    queryKey: ['/api/users', userId, 'projects'],
+    queryFn: async () => {
+      if (!userId) return [];
+      const response = await apiRequest("GET", `/api/users/${userId}/projects`);
+      return response.json();
+    },
+    enabled: !!userId,
+  });
+  
+  // Project form
+  const projectForm = useForm<z.infer<typeof projectSchema>>({
     resolver: zodResolver(projectSchema),
     defaultValues: {
-      title: '',
-      description: '',
-      category: '',
-      startDate: format(new Date(), 'yyyy-MM-dd'),
-      projectUrl: '',
-      mediaUrls: [],
-      // isVisible removed as requested
+      title: "",
+      description: "",
+      category: "",
+      startDate: format(new Date(), "yyyy-MM-dd"),
+      projectUrl: "",
     },
   });
-
-  const collaboratorForm = useForm<CollaboratorFormValues>({
+  
+  // Collaborator form
+  const collaboratorForm = useForm<z.infer<typeof collaboratorSchema>>({
     resolver: zodResolver(collaboratorSchema),
     defaultValues: {
-      name: '',
-      email: '',
-      role: 'Contributor',
+      name: "",
+      email: "",
+      role: "",
+      profileLink: "",
     },
   });
-
-  const endorsementForm = useForm<EndorsementFormValues>({
+  
+  // Endorsement form
+  const endorsementForm = useForm<z.infer<typeof endorsementSchema>>({
     resolver: zodResolver(endorsementSchema),
     defaultValues: {
-      clientName: '',
-      clientEmail: '',
-      clientTitle: '',
-      clientCompany: '',
-      message: '',
+      clientName: "",
+      clientEmail: "",
+      clientTitle: "",
+      clientCompany: "",
+      message: "",
       rating: 5,
     },
   });
-
-  // Load projects
-  useEffect(() => {
-    if (user) {
-      loadProjects();
-    }
-  }, [user]);
-
-  // Load collaborators and endorsements when viewing a project
-  useEffect(() => {
-    if (currentProject) {
-      loadCollaborators(currentProject.id);
-      loadEndorsements(currentProject.id);
-    }
-  }, [currentProject]);
-
-  const loadProjects = async () => {
-    if (!user) return;
-    
-    // Use actual user uid if available
-    const userId = user?.uid || 0;
-    
-    setLoading(true);
-    try {
-      const response = await apiRequest('GET', `/api/users/${userId}/projects`);
-      const data = await response.json();
-      setProjects(data as Project[]);
-    } catch (error) {
-      console.error('Error loading projects:', error);
+  
+  // Add project mutation
+  const addProjectMutation = useMutation({
+    mutationFn: async (values: z.infer<typeof projectSchema>) => {
+      const data = { ...values, userId };
+      const response = await apiRequest("POST", "/api/projects", data);
+      return response.json();
+    },
+    onSuccess: () => {
       toast({
-        title: 'Error',
-        description: 'Failed to load projects. Please try again.',
-        variant: 'destructive',
+        title: "Project Added",
+        description: "Your project has been added successfully.",
       });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadCollaborators = async (projectId: number) => {
-    try {
-      const response = await apiRequest('GET', `/api/projects/${projectId}/collaborators`);
-      const data = await response.json();
-      setCollaborators(data);
-    } catch (error) {
-      console.error('Error loading collaborators:', error);
-    }
-  };
-
-  const loadEndorsements = async (projectId: number) => {
-    try {
-      const response = await apiRequest('GET', `/api/projects/${projectId}/endorsements`);
-      const data = await response.json();
-      setEndorsements(data);
-    } catch (error) {
-      console.error('Error loading endorsements:', error);
-    }
-  };
-
-  const handleAddProject = async (values: ProjectFormValues) => {
-    if (!user) return;
-    
-    // Use actual user uid if available
-    const userId = user?.uid || 0;
-    
-    setLoading(true);
-    try {
-      const projectData = {
-        ...values,
-        userId,
-      };
-      
-      // First create the project
-      const response = await apiRequest('POST', '/api/projects', projectData);
-      const project = await response.json();
-      
-      // If we have a thumbnail file, upload it
-      if (thumbnailFile) {
-        try {
-          console.log('Uploading thumbnail file for project ID:', project.id);
-          const formData = new FormData();
-          formData.append('thumbnail', thumbnailFile);
-          formData.append('projectId', project.id.toString());
-          
-          // Use fetch directly as apiRequest doesn't handle FormData
-          const uploadResponse = await fetch('/api/projects/upload-thumbnail', {
-            method: 'POST',
-            body: formData,
-          });
-          
-          if (!uploadResponse.ok) {
-            // Try to get error details
-            const errorData = await uploadResponse.json().catch(() => ({}));
-            console.error('Thumbnail upload failed with status:', uploadResponse.status, errorData);
-            throw new Error(`Failed to upload thumbnail: ${errorData.message || uploadResponse.statusText}`);
-          }
-          
-          const uploadResult = await uploadResponse.json();
-          console.log('Thumbnail upload successful:', uploadResult);
-          
-          // Update the project with the thumbnail URL
-          project.thumbnailUrl = uploadResult.thumbnailUrl;
-        } catch (uploadError) {
-          console.error('Error uploading thumbnail:', uploadError);
-          // Don't fail the whole operation, just show a toast for the upload error
-          toast({
-            title: 'Thumbnail Upload Failed',
-            description: uploadError instanceof Error ? uploadError.message : 'Unable to upload thumbnail image',
-            variant: 'destructive',
-          });
-          // Continue with the project creation even if thumbnail fails
-        }
-      }
-      
-      setProjects([...projects, project as Project]);
-      setIsAddDialogOpen(false);
       projectForm.reset();
-      setThumbnailFile(null);
-      
+      setIsAddDialogOpen(false);
+      refetchProjects();
+    },
+    onError: (error) => {
       toast({
-        title: 'Success',
-        description: 'Project added successfully!',
+        title: "Error",
+        description: "There was an error adding your project.",
+        variant: "destructive",
       });
-    } catch (error) {
-      console.error('Error adding project:', error);
-      // Show more detailed error message for debugging
-      let errorMessage = 'Failed to add project. Please try again.';
-      if (error instanceof Error) {
-        errorMessage = `Error: ${error.message}`;
-        console.error('Error details:', error.message);
-      }
-      toast({
-        title: 'Error',
-        description: errorMessage,
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
+      console.error("Add project error:", error);
     }
-  };
-
-  const handleEditProject = async (values: ProjectFormValues) => {
-    if (!currentProject) return;
-    
-    setLoading(true);
-    try {
-      const response = await apiRequest('PUT', `/api/projects/${currentProject.id}`, values);
-      let updatedProject = await response.json();
+  });
+  
+  // Edit project mutation
+  const editProjectMutation = useMutation({
+    mutationFn: async (values: z.infer<typeof projectSchema> & { id: number }) => {
+      const { id, ...data } = values;
+      const response = await apiRequest("PUT", `/api/projects/${id}`, data);
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Project Updated",
+        description: "Your project has been updated successfully.",
+      });
+      projectForm.reset();
+      setIsEditDialogOpen(false);
+      refetchProjects();
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "There was an error updating your project.",
+        variant: "destructive",
+      });
+      console.error("Edit project error:", error);
+    }
+  });
+  
+  // Delete project mutation
+  const deleteProjectMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const response = await apiRequest("DELETE", `/api/projects/${id}`);
+      return response.ok;
+    },
+    onSuccess: () => {
+      toast({
+        title: "Project Deleted",
+        description: "Your project has been deleted successfully.",
+      });
+      refetchProjects();
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "There was an error deleting your project.",
+        variant: "destructive",
+      });
+      console.error("Delete project error:", error);
+    }
+  });
+  
+  // Upload thumbnail mutation
+  const uploadThumbnailMutation = useMutation({
+    mutationFn: async (projectId: number) => {
+      if (!thumbnailFile) return null;
       
-      // If we have a thumbnail file, upload it
-      if (thumbnailFile) {
-        try {
-          console.log('Uploading thumbnail file for project ID:', updatedProject.id);
-          const formData = new FormData();
-          formData.append('thumbnail', thumbnailFile);
-          formData.append('projectId', updatedProject.id.toString());
-          
-          // Use fetch directly as apiRequest doesn't handle FormData
-          const uploadResponse = await fetch('/api/projects/upload-thumbnail', {
-            method: 'POST',
-            body: formData,
-          });
-          
-          if (!uploadResponse.ok) {
-            // Try to get error details
-            const errorData = await uploadResponse.json().catch(() => ({}));
-            console.error('Thumbnail upload failed with status:', uploadResponse.status, errorData);
-            throw new Error(`Failed to upload thumbnail: ${errorData.message || uploadResponse.statusText}`);
-          }
-          
-          const uploadResult = await uploadResponse.json();
-          console.log('Thumbnail upload successful:', uploadResult);
-          
-          // Update the project with the thumbnail URL
-          updatedProject.thumbnailUrl = uploadResult.thumbnailUrl;
-        } catch (uploadError) {
-          console.error('Error uploading thumbnail:', uploadError);
-          // Don't fail the whole operation, just show a toast for the upload error
-          toast({
-            title: 'Thumbnail Upload Failed',
-            description: uploadError instanceof Error ? uploadError.message : 'Unable to upload thumbnail image',
-            variant: 'destructive',
-          });
-          // Continue with the project update even if thumbnail fails
+      const formData = new FormData();
+      formData.append('thumbnail', thumbnailFile);
+      formData.append('projectId', projectId.toString());
+      
+      const response = await fetch('/api/projects/upload-thumbnail', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      return response.json();
+    },
+    onSuccess: (data) => {
+      if (data && data.thumbnailUrl) {
+        toast({
+          title: "Thumbnail Uploaded",
+          description: "Project thumbnail has been uploaded successfully.",
+        });
+        
+        // Update the project with the new thumbnail URL
+        if (selectedProject) {
+          const updatedProject = { ...selectedProject, thumbnailUrl: data.thumbnailUrl };
+          setSelectedProject(updatedProject);
+          refetchProjects();
         }
       }
-      
-      setProjects(projects.map(p => p.id === updatedProject.id ? updatedProject : p));
-      setIsEditDialogOpen(false);
-      setThumbnailFile(null);
-      
+    },
+    onError: (error) => {
       toast({
-        title: 'Success',
-        description: 'Project updated successfully!',
+        title: "Error",
+        description: "There was an error uploading the thumbnail.",
+        variant: "destructive",
       });
-    } catch (error) {
-      console.error('Error updating project:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to update project. Please try again.',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
+      console.error("Upload thumbnail error:", error);
     }
-  };
-
-  const handleDeleteProject = async (projectId: number) => {
-    if (!confirm('Are you sure you want to delete this project?')) return;
-    
-    setLoading(true);
-    try {
-      await apiRequest('DELETE', `/api/projects/${projectId}`);
-      
-      setProjects(projects.filter(p => p.id !== projectId));
-      
+  });
+  
+  // Fetch collaborators for selected project
+  const { 
+    data: collaborators = [], 
+    isLoading: isLoadingCollaborators,
+    refetch: refetchCollaborators
+  } = useQuery({
+    queryKey: ['/api/projects', selectedProject?.id, 'collaborators'],
+    queryFn: async () => {
+      if (!selectedProject) return [];
+      const response = await apiRequest("GET", `/api/projects/${selectedProject.id}/collaborators`);
+      return response.json();
+    },
+    enabled: !!selectedProject,
+  });
+  
+  // Fetch endorsements for selected project
+  const { 
+    data: endorsements = [], 
+    isLoading: isLoadingEndorsements,
+    refetch: refetchEndorsements
+  } = useQuery({
+    queryKey: ['/api/projects', selectedProject?.id, 'endorsements'],
+    queryFn: async () => {
+      if (!selectedProject) return [];
+      const response = await apiRequest("GET", `/api/projects/${selectedProject.id}/endorsements`);
+      return response.json();
+    },
+    enabled: !!selectedProject,
+  });
+  
+  // Add collaborator mutation
+  const addCollaboratorMutation = useMutation({
+    mutationFn: async (values: z.infer<typeof collaboratorSchema>) => {
+      const data = { ...values, projectId: selectedProject?.id };
+      const response = await apiRequest("POST", "/api/project-collaborators", data);
+      return response.json();
+    },
+    onSuccess: () => {
       toast({
-        title: 'Success',
-        description: 'Project deleted successfully!',
+        title: "Team Member Added",
+        description: "The team member has been added successfully.",
       });
-    } catch (error) {
-      console.error('Error deleting project:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to delete project. Please try again.',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleAddCollaborator = async (values: CollaboratorFormValues) => {
-    if (!currentProject) return;
-    
-    try {
-      const collaboratorData = {
-        ...values,
-        projectId: currentProject.id,
-      };
-      
-      const response = await apiRequest('POST', '/api/project-collaborators', collaboratorData);
-      const data = await response.json();
-      
-      setCollaborators([...collaborators, data]);
       collaboratorForm.reset();
-      
+      refetchCollaborators();
+    },
+    onError: (error) => {
       toast({
-        title: 'Success',
-        description: 'Collaborator added successfully!',
+        title: "Error",
+        description: "There was an error adding the team member.",
+        variant: "destructive",
       });
-    } catch (error) {
-      console.error('Error adding collaborator:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to add collaborator. Please try again.',
-        variant: 'destructive',
-      });
+      console.error("Add collaborator error:", error);
     }
-  };
-
-  const handleDeleteCollaborator = async (collaboratorId: number) => {
-    if (!confirm('Are you sure you want to remove this collaborator?')) return;
-    
-    try {
-      await apiRequest('DELETE', `/api/project-collaborators/${collaboratorId}`);
-      
-      setCollaborators(collaborators.filter(c => c.id !== collaboratorId));
-      
+  });
+  
+  // Delete collaborator mutation
+  const deleteCollaboratorMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const response = await apiRequest("DELETE", `/api/project-collaborators/${id}`);
+      return response.ok;
+    },
+    onSuccess: () => {
       toast({
-        title: 'Success',
-        description: 'Collaborator removed successfully!',
+        title: "Team Member Removed",
+        description: "The team member has been removed successfully.",
       });
-    } catch (error) {
-      console.error('Error removing collaborator:', error);
+      refetchCollaborators();
+    },
+    onError: (error) => {
       toast({
-        title: 'Error',
-        description: 'Failed to remove collaborator. Please try again.',
-        variant: 'destructive',
+        title: "Error",
+        description: "There was an error removing the team member.",
+        variant: "destructive",
       });
+      console.error("Delete collaborator error:", error);
     }
-  };
-
-  const handleAddEndorsement = async (values: EndorsementFormValues) => {
-    if (!currentProject) return;
-    
-    try {
-      const endorsementData = {
-        ...values,
-        projectId: currentProject.id,
-      };
-      
-      const response = await apiRequest('POST', '/api/project-endorsements', endorsementData);
-      const data = await response.json();
-      
-      setEndorsements([...endorsements, data]);
+  });
+  
+  // Add endorsement mutation
+  const addEndorsementMutation = useMutation({
+    mutationFn: async (values: z.infer<typeof endorsementSchema>) => {
+      const data = { ...values, projectId: selectedProject?.id };
+      const response = await apiRequest("POST", "/api/project-endorsements", data);
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Endorsement Added",
+        description: "The endorsement has been added successfully.",
+      });
       endorsementForm.reset();
-      
+      refetchEndorsements();
+    },
+    onError: (error) => {
       toast({
-        title: 'Success',
-        description: 'Endorsement added successfully!',
+        title: "Error",
+        description: "There was an error adding the endorsement.",
+        variant: "destructive",
       });
-    } catch (error) {
-      console.error('Error adding endorsement:', error);
+      console.error("Add endorsement error:", error);
+    }
+  });
+  
+  // Delete endorsement mutation
+  const deleteEndorsementMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const response = await apiRequest("DELETE", `/api/project-endorsements/${id}`);
+      return response.ok;
+    },
+    onSuccess: () => {
       toast({
-        title: 'Error',
-        description: 'Failed to add endorsement. Please try again.',
-        variant: 'destructive',
+        title: "Endorsement Removed",
+        description: "The endorsement has been removed successfully.",
       });
+      refetchEndorsements();
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "There was an error removing the endorsement.",
+        variant: "destructive",
+      });
+      console.error("Delete endorsement error:", error);
+    }
+  });
+  
+  const handleAddProject = async (values: z.infer<typeof projectSchema>) => {
+    addProjectMutation.mutate(values);
+  };
+  
+  const handleEditProject = async (values: z.infer<typeof projectSchema>) => {
+    if (selectedProject) {
+      editProjectMutation.mutate({ ...values, id: selectedProject.id });
     }
   };
-
-  const handleDeleteEndorsement = async (endorsementId: number) => {
-    if (!confirm('Are you sure you want to remove this endorsement?')) return;
+  
+  const handleDeleteProject = (id: number) => {
+    if (confirm("Are you sure you want to delete this project?")) {
+      deleteProjectMutation.mutate(id);
+    }
+  };
+  
+  const handleAddCollaborator = async (values: z.infer<typeof collaboratorSchema>) => {
+    addCollaboratorMutation.mutate(values);
+  };
+  
+  const handleAddEndorsement = async (values: z.infer<typeof endorsementSchema>) => {
+    addEndorsementMutation.mutate(values);
+  };
+  
+  const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setThumbnailFile(file);
+      
+      // Create a preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setThumbnailPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  
+  const handleUploadThumbnail = async () => {
+    if (!selectedProject || !thumbnailFile) return;
     
+    setUploading(true);
     try {
-      await apiRequest('DELETE', `/api/project-endorsements/${endorsementId}`);
-      
-      setEndorsements(endorsements.filter(e => e.id !== endorsementId));
-      
-      toast({
-        title: 'Success',
-        description: 'Endorsement removed successfully!',
-      });
-    } catch (error) {
-      console.error('Error removing endorsement:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to remove endorsement. Please try again.',
-        variant: 'destructive',
-      });
+      await uploadThumbnailMutation.mutateAsync(selectedProject.id);
+    } finally {
+      setUploading(false);
     }
   };
-
+  
   const openEditDialog = (project: Project) => {
-    setCurrentProject(project);
+    setSelectedProject(project);
     projectForm.reset({
       title: project.title,
-      description: project.description || '',
-      category: project.category || '',
-      startDate: project.startDate || format(new Date(), 'yyyy-MM-dd'),
-      projectUrl: project.projectUrl || '',
-      mediaUrls: project.mediaUrls || [],
-      // isVisible removed as requested
+      description: project.description || "",
+      category: project.category || "",
+      startDate: project.startDate,
+      projectUrl: project.projectUrl || "",
     });
-    // Reset the thumbnail file when editing
-    setThumbnailFile(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
     setIsEditDialogOpen(true);
   };
-
+  
   const openDetailDialog = (project: Project) => {
-    setCurrentProject(project);
+    setSelectedProject(project);
+    setActiveTab("details");
+    setThumbnailPreview(project.thumbnailUrl || null);
     setIsDetailDialogOpen(true);
-    setActiveTab('details');
   };
-
-
-
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return 'Present';
-    try {
-      return format(new Date(dateString), 'MMM yyyy');
-    } catch (error) {
-      return dateString;
-    }
-  };
-
+  
+  if (isLoadingProjects) {
+    return <div className="flex justify-center p-6">Loading projects...</div>;
+  }
+  
+  if (projectsError) {
+    return <div className="text-red-500 p-6">Error loading projects.</div>;
+  }
+  
   return (
-    <Card className="mb-6">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <div>
-          <CardTitle className="text-xl font-bold">My Projects</CardTitle>
-          <CardDescription>Showcase your professional projects and collaborations</CardDescription>
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h3 className="text-lg font-medium">My Projects</h3>
+        
+        <Button onClick={() => setIsAddDialogOpen(true)} variant="outline" size="sm">
+          <PlusCircle className="h-4 w-4 mr-2" />
+          Add Project
+        </Button>
+      </div>
+      
+      {projects.length === 0 ? (
+        <div className="bg-muted p-6 text-center rounded-lg">
+          <p className="text-muted-foreground">You haven't added any projects yet.</p>
+          <Button 
+            onClick={() => setIsAddDialogOpen(true)} 
+            variant="outline" 
+            className="mt-4"
+          >
+            <PlusCircle className="h-4 w-4 mr-2" />
+            Add Your First Project
+          </Button>
         </div>
-        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-          <DialogTrigger asChild>
-            <Button size="sm" variant="outline" className="h-8 gap-1">
-              <PlusIcon className="h-4 w-4" />
-              Add Project
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Add New Project</DialogTitle>
-              <DialogDescription>
-                Showcase your work, contributions, and achievements to enhance your professional profile.
-              </DialogDescription>
-            </DialogHeader>
-            <Form {...projectForm}>
-              <form onSubmit={projectForm.handleSubmit(handleAddProject)} className="space-y-4">
-                <FormField
-                  control={projectForm.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Project Title*</FormLabel>
-                      <FormControl>
-                        <Input placeholder="My Amazing Project" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {projects.map((project) => (
+            <Card key={project.id} className="hover:bg-accent/5 transition-colors">
+              <CardHeader className="pb-2">
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <CardTitle className="text-base">{project.title}</CardTitle>
+                    {project.startDate && (
+                      <CardDescription>
+                        <div className="flex items-center mt-1">
+                          <Calendar className="h-3 w-3 mr-1" />
+                          <span className="text-xs">{formatDate(project.startDate)}</span>
+                        </div>
+                      </CardDescription>
+                    )}
+                  </div>
+                  <div className="flex space-x-1">
+                    <Button variant="ghost" size="sm" onClick={() => openEditDialog(project)}>
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => handleDeleteProject(project.id)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              
+              <CardContent className="pb-2 space-y-2">
+                <div className="relative aspect-video rounded-md bg-muted flex items-center justify-center overflow-hidden cursor-pointer" onClick={() => openDetailDialog(project)}>
+                  {project.thumbnailUrl ? (
+                    <img 
+                      src={project.thumbnailUrl} 
+                      alt={project.title} 
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="text-muted-foreground flex flex-col items-center">
+                      <PlusSquare className="h-8 w-8 mb-1" />
+                      <span className="text-xs">Add Image</span>
+                    </div>
                   )}
-                />
+                </div>
                 
+                {project.description && (
+                  <p className="text-sm line-clamp-2">{project.description}</p>
+                )}
+                
+                <div className="flex justify-between items-center pt-2">
+                  {project.category && (
+                    <Badge variant="outline" className="text-xs">
+                      {project.category}
+                    </Badge>
+                  )}
+                  
+                  <Button variant="ghost" size="sm" onClick={() => openDetailDialog(project)}>
+                    View Details
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+      
+      {/* Add Project Dialog */}
+      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add New Project</DialogTitle>
+            <DialogDescription>
+              Showcase your work by adding details about your project.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <Form {...projectForm}>
+            <form onSubmit={projectForm.handleSubmit(handleAddProject)} className="space-y-4">
+              <FormField
+                control={projectForm.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Project Title*</FormLabel>
+                    <FormControl>
+                      <Input placeholder="My Awesome Project" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={projectForm.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="Describe your project" 
+                        {...field} 
+                        value={field.value || ''}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <div className="flex gap-4">
                 <FormField
                   control={projectForm.control}
                   name="category"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="flex-1">
                       <FormLabel>Category</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Web Development, Design, etc." {...field} value={field.value || ''} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={projectForm.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Description</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                          placeholder="Describe your project, its goals, and your contributions" 
-                          className="resize-none" 
-                          {...field} 
-                          value={field.value || ''} 
-                        />
-                      </FormControl>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        defaultValue={field.value || ''} 
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select category" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Web Development">Web Development</SelectItem>
+                          <SelectItem value="Mobile App">Mobile App</SelectItem>
+                          <SelectItem value="Design">Design</SelectItem>
+                          <SelectItem value="Marketing">Marketing</SelectItem>
+                          <SelectItem value="Writing">Writing</SelectItem>
+                          <SelectItem value="Research">Research</SelectItem>
+                          <SelectItem value="Data Analysis">Data Analysis</SelectItem>
+                          <SelectItem value="Other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -594,36 +717,123 @@ export default function Projects() {
                   control={projectForm.control}
                   name="startDate"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>Project Date*</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className={cn(
-                                "pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
-                              )}
-                            >
-                              {field.value ? (
-                                format(new Date(field.value), "MMMM yyyy")
-                              ) : (
-                                <span>Select month and year</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value ? new Date(field.value) : undefined}
-                            onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
+                    <FormItem className="flex-1">
+                      <FormLabel>Date*</FormLabel>
+                      <FormControl>
+                        <Input type="date" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              
+              <FormField
+                control={projectForm.control}
+                name="projectUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Project URL</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="https://myproject.com" 
+                        {...field} 
+                        value={field.value || ''}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <DialogFooter>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setIsAddDialogOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={addProjectMutation.isPending}>
+                  {addProjectMutation.isPending ? "Adding..." : "Add Project"}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Edit Project Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Project</DialogTitle>
+            <DialogDescription>
+              Update the details of your project.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <Form {...projectForm}>
+            <form onSubmit={projectForm.handleSubmit(handleEditProject)} className="space-y-4">
+              <FormField
+                control={projectForm.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Project Title*</FormLabel>
+                    <FormControl>
+                      <Input placeholder="My Awesome Project" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={projectForm.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="Describe your project" 
+                        {...field} 
+                        value={field.value || ''}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <div className="flex gap-4">
+                <FormField
+                  control={projectForm.control}
+                  name="category"
+                  render={({ field }) => (
+                    <FormItem className="flex-1">
+                      <FormLabel>Category</FormLabel>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        defaultValue={field.value || ''} 
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select category" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Web Development">Web Development</SelectItem>
+                          <SelectItem value="Mobile App">Mobile App</SelectItem>
+                          <SelectItem value="Design">Design</SelectItem>
+                          <SelectItem value="Marketing">Marketing</SelectItem>
+                          <SelectItem value="Writing">Writing</SelectItem>
+                          <SelectItem value="Research">Research</SelectItem>
+                          <SelectItem value="Data Analysis">Data Analysis</SelectItem>
+                          <SelectItem value="Other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -631,998 +841,465 @@ export default function Projects() {
                 
                 <FormField
                   control={projectForm.control}
-                  name="projectUrl"
+                  name="startDate"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Project URL</FormLabel>
+                    <FormItem className="flex-1">
+                      <FormLabel>Date*</FormLabel>
                       <FormControl>
-                        <Input placeholder="https://project-website.com" {...field} value={field.value || ''} />
+                        <Input type="date" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                
-                <div className="space-y-2">
-                  <div className="flex flex-col space-y-1">
-                    <FormLabel>Project Thumbnail</FormLabel>
-                    <div className="flex items-center gap-2">
-                      <Input
-                        type="file"
-                        accept="image/*"
-                        ref={fileInputRef}
-                        onChange={(e) => {
-                          const file = e.target.files && e.target.files[0];
-                          if (file) {
-                            setThumbnailFile(file);
-                          }
-                        }}
-                        className="flex-1"
+              </div>
+              
+              <FormField
+                control={projectForm.control}
+                name="projectUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Project URL</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="https://myproject.com" 
+                        {...field} 
+                        value={field.value || ''}
                       />
-                      {thumbnailFile && (
-                        <Button 
-                          type="button" 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => {
-                            setThumbnailFile(null);
-                            if (fileInputRef.current) {
-                              fileInputRef.current.value = '';
-                            }
-                          }}
-                        >
-                          Clear
-                        </Button>
-                      )}
-                    </div>
-                    <FormDescription>
-                      Upload an image that represents your project (max 2MB)
-                    </FormDescription>
-                    {thumbnailFile && (
-                      <div className="mt-2 p-2 border rounded-md">
-                        <p className="text-sm font-medium">Selected file:</p>
-                        <p className="text-sm text-muted-foreground">{thumbnailFile.name}</p>
-                      </div>
-                    )}
-                  </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <DialogFooter>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setIsEditDialogOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={editProjectMutation.isPending}>
+                  {editProjectMutation.isPending ? "Saving..." : "Save Changes"}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Project Details Dialog */}
+      <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
+        <DialogContent className="max-w-3xl max-h-screen overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {selectedProject?.title || "Project Details"}
+            </DialogTitle>
+            <DialogDescription>
+              {selectedProject?.startDate && (
+                <div className="flex items-center mt-1">
+                  <Calendar className="h-4 w-4 mr-1" />
+                  <span>{formatDate(selectedProject.startDate)}</span>
                 </div>
-                
-                {/* Public Visibility option removed as requested */}
-                
-                <Separator className="my-4" />
-                
-                <Tabs defaultValue="collaborators" className="w-full mt-6">
-                  <TabsList className="grid grid-cols-2 mb-4">
-                    <TabsTrigger value="collaborators" className="flex items-center gap-1">
-                      <Users2Icon className="h-4 w-4" />
-                      Team Members
-                    </TabsTrigger>
-                    <TabsTrigger value="endorsements" className="flex items-center gap-1">
-                      <AwardIcon className="h-4 w-4" />
-                      Endorsements
-                    </TabsTrigger>
-                  </TabsList>
-                  
-                  <TabsContent value="collaborators" className="space-y-4">
-                    <div className="space-y-4">
-                      <h3 className="text-sm font-medium">Add Team Members</h3>
-                      <Form {...collaboratorForm}>
-                        <form onSubmit={collaboratorForm.handleSubmit(handleAddCollaborator)} className="space-y-4">
-                          <div className="space-y-4 border rounded-lg p-4">
-                            <FormField
-                              control={collaboratorForm.control}
-                              name="name"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Name*</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="Collaborator name" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <FormField
-                              control={collaboratorForm.control}
-                              name="email"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Email</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="email@example.com" {...field} value={field.value || ''} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <FormField
-                              control={collaboratorForm.control}
-                              name="role"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Role*</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="Developer, Designer, PM, etc." {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <Button type="submit" size="sm" className="mt-2">
-                              Add Team Member
-                            </Button>
-                          </div>
-                        </form>
-                      </Form>
-                      
-                      {collaborators.length > 0 && (
-                        <div className="mt-4 space-y-3">
-                          <h3 className="text-sm font-medium">Added Team Members</h3>
-                          <div className="space-y-2">
-                            {collaborators.map((collaborator) => (
-                              <div key={collaborator.id} className="flex justify-between items-center p-2 hover:bg-muted/50 rounded-md">
-                                <div>
-                                  <p className="font-medium">{collaborator.name}</p>
-                                  <div className="flex items-center text-sm text-muted-foreground">
-                                    <span className="mr-2">{collaborator.role}</span>
-                                  </div>
-                                </div>
-                                <Button variant="ghost" size="icon" onClick={() => handleDeleteCollaborator(collaborator.id)}>
-                                  <TrashIcon className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </TabsContent>
-                  
-                  <TabsContent value="endorsements" className="space-y-4">
-                    <div className="space-y-4">
-                      <h3 className="text-sm font-medium">Add Client Endorsements</h3>
-                      <Form {...endorsementForm}>
-                        <form onSubmit={endorsementForm.handleSubmit(handleAddEndorsement)} className="space-y-4">
-                          <div className="space-y-4 border rounded-lg p-4">
-                            <FormField
-                              control={endorsementForm.control}
-                              name="clientName"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Client Name*</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="Client name" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <FormField
-                                control={endorsementForm.control}
-                                name="clientEmail"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Client Email</FormLabel>
-                                    <FormControl>
-                                      <Input placeholder="email@example.com" {...field} value={field.value || ''} />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              
-                              <FormField
-                                control={endorsementForm.control}
-                                name="clientTitle"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Client Title</FormLabel>
-                                    <FormControl>
-                                      <Input placeholder="CEO, Manager, etc." {...field} value={field.value || ''} />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                            </div>
-                            
-                            <FormField
-                              control={endorsementForm.control}
-                              name="clientCompany"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Client Company</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="Company name" {...field} value={field.value || ''} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <FormField
-                              control={endorsementForm.control}
-                              name="message"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Testimonial</FormLabel>
-                                  <FormControl>
-                                    <Textarea 
-                                      placeholder="Client's testimonial about your work" 
-                                      className="resize-none"
-                                      {...field}
-                                      value={field.value || ''}
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <FormField
-                              control={endorsementForm.control}
-                              name="rating"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Rating (1-5)</FormLabel>
-                                  <Select
-                                    onValueChange={(value) => field.onChange(parseInt(value))}
-                                    defaultValue={field.value?.toString() || "5"}
-                                  >
-                                    <FormControl>
-                                      <SelectTrigger>
-                                        <SelectValue placeholder="Select a rating" />
-                                      </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                      <SelectItem value="1">1 - Poor</SelectItem>
-                                      <SelectItem value="2">2 - Fair</SelectItem>
-                                      <SelectItem value="3">3 - Good</SelectItem>
-                                      <SelectItem value="4">4 - Very Good</SelectItem>
-                                      <SelectItem value="5">5 - Excellent</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <Button type="submit" size="sm" className="mt-2">
-                              Add Endorsement
-                            </Button>
-                          </div>
-                        </form>
-                      </Form>
-                      
-                      {endorsements.length > 0 && (
-                        <div className="mt-4 space-y-3">
-                          <h3 className="text-sm font-medium">Added Endorsements</h3>
-                          <div className="space-y-3">
-                            {endorsements.map((endorsement) => (
-                              <div key={endorsement.id} className="border rounded-lg p-3 relative">
-                                <div className="absolute top-2 right-2">
-                                  <Button variant="ghost" size="icon" onClick={() => handleDeleteEndorsement(endorsement.id)}>
-                                    <TrashIcon className="h-4 w-4" />
-                                  </Button>
-                                </div>
-                                
-                                <div className="flex items-center mb-2">
-                                  {/* Rating stars */}
-                                  <div className="flex">
-                                    {Array.from({ length: 5 }).map((_, i) => (
-                                      <svg
-                                        key={i}
-                                        className={`h-4 w-4 ${i < (endorsement.rating || 0) ? "text-yellow-400 fill-yellow-400" : "text-gray-300 fill-gray-300"}`}
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 24 24"
-                                      >
-                                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                                      </svg>
-                                    ))}
-                                  </div>
-                                </div>
-                                
-                                {endorsement.message && (
-                                  <p className="italic text-sm mb-2 line-clamp-2">"{endorsement.message}"</p>
-                                )}
-                                
-                                <div>
-                                  <p className="font-medium text-sm">{endorsement.clientName}</p>
-                                  <p className="text-xs text-muted-foreground">
-                                    {endorsement.clientTitle && `${endorsement.clientTitle}, `}
-                                    {endorsement.clientCompany}
-                                  </p>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </TabsContent>
-                </Tabs>
-                
-                <DialogFooter>
-                  <Button type="submit" disabled={loading}>
-                    {loading ? 'Saving...' : 'Save Project'}
-                  </Button>
-                </DialogFooter>
-              </form>
-            </Form>
-          </DialogContent>
-        </Dialog>
-      </CardHeader>
-
-      <CardContent>
-        {loading ? (
-          <div className="flex justify-center py-6">
-            <div className="animate-spin h-6 w-6 text-primary">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-loader-2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-            </div>
-          </div>
-        ) : projects.length === 0 ? (
-          <div className="py-6 text-center">
-            <FolderKanban className="mx-auto h-10 w-10 text-muted-foreground/50" />
-            <p className="mt-2 text-muted-foreground">No projects added yet.</p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {projects.map((project) => (
-              <Card key={project.id} className="overflow-hidden">
-                <CardContent className="p-0">
-                  <div className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="text-lg font-medium leading-none">{project.title}</h3>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="icon" onClick={() => openEditDialog(project)}>
-                          <PencilIcon className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleDeleteProject(project.id)}>
-                          <TrashIcon className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                    
-                    <div className="mt-2 flex items-center text-sm text-muted-foreground">
-                      <CalendarIcon className="mr-1 h-3 w-3" />
-                      <span>{formatDate(project.startDate)}</span>
-                      {project.category && (
-                        <>
-                          <span className="mx-1">•</span>
-                          <span>{project.category}</span>
-                        </>
-                      )}
-                    </div>
-                    
-                    {project.thumbnailUrl && (
-                      <div className="mt-2 mb-2">
-                        <img 
-                          src={project.thumbnailUrl} 
-                          alt={project.title}
-                          className="w-full max-h-40 object-cover rounded-md" 
-                        />
-                      </div>
-                    )}
-                    
-                    {project.description && (
-                      <p className="mt-2 text-sm line-clamp-2">{project.description}</p>
-                    )}
-                    
-                    <div className="mt-3 flex gap-2">
-                      <Button variant="outline" size="sm" onClick={() => openDetailDialog(project)}>
-                        View Details
-                      </Button>
-                      {project.projectUrl && (
-                        <Button variant="outline" size="sm" asChild>
-                          <a href={project.projectUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1">
-                            <ExternalLinkIcon className="h-3 w-3" />
-                            Visit Project
-                          </a>
-                        </Button>
-                      )}
-                    </div>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="grid grid-cols-3 w-full">
+              <TabsTrigger value="details">Details</TabsTrigger>
+              <TabsTrigger value="team">Team</TabsTrigger>
+              <TabsTrigger value="endorsements">Endorsements</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="details" className="space-y-4 pt-4">
+              <div className="aspect-video rounded-md bg-muted flex items-center justify-center overflow-hidden">
+                {thumbnailPreview ? (
+                  <img 
+                    src={thumbnailPreview} 
+                    alt={selectedProject?.title} 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="text-muted-foreground flex flex-col items-center">
+                    <PlusSquare className="h-12 w-12 mb-2" />
+                    <span>Add Thumbnail Image</span>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
-
-        {/* Detail dialog */}
-        <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
-          <DialogContent className="sm:max-w-[650px] max-h-[90vh] overflow-y-auto">
-            {currentProject && (
-              <>
-                <DialogHeader>
-                  <DialogTitle className="text-xl">{currentProject.title}</DialogTitle>
-                  <DialogDescription>
-                    {formatDate(currentProject.startDate)}
-                    {currentProject.category && ` • ${currentProject.category}`}
-                  </DialogDescription>
-                </DialogHeader>
+                )}
+              </div>
+              
+              <div className="flex flex-col space-y-2">
+                <div className="flex justify-between items-center">
+                  <label className="text-sm font-medium">Thumbnail Image</label>
+                  {thumbnailFile && !uploading && (
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={handleUploadThumbnail}
+                    >
+                      <Upload className="h-4 w-4 mr-2" />
+                      Upload
+                    </Button>
+                  )}
+                </div>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleThumbnailChange}
+                  disabled={uploading}
+                />
+                {uploading && (
+                  <div className="text-sm text-muted-foreground">
+                    Uploading...
+                  </div>
+                )}
+              </div>
+              
+              <div className="space-y-6">
+                {selectedProject?.description && (
+                  <div>
+                    <h4 className="font-medium mb-2">Description</h4>
+                    <p className="text-sm leading-relaxed">{selectedProject.description}</p>
+                  </div>
+                )}
                 
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-2">
-                  <TabsList className="grid grid-cols-3 mb-4">
-                    <TabsTrigger value="details">Details</TabsTrigger>
-                    <TabsTrigger value="team" className="flex items-center gap-1">
-                      <Users2Icon className="h-4 w-4" />
-                      Team
-                    </TabsTrigger>
-                    <TabsTrigger value="endorsements" className="flex items-center gap-1">
-                      <AwardIcon className="h-4 w-4" />
-                      Endorsements
-                    </TabsTrigger>
-                  </TabsList>
+                <div className="flex flex-col space-y-2">
+                  {selectedProject?.category && (
+                    <div className="flex items-center">
+                      <span className="text-sm font-medium w-24">Category:</span>
+                      <Badge variant="outline">{selectedProject.category}</Badge>
+                    </div>
+                  )}
                   
-                  <TabsContent value="details" className="space-y-4">
-                    {currentProject.thumbnailUrl && (
-                      <div>
-                        <h3 className="text-sm font-medium mb-1">Project Thumbnail</h3>
-                        <div className="mt-2">
-                          <img 
-                            src={currentProject.thumbnailUrl} 
-                            alt={currentProject.title}
-                            className="max-w-full max-h-64 object-contain rounded-md border" 
-                          />
+                  {selectedProject?.projectUrl && (
+                    <div className="flex items-center">
+                      <span className="text-sm font-medium w-24">Project URL:</span>
+                      <a 
+                        href={selectedProject.projectUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-primary flex items-center"
+                      >
+                        {selectedProject.projectUrl}
+                        <ExternalLink className="h-3 w-3 ml-1" />
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="team" className="space-y-4 pt-4">
+              <div className="flex justify-between items-center">
+                <h4 className="font-medium">Project Team</h4>
+              </div>
+              
+              <Separator />
+              
+              <div className="space-y-4">
+                {isLoadingCollaborators ? (
+                  <div className="text-center py-4">Loading team members...</div>
+                ) : collaborators.length === 0 ? (
+                  <div className="text-center py-4 text-muted-foreground">
+                    <Users className="h-12 w-12 mx-auto mb-2" />
+                    <p>No team members added yet</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {collaborators.map((collaborator) => (
+                      <div key={collaborator.id} className="flex justify-between items-center p-3 border rounded-md">
+                        <div className="space-y-1">
+                          {collaborator.name && <div className="font-medium">{collaborator.name}</div>}
+                          {collaborator.role && <div className="text-sm text-muted-foreground">{collaborator.role}</div>}
+                          {collaborator.email && <div className="text-sm">{collaborator.email}</div>}
+                          {collaborator.profileLink && (
+                            <a 
+                              href={collaborator.profileLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm text-primary flex items-center"
+                            >
+                              <Link className="h-3 w-3 mr-1" />
+                              Profile Link
+                              <ExternalLink className="h-3 w-3 ml-1" />
+                            </a>
+                          )}
                         </div>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => deleteCollaboratorMutation.mutate(collaborator.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </div>
-                    )}
-                    
-                    {currentProject.description && (
-                      <div>
-                        <h3 className="text-sm font-medium mb-1">Description</h3>
-                        <p className="text-sm">{currentProject.description}</p>
-                      </div>
-                    )}
-                    
-                    {currentProject.projectUrl && (
-                      <div>
-                        <h3 className="text-sm font-medium mb-1">Project URL</h3>
-                        <a href={currentProject.projectUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-primary inline-flex items-center">
-                          Visit Project <ExternalLinkIcon className="ml-1 h-3 w-3" />
-                        </a>
-                      </div>
-                    )}
-                    
-                    {/* Additional metadata could go here */}
-                  </TabsContent>
-                  
-                  <TabsContent value="team">
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <h3 className="text-sm font-medium">Project Collaborators</h3>
-                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              
+              <div className="pt-4 border-t">
+                <h4 className="font-medium mb-4">Add Team Member</h4>
+                
+                <Form {...collaboratorForm}>
+                  <form onSubmit={collaboratorForm.handleSubmit(handleAddCollaborator)} className="space-y-4">
+                    <div className="space-y-4 border rounded-lg p-4">
+                      <FormField
+                        control={collaboratorForm.control}
+                        name="name"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Name</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Collaborator name" {...field} value={field.value || ''} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                       
-                      <Separator />
+                      <FormField
+                        control={collaboratorForm.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Email</FormLabel>
+                            <FormControl>
+                              <Input placeholder="email@example.com" {...field} value={field.value || ''} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                       
-                      {collaborators.length > 0 ? (
-                        <div className="space-y-3">
-                          {collaborators.map((collaborator) => (
-                            <div key={collaborator.id} className="flex justify-between items-center p-2 hover:bg-muted/50 rounded-md">
-                              <div>
-                                <p className="font-medium">{collaborator.name}</p>
-                                <div className="flex items-center text-sm text-muted-foreground">
-                                  <span className="mr-2">{collaborator.role}</span>
-                                  {collaborator.inviteStatus === 'accepted' && (
-                                    <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300">Verified</Badge>
+                      <FormField
+                        control={collaboratorForm.control}
+                        name="profileLink"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Profile Link</FormLabel>
+                            <FormControl>
+                              <Input placeholder="https://linkedin.com/in/username" {...field} value={field.value || ''} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={collaboratorForm.control}
+                        name="role"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Role</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Developer, Designer, PM, etc." {...field} value={field.value || ''} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <Button type="submit" size="sm" className="mt-2">
+                        Add Team Member
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="endorsements" className="space-y-4 pt-4">
+              <div className="flex justify-between items-center">
+                <h4 className="font-medium">Client Endorsements</h4>
+              </div>
+              
+              <Separator />
+              
+              <div className="space-y-4">
+                {isLoadingEndorsements ? (
+                  <div className="text-center py-4">Loading endorsements...</div>
+                ) : endorsements.length === 0 ? (
+                  <div className="text-center py-4 text-muted-foreground">
+                    <ThumbsUp className="h-12 w-12 mx-auto mb-2" />
+                    <p>No endorsements yet</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {endorsements.map((endorsement) => (
+                      <div key={endorsement.id} className="p-4 border rounded-md">
+                        <div className="flex justify-between">
+                          <div>
+                            <div className="font-medium">{endorsement.clientName}</div>
+                            <div className="flex items-center space-x-1 text-sm text-muted-foreground">
+                              {endorsement.clientTitle && <span>{endorsement.clientTitle}</span>}
+                              {endorsement.clientTitle && endorsement.clientCompany && <span>•</span>}
+                              {endorsement.clientCompany && <span>{endorsement.clientCompany}</span>}
+                            </div>
+                          </div>
+                          <div className="flex items-center">
+                            <div className="flex">
+                              {Array.from({ length: 5 }).map((_, i) => (
+                                <div key={i}>
+                                  {i + 1 <= (endorsement.rating || 0) ? (
+                                    <Star className="h-4 w-4 text-yellow-500" />
+                                  ) : (
+                                    <Star className="h-4 w-4 text-muted" />
                                   )}
                                 </div>
-                              </div>
-                              <Button variant="ghost" size="icon" onClick={() => handleDeleteCollaborator(collaborator.id)}>
-                                <TrashIcon className="h-4 w-4" />
-                              </Button>
+                              ))}
                             </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="text-center py-4">
-                          <p className="text-muted-foreground mb-2">No collaborators added yet</p>
-                          <p className="text-sm">Add team members when creating or editing the project.</p>
-                        </div>
-                      )}
-                    </div>
-                  </TabsContent>
-                  
-                  <TabsContent value="endorsements">
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <h3 className="text-sm font-medium">Client Endorsements</h3>
-                      </div>
-                      
-                      <Separator />
-                      
-                      {endorsements.length > 0 ? (
-                        <div className="space-y-4">
-                          {endorsements.map((endorsement) => (
-                            <div key={endorsement.id} className="border rounded-lg p-4 relative">
-                              <div className="absolute top-4 right-4 flex space-x-1">
-                                <Button variant="ghost" size="icon" onClick={() => handleDeleteEndorsement(endorsement.id)}>
-                                  <TrashIcon className="h-4 w-4" />
-                                </Button>
-                                {endorsement.isVerified ? (
-                                  <CheckCircleIcon className="h-5 w-5 text-green-600" />
-                                ) : (
-                                  <Badge variant="outline" className="text-xs">Pending Verification</Badge>
-                                )}
-                              </div>
-                              
-                              <div className="flex items-center mb-3">
-                                {/* Rating stars */}
-                                <div className="flex">
-                                  {Array.from({ length: 5 }).map((_, i) => (
-                                    <svg
-                                      key={i}
-                                      className={`h-4 w-4 ${i < (endorsement.rating || 0) ? "text-yellow-400 fill-yellow-400" : "text-gray-300 fill-gray-300"}`}
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                                    </svg>
-                                  ))}
-                                </div>
-                              </div>
-                              
-                              {endorsement.message && (
-                                <p className="italic text-sm mb-3">"{endorsement.message}"</p>
-                              )}
-                              
-                              <div>
-                                <p className="font-medium text-sm">{endorsement.clientName}</p>
-                                <p className="text-xs text-muted-foreground">
-                                  {endorsement.clientTitle && `${endorsement.clientTitle}, `}
-                                  {endorsement.clientCompany}
-                                </p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="text-center py-4">
-                          <p className="text-muted-foreground mb-2">No endorsements added yet</p>
-                          <p className="text-sm">Add endorsements when creating or editing the project.</p>
-                        </div>
-                      )}
-                    </div>
-                  </TabsContent>
-                </Tabs>
-              </>
-            )}
-          </DialogContent>
-        </Dialog>
-
-        {/* Edit dialog */}
-        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Edit Project</DialogTitle>
-              <DialogDescription>
-                Update your project details and information.
-              </DialogDescription>
-            </DialogHeader>
-            <Form {...projectForm}>
-              <form onSubmit={projectForm.handleSubmit(handleEditProject)} className="space-y-4">
-                <FormField
-                  control={projectForm.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Project Title*</FormLabel>
-                      <FormControl>
-                        <Input placeholder="My Amazing Project" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={projectForm.control}
-                  name="category"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Category</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Web Development, Design, etc." {...field} value={field.value || ''} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={projectForm.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Description</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                          placeholder="Describe your project, its goals, and your contributions" 
-                          className="resize-none" 
-                          {...field} 
-                          value={field.value || ''} 
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={projectForm.control}
-                  name="startDate"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>Project Date*</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className={cn(
-                                "pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
-                              )}
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="ml-2"
+                              onClick={() => deleteEndorsementMutation.mutate(endorsement.id)}
                             >
-                              {field.value ? (
-                                format(new Date(field.value), "MMMM yyyy")
-                              ) : (
-                                <span>Select month and year</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              <Trash2 className="h-4 w-4" />
                             </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value ? new Date(field.value) : undefined}
-                            onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={projectForm.control}
-                  name="projectUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Project URL</FormLabel>
-                      <FormControl>
-                        <Input placeholder="https://project-website.com" {...field} value={field.value || ''} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                {/* Public Visibility option removed as requested */}
-                
-                <div className="flex flex-col space-y-1">
-                  <FormLabel>Project Thumbnail</FormLabel>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      ref={fileInputRef}
-                      onChange={(e) => {
-                        const file = e.target.files && e.target.files[0];
-                        if (file) {
-                          setThumbnailFile(file);
-                        }
-                      }}
-                      className="flex-1"
-                    />
-                    {thumbnailFile && (
-                      <Button 
-                        type="button" 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => {
-                          setThumbnailFile(null);
-                          if (fileInputRef.current) {
-                            fileInputRef.current.value = '';
-                          }
-                        }}
-                      >
-                        Clear
-                      </Button>
-                    )}
+                          </div>
+                        </div>
+                        
+                        {endorsement.message && (
+                          <div className="mt-2 text-sm">
+                            "{endorsement.message}"
+                          </div>
+                        )}
+                        
+                        {endorsement.isVerified && (
+                          <div className="mt-2 flex items-center text-green-600 text-xs">
+                            <CheckCircle2 className="h-3 w-3 mr-1" />
+                            Verified endorsement
+                          </div>
+                        )}
+                      </div>
+                    ))}
                   </div>
-                  {currentProject?.thumbnailUrl && !thumbnailFile && (
-                    <div className="mt-2">
-                      <p className="text-sm text-muted-foreground">Current thumbnail:</p>
-                      <div className="mt-1 relative w-24 h-24 rounded overflow-hidden">
-                        <img 
-                          src={currentProject.thumbnailUrl} 
-                          alt="Current thumbnail" 
-                          className="object-cover w-full h-full"
+                )}
+              </div>
+              
+              <div className="pt-4 border-t">
+                <h4 className="font-medium mb-4">Add Endorsement</h4>
+                
+                <Form {...endorsementForm}>
+                  <form onSubmit={endorsementForm.handleSubmit(handleAddEndorsement)} className="space-y-4">
+                    <div className="space-y-4 border rounded-lg p-4">
+                      <FormField
+                        control={endorsementForm.control}
+                        name="clientName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Client Name*</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Client name" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={endorsementForm.control}
+                          name="clientTitle"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Title</FormLabel>
+                              <FormControl>
+                                <Input placeholder="CEO, Manager, etc." {...field} value={field.value || ''} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={endorsementForm.control}
+                          name="clientCompany"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Company</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Company name" {...field} value={field.value || ''} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
                         />
                       </div>
-                    </div>
-                  )}
-                </div>
-                
-                <Separator className="my-4" />
-                
-                <Tabs defaultValue="collaborators" className="w-full mt-6">
-                  <TabsList className="grid grid-cols-2 mb-4">
-                    <TabsTrigger value="collaborators" className="flex items-center gap-1">
-                      <Users2Icon className="h-4 w-4" />
-                      Team Members
-                    </TabsTrigger>
-                    <TabsTrigger value="endorsements" className="flex items-center gap-1">
-                      <AwardIcon className="h-4 w-4" />
-                      Endorsements
-                    </TabsTrigger>
-                  </TabsList>
-                  
-                  <TabsContent value="collaborators" className="space-y-4">
-                    <div className="space-y-4">
-                      <h3 className="text-sm font-medium">Add Team Members</h3>
-                      <Form {...collaboratorForm}>
-                        <form onSubmit={collaboratorForm.handleSubmit(handleAddCollaborator)} className="space-y-4">
-                          <div className="space-y-4 border rounded-lg p-4">
-                            <FormField
-                              control={collaboratorForm.control}
-                              name="name"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Name*</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="Collaborator name" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <FormField
-                              control={collaboratorForm.control}
-                              name="email"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Email</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="email@example.com" {...field} value={field.value || ''} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <FormField
-                              control={collaboratorForm.control}
-                              name="role"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Role*</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="Developer, Designer, PM, etc." {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <Button type="submit" size="sm" className="mt-2">
-                              Add Team Member
-                            </Button>
-                          </div>
-                        </form>
-                      </Form>
                       
-                      {collaborators.length > 0 && (
-                        <div className="mt-4 space-y-3">
-                          <h3 className="text-sm font-medium">Added Team Members</h3>
-                          <div className="space-y-2">
-                            {collaborators.map((collaborator) => (
-                              <div key={collaborator.id} className="flex justify-between items-center p-2 hover:bg-muted/50 rounded-md">
-                                <div>
-                                  <p className="font-medium">{collaborator.name}</p>
-                                  <div className="flex items-center text-sm text-muted-foreground">
-                                    <span className="mr-2">{collaborator.role}</span>
-                                  </div>
-                                </div>
-                                <Button variant="ghost" size="icon" onClick={() => handleDeleteCollaborator(collaborator.id)}>
-                                  <TrashIcon className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </TabsContent>
-                  
-                  <TabsContent value="endorsements" className="space-y-4">
-                    <div className="space-y-4">
-                      <h3 className="text-sm font-medium">Add Client Endorsements</h3>
-                      <Form {...endorsementForm}>
-                        <form onSubmit={endorsementForm.handleSubmit(handleAddEndorsement)} className="space-y-4">
-                          <div className="space-y-4 border rounded-lg p-4">
-                            <FormField
-                              control={endorsementForm.control}
-                              name="clientName"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Client Name*</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="Client name" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <FormField
-                                control={endorsementForm.control}
-                                name="clientEmail"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Client Email</FormLabel>
-                                    <FormControl>
-                                      <Input placeholder="email@example.com" {...field} value={field.value || ''} />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              
-                              <FormField
-                                control={endorsementForm.control}
-                                name="clientTitle"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Client Title</FormLabel>
-                                    <FormControl>
-                                      <Input placeholder="CEO, Manager, etc." {...field} value={field.value || ''} />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                            </div>
-                            
-                            <FormField
-                              control={endorsementForm.control}
-                              name="clientCompany"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Client Company</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="Company name" {...field} value={field.value || ''} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <FormField
-                              control={endorsementForm.control}
-                              name="message"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Testimonial</FormLabel>
-                                  <FormControl>
-                                    <Textarea 
-                                      placeholder="Client's testimonial about your work" 
-                                      className="resize-none"
-                                      {...field}
-                                      value={field.value || ''}
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <FormField
-                              control={endorsementForm.control}
-                              name="rating"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Rating (1-5)</FormLabel>
-                                  <Select
-                                    onValueChange={(value) => field.onChange(parseInt(value))}
-                                    defaultValue={field.value?.toString() || "5"}
-                                  >
-                                    <FormControl>
-                                      <SelectTrigger>
-                                        <SelectValue placeholder="Select a rating" />
-                                      </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                      <SelectItem value="1">1 - Poor</SelectItem>
-                                      <SelectItem value="2">2 - Fair</SelectItem>
-                                      <SelectItem value="3">3 - Good</SelectItem>
-                                      <SelectItem value="4">4 - Very Good</SelectItem>
-                                      <SelectItem value="5">5 - Excellent</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <Button type="submit" size="sm" className="mt-2">
-                              Add Endorsement
-                            </Button>
-                          </div>
-                        </form>
-                      </Form>
+                      <FormField
+                        control={endorsementForm.control}
+                        name="clientEmail"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Email</FormLabel>
+                            <FormControl>
+                              <Input placeholder="client@example.com" {...field} value={field.value || ''} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                       
-                      {endorsements.length > 0 && (
-                        <div className="mt-4 space-y-3">
-                          <h3 className="text-sm font-medium">Added Endorsements</h3>
-                          <div className="space-y-3">
-                            {endorsements.map((endorsement) => (
-                              <div key={endorsement.id} className="border rounded-lg p-3 relative">
-                                <div className="absolute top-2 right-2">
-                                  <Button variant="ghost" size="icon" onClick={() => handleDeleteEndorsement(endorsement.id)}>
-                                    <TrashIcon className="h-4 w-4" />
-                                  </Button>
-                                </div>
-                                
-                                <div className="flex items-center mb-2">
-                                  {/* Rating stars */}
-                                  <div className="flex">
-                                    {Array.from({ length: 5 }).map((_, i) => (
-                                      <svg
-                                        key={i}
-                                        className={`h-4 w-4 ${i < (endorsement.rating || 0) ? "text-yellow-400 fill-yellow-400" : "text-gray-300 fill-gray-300"}`}
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 24 24"
-                                      >
-                                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                                      </svg>
-                                    ))}
-                                  </div>
-                                </div>
-                                
-                                {endorsement.message && (
-                                  <p className="italic text-sm mb-2 line-clamp-2">"{endorsement.message}"</p>
-                                )}
-                                
-                                <div>
-                                  <p className="font-medium text-sm">{endorsement.clientName}</p>
-                                  <p className="text-xs text-muted-foreground">
-                                    {endorsement.clientTitle && `${endorsement.clientTitle}, `}
-                                    {endorsement.clientCompany}
-                                  </p>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
+                      <FormField
+                        control={endorsementForm.control}
+                        name="message"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Testimonial</FormLabel>
+                            <FormControl>
+                              <Textarea 
+                                placeholder="What the client said about your work" 
+                                {...field} 
+                                value={field.value || ''}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={endorsementForm.control}
+                        name="rating"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Rating*</FormLabel>
+                            <FormControl>
+                              <Select 
+                                onValueChange={(value) => field.onChange(parseInt(value))} 
+                                defaultValue={field.value?.toString() || "5"}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select rating" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="1">1 Star</SelectItem>
+                                  <SelectItem value="2">2 Stars</SelectItem>
+                                  <SelectItem value="3">3 Stars</SelectItem>
+                                  <SelectItem value="4">4 Stars</SelectItem>
+                                  <SelectItem value="5">5 Stars</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <Button type="submit" size="sm" className="mt-2">
+                        Add Endorsement
+                      </Button>
                     </div>
-                  </TabsContent>
-                </Tabs>
-                
-                <DialogFooter>
-                  <Button type="submit" disabled={loading}>
-                    {loading ? 'Saving...' : 'Update Project'}
-                  </Button>
-                </DialogFooter>
-              </form>
-            </Form>
-          </DialogContent>
-        </Dialog>
-      </CardContent>
-    </Card>
+                  </form>
+                </Form>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }

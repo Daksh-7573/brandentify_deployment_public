@@ -118,9 +118,10 @@ export const projects = pgTable("projects", {
 export const projectCollaborators = pgTable("project_collaborators", {
   id: serial("id").primaryKey(),
   projectId: integer("project_id").references(() => projects.id).notNull(),
-  name: text("name").notNull(),
+  name: text("name"), // Name is now optional
   email: text("email"),
-  role: text("role").notNull(), // Such as "Lead Developer", "UI Designer"
+  role: text("role"), // Role is now optional
+  profileLink: text("profile_link"), // Added profile link field
   userId: integer("user_id").references(() => users.id), // Optional: if the collaborator is on the platform
   inviteStatus: text("invite_status").default("Pending"), // Pending, Accepted, Declined
   inviteToken: text("invite_token"),
