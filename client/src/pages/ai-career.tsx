@@ -72,11 +72,8 @@ export default function AICareerPage() {
 
   // Resume analysis mutation
   const resumeAnalysisMutation = useMutation({
-    mutationFn: async () => {
-      const res = await apiRequest("POST", "/api/ai/analyze-resume", {
-        resumeText,
-        userId: DEMO_USER_ID
-      });
+    mutationFn: async (data: { resumeText?: string; fileData?: string; userId: number }) => {
+      const res = await apiRequest("POST", "/api/ai/analyze-resume", data);
       return res.json();
     },
     onSuccess: () => {
@@ -245,24 +242,129 @@ export default function AICareerPage() {
                     <Card className="p-4 sm:p-6">
                       <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Resume Analysis</h2>
                       <p className="text-sm text-muted-foreground mb-4">
-                        Paste your resume text to get an AI-powered analysis with suggestions for improvement.
+                        Upload your resume or paste your resume text to get AI-powered analysis with suggestions for improvement.
                       </p>
-                      <Textarea 
-                        className="min-h-[150px] sm:min-h-[200px] mb-4 w-full" 
-                        placeholder="Paste your resume text here..."
-                        value={resumeText}
-                        onChange={(e) => setResumeText(e.target.value)}
-                      />
-                      <Button 
-                        className="w-full"
-                        onClick={() => resumeAnalysisMutation.mutate()}
-                        disabled={resumeAnalysisMutation.isPending || !resumeText.trim()}
-                      >
-                        {resumeAnalysisMutation.isPending && (
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        )}
-                        Analyze Resume
-                      </Button>
+                      
+                      {/* File Upload Section */}
+                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-primary transition-colors mb-5">
+                        <div className="flex flex-col items-center">
+                          <input 
+                            id="resume-file-input"
+                            type="file" 
+                            accept=".pdf,.docx" 
+                            className="hidden" 
+                            onChange={(e) => {
+                              if (e.target.files && e.target.files.length > 0) {
+                                const selectedFile = e.target.files[0];
+                                
+                                // Validate file type
+                                if (!['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'].includes(selectedFile.type)) {
+                                  toast({
+                                    title: "Invalid file type",
+                                    description: "Please upload a PDF or DOCX file.",
+                                    variant: "destructive"
+                                  });
+                                  return;
+                                }
+                                
+                                // Validate file size (5MB limit)
+                                if (selectedFile.size > 5 * 1024 * 1024) {
+                                  toast({
+                                    title: "File too large",
+                                    description: "Please upload a file smaller than 5MB.",
+                                    variant: "destructive"
+                                  });
+                                  return;
+                                }
+                                
+                                // Handle file upload
+                                const fileReader = new FileReader();
+                                fileReader.readAsDataURL(selectedFile);
+                                
+                                fileReader.onload = async () => {
+                                  const base64Data = fileReader.result?.toString().split(',')[1];
+                                  
+                                  if (!base64Data) {
+                                    toast({
+                                      title: "Upload failed",
+                                      description: "Failed to process file. Please try again.",
+                                      variant: "destructive"
+                                    });
+                                    return;
+                                  }
+                                  
+                                  try {
+                                    // Set loading state
+                                    resumeAnalysisMutation.mutate({ 
+                                      fileData: base64Data, 
+                                      userId: DEMO_USER_ID 
+                                    } as any);
+                                    
+                                    toast({
+                                      title: "Processing resume",
+                                      description: "Your resume is being analyzed. This may take a moment."
+                                    });
+                                  } catch (error) {
+                                    console.error('Error analyzing resume file:', error);
+                                    toast({
+                                      title: "Analysis failed",
+                                      description: error instanceof Error ? error.message : "Failed to analyze resume. Please try again.",
+                                      variant: "destructive"
+                                    });
+                                  }
+                                };
+                                
+                                fileReader.onerror = () => {
+                                  toast({
+                                    title: "Upload failed",
+                                    description: "Failed to read file. Please try again.",
+                                    variant: "destructive"
+                                  });
+                                };
+                              }
+                            }}
+                          />
+                          <p className="text-sm text-gray-500 mb-2">Upload your resume file</p>
+                          <p className="text-xs text-gray-400 mb-3">Supported formats: PDF, DOCX (Max 5MB)</p>
+                          <Button 
+                            variant="outline" 
+                            className="cursor-pointer"
+                            disabled={resumeAnalysisMutation.isPending}
+                            onClick={() => {
+                              document.getElementById('resume-file-input')?.click();
+                            }}
+                          >
+                            Browse Files
+                          </Button>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center mb-4">
+                        <div className="border-t border-gray-300 flex-grow"></div>
+                        <span className="mx-4 text-xs text-gray-500">OR</span>
+                        <div className="border-t border-gray-300 flex-grow"></div>
+                      </div>
+                      
+                      {/* Text Input Section */}
+                      <div>
+                        <p className="text-sm text-gray-500 mb-2">Paste your resume text</p>
+                        <Textarea 
+                          className="min-h-[150px] sm:min-h-[200px] mb-4 w-full" 
+                          placeholder="Paste your resume text here..."
+                          value={resumeText}
+                          onChange={(e) => setResumeText(e.target.value)}
+                        />
+                        <Button 
+                          className="w-full"
+                          onClick={() => resumeAnalysisMutation.mutate({ resumeText, userId: DEMO_USER_ID } as any)}
+                          disabled={resumeAnalysisMutation.isPending || !resumeText.trim()}
+                        >
+                          {resumeAnalysisMutation.isPending && (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          )}
+                          Analyze Resume Text
+                        </Button>
+                      </div>
                     </Card>
                   </TabsContent>
                   
