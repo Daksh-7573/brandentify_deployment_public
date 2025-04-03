@@ -468,7 +468,7 @@ export default function Projects() {
               Add Project
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[550px]">
+          <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Add New Project</DialogTitle>
               <DialogDescription>
@@ -776,7 +776,7 @@ export default function Projects() {
 
         {/* Detail dialog */}
         <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
-          <DialogContent className="sm:max-w-[650px]">
+          <DialogContent className="sm:max-w-[650px] max-h-[90vh] overflow-y-auto">
             {currentProject && (
               <>
                 <DialogHeader>
@@ -1127,7 +1127,7 @@ export default function Projects() {
 
         {/* Edit dialog */}
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="sm:max-w-[550px]">
+          <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Edit Project</DialogTitle>
               <DialogDescription>
