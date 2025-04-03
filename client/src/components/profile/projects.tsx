@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Loader2, Pencil, Trash2, Plus, FolderKanban, CalendarIcon, ExternalLinkIcon } from "lucide-react";
+import { Loader2, Pencil, Trash2, Plus, FolderKanban, CalendarIcon, ExternalLinkIcon, Star, X, CheckCircle, Clock } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -42,12 +42,7 @@ const collaboratorSchema = z.object({
 });
 
 const endorsementSchema = z.object({
-  clientName: z.string().min(1, { message: "Client name is required" }),
-  clientEmail: z.string().email().nullable().optional(),
-  clientTitle: z.string().nullable().optional(),
-  clientCompany: z.string().nullable().optional(),
-  message: z.string().nullable().optional(),
-  rating: z.number().min(1).max(5).nullable().optional(),
+  profileLink: z.string().min(1, { message: "Client profile link is required" }).url({ message: "Please enter a valid URL" }),
 });
 
 // Define types
@@ -205,12 +200,7 @@ export default function Projects() {
   const endorsementForm = useForm<EndorsementFormValues>({
     resolver: zodResolver(endorsementSchema),
     defaultValues: {
-      clientName: '',
-      clientEmail: '',
-      clientTitle: '',
-      clientCompany: '',
-      message: '',
-      rating: 5,
+      profileLink: '',
     },
   });
 
@@ -321,7 +311,7 @@ export default function Projects() {
     
     try {
       let response;
-      let projectData;
+      let projectData: Project;
       
       if (currentProject) {
         // Update existing project
@@ -473,8 +463,12 @@ export default function Projects() {
     if (!currentProject) return;
     
     try {
+      // Only send the client profile link - the rest of the fields will be populated 
+      // when the client confirms the endorsement
       const endorsementData = {
-        ...values,
+        profileLink: values.profileLink,
+        clientName: "Pending Client",  // Default name until confirmed
+        isVerified: false,            // Not verified until confirmed
         projectId: currentProject.id,
       };
       
@@ -486,13 +480,13 @@ export default function Projects() {
       
       toast({
         title: "Success",
-        description: "Endorsement added successfully!",
+        description: "Client invitation sent! The client will need to verify to appear in your project.",
       });
     } catch (error) {
-      console.error('Error adding endorsement:', error);
+      console.error('Error adding client:', error);
       toast({
         title: "Error",
-        description: "Failed to add endorsement. Please try again.",
+        description: "Failed to add client. Please try again.",
         variant: "destructive",
       });
     }
@@ -1036,117 +1030,32 @@ export default function Projects() {
                   
                   <TabsContent value="endorsements" className="space-y-4 pt-4">
                     <div className="space-y-4">
-                      <h3 className="text-sm font-medium">Add Testimonial</h3>
+                      <h3 className="text-sm font-medium">Add Client</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Add a client's profile link to invite them to endorse your project.
+                      </p>
                       <Form {...endorsementForm}>
                         <form onSubmit={endorsementForm.handleSubmit(handleAddEndorsement)} className="space-y-4">
                           <div className="space-y-4 border rounded-lg p-4">
                             <FormField
                               control={endorsementForm.control}
-                              name="clientName"
+                              name="profileLink"
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel>Client Name*</FormLabel>
+                                  <FormLabel>Client Profile Link*</FormLabel>
                                   <FormControl>
-                                    <Input placeholder="John Smith" {...field} />
+                                    <Input placeholder="https://brandentifier.replit.app/profile/username" {...field} />
                                   </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <FormField
-                                control={endorsementForm.control}
-                                name="clientEmail"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Client Email</FormLabel>
-                                    <FormControl>
-                                      <Input placeholder="email@example.com" {...field} value={field.value || ''} />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              
-                              <FormField
-                                control={endorsementForm.control}
-                                name="clientTitle"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Client Title</FormLabel>
-                                    <FormControl>
-                                      <Input placeholder="CEO, Manager, etc." {...field} value={field.value || ''} />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                            </div>
-                            
-                            <FormField
-                              control={endorsementForm.control}
-                              name="clientCompany"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Client Company</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="Company name" {...field} value={field.value || ''} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <FormField
-                              control={endorsementForm.control}
-                              name="message"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Endorsement Message</FormLabel>
-                                  <FormControl>
-                                    <Textarea 
-                                      placeholder="Share what the client said about your work" 
-                                      className="resize-none" 
-                                      {...field} 
-                                      value={field.value || ''} 
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <FormField
-                              control={endorsementForm.control}
-                              name="rating"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Rating (1-5)</FormLabel>
-                                  <Select
-                                    onValueChange={(value) => field.onChange(parseInt(value))}
-                                    defaultValue={field.value?.toString() || "5"}
-                                  >
-                                    <FormControl>
-                                      <SelectTrigger>
-                                        <SelectValue placeholder="Select a rating" />
-                                      </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                      <SelectItem value="1">1 Star</SelectItem>
-                                      <SelectItem value="2">2 Stars</SelectItem>
-                                      <SelectItem value="3">3 Stars</SelectItem>
-                                      <SelectItem value="4">4 Stars</SelectItem>
-                                      <SelectItem value="5">5 Stars</SelectItem>
-                                    </SelectContent>
-                                  </Select>
+                                  <FormDescription>
+                                    Add Brandentifier profile link of your client
+                                  </FormDescription>
                                   <FormMessage />
                                 </FormItem>
                               )}
                             />
                             
                             <Button type="submit" size="sm" className="mt-2">
-                              Add Endorsement
+                              Invite Client
                             </Button>
                           </div>
                         </form>
@@ -1154,40 +1063,55 @@ export default function Projects() {
                       
                       {endorsements.length > 0 ? (
                         <div className="border rounded-lg p-4 space-y-4">
-                          <h3 className="text-sm font-medium">Current Endorsements</h3>
+                          <h3 className="text-sm font-medium">Client Status</h3>
                           <div className="space-y-2">
                             {endorsements.map((endorsement) => (
                               <div key={endorsement.id} className="p-3 bg-muted rounded">
                                 <div className="flex items-center justify-between">
                                   <div>
                                     <div className="font-medium">{endorsement.clientName}</div>
-                                    <div className="text-xs text-muted-foreground">
-                                      {endorsement.clientTitle && `${endorsement.clientTitle}`}
-                                      {endorsement.clientTitle && endorsement.clientCompany && ` at `}
-                                      {endorsement.clientCompany && `${endorsement.clientCompany}`}
-                                    </div>
+                                    {endorsement.isVerified ? (
+                                      <div className="flex items-center text-green-600 text-xs">
+                                        <CheckCircle className="h-3.5 w-3.5 mr-1" />
+                                        <span>Verified</span>
+                                      </div>
+                                    ) : (
+                                      <div className="flex items-center text-amber-600 text-xs">
+                                        <Clock className="h-3.5 w-3.5 mr-1" />
+                                        <span>Pending Verification</span>
+                                      </div>
+                                    )}
+                                    {endorsement.isVerified && (
+                                      <>
+                                        <div className="text-xs text-muted-foreground mt-1">
+                                          {endorsement.clientTitle && `${endorsement.clientTitle}`}
+                                          {endorsement.clientTitle && endorsement.clientCompany && ` at `}
+                                          {endorsement.clientCompany && `${endorsement.clientCompany}`}
+                                        </div>
+                                        {endorsement.rating && (
+                                          <div className="flex items-center mt-1">
+                                            {[...Array(5)].map((_, index) => (
+                                              <span 
+                                                key={index} 
+                                                className={`text-sm ${index < (endorsement.rating || 0) ? 'text-yellow-500' : 'text-gray-300'}`}
+                                              >
+                                                ★
+                                              </span>
+                                            ))}
+                                          </div>
+                                        )}
+                                      </>
+                                    )}
                                   </div>
-                                  <div className="flex space-x-2">
-                                    <div className="flex items-center">
-                                      {[...Array(5)].map((_, index) => (
-                                        <span 
-                                          key={index} 
-                                          className={`text-sm ${index < (endorsement.rating || 0) ? 'text-yellow-500' : 'text-gray-300'}`}
-                                        >
-                                          ★
-                                        </span>
-                                      ))}
-                                    </div>
-                                    <Button 
-                                      size="icon" 
-                                      variant="ghost" 
-                                      onClick={() => handleDeleteEndorsement(endorsement.id)}
-                                    >
-                                      <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                  </div>
+                                  <Button 
+                                    size="icon" 
+                                    variant="ghost" 
+                                    onClick={() => handleDeleteEndorsement(endorsement.id)}
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
                                 </div>
-                                {endorsement.message && (
+                                {endorsement.isVerified && endorsement.message && (
                                   <div className="mt-2 text-sm italic">"{endorsement.message}"</div>
                                 )}
                               </div>
@@ -1196,7 +1120,7 @@ export default function Projects() {
                         </div>
                       ) : (
                         <div className="text-center p-4 text-muted-foreground">
-                          No endorsements added yet
+                          No clients added yet
                         </div>
                       )}
                     </div>
@@ -1325,40 +1249,55 @@ export default function Projects() {
               <TabsContent value="endorsements" className="space-y-4 pt-4">
                 {endorsements.length > 0 ? (
                   <div className="grid gap-4">
-                    {endorsements.map((endorsement) => (
-                      <div key={endorsement.id} className="p-4 bg-muted rounded-md">
-                        <div className="flex justify-between items-start mb-2">
-                          <div>
-                            <div className="font-medium">{endorsement.clientName}</div>
-                            <div className="text-sm text-muted-foreground">
-                              {endorsement.clientTitle && `${endorsement.clientTitle}`}
-                              {endorsement.clientTitle && endorsement.clientCompany && ` at `}
-                              {endorsement.clientCompany && `${endorsement.clientCompany}`}
+                    {endorsements.filter(e => e.isVerified).length > 0 ? (
+                      endorsements.filter(e => e.isVerified).map((endorsement) => (
+                        <div key={endorsement.id} className="p-4 bg-muted rounded-md">
+                          <div className="flex justify-between items-start mb-2">
+                            <div>
+                              <div className="font-medium">{endorsement.clientName}</div>
+                              <div className="text-sm text-muted-foreground">
+                                {endorsement.clientTitle && `${endorsement.clientTitle}`}
+                                {endorsement.clientTitle && endorsement.clientCompany && ` at `}
+                                {endorsement.clientCompany && `${endorsement.clientCompany}`}
+                              </div>
+                            </div>
+                            <div className="flex items-center">
+                              {[...Array(5)].map((_, index) => (
+                                <span 
+                                  key={index} 
+                                  className={`text-sm ${index < (endorsement.rating || 0) ? 'text-yellow-500' : 'text-gray-300'}`}
+                                >
+                                  ★
+                                </span>
+                              ))}
                             </div>
                           </div>
-                          <div className="flex items-center">
-                            {[...Array(5)].map((_, index) => (
-                              <span 
-                                key={index} 
-                                className={`text-sm ${index < (endorsement.rating || 0) ? 'text-yellow-500' : 'text-gray-300'}`}
-                              >
-                                ★
-                              </span>
-                            ))}
+                          {endorsement.message && (
+                            <div className="text-sm italic mt-2 pl-4 border-l-2 border-muted-foreground/20">
+                              "{endorsement.message}"
+                            </div>
+                          )}
+                          <div className="mt-2 flex items-center text-xs text-green-600">
+                            <CheckCircle className="h-3.5 w-3.5 mr-1" />
+                            <span>Verified Endorsement</span>
                           </div>
                         </div>
-                        {endorsement.message && (
-                          <div className="text-sm italic mt-2 pl-4 border-l-2 border-muted-foreground/20">
-                            "{endorsement.message}"
-                          </div>
-                        )}
-                        {endorsement.isVerified && (
-                          <div className="mt-2 flex items-center text-xs text-green-600">
-                            Verified Endorsement
-                          </div>
-                        )}
+                      ))
+                    ) : (
+                      <div className="text-center p-4 text-muted-foreground">
+                        No verified endorsements yet
                       </div>
-                    ))}
+                    )}
+                    
+                    {/* Show a count of pending endorsements if there are any */}
+                    {endorsements.filter(e => !e.isVerified).length > 0 && (
+                      <div className="p-3 bg-muted/50 rounded-md border border-amber-200">
+                        <div className="flex items-center text-amber-600 text-sm">
+                          <Clock className="h-4 w-4 mr-2" />
+                          <span>{endorsements.filter(e => !e.isVerified).length} pending client {endorsements.filter(e => !e.isVerified).length === 1 ? 'verification' : 'verifications'}</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div className="text-center p-4 text-muted-foreground">
