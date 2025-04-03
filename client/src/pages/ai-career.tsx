@@ -242,7 +242,7 @@ export default function AICareerPage() {
                     <Card className="p-4 sm:p-6">
                       <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Resume Analysis</h2>
                       <p className="text-sm text-muted-foreground mb-4">
-                        Upload your resume or paste your resume text to get AI-powered analysis with suggestions for improvement.
+                        Upload your resume file or paste a link to your resume to get AI-powered analysis with suggestions for improvement by Musk.
                       </p>
                       
                       {/* File Upload Section */}
@@ -345,12 +345,12 @@ export default function AICareerPage() {
                         <div className="border-t border-gray-300 flex-grow"></div>
                       </div>
                       
-                      {/* Text Input Section */}
+                      {/* Link Input Section */}
                       <div>
-                        <p className="text-sm text-gray-500 mb-2">Paste your resume text</p>
+                        <p className="text-sm text-gray-500 mb-2">Paste your resume link</p>
                         <Textarea 
-                          className="min-h-[150px] sm:min-h-[200px] mb-4 w-full" 
-                          placeholder="Paste your resume text here..."
+                          className="min-h-[100px] sm:min-h-[120px] mb-4 w-full" 
+                          placeholder="Paste a link to your resume (e.g., Google Drive, Dropbox, OneDrive link)..."
                           value={resumeText}
                           onChange={(e) => setResumeText(e.target.value)}
                         />
@@ -362,7 +362,7 @@ export default function AICareerPage() {
                           {resumeAnalysisMutation.isPending && (
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                           )}
-                          Analyze Resume Text
+                          Analyze Resume Link
                         </Button>
                       </div>
                     </Card>
