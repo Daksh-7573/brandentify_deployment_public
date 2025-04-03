@@ -102,19 +102,27 @@ export async function generateCareerAdvice(userProfile: {
  */
 export async function analyzeResume(resumeText: string, isBase64: boolean = false, isLink: boolean = false) {
   try {
+    console.log("analyzeResume called with parameters:", { 
+      resumeTextStart: resumeText ? resumeText.substring(0, 50) + "..." : "null", 
+      isBase64, 
+      isLink 
+    });
+    
     // If parameters are not explicitly provided, try to detect
     if (!isLink && !isBase64) {
       isLink = resumeText.startsWith('http://') || resumeText.startsWith('https://');
       isBase64 = resumeText.startsWith('This is base64 encoded resume data:');
+      console.log("Auto-detected parameters:", { isLink, isBase64 });
     }
     
     let systemPrompt = "You are an expert resume analyzer with deep knowledge of professional development and hiring practices. Provide constructive feedback and actionable insights.";
     let userPrompt = "";
     
     if (isLink) {
+      console.log("Creating prompt for URL analysis with link:", resumeText);
       systemPrompt += " You cannot access the content of external links directly, but you can provide comprehensive, detailed guidance for resume improvement similar to what an expert resume coach would offer.";
       userPrompt = `
-      The user has provided a link to their resume (${resumeText.replace('This is a link to a resume: ', '')}), but I cannot directly access the content of external links. 
+      The user has provided a link to their resume (${resumeText}), but I cannot directly access the content of external links. 
       
       Please provide a comprehensive, detailed resume analysis and improvement guide structured like this example:
 
