@@ -101,9 +101,9 @@ interface Endorsement {
 }
 
 interface AuthUser {
-  id: number;
-  username: string;
-  email: string;
+  id?: number;
+  username?: string;
+  email?: string;
 }
 
 export default function Projects() {
@@ -176,8 +176,8 @@ export default function Projects() {
   const loadProjects = async () => {
     if (!user) return;
     
-    // Default to userId 0 for demo mode, otherwise use actual user id
-    const userId = (user as AuthUser).id || 0;
+    // Use actual user id if available
+    const userId = user?.id || 0;
     
     setLoading(true);
     try {
@@ -219,8 +219,8 @@ export default function Projects() {
   const handleAddProject = async (values: ProjectFormValues) => {
     if (!user) return;
     
-    // Default to userId 0 for demo mode, otherwise use actual user id
-    const userId = (user as AuthUser).id || 0;
+    // Use actual user id if available
+    const userId = user?.id || 0;
     
     setLoading(true);
     try {
@@ -435,7 +435,6 @@ export default function Projects() {
       case 'In Progress':
         return <Badge variant="secondary">In Progress</Badge>;
       case 'Completed':
-        // Using outline with custom styling instead of 'success' which isn't a valid variant
         return <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300">Completed</Badge>;
       case 'Planned':
         return <Badge variant="outline">Planned</Badge>;
@@ -456,13 +455,16 @@ export default function Projects() {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold">My Projects</h2>
+    <Card className="mb-6">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <div>
+          <CardTitle className="text-xl font-bold">My Projects</CardTitle>
+          <CardDescription>Showcase your professional projects and collaborations</CardDescription>
+        </div>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
-            <Button size="sm">
-              <PlusIcon className="h-4 w-4 mr-2" />
+            <Button size="sm" variant="outline" className="h-8 gap-1">
+              <PlusIcon className="h-4 w-4" />
               Add Project
             </Button>
           </DialogTrigger>
@@ -489,7 +491,66 @@ export default function Projects() {
                   )}
                 />
                 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={projectForm.control}
+                    name="category"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Category</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Web Development, Design, etc." {...field} value={field.value || ''} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={projectForm.control}
+                    name="status"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Status</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a status" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Planned">Planned</SelectItem>
+                            <SelectItem value="In Progress">In Progress</SelectItem>
+                            <SelectItem value="Completed">Completed</SelectItem>
+                            <SelectItem value="On Hold">On Hold</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                
+                <FormField
+                  control={projectForm.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                        <Textarea 
+                          placeholder="Describe your project, its goals, and your contributions" 
+                          className="resize-none" 
+                          {...field} 
+                          value={field.value || ''} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
                     control={projectForm.control}
                     name="startDate"
@@ -502,7 +563,7 @@ export default function Projects() {
                               <Button
                                 variant={"outline"}
                                 className={cn(
-                                  "w-full pl-3 text-left font-normal",
+                                  "pl-3 text-left font-normal",
                                   !field.value && "text-muted-foreground"
                                 )}
                               >
@@ -541,14 +602,14 @@ export default function Projects() {
                               <Button
                                 variant={"outline"}
                                 className={cn(
-                                  "w-full pl-3 text-left font-normal",
+                                  "pl-3 text-left font-normal",
                                   !field.value && "text-muted-foreground"
                                 )}
                               >
                                 {field.value ? (
                                   format(new Date(field.value), "PPP")
                                 ) : (
-                                  <span>Ongoing/Not Set</span>
+                                  <span>Present/Ongoing</span>
                                 )}
                                 <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                               </Button>
@@ -569,52 +630,16 @@ export default function Projects() {
                   />
                 </div>
                 
-                <FormField
-                  control={projectForm.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Description</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                          placeholder="Describe the project, your role, and achievements" 
-                          {...field} 
-                          value={field.value || ''}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
                     control={projectForm.control}
-                    name="category"
+                    name="clientName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Category</FormLabel>
-                        <Select 
-                          onValueChange={field.onChange} 
-                          defaultValue={field.value || ''}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select category" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="Web Development">Web Development</SelectItem>
-                            <SelectItem value="Mobile App">Mobile App</SelectItem>
-                            <SelectItem value="UI/UX Design">UI/UX Design</SelectItem>
-                            <SelectItem value="Data Science">Data Science</SelectItem>
-                            <SelectItem value="AI/ML">AI/ML</SelectItem>
-                            <SelectItem value="DevOps">DevOps</SelectItem>
-                            <SelectItem value="Marketing">Marketing</SelectItem>
-                            <SelectItem value="Research">Research</SelectItem>
-                            <SelectItem value="Other">Other</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <FormLabel>Client Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Client or Company Name" {...field} value={field.value || ''} />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -622,26 +647,13 @@ export default function Projects() {
                   
                   <FormField
                     control={projectForm.control}
-                    name="status"
+                    name="clientUrl"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Status</FormLabel>
-                        <Select 
-                          onValueChange={field.onChange} 
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select status" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="Planned">Planned</SelectItem>
-                            <SelectItem value="In Progress">In Progress</SelectItem>
-                            <SelectItem value="Completed">Completed</SelectItem>
-                            <SelectItem value="On Hold">On Hold</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <FormLabel>Client Website</FormLabel>
+                        <FormControl>
+                          <Input placeholder="https://client-website.com" {...field} value={field.value || ''} />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -655,42 +667,12 @@ export default function Projects() {
                     <FormItem>
                       <FormLabel>Project URL</FormLabel>
                       <FormControl>
-                        <Input placeholder="https://myproject.com" {...field} value={field.value || ''} />
+                        <Input placeholder="https://project-website.com" {...field} value={field.value || ''} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={projectForm.control}
-                    name="clientName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Client/Company</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Client or company name" {...field} value={field.value || ''} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={projectForm.control}
-                    name="clientUrl"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Client URL</FormLabel>
-                        <FormControl>
-                          <Input placeholder="https://client.com" {...field} value={field.value || ''} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
                 
                 <FormField
                   control={projectForm.control}
@@ -722,590 +704,316 @@ export default function Projects() {
             </Form>
           </DialogContent>
         </Dialog>
-      </div>
-      
-      {/* Projects List */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {projects.length > 0 ? (
-          projects.map((project) => (
-            <Card key={project.id} className="overflow-hidden">
-              <CardHeader className="pb-2">
-                <div className="flex justify-between items-start">
-                  <CardTitle className="text-lg">{project.title}</CardTitle>
-                  <div className="flex space-x-1">
-                    <Button variant="ghost" size="icon" onClick={() => openEditDialog(project)}>
-                      <PencilIcon className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" onClick={() => handleDeleteProject(project.id)}>
-                      <TrashIcon className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-                <div className="flex items-center text-sm text-muted-foreground">
-                  <span className="flex items-center">
-                    <CalendarIcon className="mr-1 h-3 w-3" />
-                    {formatDate(project.startDate)} — {formatDate(project.endDate)}
-                  </span>
-                  <span className="mx-2">•</span>
-                  {getStatusBadge(project.status)}
-                </div>
-                <CardDescription className="mt-2 line-clamp-2">
-                  {project.description || "No description provided."}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pb-2">
-                {project.category && (
-                  <Badge variant="outline" className="mb-2">{project.category}</Badge>
-                )}
-                {project.clientName && (
-                  <div className="text-sm mb-2">
-                    <span className="font-semibold">Client:</span> {project.clientName}
-                  </div>
-                )}
-              </CardContent>
-              <CardFooter className="pt-0">
-                <Button variant="link" className="px-0" onClick={() => openDetailDialog(project)}>
-                  View Details & Collaborators
-                </Button>
-              </CardFooter>
-            </Card>
-          ))
+      </CardHeader>
+
+      <CardContent>
+        {projects.length === 0 ? (
+          <div className="text-center p-4">
+            <p className="text-muted-foreground mb-2">No projects added yet</p>
+            <p className="text-sm">Add your professional projects to showcase your work.</p>
+          </div>
         ) : (
-          <div className="col-span-2 p-6 text-center border rounded-lg">
-            <h3 className="mb-2 text-lg font-semibold">No projects yet</h3>
-            <p className="text-muted-foreground mb-4">
-              Showcase your work by adding projects to your profile.
-            </p>
-            <Button onClick={() => setIsAddDialogOpen(true)}>
-              <PlusIcon className="h-4 w-4 mr-2" />
-              Add Your First Project
-            </Button>
+          <div className="space-y-4">
+            {projects.map((project) => (
+              <Card key={project.id} className="overflow-hidden">
+                <CardContent className="p-0">
+                  <div className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <h3 className="text-lg font-medium leading-none">{project.title}</h3>
+                        {getStatusBadge(project.status)}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button variant="ghost" size="icon" onClick={() => openEditDialog(project)}>
+                          <PencilIcon className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" onClick={() => handleDeleteProject(project.id)}>
+                          <TrashIcon className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-2 flex items-center text-sm text-muted-foreground">
+                      <CalendarIcon className="mr-1 h-3 w-3" />
+                      <span>{formatDate(project.startDate)} - {formatDate(project.endDate)}</span>
+                      {project.category && (
+                        <>
+                          <span className="mx-1">•</span>
+                          <span>{project.category}</span>
+                        </>
+                      )}
+                    </div>
+                    
+                    {project.description && (
+                      <p className="mt-2 text-sm line-clamp-2">{project.description}</p>
+                    )}
+                    
+                    <div className="mt-3 flex gap-2">
+                      <Button variant="outline" size="sm" onClick={() => openDetailDialog(project)}>
+                        View Details
+                      </Button>
+                      {project.projectUrl && (
+                        <Button variant="outline" size="sm" asChild>
+                          <a href={project.projectUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1">
+                            <ExternalLinkIcon className="h-3 w-3" />
+                            Visit Project
+                          </a>
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         )}
-      </div>
-      
-      {/* Edit Project Dialog */}
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-[550px]">
-          <DialogHeader>
-            <DialogTitle>Edit Project</DialogTitle>
-            <DialogDescription>
-              Update your project details and showcase your latest achievements.
-            </DialogDescription>
-          </DialogHeader>
-          <Form {...projectForm}>
-            <form onSubmit={projectForm.handleSubmit(handleEditProject)} className="space-y-4">
-              <FormField
-                control={projectForm.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Project Title*</FormLabel>
-                    <FormControl>
-                      <Input placeholder="My Amazing Project" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={projectForm.control}
-                  name="startDate"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>Start Date*</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className={cn(
-                                "w-full pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
-                              )}
-                            >
-                              {field.value ? (
-                                format(new Date(field.value), "PPP")
-                              ) : (
-                                <span>Pick a date</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value ? new Date(field.value) : undefined}
-                            onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={projectForm.control}
-                  name="endDate"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>End Date</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className={cn(
-                                "w-full pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
-                              )}
-                            >
-                              {field.value ? (
-                                format(new Date(field.value), "PPP")
-                              ) : (
-                                <span>Ongoing/Not Set</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value ? new Date(field.value) : undefined}
-                            onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              
-              <FormField
-                control={projectForm.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Description</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder="Describe the project, your role, and achievements" 
-                        {...field} 
-                        value={field.value || ''}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={projectForm.control}
-                  name="category"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Category</FormLabel>
-                      <Select 
-                        onValueChange={field.onChange} 
-                        defaultValue={field.value || ''}
-                        value={field.value || ''}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select category" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="Web Development">Web Development</SelectItem>
-                          <SelectItem value="Mobile App">Mobile App</SelectItem>
-                          <SelectItem value="UI/UX Design">UI/UX Design</SelectItem>
-                          <SelectItem value="Data Science">Data Science</SelectItem>
-                          <SelectItem value="AI/ML">AI/ML</SelectItem>
-                          <SelectItem value="DevOps">DevOps</SelectItem>
-                          <SelectItem value="Marketing">Marketing</SelectItem>
-                          <SelectItem value="Research">Research</SelectItem>
-                          <SelectItem value="Other">Other</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={projectForm.control}
-                  name="status"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Status</FormLabel>
-                      <Select 
-                        onValueChange={field.onChange} 
-                        defaultValue={field.value}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select status" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="Planned">Planned</SelectItem>
-                          <SelectItem value="In Progress">In Progress</SelectItem>
-                          <SelectItem value="Completed">Completed</SelectItem>
-                          <SelectItem value="On Hold">On Hold</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              
-              <FormField
-                control={projectForm.control}
-                name="projectUrl"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Project URL</FormLabel>
-                    <FormControl>
-                      <Input placeholder="https://myproject.com" {...field} value={field.value || ''} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={projectForm.control}
-                  name="clientName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Client/Company</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Client or company name" {...field} value={field.value || ''} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={projectForm.control}
-                  name="clientUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Client URL</FormLabel>
-                      <FormControl>
-                        <Input placeholder="https://client.com" {...field} value={field.value || ''} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              
-              <FormField
-                control={projectForm.control}
-                name="isVisible"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                    <div className="space-y-0.5">
-                      <FormLabel>Public Visibility</FormLabel>
-                      <FormDescription>
-                        Make this project visible on your public profile
-                      </FormDescription>
-                    </div>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              
-              <DialogFooter>
-                <Button type="submit" disabled={loading}>
-                  {loading ? 'Saving...' : 'Save Changes'}
-                </Button>
-              </DialogFooter>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
-      
-      {/* Project Details Dialog */}
-      <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
-        <DialogContent className="sm:max-w-[650px] max-h-[85vh] overflow-y-auto">
-          {currentProject && (
-            <>
-              <DialogHeader>
-                <DialogTitle className="text-xl">{currentProject.title}</DialogTitle>
-                <DialogDescription>
-                  <div className="flex items-center mt-1 mb-2">
-                    <span className="text-sm">
-                      {formatDate(currentProject.startDate)} — {formatDate(currentProject.endDate)}
-                    </span>
-                    <span className="mx-2">•</span>
+
+        {/* Detail dialog */}
+        <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
+          <DialogContent className="sm:max-w-[650px]">
+            {currentProject && (
+              <>
+                <DialogHeader>
+                  <div className="flex items-center justify-between">
+                    <DialogTitle className="text-xl">{currentProject.title}</DialogTitle>
                     {getStatusBadge(currentProject.status)}
                   </div>
-                </DialogDescription>
-              </DialogHeader>
-              
-              <Tabs defaultValue="details" value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="grid w-full grid-cols-3">
-                  <TabsTrigger value="details">Details</TabsTrigger>
-                  <TabsTrigger value="collaborators" className="flex items-center">
-                    <Users2Icon className="w-4 h-4 mr-1" />
-                    Collaborators {collaborators.length > 0 && `(${collaborators.length})`}
-                  </TabsTrigger>
-                  <TabsTrigger value="endorsements" className="flex items-center">
-                    <AwardIcon className="w-4 h-4 mr-1" />
-                    Endorsements {endorsements.length > 0 && `(${endorsements.length})`}
-                  </TabsTrigger>
-                </TabsList>
+                  <DialogDescription>
+                    {formatDate(currentProject.startDate)} - {formatDate(currentProject.endDate)}
+                    {currentProject.category && ` • ${currentProject.category}`}
+                  </DialogDescription>
+                </DialogHeader>
                 
-                <TabsContent value="details" className="mt-4 space-y-4">
-                  {currentProject.description && (
-                    <div>
-                      <h4 className="font-semibold mb-1">Description</h4>
-                      <p className="text-sm text-foreground/80">{currentProject.description}</p>
-                    </div>
-                  )}
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-2">
+                  <TabsList className="grid grid-cols-3 mb-4">
+                    <TabsTrigger value="details">Details</TabsTrigger>
+                    <TabsTrigger value="team" className="flex items-center gap-1">
+                      <Users2Icon className="h-4 w-4" />
+                      Team
+                    </TabsTrigger>
+                    <TabsTrigger value="endorsements" className="flex items-center gap-1">
+                      <AwardIcon className="h-4 w-4" />
+                      Endorsements
+                    </TabsTrigger>
+                  </TabsList>
                   
-                  <div className="grid grid-cols-2 gap-4">
-                    {currentProject.category && (
+                  <TabsContent value="details" className="space-y-4">
+                    {currentProject.description && (
                       <div>
-                        <h4 className="font-semibold text-sm mb-1">Category</h4>
-                        <p className="text-sm text-foreground/80">{currentProject.category}</p>
+                        <h3 className="text-sm font-medium mb-1">Description</h3>
+                        <p className="text-sm">{currentProject.description}</p>
                       </div>
                     )}
                     
-                    {currentProject.status && (
-                      <div>
-                        <h4 className="font-semibold text-sm mb-1">Status</h4>
-                        <div>{getStatusBadge(currentProject.status)}</div>
-                      </div>
-                    )}
-                  </div>
-                  
-                  {(currentProject.clientName || currentProject.clientUrl) && (
-                    <div>
-                      <h4 className="font-semibold mb-1">Client Information</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {currentProject.clientName && (
-                        <p className="text-sm text-foreground/80">Name: {currentProject.clientName}</p>
+                        <div>
+                          <h3 className="text-sm font-medium mb-1">Client</h3>
+                          <p className="text-sm flex items-center">
+                            {currentProject.clientName}
+                            {currentProject.clientUrl && (
+                              <a href={currentProject.clientUrl} target="_blank" rel="noopener noreferrer" className="ml-1 inline-flex items-center text-primary">
+                                <ExternalLinkIcon className="h-3 w-3" />
+                              </a>
+                            )}
+                          </p>
+                        </div>
                       )}
-                      {currentProject.clientUrl && (
-                        <p className="text-sm text-foreground/80 flex items-center">
-                          Website: 
-                          <a 
-                            href={currentProject.clientUrl} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="ml-1 flex items-center text-primary hover:underline"
-                          >
-                            {currentProject.clientUrl}
-                            <ExternalLinkIcon className="w-3 h-3 ml-1" />
+                      
+                      {currentProject.projectUrl && (
+                        <div>
+                          <h3 className="text-sm font-medium mb-1">Project URL</h3>
+                          <a href={currentProject.projectUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-primary inline-flex items-center">
+                            Visit Project <ExternalLinkIcon className="ml-1 h-3 w-3" />
                           </a>
-                        </p>
+                        </div>
                       )}
                     </div>
-                  )}
+                    
+                    {/* Additional metadata could go here */}
+                  </TabsContent>
                   
-                  {currentProject.projectUrl && (
-                    <div>
-                      <h4 className="font-semibold mb-1">Project Link</h4>
-                      <a 
-                        href={currentProject.projectUrl} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-sm text-primary hover:underline flex items-center"
-                      >
-                        {currentProject.projectUrl}
-                        <ExternalLinkIcon className="w-3 h-3 ml-1" />
-                      </a>
-                    </div>
-                  )}
-                </TabsContent>
-                
-                <TabsContent value="collaborators" className="mt-4 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h4 className="font-semibold">Project Team & Collaborators</h4>
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button size="sm">
-                          <PlusIcon className="h-4 w-4 mr-1" />
-                          Add Collaborator
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="sm:max-w-[450px]">
-                        <DialogHeader>
-                          <DialogTitle>Add Collaborator</DialogTitle>
-                          <DialogDescription>
-                            Add team members, partners, or contributors to this project.
-                          </DialogDescription>
-                        </DialogHeader>
+                  <TabsContent value="team">
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <h3 className="text-sm font-medium">Project Collaborators</h3>
                         <Form {...collaboratorForm}>
                           <form onSubmit={collaboratorForm.handleSubmit(handleAddCollaborator)} className="space-y-4">
-                            <FormField
-                              control={collaboratorForm.control}
-                              name="name"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Name*</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="Collaborator's name" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
+                            <Button 
+                              type="button" 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => document.getElementById('add-collaborator-form')?.classList.toggle('hidden')}
+                            >
+                              Add Collaborator
+                            </Button>
                             
-                            <FormField
-                              control={collaboratorForm.control}
-                              name="email"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Email</FormLabel>
-                                  <FormControl>
-                                    <Input 
-                                      placeholder="email@example.com" 
-                                      type="email"
-                                      {...field} 
-                                      value={field.value || ''}
-                                    />
-                                  </FormControl>
-                                  <FormDescription>
-                                    Optional - Used for verification and invitations
-                                  </FormDescription>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <FormField
-                              control={collaboratorForm.control}
-                              name="role"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Role*</FormLabel>
-                                  <Select 
-                                    onValueChange={field.onChange} 
-                                    defaultValue={field.value}
-                                  >
-                                    <FormControl>
-                                      <SelectTrigger>
-                                        <SelectValue placeholder="Select role" />
-                                      </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                      <SelectItem value="Project Lead">Project Lead</SelectItem>
-                                      <SelectItem value="Developer">Developer</SelectItem>
-                                      <SelectItem value="Designer">Designer</SelectItem>
-                                      <SelectItem value="Contributor">Contributor</SelectItem>
-                                      <SelectItem value="Advisor">Advisor</SelectItem>
-                                      <SelectItem value="Client">Client</SelectItem>
-                                      <SelectItem value="Other">Other</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <DialogFooter>
-                              <Button type="submit">Add Collaborator</Button>
-                            </DialogFooter>
-                          </form>
-                        </Form>
-                      </DialogContent>
-                    </Dialog>
-                  </div>
-                  
-                  {collaborators.length > 0 ? (
-                    <div className="space-y-3">
-                      {collaborators.map((collaborator) => (
-                        <div key={collaborator.id} className="flex items-center justify-between p-3 rounded-md border">
-                          <div>
-                            <h5 className="font-medium">{collaborator.name}</h5>
-                            <p className="text-sm text-muted-foreground">{collaborator.role}</p>
-                            {collaborator.email && (
-                              <p className="text-xs text-muted-foreground">{collaborator.email}</p>
-                            )}
-                          </div>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            onClick={() => handleDeleteCollaborator(collaborator.id)}
-                          >
-                            <TrashIcon className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-6">
-                      <p className="text-muted-foreground mb-2">No collaborators added yet</p>
-                      <p className="text-sm">Add team members or contributors to showcase the collaborative nature of this project.</p>
-                    </div>
-                  )}
-                </TabsContent>
-                
-                <TabsContent value="endorsements" className="mt-4 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h4 className="font-semibold">Client Endorsements & Testimonials</h4>
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button size="sm">
-                          <PlusIcon className="h-4 w-4 mr-1" />
-                          Add Endorsement
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="sm:max-w-[450px]">
-                        <DialogHeader>
-                          <DialogTitle>Add Client Endorsement</DialogTitle>
-                          <DialogDescription>
-                            Add testimonials and endorsements from clients, managers, or stakeholders.
-                          </DialogDescription>
-                        </DialogHeader>
-                        <Form {...endorsementForm}>
-                          <form onSubmit={endorsementForm.handleSubmit(handleAddEndorsement)} className="space-y-4">
-                            <FormField
-                              control={endorsementForm.control}
-                              name="clientName"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Client Name*</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="Name of the person providing endorsement" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <div className="grid grid-cols-2 gap-4">
+                            <div id="add-collaborator-form" className="hidden mt-4 space-y-4 border rounded-lg p-4">
                               <FormField
-                                control={endorsementForm.control}
-                                name="clientTitle"
+                                control={collaboratorForm.control}
+                                name="name"
                                 render={({ field }) => (
                                   <FormItem>
-                                    <FormLabel>Title</FormLabel>
+                                    <FormLabel>Name*</FormLabel>
                                     <FormControl>
-                                      <Input 
-                                        placeholder="Job title" 
-                                        {...field} 
+                                      <Input placeholder="Collaborator name" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <FormField
+                                control={collaboratorForm.control}
+                                name="email"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Email</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="email@example.com" {...field} value={field.value || ''} />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <FormField
+                                control={collaboratorForm.control}
+                                name="role"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Role*</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="Developer, Designer, PM, etc." {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <Button type="submit" size="sm">
+                                Add
+                              </Button>
+                            </div>
+                          </form>
+                        </Form>
+                      </div>
+                      
+                      <Separator />
+                      
+                      {collaborators.length > 0 ? (
+                        <div className="space-y-3">
+                          {collaborators.map((collaborator) => (
+                            <div key={collaborator.id} className="flex justify-between items-center p-2 hover:bg-muted/50 rounded-md">
+                              <div>
+                                <p className="font-medium">{collaborator.name}</p>
+                                <div className="flex items-center text-sm text-muted-foreground">
+                                  <span className="mr-2">{collaborator.role}</span>
+                                  {collaborator.inviteStatus === 'accepted' && (
+                                    <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300">Verified</Badge>
+                                  )}
+                                </div>
+                              </div>
+                              <Button variant="ghost" size="icon" onClick={() => handleDeleteCollaborator(collaborator.id)}>
+                                <TrashIcon className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-4">
+                          <p className="text-muted-foreground mb-2">No collaborators added yet</p>
+                          <p className="text-sm">Add team members or collaborators who worked with you.</p>
+                        </div>
+                      )}
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="endorsements">
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <h3 className="text-sm font-medium">Client Endorsements</h3>
+                        <Form {...endorsementForm}>
+                          <form onSubmit={endorsementForm.handleSubmit(handleAddEndorsement)} className="space-y-4">
+                            <Button 
+                              type="button" 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => document.getElementById('add-endorsement-form')?.classList.toggle('hidden')}
+                            >
+                              Add Endorsement
+                            </Button>
+                            
+                            <div id="add-endorsement-form" className="hidden mt-4 space-y-4 border rounded-lg p-4">
+                              <FormField
+                                control={endorsementForm.control}
+                                name="clientName"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Client Name*</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="Client name" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <FormField
+                                  control={endorsementForm.control}
+                                  name="clientEmail"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Client Email</FormLabel>
+                                      <FormControl>
+                                        <Input placeholder="email@example.com" {...field} value={field.value || ''} />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                
+                                <FormField
+                                  control={endorsementForm.control}
+                                  name="clientTitle"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Client Title</FormLabel>
+                                      <FormControl>
+                                        <Input placeholder="CEO, Manager, etc." {...field} value={field.value || ''} />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                              </div>
+                              
+                              <FormField
+                                control={endorsementForm.control}
+                                name="clientCompany"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Client Company</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="Company name" {...field} value={field.value || ''} />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <FormField
+                                control={endorsementForm.control}
+                                name="message"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Testimonial</FormLabel>
+                                    <FormControl>
+                                      <Textarea 
+                                        placeholder="Client's testimonial about your work" 
+                                        className="resize-none"
+                                        {...field}
                                         value={field.value || ''}
                                       />
                                     </FormControl>
@@ -1316,162 +1024,340 @@ export default function Projects() {
                               
                               <FormField
                                 control={endorsementForm.control}
-                                name="clientCompany"
+                                name="rating"
                                 render={({ field }) => (
                                   <FormItem>
-                                    <FormLabel>Company</FormLabel>
-                                    <FormControl>
-                                      <Input 
-                                        placeholder="Company name" 
-                                        {...field} 
-                                        value={field.value || ''}
-                                      />
-                                    </FormControl>
+                                    <FormLabel>Rating (1-5)</FormLabel>
+                                    <Select
+                                      onValueChange={(value) => field.onChange(parseInt(value))}
+                                      defaultValue={field.value?.toString() || "5"}
+                                    >
+                                      <FormControl>
+                                        <SelectTrigger>
+                                          <SelectValue placeholder="Select a rating" />
+                                        </SelectTrigger>
+                                      </FormControl>
+                                      <SelectContent>
+                                        <SelectItem value="1">1 - Poor</SelectItem>
+                                        <SelectItem value="2">2 - Fair</SelectItem>
+                                        <SelectItem value="3">3 - Good</SelectItem>
+                                        <SelectItem value="4">4 - Very Good</SelectItem>
+                                        <SelectItem value="5">5 - Excellent</SelectItem>
+                                      </SelectContent>
+                                    </Select>
                                     <FormMessage />
                                   </FormItem>
                                 )}
                               />
-                            </div>
-                            
-                            <FormField
-                              control={endorsementForm.control}
-                              name="clientEmail"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Email</FormLabel>
-                                  <FormControl>
-                                    <Input 
-                                      placeholder="email@example.com" 
-                                      type="email"
-                                      {...field} 
-                                      value={field.value || ''}
-                                    />
-                                  </FormControl>
-                                  <FormDescription>
-                                    Optional - Used for verification (not displayed publicly)
-                                  </FormDescription>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <FormField
-                              control={endorsementForm.control}
-                              name="message"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Testimonial</FormLabel>
-                                  <FormControl>
-                                    <Textarea 
-                                      placeholder="What the client said about your work..." 
-                                      {...field} 
-                                      value={field.value || ''}
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <FormField
-                              control={endorsementForm.control}
-                              name="rating"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Rating (1-5)</FormLabel>
-                                  <Select 
-                                    onValueChange={(value) => field.onChange(parseInt(value))} 
-                                    defaultValue={field.value ? field.value.toString() : "5"}
-                                  >
-                                    <FormControl>
-                                      <SelectTrigger>
-                                        <SelectValue placeholder="Select rating" />
-                                      </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                      <SelectItem value="5">★★★★★ (5) Excellent</SelectItem>
-                                      <SelectItem value="4">★★★★☆ (4) Very Good</SelectItem>
-                                      <SelectItem value="3">★★★☆☆ (3) Good</SelectItem>
-                                      <SelectItem value="2">★★☆☆☆ (2) Fair</SelectItem>
-                                      <SelectItem value="1">★☆☆☆☆ (1) Poor</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <DialogFooter>
-                              <Button type="submit">Add Endorsement</Button>
-                            </DialogFooter>
-                          </form>
-                        </Form>
-                      </DialogContent>
-                    </Dialog>
-                  </div>
-                  
-                  {endorsements.length > 0 ? (
-                    <div className="space-y-4">
-                      {endorsements.map((endorsement) => (
-                        <div key={endorsement.id} className="p-4 rounded-md border">
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <h5 className="font-medium">{endorsement.clientName}</h5>
-                              {(endorsement.clientTitle || endorsement.clientCompany) && (
-                                <p className="text-sm text-muted-foreground">
-                                  {endorsement.clientTitle && endorsement.clientTitle}
-                                  {endorsement.clientTitle && endorsement.clientCompany && ", "}
-                                  {endorsement.clientCompany && endorsement.clientCompany}
-                                </p>
-                              )}
-                            </div>
-                            <div className="flex space-x-2">
-                              {endorsement.isVerified && (
-                                <Badge variant="outline" className="flex items-center">
-                                  <CheckCircleIcon className="h-3 w-3 mr-1 text-green-500" />
-                                  Verified
-                                </Badge>
-                              )}
-                              <Button 
-                                variant="ghost" 
-                                size="icon" 
-                                onClick={() => handleDeleteEndorsement(endorsement.id)}
-                              >
-                                <TrashIcon className="h-4 w-4" />
+                              
+                              <Button type="submit" size="sm">
+                                Add
                               </Button>
                             </div>
-                          </div>
-                          
-                          {endorsement.message && (
-                            <div className="mt-2">
-                              <p className="text-sm italic">"{endorsement.message}"</p>
+                          </form>
+                        </Form>
+                      </div>
+                      
+                      <Separator />
+                      
+                      {endorsements.length > 0 ? (
+                        <div className="space-y-4">
+                          {endorsements.map((endorsement) => (
+                            <div key={endorsement.id} className="border rounded-lg p-4 relative">
+                              <div className="absolute top-4 right-4 flex space-x-1">
+                                <Button variant="ghost" size="icon" onClick={() => handleDeleteEndorsement(endorsement.id)}>
+                                  <TrashIcon className="h-4 w-4" />
+                                </Button>
+                                {endorsement.isVerified ? (
+                                  <CheckCircleIcon className="h-5 w-5 text-green-600" />
+                                ) : (
+                                  <Badge variant="outline" className="text-xs">Pending Verification</Badge>
+                                )}
+                              </div>
+                              
+                              <div className="flex items-center mb-3">
+                                {/* Rating stars */}
+                                <div className="flex">
+                                  {Array.from({ length: 5 }).map((_, i) => (
+                                    <svg
+                                      key={i}
+                                      className={`h-4 w-4 ${i < (endorsement.rating || 0) ? "text-yellow-400 fill-yellow-400" : "text-gray-300 fill-gray-300"}`}
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                                    </svg>
+                                  ))}
+                                </div>
+                              </div>
+                              
+                              {endorsement.message && (
+                                <p className="italic text-sm mb-3">"{endorsement.message}"</p>
+                              )}
+                              
+                              <div>
+                                <p className="font-medium text-sm">{endorsement.clientName}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {endorsement.clientTitle && `${endorsement.clientTitle}, `}
+                                  {endorsement.clientCompany}
+                                </p>
+                              </div>
                             </div>
-                          )}
-                          
-                          {endorsement.rating !== null && (
-                            <div className="mt-2 flex">
-                              {Array.from({ length: 5 }, (_, i) => (
-                                <span key={i} className={`text-lg ${i < (endorsement.rating || 0) ? 'text-yellow-500' : 'text-gray-300'}`}>
-                                  ★
-                                </span>
-                              ))}
-                            </div>
-                          )}
+                          ))}
                         </div>
-                      ))}
+                      ) : (
+                        <div className="text-center py-4">
+                          <p className="text-muted-foreground mb-2">No endorsements added yet</p>
+                          <p className="text-sm">Add testimonials from clients or stakeholders to build credibility.</p>
+                        </div>
+                      )}
                     </div>
-                  ) : (
-                    <div className="text-center py-6">
-                      <p className="text-muted-foreground mb-2">No endorsements added yet</p>
-                      <p className="text-sm">Add testimonials from clients or stakeholders to build credibility.</p>
-                    </div>
+                  </TabsContent>
+                </Tabs>
+              </>
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit dialog */}
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="sm:max-w-[550px]">
+            <DialogHeader>
+              <DialogTitle>Edit Project</DialogTitle>
+              <DialogDescription>
+                Update your project details and information.
+              </DialogDescription>
+            </DialogHeader>
+            <Form {...projectForm}>
+              <form onSubmit={projectForm.handleSubmit(handleEditProject)} className="space-y-4">
+                <FormField
+                  control={projectForm.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Project Title*</FormLabel>
+                      <FormControl>
+                        <Input placeholder="My Amazing Project" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
                   )}
-                </TabsContent>
-              </Tabs>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
-    </div>
+                />
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={projectForm.control}
+                    name="category"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Category</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Web Development, Design, etc." {...field} value={field.value || ''} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={projectForm.control}
+                    name="status"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Status</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a status" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Planned">Planned</SelectItem>
+                            <SelectItem value="In Progress">In Progress</SelectItem>
+                            <SelectItem value="Completed">Completed</SelectItem>
+                            <SelectItem value="On Hold">On Hold</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                
+                <FormField
+                  control={projectForm.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                        <Textarea 
+                          placeholder="Describe your project, its goals, and your contributions" 
+                          className="resize-none" 
+                          {...field} 
+                          value={field.value || ''} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={projectForm.control}
+                    name="startDate"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Start Date*</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant={"outline"}
+                                className={cn(
+                                  "pl-3 text-left font-normal",
+                                  !field.value && "text-muted-foreground"
+                                )}
+                              >
+                                {field.value ? (
+                                  format(new Date(field.value), "PPP")
+                                ) : (
+                                  <span>Pick a date</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value ? new Date(field.value) : undefined}
+                              onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={projectForm.control}
+                    name="endDate"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>End Date</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant={"outline"}
+                                className={cn(
+                                  "pl-3 text-left font-normal",
+                                  !field.value && "text-muted-foreground"
+                                )}
+                              >
+                                {field.value ? (
+                                  format(new Date(field.value), "PPP")
+                                ) : (
+                                  <span>Present/Ongoing</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value ? new Date(field.value) : undefined}
+                              onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={projectForm.control}
+                    name="clientName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Client Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Client or Company Name" {...field} value={field.value || ''} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={projectForm.control}
+                    name="clientUrl"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Client Website</FormLabel>
+                        <FormControl>
+                          <Input placeholder="https://client-website.com" {...field} value={field.value || ''} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                
+                <FormField
+                  control={projectForm.control}
+                  name="projectUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Project URL</FormLabel>
+                      <FormControl>
+                        <Input placeholder="https://project-website.com" {...field} value={field.value || ''} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={projectForm.control}
+                  name="isVisible"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                      <div className="space-y-0.5">
+                        <FormLabel>Public Visibility</FormLabel>
+                        <FormDescription>
+                          Make this project visible on your public profile
+                        </FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                
+                <DialogFooter>
+                  <Button type="submit" disabled={loading}>
+                    {loading ? 'Saving...' : 'Update Project'}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
+      </CardContent>
+    </Card>
   );
 }
