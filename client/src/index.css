@@ -2,28 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom animations for Dynamic Innovator template */
-@keyframes ping-slow {
-  0% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.1); opacity: 0.5; }
-  100% { transform: scale(1); opacity: 1; }
-}
-.animate-ping-slow {
-  animation: ping-slow 3s cubic-bezier(0, 0, 0.2, 1) infinite;
-}
-.animation-delay-500 {
-  animation-delay: 1.5s;
-}
+/* Custom animations */
 
-/* Custom animations for Freelancer Hub template */
-@keyframes bounce-button {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
-}
-.animate-bounce-button:hover {
-  animation: bounce-button 0.5s ease-in-out;
-}
-
+/* Animation for signature drawing effect */
 @keyframes draw-signature {
   0% { stroke-dashoffset: 1000; }
   100% { stroke-dashoffset: 0; }
@@ -32,6 +13,30 @@
   stroke-dasharray: 1000;
   stroke-dashoffset: 1000;
   animation: draw-signature 2s forwards;
+}
+
+/* Button hover animation */
+@keyframes bounce-button {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+.animate-bounce-button:hover {
+  animation: bounce-button 0.5s ease-in-out infinite;
+}
+
+/* Slow pulsing animation for decorative elements */
+@keyframes ping-slow {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.5; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.animate-ping-slow {
+  animation: ping-slow 3s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* Animation delay utility */
+.animation-delay-500 {
+  animation-delay: 1.5s;
 }
 
 @layer base {
