@@ -310,7 +310,11 @@ export default function PortfolioBuilder() {
     { 
       id: "minimalist-pro", 
       name: "The Minimalist Pro", 
-      description: "Clean, elegant & modern design for tech professionals & business executives",
+      description: `✔ Theme: Clean, Elegant, & Modern
+✔ Best For: Tech Professionals, Consultants, Business Executives
+🎨 Color Palette: Light Gray (#F5F7FA), Deep Blue (#0044CC), Soft Gray (#EAEAEA), Dark Gray (#333333)
+🖌 UI Elements: Flat card-based layout with ample white space, subtle hover effects, rounded edges
+🎬 Animations: Smooth fade-ins, subtle micro-animations for skill bars & timeline`,
       theme: "#0044CC"
     },
     { 
@@ -513,7 +517,15 @@ export default function PortfolioBuilder() {
                     <CardTitle className="text-lg">{layout.name}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm text-gray-500">{layout.description}</p>
+                    <div 
+                      className="text-sm text-gray-600 whitespace-pre-line" 
+                      style={{
+                        maxHeight: '220px',
+                        overflowY: 'auto'
+                      }}
+                    >
+                      {layout.description}
+                    </div>
                   </CardContent>
                   <CardFooter className="pt-0 flex justify-end">
                     {form.watch("layout") === layout.id && (
@@ -942,9 +954,24 @@ export default function PortfolioBuilder() {
                       location: userData?.location || '',
                       email: userData?.email || user?.email || '',
                       photoURL: userData?.photoURL || user?.photoURL || null,
+                      lookingFor: userData?.lookingFor || '',
+                      jobLevel: userData?.jobLevel || ''
                     }}
                     userSkills={skills || []}
-                    userProjects={projects || []}
+                    userProjects={projects?.map(p => ({
+                      id: p.id,
+                      title: p.title,
+                      description: p.description,
+                      userId: p.userId,
+                      startDate: p.startDate,
+                      createdAt: null,
+                      projectUrl: null,
+                      category: null,
+                      thumbnailUrl: null,
+                      thumbnailFile: null,
+                      mediaUrls: [],
+                      updatedAt: null
+                    })) || []}
                   />
                 </CardContent>
               </Card>
