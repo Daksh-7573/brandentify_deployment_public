@@ -155,26 +155,137 @@ export default function PortfolioBuilder() {
   ];
 
   // Handle creating portfolio with AI
-  const handleCreatePortfolio = () => {
-    setIsAnalyzingProfile(true);
+  const handleCreatePortfolio = async () => {
+    if (!user?.uid) {
+      toast({
+        title: "Authentication error",
+        description: "Please log in to create a portfolio",
+        variant: "destructive"
+      });
+      return;
+    }
 
-    // Simulate AI analyzing the profile
-    setTimeout(() => {
+    setIsAnalyzingProfile(true);
+    
+    try {
+      // Fetch user data, experiences, skills and projects
+      const userResponse = await fetch(`/api/users/${user.uid}`);
+      const userData = await userResponse.json();
+      
+      // Fetch work experiences
+      const experiencesResponse = await fetch(`/api/users/${user.uid}/experiences`);
+      const experiencesData = await experiencesResponse.json();
+      
+      // Fetch skills
+      const skillsResponse = await fetch(`/api/users/${user.uid}/skills`);
+      const skillsData = await skillsResponse.json();
+      
+      // Fetch projects
+      const projectsResponse = await fetch(`/api/users/${user.uid}/projects`);
+      const projectsData = await projectsResponse.json();
+      
       setIsAnalyzingProfile(false);
       setIsGenerating(true);
-
-      // Simulate AI generating the portfolio
-      setTimeout(() => {
-        setIsGenerating(false);
-        setGenerationComplete(true);
-        setCurrentStep(STEPS.PREVIEW);
-      }, 2500);
-    }, 2000);
+      
+      // Create portfolio object with fetched data
+      const portfolio = {
+        userId: user.uid,
+        layout: form.getValues("layout"),
+        customTitle: userData.name || "",
+        customBio: "",
+        isPublished: false,
+        publicUrl: form.getValues("publicUrl") || null,
+        featuredProjects: projectsData?.map((p: any) => p.id) || [],
+        featuredSkills: skillsData?.map((s: any) => s.id) || [],
+        featuredExperiences: experiencesData?.map((e: any) => e.id) || []
+      };
+      
+      // Create or update portfolio via API
+      const createResponse = await apiRequest("POST", "/api/portfolios", portfolio);
+      
+      if (!createResponse.ok) {
+        throw new Error("Failed to create portfolio");
+      }
+      
+      setIsGenerating(false);
+      setGenerationComplete(true);
+      setCurrentStep(STEPS.PREVIEW);
+      
+      // Invalidate portfolio query to refresh data
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${user.uid}/portfolio`] });
+      
+    } catch (error: any) {
+      console.error("Error creating portfolio:", error);
+      setIsAnalyzingProfile(false);
+      setIsGenerating(false);
+      
+      toast({
+        title: "Error creating portfolio",
+        description: error.message || "Please try again later",
+        variant: "destructive"
+      });
+    }
   };
 
   // Handle final publish
-  const handlePublish = () => {
-    portfolioMutation.mutate(form.getValues());
+  const handlePublish = async () => {
+    if (!user?.uid) {
+      toast({
+        title: "Authentication error",
+        description: "Please log in to publish your portfolio",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    try {
+      // Fetch current portfolio
+      const portfolioResponse = await fetch(`/api/users/${user.uid}/portfolio`);
+      const portfolioData = await portfolioResponse.json();
+      
+      if (!portfolioData) {
+        toast({
+          title: "Portfolio not found",
+          description: "Please create a portfolio first",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      // Update portfolio with published status
+      const updateData = {
+        ...form.getValues(),
+        id: portfolioData.id,
+        userId: user.uid,
+        isPublished: true
+      };
+      
+      portfolioMutation.mutate(updateData, {
+        onSuccess: () => {
+          toast({
+            title: "Portfolio published!",
+            description: "Your portfolio is now live and available to viewers.",
+          });
+          
+          // Invalidate portfolio query to refresh data
+          queryClient.invalidateQueries({ queryKey: [`/api/users/${user.uid}/portfolio`] });
+        },
+        onError: (error) => {
+          toast({
+            title: "Publishing failed",
+            description: error.message || "Please try again later",
+            variant: "destructive"
+          });
+        }
+      });
+    } catch (error: any) {
+      console.error("Error publishing portfolio:", error);
+      toast({
+        title: "Error publishing portfolio",
+        description: error.message || "Please try again later",
+        variant: "destructive"
+      });
+    }
   };
 
   // Authentication check
