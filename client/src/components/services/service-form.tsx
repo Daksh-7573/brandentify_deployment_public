@@ -29,9 +29,6 @@ import { Service } from "@shared/schema";
 
 // Define the form schema with only required fields
 const formSchema = z.object({
-  // These are strings in the form but will be converted to numbers when submitting
-  priceInr: z.string().optional(),
-  priceUsd: z.string().optional(),
   features: z.array(z.string()).default([]),
   isActive: z.boolean().default(true),
 });
@@ -49,8 +46,6 @@ export default function ServiceForm({ service, onSubmit, isPending }: ServiceFor
   
   // Prepare default values for the form - only the required fields
   const defaultValues = {
-    priceInr: service?.priceInr !== null && service?.priceInr !== undefined ? String(service.priceInr) : "",
-    priceUsd: service?.priceUsd !== null && service?.priceUsd !== undefined ? String(service.priceUsd) : "",
     features: Array.isArray(service?.features) ? service.features : [],
     isActive: service?.isActive !== false,
   };
@@ -83,7 +78,7 @@ export default function ServiceForm({ service, onSubmit, isPending }: ServiceFor
     }
   };
   
-  // Handle form submission and convert string inputs to appropriate types
+  // Handle form submission
   const handleSubmit = (values: FormValues) => {
     // Transform form values to match API expectations and preserve existing fields
     const transformedData = {
@@ -91,11 +86,11 @@ export default function ServiceForm({ service, onSubmit, isPending }: ServiceFor
       ...(service || {}),
       // Add required title field if not present (backend requires it)
       title: service?.title || "My Professional Service",
-      // Override with new values
+      // Override with new values from the form
       ...values,
-      // Convert price strings to numbers
-      priceInr: values.priceInr ? parseFloat(values.priceInr) : null,
-      priceUsd: values.priceUsd ? parseFloat(values.priceUsd) : null,
+      // Keep or set default price fields (required by backend API)
+      priceInr: service?.priceInr ?? null,
+      priceUsd: service?.priceUsd ?? null,
       // Set default values for required fields in case they're not in the service object
       category: service?.category || "other", 
     };
@@ -105,46 +100,7 @@ export default function ServiceForm({ service, onSubmit, isPending }: ServiceFor
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 pb-2">        
-        <div className="grid grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="priceInr"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Price (INR)</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="number" 
-                    placeholder="e.g., 5000" 
-                    {...field}
-                    value={field.value === null ? '' : field.value}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="priceUsd"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Price (USD)</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="number" 
-                    placeholder="e.g., 100" 
-                    {...field}
-                    value={field.value === null ? '' : field.value}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 pb-2">
         
         <FormField
           control={form.control}
