@@ -119,12 +119,10 @@ export function JobTitleCombobox({
               <CommandItem
                 key={title}
                 value={title}
-                onSelect={(currentValue) => {
+                onSelect={() => {
                   onChange(title);
-                  setSearchValue("");
                   setOpen(false);
                 }}
-                className="cursor-pointer"
               >
                 <Check
                   className={cn(
