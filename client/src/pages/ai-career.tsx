@@ -242,11 +242,11 @@ export default function AICareerPage() {
                     <Card className="p-4 sm:p-6">
                       <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Resume Analysis</h2>
                       <p className="text-sm text-muted-foreground mb-4">
-                        Upload your resume file or paste a link to your resume to get AI-powered analysis with suggestions for improvement by Musk. Please note that while Musk can provide general resume advice, it cannot directly download content from external links.
+                        Upload your resume file to get AI-powered analysis with suggestions for improvement by Musk.
                       </p>
                       
                       {/* File Upload Section */}
-                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-primary transition-colors mb-5">
+                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-primary transition-colors">
                         <div className="flex flex-col items-center">
                           <input 
                             id="resume-file-input"
@@ -334,36 +334,12 @@ export default function AICareerPage() {
                               document.getElementById('resume-file-input')?.click();
                             }}
                           >
-                            Upload Resume for Detailed Analysis
+                            {resumeAnalysisMutation.isPending && (
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            )}
+                            Upload Resume for Analysis
                           </Button>
                         </div>
-                      </div>
-                      
-                      <div className="flex items-center mb-4">
-                        <div className="border-t border-gray-300 flex-grow"></div>
-                        <span className="mx-4 text-xs text-gray-500">OR</span>
-                        <div className="border-t border-gray-300 flex-grow"></div>
-                      </div>
-                      
-                      {/* Link Input Section */}
-                      <div>
-                        <p className="text-sm text-gray-500 mb-2">Paste your resume link</p>
-                        <Textarea 
-                          className="min-h-[100px] sm:min-h-[120px] mb-4 w-full" 
-                          placeholder="Paste a link to your resume (e.g., Google Drive, Dropbox, OneDrive link). Note: Musk will provide general resume advice but cannot directly access the linked content."
-                          value={resumeText}
-                          onChange={(e) => setResumeText(e.target.value)}
-                        />
-                        <Button 
-                          className="w-full"
-                          onClick={() => resumeAnalysisMutation.mutate({ resumeText, userId: DEMO_USER_ID } as any)}
-                          disabled={resumeAnalysisMutation.isPending || !resumeText.trim()}
-                        >
-                          {resumeAnalysisMutation.isPending && (
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          )}
-                          Get General Resume Advice
-                        </Button>
                       </div>
                     </Card>
                   </TabsContent>

@@ -1466,11 +1466,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      const { resumeText, userId, fileData } = req.body;
+      const { userId, fileData } = req.body;
       
-      // Check if we have either resume text or file data
-      if (!resumeText && !fileData) {
-        return res.status(400).json({ message: "Resume link or file data is required" });
+      // Check if we have file data
+      if (!fileData) {
+        return res.status(400).json({ message: "Resume file data is required" });
       }
       
       // Import OpenAI service
@@ -1478,19 +1478,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       let analysis;
       
-      // If this is a link to a resume
-      if (resumeText && (resumeText.startsWith('http://') || resumeText.startsWith('https://'))) {
-        console.log("Processing resume link:", resumeText);
-        analysis = await analyzeResume(resumeText, false, true);
-      } else if (fileData) {
-        // If file data is provided, use that with isBase64=true
-        console.log("Processing resume file data");
-        analysis = await analyzeResume(fileData, true, false);
-      } else {
-        // Plain text resume
-        console.log("Processing plain text resume");
-        analysis = await analyzeResume(resumeText, false, false);
-      }
+      // Process the file data
+      console.log("Processing resume file data");
+      analysis = await analyzeResume(fileData, true, false);
       
       // If userId is provided, save the analysis as a chat message
       if (userId) {
