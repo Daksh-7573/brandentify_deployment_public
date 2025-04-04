@@ -246,18 +246,7 @@ export default function PortfolioBuilder() {
                   <h3 className="font-semibold">Layout Style</h3>
                   <p>{layoutOptions.find(l => l.id === form.watch("layout"))?.name || "Professional"}</p>
                 </div>
-                {form.watch("customTitle") && (
-                  <div>
-                    <h3 className="font-semibold">Custom Title</h3>
-                    <p>{form.watch("customTitle")}</p>
-                  </div>
-                )}
-                {form.watch("customBio") && (
-                  <div>
-                    <h3 className="font-semibold">Custom Bio</h3>
-                    <p>{form.watch("customBio")}</p>
-                  </div>
-                )}
+                {/* Custom Title and Bio fields removed from preview */}
                 <div>
                   <h3 className="font-semibold">Publication Status</h3>
                   <p>{form.watch("isPublished") ? "Published" : "Draft (not published)"}</p>
@@ -306,48 +295,7 @@ export default function PortfolioBuilder() {
                       )}
                     />
                     
-                    <FormField
-                      control={form.control}
-                      name="customTitle"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Portfolio Title</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="My Professional Portfolio"
-                              {...field}
-                              value={field.value || ""}
-                            />
-                          </FormControl>
-                          <FormDescription>
-                            Custom title for your portfolio (optional)
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="customBio"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Custom Bio</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              placeholder="Share additional information about yourself"
-                              className="min-h-24"
-                              {...field}
-                              value={field.value || ""}
-                            />
-                          </FormControl>
-                          <FormDescription>
-                            Add a custom bio to your portfolio (optional)
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    {/* Portfolio Title and Custom Bio fields removed as requested */}
                     
                     <FormField
                       control={form.control}
