@@ -158,6 +158,7 @@ export default function PortfolioBuilder() {
     
     console.log("Work Experience - Directly fetching latest experiences data", Date.now());
     try {
+      // First try fetching by userNumericId
       const response = await fetch(`/api/users/${userNumericId}/experiences`, {
         method: 'GET',
         headers: { 'Cache-Control': 'no-cache, no-store' }
@@ -165,7 +166,18 @@ export default function PortfolioBuilder() {
       
       if (response.ok) {
         const data = await response.json();
-        console.log("Work Experience - Got direct fetch data:", data);
+        console.log("Work Experience - Got direct fetch data for userNumericId:", data);
+        
+        // If no data, try with userId=0 (existing data)
+        if (data.length === 0) {
+          const fallbackResponse = await fetch(`/api/users/0/experiences`);
+          if (fallbackResponse.ok) {
+            const fallbackData = await fallbackResponse.json();
+            console.log("Work Experience - Got fallback data for userId=0:", fallbackData);
+            return fallbackData;
+          }
+        }
+        
         return data;
       }
     } catch (error) {
@@ -187,6 +199,7 @@ export default function PortfolioBuilder() {
     
     console.log("Skills - Directly fetching latest skills data", Date.now());
     try {
+      // First try fetching by userNumericId
       const response = await fetch(`/api/users/${userNumericId}/skills`, {
         method: 'GET',
         headers: { 'Cache-Control': 'no-cache, no-store' }
@@ -194,7 +207,18 @@ export default function PortfolioBuilder() {
       
       if (response.ok) {
         const data = await response.json();
-        console.log("Skills - Got direct fetch data:", data);
+        console.log("Skills - Got direct fetch data for userNumericId:", data);
+        
+        // If no data, try with userId=0 (existing data)
+        if (data.length === 0) {
+          const fallbackResponse = await fetch(`/api/users/0/skills`);
+          if (fallbackResponse.ok) {
+            const fallbackData = await fallbackResponse.json();
+            console.log("Skills - Got fallback data for userId=0:", fallbackData);
+            return fallbackData;
+          }
+        }
+        
         return data;
       }
     } catch (error) {
@@ -303,21 +327,39 @@ export default function PortfolioBuilder() {
         
         if (userNumericId) {
           try {
-            // Fetch latest experiences
+            // Fetch latest experiences from userNumericId
             const expResponse = await fetch(`/api/users/${userNumericId}/experiences`);
             if (expResponse.ok) {
               experiencesData = await expResponse.json();
-              console.log("Portfolio - Got latest experiences:", experiencesData);
+              console.log("Portfolio - Got latest experiences for userNumericId:", experiencesData);
+              
+              // If no experiences, try with userId=0 (for existing data)
+              if (experiencesData.length === 0) {
+                const fallbackResponse = await fetch(`/api/users/0/experiences`);
+                if (fallbackResponse.ok) {
+                  experiencesData = await fallbackResponse.json();
+                  console.log("Portfolio - Got fallback experiences for userId=0:", experiencesData);
+                }
+              }
             }
             
-            // Fetch latest skills
+            // Fetch latest skills from userNumericId
             const skillsResponse = await fetch(`/api/users/${userNumericId}/skills`);
             if (skillsResponse.ok) {
               skillsData = await skillsResponse.json();
-              console.log("Portfolio - Got latest skills:", skillsData);
+              console.log("Portfolio - Got latest skills for userNumericId:", skillsData);
+              
+              // If no skills, try with userId=0 (for existing data)
+              if (skillsData.length === 0) {
+                const fallbackResponse = await fetch(`/api/users/0/skills`);
+                if (fallbackResponse.ok) {
+                  skillsData = await fallbackResponse.json();
+                  console.log("Portfolio - Got fallback skills for userId=0:", skillsData);
+                }
+              }
             }
             
-            // Fetch latest projects
+            // Fetch latest projects - already linked to correct userNumericId
             const projectsResponse = await fetch(`/api/users/${userNumericId}/projects`);
             if (projectsResponse.ok) {
               projectsData = await projectsResponse.json();
