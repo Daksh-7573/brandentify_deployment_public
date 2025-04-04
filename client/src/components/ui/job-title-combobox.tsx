@@ -185,15 +185,23 @@ export function JobTitleCombobox({
                   onChange(title);
                   setOpen(false);
                 }}
-                className="cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors duration-150 flex items-center px-2 py-1.5 text-sm rounded-sm w-full"
+                className="hover:bg-accent hover:text-accent-foreground transition-colors duration-150 flex items-center px-2 py-1.5 text-sm rounded-sm w-full"
               >
-                <Check
-                  className={cn(
-                    "mr-2 h-4 w-4",
-                    value === title ? "opacity-100" : "opacity-0"
-                  )}
-                />
-                {title}
+                <div 
+                  className="flex items-center w-full cursor-pointer py-1 px-1 rounded-md hover:bg-primary/10 active:bg-primary/20" 
+                  onClick={() => {
+                    onChange(title);
+                    setOpen(false);
+                  }}
+                >
+                  <Check
+                    className={cn(
+                      "mr-2 h-4 w-4",
+                      value === title ? "opacity-100" : "opacity-0"
+                    )}
+                  />
+                  {title}
+                </div>
               </CommandItem>
             ))}
           </CommandGroup>
