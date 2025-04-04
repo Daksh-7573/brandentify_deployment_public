@@ -114,7 +114,7 @@ export default function Services() {
             <DialogHeader>
               <DialogTitle>Add Service</DialogTitle>
               <DialogDescription>
-                Enter a service you offer professionally.
+                Enter a single service you offer professionally (one at a time).
               </DialogDescription>
             </DialogHeader>
             <ServiceForm 

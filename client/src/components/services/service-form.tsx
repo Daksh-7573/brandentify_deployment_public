@@ -89,6 +89,9 @@ export default function ServiceForm({ service, onSubmit, isPending, existingServ
           render={({ field }) => (
             <FormItem>
               <FormLabel>Service Title*</FormLabel>
+              <FormDescription className="text-xs mb-2">
+                Enter a single professional service you offer.
+              </FormDescription>
               <FormControl>
                 <Input
                   placeholder="Enter your service title..."
