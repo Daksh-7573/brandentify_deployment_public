@@ -934,9 +934,17 @@ export default function PortfolioBuilder() {
               <Card className="overflow-hidden bg-white border-gray-200 shadow-lg">
                 <CardContent className="p-0">
                   <FreelancerHub 
-                    userInfo={userInfo}
-                    userSkills={skillsData}
-                    userProjects={projectsData}
+                    userInfo={{
+                      name: userData?.name || user?.name || '',
+                      title: userData?.title || '',
+                      industry: userData?.industry || '',
+                      domain: userData?.domain || '',
+                      location: userData?.location || '',
+                      email: userData?.email || user?.email || '',
+                      photoURL: userData?.photoURL || user?.photoURL || null,
+                    }}
+                    userSkills={skills || []}
+                    userProjects={projects || []}
                   />
                 </CardContent>
               </Card>
