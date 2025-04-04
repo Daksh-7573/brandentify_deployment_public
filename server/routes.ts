@@ -19,12 +19,14 @@ import {
   insertProjectSchema,
   insertProjectCollaboratorSchema,
   insertProjectEndorsementSchema,
+  insertPortfolioSchema,
   InsertWorkExperience,
   InsertEducation,
   InsertSkill,
   InsertProject,
   InsertProjectCollaborator,
-  InsertProjectEndorsement
+  InsertProjectEndorsement,
+  InsertPortfolio
 } from "@shared/schema";
 import { generateCareerAdvice } from "./services/ai-service";
 import { getJobTitleSuggestions } from "./services/title-suggestions";
@@ -2392,6 +2394,151 @@ ${extractedText.substring(0, 5000)}
     }
   });
   */
+
+  // Portfolio routes
+  apiRouter.get("/users/:userId/portfolio", async (req: Request, res: Response) => {
+    try {
+      const userIdParam = req.params.userId;
+      console.log(`[GET /users/:userId/portfolio] Request for portfolio with userId: ${userIdParam}`);
+      
+      let userId: number;
+      
+      // Improved detection of Firebase UIDs - they're long and contain non-numeric characters
+      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
+      
+      if (isFirebaseUid) {
+        console.log(`[GET /users/:userId/portfolio] userId appears to be a Firebase UID: ${userIdParam}`);
+        // Try to find user with this username (Firebase UID)
+        const user = await storage.getUserByUsername(userIdParam);
+        
+        if (!user) {
+          console.log(`[GET /users/:userId/portfolio] No user found with Firebase UID: ${userIdParam}`);
+          return res.status(404).json({ message: "User not found" });
+        }
+        
+        console.log(`[GET /users/:userId/portfolio] Found user with ID: ${user.id} for Firebase UID: ${userIdParam}`);
+        userId = user.id;
+      } else {
+        // Try to parse as numeric ID
+        userId = parseInt(userIdParam);
+        
+        if (isNaN(userId)) {
+          console.log(`[GET /users/:userId/portfolio] ID is not a valid numeric ID: ${userIdParam}`);
+          return res.status(400).json({ message: "Invalid user ID format" });
+        }
+        
+        console.log(`[GET /users/:userId/portfolio] Using numeric userId: ${userId}`);
+      }
+      
+      const portfolio = await storage.getPortfolioByUserId(userId);
+      
+      if (!portfolio) {
+        console.log(`[GET /users/:userId/portfolio] No portfolio found for userId: ${userId}`);
+        return res.status(404).json({ message: "Portfolio not found" });
+      }
+      
+      console.log(`[GET /users/:userId/portfolio] Found portfolio:`, portfolio);
+      res.json(portfolio);
+    } catch (error) {
+      console.error("Error fetching portfolio:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  apiRouter.post("/portfolios", async (req: Request, res: Response) => {
+    try {
+      console.log(`[POST /portfolios] Creating portfolio with data:`, req.body);
+      
+      // Check if we have a Firebase UID instead of numeric userId
+      if (typeof req.body.userId === 'string' && req.body.userId.length > 20) {
+        console.log(`[POST /portfolios] Received Firebase UID as userId: ${req.body.userId}`);
+        
+        // Look up the numeric userId for this Firebase UID
+        const user = await storage.getUserByUsername(req.body.userId);
+        
+        if (user) {
+          console.log(`[POST /portfolios] Found matching user with ID: ${user.id}`);
+          // Replace the Firebase UID with the numeric userId
+          req.body.userId = user.id;
+        } else {
+          console.log(`[POST /portfolios] No matching user found for Firebase UID: ${req.body.userId}`);
+          return res.status(404).json({ message: "User not found" });
+        }
+      }
+      
+      // Check if user already has a portfolio
+      const existingPortfolio = await storage.getPortfolioByUserId(req.body.userId);
+      if (existingPortfolio) {
+        console.log(`[POST /portfolios] User already has a portfolio, updating instead of creating`);
+        // Update the existing portfolio instead of creating a new one
+        const updatedPortfolio = await storage.updatePortfolio(existingPortfolio.id, req.body);
+        return res.status(200).json(updatedPortfolio);
+      }
+      
+      console.log(`[POST /portfolios] Processing with userId: ${req.body.userId}`);
+      const portfolioData = insertPortfolioSchema.parse(req.body);
+      const portfolio = await storage.createPortfolio(portfolioData);
+      console.log(`[POST /portfolios] Created portfolio with ID: ${portfolio.id}`);
+      res.status(201).json(portfolio);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        console.error(`[POST /portfolios] Validation error:`, error.errors);
+        res.status(400).json({ message: error.errors });
+      } else {
+        console.error(`[POST /portfolios] Server error:`, error);
+        res.status(500).json({ message: "Internal server error" });
+      }
+    }
+  });
+  
+  apiRouter.put("/portfolios/:id", async (req: Request, res: Response) => {
+    try {
+      const portfolioId = parseInt(req.params.id);
+      
+      if (isNaN(portfolioId)) {
+        return res.status(400).json({ message: "Invalid portfolio ID" });
+      }
+      
+      console.log(`[PUT /portfolios/:id] Updating portfolio with ID: ${portfolioId}`);
+      
+      // Find the portfolio first
+      const portfolio = await storage.updatePortfolio(portfolioId, req.body);
+      
+      if (!portfolio) {
+        return res.status(404).json({ message: "Portfolio not found" });
+      }
+      
+      console.log(`[PUT /portfolios/:id] Successfully updated portfolio:`, portfolio);
+      res.json(portfolio);
+    } catch (error) {
+      console.error("Error updating portfolio:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  apiRouter.delete("/portfolios/:id", async (req: Request, res: Response) => {
+    try {
+      const portfolioId = parseInt(req.params.id);
+      
+      if (isNaN(portfolioId)) {
+        return res.status(400).json({ message: "Invalid portfolio ID" });
+      }
+      
+      console.log(`[DELETE /portfolios/:id] Deleting portfolio with ID: ${portfolioId}`);
+      
+      const success = await storage.deletePortfolio(portfolioId);
+      
+      if (!success) {
+        return res.status(404).json({ message: "Portfolio not found" });
+      }
+      
+      console.log(`[DELETE /portfolios/:id] Successfully deleted portfolio with ID: ${portfolioId}`);
+      res.status(204).end();
+    } catch (error) {
+      console.error("Error deleting portfolio:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
 
   app.use("/api", apiRouter);
 

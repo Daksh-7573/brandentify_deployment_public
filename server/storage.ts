@@ -9,7 +9,8 @@ import {
   emailVerifications, EmailVerification, InsertEmailVerification,
   projects, Project, InsertProject,
   projectCollaborators, ProjectCollaborator, InsertProjectCollaborator,
-  projectEndorsements, ProjectEndorsement, InsertProjectEndorsement
+  projectEndorsements, ProjectEndorsement, InsertProjectEndorsement,
+  portfolios, Portfolio, InsertPortfolio
 } from "@shared/schema";
 
 // Interface for all storage operations
@@ -83,6 +84,12 @@ export interface IStorage {
   updateEmailVerification(id: number, verification: Partial<EmailVerification>): Promise<EmailVerification | undefined>;
   verifyEmail(email: string, token: string): Promise<boolean>;
   
+  // Portfolio operations
+  getPortfolioByUserId(userId: number): Promise<Portfolio | undefined>;
+  createPortfolio(portfolio: InsertPortfolio): Promise<Portfolio>;
+  updatePortfolio(id: number, portfolio: Partial<Portfolio>): Promise<Portfolio | undefined>;
+  deletePortfolio(id: number): Promise<boolean>;
+  
   // Debug and maintenance operations
   reinitializeDemoData(): Promise<void>;
   clearAllUsers(): Promise<void>;
@@ -101,6 +108,7 @@ export class MemStorage implements IStorage {
   private projects: Map<number, Project>;
   private projectCollaborators: Map<number, ProjectCollaborator>;
   private projectEndorsements: Map<number, ProjectEndorsement>;
+  private portfolios: Map<number, Portfolio>;
   
   private currentUserId: number;
   private currentResumeId: number;
@@ -113,6 +121,7 @@ export class MemStorage implements IStorage {
   private currentProjectId: number;
   private currentProjectCollaboratorId: number;
   private currentProjectEndorsementId: number;
+  private currentPortfolioId: number;
 
   constructor() {
     this.users = new Map();
@@ -126,6 +135,7 @@ export class MemStorage implements IStorage {
     this.projects = new Map();
     this.projectCollaborators = new Map();
     this.projectEndorsements = new Map();
+    this.portfolios = new Map();
     
     this.currentUserId = 1;
     this.currentResumeId = 1;
@@ -138,6 +148,7 @@ export class MemStorage implements IStorage {
     this.currentProjectId = 1;
     this.currentProjectCollaboratorId = 1;
     this.currentProjectEndorsementId = 1;
+    this.currentPortfolioId = 1;
     
     // Initialize with a default user for development/demo
     this.initializeDemoData();
@@ -211,7 +222,7 @@ export class MemStorage implements IStorage {
   }
   
   /**
-   * Clear all work experience, education, skills, and project data
+   * Clear all work experience, education, skills, project, and portfolio data
    */
   private clearDemoDataMaps(): void {
     // Clear all existing work experiences
@@ -231,6 +242,9 @@ export class MemStorage implements IStorage {
     
     // Clear all existing project endorsements
     this.projectEndorsements.clear();
+    
+    // Clear all existing portfolios
+    this.portfolios.clear();
   }
   
   /**
@@ -662,8 +676,8 @@ export class MemStorage implements IStorage {
       startDate: insertProject.startDate ?? null,
       projectUrl: insertProject.projectUrl ?? null,
       thumbnailUrl: insertProject.thumbnailUrl ?? null,
-      category: insertProject.category ?? null,
-      isVisible: insertProject.isVisible ?? true
+      thumbnailFile: insertProject.thumbnailFile ?? null,
+      category: insertProject.category ?? null
     };
     
     this.projects.set(id, project);
@@ -722,6 +736,7 @@ export class MemStorage implements IStorage {
       inviteExpires: null,
       email: insertCollaborator.email ?? null,
       userId: insertCollaborator.userId ?? null,
+      name: insertCollaborator.name || 'Team Member', // Use default if not provided
       role: insertCollaborator.role ?? 'Contributor'
     };
     
@@ -785,6 +800,51 @@ export class MemStorage implements IStorage {
   
   async deleteProjectEndorsement(id: number): Promise<boolean> {
     return this.projectEndorsements.delete(id);
+  }
+
+  // Portfolio operations
+  async getPortfolioByUserId(userId: number): Promise<Portfolio | undefined> {
+    return Array.from(this.portfolios.values())
+      .find(portfolio => portfolio.userId === userId);
+  }
+
+  async createPortfolio(insertPortfolio: InsertPortfolio): Promise<Portfolio> {
+    const id = this.currentPortfolioId++;
+    const createdAt = new Date();
+    const portfolio: Portfolio = {
+      id,
+      userId: insertPortfolio.userId,
+      layout: insertPortfolio.layout || "professional", // Default to professional if not specified
+      createdAt,
+      updatedAt: createdAt,
+      isPublished: insertPortfolio.isPublished ?? false,
+      customTitle: insertPortfolio.customTitle ?? null,
+      customBio: insertPortfolio.customBio ?? null,
+      publicUrl: insertPortfolio.publicUrl ?? null,
+      customizationOptions: insertPortfolio.customizationOptions ?? {},
+      featuredProjects: insertPortfolio.featuredProjects ?? [],
+      featuredSkills: insertPortfolio.featuredSkills ?? [],
+      featuredExperiences: insertPortfolio.featuredExperiences ?? []
+    };
+    this.portfolios.set(id, portfolio);
+    return portfolio;
+  }
+
+  async updatePortfolio(id: number, portfolioData: Partial<Portfolio>): Promise<Portfolio | undefined> {
+    const portfolio = this.portfolios.get(id);
+    if (!portfolio) return undefined;
+    
+    const updatedPortfolio = { 
+      ...portfolio, 
+      ...portfolioData,
+      updatedAt: new Date() 
+    };
+    this.portfolios.set(id, updatedPortfolio);
+    return updatedPortfolio;
+  }
+
+  async deletePortfolio(id: number): Promise<boolean> {
+    return this.portfolios.delete(id);
   }
 
   /**

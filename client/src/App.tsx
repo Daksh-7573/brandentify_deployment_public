@@ -11,6 +11,7 @@ import Dashboard from "@/pages/dashboard";
 import Profile from "@/pages/profile";
 import AICareer from "@/pages/ai-career";
 import SmartConnect from "@/pages/smart-connect";
+import PortfolioBuilder from "@/pages/portfolio-builder";
 import AuthPage from "@/pages/auth-page";
 import EmailVerification from "@/pages/email-verification";
 
@@ -53,6 +54,9 @@ function Router() {
       </Route>
       <Route path="/smart-connect">
         <ProtectedRoute path="/smart-connect" component={SmartConnect} />
+      </Route>
+      <Route path="/portfolio-builder">
+        <ProtectedRoute path="/portfolio-builder" component={PortfolioBuilder} />
       </Route>
       <Route component={NotFound} />
     </Switch>

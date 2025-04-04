@@ -210,3 +210,40 @@ export type InsertProjectCollaborator = z.infer<typeof insertProjectCollaborator
 
 export type ProjectEndorsement = typeof projectEndorsements.$inferSelect;
 export type InsertProjectEndorsement = z.infer<typeof insertProjectEndorsementSchema>;
+
+// Portfolio layout enum
+export const portfolioLayoutEnum = pgEnum("portfolio_layout", [
+  "professional", 
+  "creative", 
+  "minimal", 
+  "technical",
+  "executive"
+]);
+
+// Portfolio model
+export const portfolios = pgTable("portfolios", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  layout: portfolioLayoutEnum("layout").notNull().default("professional"),
+  customTitle: text("custom_title"), // Custom title for the portfolio
+  customBio: text("custom_bio"), // Additional bio information
+  customizationOptions: jsonb("customization_options").default("{}"), // JSON data for customization (colors, fonts, etc.)
+  isPublished: boolean("is_published").default(false), // Whether portfolio is public
+  publicUrl: text("public_url"), // Custom URL for the portfolio
+  featuredProjects: jsonb("featured_projects").default("[]"), // IDs of featured projects
+  featuredSkills: jsonb("featured_skills").default("[]"), // IDs of featured skills
+  featuredExperiences: jsonb("featured_experiences").default("[]"), // IDs of featured work experiences
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Insert schema for Portfolio
+export const insertPortfolioSchema = createInsertSchema(portfolios).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+// Export types for Portfolio
+export type Portfolio = typeof portfolios.$inferSelect;
+export type InsertPortfolio = z.infer<typeof insertPortfolioSchema>;
