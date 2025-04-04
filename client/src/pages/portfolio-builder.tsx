@@ -35,6 +35,7 @@ import FreelancerHub from "@/components/portfolio/templates/freelancer-hub";
 import TimelineStoryteller from "@/components/portfolio/templates/timeline-storyteller";
 import VisualExpert from "@/components/portfolio/templates/visual-expert";
 import CorporateExecutive from "@/components/portfolio/templates/corporate-executive";
+import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innovator";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -353,7 +354,11 @@ export default function PortfolioBuilder() {
     { 
       id: "dynamic-innovator", 
       name: "The Dynamic Innovator", 
-      description: "Futuristic high-tech design for AI experts, engineers & startups",
+      description: `✔ Theme: Futuristic & High-Tech
+✔ Best For: AI Experts, Engineers, Startups
+🎨 Color Palette: #000000 (Black), #0FF0FC (Neon Cyan), #FF007F (Neon Pink), #EAEAEA (Soft Gray)
+🖌 UI Elements: Glowing neon hover effects, data visualization elements, dark mode with floating UI elements
+🎬 Animations: Hacker-style glowing effects, AI-powered real-time animated skill visualization`,
       theme: "#0FF0FC"
     },
     { 
@@ -735,108 +740,22 @@ export default function PortfolioBuilder() {
             )}
             
             {form.watch("layout") === "dynamic-innovator" && (
-              <Card className="overflow-hidden bg-stone-50 border-stone-200">
-                <CardContent className="p-0">
-                  <div className="flex flex-col md:flex-row">
-                    <div className="md:w-2/5 bg-stone-900 text-stone-100 p-8">
-                      <div className="flex flex-col items-center md:items-start">
-                        <div className="h-32 w-32 overflow-hidden rounded-full bg-stone-800 mb-6 flex items-center justify-center border-4 border-stone-700">
-                          <ProfileImage
-                            src={user?.photoURL}
-                            alt={user?.name || "User profile"}
-                          />
-                        </div>
-                        <h2 className="text-2xl font-bold text-stone-100 mb-1">{userData?.name || user?.name || 'Executive Leader'}</h2>
-                        <p className="text-sm text-stone-400 mb-6">{userData?.title || 'Chief Executive Officer'}</p>
-                        <div className="w-16 h-1 bg-amber-500 mb-6 hidden md:block"></div>
-                        <div className="space-y-4 text-center md:text-left">
-                          <div>
-                            <p className="text-xs text-stone-500 uppercase tracking-wider">Email</p>
-                            <p className="text-sm">{userData?.email || user?.email || 'email@example.com'}</p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-stone-500 uppercase tracking-wider">Location</p>
-                            <p className="text-sm">New York, NY</p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-stone-500 uppercase tracking-wider">Connect</p>
-                            <div className="flex gap-3 mt-2 justify-center md:justify-start">
-                              <div className="w-8 h-8 rounded-full bg-stone-700 text-stone-300 flex items-center justify-center">
-                                <Linkedin className="h-4 w-4" />
-                              </div>
-                              <div className="w-8 h-8 rounded-full bg-stone-700 text-stone-300 flex items-center justify-center">
-                                <Mail className="h-4 w-4" />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="md:w-3/5 p-8">
-                      <div className="mb-8">
-                        <h3 className="text-lg font-bold text-stone-800 mb-3 flex items-center">
-                          <span className="w-6 h-6 rounded-full bg-amber-500 text-white text-xs flex items-center justify-center mr-2">
-                            <User className="h-3 w-3" />
-                          </span>
-                          Executive Summary
-                        </h3>
-                        <p className="text-stone-600">
-                          Seasoned executive with a track record of strategic leadership and business transformation. 
-                          Expertise in organizational development, stakeholder management, and driving sustainable growth.
-                        </p>
-                      </div>
-                      <div className="mb-8">
-                        <h3 className="text-lg font-bold text-stone-800 mb-3 flex items-center">
-                          <span className="w-6 h-6 rounded-full bg-amber-500 text-white text-xs flex items-center justify-center mr-2">
-                            <Award className="h-3 w-3" />
-                          </span>
-                          Key Achievements
-                        </h3>
-                        <ul className="space-y-2 text-stone-600">
-                          <li className="flex items-start">
-                            <span className="text-amber-500 mr-2">•</span>
-                            Led company through 200% growth over 3 years
-                          </li>
-                          <li className="flex items-start">
-                            <span className="text-amber-500 mr-2">•</span>
-                            Successfully navigated digital transformation
-                          </li>
-                          <li className="flex items-start">
-                            <span className="text-amber-500 mr-2">•</span>
-                            Expanded operations into 5 new international markets
-                          </li>
-                        </ul>
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-bold text-stone-800 mb-3 flex items-center">
-                          <span className="w-6 h-6 rounded-full bg-amber-500 text-white text-xs flex items-center justify-center mr-2">
-                            <Briefcase className="h-3 w-3" />
-                          </span>
-                          Areas of Expertise
-                        </h3>
-                        <div className="grid grid-cols-2 gap-2">
-                          <div className="flex items-center">
-                            <div className="w-2 h-2 rounded-full bg-amber-500 mr-2"></div>
-                            <span className="text-stone-600 text-sm">Strategic Planning</span>
-                          </div>
-                          <div className="flex items-center">
-                            <div className="w-2 h-2 rounded-full bg-amber-500 mr-2"></div>
-                            <span className="text-stone-600 text-sm">Corporate Finance</span>
-                          </div>
-                          <div className="flex items-center">
-                            <div className="w-2 h-2 rounded-full bg-amber-500 mr-2"></div>
-                            <span className="text-stone-600 text-sm">Team Leadership</span>
-                          </div>
-                          <div className="flex items-center">
-                            <div className="w-2 h-2 rounded-full bg-amber-500 mr-2"></div>
-                            <span className="text-stone-600 text-sm">Business Development</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <DynamicInnovator
+                userInfo={{
+                  name: userData?.name || user?.name || '',
+                  title: userData?.title || null,
+                  industry: userData?.industry || null,
+                  domain: userData?.domain || null,
+                  location: userData?.location || null,
+                  email: userData?.email || user?.email || null,
+                  photoURL: userData?.photoURL || user?.photoURL || null,
+                  lookingFor: userData?.lookingFor || null,
+                  jobLevel: userData?.jobLevel || null
+                }}
+                userSkills={userSkills || []}
+                userExperiences={userExperiences || []}
+                userProjects={userProjects || []}
+              />
             )}
             
             {form.watch("layout") === "freelancer-hub" && (
