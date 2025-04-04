@@ -180,11 +180,12 @@ export function JobTitleCombobox({
               <CommandItem
                 key={title}
                 value={title}
-                onSelect={(currentValue) => {
-                  onChange(currentValue);
+                onSelect={() => {
+                  // Set the title value directly instead of using 'currentValue'
+                  onChange(title);
                   setOpen(false);
                 }}
-                className="cursor-pointer hover:bg-accent hover:text-accent-foreground"
+                className="cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors duration-150 flex items-center px-2 py-1.5 text-sm rounded-sm w-full"
               >
                 <Check
                   className={cn(
