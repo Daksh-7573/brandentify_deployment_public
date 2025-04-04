@@ -87,8 +87,13 @@ export default function PortfolioBuilder() {
     username: string;
     email: string;
     name: string;
-    title: string;
+    title: string | null;
     photoURL: string | null;
+    industry: string | null;
+    domain: string | null;
+    location: string | null;
+    jobLevel: string | null;
+    lookingFor: string | null;
     // Add other fields as needed
   };
   
@@ -290,28 +295,87 @@ export default function PortfolioBuilder() {
       setIsAnalyzingProfile(false);
       setIsGenerating(true);
 
-      // Prepare the portfolio data with user information
-      const selectedLayout = form.getValues().layout;
-      const publicUrl = form.getValues().publicUrl;
+      // Directly fetch the most up-to-date data
+      const fetchAllUserData = async () => {
+        let experiencesData = [];
+        let skillsData = [];
+        let projectsData = [];
+        
+        if (userNumericId) {
+          try {
+            // Fetch latest experiences
+            const expResponse = await fetch(`/api/users/${userNumericId}/experiences`);
+            if (expResponse.ok) {
+              experiencesData = await expResponse.json();
+              console.log("Portfolio - Got latest experiences:", experiencesData);
+            }
+            
+            // Fetch latest skills
+            const skillsResponse = await fetch(`/api/users/${userNumericId}/skills`);
+            if (skillsResponse.ok) {
+              skillsData = await skillsResponse.json();
+              console.log("Portfolio - Got latest skills:", skillsData);
+            }
+            
+            // Fetch latest projects
+            const projectsResponse = await fetch(`/api/users/${userNumericId}/projects`);
+            if (projectsResponse.ok) {
+              projectsData = await projectsResponse.json();
+              console.log("Portfolio - Got latest projects:", projectsData);
+            }
+          } catch (error) {
+            console.error("Failed to fetch latest user data:", error);
+          }
+        }
+
+        // Prepare the portfolio data with user information
+        const selectedLayout = form.getValues().layout;
+        const publicUrl = form.getValues().publicUrl;
+        
+        // Get all user details for Musk AI to analyze
+        const userDetails = {
+          name: userData?.name || user?.name || '',
+          title: userData?.title || '',
+          industry: userData?.industry || '',
+          domain: userData?.domain || '',
+          location: userData?.location || '',
+          jobLevel: userData?.jobLevel || '',
+          lookingFor: userData?.lookingFor || '',
+          email: userData?.email || user?.email || '',
+          photoURL: userData?.photoURL || user?.photoURL || null,
+        };
+        
+        console.log("Portfolio - User details for AI analysis:", userDetails);
+        console.log("Portfolio - Layout selected:", selectedLayout);
       
-      // Prepare portfolio data with user information
-      const portfolioData = {
-        layout: selectedLayout,
-        publicUrl: publicUrl || null,
-        isPublished: false,
-        customTitle: userData?.name || user?.name || '',
-        customBio: userData?.title || '',
-        customizationOptions: {
-          theme: selectedLayout === 'creative' ? 'colorful' : 'professional',
-          showContact: true
-        },
-        featuredProjects: projects ? projects.map(project => project.id) : [],
-        featuredSkills: skills ? skills.map(skill => skill.id) : [],
-        featuredExperiences: experiences ? experiences.map(exp => exp.id) : []
-      };
-      
-      // Simulate AI generating the portfolio
-      setTimeout(() => {
+        // Prepare portfolio data with user information
+        const portfolioData = {
+          layout: selectedLayout,
+          publicUrl: publicUrl || null,
+          isPublished: false,
+          customTitle: userDetails.name,
+          customBio: userDetails.title 
+            ? `${userDetails.title}${userDetails.industry ? ` in ${userDetails.industry}` : ''}`
+            : (userDetails.industry ? `Professional in ${userDetails.industry}` : ''),
+          customizationOptions: {
+            theme: selectedLayout === 'creative' ? 'colorful' : 'professional',
+            showContact: true
+          },
+          featuredProjects: projectsData.map((project: Project) => project.id),
+          featuredSkills: skillsData.map((skill: Skill) => skill.id),
+          featuredExperiences: experiencesData.map((exp: WorkExperience) => exp.id),
+          // Additional analyzed data fields
+          skills: skillsData,
+          experiences: experiencesData,
+          projects: projectsData,
+          userData: userDetails,
+        };
+        
+        console.log("Portfolio - AI generated data:", portfolioData);
+        
+        // Save the analyzed data for preview templates
+        localStorage.setItem('portfolio-preview-data', JSON.stringify(portfolioData));
+        
         // Set the updated form values to include our personalized data
         form.setValue('isPublished', false);
         
@@ -319,7 +383,10 @@ export default function PortfolioBuilder() {
         setIsGenerating(false);
         setGenerationComplete(true);
         setCurrentStep(STEPS.PREVIEW);
-      }, 2500);
+      };
+      
+      // Execute the data fetching and processing
+      fetchAllUserData();
     }, 2000);
   };
 
@@ -455,6 +522,37 @@ export default function PortfolioBuilder() {
           </div>
         );
       case STEPS.PREVIEW:
+        // Get portfolio data from local storage
+        const storedData = localStorage.getItem('portfolio-preview-data');
+        const portfolioPreviewData = storedData ? JSON.parse(storedData) : null;
+        
+        // Extract user data and content from stored portfolio data
+        const userInfo = portfolioPreviewData?.userData || {
+          name: userData?.name || user?.name || '',
+          title: userData?.title || '',
+          industry: userData?.industry || '',
+          domain: userData?.domain || '',
+          location: userData?.location || '',
+          email: userData?.email || user?.email || '',
+          photoURL: userData?.photoURL || user?.photoURL || null,
+        };
+        
+        // Extract skills, sorted by proficiency
+        const userSkills = portfolioPreviewData?.skills || skills || [];
+        const sortedSkills = [...userSkills].sort((a, b) => b.proficiency - a.proficiency);
+        
+        // Extract experiences, sorted by date
+        const userExperiences = portfolioPreviewData?.experiences || experiences || [];
+        const sortedExperiences = [...userExperiences].sort((a, b) => 
+          new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+        );
+        
+        // Extract projects, sorted by date
+        const userProjects = portfolioPreviewData?.projects || projects || [];
+        const sortedProjects = [...userProjects].sort((a, b) => 
+          new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+        );
+        
         return (
           <div className="space-y-8">
             <div className="bg-primary/5 p-6 rounded-lg border mb-8">
@@ -472,31 +570,73 @@ export default function PortfolioBuilder() {
                   <div className="absolute -top-16 left-6">
                     <div className="h-24 w-24 overflow-hidden rounded-full bg-white ring-4 ring-white flex items-center justify-center">
                       <ProfileImage
-                        src={user?.photoURL}
-                        alt={user?.name || "User profile"}
+                        src={userInfo.photoURL}
+                        alt={userInfo.name || "User profile"}
                       />
                     </div>
                   </div>
                   <div className="pl-32 mt-2">
-                    <h2 className="text-xl font-bold text-gray-900">{userData?.name || user?.name || 'Professional'}</h2>
-                    <p className="text-sm text-gray-500 mt-1">{userData?.title || 'Professional'}</p>
+                    <h2 className="text-xl font-bold text-gray-900">{userInfo.name}</h2>
+                    <p className="text-sm text-gray-500 mt-1">
+                      {userInfo.title}
+                      {userInfo.industry ? ` in ${userInfo.industry}` : ''}
+                      {userInfo.location ? ` • ${userInfo.location}` : ''}
+                    </p>
+                    
                     <div className="mt-4 grid grid-cols-3 gap-4">
                       <div className="p-3 border rounded-md text-center">
                         <p className="text-sm font-medium">Experience</p>
-                        <p className="text-2xl font-bold text-primary">{experiences?.length || 0}</p>
+                        <p className="text-2xl font-bold text-primary">{userExperiences.length}</p>
                         <p className="text-xs text-gray-500">Positions</p>
                       </div>
                       <div className="p-3 border rounded-md text-center">
                         <p className="text-sm font-medium">Projects</p>
-                        <p className="text-2xl font-bold text-primary">{projects?.length || 0}</p>
+                        <p className="text-2xl font-bold text-primary">{userProjects.length}</p>
                         <p className="text-xs text-gray-500">Completed</p>
                       </div>
                       <div className="p-3 border rounded-md text-center">
                         <p className="text-sm font-medium">Skills</p>
-                        <p className="text-2xl font-bold text-primary">{skills?.length || 0}</p>
-                        <p className="text-xs text-gray-500">Verified</p>
+                        <p className="text-2xl font-bold text-primary">{userSkills.length}</p>
+                        <p className="text-xs text-gray-500">{userInfo.domain ? userInfo.domain : 'Professional'}</p>
                       </div>
                     </div>
+                    
+                    {userExperiences.length > 0 && (
+                      <div className="mt-6">
+                        <h3 className="text-lg font-semibold mb-3">Professional Experience</h3>
+                        <div className="space-y-3">
+                          {sortedExperiences.slice(0, 2).map((exp) => (
+                            <div key={exp.id} className="border rounded-md p-3">
+                              <div className="flex justify-between items-start">
+                                <div>
+                                  <h4 className="font-medium">{exp.title}</h4>
+                                  <p className="text-sm text-gray-500">{exp.company}</p>
+                                </div>
+                                <Badge variant="outline" className="text-xs">
+                                  {exp.industry}
+                                </Badge>
+                              </div>
+                              {exp.description && (
+                                <p className="text-sm text-gray-600 mt-2 line-clamp-2">{exp.description}</p>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {userSkills.length > 0 && (
+                      <div className="mt-6">
+                        <h3 className="text-lg font-semibold mb-3">Top Skills</h3>
+                        <div className="flex flex-wrap gap-2">
+                          {sortedSkills.slice(0, 5).map((skill) => (
+                            <Badge key={skill.id} variant="secondary">
+                              {skill.name} ({skill.level})
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -508,15 +648,39 @@ export default function PortfolioBuilder() {
                   <div className="grid grid-cols-1 md:grid-cols-2">
                     <div className="p-8 flex flex-col justify-center">
                       <h2 className="text-3xl font-bold mb-2 bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
-                        {userData?.name || user?.name || 'Creative Professional'}
+                        {userInfo.name}
                       </h2>
-                      <p className="text-base font-medium text-gray-800 mb-4">{userData?.title || 'Designer & Creator'}</p>
+                      <p className="text-base font-medium text-gray-800 mb-4">
+                        {userInfo.title || userInfo.domain || 'Creative Professional'}
+                      </p>
+                      
                       <div className="flex flex-wrap gap-2 mb-4">
-                        <Badge className="bg-pink-100 text-pink-800 hover:bg-pink-200">UI/UX Design</Badge>
-                        <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200">Illustration</Badge>
-                        <Badge className="bg-indigo-100 text-indigo-800 hover:bg-indigo-200">Animation</Badge>
-                        <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">Art Direction</Badge>
+                        {sortedSkills.slice(0, 4).map((skill) => (
+                          <Badge 
+                            key={skill.id} 
+                            className={`
+                              ${skill.level === 'Expert' ? 'bg-pink-100 text-pink-800 hover:bg-pink-200' : 
+                                skill.level === 'Advanced' ? 'bg-purple-100 text-purple-800 hover:bg-purple-200' :
+                                skill.level === 'Intermediate' ? 'bg-indigo-100 text-indigo-800 hover:bg-indigo-200' :
+                                'bg-blue-100 text-blue-800 hover:bg-blue-200'}
+                            `}
+                          >
+                            {skill.name}
+                          </Badge>
+                        ))}
+                        
+                        {sortedSkills.length === 0 && (
+                          <>
+                            <Badge className="bg-pink-100 text-pink-800 hover:bg-pink-200">
+                              {userInfo.domain || 'Design'}
+                            </Badge>
+                            <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200">
+                              {userInfo.industry || 'Creative'}
+                            </Badge>
+                          </>
+                        )}
                       </div>
+                      
                       <div className="flex gap-4 mt-4">
                         <div className="w-8 h-8 rounded-full bg-pink-500 text-white flex items-center justify-center">
                           <Mail className="h-4 w-4" />
@@ -535,8 +699,8 @@ export default function PortfolioBuilder() {
                     <div className="flex items-center justify-center p-6 relative">
                       <div className="relative overflow-hidden rounded-full h-64 w-64 bg-gradient-to-br from-pink-400 to-purple-600 p-1">
                         <ProfileImage
-                          src={user?.photoURL}
-                          alt={user?.name || "User profile"}
+                          src={userInfo.photoURL}
+                          alt={userInfo.name || "User profile"}
                           className="h-full w-full object-cover rounded-full"
                         />
                       </div>
