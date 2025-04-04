@@ -1511,13 +1511,22 @@ export default function Profile() {
           <div className="mx-auto max-w-3xl">
             <div className="flex items-center justify-between mb-6">
               <h1 className="text-2xl font-semibold text-gray-900">Profile</h1>
-              <div className="text-right">
-                <p className="text-sm text-gray-500">Profile Completion</p>
-                <div className="flex items-center mt-1">
-                  <div className="w-36 bg-gray-200 rounded-full h-2.5 mr-2">
-                    <div id="profile-completion-bar" className="bg-primary h-2.5 rounded-full" style={{ width: '65%' }}></div>
+              <div className="flex items-center gap-4">
+                <Button 
+                  onClick={() => setLocation('/portfolio-builder')}
+                  className="flex items-center gap-2"
+                >
+                  <i className="fas fa-id-card"></i>
+                  Portfolio Builder
+                </Button>
+                <div className="text-right">
+                  <p className="text-sm text-gray-500">Profile Completion</p>
+                  <div className="flex items-center mt-1">
+                    <div className="w-36 bg-gray-200 rounded-full h-2.5 mr-2">
+                      <div id="profile-completion-bar" className="bg-primary h-2.5 rounded-full" style={{ width: '65%' }}></div>
+                    </div>
+                    <span className="text-sm font-medium text-gray-900">65%</span>
                   </div>
-                  <span className="text-sm font-medium text-gray-900">65%</span>
                 </div>
               </div>
             </div>
