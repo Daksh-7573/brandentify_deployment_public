@@ -1,14 +1,10 @@
-import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { Loader2, PlusCircle, X } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -18,18 +14,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { Service } from "@shared/schema";
 
 // Define the form schema with only required fields
 const formSchema = z.object({
-  features: z.array(z.string()).default([]),
+  title: z.string().min(1, "Service title is required"),
   isActive: z.boolean().default(true),
 });
 
@@ -39,14 +29,18 @@ interface ServiceFormProps {
   service?: Service;
   onSubmit: (data: any) => void; // Use any to allow us to transform the data before submission
   isPending: boolean;
+  existingServicesCount?: number;
 }
 
-export default function ServiceForm({ service, onSubmit, isPending }: ServiceFormProps) {
-  const [featureInput, setFeatureInput] = useState("");
+export default function ServiceForm({ service, onSubmit, isPending, existingServicesCount = 0 }: ServiceFormProps) {
+  // Maximum allowed services (6)
+  const MAX_SERVICES = 6;
+  const isEditing = !!service;
+  const canAddService = isEditing || existingServicesCount < MAX_SERVICES;
   
   // Prepare default values for the form - only the required fields
   const defaultValues = {
-    features: Array.isArray(service?.features) ? service.features : [],
+    title: service?.title || "",
     isActive: service?.isActive !== false,
   };
   
@@ -55,53 +49,35 @@ export default function ServiceForm({ service, onSubmit, isPending }: ServiceFor
     defaultValues,
   });
   
-  const handleAddFeature = () => {
-    if (featureInput.trim() === "") return;
-    
-    const currentFeatures = form.getValues("features") || [];
-    form.setValue("features", [...currentFeatures, featureInput.trim()]);
-    setFeatureInput("");
-  };
-  
-  const handleRemoveFeature = (index: number) => {
-    const currentFeatures = form.getValues("features") || [];
-    form.setValue(
-      "features",
-      currentFeatures.filter((_, i) => i !== index)
-    );
-  };
-  
-  const handleFeatureKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleAddFeature();
-    }
-  };
-  
   // Handle form submission
   const handleSubmit = (values: FormValues) => {
-    // Extract the service title from features array - use the first feature as the title
-    const serviceTitle = values.features && values.features.length > 0 
-      ? values.features[0] 
-      : (service?.title || "My Professional Service");
-      
-    // Transform form values to match API expectations and preserve existing fields
+    // Transform form values to match API expectations
     const transformedData = {
-      // Keep existing service values if editing 
+      // Start with default values for all required fields
+      category: "other",
+      features: [],
+      priceInr: null,
+      priceUsd: null,
+      // Then add existing service values if editing
       ...(service || {}),
-      // Set the title from the first feature
-      title: serviceTitle,
-      // Override with new values from the form
+      // Finally override with new values from the form
       ...values,
-      // Keep or set default price fields (required by backend API)
-      priceInr: service?.priceInr ?? null,
-      priceUsd: service?.priceUsd ?? null,
-      // Set default values for required fields in case they're not in the service object
-      category: service?.category || "other", 
     };
     
     onSubmit(transformedData);
   };
+
+  // If we can't add more services and we're not editing an existing one, show a message
+  if (!canAddService && !isEditing) {
+    return (
+      <div className="p-4 text-center border rounded-md">
+        <p className="text-amber-600 font-medium">Maximum of 6 services reached</p>
+        <p className="text-muted-foreground mt-1 text-sm">
+          Please delete an existing service before adding a new one.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <Form {...form}>
@@ -109,46 +85,16 @@ export default function ServiceForm({ service, onSubmit, isPending }: ServiceFor
         
         <FormField
           control={form.control}
-          name="features"
-          render={() => (
+          name="title"
+          render={({ field }) => (
             <FormItem>
               <FormLabel>Service Title*</FormLabel>
-              <div className="space-y-2">
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="Enter service title..."
-                    value={featureInput}
-                    onChange={(e) => setFeatureInput(e.target.value)}
-                    onKeyDown={handleFeatureKeyDown}
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleAddFeature}
-                  >
-                    <PlusCircle className="h-4 w-4" />
-                  </Button>
-                </div>
-                
-                <div className="space-y-2">
-                  {form.watch("features")?.map((feature, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between rounded-md border px-3 py-2"
-                    >
-                      <span>{feature}</span>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleRemoveFeature(index)}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <FormControl>
+                <Input
+                  placeholder="Enter your service title..."
+                  {...field}
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}

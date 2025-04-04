@@ -101,7 +101,7 @@ export default function Services() {
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <div>
           <CardTitle className="text-xl font-bold">My Services</CardTitle>
-          <CardDescription>Showcase your professional services with pricing and features</CardDescription>
+          <CardDescription>List professional services you provide (max 6)</CardDescription>
         </div>
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
@@ -112,14 +112,15 @@ export default function Services() {
           </DialogTrigger>
           <DialogContent className="sm:max-w-[525px] max-h-[88vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Create New Service</DialogTitle>
+              <DialogTitle>Add Service</DialogTitle>
               <DialogDescription>
-                Add a new service you offer to clients.
+                Enter a service you offer professionally.
               </DialogDescription>
             </DialogHeader>
             <ServiceForm 
               onSubmit={handleCreate} 
-              isPending={isPendingCreate} 
+              isPending={isPendingCreate}
+              existingServicesCount={services.length}
             />
           </DialogContent>
         </Dialog>
@@ -136,16 +137,17 @@ export default function Services() {
             <p className="mt-2 text-muted-foreground">No services added yet.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             {services.map((service) => (
-              <div key={service.id} className="border border-gray-200 rounded-md p-4">
-                <div className="flex justify-between mb-2">
-                  <Badge className="mb-1">
-                    {service.category.charAt(0).toUpperCase() + service.category.slice(1)}
-                  </Badge>
-                  <div className="flex items-center space-x-2">
+              <div 
+                key={service.id} 
+                className="border bg-background rounded-lg p-4 transition-all hover:shadow-md hover:border-primary/30"
+              >
+                <div className="flex justify-between items-start">
+                  <h3 className="font-medium text-base line-clamp-2 flex-1">{service.title}</h3>
+                  <div className="flex items-center space-x-1 ml-2">
                     <button 
-                      className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                      className="text-muted-foreground hover:text-primary focus:outline-none rounded-full p-1 hover:bg-muted"
                       onClick={() => {
                         setSelectedService(service);
                         setIsEditDialogOpen(true);
@@ -154,7 +156,7 @@ export default function Services() {
                       <Edit className="h-3.5 w-3.5" />
                     </button>
                     <button 
-                      className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                      className="text-muted-foreground hover:text-destructive focus:outline-none rounded-full p-1 hover:bg-muted"
                       onClick={() => {
                         setSelectedService(service);
                         setIsDeleteDialogOpen(true);
@@ -165,46 +167,10 @@ export default function Services() {
                   </div>
                 </div>
                 
-                <h3 className="font-medium mb-1">{service.title}</h3>
-                
-                <div className="flex items-center mb-2">
-                  {service.priceInr !== null && (
-                    <span className="font-bold text-primary text-lg">
-                      {formatCurrency(Number(service.priceInr), 'INR')}
-                      {service.isHourly && <span className="text-sm font-normal text-muted-foreground ml-1">/hr</span>}
-                    </span>
-                  )}
-                  {service.priceUsd !== null && (
-                    <span className="text-xs text-muted-foreground ml-2">
-                      ({formatCurrency(Number(service.priceUsd), 'USD')}
-                      {service.isHourly && <span>/hr</span>})
-                    </span>
-                  )}
-                </div>
-                
-                <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                  {service.description}
-                </p>
-                
-                {Array.isArray(service.features) && service.features.length > 0 && (
-                  <div className="mt-2">
-                    <p className="text-xs font-medium">Features:</p>
-                    <ul className="text-xs text-muted-foreground mt-1 space-y-1 list-disc pl-4">
-                      {service.features.slice(0, 3).map((feature: string, index: number) => (
-                        <li key={index}>{feature}</li>
-                      ))}
-                      {service.features.length > 3 && (
-                        <li className="text-primary">+{service.features.length - 3} more</li>
-                      )}
-                    </ul>
-                  </div>
-                )}
-                
-                <div className="mt-3 pt-3 border-t">
-                  <Button size="sm" className="w-full gap-1 text-xs">
-                    <ShoppingCart className="h-3 w-3" />
-                    <span>Request Service</span>
-                  </Button>
+                <div className="mt-2 flex items-center">
+                  <Badge variant="outline" className={service.isActive ? 'bg-primary/10 text-primary border-primary/30' : 'bg-muted'}>
+                    {service.isActive ? 'Active' : 'Inactive'}
+                  </Badge>
                 </div>
               </div>
             ))}
@@ -218,7 +184,7 @@ export default function Services() {
           <DialogHeader>
             <DialogTitle>Edit Service</DialogTitle>
             <DialogDescription>
-              Update your service details.
+              Update your professional service.
             </DialogDescription>
           </DialogHeader>
           {selectedService && (
@@ -226,6 +192,7 @@ export default function Services() {
               service={selectedService}
               onSubmit={handleUpdate} 
               isPending={isPendingUpdate}
+              existingServicesCount={services.length}
             />
           )}
         </DialogContent>
