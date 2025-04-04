@@ -25,12 +25,10 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -38,7 +36,7 @@ import { z } from "zod";
 import { useAuth } from "@/hooks/use-auth";
 import Sidebar from "@/components/layout/sidebar";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Loader2, Layout, Palette, Eye, EyeOff, Save, Check } from "lucide-react";
+import { Loader2, Layout, Eye, EyeOff, Save, Check } from "lucide-react";
 
 // Define AuthUser type to match the one in auth-context
 type AuthUser = {
@@ -71,7 +69,7 @@ export default function PortfolioBuilder() {
   const { toast } = useToast();
   const [location, setLocation] = useLocation();
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState("layout");
+  // Tab state removed as we're using single page layout
   const [preview, setPreview] = useState(false);
 
   // Fetch existing portfolio if it exists
@@ -275,154 +273,127 @@ export default function PortfolioBuilder() {
           ) : (
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                <Tabs value={activeTab} onValueChange={setActiveTab}>
-                  <TabsList className="mb-4">
-                    <TabsTrigger value="layout" className="flex items-center gap-2">
-                      <Layout className="h-4 w-4" /> Layout
-                    </TabsTrigger>
-                    <TabsTrigger value="content" className="flex items-center gap-2">
-                      <Palette className="h-4 w-4" /> Content
-                    </TabsTrigger>
-                  </TabsList>
-                  
-                  <TabsContent value="layout" className="space-y-6">
-                    <div className="grid gap-6">
-                      <FormField
-                        control={form.control}
-                        name="layout"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Portfolio Layout</FormLabel>
-                            <Select
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select a layout style" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {layoutOptions.map(layout => (
-                                  <SelectItem key={layout.id} value={layout.id}>
-                                    {layout.name}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormDescription>
-                              Choose a layout that best represents your professional style
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="isPublished"
-                        render={({ field }) => (
-                          <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                <div className="space-y-6">
+                  <div className="grid gap-6">
+                    <FormField
+                      control={form.control}
+                      name="layout"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Portfolio Layout</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
                             <FormControl>
-                              <Checkbox
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
-                              />
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select a layout style" />
+                              </SelectTrigger>
                             </FormControl>
-                            <div className="space-y-1 leading-none">
-                              <FormLabel>
-                                Publish Portfolio
-                              </FormLabel>
-                              <FormDescription>
-                                Make your portfolio visible to the public
-                              </FormDescription>
-                            </div>
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="publicUrl"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Custom URL</FormLabel>
-                            <FormControl>
-                              <Input
-                                placeholder="your-custom-url"
-                                {...field}
-                                value={field.value || ""}
-                              />
-                            </FormControl>
+                            <SelectContent>
+                              {layoutOptions.map(layout => (
+                                <SelectItem key={layout.id} value={layout.id}>
+                                  {layout.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormDescription>
+                            Choose a layout that best represents your professional style
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="customTitle"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Portfolio Title</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="My Professional Portfolio"
+                              {...field}
+                              value={field.value || ""}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Custom title for your portfolio (optional)
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="customBio"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Custom Bio</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              placeholder="Share additional information about yourself"
+                              className="min-h-24"
+                              {...field}
+                              value={field.value || ""}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Add a custom bio to your portfolio (optional)
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="isPublished"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                          <div className="space-y-1 leading-none">
+                            <FormLabel>
+                              Publish Portfolio
+                            </FormLabel>
                             <FormDescription>
-                              Create a custom URL for your portfolio (optional)
+                              Make your portfolio visible to the public
                             </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </TabsContent>
-                  
-                  <TabsContent value="content" className="space-y-6">
-                    <div className="grid gap-6">
-                      <FormField
-                        control={form.control}
-                        name="customTitle"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Portfolio Title</FormLabel>
-                            <FormControl>
-                              <Input
-                                placeholder="My Professional Portfolio"
-                                {...field}
-                                value={field.value || ""}
-                              />
-                            </FormControl>
-                            <FormDescription>
-                              Custom title for your portfolio (optional)
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="customBio"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Custom Bio</FormLabel>
-                            <FormControl>
-                              <Textarea
-                                placeholder="Share additional information about yourself"
-                                className="min-h-24"
-                                {...field}
-                                value={field.value || ""}
-                              />
-                            </FormControl>
-                            <FormDescription>
-                              Add a custom bio to your portfolio (optional)
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      {/* Featured content selectors would go here in a real implementation */}
-                      <div className="border rounded-lg p-4">
-                        <h3 className="font-medium mb-2">Featured Content</h3>
-                        <p className="text-sm text-muted-foreground mb-4">
-                          Select projects, skills, and experiences to highlight in your portfolio.
-                          This feature will be fully implemented in a future update.
-                        </p>
-                        <Button variant="outline" type="button" disabled>
-                          Select Featured Content
-                        </Button>
-                      </div>
-                    </div>
-                  </TabsContent>
-                </Tabs>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="publicUrl"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Custom URL</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="your-custom-url"
+                              {...field}
+                              value={field.value || ""}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Create a custom URL for your portfolio (optional)
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
               </form>
             </Form>
           )}
