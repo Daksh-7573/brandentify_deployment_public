@@ -351,12 +351,7 @@ export default function Skills() {
                 </div>
               ))}
             </div>
-          ) : (
-            <div className="py-6 text-center">
-              <Lightbulb className="mx-auto h-10 w-10 text-muted-foreground/50" />
-              <p className="mt-2 text-muted-foreground">No skills added yet.</p>
-            </div>
-          )}
+          ) : null}
         </CardContent>
       </Card>
       
