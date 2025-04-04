@@ -930,6 +930,18 @@ export default function PortfolioBuilder() {
               </Card>
             )}
             
+            {form.watch("layout") === "freelancer-hub" && (
+              <Card className="overflow-hidden bg-white border-gray-200 shadow-lg">
+                <CardContent className="p-0">
+                  <FreelancerHub 
+                    userInfo={userInfo}
+                    userSkills={skillsData}
+                    userProjects={projectsData}
+                  />
+                </CardContent>
+              </Card>
+            )}
+            
             <div className="flex justify-between">
               <Button 
                 variant="outline"
