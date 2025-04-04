@@ -117,9 +117,9 @@ export default function FreelancerHub({ userInfo, userSkills, userProjects, publ
             </svg>
           </motion.div>
         </div>
-        <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
+        <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 z-10">
           <motion.div 
-            className="h-24 w-24 rounded-full border-4 border-white overflow-hidden bg-white flex items-center justify-center shadow-lg"
+            className="h-32 w-32 rounded-full border-4 border-white overflow-hidden bg-white flex items-center justify-center shadow-lg"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", stiffness: 200, damping: 15 }}
@@ -127,12 +127,13 @@ export default function FreelancerHub({ userInfo, userSkills, userProjects, publ
             <ProfileImage
               src={userInfo.photoURL}
               alt={userInfo.name || "User profile"}
+              className="w-full h-full object-cover"
             />
           </motion.div>
         </div>
       </div>
       
-      <CardContent className="pt-16 px-8 pb-8">
+      <CardContent className="pt-24 px-8 pb-8">
         {/* Bio section */}
         <div className="text-center mb-10">
           <motion.p 
