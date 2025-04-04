@@ -177,32 +177,22 @@ export function JobTitleCombobox({
           )}
           <CommandGroup className="max-h-60 overflow-auto">
             {filteredTitles.map((title) => (
-              <CommandItem
+              <div 
                 key={title}
-                value={title}
-                onSelect={() => {
-                  // Set the title value directly instead of using 'currentValue'
+                className="flex items-center w-full cursor-pointer py-2 px-3 rounded-md hover:bg-accent hover:text-accent-foreground active:bg-primary/20 transition-colors"
+                onClick={() => {
                   onChange(title);
                   setOpen(false);
                 }}
-                className="hover:bg-accent hover:text-accent-foreground transition-colors duration-150 flex items-center px-2 py-1.5 text-sm rounded-sm w-full"
               >
-                <div 
-                  className="flex items-center w-full cursor-pointer py-1 px-1 rounded-md hover:bg-primary/10 active:bg-primary/20" 
-                  onClick={() => {
-                    onChange(title);
-                    setOpen(false);
-                  }}
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      value === title ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  {title}
-                </div>
-              </CommandItem>
+                <Check
+                  className={cn(
+                    "mr-2 h-4 w-4 shrink-0",
+                    value === title ? "opacity-100" : "opacity-0"
+                  )}
+                />
+                <span className="truncate">{title}</span>
+              </div>
             ))}
           </CommandGroup>
         </Command>
