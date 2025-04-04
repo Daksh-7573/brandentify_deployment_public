@@ -36,6 +36,16 @@ import { z } from "zod";
 import { useAuth } from "@/hooks/use-auth";
 import Sidebar from "@/components/layout/sidebar";
 import { apiRequest } from "@/lib/queryClient";
+
+// Define AuthUser type to match Firebase user structure
+type AuthUser = {
+  uid: string;
+  name: string | null;
+  email: string | null;
+  photoURL: string | null;
+  emailVerified: boolean;
+  // Add other Firebase user fields as needed
+};
 import { ProfileImage } from "@/components/ui/profile-image";
 import { 
   Loader2, Eye, ChevronRight, Check, ArrowLeft, Bot, 
@@ -71,38 +81,127 @@ export default function PortfolioBuilder() {
   const [isAnalyzingProfile, setIsAnalyzingProfile] = useState(false);
   const [generationComplete, setGenerationComplete] = useState(false);
 
+  // Define User type to match server-side schema
+  type User = {
+    id: number;
+    username: string;
+    email: string;
+    name: string;
+    title: string;
+    photoURL: string | null;
+    // Add other fields as needed
+  };
+  
+  // Fetch user profile data with proper typing
+  const { data: userData, isLoading: isLoadingUser } = useQuery<User>({
+    queryKey: [`/api/users/${user?.uid}`], // This uses Firebase UID to get the numeric DB ID
+    enabled: !!user,
+    staleTime: 30000
+  });
+  
+  // Fetch user profile numeric ID for use in other queries
+  const userNumericId = userData?.id;
+  
   // Fetch existing portfolio if it exists
   const { data: portfolio, isLoading: isLoadingPortfolio } = useQuery({
-    queryKey: [`/api/users/${user?.uid}/portfolio`],
-    enabled: !!user,
+    queryKey: [`/api/users/${userNumericId}/portfolio`],
+    enabled: !!user && !!userNumericId, // Only fetch when we have the numeric ID
     staleTime: 30000 // 30 seconds
   });
   
-  // Fetch user profile data
-  const { data: userData, isLoading: isLoadingUser } = useQuery({
-    queryKey: [`/api/users/${user?.uid}`],
-    enabled: !!user,
+  // Define types for experiences, skills, and projects
+  type WorkExperience = {
+    id: number;
+    userId: number;
+    title: string;
+    company: string;
+    industry: string;
+    domain: string;
+    location: string;
+    startDate: string;
+    endDate: string | null;
+    description: string;
+  };
+  
+  type Skill = {
+    id: number;
+    userId: number;
+    name: string;
+    level: string;
+    proficiency: number;
+  };
+  
+  type Project = {
+    id: number;
+    userId: number;
+    title: string;
+    description: string | null;
+    startDate: string;
+    // Other project fields
+  };
+
+  // Fetch user experiences - use the numerical ID instead of Firebase UID
+  const { data: experiences, isLoading: isLoadingExperiences } = useQuery<WorkExperience[]>({
+    queryKey: [`/api/users/${userNumericId}/experiences`],
+    enabled: !!user && !!userNumericId, // Only fetch when we have the numeric ID
     staleTime: 30000
   });
   
-  // Fetch user experiences
-  const { data: experiences, isLoading: isLoadingExperiences } = useQuery({
-    queryKey: [`/api/users/${user?.uid}/experiences`],
-    enabled: !!user,
+  // For direct fetching when needed in useEffects and other places
+  const fetchLatestExperiences = async () => {
+    if (!userNumericId) return [];
+    
+    console.log("Work Experience - Directly fetching latest experiences data", Date.now());
+    try {
+      const response = await fetch(`/api/users/${userNumericId}/experiences`, {
+        method: 'GET',
+        headers: { 'Cache-Control': 'no-cache, no-store' }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Work Experience - Got direct fetch data:", data);
+        return data;
+      }
+    } catch (error) {
+      console.error("Failed to fetch latest experiences:", error);
+    }
+    return [];
+  };
+  
+  // Fetch user skills - use the numerical ID instead of Firebase UID
+  const { data: skills, isLoading: isLoadingSkills } = useQuery<Skill[]>({
+    queryKey: [`/api/users/${userNumericId}/skills`],
+    enabled: !!user && !!userNumericId, // Only fetch when we have the numeric ID
     staleTime: 30000
   });
   
-  // Fetch user skills
-  const { data: skills, isLoading: isLoadingSkills } = useQuery({
-    queryKey: [`/api/users/${user?.uid}/skills`],
-    enabled: !!user,
-    staleTime: 30000
-  });
+  // For direct fetching when needed in useEffects and other places
+  const fetchLatestSkills = async () => {
+    if (!userNumericId) return [];
+    
+    console.log("Skills - Directly fetching latest skills data", Date.now());
+    try {
+      const response = await fetch(`/api/users/${userNumericId}/skills`, {
+        method: 'GET',
+        headers: { 'Cache-Control': 'no-cache, no-store' }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Skills - Got direct fetch data:", data);
+        return data;
+      }
+    } catch (error) {
+      console.error("Failed to fetch latest skills:", error);
+    }
+    return [];
+  };
   
   // Fetch user projects
-  const { data: projects, isLoading: isLoadingProjects } = useQuery({
-    queryKey: [`/api/users/${user?.uid}/projects`],
-    enabled: !!user,
+  const { data: projects, isLoading: isLoadingProjects } = useQuery<Project[]>({
+    queryKey: [`/api/users/${userNumericId}/projects`],
+    enabled: !!user && !!userNumericId, // Only fetch when we have the numeric ID
     staleTime: 30000
   });
 
@@ -146,10 +245,10 @@ export default function PortfolioBuilder() {
         const res = await apiRequest("PUT", `/api/portfolios/${typedPortfolio.id}`, data);
         return await res.json();
       } else {
-        // Create new portfolio
+        // Create new portfolio - use numeric user ID instead of Firebase UID
         const res = await apiRequest("POST", "/api/portfolios", {
           ...data,
-          userId: user?.uid
+          userId: userNumericId // Use the numeric ID from database instead of Firebase UID
         });
         return await res.json();
       }
@@ -161,7 +260,7 @@ export default function PortfolioBuilder() {
         variant: "default",
       });
       
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.uid}/portfolio`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userNumericId}/portfolio`] });
       setCurrentStep(STEPS.PUBLISH);
     },
     onError: (error) => {
@@ -200,7 +299,7 @@ export default function PortfolioBuilder() {
         layout: selectedLayout,
         publicUrl: publicUrl || null,
         isPublished: false,
-        customTitle: userData?.name || user?.displayName || '',
+        customTitle: userData?.name || user?.name || '',
         customBio: userData?.title || '',
         customizationOptions: {
           theme: selectedLayout === 'creative' ? 'colorful' : 'professional',
@@ -379,7 +478,7 @@ export default function PortfolioBuilder() {
                     </div>
                   </div>
                   <div className="pl-32 mt-2">
-                    <h2 className="text-xl font-bold text-gray-900">{userData?.name || user?.displayName || 'Professional'}</h2>
+                    <h2 className="text-xl font-bold text-gray-900">{userData?.name || user?.name || 'Professional'}</h2>
                     <p className="text-sm text-gray-500 mt-1">{userData?.title || 'Professional'}</p>
                     <div className="mt-4 grid grid-cols-3 gap-4">
                       <div className="p-3 border rounded-md text-center">
@@ -409,7 +508,7 @@ export default function PortfolioBuilder() {
                   <div className="grid grid-cols-1 md:grid-cols-2">
                     <div className="p-8 flex flex-col justify-center">
                       <h2 className="text-3xl font-bold mb-2 bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
-                        {userData?.name || user?.displayName || 'Creative Professional'}
+                        {userData?.name || user?.name || 'Creative Professional'}
                       </h2>
                       <p className="text-base font-medium text-gray-800 mb-4">{userData?.title || 'Designer & Creator'}</p>
                       <div className="flex flex-wrap gap-2 mb-4">
@@ -459,7 +558,7 @@ export default function PortfolioBuilder() {
                         alt={user?.name || "User profile"}
                       />
                     </div>
-                    <h2 className="text-2xl font-light text-gray-900 mb-1">{userData?.name || user?.displayName || 'Minimalist Professional'}</h2>
+                    <h2 className="text-2xl font-light text-gray-900 mb-1">{userData?.name || user?.name || 'Minimalist Professional'}</h2>
                     <p className="text-sm text-gray-500">{userData?.title || 'Professional'}</p>
                   </div>
                   <div className="border-t border-gray-100 pt-6">
@@ -505,7 +604,7 @@ export default function PortfolioBuilder() {
                           </div>
                           <div>
                             <p className="text-green-400 font-mono text-xs mb-1">class Developer &#123;</p>
-                            <h2 className="text-xl font-semibold text-green-300 font-mono">{userData?.name || user?.displayName || 'TechDev'}</h2>
+                            <h2 className="text-xl font-semibold text-green-300 font-mono">{userData?.name || user?.name || 'TechDev'}</h2>
                             <p className="text-green-400 font-mono text-xs">&#125;</p>
                           </div>
                         </div>
@@ -566,7 +665,7 @@ export default function PortfolioBuilder() {
                             alt={user?.name || "User profile"}
                           />
                         </div>
-                        <h2 className="text-2xl font-bold text-stone-100 mb-1">{userData?.name || user?.displayName || 'Executive Leader'}</h2>
+                        <h2 className="text-2xl font-bold text-stone-100 mb-1">{userData?.name || user?.name || 'Executive Leader'}</h2>
                         <p className="text-sm text-stone-400 mb-6">{userData?.title || 'Chief Executive Officer'}</p>
                         <div className="w-16 h-1 bg-amber-500 mb-6 hidden md:block"></div>
                         <div className="space-y-4 text-center md:text-left">
