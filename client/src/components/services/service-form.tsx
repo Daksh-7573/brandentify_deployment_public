@@ -27,11 +27,9 @@ import {
 } from "@/components/ui/select";
 import { Service } from "@shared/schema";
 
-// Define the form schema with required fields
+// Define the form schema with only required fields
 const formSchema = z.object({
   features: z.array(z.string()).default([]),
-  priceInr: z.string().optional(),
-  priceUsd: z.string().optional(),
   isActive: z.boolean().default(true),
 });
 
@@ -46,11 +44,9 @@ interface ServiceFormProps {
 export default function ServiceForm({ service, onSubmit, isPending }: ServiceFormProps) {
   const [featureInput, setFeatureInput] = useState("");
   
-  // Prepare default values for the form
+  // Prepare default values for the form - only the required fields
   const defaultValues = {
     features: Array.isArray(service?.features) ? service.features : [],
-    priceInr: service?.priceInr !== null && service?.priceInr !== undefined ? String(service.priceInr) : "",
-    priceUsd: service?.priceUsd !== null && service?.priceUsd !== undefined ? String(service.priceUsd) : "",
     isActive: service?.isActive !== false,
   };
   
@@ -97,9 +93,9 @@ export default function ServiceForm({ service, onSubmit, isPending }: ServiceFor
       title: serviceTitle,
       // Override with new values from the form
       ...values,
-      // Convert price strings to numbers
-      priceInr: values.priceInr ? parseFloat(values.priceInr) : null,
-      priceUsd: values.priceUsd ? parseFloat(values.priceUsd) : null,
+      // Keep or set default price fields (required by backend API)
+      priceInr: service?.priceInr ?? null,
+      priceUsd: service?.priceUsd ?? null,
       // Set default values for required fields in case they're not in the service object
       category: service?.category || "other", 
     };
@@ -157,46 +153,6 @@ export default function ServiceForm({ service, onSubmit, isPending }: ServiceFor
             </FormItem>
           )}
         />
-        
-        <div className="grid grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="priceInr"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Price (INR)</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="number" 
-                    placeholder="e.g., 5000" 
-                    {...field}
-                    value={field.value === null ? '' : field.value}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="priceUsd"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Price (USD)</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="number" 
-                    placeholder="e.g., 100" 
-                    {...field}
-                    value={field.value === null ? '' : field.value}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
         
         <FormField
           control={form.control}
