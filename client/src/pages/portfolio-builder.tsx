@@ -28,6 +28,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -35,7 +36,11 @@ import { z } from "zod";
 import { useAuth } from "@/hooks/use-auth";
 import Sidebar from "@/components/layout/sidebar";
 import { apiRequest } from "@/lib/queryClient";
-import { Loader2, Eye, ChevronRight, Check, ArrowLeft, Bot } from "lucide-react";
+import { 
+  Loader2, Eye, ChevronRight, Check, ArrowLeft, Bot, 
+  Mail, Linkedin, Instagram, Briefcase, Award, User,
+  Code, Github, Terminal
+} from "lucide-react";
 import Header from "@/components/layout/header";
 
 // Define the schema for portfolio form
@@ -367,16 +372,16 @@ export default function PortfolioBuilder() {
                       </div>
                       <div className="flex gap-4 mt-4">
                         <div className="w-8 h-8 rounded-full bg-pink-500 text-white flex items-center justify-center">
-                          <i className="fas fa-envelope"></i>
+                          <Mail className="h-4 w-4" />
                         </div>
                         <div className="w-8 h-8 rounded-full bg-purple-500 text-white flex items-center justify-center">
-                          <i className="fab fa-linkedin-in"></i>
+                          <Linkedin className="h-4 w-4" />
                         </div>
                         <div className="w-8 h-8 rounded-full bg-indigo-500 text-white flex items-center justify-center">
-                          <i className="fab fa-behance"></i>
+                          <Code className="h-4 w-4" />
                         </div>
                         <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center">
-                          <i className="fab fa-instagram"></i>
+                          <Instagram className="h-4 w-4" />
                         </div>
                       </div>
                     </div>
@@ -548,10 +553,10 @@ export default function PortfolioBuilder() {
                             <p className="text-xs text-stone-500 uppercase tracking-wider">Connect</p>
                             <div className="flex gap-3 mt-2 justify-center md:justify-start">
                               <div className="w-8 h-8 rounded-full bg-stone-700 text-stone-300 flex items-center justify-center">
-                                <i className="fab fa-linkedin-in"></i>
+                                <Linkedin className="h-4 w-4" />
                               </div>
                               <div className="w-8 h-8 rounded-full bg-stone-700 text-stone-300 flex items-center justify-center">
-                                <i className="fab fa-twitter"></i>
+                                <Mail className="h-4 w-4" />
                               </div>
                             </div>
                           </div>
@@ -562,7 +567,7 @@ export default function PortfolioBuilder() {
                       <div className="mb-8">
                         <h3 className="text-lg font-bold text-stone-800 mb-3 flex items-center">
                           <span className="w-6 h-6 rounded-full bg-amber-500 text-white text-xs flex items-center justify-center mr-2">
-                            <i className="fas fa-user"></i>
+                            <User className="h-3 w-3" />
                           </span>
                           Executive Summary
                         </h3>
@@ -574,7 +579,7 @@ export default function PortfolioBuilder() {
                       <div className="mb-8">
                         <h3 className="text-lg font-bold text-stone-800 mb-3 flex items-center">
                           <span className="w-6 h-6 rounded-full bg-amber-500 text-white text-xs flex items-center justify-center mr-2">
-                            <i className="fas fa-trophy"></i>
+                            <Award className="h-3 w-3" />
                           </span>
                           Key Achievements
                         </h3>
@@ -596,7 +601,7 @@ export default function PortfolioBuilder() {
                       <div>
                         <h3 className="text-lg font-bold text-stone-800 mb-3 flex items-center">
                           <span className="w-6 h-6 rounded-full bg-amber-500 text-white text-xs flex items-center justify-center mr-2">
-                            <i className="fas fa-briefcase"></i>
+                            <Briefcase className="h-3 w-3" />
                           </span>
                           Areas of Expertise
                         </h3>
