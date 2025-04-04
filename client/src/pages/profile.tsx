@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import WorkExperience from "@/components/profile/work-experience";
 import Education from "@/components/profile/education";
-import Skills from "@/components/profile/skills";
+// Skills component import removed
 import Projects from "@/components/profile/projects";
 import Services from "@/components/profile/services";
 // Removed Resume and LinkedIn import components
@@ -430,14 +430,7 @@ export default function Profile() {
     refetchOnWindowFocus: true,
   });
 
-  // Fetch user skills for the badges
-  const { data: skills = [], isLoading: isLoadingSkills } = useQuery<any[]>({
-    queryKey: [`/api/users/${userId}/skills`],
-    enabled: !!userId && isAuthenticated,
-    staleTime: 1000, // Consider data stale after 1 second to force refresh
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
-  });
+  // Skills query removed
   
   // Mutation for updating user basic info
   const updateUserMutation = useMutation({
@@ -1603,23 +1596,7 @@ export default function Profile() {
                     </p>
                   )}
                 </div>
-                <div className="mt-4 pl-0 md:pl-32 flex flex-wrap gap-2">
-                  {isLoadingSkills ? (
-                    <p className="text-sm text-gray-500">Loading skills...</p>
-                  ) : skills && skills.length > 0 ? (
-                    skills.map((skill: any) => (
-                      <Badge 
-                        key={skill.id} 
-                        variant="outline" 
-                        className="bg-blue-100 text-blue-800 hover:bg-blue-100"
-                      >
-                        {skill.name}
-                      </Badge>
-                    ))
-                  ) : (
-                    <p className="text-sm text-gray-500">No skills added yet</p>
-                  )}
-                </div>
+                {/* Skills section removed */}
               </CardContent>
             </Card>
             
@@ -1631,8 +1608,7 @@ export default function Profile() {
             
             {/* Education section removed as requested */}
             
-            {/* Skills */}
-            <Skills />
+            {/* Skills component removed */}
             
             {/* Projects Section */}
             <Projects />
@@ -1652,7 +1628,7 @@ export default function Profile() {
                   // Refresh all profile data queries
                   queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/experiences`] });
                   queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/educations`] });
-                  queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/skills`] });
+                  // Skills query removed
                   queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'services'] });
                   queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
                   
