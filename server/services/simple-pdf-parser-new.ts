@@ -45,11 +45,9 @@ async function extractTextFromPdf(fileBuffer: Buffer): Promise<string> {
     try {
       // This is wrapped in a try/catch since we're using a fallback approach anyway
       // @ts-ignore - Ignore the TypeScript error about missing module
-      const pdfjsLib = await import('pdfjs-dist/legacy/build/pdf.js');
-      // @ts-ignore - Ignore the TypeScript error about missing module
-      const pdfjsWorker = await import('pdfjs-dist/legacy/build/pdf.worker.js');
-      
-      pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
+      const pdfjsLib = await import('pdfjs-dist/build/pdf.js');
+      // Set the worker path to use the CDN version
+      pdfjsLib.GlobalWorkerOptions.workerSrc = '//cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
       
       console.log("Loading PDF document with pdf.js");
       const pdf = await pdfjsLib.getDocument({ data: fileBuffer }).promise;
