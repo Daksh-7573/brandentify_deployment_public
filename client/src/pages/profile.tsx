@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import WorkExperience from "@/components/profile/work-experience";
 import Education from "@/components/profile/education";
-// Skills component import removed
+import Skills from "@/components/profile/skills";
 import Projects from "@/components/profile/projects";
 import Services from "@/components/profile/services";
 // Removed Resume and LinkedIn import components
@@ -430,7 +430,14 @@ export default function Profile() {
     refetchOnWindowFocus: true,
   });
 
-  // Skills query removed
+  // Fetch user skills for the badges
+  const { data: skills = [], isLoading: isLoadingSkills } = useQuery<any[]>({
+    queryKey: [`/api/users/${userId}/skills`],
+    enabled: !!userId && isAuthenticated,
+    staleTime: 1000, // Consider data stale after 1 second to force refresh
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+  });
   
   // Mutation for updating user basic info
   const updateUserMutation = useMutation({
@@ -1608,7 +1615,8 @@ export default function Profile() {
             
             {/* Education section removed as requested */}
             
-            {/* Skills component removed */}
+            {/* Skills Section */}
+            <Skills />
             
             {/* Projects Section */}
             <Projects />
@@ -1628,7 +1636,7 @@ export default function Profile() {
                   // Refresh all profile data queries
                   queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/experiences`] });
                   queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/educations`] });
-                  // Skills query removed
+                  queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/skills`] });
                   queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'services'] });
                   queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
                   

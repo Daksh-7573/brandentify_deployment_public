@@ -352,9 +352,20 @@ export default function Skills() {
               ))}
             </div>
           ) : (
-            <div className="py-6 text-center">
-              <Lightbulb className="mx-auto h-10 w-10 text-muted-foreground/50" />
-              <p className="mt-2 text-muted-foreground">No skills added yet.</p>
+            <div className="py-8 text-center">
+              <div className="bg-muted/30 rounded-full p-4 w-20 h-20 mx-auto mb-3 flex items-center justify-center">
+                <Lightbulb className="h-10 w-10 text-primary/60" />
+              </div>
+              <h3 className="text-lg font-medium mb-1">Showcase your expertise</h3>
+              <p className="text-muted-foreground mb-4 max-w-md mx-auto">Adding your skills helps potential clients and employers find you for relevant opportunities.</p>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setIsAddModalOpen(true)} 
+                className="mx-auto"
+              >
+                <Plus className="h-4 w-4 mr-1" /> Add Skills
+              </Button>
             </div>
           )}
         </CardContent>
