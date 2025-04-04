@@ -32,6 +32,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 // Import our portfolio templates
 import MinimalistPro from "@/components/portfolio/templates/minimalist-pro";
 import FreelancerHub from "@/components/portfolio/templates/freelancer-hub";
+import TimelineStoryteller from "@/components/portfolio/templates/timeline-storyteller";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -320,7 +321,11 @@ export default function PortfolioBuilder() {
     { 
       id: "timeline-storyteller", 
       name: "The Timeline Storyteller", 
-      description: "Interactive storytelling layout ideal for PMs, entrepreneurs & creatives",
+      description: `✔ Theme: Interactive & Storytelling-Based
+✔ Best For: Product Managers, Entrepreneurs, Creatives
+🎨 Color Palette: #FAFAFA (Soft White), #FF6B6B (Vibrant Coral Red), #FFD166 (Warm Yellow), #333333 (Deep Black)
+🖌 UI Elements: Horizontal/vertical scrolling timeline, circular profile picture at milestones, colorful progress dots
+🎬 Animations: Swipe-based scrolling, animated path with glowing career milestones`,
       theme: "#FF6B6B"
     },
     { 
@@ -663,73 +668,22 @@ export default function PortfolioBuilder() {
             )}
             
             {form.watch("layout") === "timeline-storyteller" && (
-              <Card className="overflow-hidden bg-gradient-to-br from-pink-100 to-purple-100">
-                <CardContent className="p-0">
-                  <div className="grid grid-cols-1 md:grid-cols-2">
-                    <div className="p-8 flex flex-col justify-center">
-                      <h2 className="text-3xl font-bold mb-2 bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
-                        {userInfo.name}
-                      </h2>
-                      <p className="text-base font-medium text-gray-800 mb-4">
-                        {userInfo.title || userInfo.domain || 'Creative Professional'}
-                      </p>
-                      
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {sortedSkills.slice(0, 4).map((skill) => (
-                          <Badge 
-                            key={skill.id} 
-                            className={`
-                              ${skill.level === 'Expert' ? 'bg-pink-100 text-pink-800 hover:bg-pink-200' : 
-                                skill.level === 'Advanced' ? 'bg-purple-100 text-purple-800 hover:bg-purple-200' :
-                                skill.level === 'Intermediate' ? 'bg-indigo-100 text-indigo-800 hover:bg-indigo-200' :
-                                'bg-blue-100 text-blue-800 hover:bg-blue-200'}
-                            `}
-                          >
-                            {skill.name}
-                          </Badge>
-                        ))}
-                        
-                        {sortedSkills.length === 0 && (
-                          <>
-                            <Badge className="bg-pink-100 text-pink-800 hover:bg-pink-200">
-                              {userInfo.domain || 'Design'}
-                            </Badge>
-                            <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200">
-                              {userInfo.industry || 'Creative'}
-                            </Badge>
-                          </>
-                        )}
-                      </div>
-                      
-                      <div className="flex gap-4 mt-4">
-                        <div className="w-8 h-8 rounded-full bg-pink-500 text-white flex items-center justify-center">
-                          <Mail className="h-4 w-4" />
-                        </div>
-                        <div className="w-8 h-8 rounded-full bg-purple-500 text-white flex items-center justify-center">
-                          <Linkedin className="h-4 w-4" />
-                        </div>
-                        <div className="w-8 h-8 rounded-full bg-indigo-500 text-white flex items-center justify-center">
-                          <Code className="h-4 w-4" />
-                        </div>
-                        <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center">
-                          <Instagram className="h-4 w-4" />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-center p-6 relative">
-                      <div className="relative overflow-hidden rounded-full h-64 w-64 bg-gradient-to-br from-pink-400 to-purple-600 p-1">
-                        <ProfileImage
-                          src={userInfo.photoURL}
-                          alt={userInfo.name || "User profile"}
-                          className="h-full w-full object-cover rounded-full"
-                        />
-                      </div>
-                      <div className="absolute w-32 h-32 rounded-full border-4 border-white bg-pink-100 -bottom-10 -left-4 -z-10"></div>
-                      <div className="absolute w-24 h-24 rounded-full border-4 border-white bg-purple-100 -top-8 -right-4 -z-10"></div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <TimelineStoryteller 
+                userInfo={{
+                  name: userInfo.name,
+                  title: userInfo.title,
+                  industry: userInfo.industry,
+                  domain: userInfo.domain,
+                  location: userInfo.location,
+                  email: userInfo.email,
+                  photoURL: userInfo.photoURL,
+                  lookingFor: userData?.lookingFor || '',
+                  jobLevel: userData?.jobLevel || ''
+                }}
+                userSkills={userSkills}
+                userExperiences={userExperiences || []}
+                userProjects={userProjects}
+              />
             )}
             
             {form.watch("layout") === "visual-expert" && (
