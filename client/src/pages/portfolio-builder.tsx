@@ -34,6 +34,7 @@ import MinimalistPro from "@/components/portfolio/templates/minimalist-pro";
 import FreelancerHub from "@/components/portfolio/templates/freelancer-hub";
 import TimelineStoryteller from "@/components/portfolio/templates/timeline-storyteller";
 import VisualExpert from "@/components/portfolio/templates/visual-expert";
+import CorporateExecutive from "@/components/portfolio/templates/corporate-executive";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -342,7 +343,11 @@ export default function PortfolioBuilder() {
     { 
       id: "corporate-executive", 
       name: "The Corporate Executive", 
-      description: "Premium, polished layout for senior executives & industry experts",
+      description: `✔ Theme: High-End, Premium, & Polished
+✔ Best For: Senior Executives, Investors, Industry Experts
+🎨 Color Palette: #0C1C2D (Deep Navy Blue), #DAA520 (Gold), #EAEAEA (Soft Silver), #FFFFFF (White)
+🖌 UI Elements: Card-based layout with elegant dividers, testimonial slider with executive quotes, gold gradient CTAs
+🎬 Animations: Slide-in effects for testimonials, interactive business cards with contact details`,
       theme: "#DAA520"
     },
     { 
@@ -711,67 +716,22 @@ export default function PortfolioBuilder() {
             )}
             
             {form.watch("layout") === "corporate-executive" && (
-              <Card className="overflow-hidden text-gray-100 bg-gray-900 border-none">
-                <CardContent className="p-8">
-                  <div className="flex flex-col md:flex-row gap-8">
-                    <div className="md:w-1/3">
-                      <div className="bg-gray-800 p-4 rounded-md">
-                        <div className="flex items-center mb-4">
-                          <div className="h-16 w-16 overflow-hidden rounded-md bg-gray-700 mr-4 flex items-center justify-center">
-                            <ProfileImage
-                              src={user?.photoURL}
-                              alt={user?.name || "User profile"}
-                            />
-                          </div>
-                          <div>
-                            <p className="text-green-400 font-mono text-xs mb-1">class Developer &#123;</p>
-                            <h2 className="text-xl font-semibold text-green-300 font-mono">{userData?.name || user?.name || 'TechDev'}</h2>
-                            <p className="text-green-400 font-mono text-xs">&#125;</p>
-                          </div>
-                        </div>
-                        <div className="border-t border-gray-700 pt-4">
-                          <p className="text-gray-400 font-mono text-sm mb-2">// Main.skills</p>
-                          <div className="grid grid-cols-2 gap-2">
-                            <div className="bg-gray-700 px-2 py-1 rounded text-xs font-mono text-green-300">JavaScript</div>
-                            <div className="bg-gray-700 px-2 py-1 rounded text-xs font-mono text-green-300">TypeScript</div>
-                            <div className="bg-gray-700 px-2 py-1 rounded text-xs font-mono text-green-300">React</div>
-                            <div className="bg-gray-700 px-2 py-1 rounded text-xs font-mono text-green-300">Node.js</div>
-                            <div className="bg-gray-700 px-2 py-1 rounded text-xs font-mono text-green-300">Python</div>
-                            <div className="bg-gray-700 px-2 py-1 rounded text-xs font-mono text-green-300">Docker</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="md:w-2/3">
-                      <div className="bg-gray-800 p-4 rounded-md mb-4 font-mono">
-                        <p className="text-gray-400 text-sm mb-2">// About.me</p>
-                        <p className="text-gray-200 text-sm">
-                          <span className="text-blue-400">function</span> <span className="text-yellow-400">getProfile</span>() &#123;<br />
-                          &nbsp;&nbsp;<span className="text-blue-400">return</span> &#123;<br />
-                          &nbsp;&nbsp;&nbsp;&nbsp;title: <span className="text-green-300">"{userData?.title || 'Software Engineer'}"</span>,<br />
-                          &nbsp;&nbsp;&nbsp;&nbsp;focus: <span className="text-green-300">"Full-stack development"</span>,<br />
-                          &nbsp;&nbsp;&nbsp;&nbsp;yearsOfExperience: <span className="text-purple-400">5</span><br />
-                          &nbsp;&nbsp;&#125;;<br />
-                          &#125;
-                        </p>
-                      </div>
-                      <div className="bg-gray-800 p-4 rounded-md font-mono">
-                        <p className="text-gray-400 text-sm mb-2">// Projects.latest</p>
-                        <div className="space-y-3">
-                          <div className="border-l-2 border-green-500 pl-3">
-                            <p className="text-yellow-400 text-sm">Project: <span className="text-gray-200">AI-Powered Analytics Platform</span></p>
-                            <p className="text-gray-400 text-xs">// Tech: React, Node.js, TensorFlow</p>
-                          </div>
-                          <div className="border-l-2 border-blue-500 pl-3">
-                            <p className="text-yellow-400 text-sm">Project: <span className="text-gray-200">Microservice Architecture</span></p>
-                            <p className="text-gray-400 text-xs">// Tech: Docker, Kubernetes, Go</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <CorporateExecutive
+                userInfo={{
+                  name: userData?.name || user?.name || '',
+                  title: userData?.title || null,
+                  industry: userData?.industry || null,
+                  domain: userData?.domain || null,
+                  location: userData?.location || null,
+                  email: userData?.email || user?.email || null,
+                  photoURL: userData?.photoURL || user?.photoURL || null,
+                  lookingFor: userData?.lookingFor || null,
+                  jobLevel: userData?.jobLevel || null
+                }}
+                userSkills={userSkills || []}
+                userExperiences={userExperiences || []}
+                userProjects={userProjects || []}
+              />
             )}
             
             {form.watch("layout") === "dynamic-innovator" && (
