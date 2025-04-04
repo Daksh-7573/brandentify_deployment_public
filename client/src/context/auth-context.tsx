@@ -458,22 +458,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           console.error("Error fetching user profile data:", userFetchError);
         }
         
-        // For other data, use numeric user ID
-        // Convert user ID to number for API calls (if it's a Firebase UID, use 0 as placeholder)
-        const numericUserId = isDemoMode ? 1 : 0;
+        // For other data, we need to make sure we're using the correct user ID
+        // Use the same Firebase UID for these endpoints to ensure server-side conversion works properly
+        const targetUserId = userId;
         
         // Add manual fetch to ensure we get the latest data
-        const experiencesResponse = await fetch(`/api/users/${numericUserId}/experiences`, {
+        const experiencesResponse = await fetch(`/api/users/${targetUserId}/experiences`, {
           method: 'GET',
           headers: { 'Cache-Control': 'no-cache, no-store' }
         });
         
-        const educationsResponse = await fetch(`/api/users/${numericUserId}/educations`, {
+        const educationsResponse = await fetch(`/api/users/${targetUserId}/educations`, {
           method: 'GET',
           headers: { 'Cache-Control': 'no-cache, no-store' }
         });
         
-        const skillsResponse = await fetch(`/api/users/${numericUserId}/skills`, {
+        const skillsResponse = await fetch(`/api/users/${targetUserId}/skills`, {
           method: 'GET',
           headers: { 'Cache-Control': 'no-cache, no-store' }
         });
@@ -488,10 +488,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.log("Manual fetch educations:", educations);
         console.log("Manual fetch skills:", skills);
         
-        // Explicitly set these in the query cache
-        queryClient.setQueryData([`/api/users/${numericUserId}/experiences`], experiences);
-        queryClient.setQueryData([`/api/users/${numericUserId}/educations`], educations);
-        queryClient.setQueryData([`/api/users/${numericUserId}/skills`], skills);
+        // Explicitly set these in the query cache - use the same user ID as the fetch
+        queryClient.setQueryData([`/api/users/${targetUserId}/experiences`], experiences);
+        queryClient.setQueryData([`/api/users/${targetUserId}/educations`], educations);
+        queryClient.setQueryData([`/api/users/${targetUserId}/skills`], skills);
         
         // Give it a small delay to ensure all components receive fresh data
         await new Promise(resolve => setTimeout(resolve, 500));
