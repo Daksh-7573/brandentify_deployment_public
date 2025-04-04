@@ -65,7 +65,7 @@ export default function ServiceForm({ service, onSubmit, isPending }: ServiceFor
     features: service?.features || [],
     imageUrl: service?.imageUrl || "",
     order: service?.order || 0,
-    isActive: service?.isActive !== undefined ? service.isActive : true,
+    isActive: service?.isActive === undefined ? true : service.isActive,
   };
   
   const form = useForm<FormValues>({

@@ -9,6 +9,7 @@ import WorkExperience from "@/components/profile/work-experience";
 import Education from "@/components/profile/education";
 import Skills from "@/components/profile/skills";
 import Projects from "@/components/profile/projects";
+import Services from "@/components/profile/services";
 // Removed Resume and LinkedIn import components
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -1636,6 +1637,9 @@ export default function Profile() {
             {/* Projects Section */}
             <Projects />
             
+            {/* Services Section */}
+            <Services />
+            
             {/* Action Buttons */}
             <div className="flex justify-between mb-6">
               <Button 
@@ -1649,6 +1653,7 @@ export default function Profile() {
                   queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/experiences`] });
                   queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/educations`] });
                   queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/skills`] });
+                  queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'services'] });
                   queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
                   
                   // Show toast notification
