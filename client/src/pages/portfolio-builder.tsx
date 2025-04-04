@@ -33,6 +33,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import MinimalistPro from "@/components/portfolio/templates/minimalist-pro";
 import FreelancerHub from "@/components/portfolio/templates/freelancer-hub";
 import TimelineStoryteller from "@/components/portfolio/templates/timeline-storyteller";
+import VisualExpert from "@/components/portfolio/templates/visual-expert";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -331,7 +332,11 @@ export default function PortfolioBuilder() {
     { 
       id: "visual-expert", 
       name: "The Visual Expert", 
-      description: "Image-first bold design for designers, photographers & marketers",
+      description: `✔ Theme: Image-First, Creative & Bold
+✔ Best For: Designers, Photographers, Marketers
+🎨 Color Palette: #181818 (Deep Charcoal Black), #F8C471 (Gold), #EC7063 (Warm Red), #FFFFFF (White)
+🖌 UI Elements: Masonry-style grid layout, large image thumbnails with hover animations, dark mode
+🎬 Animations: Hover zoom effect on portfolio images, parallax effect for project showcases`,
       theme: "#F8C471"
     },
     { 
@@ -687,44 +692,22 @@ export default function PortfolioBuilder() {
             )}
             
             {form.watch("layout") === "visual-expert" && (
-              <Card className="overflow-hidden">
-                <CardContent className="p-8">
-                  <div className="flex flex-col items-center text-center mb-8">
-                    <div className="h-24 w-24 overflow-hidden rounded-full bg-gray-100 mb-4 flex items-center justify-center">
-                      <ProfileImage
-                        src={user?.photoURL}
-                        alt={user?.name || "User profile"}
-                      />
-                    </div>
-                    <h2 className="text-2xl font-light text-gray-900 mb-1">{userData?.name || user?.name || 'Minimalist Professional'}</h2>
-                    <p className="text-sm text-gray-500">{userData?.title || 'Professional'}</p>
-                  </div>
-                  <div className="border-t border-gray-100 pt-6">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                      <div>
-                        <h3 className="text-sm font-medium uppercase tracking-wider text-gray-400 mb-3">About</h3>
-                        <p className="text-sm text-gray-600">A professional with a minimalist approach to design and problem-solving. Focused on delivering clean, efficient solutions.</p>
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-medium uppercase tracking-wider text-gray-400 mb-3">Expertise</h3>
-                        <ul className="space-y-2 text-sm text-gray-600">
-                          <li>Simplified UX Design</li>
-                          <li>Clean Architecture</li>
-                          <li>User-Centered Approach</li>
-                          <li>Accessible Design</li>
-                        </ul>
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-medium uppercase tracking-wider text-gray-400 mb-3">Contact</h3>
-                        <ul className="space-y-2 text-sm text-gray-600">
-                          <li>{userData?.email || user?.email || 'email@example.com'}</li>
-                          <li>{form.watch("publicUrl") ? `brandentifier.com/${form.watch("publicUrl")}` : 'Your portfolio URL'}</li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <VisualExpert
+                userInfo={{
+                  name: userData?.name || user?.name || '',
+                  title: userData?.title || null,
+                  industry: userData?.industry || null,
+                  domain: userData?.domain || null,
+                  location: userData?.location || null,
+                  email: userData?.email || user?.email || null,
+                  photoURL: userData?.photoURL || user?.photoURL || null,
+                  lookingFor: userData?.lookingFor || null,
+                  jobLevel: userData?.jobLevel || null
+                }}
+                userSkills={userSkills || []}
+                userExperiences={userExperiences || []}
+                userProjects={userProjects || []}
+              />
             )}
             
             {form.watch("layout") === "corporate-executive" && (
