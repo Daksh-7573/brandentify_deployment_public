@@ -598,7 +598,12 @@ export default function Projects() {
                 </div>
               ))}
             </div>
-          ) : null}
+          ) : (
+            <div className="py-6 text-center">
+              <FolderKanban className="mx-auto h-10 w-10 text-muted-foreground/50" />
+              <p className="mt-2 text-muted-foreground">No projects added yet.</p>
+            </div>
+          )}
         </CardContent>
       </Card>
       
