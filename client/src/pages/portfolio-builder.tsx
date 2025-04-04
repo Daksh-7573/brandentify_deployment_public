@@ -28,6 +28,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+
+// Import our portfolio templates
+import MinimalistPro from "@/components/portfolio/templates/minimalist-pro";
+import FreelancerHub from "@/components/portfolio/templates/freelancer-hub";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -56,7 +60,7 @@ import Header from "@/components/layout/header";
 
 // Define the schema for portfolio form
 const portfolioFormSchema = z.object({
-  layout: z.enum(["professional", "creative", "minimal", "technical", "executive"]),
+  layout: z.enum(["minimalist-pro", "timeline-storyteller", "visual-expert", "corporate-executive", "dynamic-innovator", "freelancer-hub"]),
   isPublished: z.boolean().default(false),
   publicUrl: z.string().nullable().optional(),
 });
@@ -238,7 +242,7 @@ export default function PortfolioBuilder() {
   const form = useForm<PortfolioFormValues>({
     resolver: zodResolver(portfolioFormSchema),
     defaultValues: {
-      layout: "professional",
+      layout: "minimalist-pro",
       isPublished: false,
       publicUrl: "",
     }
@@ -303,11 +307,42 @@ export default function PortfolioBuilder() {
 
   // Layout templates
   const layoutOptions = [
-    { id: "professional", name: "Professional", description: "Clean, traditional layout ideal for corporate environments" },
-    { id: "creative", name: "Creative", description: "Visual-heavy design perfect for designers and artists" },
-    { id: "minimal", name: "Minimal", description: "Simple, elegant design that focuses on content" },
-    { id: "technical", name: "Technical", description: "Code-focused design for developers and engineers" },
-    { id: "executive", name: "Executive", description: "Sophisticated layout for senior professionals and executives" }
+    { 
+      id: "minimalist-pro", 
+      name: "The Minimalist Pro", 
+      description: "Clean, elegant & modern design for tech professionals & business executives",
+      theme: "#0044CC"
+    },
+    { 
+      id: "timeline-storyteller", 
+      name: "The Timeline Storyteller", 
+      description: "Interactive storytelling layout ideal for PMs, entrepreneurs & creatives",
+      theme: "#FF6B6B"
+    },
+    { 
+      id: "visual-expert", 
+      name: "The Visual Expert", 
+      description: "Image-first bold design for designers, photographers & marketers",
+      theme: "#F8C471"
+    },
+    { 
+      id: "corporate-executive", 
+      name: "The Corporate Executive", 
+      description: "Premium, polished layout for senior executives & industry experts",
+      theme: "#DAA520"
+    },
+    { 
+      id: "dynamic-innovator", 
+      name: "The Dynamic Innovator", 
+      description: "Futuristic high-tech design for AI experts, engineers & startups",
+      theme: "#0FF0FC"
+    },
+    { 
+      id: "freelancer-hub", 
+      name: "The Freelancer Hub", 
+      description: "Vibrant, playful design for freelancers, influencers & coaches",
+      theme: "#FF7F50"
+    }
   ];
 
   // Handle creating portfolio with AI
@@ -400,7 +435,7 @@ export default function PortfolioBuilder() {
             ? `${userDetails.title}${userDetails.industry ? ` in ${userDetails.industry}` : ''}`
             : (userDetails.industry ? `Professional in ${userDetails.industry}` : ''),
           customizationOptions: {
-            theme: selectedLayout === 'creative' ? 'colorful' : 'professional',
+            theme: selectedLayout === 'visual-expert' || selectedLayout === 'timeline-storyteller' ? 'colorful' : 'professional',
             showContact: true
           },
           featuredProjects: projectsData.map((project: Project) => project.id),
@@ -605,86 +640,17 @@ export default function PortfolioBuilder() {
             </div>
             
             {/* Dynamic portfolio preview based on selected layout */}
-            {form.watch("layout") === "professional" && (
-              <Card className="overflow-hidden">
-                <div className="h-32 bg-gradient-to-r from-primary/80 to-blue-600"></div>
-                <CardContent className="relative pt-16 pb-4">
-                  <div className="absolute -top-16 left-6">
-                    <div className="h-24 w-24 overflow-hidden rounded-full bg-white ring-4 ring-white flex items-center justify-center">
-                      <ProfileImage
-                        src={userInfo.photoURL}
-                        alt={userInfo.name || "User profile"}
-                      />
-                    </div>
-                  </div>
-                  <div className="pl-32 mt-2">
-                    <h2 className="text-xl font-bold text-gray-900">{userInfo.name}</h2>
-                    <p className="text-sm text-gray-500 mt-1">
-                      {userInfo.title}
-                      {userInfo.industry ? ` in ${userInfo.industry}` : ''}
-                      {userInfo.location ? ` • ${userInfo.location}` : ''}
-                    </p>
-                    
-                    <div className="mt-4 grid grid-cols-3 gap-4">
-                      <div className="p-3 border rounded-md text-center">
-                        <p className="text-sm font-medium">Experience</p>
-                        <p className="text-2xl font-bold text-primary">{userExperiences.length}</p>
-                        <p className="text-xs text-gray-500">Positions</p>
-                      </div>
-                      <div className="p-3 border rounded-md text-center">
-                        <p className="text-sm font-medium">Projects</p>
-                        <p className="text-2xl font-bold text-primary">{userProjects.length}</p>
-                        <p className="text-xs text-gray-500">Completed</p>
-                      </div>
-                      <div className="p-3 border rounded-md text-center">
-                        <p className="text-sm font-medium">Skills</p>
-                        <p className="text-2xl font-bold text-primary">{userSkills.length}</p>
-                        <p className="text-xs text-gray-500">{userInfo.domain ? userInfo.domain : 'Professional'}</p>
-                      </div>
-                    </div>
-                    
-                    {userExperiences.length > 0 && (
-                      <div className="mt-6">
-                        <h3 className="text-lg font-semibold mb-3">Professional Experience</h3>
-                        <div className="space-y-3">
-                          {sortedExperiences.slice(0, 2).map((exp) => (
-                            <div key={exp.id} className="border rounded-md p-3">
-                              <div className="flex justify-between items-start">
-                                <div>
-                                  <h4 className="font-medium">{exp.title}</h4>
-                                  <p className="text-sm text-gray-500">{exp.company}</p>
-                                </div>
-                                <Badge variant="outline" className="text-xs">
-                                  {exp.industry}
-                                </Badge>
-                              </div>
-                              {exp.description && (
-                                <p className="text-sm text-gray-600 mt-2 line-clamp-2">{exp.description}</p>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    
-                    {userSkills.length > 0 && (
-                      <div className="mt-6">
-                        <h3 className="text-lg font-semibold mb-3">Top Skills</h3>
-                        <div className="flex flex-wrap gap-2">
-                          {sortedSkills.slice(0, 5).map((skill) => (
-                            <Badge key={skill.id} variant="secondary">
-                              {skill.name} ({skill.level})
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+            {/* The Minimalist Pro */}
+            {form.watch("layout") === "minimalist-pro" && (
+              <MinimalistPro 
+                userInfo={userInfo}
+                userSkills={userSkills}
+                userExperiences={userExperiences || []}
+                userProjects={userProjects}
+              />
             )}
             
-            {form.watch("layout") === "creative" && (
+            {form.watch("layout") === "timeline-storyteller" && (
               <Card className="overflow-hidden bg-gradient-to-br from-pink-100 to-purple-100">
                 <CardContent className="p-0">
                   <div className="grid grid-cols-1 md:grid-cols-2">
@@ -754,7 +720,7 @@ export default function PortfolioBuilder() {
               </Card>
             )}
             
-            {form.watch("layout") === "minimal" && (
+            {form.watch("layout") === "visual-expert" && (
               <Card className="overflow-hidden">
                 <CardContent className="p-8">
                   <div className="flex flex-col items-center text-center mb-8">
@@ -795,7 +761,7 @@ export default function PortfolioBuilder() {
               </Card>
             )}
             
-            {form.watch("layout") === "technical" && (
+            {form.watch("layout") === "corporate-executive" && (
               <Card className="overflow-hidden text-gray-100 bg-gray-900 border-none">
                 <CardContent className="p-8">
                   <div className="flex flex-col md:flex-row gap-8">
@@ -859,7 +825,7 @@ export default function PortfolioBuilder() {
               </Card>
             )}
             
-            {form.watch("layout") === "executive" && (
+            {form.watch("layout") === "dynamic-innovator" && (
               <Card className="overflow-hidden bg-stone-50 border-stone-200">
                 <CardContent className="p-0">
                   <div className="flex flex-col md:flex-row">
