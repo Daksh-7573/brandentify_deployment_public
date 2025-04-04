@@ -397,10 +397,9 @@ export default function Profile() {
   const [_, setLocation] = useLocation();
   const { toast } = useToast();
   
-  // Get user ID (use demo ID if in demo mode)
-  // Always use ID 0 for now which we know exists in the database
-  // This provides a consistent experience during development
-  const userId = 0;
+  // Get user ID from authenticated user object
+  // Use the Firebase UID directly, the backend will handle the conversion
+  const userId = user?.uid || (isDemoMode ? 1 : null);
   
   // State for edit dialogs
   const [showEditBasicInfo, setShowEditBasicInfo] = useState(false);

@@ -4,21 +4,24 @@ import { toast } from "@/hooks/use-toast";
 import { User } from "@shared/schema";
 import { useAuth } from "@/hooks/use-auth";
 
-export function useProfilePicture(userId: number | string = 1) {
-  // Get the refresh function from auth context
-  const { refreshUserData } = useAuth();
+export function useProfilePicture(userId: number | string | null = null) {
+  // Get the refresh function and current user from auth context
+  const { refreshUserData, user } = useAuth();
+  
+  // If userId is not provided, use the current user's UID
+  const targetUserId = userId || user?.uid || null;
   
   // Mutation for updating the profile picture
   return useMutation({
     mutationFn: async (base64Image: string) => {
-      console.log(`Updating profile picture for user ID: ${userId}`);
+      console.log(`Updating profile picture for user ID: ${targetUserId}`);
       // Ensure we have a valid user ID
-      if (!userId || (typeof userId === 'number' && userId === 0)) {
+      if (!targetUserId) {
         throw new Error("Invalid user ID. Please log in again.");
       }
       
       // Send only the photoURL update to the API
-      const res = await apiRequest('PUT', `/api/users/${userId}`, {
+      const res = await apiRequest('PUT', `/api/users/${targetUserId}`, {
         photoURL: base64Image
       });
       
@@ -26,17 +29,13 @@ export function useProfilePicture(userId: number | string = 1) {
     },
     onSuccess: async (data) => {
       // Invalidate and refetch user data
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${targetUserId}`] });
       
       // Immediately refresh the auth context
       await refreshUserData();
       
       // Force invalidate all user data queries
-      if (typeof userId === 'number') {
-        queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
-      } else if (typeof userId === 'string') {
-        queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
-      }
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${targetUserId}`] });
       
       toast({
         title: "Profile picture updated",
