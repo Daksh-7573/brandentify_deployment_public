@@ -15,6 +15,25 @@
   animation-delay: 1.5s;
 }
 
+/* Custom animations for Freelancer Hub template */
+@keyframes bounce-button {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+.animate-bounce-button:hover {
+  animation: bounce-button 0.5s ease-in-out;
+}
+
+@keyframes draw-signature {
+  0% { stroke-dashoffset: 1000; }
+  100% { stroke-dashoffset: 0; }
+}
+.animate-signature {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: draw-signature 2s forwards;
+}
+
 @layer base {
   * {
     @apply border-border;

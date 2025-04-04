@@ -364,7 +364,11 @@ export default function PortfolioBuilder() {
     { 
       id: "freelancer-hub", 
       name: "The Freelancer Hub", 
-      description: "Vibrant, playful design for freelancers, influencers & coaches",
+      description: `✔ Theme: Vibrant & Playful
+✔ Best For: Freelancers, Influencers, Coaches
+🎨 Color Palette: #FFFFFF (White), #FF7F50 (Bright Coral), #6A0572 (Deep Purple), #333333 (Dark Gray) 
+🖌 UI Elements: Friendly rounded elements, colorful hand-drawn icons, Lobster/Nunito typography, pricing cards
+🎬 Animations: Fun bounce effects for CTAs, handwritten signature animation`,
       theme: "#FF7F50"
     }
   ];
