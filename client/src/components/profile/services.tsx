@@ -110,7 +110,7 @@ export default function Services() {
               <span>Add</span>
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[525px]">
+          <DialogContent className="sm:max-w-[525px] max-h-[88vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Create New Service</DialogTitle>
               <DialogDescription>
@@ -214,7 +214,7 @@ export default function Services() {
 
       {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-[525px]">
+        <DialogContent className="sm:max-w-[525px] max-h-[88vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Service</DialogTitle>
             <DialogDescription>

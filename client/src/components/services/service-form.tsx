@@ -113,7 +113,7 @@ export default function ServiceForm({ service, onSubmit, isPending }: ServiceFor
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 pb-2">
         <FormField
           control={form.control}
           name="title"
@@ -225,7 +225,7 @@ export default function ServiceForm({ service, onSubmit, isPending }: ServiceFor
             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
               <div className="space-y-0.5">
                 <FormLabel className="text-base">Hourly Rate</FormLabel>
-                <FormDescription>
+                <FormDescription className="text-xs">
                   Is this an hourly service or a fixed price?
                 </FormDescription>
               </div>
@@ -304,7 +304,7 @@ export default function ServiceForm({ service, onSubmit, isPending }: ServiceFor
                   value={field.value || ''}
                 />
               </FormControl>
-              <FormDescription>
+              <FormDescription className="text-xs">
                 Enter a URL for an image representing your service
               </FormDescription>
               <FormMessage />
@@ -334,7 +334,7 @@ export default function ServiceForm({ service, onSubmit, isPending }: ServiceFor
                   <SelectItem value="3">Medium Priority (3)</SelectItem>
                 </SelectContent>
               </Select>
-              <FormDescription>
+              <FormDescription className="text-xs">
                 Higher priority services (1-3) will be displayed prominently
               </FormDescription>
               <FormMessage />
@@ -349,7 +349,7 @@ export default function ServiceForm({ service, onSubmit, isPending }: ServiceFor
             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
               <div className="space-y-0.5">
                 <FormLabel className="text-base">Active Status</FormLabel>
-                <FormDescription>
+                <FormDescription className="text-xs">
                   Is this service currently available?
                 </FormDescription>
               </div>
