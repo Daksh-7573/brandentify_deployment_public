@@ -80,12 +80,17 @@ export default function ServiceForm({ service, onSubmit, isPending }: ServiceFor
   
   // Handle form submission
   const handleSubmit = (values: FormValues) => {
+    // Extract the service title from features array - use the first feature as the title
+    const serviceTitle = values.features && values.features.length > 0 
+      ? values.features[0] 
+      : (service?.title || "My Professional Service");
+      
     // Transform form values to match API expectations and preserve existing fields
     const transformedData = {
       // Keep existing service values if editing 
       ...(service || {}),
-      // Add required title field if not present (backend requires it)
-      title: service?.title || "My Professional Service",
+      // Set the title from the first feature
+      title: serviceTitle,
       // Override with new values from the form
       ...values,
       // Keep or set default price fields (required by backend API)
@@ -107,11 +112,11 @@ export default function ServiceForm({ service, onSubmit, isPending }: ServiceFor
           name="features"
           render={() => (
             <FormItem>
-              <FormLabel>Features</FormLabel>
+              <FormLabel>Service Title*</FormLabel>
               <div className="space-y-2">
                 <div className="flex gap-2">
                   <Input
-                    placeholder="Add a feature..."
+                    placeholder="Enter service title..."
                     value={featureInput}
                     onChange={(e) => setFeatureInput(e.target.value)}
                     onKeyDown={handleFeatureKeyDown}
@@ -142,11 +147,6 @@ export default function ServiceForm({ service, onSubmit, isPending }: ServiceFor
                       </Button>
                     </div>
                   ))}
-                  {form.watch("features")?.length === 0 && (
-                    <p className="text-sm text-muted-foreground">
-                      No features added. Add features to highlight what's included.
-                    </p>
-                  )}
                 </div>
               </div>
               <FormMessage />
