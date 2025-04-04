@@ -58,314 +58,211 @@ export default function Skills() {
         console.log("Skills - Got direct fetch data:", freshData);
         // Force update
         if (freshData && Array.isArray(freshData)) {
-          setSkills([...freshData]);
-          // Update the ref as well
-          latestDataRef.current = [...freshData];
+          setSkills(freshData);
         }
       } catch (error) {
-        console.error("Error during direct skills fetch:", error);
+        console.error("Error fetching skills:", error);
       }
     }
-    
     directFetch();
-    
-    // Poll every second
-    const interval = setInterval(directFetch, 1000);
-    return () => clearInterval(interval);
-  }, [userId]); // Only re-run when userId changes
+  }, [userId]);
   
-  // Initialize with an empty array, but use the ref for the actual display data
   const [skills, setSkills] = useState<SkillItem[]>([]);
-  
-  // Reference to hold the most recent data
-  const latestDataRef = useRef<SkillItem[]>([]);
-  
-  // CRITICAL IMPROVEMENT: Initialize skills from serverSkills on first load
-  useEffect(() => {
-    if (serverSkills && Array.isArray(serverSkills) && serverSkills.length > 0) {
-      console.log("Skills: Initial data from server:", serverSkills);
-      setSkills(serverSkills);
-      latestDataRef.current = serverSkills;
-    }
-  }, []);
-  
-  // Update skills state when server data changes
-  useEffect(() => {
-    if (serverSkills && Array.isArray(serverSkills)) {
-      console.log("Skills received updated data:", serverSkills);
-      
-      // Always update our reference with the latest data
-      latestDataRef.current = [...serverSkills];
-      
-      // Update the state too to trigger re-renders
-      setSkills([...serverSkills]);
-    }
-  }, [serverSkills]);
-  
-  // Always use the latest data for display, using direct ref access as a fallback
-  const displaySkills = skills.length > 0 ? skills : 
-                       (latestDataRef.current.length > 0 ? latestDataRef.current : []);
-
-  // For the modal form
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [newSkill, setNewSkill] = useState<Partial<SkillItem>>({
     name: '',
-    level: 'Beginner',
+    level: 'Intermediate',
     proficiency: 50
   });
-  
-  // For Slider state
   const [sliderValue, setSliderValue] = useState(50);
-  
   const { toast } = useToast();
   
-  // Map level to proficiency ranges
-  const levelToProficiency = {
-    'Beginner': { min: 10, max: 40 },
-    'Intermediate': { min: 41, max: 75 },
-    'Advanced': { min: 76, max: 100 },
-    'Expert': { min: 90, max: 100 }
-  };
+  // Update local skills when server skills change
+  useEffect(() => {
+    if (serverSkills && Array.isArray(serverSkills)) {
+      setSkills(serverSkills);
+    }
+  }, [serverSkills]);
   
-  // Calculate level from proficiency
-  const getProficiencyLevel = (proficiency: number): string => {
-    if (proficiency >= 76) return 'Advanced';
-    if (proficiency >= 41) return 'Intermediate';
-    return 'Beginner';
-  };
-  
-  // Define level options for our custom select
   const levelOptions = [
-    { value: "Beginner", label: "Beginner" },
-    { value: "Intermediate", label: "Intermediate" },
-    { value: "Advanced", label: "Advanced" },
-    { value: "Expert", label: "Expert" }
+    { value: 'Beginner', label: 'Beginner' },
+    { value: 'Intermediate', label: 'Intermediate' },
+    { value: 'Advanced', label: 'Advanced' }
   ];
-
-  const handleAdd = () => {
+  
+  const handleOpenAddModal = () => {
+    setNewSkill({
+      name: '',
+      level: 'Intermediate',
+      proficiency: 50
+    });
+    setSliderValue(50);
     setIsAddModalOpen(true);
   };
   
   const handleCloseModal = () => {
     setIsAddModalOpen(false);
-    // Reset form
-    setNewSkill({
-      name: '',
-      level: 'Beginner',
-      proficiency: 50
-    });
-    // Reset slider
-    setSliderValue(50);
   };
   
-  const handleSaveSkill = async () => {
+  const handleSliderChange = (value: number[]) => {
+    const proficiency = value[0];
+    setSliderValue(proficiency);
+    setNewSkill(prev => ({ ...prev, proficiency }));
+  };
+  
+  const handleLevelChange = (value: string) => {
+    setNewSkill(prev => ({ ...prev, level: value }));
+  };
+  
+  const handleEditSkill = (skill: SkillItem) => {
+    setNewSkill(skill);
+    setSliderValue(skill.proficiency);
+    setIsAddModalOpen(true);
+  };
+  
+  const handleDeleteSkill = async (skillId: number) => {
+    if (!skillId) return;
+    
     try {
-      // Validate form
-      if (!newSkill.name) {
-        toast({
-          title: "Missing information",
-          description: "Please enter a skill name",
-          variant: "destructive"
-        });
-        return;
-      }
-      
-      // Add userId to the skill
-      const skillToSave = {
-        ...newSkill,
-        userId: userId,
-        proficiency: sliderValue // Use the slider value
-      };
-      
-      let response;
-      let successMessage;
-      
-      // Check if we're editing an existing skill (has an id) or creating a new one
-      if (newSkill.id) {
-        // Update existing skill
-        response = await apiRequest('PUT', `/api/skills/${newSkill.id}`, skillToSave);
-        successMessage = "Your skill has been updated successfully";
-      } else {
-        // Create new skill
-        response = await apiRequest('POST', '/api/skills', skillToSave);
-        successMessage = "Your skill has been added successfully";
-      }
-      
-      if (response.ok) {
-        // Close modal
-        setIsAddModalOpen(false);
-        
-        // Refresh data
-        refetch();
-        
-        // Show success message
-        toast({
-          title: newSkill.id ? "Skill updated" : "Skill added",
-          description: successMessage,
-        });
-        
-        // Reset form
-        setNewSkill({
-          name: '',
-          level: 'Beginner',
-          proficiency: 50
-        });
-        
-        // Reset slider
-        setSliderValue(50);
-      } else {
-        throw new Error(`Failed to ${newSkill.id ? 'update' : 'save'} skill`);
-      }
-    } catch (error) {
-      console.error("Error saving skill:", error);
+      await apiRequest('DELETE', `/api/skills/${skillId}`);
+      setSkills(prev => prev.filter(skill => skill.id !== skillId));
       toast({
-        title: "Error",
-        description: `Failed to ${newSkill.id ? 'update' : 'save'} your skill. Please try again.`,
-        variant: "destructive"
-      });
-    }
-  };
-
-  const handleEditSkill = (id: number) => {
-    // Find the skill to edit
-    const skillToEdit = displaySkills.find(skill => skill.id === id);
-    if (skillToEdit) {
-      setNewSkill({
-        ...skillToEdit
+        title: "Skill deleted",
+        description: "Skill has been removed from your profile",
       });
       
-      // Set the slider value
-      setSliderValue(skillToEdit.proficiency);
+      // Invalidate the skills query to trigger a refresh
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/skills`] });
       
-      setIsAddModalOpen(true);
-    }
-  };
-
-  const handleDeleteSkill = async (id: number) => {
-    try {
-      const response = await apiRequest('DELETE', `/api/skills/${id}`);
-      if (response.ok) {
-        // Update local state immediately for responsiveness
-        setSkills(skills.filter(skill => skill.id !== id));
-        
-        // Show success message
-        toast({
-          title: "Skill deleted",
-          description: "Your skill has been deleted successfully",
-        });
-        
-        // Refresh data
-        refetch();
-      } else {
-        throw new Error("Failed to delete skill");
-      }
     } catch (error) {
       console.error("Error deleting skill:", error);
       toast({
         title: "Error",
-        description: "Failed to delete your skill. Please try again.",
-        variant: "destructive"
+        description: "Failed to delete skill. Please try again.",
+        variant: "destructive",
       });
     }
   };
   
-  // Handle level change
-  const handleLevelChange = (value: string) => {
-    setNewSkill({...newSkill, level: value});
+  const handleSaveSkill = async () => {
+    if (!newSkill.name) {
+      toast({
+        title: "Validation Error",
+        description: "Skill name is required",
+        variant: "destructive",
+      });
+      return;
+    }
     
-    // Set a default proficiency for the level
-    const { min, max } = levelToProficiency[value as keyof typeof levelToProficiency];
-    const defaultValue = Math.floor((min + max) / 2);
-    setSliderValue(defaultValue);
+    try {
+      const method = newSkill.id ? 'PUT' : 'POST';
+      const endpoint = newSkill.id ? `/api/skills/${newSkill.id}` : '/api/skills';
+      const data = {
+        ...newSkill,
+        userId: userId
+      };
+      
+      await apiRequest(method, endpoint, data);
+      
+      toast({
+        title: newSkill.id ? "Skill updated" : "Skill added",
+        description: newSkill.id ? 
+          "Skill has been updated successfully" : 
+          "Skill has been added to your profile",
+      });
+      
+      // Invalidate the skills query to trigger a refresh
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/skills`] });
+      setIsAddModalOpen(false);
+      
+    } catch (error) {
+      console.error("Error saving skill:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save skill. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
   
-  // Handle slider change
-  const handleSliderChange = (value: number[]) => {
-    const newValue = value[0];
-    setSliderValue(newValue);
-    
-    // Update the level based on the proficiency
-    const level = getProficiencyLevel(newValue);
-    setNewSkill({...newSkill, level, proficiency: newValue});
-  };
-
-  // Get color based on proficiency
+  // Function to determine color based on proficiency
   const getColor = (proficiency: number) => {
-    if (proficiency >= 80) return "bg-green-500";
-    if (proficiency >= 50) return "bg-yellow-500";
-    return "bg-red-500";
+    if (proficiency < 33) return 'bg-red-500';
+    if (proficiency < 66) return 'bg-yellow-500';
+    return 'bg-green-500';
   };
-
+  
   return (
     <>
       <Card className="mb-6">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <div>
             <CardTitle className="text-xl font-bold">Skills</CardTitle>
-            <CardDescription>Add your professional skills</CardDescription>
+            <CardDescription>Add your professional skills and expertise levels</CardDescription>
           </div>
           <Button 
             variant="outline" 
             size="sm" 
             className="h-8 gap-1" 
-            onClick={handleAdd}
+            onClick={() => setIsAddModalOpen(true)}
           >
             <Plus className="h-3.5 w-3.5" />
             <span>Add</span>
           </Button>
         </CardHeader>
-        
         <CardContent>
           {isLoading ? (
             <div className="flex justify-center py-6">
               <Loader2 className="h-6 w-6 animate-spin text-primary" />
             </div>
-          ) : displaySkills && displaySkills.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {displaySkills.map((skill) => (
-                <div key={skill.id} className="border border-gray-200 rounded-md p-3">
-                  <div className="flex justify-between mb-1">
-                    <span className="text-sm font-medium text-gray-700">{skill.name}</span>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-xs text-gray-500">{skill.level}</span>
+          ) : skills.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {skills.map((skill) => (
+                <div 
+                  key={skill.id} 
+                  className="border bg-background rounded-lg p-4 transition-all hover:shadow-md hover:border-primary/30"
+                >
+                  <div className="flex justify-between items-start">
+                    <h3 className="font-medium text-base line-clamp-2 flex-1">{skill.name}</h3>
+                    <div className="flex items-center space-x-1 ml-2">
                       <button 
-                        className="text-gray-400 hover:text-gray-600 focus:outline-none"
-                        onClick={() => handleEditSkill(skill.id)}
+                        onClick={() => handleEditSkill(skill)} 
+                        className="text-muted-foreground hover:text-primary focus:outline-none rounded-full p-1 hover:bg-muted"
                       >
                         <Pencil className="h-3.5 w-3.5" />
                       </button>
                       <button 
-                        className="text-gray-400 hover:text-gray-600 focus:outline-none"
-                        onClick={() => handleDeleteSkill(skill.id)}
+                        onClick={() => handleDeleteSkill(skill.id)} 
+                        className="text-muted-foreground hover:text-destructive focus:outline-none rounded-full p-1 hover:bg-muted"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </button>
                     </div>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-1.5">
-                    <div 
-                      className={`${getColor(skill.proficiency)} h-1.5 rounded-full`} 
-                      style={{ width: `${skill.proficiency}%` }}
-                    ></div>
+                  <div className="mt-2">
+                    <span className="inline-block text-xs text-muted-foreground px-2 py-0.5 rounded-full bg-muted mb-2">
+                      {skill.level || 'No level set'}
+                    </span>
+                    <div className="mt-2">
+                      <div className="flex items-center justify-between text-xs mb-1">
+                        <span className="text-muted-foreground">Proficiency</span>
+                        <span>{skill.proficiency}%</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-1.5">
+                        <div 
+                          className={`${getColor(skill.proficiency)} h-1.5 rounded-full`} 
+                          style={{ width: `${skill.proficiency}%` }}
+                        ></div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="py-8 text-center">
-              <div className="bg-muted/30 rounded-full p-4 w-20 h-20 mx-auto mb-3 flex items-center justify-center">
-                <Lightbulb className="h-10 w-10 text-primary/60" />
-              </div>
-              <h3 className="text-lg font-medium mb-1">Showcase your expertise</h3>
-              <p className="text-muted-foreground mb-4 max-w-md mx-auto">Adding your skills helps potential clients and employers find you for relevant opportunities.</p>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => setIsAddModalOpen(true)} 
-                className="mx-auto"
-              >
-                <Plus className="h-4 w-4 mr-1" /> Add Skills
-              </Button>
+            <div className="py-6 text-center">
+              <Lightbulb className="mx-auto h-10 w-10 text-muted-foreground/50" />
+              <p className="mt-2 text-muted-foreground">No skills added yet.</p>
             </div>
           )}
         </CardContent>
