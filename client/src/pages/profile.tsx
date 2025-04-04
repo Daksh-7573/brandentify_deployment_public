@@ -448,18 +448,20 @@ export default function Profile() {
       // Invalidate and refetch
       queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
       toast({
-        title: "Profile updated",
-        description: "Your profile information has been updated successfully",
-        duration: 3000, // Show for 3 seconds
+        title: "✅ Profile Successfully Updated!",
+        description: "All your profile changes have been saved. You can now continue or navigate to other sections.",
+        duration: 5000, // Show for 5 seconds
         className: "profile-save-toast animate-bounce-once",
       });
       setShowEditBasicInfo(false);
     },
     onError: (error: Error) => {
       toast({
-        title: "Error updating profile",
-        description: error.message,
+        title: "❌ Error Updating Profile",
+        description: error.message || "There was a problem saving your profile changes. Please try again.",
         variant: "destructive",
+        duration: 5000, // Show for 5 seconds
+        className: "animate-bounce-once",
       });
     }
   });
