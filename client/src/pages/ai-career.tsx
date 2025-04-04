@@ -21,9 +21,7 @@ const DEMO_USER_ID = 1;
 
 export default function AICareerPage() {
   const { toast } = useToast();
-  const [resumeText, setResumeText] = useState("");
-  const [targetIndustry, setTargetIndustry] = useState("");
-  const [networkingPurpose, setNetworkingPurpose] = useState("mentorship");
+  const [resumeText, setResumeText] = useState(""); // Add this back for file upload
   const [activeTab, setActiveTab] = useState("career");
   const { user, isAuthenticated, isLoading } = useAuth();
   const [_, setLocation] = useLocation();
@@ -99,38 +97,7 @@ export default function AICareerPage() {
     }
   });
 
-  // Networking recommendations mutation
-  const networkingMutation = useMutation({
-    mutationFn: async () => {
-      const res = await apiRequest("POST", "/api/ai/networking-recommendations", {
-        userId: DEMO_USER_ID,
-        targetIndustry,
-        purpose: networkingPurpose
-      });
-      return res.json();
-    },
-    onSuccess: () => {
-      toast({
-        title: "Networking recommendations generated",
-        description: "Your personalized networking recommendations have been generated."
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["/api/users", DEMO_USER_ID, "chat-messages"]
-      });
-      setTargetIndustry("");
-    },
-    onError: (error: Error) => {
-      const isApiKeyMissing = error.message.includes("API key");
-      
-      toast({
-        title: "Error generating recommendations",
-        description: isApiKeyMissing 
-          ? "OpenAI API key is missing. Please check your environment variables."
-          : "Failed to generate networking recommendations. Please try again later.",
-        variant: "destructive"
-      });
-    }
-  });
+  // We've removed the networking recommendations mutation
 
   // Get recent AI messages for display based on active tab
   const getRecentAIMessages = (messageType?: string) => {
@@ -164,7 +131,6 @@ export default function AICareerPage() {
     const types: Record<string, string> = {
       'career_advice': 'Career Advice',
       'resume_analysis': 'Resume Analysis',
-      'networking_recommendations': 'Networking Recommendations',
       'general': 'General'
     };
     return types[type] || 'AI Message';
@@ -208,14 +174,11 @@ export default function AICareerPage() {
                     
                     if (value === 'resume') {
                       setResumeText("");
-                    } else if (value === 'networking') {
-                      setTargetIndustry("");
                     }
                   }}>
-                  <TabsList className="grid w-full grid-cols-3 mb-4">
+                  <TabsList className="grid w-full grid-cols-2 mb-4">
                     <TabsTrigger value="career">Career Advice</TabsTrigger>
                     <TabsTrigger value="resume">Resume Analysis</TabsTrigger>
-                    <TabsTrigger value="networking">Networking</TabsTrigger>
                   </TabsList>
                   
                   <TabsContent value="career" className="mt-2">
@@ -344,57 +307,7 @@ export default function AICareerPage() {
                     </Card>
                   </TabsContent>
                   
-                  <TabsContent value="networking" className="mt-2">
-                    <Card className="p-4 sm:p-6">
-                      <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Networking Recommendations</h2>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Get personalized networking recommendations for your career goals.
-                      </p>
-                      
-                      <div className="space-y-4">
-                        <div>
-                          <Label htmlFor="industry" className="mb-1.5 block">Target Industry</Label>
-                          <Input 
-                            id="industry" 
-                            placeholder="e.g. Technology, Healthcare, Finance"
-                            value={targetIndustry}
-                            onChange={(e) => setTargetIndustry(e.target.value)}
-                            className="w-full"
-                          />
-                        </div>
-                        
-                        <div>
-                          <Label htmlFor="purpose" className="mb-1.5 block">Networking Purpose</Label>
-                          <Select 
-                            value={networkingPurpose} 
-                            onValueChange={setNetworkingPurpose}
-                          >
-                            <SelectTrigger id="purpose" className="w-full">
-                              <SelectValue placeholder="Select purpose" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="mentorship">Find a Mentor</SelectItem>
-                              <SelectItem value="job_search">Job Search</SelectItem>
-                              <SelectItem value="collaboration">Find Collaborators</SelectItem>
-                              <SelectItem value="industry_insights">Industry Insights</SelectItem>
-                              <SelectItem value="career_change">Career Change</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        
-                        <Button 
-                          className="w-full mt-2"
-                          onClick={() => networkingMutation.mutate()}
-                          disabled={networkingMutation.isPending || !targetIndustry.trim()}
-                        >
-                          {networkingMutation.isPending && (
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          )}
-                          Get Recommendations
-                        </Button>
-                      </div>
-                    </Card>
-                  </TabsContent>
+
                 </Tabs>
               </div>
               
@@ -413,8 +326,6 @@ export default function AICareerPage() {
                     messageType = "career_advice";
                   } else if (activeTab === "resume") {
                     messageType = "resume_analysis";
-                  } else if (activeTab === "networking") {
-                    messageType = "networking_recommendations";
                   }
                   
                   const filteredMessages = getRecentAIMessages(messageType);
@@ -425,8 +336,7 @@ export default function AICareerPage() {
                         <h3 className="text-base sm:text-lg font-medium">No AI insights yet</h3>
                         <p className="text-sm text-muted-foreground mt-2 max-w-md mx-auto">
                           {activeTab === "career" ? "Generate career advice to see insights here." :
-                           activeTab === "resume" ? "Analyze your resume to see insights here." :
-                           "Generate networking recommendations to see insights here."}
+                           "Analyze your resume to see insights here."}
                         </p>
                       </div>
                     );
