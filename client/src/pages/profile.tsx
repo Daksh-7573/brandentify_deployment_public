@@ -450,6 +450,8 @@ export default function Profile() {
       toast({
         title: "Profile updated",
         description: "Your profile information has been updated successfully",
+        duration: 3000, // Show for 3 seconds
+        className: "profile-save-toast animate-bounce-once",
       });
       setShowEditBasicInfo(false);
     },
