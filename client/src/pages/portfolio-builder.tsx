@@ -307,29 +307,323 @@ export default function PortfolioBuilder() {
               </p>
             </div>
             
-            {/* Simplified AI-generated portfolio preview */}
-            <Card className="overflow-hidden">
-              <div className="h-32 bg-gradient-to-r from-primary to-purple-600"></div>
-              <CardContent className="relative pt-16 pb-4">
-                <div className="absolute -top-16 left-6">
-                  <div className="h-24 w-24 overflow-hidden rounded-full bg-white ring-4 ring-white flex items-center justify-center">
-                    <img 
-                      className="h-full w-full object-cover" 
-                      src={user?.photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
-                      alt="User profile"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
-                      }}
-                    />
+            {/* Dynamic portfolio preview based on selected layout */}
+            {form.watch("layout") === "professional" && (
+              <Card className="overflow-hidden">
+                <div className="h-32 bg-gradient-to-r from-primary/80 to-blue-600"></div>
+                <CardContent className="relative pt-16 pb-4">
+                  <div className="absolute -top-16 left-6">
+                    <div className="h-24 w-24 overflow-hidden rounded-full bg-white ring-4 ring-white flex items-center justify-center">
+                      <img 
+                        className="h-full w-full object-cover" 
+                        src={user?.photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
+                        alt="User profile"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
+                        }}
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="pl-32 mt-2">
-                  <h2 className="text-xl font-bold text-gray-900">{user?.name || 'Professional'}</h2>
-                  <p className="text-sm text-gray-500 mt-1">{user?.title || 'Professional'}</p>
-                </div>
-              </CardContent>
-            </Card>
+                  <div className="pl-32 mt-2">
+                    <h2 className="text-xl font-bold text-gray-900">{user?.name || 'Professional'}</h2>
+                    <p className="text-sm text-gray-500 mt-1">{user?.title || 'Professional'}</p>
+                    <div className="mt-4 grid grid-cols-3 gap-4">
+                      <div className="p-3 border rounded-md text-center">
+                        <p className="text-sm font-medium">Experience</p>
+                        <p className="text-2xl font-bold text-primary">5+</p>
+                        <p className="text-xs text-gray-500">Years</p>
+                      </div>
+                      <div className="p-3 border rounded-md text-center">
+                        <p className="text-sm font-medium">Projects</p>
+                        <p className="text-2xl font-bold text-primary">12</p>
+                        <p className="text-xs text-gray-500">Completed</p>
+                      </div>
+                      <div className="p-3 border rounded-md text-center">
+                        <p className="text-sm font-medium">Skills</p>
+                        <p className="text-2xl font-bold text-primary">20+</p>
+                        <p className="text-xs text-gray-500">Verified</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+            
+            {form.watch("layout") === "creative" && (
+              <Card className="overflow-hidden bg-gradient-to-br from-pink-100 to-purple-100">
+                <CardContent className="p-0">
+                  <div className="grid grid-cols-1 md:grid-cols-2">
+                    <div className="p-8 flex flex-col justify-center">
+                      <h2 className="text-3xl font-bold mb-2 bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
+                        {user?.name || 'Creative Professional'}
+                      </h2>
+                      <p className="text-base font-medium text-gray-800 mb-4">{user?.title || 'Designer & Creator'}</p>
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        <Badge className="bg-pink-100 text-pink-800 hover:bg-pink-200">UI/UX Design</Badge>
+                        <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200">Illustration</Badge>
+                        <Badge className="bg-indigo-100 text-indigo-800 hover:bg-indigo-200">Animation</Badge>
+                        <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">Art Direction</Badge>
+                      </div>
+                      <div className="flex gap-4 mt-4">
+                        <div className="w-8 h-8 rounded-full bg-pink-500 text-white flex items-center justify-center">
+                          <i className="fas fa-envelope"></i>
+                        </div>
+                        <div className="w-8 h-8 rounded-full bg-purple-500 text-white flex items-center justify-center">
+                          <i className="fab fa-linkedin-in"></i>
+                        </div>
+                        <div className="w-8 h-8 rounded-full bg-indigo-500 text-white flex items-center justify-center">
+                          <i className="fab fa-behance"></i>
+                        </div>
+                        <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center">
+                          <i className="fab fa-instagram"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-center p-6 relative">
+                      <div className="relative overflow-hidden rounded-full h-64 w-64 bg-gradient-to-br from-pink-400 to-purple-600 p-1">
+                        <img 
+                          className="h-full w-full object-cover rounded-full" 
+                          src={user?.photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
+                          alt="User profile"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
+                          }}
+                        />
+                      </div>
+                      <div className="absolute w-32 h-32 rounded-full border-4 border-white bg-pink-100 -bottom-10 -left-4 -z-10"></div>
+                      <div className="absolute w-24 h-24 rounded-full border-4 border-white bg-purple-100 -top-8 -right-4 -z-10"></div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+            
+            {form.watch("layout") === "minimal" && (
+              <Card className="overflow-hidden">
+                <CardContent className="p-8">
+                  <div className="flex flex-col items-center text-center mb-8">
+                    <div className="h-24 w-24 overflow-hidden rounded-full bg-gray-100 mb-4 flex items-center justify-center">
+                      <img 
+                        className="h-full w-full object-cover" 
+                        src={user?.photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
+                        alt="User profile"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
+                        }}
+                      />
+                    </div>
+                    <h2 className="text-2xl font-light text-gray-900 mb-1">{user?.name || 'Minimalist Professional'}</h2>
+                    <p className="text-sm text-gray-500">{user?.title || 'Professional'}</p>
+                  </div>
+                  <div className="border-t border-gray-100 pt-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                      <div>
+                        <h3 className="text-sm font-medium uppercase tracking-wider text-gray-400 mb-3">About</h3>
+                        <p className="text-sm text-gray-600">A professional with a minimalist approach to design and problem-solving. Focused on delivering clean, efficient solutions.</p>
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-medium uppercase tracking-wider text-gray-400 mb-3">Expertise</h3>
+                        <ul className="space-y-2 text-sm text-gray-600">
+                          <li>Simplified UX Design</li>
+                          <li>Clean Architecture</li>
+                          <li>User-Centered Approach</li>
+                          <li>Accessible Design</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-medium uppercase tracking-wider text-gray-400 mb-3">Contact</h3>
+                        <ul className="space-y-2 text-sm text-gray-600">
+                          <li>{user?.email || 'email@example.com'}</li>
+                          <li>{form.watch("publicUrl") ? `brandentifier.com/${form.watch("publicUrl")}` : 'Your portfolio URL'}</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+            
+            {form.watch("layout") === "technical" && (
+              <Card className="overflow-hidden text-gray-100 bg-gray-900 border-none">
+                <CardContent className="p-8">
+                  <div className="flex flex-col md:flex-row gap-8">
+                    <div className="md:w-1/3">
+                      <div className="bg-gray-800 p-4 rounded-md">
+                        <div className="flex items-center mb-4">
+                          <div className="h-16 w-16 overflow-hidden rounded-md bg-gray-700 mr-4 flex items-center justify-center">
+                            <img 
+                              className="h-full w-full object-cover" 
+                              src={user?.photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
+                              alt="User profile"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.src = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
+                              }}
+                            />
+                          </div>
+                          <div>
+                            <p className="text-green-400 font-mono text-xs mb-1">class Developer &#123;</p>
+                            <h2 className="text-xl font-semibold text-green-300 font-mono">{user?.name || 'TechDev'}</h2>
+                            <p className="text-green-400 font-mono text-xs">&#125;</p>
+                          </div>
+                        </div>
+                        <div className="border-t border-gray-700 pt-4">
+                          <p className="text-gray-400 font-mono text-sm mb-2">// Main.skills</p>
+                          <div className="grid grid-cols-2 gap-2">
+                            <div className="bg-gray-700 px-2 py-1 rounded text-xs font-mono text-green-300">JavaScript</div>
+                            <div className="bg-gray-700 px-2 py-1 rounded text-xs font-mono text-green-300">TypeScript</div>
+                            <div className="bg-gray-700 px-2 py-1 rounded text-xs font-mono text-green-300">React</div>
+                            <div className="bg-gray-700 px-2 py-1 rounded text-xs font-mono text-green-300">Node.js</div>
+                            <div className="bg-gray-700 px-2 py-1 rounded text-xs font-mono text-green-300">Python</div>
+                            <div className="bg-gray-700 px-2 py-1 rounded text-xs font-mono text-green-300">Docker</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="md:w-2/3">
+                      <div className="bg-gray-800 p-4 rounded-md mb-4 font-mono">
+                        <p className="text-gray-400 text-sm mb-2">// About.me</p>
+                        <p className="text-gray-200 text-sm">
+                          <span className="text-blue-400">function</span> <span className="text-yellow-400">getProfile</span>() &#123;<br />
+                          &nbsp;&nbsp;<span className="text-blue-400">return</span> &#123;<br />
+                          &nbsp;&nbsp;&nbsp;&nbsp;title: <span className="text-green-300">"{user?.title || 'Software Engineer'}"</span>,<br />
+                          &nbsp;&nbsp;&nbsp;&nbsp;focus: <span className="text-green-300">"Full-stack development"</span>,<br />
+                          &nbsp;&nbsp;&nbsp;&nbsp;yearsOfExperience: <span className="text-purple-400">5</span><br />
+                          &nbsp;&nbsp;&#125;;<br />
+                          &#125;
+                        </p>
+                      </div>
+                      <div className="bg-gray-800 p-4 rounded-md font-mono">
+                        <p className="text-gray-400 text-sm mb-2">// Projects.latest</p>
+                        <div className="space-y-3">
+                          <div className="border-l-2 border-green-500 pl-3">
+                            <p className="text-yellow-400 text-sm">Project: <span className="text-gray-200">AI-Powered Analytics Platform</span></p>
+                            <p className="text-gray-400 text-xs">// Tech: React, Node.js, TensorFlow</p>
+                          </div>
+                          <div className="border-l-2 border-blue-500 pl-3">
+                            <p className="text-yellow-400 text-sm">Project: <span className="text-gray-200">Microservice Architecture</span></p>
+                            <p className="text-gray-400 text-xs">// Tech: Docker, Kubernetes, Go</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+            
+            {form.watch("layout") === "executive" && (
+              <Card className="overflow-hidden bg-stone-50 border-stone-200">
+                <CardContent className="p-0">
+                  <div className="flex flex-col md:flex-row">
+                    <div className="md:w-2/5 bg-stone-900 text-stone-100 p-8">
+                      <div className="flex flex-col items-center md:items-start">
+                        <div className="h-32 w-32 overflow-hidden rounded-full bg-stone-800 mb-6 flex items-center justify-center border-4 border-stone-700">
+                          <img 
+                            className="h-full w-full object-cover" 
+                            src={user?.photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
+                            alt="User profile"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.src = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
+                            }}
+                          />
+                        </div>
+                        <h2 className="text-2xl font-bold text-stone-100 mb-1">{user?.name || 'Executive Leader'}</h2>
+                        <p className="text-sm text-stone-400 mb-6">{user?.title || 'Chief Executive Officer'}</p>
+                        <div className="w-16 h-1 bg-amber-500 mb-6 hidden md:block"></div>
+                        <div className="space-y-4 text-center md:text-left">
+                          <div>
+                            <p className="text-xs text-stone-500 uppercase tracking-wider">Email</p>
+                            <p className="text-sm">{user?.email || 'email@example.com'}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-stone-500 uppercase tracking-wider">Location</p>
+                            <p className="text-sm">New York, NY</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-stone-500 uppercase tracking-wider">Connect</p>
+                            <div className="flex gap-3 mt-2 justify-center md:justify-start">
+                              <div className="w-8 h-8 rounded-full bg-stone-700 text-stone-300 flex items-center justify-center">
+                                <i className="fab fa-linkedin-in"></i>
+                              </div>
+                              <div className="w-8 h-8 rounded-full bg-stone-700 text-stone-300 flex items-center justify-center">
+                                <i className="fab fa-twitter"></i>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="md:w-3/5 p-8">
+                      <div className="mb-8">
+                        <h3 className="text-lg font-bold text-stone-800 mb-3 flex items-center">
+                          <span className="w-6 h-6 rounded-full bg-amber-500 text-white text-xs flex items-center justify-center mr-2">
+                            <i className="fas fa-user"></i>
+                          </span>
+                          Executive Summary
+                        </h3>
+                        <p className="text-stone-600">
+                          Seasoned executive with a track record of strategic leadership and business transformation. 
+                          Expertise in organizational development, stakeholder management, and driving sustainable growth.
+                        </p>
+                      </div>
+                      <div className="mb-8">
+                        <h3 className="text-lg font-bold text-stone-800 mb-3 flex items-center">
+                          <span className="w-6 h-6 rounded-full bg-amber-500 text-white text-xs flex items-center justify-center mr-2">
+                            <i className="fas fa-trophy"></i>
+                          </span>
+                          Key Achievements
+                        </h3>
+                        <ul className="space-y-2 text-stone-600">
+                          <li className="flex items-start">
+                            <span className="text-amber-500 mr-2">•</span>
+                            Led company through 200% growth over 3 years
+                          </li>
+                          <li className="flex items-start">
+                            <span className="text-amber-500 mr-2">•</span>
+                            Successfully navigated digital transformation
+                          </li>
+                          <li className="flex items-start">
+                            <span className="text-amber-500 mr-2">•</span>
+                            Expanded operations into 5 new international markets
+                          </li>
+                        </ul>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-stone-800 mb-3 flex items-center">
+                          <span className="w-6 h-6 rounded-full bg-amber-500 text-white text-xs flex items-center justify-center mr-2">
+                            <i className="fas fa-briefcase"></i>
+                          </span>
+                          Areas of Expertise
+                        </h3>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="flex items-center">
+                            <div className="w-2 h-2 rounded-full bg-amber-500 mr-2"></div>
+                            <span className="text-stone-600 text-sm">Strategic Planning</span>
+                          </div>
+                          <div className="flex items-center">
+                            <div className="w-2 h-2 rounded-full bg-amber-500 mr-2"></div>
+                            <span className="text-stone-600 text-sm">Corporate Finance</span>
+                          </div>
+                          <div className="flex items-center">
+                            <div className="w-2 h-2 rounded-full bg-amber-500 mr-2"></div>
+                            <span className="text-stone-600 text-sm">Team Leadership</span>
+                          </div>
+                          <div className="flex items-center">
+                            <div className="w-2 h-2 rounded-full bg-amber-500 mr-2"></div>
+                            <span className="text-stone-600 text-sm">Business Development</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
             
             <div className="flex justify-between">
               <Button 
