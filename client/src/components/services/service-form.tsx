@@ -27,22 +27,12 @@ import {
 } from "@/components/ui/select";
 import { Service } from "@shared/schema";
 
-// Define the form schema with string representations for numeric fields
+// Define the form schema with only required fields
 const formSchema = z.object({
-  title: z.string().min(3, {
-    message: "Title must be at least 3 characters",
-  }),
-  description: z.string().min(10, {
-    message: "Description must be at least 10 characters",
-  }).nullable(),
-  category: z.enum(["consulting", "development", "design", "marketing", "writing", "coaching", "teaching", "other"]),
   // These are strings in the form but will be converted to numbers when submitting
   priceInr: z.string().optional(),
   priceUsd: z.string().optional(),
-  isHourly: z.boolean().default(false),
   features: z.array(z.string()).default([]),
-  imageUrl: z.string().nullable().optional(),
-  order: z.number().default(0),
   isActive: z.boolean().default(true),
 });
 
@@ -57,17 +47,11 @@ interface ServiceFormProps {
 export default function ServiceForm({ service, onSubmit, isPending }: ServiceFormProps) {
   const [featureInput, setFeatureInput] = useState("");
   
-  // Prepare default values for the form
+  // Prepare default values for the form - only the required fields
   const defaultValues = {
-    title: service?.title || "",
-    description: service?.description || "",
-    category: service?.category || "other",
     priceInr: service?.priceInr !== null && service?.priceInr !== undefined ? String(service.priceInr) : "",
     priceUsd: service?.priceUsd !== null && service?.priceUsd !== undefined ? String(service.priceUsd) : "",
-    isHourly: !!service?.isHourly,
     features: Array.isArray(service?.features) ? service.features : [],
-    imageUrl: service?.imageUrl || "",
-    order: service?.order || 0,
     isActive: service?.isActive !== false,
   };
   
@@ -101,11 +85,19 @@ export default function ServiceForm({ service, onSubmit, isPending }: ServiceFor
   
   // Handle form submission and convert string inputs to appropriate types
   const handleSubmit = (values: FormValues) => {
-    // Transform form values to match API expectations
+    // Transform form values to match API expectations and preserve existing fields
     const transformedData = {
+      // Keep existing service values if editing 
+      ...(service || {}),
+      // Add required title field if not present (backend requires it)
+      title: service?.title || "My Professional Service",
+      // Override with new values
       ...values,
+      // Convert price strings to numbers
       priceInr: values.priceInr ? parseFloat(values.priceInr) : null,
       priceUsd: values.priceUsd ? parseFloat(values.priceUsd) : null,
+      // Set default values for required fields in case they're not in the service object
+      category: service?.category || "other", 
     };
     
     onSubmit(transformedData);
@@ -113,71 +105,7 @@ export default function ServiceForm({ service, onSubmit, isPending }: ServiceFor
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 pb-2">
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Service Title*</FormLabel>
-              <FormControl>
-                <Input placeholder="e.g., Web Development" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
-        <FormField
-          control={form.control}
-          name="category"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Category*</FormLabel>
-              <Select 
-                onValueChange={field.onChange} 
-                defaultValue={field.value}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a category" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="consulting">Consulting</SelectItem>
-                  <SelectItem value="development">Development</SelectItem>
-                  <SelectItem value="design">Design</SelectItem>
-                  <SelectItem value="marketing">Marketing</SelectItem>
-                  <SelectItem value="writing">Writing</SelectItem>
-                  <SelectItem value="coaching">Coaching</SelectItem>
-                  <SelectItem value="teaching">Teaching</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description*</FormLabel>
-              <FormControl>
-                <Textarea 
-                  placeholder="Describe your service in detail..." 
-                  className="min-h-[100px]" 
-                  {...field}
-                  value={field.value || ''}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 pb-2">        
         <div className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control}
@@ -217,27 +145,6 @@ export default function ServiceForm({ service, onSubmit, isPending }: ServiceFor
             )}
           />
         </div>
-        
-        <FormField
-          control={form.control}
-          name="isHourly"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-              <div className="space-y-0.5">
-                <FormLabel className="text-base">Hourly Rate</FormLabel>
-                <FormDescription className="text-xs">
-                  Is this an hourly service or a fixed price?
-                </FormDescription>
-              </div>
-              <FormControl>
-                <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
         
         <FormField
           control={form.control}
@@ -286,57 +193,6 @@ export default function ServiceForm({ service, onSubmit, isPending }: ServiceFor
                   )}
                 </div>
               </div>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
-        <FormField
-          control={form.control}
-          name="imageUrl"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Image URL</FormLabel>
-              <FormControl>
-                <Input 
-                  placeholder="https://example.com/image.jpg" 
-                  {...field}
-                  value={field.value || ''}
-                />
-              </FormControl>
-              <FormDescription className="text-xs">
-                Enter a URL for an image representing your service
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
-        <FormField
-          control={form.control}
-          name="order"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Display Order</FormLabel>
-              <Select 
-                onValueChange={(value) => field.onChange(parseInt(value))} 
-                defaultValue={field.value.toString()}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select display order" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="0">Default</SelectItem>
-                  <SelectItem value="1">Top Priority (1)</SelectItem>
-                  <SelectItem value="2">High Priority (2)</SelectItem>
-                  <SelectItem value="3">Medium Priority (3)</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormDescription className="text-xs">
-                Higher priority services (1-3) will be displayed prominently
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
