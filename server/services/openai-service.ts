@@ -178,10 +178,18 @@ export async function analyzeResume(resumeText: string, isBase64: boolean = fals
           // Now we have the actual text content, analyze it
           systemPrompt = "You are an expert resume analyzer with deep knowledge of professional development and hiring practices. Provide constructive feedback and actionable insights based on the actual content of this resume.";
           
+          // Limit the text to a reasonable size (around 8000 characters) to avoid token limits
+          const MAX_TEXT_LENGTH = 8000;
+          const truncatedText = extractedText.length > MAX_TEXT_LENGTH 
+            ? extractedText.substring(0, MAX_TEXT_LENGTH) + "...(truncated due to length)"
+            : extractedText;
+          
+          console.log(`Resume text length: ${extractedText.length} characters, truncated to ${truncatedText.length} characters`);
+          
           userPrompt = `
           I need a detailed professional analysis of this resume:
           
-          ${extractedText}
+          ${truncatedText}
           
           Please provide a comprehensive resume analysis and improvement suggestions using this structure:
           
