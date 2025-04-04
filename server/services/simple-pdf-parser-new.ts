@@ -40,41 +40,13 @@ export async function extractTextFromBinaryData(fileBuffer: Buffer): Promise<str
  */
 async function extractTextFromPdf(fileBuffer: Buffer): Promise<string> {
   try {
-    console.log("Using pdf.js to extract text from PDF");
-    
-    try {
-      // This is wrapped in a try/catch since we're using a fallback approach anyway
-      // @ts-ignore - Ignore the TypeScript error about missing module
-      const pdfjsLib = await import('pdfjs-dist/build/pdf.js');
-      // Set the worker path to use the CDN version
-      pdfjsLib.GlobalWorkerOptions.workerSrc = '//cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
-      
-      console.log("Loading PDF document with pdf.js");
-      const pdf = await pdfjsLib.getDocument({ data: fileBuffer }).promise;
-      console.log(`PDF loaded successfully. Pages: ${pdf.numPages}`);
-      
-      let extractedText = '';
-      
-      for (let i = 1; i <= pdf.numPages; i++) {
-        console.log(`Extracting text from page ${i} of ${pdf.numPages}`);
-        const page = await pdf.getPage(i);
-        const content = await page.getTextContent();
-        const strings = content.items.map((item: any) => item.str);
-        extractedText += strings.join(' ') + '\n';
-      }
-      
-      console.log(`Extracted ${extractedText.length} characters of text from PDF`);
-      return extractedText;
-    } catch (pdfLibError: unknown) {
-      console.error("Error loading pdf.js library:", pdfLibError);
-      throw new Error("PDF.js library loading failed");
-    }
+    // Skip attempting to use pdf.js directly as it causes import issues
+    console.log("Using basic pattern-based PDF text extraction as primary method");
+    return basicPdfTextExtraction(fileBuffer);
   } catch (error: unknown) {
     console.error("Error in PDF text extraction:", error);
-    
-    // Try alternative method: Basic PDF text extraction with patterns
-    console.log("Attempting basic pattern-based PDF text extraction");
-    return basicPdfTextExtraction(fileBuffer);
+    // Return empty string if extraction fails
+    return "";
   }
 }
 
