@@ -36,6 +36,7 @@ import { z } from "zod";
 import { useAuth } from "@/hooks/use-auth";
 import Sidebar from "@/components/layout/sidebar";
 import { apiRequest } from "@/lib/queryClient";
+import { ProfileImage } from "@/components/ui/profile-image";
 import { 
   Loader2, Eye, ChevronRight, Check, ArrowLeft, Bot, 
   Mail, Linkedin, Instagram, Briefcase, Award, User,
@@ -319,14 +320,9 @@ export default function PortfolioBuilder() {
                 <CardContent className="relative pt-16 pb-4">
                   <div className="absolute -top-16 left-6">
                     <div className="h-24 w-24 overflow-hidden rounded-full bg-white ring-4 ring-white flex items-center justify-center">
-                      <img 
-                        className="h-full w-full object-cover" 
-                        src={user?.photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
-                        alt="User profile"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
-                        }}
+                      <ProfileImage
+                        src={user?.photoURL}
+                        alt={user?.name || "User profile"}
                       />
                     </div>
                   </div>
@@ -387,14 +383,10 @@ export default function PortfolioBuilder() {
                     </div>
                     <div className="flex items-center justify-center p-6 relative">
                       <div className="relative overflow-hidden rounded-full h-64 w-64 bg-gradient-to-br from-pink-400 to-purple-600 p-1">
-                        <img 
-                          className="h-full w-full object-cover rounded-full" 
-                          src={user?.photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
-                          alt="User profile"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
-                          }}
+                        <ProfileImage
+                          src={user?.photoURL}
+                          alt={user?.name || "User profile"}
+                          className="h-full w-full object-cover rounded-full"
                         />
                       </div>
                       <div className="absolute w-32 h-32 rounded-full border-4 border-white bg-pink-100 -bottom-10 -left-4 -z-10"></div>
@@ -410,14 +402,9 @@ export default function PortfolioBuilder() {
                 <CardContent className="p-8">
                   <div className="flex flex-col items-center text-center mb-8">
                     <div className="h-24 w-24 overflow-hidden rounded-full bg-gray-100 mb-4 flex items-center justify-center">
-                      <img 
-                        className="h-full w-full object-cover" 
-                        src={user?.photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
-                        alt="User profile"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
-                        }}
+                      <ProfileImage
+                        src={user?.photoURL}
+                        alt={user?.name || "User profile"}
                       />
                     </div>
                     <h2 className="text-2xl font-light text-gray-900 mb-1">{user?.name || 'Minimalist Professional'}</h2>
@@ -459,14 +446,9 @@ export default function PortfolioBuilder() {
                       <div className="bg-gray-800 p-4 rounded-md">
                         <div className="flex items-center mb-4">
                           <div className="h-16 w-16 overflow-hidden rounded-md bg-gray-700 mr-4 flex items-center justify-center">
-                            <img 
-                              className="h-full w-full object-cover" 
-                              src={user?.photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
-                              alt="User profile"
-                              onError={(e) => {
-                                const target = e.target as HTMLImageElement;
-                                target.src = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
-                              }}
+                            <ProfileImage
+                              src={user?.photoURL}
+                              alt={user?.name || "User profile"}
                             />
                           </div>
                           <div>
@@ -527,14 +509,9 @@ export default function PortfolioBuilder() {
                     <div className="md:w-2/5 bg-stone-900 text-stone-100 p-8">
                       <div className="flex flex-col items-center md:items-start">
                         <div className="h-32 w-32 overflow-hidden rounded-full bg-stone-800 mb-6 flex items-center justify-center border-4 border-stone-700">
-                          <img 
-                            className="h-full w-full object-cover" 
-                            src={user?.photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
-                            alt="User profile"
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.src = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
-                            }}
+                          <ProfileImage
+                            src={user?.photoURL}
+                            alt={user?.name || "User profile"}
                           />
                         </div>
                         <h2 className="text-2xl font-bold text-stone-100 mb-1">{user?.name || 'Executive Leader'}</h2>
