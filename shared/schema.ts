@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb, varchar } from "drizzle-orm/pg-core"; 
+import { pgTable, text, serial, integer, boolean, timestamp, jsonb, varchar, decimal } from "drizzle-orm/pg-core"; 
 import { pgEnum } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -211,6 +211,18 @@ export type InsertProjectCollaborator = z.infer<typeof insertProjectCollaborator
 export type ProjectEndorsement = typeof projectEndorsements.$inferSelect;
 export type InsertProjectEndorsement = z.infer<typeof insertProjectEndorsementSchema>;
 
+// Service category enum for categorizing user services
+export const serviceCategoryEnum = pgEnum("service_category", [
+  "consulting", 
+  "development",
+  "design",
+  "marketing",
+  "writing",
+  "coaching",
+  "teaching",
+  "other"
+]);
+
 // Portfolio layout enum
 export const portfolioLayoutEnum = pgEnum("portfolio_layout", [
   "professional", 
@@ -247,3 +259,32 @@ export const insertPortfolioSchema = createInsertSchema(portfolios).omit({
 // Export types for Portfolio
 export type Portfolio = typeof portfolios.$inferSelect;
 export type InsertPortfolio = z.infer<typeof insertPortfolioSchema>;
+
+// Services model for showcasing user services with pricing
+export const services = pgTable("services", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  title: text("title").notNull(),
+  description: text("description"),
+  category: serviceCategoryEnum("category").notNull().default("other"),
+  priceInr: decimal("price_inr", { precision: 10, scale: 2 }), // Price in INR
+  priceUsd: decimal("price_usd", { precision: 10, scale: 2 }), // Price in USD
+  isHourly: boolean("is_hourly").default(false), // Whether price is per hour or fixed
+  features: jsonb("features").default("[]"), // Array of features included in the service
+  imageUrl: text("image_url"), // URL to service image
+  order: integer("order").default(0), // For ordering services (1, 2, 3 for top services)
+  isActive: boolean("is_active").default(true), // Whether service is active
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Insert schema for Services
+export const insertServiceSchema = createInsertSchema(services).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+// Export types for Services
+export type Service = typeof services.$inferSelect;
+export type InsertService = z.infer<typeof insertServiceSchema>;

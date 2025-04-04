@@ -10,7 +10,8 @@ import {
   projects, Project, InsertProject,
   projectCollaborators, ProjectCollaborator, InsertProjectCollaborator,
   projectEndorsements, ProjectEndorsement, InsertProjectEndorsement,
-  portfolios, Portfolio, InsertPortfolio
+  portfolios, Portfolio, InsertPortfolio,
+  services, Service, InsertService
 } from "@shared/schema";
 
 // Interface for all storage operations
@@ -90,6 +91,13 @@ export interface IStorage {
   updatePortfolio(id: number, portfolio: Partial<Portfolio>): Promise<Portfolio | undefined>;
   deletePortfolio(id: number): Promise<boolean>;
   
+  // Service operations
+  getServicesByUserId(userId: number): Promise<Service[]>;
+  getServiceById(id: number): Promise<Service | undefined>;
+  createService(service: InsertService): Promise<Service>;
+  updateService(id: number, service: Partial<Service>): Promise<Service | undefined>;
+  deleteService(id: number): Promise<boolean>;
+  
   // Debug and maintenance operations
   reinitializeDemoData(): Promise<void>;
   clearAllUsers(): Promise<void>;
@@ -109,6 +117,7 @@ export class MemStorage implements IStorage {
   private projectCollaborators: Map<number, ProjectCollaborator>;
   private projectEndorsements: Map<number, ProjectEndorsement>;
   private portfolios: Map<number, Portfolio>;
+  private services: Map<number, Service>;
   
   private currentUserId: number;
   private currentResumeId: number;
@@ -122,6 +131,7 @@ export class MemStorage implements IStorage {
   private currentProjectCollaboratorId: number;
   private currentProjectEndorsementId: number;
   private currentPortfolioId: number;
+  private currentServiceId: number;
 
   constructor() {
     this.users = new Map();
@@ -136,6 +146,7 @@ export class MemStorage implements IStorage {
     this.projectCollaborators = new Map();
     this.projectEndorsements = new Map();
     this.portfolios = new Map();
+    this.services = new Map();
     
     this.currentUserId = 1;
     this.currentResumeId = 1;
@@ -149,6 +160,7 @@ export class MemStorage implements IStorage {
     this.currentProjectCollaboratorId = 1;
     this.currentProjectEndorsementId = 1;
     this.currentPortfolioId = 1;
+    this.currentServiceId = 1;
     
     // Initialize with a default user for development/demo
     this.initializeDemoData();
@@ -222,7 +234,7 @@ export class MemStorage implements IStorage {
   }
   
   /**
-   * Clear all work experience, education, skills, project, and portfolio data
+   * Clear all work experience, education, skills, project, portfolio, and service data
    */
   private clearDemoDataMaps(): void {
     // Clear all existing work experiences
@@ -245,6 +257,9 @@ export class MemStorage implements IStorage {
     
     // Clear all existing portfolios
     this.portfolios.clear();
+    
+    // Clear all existing services
+    this.services.clear();
   }
   
   /**
@@ -845,6 +860,52 @@ export class MemStorage implements IStorage {
 
   async deletePortfolio(id: number): Promise<boolean> {
     return this.portfolios.delete(id);
+  }
+  
+  // Service operations
+  async getServicesByUserId(userId: number): Promise<Service[]> {
+    return Array.from(this.services.values())
+      .filter(service => service.userId === userId);
+  }
+
+  async getServiceById(id: number): Promise<Service | undefined> {
+    return this.services.get(id);
+  }
+
+  async createService(insertService: InsertService): Promise<Service> {
+    const id = this.currentServiceId++;
+    const createdAt = new Date();
+    const service: Service = {
+      id,
+      userId: insertService.userId,
+      title: insertService.title,
+      description: insertService.description ?? null,
+      category: insertService.category ?? "other",
+      priceInr: insertService.priceInr ?? null,
+      priceUsd: insertService.priceUsd ?? null,
+      isHourly: insertService.isHourly ?? false,
+      features: insertService.features ?? [],
+      imageUrl: insertService.imageUrl ?? null,
+      order: insertService.order ?? 0,
+      isActive: insertService.isActive ?? true,
+      createdAt,
+      updatedAt: createdAt
+    };
+    this.services.set(id, service);
+    return service;
+  }
+
+  async updateService(id: number, serviceData: Partial<Service>): Promise<Service | undefined> {
+    const service = this.services.get(id);
+    if (!service) return undefined;
+    
+    const updatedService = { ...service, ...serviceData };
+    this.services.set(id, updatedService);
+    return updatedService;
+  }
+
+  async deleteService(id: number): Promise<boolean> {
+    return this.services.delete(id);
   }
 
   /**

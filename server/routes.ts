@@ -20,13 +20,15 @@ import {
   insertProjectCollaboratorSchema,
   insertProjectEndorsementSchema,
   insertPortfolioSchema,
+  insertServiceSchema,
   InsertWorkExperience,
   InsertEducation,
   InsertSkill,
   InsertProject,
   InsertProjectCollaborator,
   InsertProjectEndorsement,
-  InsertPortfolio
+  InsertPortfolio,
+  InsertService
 } from "@shared/schema";
 import { generateCareerAdvice } from "./services/ai-service";
 import { getJobTitleSuggestions } from "./services/title-suggestions";
@@ -2536,6 +2538,135 @@ ${extractedText.substring(0, 5000)}
       res.status(204).end();
     } catch (error) {
       console.error("Error deleting portfolio:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Service routes
+  apiRouter.get("/users/:userId/services", async (req: Request, res: Response) => {
+    try {
+      const userIdParam = req.params.userId;
+      console.log(`[GET /users/:userId/services] Request for services with userId: ${userIdParam}`);
+      
+      let userId: number;
+      
+      // Handle Firebase UID
+      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
+      
+      if (isFirebaseUid) {
+        console.log(`[GET /users/:userId/services] userId appears to be a Firebase UID: ${userIdParam}`);
+        const user = await storage.getUserByUsername(userIdParam);
+        
+        if (!user) {
+          console.log(`[GET /users/:userId/services] No user found with Firebase UID: ${userIdParam}`);
+          return res.status(404).json({ message: "User not found" });
+        }
+        
+        console.log(`[GET /users/:userId/services] Found user with ID: ${user.id} for Firebase UID: ${userIdParam}`);
+        userId = user.id;
+      } else {
+        // Try to parse as numeric ID
+        userId = parseInt(userIdParam);
+        
+        if (isNaN(userId)) {
+          console.log(`[GET /users/:userId/services] ID is not a valid numeric ID: ${userIdParam}`);
+          return res.status(400).json({ message: "Invalid user ID format" });
+        }
+        
+        console.log(`[GET /users/:userId/services] Using numeric userId: ${userId}`);
+      }
+      
+      const services = await storage.getServicesByUserId(userId);
+      console.log(`[GET /users/:userId/services] Found ${services.length} services for userId: ${userId}`);
+      res.json(services);
+    } catch (error) {
+      console.error("Error fetching services:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  apiRouter.post("/services", async (req: Request, res: Response) => {
+    try {
+      console.log(`[POST /services] Creating service with data:`, req.body);
+      
+      // Check if we have a Firebase UID instead of numeric userId
+      if (typeof req.body.userId === 'string' && req.body.userId.length > 20) {
+        console.log(`[POST /services] Received Firebase UID as userId: ${req.body.userId}`);
+        
+        // Look up the numeric userId for this Firebase UID
+        const user = await storage.getUserByUsername(req.body.userId);
+        
+        if (user) {
+          console.log(`[POST /services] Found matching user with ID: ${user.id}`);
+          // Replace the Firebase UID with the numeric userId
+          req.body.userId = user.id;
+        } else {
+          console.log(`[POST /services] No matching user found for Firebase UID: ${req.body.userId}`);
+          return res.status(404).json({ message: "User not found" });
+        }
+      }
+      
+      console.log(`[POST /services] Processing with userId: ${req.body.userId}`);
+      const serviceData = insertServiceSchema.parse(req.body);
+      const service = await storage.createService(serviceData);
+      console.log(`[POST /services] Created service with ID: ${service.id}`);
+      res.status(201).json(service);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        console.error(`[POST /services] Validation error:`, error.errors);
+        res.status(400).json({ message: error.errors });
+      } else {
+        console.error(`[POST /services] Server error:`, error);
+        res.status(500).json({ message: "Internal server error" });
+      }
+    }
+  });
+  
+  apiRouter.put("/services/:id", async (req: Request, res: Response) => {
+    try {
+      const serviceId = parseInt(req.params.id);
+      
+      if (isNaN(serviceId)) {
+        return res.status(400).json({ message: "Invalid service ID" });
+      }
+      
+      console.log(`[PUT /services/:id] Updating service with ID: ${serviceId}`);
+      
+      // Find the service first
+      const service = await storage.updateService(serviceId, req.body);
+      
+      if (!service) {
+        return res.status(404).json({ message: "Service not found" });
+      }
+      
+      console.log(`[PUT /services/:id] Successfully updated service:`, service);
+      res.json(service);
+    } catch (error) {
+      console.error("Error updating service:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  apiRouter.delete("/services/:id", async (req: Request, res: Response) => {
+    try {
+      const serviceId = parseInt(req.params.id);
+      
+      if (isNaN(serviceId)) {
+        return res.status(400).json({ message: "Invalid service ID" });
+      }
+      
+      console.log(`[DELETE /services/:id] Deleting service with ID: ${serviceId}`);
+      
+      const success = await storage.deleteService(serviceId);
+      
+      if (!success) {
+        return res.status(404).json({ message: "Service not found" });
+      }
+      
+      console.log(`[DELETE /services/:id] Successfully deleted service with ID: ${serviceId}`);
+      res.status(204).end();
+    } catch (error) {
+      console.error("Error deleting service:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   });
