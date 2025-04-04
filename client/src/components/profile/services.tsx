@@ -10,7 +10,14 @@ import {
   CardFooter 
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, PlusCircle, Edit, Trash2, ShoppingCart } from "lucide-react";
+import { 
+  Loader2, 
+  PlusCircle, 
+  Edit, 
+  Trash2, 
+  ShoppingCart,
+  Package 
+} from "lucide-react";
 import { useState } from "react";
 import ServiceForm from "@/components/services/service-form";
 import {
@@ -90,19 +97,17 @@ export default function Services() {
   };
   
   return (
-    <div className="mt-6 border rounded-lg p-6 bg-white shadow-sm">
-      <div className="flex justify-between items-center mb-6">
+    <Card className="mb-6">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <div>
-          <h2 className="text-xl font-semibold mb-1">My Services</h2>
-          <p className="text-sm text-muted-foreground">
-            Showcase your professional services with pricing and features
-          </p>
+          <CardTitle className="text-xl font-bold">My Services</CardTitle>
+          <CardDescription>Showcase your professional services with pricing and features</CardDescription>
         </div>
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
-            <Button size="sm" className="gap-1">
-              <PlusCircle size={16} />
-              <span>Add Service</span>
+            <Button variant="outline" size="sm" className="h-8 gap-1">
+              <PlusCircle className="h-3.5 w-3.5" />
+              <span>Add</span>
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[525px]">
@@ -118,100 +123,94 @@ export default function Services() {
             />
           </DialogContent>
         </Dialog>
-      </div>
-      
-      {isLoading ? (
-        <div className="flex justify-center items-center h-64">
-          <Loader2 className="h-8 w-8 animate-spin" />
-        </div>
-      ) : services.length === 0 ? (
-        <div className="text-center p-12 border rounded-lg border-dashed">
-          <h3 className="text-xl font-medium mb-2">No services added yet</h3>
-          <p className="text-muted-foreground mb-6">
-            Showcase your professional services to potential clients.
-          </p>
-          <Button 
-            variant="outline" 
-            onClick={() => setIsCreateDialogOpen(true)}
-            className="gap-1"
-          >
-            <PlusCircle size={16} />
-            <span>Create Your First Service</span>
-          </Button>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {services.map((service) => (
-            <Card key={service.id} className="overflow-hidden flex flex-col">
-              <CardHeader className="pb-3">
-                <div className="flex justify-between items-start">
-                  <Badge className="mb-2">
+      </CardHeader>
+    
+      <CardContent>
+        {isLoading ? (
+          <div className="flex justify-center py-6">
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+          </div>
+        ) : services.length === 0 ? (
+          <div className="py-6 text-center">
+            <Package className="mx-auto h-10 w-10 text-muted-foreground/50" />
+            <p className="mt-2 text-muted-foreground">No services added yet.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {services.map((service) => (
+              <div key={service.id} className="border border-gray-200 rounded-md p-4">
+                <div className="flex justify-between mb-2">
+                  <Badge className="mb-1">
                     {service.category.charAt(0).toUpperCase() + service.category.slice(1)}
                   </Badge>
-                  <div className="flex gap-1">
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
+                  <div className="flex items-center space-x-2">
+                    <button 
+                      className="text-gray-400 hover:text-gray-600 focus:outline-none"
                       onClick={() => {
                         setSelectedService(service);
                         setIsEditDialogOpen(true);
                       }}
                     >
-                      <Edit size={16} />
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
+                      <Edit className="h-3.5 w-3.5" />
+                    </button>
+                    <button 
+                      className="text-gray-400 hover:text-gray-600 focus:outline-none"
                       onClick={() => {
                         setSelectedService(service);
                         setIsDeleteDialogOpen(true);
                       }}
                     >
-                      <Trash2 size={16} />
-                    </Button>
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
                   </div>
                 </div>
-                <CardTitle>{service.title}</CardTitle>
-                {service.priceInr !== null && (
-                  <div className="flex items-center mt-2">
-                    <span className="text-2xl font-bold">
+                
+                <h3 className="font-medium mb-1">{service.title}</h3>
+                
+                <div className="flex items-center mb-2">
+                  {service.priceInr !== null && (
+                    <span className="font-bold text-primary text-lg">
                       {formatCurrency(Number(service.priceInr), 'INR')}
+                      {service.isHourly && <span className="text-sm font-normal text-muted-foreground ml-1">/hr</span>}
                     </span>
-                    {service.isHourly && <span className="ml-1 text-muted-foreground">/hr</span>}
-                  </div>
-                )}
-                {service.priceUsd !== null && (
-                  <div className="text-sm text-muted-foreground">
-                    {formatCurrency(Number(service.priceUsd), 'USD')}
-                    {service.isHourly && <span>/hr</span>}
-                  </div>
-                )}
-              </CardHeader>
-              <CardContent className="flex-grow">
-                <CardDescription className="mb-4">
+                  )}
+                  {service.priceUsd !== null && (
+                    <span className="text-xs text-muted-foreground ml-2">
+                      ({formatCurrency(Number(service.priceUsd), 'USD')}
+                      {service.isHourly && <span>/hr</span>})
+                    </span>
+                  )}
+                </div>
+                
+                <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
                   {service.description}
-                </CardDescription>
+                </p>
+                
                 {Array.isArray(service.features) && service.features.length > 0 && (
-                  <div className="mt-4">
-                    <h4 className="text-sm font-semibold mb-2">Features:</h4>
-                    <ul className="list-disc pl-5 text-sm space-y-1">
-                      {service.features.map((feature: string, index: number) => (
+                  <div className="mt-2">
+                    <p className="text-xs font-medium">Features:</p>
+                    <ul className="text-xs text-muted-foreground mt-1 space-y-1 list-disc pl-4">
+                      {service.features.slice(0, 3).map((feature: string, index: number) => (
                         <li key={index}>{feature}</li>
                       ))}
+                      {service.features.length > 3 && (
+                        <li className="text-primary">+{service.features.length - 3} more</li>
+                      )}
                     </ul>
                   </div>
                 )}
-              </CardContent>
-              <CardFooter className="pt-4 border-t bg-muted/40">
-                <Button className="w-full gap-2">
-                  <ShoppingCart size={16} />
-                  <span>Request Service</span>
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
-      )}
+                
+                <div className="mt-3 pt-3 border-t">
+                  <Button size="sm" className="w-full gap-1 text-xs">
+                    <ShoppingCart className="h-3 w-3" />
+                    <span>Request Service</span>
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </CardContent>
 
       {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
@@ -266,6 +265,6 @@ export default function Services() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </Card>
   );
 }

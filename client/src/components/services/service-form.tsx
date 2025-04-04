@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/select";
 import { Service } from "@shared/schema";
 
+// Define the form schema with string representations for numeric fields
 const formSchema = z.object({
   title: z.string().min(3, {
     message: "Title must be at least 3 characters",
@@ -35,10 +36,11 @@ const formSchema = z.object({
     message: "Description must be at least 10 characters",
   }).nullable(),
   category: z.enum(["consulting", "development", "design", "marketing", "writing", "coaching", "teaching", "other"]),
-  priceInr: z.string().transform(val => val === "" ? null : parseFloat(val)).nullable(),
-  priceUsd: z.string().transform(val => val === "" ? null : parseFloat(val)).nullable(),
+  // These are strings in the form but will be converted to numbers when submitting
+  priceInr: z.string().optional(),
+  priceUsd: z.string().optional(),
   isHourly: z.boolean().default(false),
-  features: z.array(z.string()),
+  features: z.array(z.string()).default([]),
   imageUrl: z.string().nullable().optional(),
   order: z.number().default(0),
   isActive: z.boolean().default(true),
@@ -48,24 +50,25 @@ type FormValues = z.infer<typeof formSchema>;
 
 interface ServiceFormProps {
   service?: Service;
-  onSubmit: (data: FormValues) => void;
+  onSubmit: (data: any) => void; // Use any to allow us to transform the data before submission
   isPending: boolean;
 }
 
 export default function ServiceForm({ service, onSubmit, isPending }: ServiceFormProps) {
   const [featureInput, setFeatureInput] = useState("");
   
-  const defaultValues: Partial<FormValues> = {
+  // Prepare default values for the form
+  const defaultValues = {
     title: service?.title || "",
     description: service?.description || "",
     category: service?.category || "other",
-    priceInr: service && service.priceInr !== null ? service.priceInr.toString() : "",
-    priceUsd: service && service.priceUsd !== null ? service.priceUsd.toString() : "",
-    isHourly: service?.isHourly || false,
-    features: service?.features || [],
+    priceInr: service?.priceInr !== null && service?.priceInr !== undefined ? String(service.priceInr) : "",
+    priceUsd: service?.priceUsd !== null && service?.priceUsd !== undefined ? String(service.priceUsd) : "",
+    isHourly: !!service?.isHourly,
+    features: Array.isArray(service?.features) ? service.features : [],
     imageUrl: service?.imageUrl || "",
     order: service?.order || 0,
-    isActive: service?.isActive === undefined ? true : service.isActive,
+    isActive: service?.isActive !== false,
   };
   
   const form = useForm<FormValues>({
@@ -96,9 +99,21 @@ export default function ServiceForm({ service, onSubmit, isPending }: ServiceFor
     }
   };
   
+  // Handle form submission and convert string inputs to appropriate types
+  const handleSubmit = (values: FormValues) => {
+    // Transform form values to match API expectations
+    const transformedData = {
+      ...values,
+      priceInr: values.priceInr ? parseFloat(values.priceInr) : null,
+      priceUsd: values.priceUsd ? parseFloat(values.priceUsd) : null,
+    };
+    
+    onSubmit(transformedData);
+  };
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
         <FormField
           control={form.control}
           name="title"
