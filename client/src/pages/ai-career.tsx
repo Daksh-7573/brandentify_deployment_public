@@ -342,9 +342,14 @@ export default function AICareerPage() {
                     );
                   }
                   
+                  // If we're on the resume tab, only show the most recent analysis
+                  const messagesToShow = activeTab === "resume" 
+                    ? [filteredMessages[0]] // Only the first/most recent resume analysis
+                    : filteredMessages;     // All career advice messages
+                  
                   return (
                     <div className="space-y-4 sm:space-y-6">
-                      {filteredMessages.map((message: any) => (
+                      {messagesToShow.map((message: any) => (
                         <Card key={message.id} className="p-4 sm:p-6 overflow-hidden">
                           <div className="flex justify-between items-start mb-3 sm:mb-4">
                             <div>
