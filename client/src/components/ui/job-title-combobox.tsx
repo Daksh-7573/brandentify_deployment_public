@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
 
 export interface JobTitleComboboxProps {
   value: string;
@@ -14,8 +16,8 @@ export interface JobTitleComboboxProps {
   error?: boolean;
 }
 
-// Common job titles that will be used for suggestions
-const JOB_TITLES = [
+// Fallback common job titles that will be used if the API fails
+const FALLBACK_JOB_TITLES = [
   "Software Engineer",
   "Product Manager",
   "UX Designer",
@@ -54,22 +56,72 @@ export function JobTitleCombobox({
   disabled = false,
   error = false
 }: JobTitleComboboxProps) {
+  const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [filteredTitles, setFilteredTitles] = useState<string[]>([]);
   const [searchValue, setSearchValue] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [useLocalFilter, setUseLocalFilter] = useState(false);
 
-  // Filter job titles based on search value
+  // Fetch suggestions from the API or filter locally
   useEffect(() => {
-    if (!searchValue) {
-      setFilteredTitles(JOB_TITLES);
-      return;
-    }
+    const delayDebounceFn = setTimeout(async () => {
+      if (!searchValue || searchValue.trim().length < 2) {
+        setFilteredTitles([]);
+        return;
+      }
 
-    const filtered = JOB_TITLES.filter(
-      title => title.toLowerCase().includes(searchValue.toLowerCase())
-    );
-    setFilteredTitles(filtered);
-  }, [searchValue]);
+      if (useLocalFilter) {
+        // Use local filtering if API failed previously
+        const filtered = FALLBACK_JOB_TITLES.filter(
+          title => title.toLowerCase().includes(searchValue.toLowerCase())
+        );
+        setFilteredTitles(filtered);
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        const response = await fetch(`/api/job-title-suggestions?q=${encodeURIComponent(searchValue)}`);
+        const data = await response.json();
+        
+        if (response.ok) {
+          if (Array.isArray(data.suggestions) && data.suggestions.length > 0) {
+            setFilteredTitles(data.suggestions);
+          } else {
+            // If no suggestions from API, fall back to local filtering
+            const filtered = FALLBACK_JOB_TITLES.filter(
+              title => title.toLowerCase().includes(searchValue.toLowerCase())
+            );
+            setFilteredTitles(filtered);
+          }
+        } else {
+          console.error("Error fetching job title suggestions:", data);
+          setUseLocalFilter(true);
+          const filtered = FALLBACK_JOB_TITLES.filter(
+            title => title.toLowerCase().includes(searchValue.toLowerCase())
+          );
+          setFilteredTitles(filtered);
+        }
+      } catch (error) {
+        console.error("Failed to fetch job title suggestions:", error);
+        toast({
+          variant: "destructive",
+          title: "Failed to fetch suggestions",
+          description: "Using local suggestions instead.",
+        });
+        setUseLocalFilter(true);
+        const filtered = FALLBACK_JOB_TITLES.filter(
+          title => title.toLowerCase().includes(searchValue.toLowerCase())
+        );
+        setFilteredTitles(filtered);
+      } finally {
+        setIsLoading(false);
+      }
+    }, 300); // Debounce to avoid too many API calls
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchValue, useLocalFilter, toast]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -97,20 +149,29 @@ export function JobTitleCombobox({
             value={searchValue}
             className="h-9"
           />
-          {filteredTitles.length === 0 && (
+          {isLoading ? (
+            <div className="flex items-center justify-center py-6">
+              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+              <span className="ml-2 text-sm text-muted-foreground">Loading suggestions...</span>
+            </div>
+          ) : filteredTitles.length === 0 && (
             <CommandEmpty>
-              No job title found. 
-              {searchValue && (
-                <Button
-                  variant="ghost"
-                  className="mt-2 w-full justify-start text-left"
-                  onClick={() => {
-                    onChange(searchValue);
-                    setOpen(false);
-                  }}
-                >
-                  Use "{searchValue}"
-                </Button>
+              {searchValue && searchValue.trim().length >= 2 ? (
+                <div>
+                  <p>No job title found.</p>
+                  <Button
+                    variant="ghost"
+                    className="mt-2 w-full justify-start text-left"
+                    onClick={() => {
+                      onChange(searchValue);
+                      setOpen(false);
+                    }}
+                  >
+                    Use "{searchValue}"
+                  </Button>
+                </div>
+              ) : (
+                <p>Type at least 2 characters to search</p>
               )}
             </CommandEmpty>
           )}
@@ -119,10 +180,11 @@ export function JobTitleCombobox({
               <CommandItem
                 key={title}
                 value={title}
-                onSelect={() => {
-                  onChange(title);
+                onSelect={(currentValue) => {
+                  onChange(currentValue);
                   setOpen(false);
                 }}
+                className="cursor-pointer hover:bg-accent hover:text-accent-foreground"
               >
                 <Check
                   className={cn(
