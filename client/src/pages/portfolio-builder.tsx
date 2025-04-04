@@ -77,6 +77,34 @@ export default function PortfolioBuilder() {
     enabled: !!user,
     staleTime: 30000 // 30 seconds
   });
+  
+  // Fetch user profile data
+  const { data: userData, isLoading: isLoadingUser } = useQuery({
+    queryKey: [`/api/users/${user?.uid}`],
+    enabled: !!user,
+    staleTime: 30000
+  });
+  
+  // Fetch user experiences
+  const { data: experiences, isLoading: isLoadingExperiences } = useQuery({
+    queryKey: [`/api/users/${user?.uid}/experiences`],
+    enabled: !!user,
+    staleTime: 30000
+  });
+  
+  // Fetch user skills
+  const { data: skills, isLoading: isLoadingSkills } = useQuery({
+    queryKey: [`/api/users/${user?.uid}/skills`],
+    enabled: !!user,
+    staleTime: 30000
+  });
+  
+  // Fetch user projects
+  const { data: projects, isLoading: isLoadingProjects } = useQuery({
+    queryKey: [`/api/users/${user?.uid}/projects`],
+    enabled: !!user,
+    staleTime: 30000
+  });
 
   // Form setup
   const form = useForm<PortfolioFormValues>({
@@ -158,13 +186,37 @@ export default function PortfolioBuilder() {
   const handleCreatePortfolio = () => {
     setIsAnalyzingProfile(true);
 
-    // Simulate AI analyzing the profile
+    // First check if we have the user's profile and portfolio related data
     setTimeout(() => {
       setIsAnalyzingProfile(false);
       setIsGenerating(true);
 
+      // Prepare the portfolio data with user information
+      const selectedLayout = form.getValues().layout;
+      const publicUrl = form.getValues().publicUrl;
+      
+      // Prepare portfolio data with user information
+      const portfolioData = {
+        layout: selectedLayout,
+        publicUrl: publicUrl || null,
+        isPublished: false,
+        customTitle: userData?.name || user?.displayName || '',
+        customBio: userData?.title || '',
+        customizationOptions: {
+          theme: selectedLayout === 'creative' ? 'colorful' : 'professional',
+          showContact: true
+        },
+        featuredProjects: projects ? projects.map(project => project.id) : [],
+        featuredSkills: skills ? skills.map(skill => skill.id) : [],
+        featuredExperiences: experiences ? experiences.map(exp => exp.id) : []
+      };
+      
       // Simulate AI generating the portfolio
       setTimeout(() => {
+        // Set the updated form values to include our personalized data
+        form.setValue('isPublished', false);
+        
+        // AI generation simulation complete
         setIsGenerating(false);
         setGenerationComplete(true);
         setCurrentStep(STEPS.PREVIEW);
@@ -327,22 +379,22 @@ export default function PortfolioBuilder() {
                     </div>
                   </div>
                   <div className="pl-32 mt-2">
-                    <h2 className="text-xl font-bold text-gray-900">{user?.name || 'Professional'}</h2>
-                    <p className="text-sm text-gray-500 mt-1">{user?.title || 'Professional'}</p>
+                    <h2 className="text-xl font-bold text-gray-900">{userData?.name || user?.displayName || 'Professional'}</h2>
+                    <p className="text-sm text-gray-500 mt-1">{userData?.title || 'Professional'}</p>
                     <div className="mt-4 grid grid-cols-3 gap-4">
                       <div className="p-3 border rounded-md text-center">
                         <p className="text-sm font-medium">Experience</p>
-                        <p className="text-2xl font-bold text-primary">5+</p>
-                        <p className="text-xs text-gray-500">Years</p>
+                        <p className="text-2xl font-bold text-primary">{experiences?.length || 0}</p>
+                        <p className="text-xs text-gray-500">Positions</p>
                       </div>
                       <div className="p-3 border rounded-md text-center">
                         <p className="text-sm font-medium">Projects</p>
-                        <p className="text-2xl font-bold text-primary">12</p>
+                        <p className="text-2xl font-bold text-primary">{projects?.length || 0}</p>
                         <p className="text-xs text-gray-500">Completed</p>
                       </div>
                       <div className="p-3 border rounded-md text-center">
                         <p className="text-sm font-medium">Skills</p>
-                        <p className="text-2xl font-bold text-primary">20+</p>
+                        <p className="text-2xl font-bold text-primary">{skills?.length || 0}</p>
                         <p className="text-xs text-gray-500">Verified</p>
                       </div>
                     </div>
@@ -357,9 +409,9 @@ export default function PortfolioBuilder() {
                   <div className="grid grid-cols-1 md:grid-cols-2">
                     <div className="p-8 flex flex-col justify-center">
                       <h2 className="text-3xl font-bold mb-2 bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
-                        {user?.name || 'Creative Professional'}
+                        {userData?.name || user?.displayName || 'Creative Professional'}
                       </h2>
-                      <p className="text-base font-medium text-gray-800 mb-4">{user?.title || 'Designer & Creator'}</p>
+                      <p className="text-base font-medium text-gray-800 mb-4">{userData?.title || 'Designer & Creator'}</p>
                       <div className="flex flex-wrap gap-2 mb-4">
                         <Badge className="bg-pink-100 text-pink-800 hover:bg-pink-200">UI/UX Design</Badge>
                         <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200">Illustration</Badge>
@@ -407,8 +459,8 @@ export default function PortfolioBuilder() {
                         alt={user?.name || "User profile"}
                       />
                     </div>
-                    <h2 className="text-2xl font-light text-gray-900 mb-1">{user?.name || 'Minimalist Professional'}</h2>
-                    <p className="text-sm text-gray-500">{user?.title || 'Professional'}</p>
+                    <h2 className="text-2xl font-light text-gray-900 mb-1">{userData?.name || user?.displayName || 'Minimalist Professional'}</h2>
+                    <p className="text-sm text-gray-500">{userData?.title || 'Professional'}</p>
                   </div>
                   <div className="border-t border-gray-100 pt-6">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -428,7 +480,7 @@ export default function PortfolioBuilder() {
                       <div>
                         <h3 className="text-sm font-medium uppercase tracking-wider text-gray-400 mb-3">Contact</h3>
                         <ul className="space-y-2 text-sm text-gray-600">
-                          <li>{user?.email || 'email@example.com'}</li>
+                          <li>{userData?.email || user?.email || 'email@example.com'}</li>
                           <li>{form.watch("publicUrl") ? `brandentifier.com/${form.watch("publicUrl")}` : 'Your portfolio URL'}</li>
                         </ul>
                       </div>
@@ -453,7 +505,7 @@ export default function PortfolioBuilder() {
                           </div>
                           <div>
                             <p className="text-green-400 font-mono text-xs mb-1">class Developer &#123;</p>
-                            <h2 className="text-xl font-semibold text-green-300 font-mono">{user?.name || 'TechDev'}</h2>
+                            <h2 className="text-xl font-semibold text-green-300 font-mono">{userData?.name || user?.displayName || 'TechDev'}</h2>
                             <p className="text-green-400 font-mono text-xs">&#125;</p>
                           </div>
                         </div>
@@ -476,7 +528,7 @@ export default function PortfolioBuilder() {
                         <p className="text-gray-200 text-sm">
                           <span className="text-blue-400">function</span> <span className="text-yellow-400">getProfile</span>() &#123;<br />
                           &nbsp;&nbsp;<span className="text-blue-400">return</span> &#123;<br />
-                          &nbsp;&nbsp;&nbsp;&nbsp;title: <span className="text-green-300">"{user?.title || 'Software Engineer'}"</span>,<br />
+                          &nbsp;&nbsp;&nbsp;&nbsp;title: <span className="text-green-300">"{userData?.title || 'Software Engineer'}"</span>,<br />
                           &nbsp;&nbsp;&nbsp;&nbsp;focus: <span className="text-green-300">"Full-stack development"</span>,<br />
                           &nbsp;&nbsp;&nbsp;&nbsp;yearsOfExperience: <span className="text-purple-400">5</span><br />
                           &nbsp;&nbsp;&#125;;<br />
@@ -514,13 +566,13 @@ export default function PortfolioBuilder() {
                             alt={user?.name || "User profile"}
                           />
                         </div>
-                        <h2 className="text-2xl font-bold text-stone-100 mb-1">{user?.name || 'Executive Leader'}</h2>
-                        <p className="text-sm text-stone-400 mb-6">{user?.title || 'Chief Executive Officer'}</p>
+                        <h2 className="text-2xl font-bold text-stone-100 mb-1">{userData?.name || user?.displayName || 'Executive Leader'}</h2>
+                        <p className="text-sm text-stone-400 mb-6">{userData?.title || 'Chief Executive Officer'}</p>
                         <div className="w-16 h-1 bg-amber-500 mb-6 hidden md:block"></div>
                         <div className="space-y-4 text-center md:text-left">
                           <div>
                             <p className="text-xs text-stone-500 uppercase tracking-wider">Email</p>
-                            <p className="text-sm">{user?.email || 'email@example.com'}</p>
+                            <p className="text-sm">{userData?.email || user?.email || 'email@example.com'}</p>
                           </div>
                           <div>
                             <p className="text-xs text-stone-500 uppercase tracking-wider">Location</p>
