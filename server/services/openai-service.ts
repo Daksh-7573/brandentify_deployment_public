@@ -8,14 +8,17 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const MODEL = "gpt-4o";
 
 /**
- * Generate career advice based on user profile information
- * @param userProfile User profile data
+ * Generate career advice based on user profile information and specific advice type
+ * @param userProfile User profile data including advice type
  * @returns Career advice and next step recommendations
  */
 export async function generateCareerAdvice(userProfile: {
+  user: any;
   workExperiences: WorkExperience[];
   skills: Skill[];
   educations: Education[];
+  adviceType: string;
+  customAdviceText?: string;
 }) {
   try {
     // Format work experiences for the prompt
@@ -51,9 +54,66 @@ export async function generateCareerAdvice(userProfile: {
         }`;
       })
       .join("\n\n");
+      
+    // Get user basic information
+    const userName = userProfile.user?.name || "the user";
+    const userTitle = userProfile.user?.title || "a professional";
+    const userIndustry = userProfile.user?.industry || "various industries";
+    const userLocation = userProfile.user?.location || "unknown location";
+    
+    // Convert advice type to a human-readable format
+    let adviceTypeText = "career advancement";
+    let specificPrompt = "";
+    
+    switch (userProfile.adviceType) {
+      case "explore_options":
+        adviceTypeText = "exploring career options";
+        specificPrompt = `Focus on identifying diverse career paths that would be a good match for ${userName}'s skills and experience. Suggest at least 3-5 potential career options with rationale for each.`;
+        break;
+      case "switch_industry":
+        adviceTypeText = "switching industries";
+        specificPrompt = `Focus on strategies for transitioning from ${userIndustry} to other industries. Identify 3-4 potential target industries where ${userName}'s skills would be transferable, and provide specific advice for making the switch.`;
+        break;
+      case "build_skills":
+        adviceTypeText = "building core skills for future roles";
+        specificPrompt = `Focus on identifying skill gaps compared to industry standards and future trends. Recommend specific skills to develop, with practical ways to acquire them (courses, certifications, projects, etc).`;
+        break;
+      case "get_certifications":
+        adviceTypeText = "acquiring valuable certifications";
+        specificPrompt = `Focus on recommending 3-5 specific certifications that would be most valuable for ${userName} as a ${userTitle}. For each certification, explain its value, difficulty, time commitment, and how it would benefit their career.`;
+        break;
+      case "expand_network":
+        adviceTypeText = "expanding professional network";
+        specificPrompt = `Focus on networking strategies tailored to ${userName}'s career stage and industry. Include both online and offline networking techniques, specific platforms or groups to join, and tips for making meaningful connections.`;
+        break;
+      case "find_job":
+        adviceTypeText = "finding a new job";
+        specificPrompt = `Focus on job search strategies, including optimizing online presence, targeting companies, tailoring applications, and interview preparation. Provide specific advice about job hunting in ${userLocation} or remotely, if appropriate.`;
+        break;
+      case "prepare_interviews":
+        adviceTypeText = "preparing for job interviews";
+        specificPrompt = `Focus on comprehensive interview preparation, including common questions for ${userTitle} positions, how to demonstrate value, behavioral question strategies, and how to effectively discuss past experiences from the resume.`;
+        break;
+      case "launch_startup":
+        adviceTypeText = "launching a startup";
+        specificPrompt = `Focus on entrepreneurship advice based on ${userName}'s background. Include guidance on validating ideas, finding co-founders, early funding options, and leveraging their existing experience in a startup context.`;
+        break;
+      case "international":
+        adviceTypeText = "working or studying internationally";
+        specificPrompt = `Focus on strategies for international career opportunities. Cover visa considerations, international job search tactics, adapting skills for global markets, and specific regions that might be good matches based on ${userName}'s profile.`;
+        break;
+      case "custom":
+        adviceTypeText = "custom career request";
+        if (userProfile.customAdviceText) {
+          specificPrompt = `The user has a specific request: "${userProfile.customAdviceText}". Focus your advice precisely on addressing this request in detail, while making it relevant to their professional background.`;
+        }
+        break;
+    }
 
     const prompt = `
-    I need personalized career advice based on the following professional profile:
+    I need personalized career advice about ${adviceTypeText} for ${userName}, who is currently working as ${userTitle} in ${userIndustry}, located in ${userLocation}.
+    
+    Here is their professional profile:
     
     WORK EXPERIENCE:
     ${workExperienceText || "No work experience provided"}
@@ -64,13 +124,15 @@ export async function generateCareerAdvice(userProfile: {
     EDUCATION:
     ${educationText || "No education provided"}
     
-    Please provide:
-    1. A career assessment analyzing strengths, potential gaps, and positioning in the job market
-    2. Three specific, actionable next steps to advance the career
-    3. Suggestions for skill development that would complement the existing profile
-    4. One or two potential career paths that might be worth exploring
+    ${specificPrompt}
     
-    Format the advice in a clear, professional tone with section headings.
+    Please provide:
+    1. A personalized assessment of their situation related to ${adviceTypeText}
+    2. Three to five specific, actionable steps they can take immediately
+    3. Longer-term strategies they should consider
+    4. Resources they might find helpful (books, courses, websites, tools, communities)
+    
+    Format the advice in a clear, conversational tone with section headings. Be specific and actionable throughout.
     `;
 
     const response = await openai.chat.completions.create({
@@ -79,7 +141,7 @@ export async function generateCareerAdvice(userProfile: {
         {
           role: "system",
           content:
-            "You are a professional career coach with expertise in career development and job market trends. Provide personalized, actionable career advice.",
+            "You are Musk, a professional career coach with expertise in career development, industry trends, and professional growth. Provide personalized, actionable career advice that's warm and encouraging while remaining practical. Sign your response as 'Musk, Your Career Partner' at the end.",
         },
         { role: "user", content: prompt },
       ],

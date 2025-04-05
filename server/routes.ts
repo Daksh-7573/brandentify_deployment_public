@@ -1420,10 +1420,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      const { userId } = req.body;
+      const { userId, adviceType, customAdviceText } = req.body;
       
       if (!userId) {
         return res.status(400).json({ message: "User ID is required" });
+      }
+      
+      if (!adviceType) {
+        return res.status(400).json({ message: "Advice type is required" });
       }
       
       // Fetch all relevant user data
@@ -1431,11 +1435,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const skills = await storage.getSkillsByUserId(userId);
       const educations = await storage.getEducationsByUserId(userId);
       
+      // Get user basics
+      const user = await storage.getUser(userId);
+      
       // Compile user profile
       const userProfile = {
+        user,
         workExperiences,
         skills,
-        educations
+        educations,
+        adviceType,
+        customAdviceText
       };
       
       // Import OpenAI service
