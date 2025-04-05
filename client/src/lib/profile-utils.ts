@@ -1,5 +1,5 @@
 /**
- * Calculates the profile completion percentage based on the user data
+ * Calculates the profile completion percentage based on the user's Basic Information
  * 
  * @param userData The user data object
  * @returns A number between 15 and 100 representing the profile completion percentage
@@ -7,8 +7,8 @@
 export function calculateProfileCompletion(userData?: any): number {
   if (!userData) return 15; // Start with a base level of completion to encourage users
   
-  // Define profile fields to check (weighted approach)
-  const fields = [
+  // Define Basic Information fields to check (weighted approach)
+  const basicInfoFields = [
     { field: 'name', weight: 15 },
     { field: 'photoURL', weight: 10 },
     { field: 'title', weight: 10 },
@@ -19,10 +19,20 @@ export function calculateProfileCompletion(userData?: any): number {
     // through their respective API calls
   ];
   
+  // Log Basic Information for debugging
+  console.log("User data being used for calculation:", {
+    name: userData.name || null,
+    photoURL: userData.photoURL ? "exists" : null,
+    title: userData.title || null,
+    location: userData.location || null,
+    industry: userData.industry || null,
+    lookingFor: userData.lookingFor || null
+  });
+  
   // Calculate basic profile info completion
   let completionScore = 0;
   
-  fields.forEach(({ field, weight }) => {
+  basicInfoFields.forEach(({ field, weight }) => {
     if (userData[field]) {
       completionScore += weight;
     }
@@ -40,6 +50,7 @@ export function calculateProfileCompletion(userData?: any): number {
  * @param educations Array of user educations
  * @param skills Array of user skills
  * @param projects Array of user projects
+ * @param services Array of user services
  * @returns A number between 15 and 100 representing the overall profile completion percentage
  */
 export function calculateOverallProfileCompletion(
@@ -62,16 +73,19 @@ export function calculateOverallProfileCompletion(
     services: services.length
   });
   
-  // Start with basic profile completion (max 50%)
-  const basicCompletion = calculateProfileCompletion(userData);
-  let totalCompletion = basicCompletion;
+  // Start with Basic Information completion (max 50%)
+  const basicInfoCompletion = calculateProfileCompletion(userData);
+  let totalCompletion = basicInfoCompletion;
   
-  // Add points for each collection (max 50% total)
-  if (experiences.length > 0) totalCompletion += 10; // 10% for having experiences
-  if (educations.length > 0) totalCompletion += 10; // 10% for having educations
+  // Add points for each professional profile section (max 50% total)
+  if (experiences.length > 0) totalCompletion += 10; // 10% for having work experiences
+  if (educations.length > 0) totalCompletion += 10; // 10% for having education history
   if (skills.length > 0) totalCompletion += 10; // 10% for having skills
   if (projects.length > 0) totalCompletion += 10; // 10% for having projects
-  if (services.length > 0) totalCompletion += 10; // 10% for having services
+  if (services.length > 0) totalCompletion += 10; // 10% for having professional services
+  
+  // Output the calculated percentage for debugging
+  console.log("Profile completion percentage:", totalCompletion);
   
   // Ensure a minimum of 15% to encourage users
   return Math.min(Math.max(Math.round(totalCompletion), 15), 100);
