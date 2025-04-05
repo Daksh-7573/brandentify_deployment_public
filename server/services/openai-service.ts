@@ -327,23 +327,115 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
           console.log("Extracting text from PDF using our robust extractor utility");
           let extractedText = await extractTextFromPdf(pdfBuffer);
           
-          // Check if extraction succeeded
+          // Check if extraction succeeded and if the content looks like actual resume text
+          // rather than just PDF metadata
           let hasResumeContent = extractedText && 
-                               extractedText.length > 100 && 
+                               extractedText.length > 300 && 
                                !extractedText.includes("Could not extract text");
-                               
+          
+          // Additional check: Does the extracted text look like a resume?
+          // Check for common resume keywords
+          const resumeKeywords = ["experience", "education", "skills", "work", "job", "employment", 
+                                 "resume", "cv", "career", "professional", "contact", "project"];
+          const containsResumeKeywords = resumeKeywords.some(keyword => 
+            extractedText.toLowerCase().includes(keyword.toLowerCase())
+          );
+          
+          // Check if it's primarily metadata (common with Canva PDFs)
+          const metadataPatterns = ["structtreeroot", "viewerpreferences", "canva", "creator", "producer"];
+          const isMainlyMetadata = metadataPatterns.some(pattern => 
+            extractedText.toLowerCase().includes(pattern.toLowerCase())
+          );
+          
           // For debugging
           console.log(`Initial extraction ${hasResumeContent ? 'successful' : 'failed'}: ${extractedText ? extractedText.length : 0} characters`);
+          console.log(`Text sample: "${extractedText ? extractedText.substring(0, 200) + '...' : 'No text found'}"`);
+          console.log(`Contains resume keywords: ${containsResumeKeywords}`);
           
-          // If extraction failed, fall back to AI analysis
-          if (!hasResumeContent) {
-            console.log("PDF extraction failed. We can't analyze this PDF properly.");
+          // Detect if this is a Canva-created PDF (or similar design tool) that needs visual analysis
+          const isCanvaPDF = extractedText.toLowerCase().includes("canva");
+          const isDesignerPDF = isCanvaPDF || 
+                               (isMainlyMetadata && !containsResumeKeywords) ||
+                               (extractedText.length > 300 && metadataPatterns.some(pattern => 
+                                 extractedText.toLowerCase().includes(pattern.toLowerCase())
+                               ));
+          
+          // If extraction failed OR we detect it's a Canva PDF, use Vision model
+          if (!hasResumeContent || isDesignerPDF) {
+            console.log(`${isCanvaPDF ? "Canva" : "Designer"} PDF detected or text extraction insufficient. Using Vision model for analysis.`);
             
-            // Set a helpful message for users that clearly explains the issue and provides alternatives
-            extractedText = `
+            // Use OpenAI's Vision model to analyze the PDF visually
+            try {
+              // Create a data URL from the PDF buffer for the vision model
+              const pdfDataUrl = `data:application/pdf;base64,${base64Data}`;
+              
+              console.log("Sending PDF to OpenAI Vision model for analysis");
+              
+              // Call the vision model to analyze the PDF
+              const response = await openai.chat.completions.create({
+                model: "gpt-4o", // The newest model with vision capabilities
+                messages: [
+                  {
+                    role: "system",
+                    content: "You are Musk, an expert resume analyst within the Brandentifier platform. Your task is to analyze this PDF resume thoroughly. You can see the resume visually, so examine its structure, layout, content, and formatting. Provide a comprehensive analysis focusing on content quality, structure, achievements, relevance to industry, and ATS compatibility. Include precise percentage scores for each category as follows: \"Structure & Layout: XX%\", \"Content Quality: XX%\", \"Relevance to Role/Industry: XX%\", \"Achievements & Metrics: XX%\", \"Soft Skills & Personality: XX%\", \"ATS Compatibility: XX%\". These exact formats must appear in your response."
+                  },
+                  {
+                    role: "user",
+                    content: [
+                      {
+                        type: "text",
+                        text: "Please analyze this resume PDF in detail and provide a comprehensive evaluation. Since you can see the visual layout, assess both content and formatting. Ensure you include percentage scores for all 6 categories as specified."
+                      },
+                      {
+                        type: "image_url",
+                        image_url: {
+                          url: pdfDataUrl
+                        }
+                      }
+                    ]
+                  }
+                ],
+                max_tokens: 4000
+              });
+              
+              console.log("Successfully received analysis from Vision model");
+              return response.choices[0].message.content || "Failed to analyze the resume visually.";
+            } catch (visionError: any) {
+              console.error("Error using Vision model:", visionError.message);
+              
+              // If Vision model fails, show a more helpful error message specifically for Canva PDFs
+              if (isCanvaPDF) {
+                console.log("Vision model failed for Canva PDF, showing Canva-specific message");
+                
+                // Set a helpful message for users that clearly explains the issue with Canva PDFs
+                extractedText = `
+# Resume Analysis - Design Format Detected
+
+I notice you're using a beautifully designed resume created with Canva or a similar design tool. While these look great to human reviewers, they can be challenging for AI analysis.
+
+## Why This Happens
+
+Design-focused PDFs often store text as graphical elements rather than as actual text content, which makes them harder for me to process accurately.
+
+## For Best Results:
+
+1. **Copy & Paste Your Resume Text Directly**
+   • Open your resume document
+   • Select all text (Ctrl+A or Cmd+A)
+   • Copy it (Ctrl+C or Cmd+C)
+   • Paste it directly in the text area below
+
+2. **Try Another Format**
+   If you have your resume in DOCX format, that often works better than PDF for AI analysis.
+
+I'll be able to provide a much more detailed, personalized analysis of your resume when I can properly access its content!
+                `;
+              } else {
+                // Generic message for non-Canva PDFs
+                extractedText = `
 # Resume Upload Issue
 
-I noticed you're trying to upload a PDF resume, but I'm having trouble accessing its content for analysis. This is a common issue with certain types of PDFs.
+I encountered a technical issue analyzing your PDF resume. This can happen with certain PDF formats.
 
 ## For Best Results:
 
@@ -356,27 +448,21 @@ I noticed you're trying to upload a PDF resume, but I'm having trouble accessing
 2. **Try Another Format**
    If you have your resume in DOCX format, that often works better than PDF.
 
-## Why This Happens
-Some PDFs contain images of text rather than actual text characters, particularly if they were scanned. Others may have security settings that prevent text extraction.
-
 I'm ready to provide you with detailed, personalized analysis of your resume as soon as I can access its content!
-            `;
-            
-            // Mark that we do have content (our error message) to show the user
-            hasResumeContent = true;
-          }
+                `;
+              }
+              
+              // Mark that we do have content (our error message) to show the user
+              hasResumeContent = true;
+            }
           
           // Check if the extracted text contains actual resume content by looking for common keywords
           const resumeKeywords = ['resume', 'experience', 'education', 'skills', 'work', 'job', 'university', 'degree', 'professional', 'profile', 'objective', 'certification'];
+          
           // Check if extraction worked and if it contains resume-like content
-          const hasResumeKeywords = 
-              extractedText.includes("experience") || 
-              extractedText.includes("education") || 
-              extractedText.includes("skills") || 
-              extractedText.includes("professional") ||
-              extractedText.includes("resume") ||
-              extractedText.includes("summary") ||
-              extractedText.includes("employment");
+          const hasResumeKeywords = resumeKeywords.some(keyword => 
+            extractedText.toLowerCase().includes(keyword.toLowerCase())
+          );
           
           // Extract at least a small sample of the text to log for debugging
           const textSample = extractedText.substring(0, 200).replace(/\n/g, ' ');
