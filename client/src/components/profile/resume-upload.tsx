@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Loader2 } from "lucide-react";
+import { Loader2, Upload, FileText } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ProfileReviewDialog, ParsedProfileData } from "./profile-review-dialog";
 
@@ -18,35 +18,89 @@ export default function ResumeUpload() {
   const [extractProfileData, setExtractProfileData] = useState(true);
   const [parsedData, setParsedData] = useState<ParsedProfileData | null>(null);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [isDragActive, setIsDragActive] = useState(false);
+  const dropZoneRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const { toast } = useToast();
   const { user, isDemoMode, refreshUserData } = useAuth();
+  
+  const validateFile = (selectedFile: File): boolean => {
+    // Validate file type
+    const validTypes = [
+      'application/pdf', 
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      // Some browsers may use these MIME types for PDFs
+      'binary/octet-stream',
+      'application/x-pdf',
+      'application/acrobat',
+    ];
+    
+    // Handle cases where MIME type isn't correctly detected
+    const fileExtension = selectedFile.name.split('.').pop()?.toLowerCase();
+    const isPdf = fileExtension === 'pdf';
+    const isDocx = fileExtension === 'docx';
+    
+    const isValidType = validTypes.includes(selectedFile.type) || isPdf || isDocx;
+    
+    if (!isValidType) {
+      toast({
+        title: "Invalid file type",
+        description: "Please upload a PDF or DOCX file.",
+        variant: "destructive"
+      });
+      return false;
+    }
+    
+    // Validate file size (5MB limit)
+    if (selectedFile.size > 5 * 1024 * 1024) {
+      toast({
+        title: "File too large",
+        description: "Please upload a file smaller than 5MB.",
+        variant: "destructive"
+      });
+      return false;
+    }
+    
+    return true;
+  };
   
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const selectedFile = e.target.files[0];
       
-      // Validate file type
-      if (!['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'].includes(selectedFile.type)) {
-        toast({
-          title: "Invalid file type",
-          description: "Please upload a PDF or DOCX file.",
-          variant: "destructive"
-        });
-        return;
+      if (validateFile(selectedFile)) {
+        setFile(selectedFile);
+        console.log("File selected:", selectedFile.name, "Type:", selectedFile.type);
       }
+    }
+  };
+  
+  // Handle drag events
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragActive(true);
+  };
+  
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragActive(false);
+  };
+  
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragActive(false);
+    
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const droppedFile = e.dataTransfer.files[0];
       
-      // Validate file size (5MB limit)
-      if (selectedFile.size > 5 * 1024 * 1024) {
-        toast({
-          title: "File too large",
-          description: "Please upload a file smaller than 5MB.",
-          variant: "destructive"
-        });
-        return;
+      if (validateFile(droppedFile)) {
+        setFile(droppedFile);
+        console.log("File dropped:", droppedFile.name, "Type:", droppedFile.type);
       }
-      
-      setFile(selectedFile);
     }
   };
 
@@ -56,99 +110,119 @@ export default function ResumeUpload() {
     setIsUploading(true);
     
     try {
+      console.log("Starting file upload - Converting to base64");
+      
       // Convert file to base64
       const fileReader = new FileReader();
+      
+      // Set up promise to handle file reading
+      const fileReadPromise = new Promise<string>((resolve, reject) => {
+        fileReader.onload = () => {
+          const result = fileReader.result?.toString() || '';
+          const base64Data = result.split(',')[1] || result;
+          if (base64Data) {
+            resolve(base64Data);
+          } else {
+            reject(new Error("Failed to convert file to base64"));
+          }
+        };
+        
+        fileReader.onerror = () => {
+          reject(new Error("Failed to read file"));
+        };
+      });
+      
+      // Start reading the file
       fileReader.readAsDataURL(file);
       
-      fileReader.onload = async () => {
-        const base64Data = fileReader.result?.toString().split(',')[1];
-        
-        if (!base64Data) {
-          throw new Error("Failed to convert file to base64");
-        }
-        
-        // Save the resume
-        // In demo mode, use user ID 1, otherwise try to parse the user's UID as a number
-        const userId = isDemoMode ? 1 : (user?.uid ? parseInt(user.uid) : 1);
-        
-        await apiRequest('POST', '/api/resumes', {
-          userId,
-          fileName: file.name,
-          fileData: base64Data
-        });
-        
-        toast({
-          title: "Resume uploaded",
-          description: "Your resume has been successfully uploaded."
-        });
-        
-        // If user wants to extract profile data
-        if (extractProfileData) {
-          setIsParsing(true);
-          try {
-            console.log("Starting resume parsing...");
-            
-            // Call the parse-resume endpoint to get extracted data
-            const response = await apiRequest('POST', '/api/parse-resume', {
-              userId,
-              fileData: base64Data
-            });
-            
-            console.log("Resume parsing response received, status:", response.status);
-            
-            // Get the extracted data
-            const extractedData = await response.json();
-            
-            console.log("Extracted data:", JSON.stringify(extractedData, null, 2));
-            
-            // Check for API error
-            if (extractedData.error) {
-              throw new Error(extractedData.message || extractedData.error || "Error processing resume");
-            }
-            
-            // If no data was extracted, show error
-            if (!extractedData || 
-                (!extractedData.experiences?.length && 
-                 !extractedData.educations?.length && 
-                 !extractedData.skills?.length)) {
-              throw new Error("No profile data could be extracted from your resume. The file may be in an unsupported format or not contain recognizable text.");
-            }
-            
-            // Store the parsed data
-            console.log("Setting parsed data and showing confirmation dialog");
-            setParsedData(extractedData);
-            
-            // Show the confirmation dialog
-            setShowConfirmDialog(true);
-            
-            toast({
-              title: "Data extracted",
-              description: "Please review the extracted information before saving it to your profile.",
-            });
-          } catch (error) {
-            console.error('Error parsing resume:', error);
-            toast({
-              title: "Extraction failed",
-              description: error instanceof Error ? error.message : "Failed to extract profile data from resume. Please update your profile manually.",
-              variant: "destructive"
-            });
-          } finally {
-            setIsParsing(false);
-          }
-        }
-        
-        setFile(null);
-        setIsUploading(false);
-      };
+      // Wait for file reading to complete
+      const base64Data = await fileReadPromise;
+      console.log("File successfully converted to base64, length:", base64Data.length);
       
-      fileReader.onerror = () => {
-        throw new Error("Failed to read file");
-      };
+      // In demo mode, use user ID 1, otherwise try to parse the user's UID as a number
+      const userId = isDemoMode ? 1 : (user?.uid ? parseInt(user.uid) : 1);
+      
+      // Save the resume
+      console.log("Sending resume to server");
+      await apiRequest('POST', '/api/resumes', {
+        userId,
+        fileName: file.name,
+        fileData: base64Data
+      });
+      
+      toast({
+        title: "Resume uploaded",
+        description: "Your resume has been successfully uploaded."
+      });
+      
+      // If user wants to extract profile data
+      if (extractProfileData) {
+        setIsParsing(true);
+        try {
+          console.log("Starting resume parsing...");
+          
+          // Call the parse-resume endpoint to get extracted data
+          const response = await apiRequest('POST', '/api/parse-resume', {
+            userId,
+            fileData: base64Data
+          });
+          
+          console.log("Resume parsing response received, status:", response.status);
+          
+          // Get the extracted data
+          const extractedData = await response.json();
+          
+          console.log("Extracted data:", JSON.stringify(extractedData, null, 2));
+          
+          // Check for API error
+          if (extractedData.error) {
+            throw new Error(extractedData.message || extractedData.error || "Error processing resume");
+          }
+          
+          // If no data was extracted, show error
+          if (!extractedData || 
+              (!extractedData.experiences?.length && 
+               !extractedData.educations?.length && 
+               !extractedData.skills?.length)) {
+            throw new Error("No profile data could be extracted from your resume. The file may be in an unsupported format or not contain recognizable text.");
+          }
+          
+          // Store the parsed data
+          console.log("Setting parsed data and showing confirmation dialog");
+          setParsedData(extractedData);
+          
+          // Show the confirmation dialog
+          setShowConfirmDialog(true);
+          
+          toast({
+            title: "Data extracted",
+            description: "Please review the extracted information before saving it to your profile.",
+          });
+        } catch (error) {
+          console.error('Error parsing resume:', error);
+          toast({
+            title: "Extraction failed",
+            description: error instanceof Error ? error.message : "Failed to extract profile data from resume. Please update your profile manually.",
+            variant: "destructive"
+          });
+        } finally {
+          setIsParsing(false);
+        }
+      }
+      
+      setFile(null);
+      setIsUploading(false);
+      
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+      
     } catch (error) {
       console.error('Error uploading resume:', error);
       toast({
         title: "Upload failed",
-        description: "Failed to upload resume. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to upload resume. Please try again.",
         variant: "destructive"
       });
       setIsUploading(false);
@@ -245,10 +319,27 @@ export default function ResumeUpload() {
       <Card className="mb-6">
         <CardContent className="pt-6">
           <h2 className="text-lg font-medium text-gray-900 mb-4">Resume</h2>
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary transition-colors">
+          
+          {/* Drop zone with drag and drop event handlers */}
+          <div 
+            ref={dropZoneRef}
+            className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors relative
+                      ${isDragActive ? 'border-primary bg-primary/5' : 'border-gray-300 hover:border-primary'}`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            onClick={() => fileInputRef.current?.click()}
+          >
             <div className="flex flex-col items-center">
-              <Loader2 className="h-10 w-10 text-gray-400 mb-4" />
-              <p className="text-sm text-gray-500 mb-2">
+              {file ? (
+                <FileText className="h-12 w-12 text-primary mb-4" />
+              ) : isUploading || isParsing ? (
+                <Loader2 className="h-12 w-12 text-primary mb-4 animate-spin" />
+              ) : (
+                <Upload className="h-12 w-12 text-gray-400 mb-4" />
+              )}
+              
+              <p className="text-sm text-gray-500 mb-2 font-medium">
                 {file ? `Selected file: ${file.name}` : "Drag and drop your resume here or click to browse"}
               </p>
               <p className="text-xs text-gray-400">Supported formats: PDF, DOCX (Max 5MB)</p>
@@ -277,34 +368,54 @@ export default function ResumeUpload() {
                 )}
                 
                 <div className="flex gap-4 justify-center">
-                  <div>
-                    <input 
-                      id="resume-file-input"
-                      type="file" 
-                      accept=".pdf,.docx" 
-                      className="hidden" 
-                      onChange={handleFileChange}
-                      disabled={isUploading || isParsing}
-                    />
+                  <input 
+                    ref={fileInputRef}
+                    id="resume-file-input"
+                    type="file" 
+                    accept=".pdf,.docx" 
+                    className="hidden" 
+                    onChange={handleFileChange}
+                    disabled={isUploading || isParsing}
+                  />
+                  
+                  {!file ? (
                     <Button 
                       variant="outline" 
                       className="cursor-pointer"
                       disabled={isUploading || isParsing}
-                      onClick={() => {
-                        document.getElementById('resume-file-input')?.click();
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent triggering the dropzone click
+                        fileInputRef.current?.click();
                       }}
                     >
                       Browse Files
                     </Button>
-                  </div>
-                  {file && (
-                    <Button 
-                      onClick={handleUpload}
-                      disabled={isUploading || isParsing}
-                    >
-                      {isUploading ? "Uploading..." : isParsing ? "Processing..." : "Upload Resume"}
-                      {(isUploading || isParsing) && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
-                    </Button>
+                  ) : (
+                    <>
+                      <Button 
+                        variant="outline"
+                        className="cursor-pointer"
+                        disabled={isUploading || isParsing}
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent triggering the dropzone click
+                          setFile(null);
+                          if (fileInputRef.current) fileInputRef.current.value = '';
+                        }}
+                      >
+                        Remove File
+                      </Button>
+                      
+                      <Button 
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent triggering the dropzone click
+                          handleUpload();
+                        }}
+                        disabled={isUploading || isParsing}
+                      >
+                        {isUploading ? "Uploading..." : isParsing ? "Processing..." : "Upload Resume"}
+                        {(isUploading || isParsing) && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+                      </Button>
+                    </>
                   )}
                 </div>
                 

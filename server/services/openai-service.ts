@@ -211,7 +211,6 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
   }
   
   try {
-
     console.log("analyzeResume called with parameters:", { 
       resumeTextStart: resumeText ? resumeText.substring(0, 50) + "..." : "null", 
       isBase64: isBase64Value, 
@@ -309,91 +308,65 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
             const path = await import('path');
             const sampleAnalysisPath = path.join(process.cwd(), 'attached_assets', 'Pasted-Resume-Analysis-Improvement-Suggestions-for-Nishant-Chopra-Your-resume-is-strong-in-terms-of-exper-1743723302407.txt');
             
-            const sampleAnalysis = await fs.readFile(sampleAnalysisPath, 'utf8');
-            console.log(`Using sample analysis because OpenAI API key is missing (${sampleAnalysis.length} characters)`);
-            return sampleAnalysis;
-          } catch (err: any) {
-            console.error(`Error reading sample analysis: ${err.message}`);
-            return "Error: Could not analyze the resume. Please check that the OpenAI API key is properly configured.";
+            if (await fs.stat(sampleAnalysisPath)) {
+              const sampleAnalysis = await fs.readFile(sampleAnalysisPath, 'utf8');
+              console.log(`Returning sample analysis (${sampleAnalysis.length} characters)`);
+              return sampleAnalysis;
+            }
+          } catch (error) {
+            console.error("Error reading sample analysis:", error);
           }
+          
+          throw new Error("OpenAI API key is missing. Please check your environment variables.");
         }
         
-        console.log("Using improved PDF extractor to process the PDF directly");
-        
-        // Print the first 100 characters of the base64 data for debugging
-        console.log(`Base64 data preview: ${base64Data.substring(0, 100)}...`);
-        
+        // The base64 string is typically a PDF file, attempt to extract text from it
+        console.log("Attempting to extract text from the CV PDF");
         try {
-          // Convert base64 to buffer
-          const pdfBuffer = Buffer.from(base64Data, 'base64');
+          // Create a temporary file in the /tmp directory
+          const tmpFilePath = path.join('/tmp', `cv-${Date.now()}.pdf`);
+          const buffer = Buffer.from(base64Data, 'base64');
           
-          // Use our improved PDF extractor utility
-          console.log("Extracting text from PDF using our robust extractor utility");
-          let extractedText = await extractTextFromPdf(pdfBuffer);
+          // Save the buffer to a temporary file
+          await fs.writeFile(tmpFilePath, buffer);
+          console.log(`Saved PDF to temporary file: ${tmpFilePath}`);
           
-          // Check if extraction succeeded and if the content looks like actual resume text
-          // rather than just PDF metadata
-          let hasResumeContent = extractedText && 
-                               extractedText.length > 300 && 
-                               !extractedText.includes("Could not extract text");
+          // Extract text from the PDF
+          const extractedText = await extractTextFromPdf(tmpFilePath);
           
-          // Additional check: Does the extracted text look like a resume?
-          // Check for common resume keywords
-          const pdfResumeKeywords = ["experience", "education", "skills", "work", "job", "employment", 
-                                 "resume", "cv", "career", "professional", "contact", "project"];
-          const containsResumeKeywords = pdfResumeKeywords.some(keyword => 
-            extractedText.toLowerCase().includes(keyword.toLowerCase())
-          );
+          // Clean up the temporary file
+          await fs.unlink(tmpFilePath);
           
-          // Check if it's primarily metadata (common with Canva PDFs)
-          const metadataPatterns = ["structtreeroot", "viewerpreferences", "canva", "creator", "producer"];
-          const isMainlyMetadata = metadataPatterns.some(pattern => 
-            extractedText.toLowerCase().includes(pattern.toLowerCase())
-          );
-          
-          // For debugging
-          console.log(`Initial extraction ${hasResumeContent ? 'successful' : 'failed'}: ${extractedText ? extractedText.length : 0} characters`);
-          console.log(`Text sample: "${extractedText ? extractedText.substring(0, 200) + '...' : 'No text found'}"`);
-          console.log(`Contains resume keywords: ${containsResumeKeywords}`);
-          
-          // Detect if this is a Canva-created PDF (or similar design tool) that needs visual analysis
-          const isCanvaPDF = extractedText.toLowerCase().includes("canva");
-          const isDesignerPDF = isCanvaPDF || 
-                               (isMainlyMetadata && !containsResumeKeywords) ||
-                               (extractedText.length > 300 && metadataPatterns.some(pattern => 
-                                 extractedText.toLowerCase().includes(pattern.toLowerCase())
-                               ));
-          
-          // If extraction failed OR we detect it's a Canva PDF, use Vision model
-          if (!hasResumeContent || isDesignerPDF) {
-            console.log(`${isCanvaPDF ? "Canva" : "Designer"} PDF detected or text extraction insufficient. Using Vision model for analysis.`);
+          if (extractedText && extractedText.length > 0) {
+            console.log(`Successfully extracted text (${extractedText.length} chars)`);
+            // Update resumeText with the extracted text and set isDirectTextInput to true
+            resumeText = extractedText;
+            isDirectTextInput = true;
+            isBase64Value = false;
+          } else {
+            console.log("Text extraction failed or returned empty text");
             
-            // Use OpenAI's Vision model to analyze the PDF visually
+            // If text extraction failed, use Vision API to analyze the PDF
+            console.log("Attempting to use Vision API to analyze the CV PDF");
             try {
-              // Create a data URL from the PDF buffer for the vision model
-              const pdfDataUrl = `data:application/pdf;base64,${base64Data}`;
-              
-              console.log("Sending PDF to OpenAI Vision model for analysis");
-              
-              // Call the vision model to analyze the PDF
               const response = await openai.chat.completions.create({
-                model: "gpt-4o", // The newest model with vision capabilities
+                model: "gpt-4o",
                 messages: [
                   {
                     role: "system",
-                    content: "You are Musk, an expert resume analyst within the Brandentifier platform. Your task is to analyze this PDF resume thoroughly. You can see the resume visually, so examine its structure, layout, content, and formatting. Provide a comprehensive analysis focusing on content quality, structure, achievements, relevance to industry, and ATS compatibility. Include precise percentage scores for each category as follows: \"Structure & Layout: XX%\", \"Content Quality: XX%\", \"Relevance to Role/Industry: XX%\", \"Achievements & Metrics: XX%\", \"Soft Skills & Personality: XX%\", \"ATS Compatibility: XX%\". These exact formats must appear in your response."
+                    content: "You are an expert system for extracting structured text content from resume images. Extract all important text information from the provided resume image, maintaining the original structure and formatting as much as possible."
                   },
                   {
                     role: "user",
                     content: [
                       {
                         type: "text",
-                        text: "Please analyze this resume PDF in detail and provide a comprehensive evaluation. Since you can see the visual layout, assess both content and formatting. Ensure you include percentage scores for all 6 categories as specified."
+                        text: "Below is a resume image. Please extract ALL text content from it while preserving the structure as best as possible. Include the person's name, contact information, summary, experience details (company names, job titles, dates, responsibilities), education, skills, certifications, and any other information present. Format it as plain text with clear section headers and appropriate spacing."
                       },
                       {
                         type: "image_url",
                         image_url: {
-                          url: pdfDataUrl
+                          url: `data:application/pdf;base64,${base64Data}`
                         }
                       }
                     ]
@@ -402,346 +375,38 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
                 max_tokens: 4000
               });
               
-              console.log("Successfully received analysis from Vision model");
-              return response.choices[0].message.content || "Failed to analyze the resume visually.";
-            } catch (visionError: any) {
-              console.error("Error using Vision model:", visionError.message);
+              const extractedVisionText = response.choices[0].message.content;
               
-              // If Vision model fails, show a more helpful error message specifically for Canva PDFs
-              if (isCanvaPDF) {
-                console.log("Vision model failed for Canva PDF, showing Canva-specific message");
-                
-                // Set a helpful message for users that clearly explains the issue with Canva PDFs
-                extractedText = `
-# Resume Analysis - Design Format Detected
-
-I notice you're using a beautifully designed resume created with Canva or a similar design tool. While these look great to human reviewers, they can be challenging for AI analysis.
-
-## Why This Happens
-
-Design-focused PDFs often store text as graphical elements rather than as actual text content, which makes them harder for me to process accurately.
-
-## For Best Results:
-
-1. **Copy & Paste Your Resume Text Directly**
-   • Open your resume document
-   • Select all text (Ctrl+A or Cmd+A)
-   • Copy it (Ctrl+C or Cmd+C)
-   • Paste it directly in the text area below
-
-2. **Try Another Format**
-   If you have your resume in DOCX format, that often works better than PDF for AI analysis.
-
-I'll be able to provide a much more detailed, personalized analysis of your resume when I can properly access its content!
-                `;
+              if (extractedVisionText && extractedVisionText.length > 0) {
+                console.log(`Successfully extracted text with Vision API (${extractedVisionText.length} chars)`);
+                // Update resumeText with the extracted text and set isDirectTextInput to true
+                resumeText = extractedVisionText;
+                isDirectTextInput = true;
+                isBase64Value = false;
               } else {
-                // Generic message for non-Canva PDFs
-                extractedText = `
-# Resume Upload Issue
-
-I encountered a technical issue analyzing your PDF resume. This can happen with certain PDF formats.
-
-## For Best Results:
-
-1. **Copy & Paste Your Resume Text Directly**
-   • Open your resume document
-   • Select all text (Ctrl+A or Cmd+A)
-   • Copy it (Ctrl+C or Cmd+C)
-   • Paste it directly in the text area below
-
-2. **Try Another Format**
-   If you have your resume in DOCX format, that often works better than PDF.
-
-I'm ready to provide you with detailed, personalized analysis of your resume as soon as I can access its content!
-                `;
+                console.log("Vision API extraction failed or returned empty text");
+                throw new Error("Failed to extract text from the PDF using Vision API");
               }
-              
-              // Mark that we do have content (our error message) to show the user
-              hasResumeContent = true;
+            } catch (visionError: any) {
+              console.error("Error using Vision API:", visionError);
+              throw new Error(`Failed to process PDF: ${visionError.message}`);
             }
           }
-          
-          // Check if the extracted text contains actual resume content by looking for common keywords
-          const commonResumeKeywords = ['resume', 'experience', 'education', 'skills', 'work', 'job', 'university', 'degree', 'professional', 'profile', 'objective', 'certification'];
-          
-          // Check if extraction worked and if it contains resume-like content
-          const hasResumeKeywords = commonResumeKeywords.some(keyword => 
-            extractedText.toLowerCase().includes(keyword.toLowerCase())
-          );
-          
-          // Extract at least a small sample of the text to log for debugging
-          const textSample = extractedText.substring(0, 200).replace(/\n/g, ' ');
-          console.log(`Text sample: "${textSample}..."`);
-          console.log(`Contains resume keywords: ${hasResumeKeywords}`);
-          
-          // Check if we have valid resume content
-          if (extractedText && extractedText.length > 100 && hasResumeKeywords) {
-            console.log(`Successfully extracted readable resume content: ${extractedText.length} characters`);
-            
-            // Now we have the actual text content, analyze it
-            systemPrompt = "You are Musk, an expert resume analyzer within the Brandentifier platform, with deep knowledge of professional development and hiring practices across many industries. Your analysis must be EXTREMELY PERSONALIZED based on the resume text provided, directly referencing the specific experiences, skills, education, and background from the resume. Avoid generic advice at all costs - everything must be tailored to this specific individual's situation as detailed in their resume. Provide detailed, constructive feedback with highly actionable insights. When suggesting improvements, always mention how Brandentifier's features can help, including the Portfolio Builder for showcasing projects, Smart Connect for networking, and Services showcase for freelancers and consultants. Your analysis should be as detailed and helpful as what someone would receive directly from ChatGPT, with the same level of personalization and specificity.";
-            
-            // Limit the text to a reasonable size to avoid token limits
-            const MAX_TEXT_LENGTH = 4000;
-            const truncatedText = extractedText.length > MAX_TEXT_LENGTH 
-              ? extractedText.substring(0, MAX_TEXT_LENGTH) + "...(truncated due to length)"
-              : extractedText;
-            
-            console.log(`Resume text length: ${extractedText.length} characters, truncated to ${truncatedText.length} characters`);
-            
-            userPrompt = `
-            I need an EXTREMELY detailed and personalized professional analysis of the resume text below. This must be a comprehensive, specific analysis that directly references the actual content in the resume, not generic advice. Make your response feel like it was written specifically for this individual after carefully studying their resume.
-            
-            Analyze the resume using these critical evaluation criteria, providing a score (out of 100%) for each category and an overall score.
-            
-            EXTREMELY IMPORTANT: You MUST include the exact category name followed by the score percentage in this exact format for each category:
-            
-            "Structure & Layout: XX%"
-            "Content Quality: XX%"
-            "Relevance to Role/Industry: XX%"
-            "Achievements & Metrics: XX%"
-            "Soft Skills & Personality: XX%"
-            "ATS Compatibility: XX%"
-            
-            These exact formats must appear in your response as they will be automatically parsed to generate a visual score chart.
-            
-            1. STRUCTURE & LAYOUT (20% of total score)
-               - Clear sections: Are key sections (Summary, Experience, Skills, Education, etc.) easy to find?
-               - Readable format: Is the layout clean, professional, and not cluttered?
-               - Consistency: Are fonts, bullet styles, and date formats consistent throughout?
-            
-            2. CONTENT QUALITY (30% of total score)
-               - Profile/Objective: Is it concise, relevant, and does it highlight strengths or achievements?
-               - Work Experience: Does it show career progression? Use strong action verbs? Focus on quantifiable achievements?
-               - Skills: Are they relevant to the role/industry?
-               - Education & Certifications: Are they properly listed in reverse chronological order?
-            
-            3. RELEVANCE TO ROLE/INDUSTRY (15% of total score)
-               - Are roles and responsibilities tailored toward the desired industry?
-               - Does it use appropriate industry-specific keywords (helpful for ATS parsing)?
-            
-            4. ACHIEVEMENTS & METRICS (20% of total score)
-               - Does the resume mention measurable outcomes and quantifiable results?
-               - Are achievements backed by specific metrics (percentages, numbers, etc.)?
-            
-            5. SOFT SKILLS & PERSONALITY (10% of total score)
-               - Does the CV reflect the candidate's attitude, values, or team collaboration abilities?
-               - Are soft skills like communication, leadership, and adaptability clear from the language?
-            
-            6. ATS COMPATIBILITY (5% of total score)
-               - Is it text-based (not image-heavy)?
-               - Does it use standard headings?
-               - Does it avoid graphics or tables that might confuse ATS bots?
-            
-            ALSO IDENTIFY CRITICAL RED FLAGS:
-            - Typos, grammar issues
-            - Overuse of buzzwords without substance
-            - No accomplishments, only duties
-            - Poor alignment or inconsistent formatting
-            - Outdated information or irrelevant jobs
-            
-            FOR YOUR RESPONSE:
-            1. Begin with an overall score out of 100% and a brief summary of key strengths and areas for improvement
-            2. For each of the 6 categories above, provide:
-               - The category score (e.g., "Structure & Layout: 18/20 (90%)")
-               - Specific, detailed feedback directly referencing elements from their resume
-               - Clear, actionable recommendations for improvement
-            3. End with a prioritized list of 3-5 most important improvements they should make first
-            
-            The resume text:
-            
-            ${truncatedText}
-            
-            First, analyze the resume to identify the person's name, experience details, education background, skills, and other key information. Then, provide a comprehensive, personalized analysis that mentions the person by their EXACT name and references their SPECIFIC experiences, skills, and background throughout your entire response.
-            
-            Provide a HIGHLY personalized and comprehensive resume analysis with specific improvement suggestions using this structure:
-
-            # Resume Analysis & Improvement Suggestions for [Name]
-            
-            ## Career Overview & Industry Context
-            🔍 Identify the person's industry and career stage
-            📈 Briefly describe how their experience aligns with current trends in their industry
-            🎯 Note any career trajectory patterns visible in their work history
-            
-            ## Key Strengths:
-            ✅ List 6-7 key strengths from the resume (be specific to their actual achievements)
-            ✅ Include exact metrics/quantifiable results they've mentioned (and suggest where more could be added)
-            ✅ Highlight their specific technical proficiency and skill level
-            ✅ Note their industry exposure with company names and actual positions held
-            
-            ## Areas for Improvement & Detailed Recommendations:
-            
-            ### 1️⃣ Profile Summary Enhancement
-            Analyze their existing summary section (or note its absence):
-            
-            ❌ Current summary (quoted EXACTLY from the resume) with specific weaknesses identified
-            ✅ Suggested revision (completely rewritten to be more impactful) that:
-               - Highlights their SPECIFIC years of experience in their ACTUAL field
-               - Incorporates their MOST impressive achievements with real metrics
-               - Positions them for their apparent career goals based on resume content
-               - Mentions how they could showcase this summary in their Brandentifier Portfolio
-            
-            ### 2️⃣ Achievement Optimization
-            Identify 3-4 weak achievement descriptions from their ACTUAL resume:
-            
-            ❌ Original statement: "[exact quote from resume]"
-            ✅ Improved version: "[rewritten with specific metrics and outcomes]"
-            
-            ❌ Original statement: "[exact quote from resume]"
-            ✅ Improved version: "[rewritten with specific metrics and outcomes]"
-            
-            [Include 1-2 more examples as needed]
-            
-            ### 3️⃣ Detailed Resume Structure Analysis
-            Analyze the actual organization of their resume:
-            - Comment on the specific section order they've used
-            - Note any missing critical sections they should add
-            - Suggest formatting improvements tailored to their industry/role
-            - Recommend how they could present this improved structure using Brandentifier's Portfolio Builder
-            
-            ### 4️⃣ Comprehensive Skills Assessment
-            Based on their stated role and industry:
-            - List the skills they ACTUALLY mention that are valuable
-            - Identify 5-7 SPECIFIC missing skills that employers in their field currently value
-            - Suggest how to present skills by category/proficiency level
-            - Recommend using Brandentifier's Skills showcase to better visualize their expertise
-            
-            ### 5️⃣ Expanded Projects/Portfolio Strategy
-            Based on their actual work history:
-            - Analyze any projects they've mentioned
-            - Suggest 3-4 SPECIFIC additional projects they should highlight based on their experience
-            - Provide a detailed format for presenting each project
-            - Explain how Brandentifier's Portfolio Builder can help them create an impressive project showcase
-            
-            ### 6️⃣ Personalized ATS Optimization Recommendations
-            Provide detailed, specific ATS optimization advice:
-            - List 5-7 actual keywords from their industry that should be included
-            - Identify any ATS-problematic formatting in their current resume
-            - Suggest specific filename conventions for their field
-            - Explain how to handle any unusual elements in their resume (gaps, career changes)
-            
-            ### 7️⃣ Networking Strategy Based on Resume Content
-            Using the resume details:
-            - Suggest 4-5 specific types of professionals they should connect with
-            - Recommend how to leverage their unique experience when networking
-            - Explain how Brandentifier's Smart Connect feature can help them build their professional network
-            
-            ### 8️⃣ Service Offering Opportunities
-            Based on their expertise:
-            - Suggest 3-4 specific services they could offer as a consultant/freelancer
-            - Outline how to package and present each service
-            - Explain how Brandentifier's Services showcase can help them market these offerings
-            
-            Format with emoji bullets (like ✅, 🔹, 📅) to make sections visually distinct. Use a professional yet conversational tone, and make all advice extremely detailed, practical, and tailored specifically to their experience and industry.
-            `;
-          } else {
-            console.warn("Could not extract valid resume content from the uploaded file. Responding with error and suggestions.");
-            
-            // Special case for PDFs with extraction issues - provide helpful guidance
-            systemPrompt = "You are Musk, a helpful assistant in the Brandentifier platform. The user has uploaded a resume file, but we could not extract readable resume content from it. The file might be corrupted or have unusual formatting.";
-            
-            userPrompt = `
-            The user has uploaded a PDF resume file, but we're encountering an issue extracting meaningful text content from it.
-
-            Please provide a friendly, helpful response that:
-            1. Explains that we're having trouble processing their specific PDF file
-            2. Suggests they try the "Option 2: Paste your resume text directly" feature that's available on the same page, which will give them better results
-            3. Mentions that if they still want to upload a file, they might try a different format (like .docx) or a different PDF that was created as a text document rather than a scan
-            4. Reassures them that this is a technical limitation and not an issue with their resume content
-
-            End with an encouraging note about how Brandentifier's AI resume analysis can provide valuable insights once we can access the resume content properly.
-            `;
-          }
-        } catch (error: any) {
-          console.error("Error processing PDF:", error);
-          
-          // Check if the error is related to OpenAI API key
-          if (error.message && (error.message.includes('API key') || error.message.includes('authentication'))) {
-            console.error("OpenAI API key error:", error.message);
-            systemPrompt = "You are a helpful AI assistant on the Brandentifier platform. There is an issue with the OpenAI API configuration.";
-            userPrompt = "The system encountered an authentication error when trying to process the resume. Please let the user know that there's an issue with the API configuration and that they should try again later or contact support.";
-          } else {
-            console.error("General error processing PDF:", error);
-            systemPrompt += " You cannot directly process this PDF file, but you can provide comprehensive, detailed guidance for resume improvement similar to what an expert resume coach would offer.";
-            userPrompt = `
-            The user has uploaded a resume file, but I encountered an error when trying to process it: ${error.message}. Please provide a comprehensive, detailed resume analysis and improvement guide structured like this example:
-        
-          Resume Analysis & Improvement Suggestions
-          
-          Strengths:
-          ✅ List 5-6 common strengths seen in professional resumes
-          ✅ Include specific areas like quantifiable achievements, technical skills, career progression
-          ✅ Mention industry exposure (tech, fintech, e-commerce, etc.)
-          
-          Areas for Improvement & Recommendations:
-          
-          1️⃣ Improve Profile Summary
-          Show examples of weak vs. strong profile summaries:
-          
-          ❌ Current (example of a generic summary)
-          ✅ Suggested Revision (example of a strong summary with specifics)
-          
-          2️⃣ Achievements Need More Quantifiable Impact
-          Provide specific examples:
-          
-          ❌ Generic achievement example
-          ✅ Achievement with metrics (e.g., "Led full-cycle product development for 5+ AI-powered products, achieving a 30% reduction in time-to-market")
-          
-          3️⃣ Better Formatting for Readability
-          Specific formatting tips for modern resumes
-          
-          4️⃣ Improve "Skills" Section
-          Suggested structure with modern skills relevant to various roles
-          
-          5️⃣ "Projects" Section Recommendations
-          Show how to structure a projects section with examples
-          
-          6️⃣ ATS Optimization Tips
-          Explain how to make resumes ATS-friendly with examples
-          
-          Make this extremely actionable, detailed, and formatted with emoji bullets (like ✅, 🔹, 📅) to make sections visually distinct. Use a professional yet conversational tone.
-          `;
+        } catch (err: any) {
+          console.error("Error extracting text from PDF:", err);
+          throw new Error(`Failed to extract text from PDF: ${err.message}`);
         }
+      } catch (error: any) {
+        console.error("Error processing base64 data:", error);
+        systemPrompt += " I cannot directly process this resume file, but I can provide comprehensive, detailed guidance for resume improvement similar to what an expert resume coach would offer.";
         userPrompt = `
-        The user has uploaded a resume file, but I encountered an error when trying to process it. Please provide a comprehensive, detailed resume analysis and improvement guide structured like this example:
-  
-        Resume Analysis & Improvement Suggestions
-        
-        Strengths:
-        ✅ List 5-6 common strengths seen in professional resumes
-        ✅ Include specific areas like quantifiable achievements, technical skills, career progression
-        ✅ Mention industry exposure (tech, fintech, e-commerce, etc.)
-        
-        Areas for Improvement & Recommendations:
-        
-        1️⃣ Improve Profile Summary
-        Show examples of weak vs. strong profile summaries:
-        
-        ❌ Current (example of a generic summary)
-        ✅ Suggested Revision (example of a strong summary with specifics)
-        
-        2️⃣ Achievements Need More Quantifiable Impact
-        Provide specific examples:
-        
-        ❌ Generic achievement example
-        ✅ Achievement with metrics (e.g., "Led full-cycle product development for 5+ AI-powered products, achieving a 30% reduction in time-to-market")
-        
-        3️⃣ Better Formatting for Readability
-        Specific formatting tips for modern resumes
-        
-        4️⃣ Improve "Skills" Section
-        Suggested structure with modern skills relevant to various roles
-        
-        5️⃣ "Projects" Section Recommendations
-        Show how to structure a projects section with examples
-        
-        6️⃣ ATS Optimization Tips
-        Explain how to make resumes ATS-friendly with examples
-        
-        Make this extremely actionable, detailed, and formatted with emoji bullets (like ✅, 🔹, 📅) to make sections visually distinct. Use a professional yet conversational tone.
+        I couldn't properly process the resume file you provided. Please provide a comprehensive, detailed resume analysis and improvement guide using standard best practices.
         `;
       }
-    } else {
+    } 
+    
+    // Process direct text input or text extracted from base64 file
+    if (isDirectTextInput) {
       try {
         // Regular text resume
         console.log("Processing plain text resume");
@@ -758,131 +423,52 @@ I'm ready to provide you with detailed, personalized analysis of your resume as 
       Analyze the resume using these critical evaluation criteria, providing a score (out of 100%) for each category and an overall score:
       
       1. STRUCTURE & LAYOUT (20% of total score)
-         - Clear sections: Are key sections (Summary, Experience, Skills, Education, etc.) easy to find?
-         - Readable format: Is the layout clean, professional, and not cluttered?
-         - Consistency: Are fonts, bullet styles, and date formats consistent throughout?
+      • Overall organization and visual appeal
+      • Section order and prominence
+      • Appropriate length (1-2 pages)
+      • Consistent formatting and readability
       
-      2. CONTENT QUALITY (30% of total score)
-         - Profile/Objective: Is it concise, relevant, and does it highlight strengths or achievements?
-         - Work Experience: Does it show career progression? Use strong action verbs? Focus on quantifiable achievements?
-         - Skills: Are they relevant to the role/industry?
-         - Education & Certifications: Are they properly listed in reverse chronological order?
+      2. CONTENT QUALITY (20% of total score)
+      • Clarity and conciseness
+      • Relevance of information included
+      • Professional language and tone
+      • Proper grammar and spelling
       
       3. RELEVANCE TO ROLE/INDUSTRY (15% of total score)
-         - Are roles and responsibilities tailored toward the desired industry?
-         - Does it use appropriate industry-specific keywords (helpful for ATS parsing)?
+      • Alignment with industry expectations
+      • Focus on relevant skills/experiences
+      • Use of appropriate industry terminology
+      • Clear career progression/trajectory
       
       4. ACHIEVEMENTS & METRICS (20% of total score)
-         - Does the resume mention measurable outcomes and quantifiable results?
-         - Are achievements backed by specific metrics (percentages, numbers, etc.)?
+      • Quantified results and impact
+      • Specific accomplishments vs. job duties
+      • Evidence of leadership and initiative
+      • Demonstration of value added
       
       5. SOFT SKILLS & PERSONALITY (10% of total score)
-         - Does the CV reflect the candidate's attitude, values, or team collaboration abilities?
-         - Are soft skills like communication, leadership, and adaptability clear from the language?
+      • Balance of technical and interpersonal skills
+      • Evidence of teamwork and collaboration
+      • Communication and leadership qualities
+      • Unique attributes that distinguish the candidate
       
-      6. ATS COMPATIBILITY (5% of total score)
-         - Is it text-based (not image-heavy)?
-         - Does it use standard headings?
-         - Does it avoid graphics or tables that might confuse ATS bots?
+      6. ATS COMPATIBILITY (15% of total score)
+      • Keyword optimization for target roles
+      • Clean, parsable formatting
+      • Proper use of standard section headings
+      • Absence of graphics/tables that confuse ATS
       
-      ALSO IDENTIFY CRITICAL RED FLAGS:
-      - Typos, grammar issues
-      - Overuse of buzzwords without substance
-      - No accomplishments, only duties
-      - Poor alignment or inconsistent formatting
-      - Outdated information or irrelevant jobs
-      
-      FOR YOUR RESPONSE:
-      1. Begin with an overall score out of 100% and a brief summary of key strengths and areas for improvement
-      2. For each of the 6 categories above, provide:
-         - The category score (e.g., "Structure & Layout: 18/20 (90%)")
-         - Specific, detailed feedback directly referencing elements from their resume
-         - Clear, actionable recommendations for improvement
-      3. End with a prioritized list of 3-5 most important improvements they should make first
-      
+      RESUME TEXT:
       ${truncatedText}
       
-      First, analyze the resume to identify the person's name, experience details, education background, skills, and other key information. Then, provide a comprehensive, personalized analysis that mentions the person by their EXACT name and references their SPECIFIC experiences, skills, and background throughout your entire response.
-
-      Provide a HIGHLY personalized and comprehensive resume analysis with specific improvement suggestions using this structure:
-
-      # Resume Analysis & Improvement Suggestions for [EXACT NAME FROM RESUME]
+      Provide the analysis in this format:
+      1. Summary of resume strengths and weaknesses
+      2. Detailed scores for each category with specific examples from the resume
+      3. Overall score with explanation
+      4. Prioritized recommendations for improvement (most impactful first)
+      5. Specific suggestions on how to use Brandentifier's Portfolio Builder to showcase projects and skills
       
-      ## Career Overview & Industry Context
-      🔍 Identify the person's specific industry, role, and career stage based on the actual resume content
-      📈 Analyze how their specific experience aligns with current trends in their industry
-      🎯 Note any career trajectory patterns visible in their work history with specific examples from their resume
-      
-      ## Key Strengths:
-      ✅ List 6-7 key strengths from the resume (be specific to their actual achievements)
-      ✅ Include exact metrics/quantifiable results they've mentioned (and suggest where more could be added)
-      ✅ Highlight their specific technical proficiency and skill level
-      ✅ Note their industry exposure with company names and actual positions held
-      
-      ## Areas for Improvement & Detailed Recommendations:
-      
-      ### 1️⃣ Profile Summary Enhancement
-      Analyze their existing summary section (or note its absence):
-      
-      ❌ Current summary (quoted EXACTLY from the resume) with specific weaknesses identified
-      ✅ Suggested revision (completely rewritten to be more impactful) that:
-         - Highlights their SPECIFIC years of experience in their ACTUAL field
-         - Incorporates their MOST impressive achievements with real metrics
-         - Positions them for their apparent career goals based on resume content
-         - Mentions how they could showcase this summary in their Brandentifier Portfolio
-      
-      ### 2️⃣ Achievement Optimization
-      Identify 3-4 weak achievement descriptions from their ACTUAL resume:
-      
-      ❌ Original statement: "[exact quote from resume]"
-      ✅ Improved version: "[rewritten with specific metrics and outcomes]"
-      
-      ❌ Original statement: "[exact quote from resume]"
-      ✅ Improved version: "[rewritten with specific metrics and outcomes]"
-      
-      [Include 1-2 more examples as needed]
-      
-      ### 3️⃣ Detailed Resume Structure Analysis
-      Analyze the actual organization of their resume:
-      - Comment on the specific section order they've used
-      - Note any missing critical sections they should add
-      - Suggest formatting improvements tailored to their industry/role
-      - Recommend how they could present this improved structure using Brandentifier's Portfolio Builder
-      
-      ### 4️⃣ Comprehensive Skills Assessment
-      Based on their stated role and industry:
-      - List the skills they ACTUALLY mention that are valuable
-      - Identify 5-7 SPECIFIC missing skills that employers in their field currently value
-      - Suggest how to present skills by category/proficiency level
-      - Recommend using Brandentifier's Skills showcase to better visualize their expertise
-      
-      ### 5️⃣ Expanded Projects/Portfolio Strategy
-      Based on their actual work history:
-      - Analyze any projects they've mentioned
-      - Suggest 3-4 SPECIFIC additional projects they should highlight based on their experience
-      - Provide a detailed format for presenting each project
-      - Explain how Brandentifier's Portfolio Builder can help them create an impressive project showcase
-      
-      ### 6️⃣ Personalized ATS Optimization Recommendations
-      Provide detailed, specific ATS optimization advice:
-      - List 5-7 actual keywords from their industry that should be included
-      - Identify any ATS-problematic formatting in their current resume
-      - Suggest specific filename conventions for their field
-      - Explain how to handle any unusual elements in their resume (gaps, career changes)
-      
-      ### 7️⃣ Networking Strategy Based on Resume Content
-      Using the resume details:
-      - Suggest 4-5 specific types of professionals they should connect with
-      - Recommend how to leverage their unique experience when networking
-      - Explain how Brandentifier's Smart Connect feature can help them build their professional network
-      
-      ### 8️⃣ Service Offering Opportunities
-      Based on their expertise:
-      - Suggest 3-4 specific services they could offer as a consultant/freelancer
-      - Outline how to package and present each service
-      - Explain how Brandentifier's Services showcase can help them market these offerings
-      
-      Format with emoji bullets (like ✅, 🔹, 📅) to make sections visually distinct. Use a professional yet conversational tone, and make all advice extremely detailed, practical, and tailored specifically to their experience and industry.
+      Make this extremely actionable, detailed, and formatted with emoji bullets (like ✅, 🔹, 📅) to make sections visually distinct. Use a professional yet conversational tone.
       `;
       } catch (error: any) {
         console.error("Error processing text resume:", error);
@@ -891,6 +477,12 @@ I'm ready to provide you with detailed, personalized analysis of your resume as 
         I couldn't properly process the resume text you provided. Please provide a comprehensive, detailed resume analysis and improvement guide using standard best practices.
         `;
       }
+    } else if (!userPrompt) {
+      // Fallback for any other case
+      systemPrompt += " I cannot directly process this resume, but I can provide comprehensive, detailed guidance for resume improvement similar to what an expert resume coach would offer.";
+      userPrompt = `
+      I couldn't properly process the resume you provided. Please provide a comprehensive, detailed resume analysis and improvement guide using standard best practices.
+      `;
     }
     
     // Send request to OpenAI API
@@ -997,12 +589,12 @@ export async function generateNetworkingRecommendations(
     
     Please provide:
     1. A personalized assessment of their networking potential for ${targetIndustry} based on their background
-    2. Specific types of professionals they should connect with (5-7 roles/positions)
-    3. Places/platforms where they can find these connections (both online and offline)
-    4. Conversation starters and value propositions for each type of connection
-    5. Tips for maintaining relationships after initial contact
+    2. Specific suggestions for where and how to find relevant networking opportunities (both online and offline)
+    3. Tips for creating an effective elevator pitch based on their background
+    4. Suggestions for initiating conversations and building meaningful connections
+    5. Advice on following up and maintaining professional relationships
     6. Common mistakes to avoid when networking in ${targetIndustry}
-    7. Long-term networking strategy aligned with their career goals
+    7. How Brandentifier's Smart Connect feature can specifically help them network effectively
     
     USE PROPER FORMATTING:
     - Use "# " for main section titles
@@ -1012,7 +604,6 @@ export async function generateNetworkingRecommendations(
     - Use line breaks between sections
     
     Make it professional, clean, and easy to read. Be specific and actionable throughout.
-    IMPORTANT: When suggesting networking platforms or groups, always mention Brandentifier's Smart Connect feature as a primary option alongside other platforms like LinkedIn.
     `;
 
     const response = await openai.chat.completions.create({
