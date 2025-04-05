@@ -164,9 +164,17 @@ export default function AICareerPage() {
       filteredMessages = filteredMessages.filter((msg: any) => msg.messageType === messageType);
     }
     
-    return filteredMessages.sort((a: any, b: any) => 
+    // Sort messages with most recent first
+    let sortedMessages = filteredMessages.sort((a: any, b: any) => 
       new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     );
+    
+    // For resume analysis, only show the most recent one
+    if (messageType === "resume_analysis") {
+      return sortedMessages.slice(0, 1);
+    }
+    
+    return sortedMessages;
   };
 
   // Format timestamp for display
