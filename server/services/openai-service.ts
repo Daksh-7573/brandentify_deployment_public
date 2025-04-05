@@ -286,7 +286,7 @@ export async function analyzeResume(resumeText: string, isBase64: boolean = fals
         console.log(`Text extraction ${hasResumeContent ? 'successful' : 'failed'}: ${extractedText.length} characters`);
         
         // Check if the extracted text contains actual resume content by looking for common keywords
-        const resumeKeywords = ['resume', 'experience', 'education', 'skills', 'work', 'job', 'university', 'degree'];
+        const resumeKeywords = ['resume', 'experience', 'education', 'skills', 'work', 'job', 'university', 'degree', 'professional', 'profile', 'objective', 'certification'];
         const containsResumeKeywords = resumeKeywords.some(keyword => 
           extractedText.toLowerCase().includes(keyword.toLowerCase())
         );
@@ -301,21 +301,58 @@ export async function analyzeResume(resumeText: string, isBase64: boolean = fals
           /xmp\.did:/g,               // XMP identifiers
           /uuid:/g,                   // UUID markers
           /D:\d{14}/g,                // Date stamps
+          /\/Type\//g,                // PDF structure markers
+          /\/Page\//g,                // PDF page markers
+          /\/S\//g,                   // PDF stream markers
+          /\/Parent/g,                // PDF object references
+          /endobj/g,                  // PDF object end markers
+          /startxref/g,               // PDF xref markers
+          /%%EOF/g,                   // PDF end of file markers
         ];
         
-        // Count noise matches
+        // Check for binary data markers and non-printable characters
+        const binaryDataCheck = extractedText.match(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\xFF]/g);
+        const binaryCharCount = binaryDataCheck ? binaryDataCheck.length : 0;
+        const binaryRatio = binaryCharCount / extractedText.length;
+        
+        // Count noise matches for PDF structural elements
         const noiseMatches = pdfNoisePatterns.reduce((count, pattern) => {
           const matches = extractedText.match(pattern);
           return count + (matches ? matches.length : 0);
         }, 0);
         
-        // Calculate noise ratio - if more than 10% of extracted strings are noise, it's likely not valid resume content
+        // Calculate noise ratio - if more than 5% of extracted strings are noise or 15% are binary characters, it's likely not valid resume content
         const noiseRatio = extractedText.length > 0 ? noiseMatches / (extractedText.length / 20) : 0;
-        const isProbablyPdfNoise = noiseRatio > 0.1;
+        const isProbablyPdfNoise = noiseRatio > 0.05 || binaryRatio > 0.15;
         
-        console.log(`Noise analysis: ${noiseMatches} noise patterns found, ratio: ${noiseRatio}, isProbablyPdfNoise: ${isProbablyPdfNoise}`);
+        // Check for readable text patterns - look for sentences, paragraphs and word boundaries
+        const readableTextPatterns = [
+          /\b[A-Z][a-z]+ [a-z]+ [a-z]+\b/g,  // Three words with proper capitalization
+          /\. [A-Z]/g,                        // Period followed by capital (sentence boundary)
+          /\b(January|February|March|April|May|June|July|August|September|October|November|December)\b/gi, // Month names
+          /\b(20\d\d|19\d\d)\b/g,            // Years (1900-2099)
+          /\b(skills|experience|education|profile|summary|objective|work|project|achievement)\b:/gi // Common section headers
+        ];
         
-        if (hasResumeContent && (containsResumeKeywords || extractedText.length > 500) && !isProbablyPdfNoise) {
+        // Count readable text matches
+        const readableMatches = readableTextPatterns.reduce((count, pattern) => {
+          const matches = extractedText.match(pattern);
+          return count + (matches ? matches.length : 0);
+        }, 0);
+        
+        // A resume with real content should have some readable patterns
+        const hasReadableContent = readableMatches > 5;
+        
+        console.log(`Content analysis: 
+          - Noise: ${noiseMatches} patterns, ratio: ${noiseRatio}
+          - Binary: ${binaryCharCount} chars, ratio: ${binaryRatio} 
+          - Readable patterns: ${readableMatches}
+          - Has resume keywords: ${containsResumeKeywords}
+          - Has readable content: ${hasReadableContent}
+          - Final decision: ${!isProbablyPdfNoise && (containsResumeKeywords || hasReadableContent)}
+        `);
+        
+        if (hasResumeContent && (containsResumeKeywords || hasReadableContent) && !isProbablyPdfNoise) {
           console.log(`Successfully extracted readable resume content: ${extractedText.length} characters`);
           
           // Now we have the actual text content, analyze it
