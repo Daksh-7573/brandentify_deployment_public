@@ -1,12 +1,7 @@
 /**
  * Utility for PDF text extraction with robust error handling and fallback mechanisms
  */
-import * as pdfjs from 'pdfjs-dist';
 import OpenAI from "openai";
-
-// Ensure the PDF.js worker is set up correctly
-const pdfjsLib = pdfjs as any;
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.js`;
 
 // Initialize OpenAI client
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });

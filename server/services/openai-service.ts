@@ -2,8 +2,12 @@ import OpenAI from "openai";
 import { WorkExperience, Education, Skill } from "@shared/schema";
 import { extractTextFromPdf } from "../utils/pdf-extractor";
 
-// Initialize OpenAI client
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+// Initialize OpenAI client with timeout
+const openai = new OpenAI({ 
+  apiKey: process.env.OPENAI_API_KEY,
+  timeout: 30000, // 30 seconds timeout
+  maxRetries: 2
+});
 
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
 const MODEL = "gpt-4o";
@@ -673,15 +677,23 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
     }
     
     // Send request to OpenAI API
-    const response = await openai.chat.completions.create({
-      model: MODEL,
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt }
-      ],
-      temperature: 0.7,
-      max_tokens: 4000,
-    });
+    let response;
+    try {
+      console.log("Sending request to OpenAI API...");
+      response = await openai.chat.completions.create({
+        model: MODEL,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt }
+        ],
+        temperature: 0.7,
+        max_tokens: 4000,
+      });
+      console.log("Received response from OpenAI API");
+    } catch (apiError) {
+      console.error("OpenAI API error:", apiError);
+      throw apiError;
+    }
     
     return response.choices[0].message.content || "Unable to analyze resume";
   } catch (error: any) {

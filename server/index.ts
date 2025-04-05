@@ -9,6 +9,28 @@ const app = express();
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 
+// Request timeout middleware (45 seconds)
+const requestTimeout = (req: Request, res: Response, next: NextFunction) => {
+  // Skip timeout for non-AI-related endpoints
+  if (!req.path.includes('/ai/')) {
+    return next();
+  }
+  
+  const timeout = 45000; // 45 seconds timeout for AI requests
+  res.setTimeout(timeout, () => {
+    console.log(`Request to ${req.path} timed out after ${timeout}ms`);
+    if (!res.headersSent) {
+      res.status(503).json({
+        error: "TIMEOUT",
+        message: "The request took too long to process. Please try again with a shorter resume text or contact support."
+      });
+    }
+  });
+  next();
+};
+
+app.use(requestTimeout);
+
 // Setup express-fileupload middleware
 app.use(fileUpload({
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max file size
