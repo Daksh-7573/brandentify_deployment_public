@@ -311,7 +311,7 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
           const pdfBuffer = Buffer.from(base64Data, 'base64');
           
           // Use our improved PDF extractor utility
-          console.log("Extracting text from PDF using our robust extractor utility");
+          console.log("Extracting text from PDF using robust extractor utility");
           let extractedText = await extractTextFromPdf(pdfBuffer);
           
           // Check if extraction succeeded
@@ -319,7 +319,6 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
                                extractedText.length > 100 && 
                                !extractedText.includes("Could not extract text");
                                
-          // For debugging
           console.log(`Initial extraction ${hasResumeContent ? 'successful' : 'failed'}: ${extractedText ? extractedText.length : 0} characters`);
           
           // If extraction failed, fall back to AI analysis
@@ -328,7 +327,7 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
             
             // Fall back to AI analysis as a last resort
             const pdfResponse = await openai.chat.completions.create({
-              model: MODEL,
+              model: "gpt-4o",
               messages: [
                 {
                   role: "system",
@@ -344,7 +343,7 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
             });
             console.log("OpenAI fallback response received!");
             
-            // Get the extracted text from the PDF
+            // Get the extracted text from the fallback method
             extractedText = pdfResponse.choices[0].message.content || "";
             
             // Re-check if we got meaningful content
@@ -361,7 +360,6 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
           // Extract at least a small sample of the text to log for debugging
           const textSample = extractedText.substring(0, 200).replace(/\n/g, ' ');
           console.log(`Text sample: "${textSample}..."`);
-          console.log(`Contains resume keywords: ${containsResumeKeywords}`);
           
           if (hasResumeContent && extractedText.length > 100 && containsResumeKeywords) {
             console.log(`Successfully extracted readable resume content: ${extractedText.length} characters`);

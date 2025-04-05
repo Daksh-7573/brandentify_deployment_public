@@ -316,19 +316,21 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
           
           // Check if extraction succeeded
           let hasResumeContent = extractedText && 
-                               extractedText.length > 100 && 
-                               !extractedText.includes("Could not extract text");
-                               
+                                extractedText.length > 100 && 
+                                !extractedText.includes("Could not extract text");
+                                
           // For debugging
           console.log(`Initial extraction ${hasResumeContent ? 'successful' : 'failed'}: ${extractedText ? extractedText.length : 0} characters`);
+          
+          let pdfResponse; // Declare the response variable outside the if block
           
           // If extraction failed, fall back to AI analysis
           if (!hasResumeContent) {
             console.log("PDF extraction failed. Falling back to AI analysis of the binary data");
             
             // Fall back to AI analysis as a last resort
-            const pdfResponse = await openai.chat.completions.create({
-              model: MODEL,
+            pdfResponse = await openai.chat.completions.create({
+              model: "gpt-4o",
               messages: [
                 {
                   role: "system",
@@ -361,7 +363,6 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
           // Extract at least a small sample of the text to log for debugging
           const textSample = extractedText.substring(0, 200).replace(/\n/g, ' ');
           console.log(`Text sample: "${textSample}..."`);
-          console.log(`Contains resume keywords: ${containsResumeKeywords}`);
           
           if (hasResumeContent && extractedText.length > 100 && containsResumeKeywords) {
             console.log(`Successfully extracted readable resume content: ${extractedText.length} characters`);
@@ -576,21 +577,22 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
         `;
       }
     } else {
-      // Regular text resume
-      console.log("Processing plain text resume");
-      
-      // Limit the text to a reasonable size to avoid token limits
-      const MAX_TEXT_LENGTH = 4000;
+      // Limit the text to a very conservative size (2500 characters) to avoid token limits
+      const MAX_TEXT_LENGTH = 2500;
       const truncatedText = resumeText.length > MAX_TEXT_LENGTH 
         ? resumeText.substring(0, MAX_TEXT_LENGTH) + "...(truncated due to length)"
         : resumeText;
       
+      console.log(`Resume text length: ${resumeText.length} characters, truncated to ${truncatedText.length} characters`);
+      
       userPrompt = `
-      I need a detailed professional analysis of this resume:
+      I need a detailed professional analysis of this resume text:
       
       ${truncatedText}
       
-      Provide an extremely personalized and comprehensive resume analysis with specific improvement suggestions using this structure:
+      First, identify the industry/field this person works in and their level of experience.
+      
+      Please provide an extremely personalized and comprehensive resume analysis with specific improvement suggestions using this structure:
 
       # Resume Analysis & Improvement Suggestions for [Name]
       
@@ -672,21 +674,25 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
       `;
     }
     
-    // Send request to OpenAI API
     const response = await openai.chat.completions.create({
       model: MODEL,
       messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt }
+        {
+          role: "system",
+          content: systemPrompt,
+        },
+        {
+          role: "user",
+          content: userPrompt,
+        },
       ],
       temperature: 0.7,
-      max_tokens: 4000,
     });
-    
+
     return response.choices[0].message.content || "Unable to analyze resume";
   } catch (error: any) {
     console.error("Error analyzing resume:", error);
-    return `Error analyzing your resume: ${error.message}. Please try again later or contact support.`;
+    throw new Error(`Failed to analyze resume: ${error.message}`);
   }
 }
 
@@ -699,10 +705,8 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
  */
 export async function generateNetworkingRecommendations(
   userProfile: {
-    user: any;
     workExperiences: WorkExperience[];
     skills: Skill[];
-    educations: Education[];
   },
   targetIndustry: string,
   purpose: string
@@ -716,7 +720,9 @@ export async function generateNetworkingRecommendations(
         }${exp.industry ? ` in ${exp.industry}` : ""}${
           exp.location ? `, ${exp.location}` : ""
         }
-        Duration: ${exp.startDate}${exp.endDate ? ` to ${exp.endDate}` : " to Present"}
+        Duration: ${exp.startDate}${
+          exp.endDate ? ` to ${exp.endDate}` : " to Present"
+        }
         ${exp.description ? `Description: ${exp.description}` : ""}`;
       })
       .join("\n\n");
@@ -730,30 +736,8 @@ export async function generateNetworkingRecommendations(
       })
       .join("\n");
 
-    // Format education for the prompt
-    const educationText = userProfile.educations
-      .map((edu) => {
-        return `- ${edu.degree} at ${edu.institution}${
-          edu.location ? `, ${edu.location}` : ""
-        }
-        Duration: ${edu.startDate}${
-          edu.endDate ? ` to ${edu.endDate}` : " to Present"
-        }`;
-      })
-      .join("\n\n");
-      
-    // Get user basic information
-    const userName = userProfile.user?.name || "the user";
-    const userTitle = userProfile.user?.title || "a professional";
-    const userIndustry = userProfile.user?.industry || "various industries";
-    const userLocation = userProfile.user?.location || "unknown location";
-
     const prompt = `
-    I need personalized networking recommendations for ${userName}, who is currently working as ${userTitle} in ${userIndustry}, located in ${userLocation}.
-    
-    The user is specifically interested in networking in the ${targetIndustry} industry for the purpose of ${purpose}.
-    
-    Here is their professional profile:
+    I need personalized networking recommendations based on the following profile:
     
     WORK EXPERIENCE:
     ${workExperienceText || "No work experience provided"}
@@ -761,27 +745,18 @@ export async function generateNetworkingRecommendations(
     SKILLS:
     ${skillsText || "No skills provided"}
     
-    EDUCATION:
-    ${educationText || "No education provided"}
+    TARGET INDUSTRY: ${targetIndustry}
+    
+    NETWORKING PURPOSE: ${purpose}
     
     Please provide:
-    1. A personalized assessment of their networking potential for ${targetIndustry} based on their background
-    2. Specific types of professionals they should connect with (5-7 roles/positions)
-    3. Places/platforms where they can find these connections (both online and offline)
-    4. Conversation starters and value propositions for each type of connection
-    5. Tips for maintaining relationships after initial contact
-    6. Common mistakes to avoid when networking in ${targetIndustry}
-    7. Long-term networking strategy aligned with their career goals
+    1. Specific types of professionals to connect with based on the target industry and networking purpose
+    2. Recommended networking platforms and communities that align with the profile and goals. IMPORTANT: Always include Brandentifier's Smart Connect feature as a primary recommendation alongside platforms like LinkedIn or industry-specific networks.
+    3. Networking conversation starters and topics to discuss based on the professional background
+    4. Suggestions for how to leverage existing experience when networking in this industry, including using Brandentifier's Portfolio Builder to showcase projects and Services feature to highlight skills
+    5. Potential networking events or groups that would be valuable
     
-    USE PROPER FORMATTING:
-    - Use "# " for main section titles
-    - Use "## " for subtitles
-    - Use bullet points with "- " for lists 
-    - Use *italic* for emphasis
-    - Use line breaks between sections
-    
-    Make it professional, clean, and easy to read. Be specific and actionable throughout.
-    IMPORTANT: When suggesting networking platforms or groups, always mention Brandentifier's Smart Connect feature as a primary option alongside other platforms like LinkedIn.
+    Format the recommendations in a clear, professional tone with section headings. Make sure to emphasize how Brandentifier's features can enhance the person's networking experience at each relevant step.
     `;
 
     const response = await openai.chat.completions.create({
@@ -790,7 +765,7 @@ export async function generateNetworkingRecommendations(
         {
           role: "system",
           content:
-            "You are Musk, a professional networking coach within the Brandentifier platform, with expertise in professional networking, relationship building, and career development. Provide personalized, actionable networking advice that's strategic and targeted. You should always promote Brandentifier's features when giving advice, especially the Smart Connect networking feature. When suggesting networking platforms or groups, always mention how Brandentifier's Smart Connect can help alongside external options like LinkedIn. Use proper markdown formatting for all your responses, with headings (# and ##), bullet points (- ), emphasis (*italic*), and clear section organization. Your advice should look professional and be easy to read at a glance. Sign your response as 'Musk, Your Networking Partner' at the end.",
+            "You are Musk, an expert networking strategist within the Brandentifier platform who helps professionals connect strategically to advance their careers. Provide personalized, actionable networking advice. Always recommend Brandentifier's Smart Connect feature for networking alongside external platforms. Whenever appropriate, mention how users can showcase their portfolio using Brandentifier's Portfolio Builder and offer services using the Services showcase feature.",
         },
         { role: "user", content: prompt },
       ],

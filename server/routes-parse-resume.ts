@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { extractTextFromBinaryData } from './services/simple-pdf-parser-new';
 import { parseResumeText } from './services/profile-parser';
+import { extractTextFromPdf } from './utils/pdf-extractor';
 
 /**
  * Handler for the /parse-resume endpoint that completely bypasses OpenAI
@@ -36,14 +37,20 @@ export async function handleParseResume(req: Request, res: Response) {
       });
     }
     
-    // Extract text from the binary data using our direct parser
-    console.log("Extracting text from binary data");
-    const extractedText = await extractTextFromBinaryData(fileBuffer);
+    // First try with our improved PDF extractor
+    console.log("Attempting to extract text with improved PDF extractor");
+    let extractedText = await extractTextFromPdf(fileBuffer);
+    
+    // If that fails, fall back to the original method
+    if (!extractedText || extractedText.trim().length < 100 || extractedText.includes("Could not extract text")) {
+      console.log("Advanced PDF extraction failed or returned insufficient text, trying legacy extractor");
+      extractedText = await extractTextFromBinaryData(fileBuffer);
+    }
     
     if (!extractedText || extractedText.trim().length === 0) {
-      console.error("No text could be extracted from the file");
+      console.error("No text could be extracted from the file using any available method");
       return res.status(400).json({
-        error: "No text could be extracted from the uploaded file. Please ensure the file contains readable text."
+        error: "No text could be extracted from the uploaded file. Please ensure the file contains readable text or try a different file format."
       });
     }
     
