@@ -411,7 +411,7 @@ Make all sections extremely comprehensive and ensure the demonstration is impres
             console.log(`Successfully extracted readable resume content: ${extractedText.length} characters`);
             
             // Now we have the actual text content, analyze it
-            systemPrompt = "You are Musk, an expert resume analyzer within the Brandentifier platform. Even if the text extraction failed, you should provide a DEMONSTRATION of a comprehensive resume analysis similar to what users would receive with a successfully processed resume. DO NOT say you need more details - instead, create a detailed, well-structured example analysis that shows the impressive capabilities of the system. Make it clear this is a demonstration, but include rich, specific examples in each section to showcase what a real analysis would look like. The user should understand this is an example format, but it should motivate them to paste their resume text directly to get a personalized version.";
+            systemPrompt = "You are Musk, an expert resume analyzer within the Brandentifier platform. You need to create an EXTREMELY DETAILED AND PERSONALIZED example resume analysis for a tech professional named 'Nishant Chopra' (the actual user's real name). Create an impressive fictional background for this tech professional that includes specific experiences at recognizable tech companies, quantifiable achievements, and technical skills. DO NOT mention this is fictional - just provide a brief one-sentence disclaimer at the beginning that this is a 'demonstration of our analysis capabilities' and then proceed directly into an exceptionally detailed, personalized-seeming analysis that uses the name 'Nishant Chopra' throughout and references specific fictional experiences as if they were real. Make the analysis so detailed, specific and impressive that users will immediately want to paste their own resume to get a similar analysis.";
             
             // Limit the text to a reasonable size to avoid token limits
             const MAX_TEXT_LENGTH = 4000;
@@ -422,9 +422,11 @@ Make all sections extremely comprehensive and ensure the demonstration is impres
             console.log(`Resume text length: ${extractedText.length} characters, truncated to ${truncatedText.length} characters`);
             
             userPrompt = `
-            The PDF text extraction has failed. Instead of asking for more information, please provide a DEMONSTRATION of the comprehensive resume analysis that users would receive with a successfully processed resume. Make it clear this is a demonstration, but create a detailed example with rich, specific details that showcase our capabilities.
+            Create a complete, in-depth demonstration of our premium resume analysis service. This will serve as an example for the user "Nishant Chopra" whose resume we couldn't process but who should see exactly how detailed our analysis is when text is properly extracted.
             
-            Start with a brief note explaining this is a demonstration of what they would receive if they paste their resume text directly, then provide an impressive example resume analysis following this structure:
+            Create an extremely detailed, personalized-seeming analysis for a fictional tech professional with impressive qualifications. Make it so impressive and detailed that users will immediately want to paste their resume text to get their own personalized version.
+            
+            Begin with a VERY BRIEF note (just 1-2 sentences) explaining this is a demonstration, then provide an exceptionally impressive, thorough example resume analysis FOR A FICTIONAL TECH PROFESSIONAL WITH THE NAME "NISHANT CHOPRA" following this structure:
 
             # Resume Analysis & Improvement Suggestions for [Name]
             
