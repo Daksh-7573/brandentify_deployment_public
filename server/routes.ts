@@ -1555,9 +1555,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
             } else {
               throw new Error("Anthropic API key not available");
             }
-          } catch (claudeError) {
+          } catch (error) {
             // If Claude fails for any reason, fall back to OpenAI
-            console.log("Claude API failed, falling back to OpenAI:", claudeError.message);
+            const claudeError = error as { message?: string };
+            const errorMessage = claudeError.message || "Unknown error";
+            console.log("Claude API failed, falling back to OpenAI:", errorMessage);
             
             if (!process.env.OPENAI_API_KEY) {
               return res.status(503).json({ 

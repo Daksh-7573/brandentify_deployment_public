@@ -32,10 +32,63 @@ export async function extractTextFromPdf(pdfBuffer: Buffer): Promise<string> {
     
     console.log(`PDF buffer size: ${pdfBuffer.length} bytes`);
     
-    // Since our PDF.js implementation wasn't working, let's go straight to a simple text-based 
-    // solution - the user can manually provide their resume content if this fails
-    console.log("Providing helpful instructions for manual resume input");
-    return getHelpfulUploadInstructions();
+    // Convert PDF to base64 for OpenAI API
+    const pdfBase64 = pdfBuffer.toString('base64');
+    
+    // Use OpenAI directly to extract text from the PDF
+    try {
+      console.log("Attempting PDF text extraction with OpenAI...");
+      
+      // First, check if the OpenAI API key is available
+      if (!process.env.OPENAI_API_KEY) {
+        console.log("OpenAI API key not available, returning instructions");
+        return getHelpfulUploadInstructions();
+      }
+      
+      // Use the Vision API to extract text from the PDF
+      const response = await openai.chat.completions.create({
+        model: MODEL,
+        messages: [
+          {
+            role: "system",
+            content: "You are a helpful assistant that extracts and cleans text from PDF resumes. Extract ALL text content from the PDF without any commentary or introduction. Simply return the text content exactly as it appears in the PDF, preserving all sections, formatting, and details. Do not add any additional text, comments, or explanations. Just extract the raw resume text."
+          },
+          {
+            role: "user", 
+            content: [
+              {
+                type: "text",
+                text: "Extract ALL text from this PDF resume. Return ONLY the extracted text without any commentary."
+              },
+              {
+                type: "image_url",
+                image_url: {
+                  url: `data:application/pdf;base64,${pdfBase64}`,
+                  detail: "high"
+                }
+              }
+            ]
+          }
+        ],
+        max_tokens: 4000
+      });
+      
+      let extractedText = response.choices[0].message.content || "";
+      
+      // Check if we got meaningful text back
+      if (extractedText && extractedText.length > 100 && looksLikeResume(extractedText)) {
+        console.log(`Successfully extracted ${extractedText.length} characters of text from PDF using OpenAI`);
+        console.log("Sample (first 300 chars):", extractedText.substring(0, 300));
+        return extractedText;
+      } else {
+        console.log("OpenAI extraction failed or returned too little content");
+        // Fall back to instructions if extraction fails
+        return getHelpfulUploadInstructions();
+      }
+    } catch (oaiError) {
+      console.error("Error in OpenAI extraction:", oaiError);
+      return getHelpfulUploadInstructions();
+    }
     
   } catch (error: any) {
     console.error("Error in PDF extraction process:", error);
