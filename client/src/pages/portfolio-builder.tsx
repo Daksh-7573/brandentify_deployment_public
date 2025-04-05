@@ -315,10 +315,7 @@ export default function PortfolioBuilder() {
       id: "minimalist-pro", 
       name: "The Minimalist Pro", 
       description: `✔ Theme: Clean, Elegant, & Modern
-✔ Best For: Tech Professionals, Consultants, Business Executives
-🎨 Color Palette: Light Gray (#F5F7FA), Deep Blue (#0044CC), Soft Gray (#EAEAEA), Dark Gray (#333333)
-🖌 UI Elements: Flat card-based layout with ample white space, subtle hover effects, rounded edges
-🎬 Animations: Smooth fade-ins, subtle micro-animations for skill bars & timeline`,
+✔ Best For: Tech Professionals, Consultants, Business Executives`,
       theme: "#0044CC"
     },
     { 
