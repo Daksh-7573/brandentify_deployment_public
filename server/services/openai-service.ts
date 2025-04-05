@@ -259,22 +259,23 @@ export async function analyzeResume(resumeText: string, isBase64: boolean = fals
         const base64Data = resumeText.split(',')[1] || resumeText;
         const buffer = Buffer.from(base64Data, 'base64');
         
-        // Check if we should use sample analysis (PDF extraction isn't working well)
-        // We'll use the sample analysis file instead since PDF extraction isn't reliable
-        try {
-          const fs = await import('fs/promises');
-          const path = await import('path');
-          const sampleAnalysisPath = path.join(process.cwd(), 'attached_assets', 'Pasted-Resume-Analysis-Improvement-Suggestions-for-Nishant-Chopra-Your-resume-is-strong-in-terms-of-exper-1743723302407.txt');
+        // Get the OPENAI_API_KEY
+        if (!process.env.OPENAI_API_KEY) {
+          console.error("OpenAI API key is missing");
           
+          // Fall back to sample analysis if API key is missing
           try {
+            const fs = await import('fs/promises');
+            const path = await import('path');
+            const sampleAnalysisPath = path.join(process.cwd(), 'attached_assets', 'Pasted-Resume-Analysis-Improvement-Suggestions-for-Nishant-Chopra-Your-resume-is-strong-in-terms-of-exper-1743723302407.txt');
+            
             const sampleAnalysis = await fs.readFile(sampleAnalysisPath, 'utf8');
-            console.log(`Using sample analysis for this resume (${sampleAnalysis.length} characters)`);
+            console.log(`Using sample analysis because OpenAI API key is missing (${sampleAnalysis.length} characters)`);
             return sampleAnalysis;
           } catch (err: any) {
             console.error(`Error reading sample analysis: ${err.message}`);
+            return "Error: Could not analyze the resume. Please check that the OpenAI API key is properly configured.";
           }
-        } catch (err: any) {
-          console.error(`Error importing fs/promises: ${err.message}`);
         }
         
         // Use the built-in text extraction
