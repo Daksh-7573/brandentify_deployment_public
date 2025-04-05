@@ -558,10 +558,7 @@ export default function AICareerPage() {
                             </Button>
                             
                             <div className="w-full pt-6 border-t border-gray-200">
-                              <p className="text-sm text-gray-500 mb-2 font-medium">Paste your resume text directly (Recommended)</p>
-                              <p className="text-xs text-gray-400 mb-3">
-                                For more accurate and detailed analysis, paste your resume content directly
-                              </p>
+                              <p className="text-sm text-gray-500 mb-3 font-medium">Paste your resume text directly</p>
                               <Textarea
                                 value={resumeText}
                                 onChange={(e) => setResumeText(e.target.value)}
