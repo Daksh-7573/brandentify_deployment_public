@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Loader2, Send, Sparkles, Lightbulb, BookOpen, BarChart, LucideIcon } from "lucide-react";
+import { Loader2, Send, Sparkles, Lightbulb, BookOpen, BarChart, LucideIcon, Bot, UserRound } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -539,13 +539,14 @@ export default function AICareerPage() {
                                         prose-headings:text-foreground prose-strong:font-semibold prose-strong:text-foreground
                                         prose-code:text-muted-foreground prose-code:font-mono prose-code:bg-muted
                                         prose-code:rounded prose-code:px-1 prose-code:py-0.5 prose-code:text-sm">
-                            <ReactMarkdown
-                              remarkPlugins={[remarkGfm]}
-                              rehypePlugins={[rehypeRaw]}
-                              className="break-words"
-                            >
-                              {message.content}
-                            </ReactMarkdown>
+                            <div className="break-words">
+                              <ReactMarkdown
+                                remarkPlugins={[remarkGfm]}
+                                rehypePlugins={[rehypeRaw]}
+                              >
+                                {message.content}
+                              </ReactMarkdown>
+                            </div>
                           </div>
                         </Card>
                       ))}
@@ -585,13 +586,14 @@ export default function AICareerPage() {
                                   {message.sender === "user" ? (
                                     <p>{message.content}</p>
                                   ) : (
-                                    <ReactMarkdown
-                                      remarkPlugins={[remarkGfm]}
-                                      rehypePlugins={[rehypeRaw]}
-                                      className="break-words prose-sm max-w-none prose-p:mb-1 prose-p:mt-1"
-                                    >
-                                      {message.content}
-                                    </ReactMarkdown>
+                                    <div className="break-words prose-sm max-w-none prose-p:mb-1 prose-p:mt-1">
+                                      <ReactMarkdown
+                                        remarkPlugins={[remarkGfm]}
+                                        rehypePlugins={[rehypeRaw]}
+                                      >
+                                        {message.content}
+                                      </ReactMarkdown>
+                                    </div>
                                   )}
                                   <div className="text-xs opacity-70 mt-1 text-right">
                                     {message.timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
@@ -600,7 +602,7 @@ export default function AICareerPage() {
                                 
                                 {message.sender === "user" && (
                                   <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 ml-2">
-                                    <User className="h-4 w-4 text-primary" />
+                                    <UserRound className="h-4 w-4 text-primary" />
                                   </div>
                                 )}
                               </div>

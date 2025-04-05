@@ -273,7 +273,7 @@ export default function ChatInterface({ initialQuestion }: ChatInterfaceProps = 
     
     if (!inputMessage.trim()) return;
     
-    const userId = 1; // This would ideally come from authenticated user
+    const userId = user?.id || 1; // Use authenticated user ID or fallback to demo user
     const userMessage: Message = {
       id: Date.now().toString(),
       message: inputMessage,
@@ -402,7 +402,7 @@ export default function ChatInterface({ initialQuestion }: ChatInterfaceProps = 
     } finally {
       setIsLoading(false);
     }
-  }, [inputMessage, selectedGoal, setMessages, setInputMessage, setIsLoading, toast]);
+  }, [inputMessage, selectedGoal, setMessages, setInputMessage, setIsLoading, toast, user]);
   
   // Handle initialQuestion if provided
   useEffect(() => {

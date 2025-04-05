@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/dialog";
 import { ProfileUpload } from "./profile-upload";
 import { useProfilePicture } from "@/hooks/use-profile-picture";
+import { useAuth } from "@/hooks/use-auth";
 
 interface ProfilePictureDialogProps {
   userId?: number | string; // Optional userId, will use hook's default if not provided
@@ -16,14 +17,17 @@ interface ProfilePictureDialogProps {
 }
 
 export function ProfilePictureDialog({
-  userId = 1, // Default to user ID 1 (demo user)
+  userId, // No default - will be set from auth context if not provided
   open,
   onOpenChange,
   currentPhotoURL,
   onSave,
 }: ProfilePictureDialogProps) {
-  // Use the profile picture mutation hook
-  const profilePictureMutation = useProfilePicture(userId);
+  // Get authenticated user
+  const { user: authUser } = useAuth();
+  // Use the profile picture mutation hook with the provided userId or the authenticated user's ID
+  const actualUserId = userId || (authUser?.id ?? 1);
+  const profilePictureMutation = useProfilePicture(actualUserId);
 
   // Handle saving the updated profile picture
   const handleSaveProfilePicture = (base64Image: string) => {
