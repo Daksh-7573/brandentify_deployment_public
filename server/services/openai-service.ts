@@ -335,22 +335,33 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
           
           // If extraction failed, fall back to AI analysis
           if (!hasResumeContent) {
-            console.log("PDF extraction failed. We can't use Vision API for PDFs directly. Attempting additional extraction methods...");
+            console.log("PDF extraction failed. We can't analyze this PDF properly.");
             
-            // Try a more aggressive fallback extraction approach 
-            // For now, we'll skip the Vision API attempt since it doesn't support PDFs directly
+            // Set a helpful message for users that clearly explains the issue and provides alternatives
+            extractedText = `
+# Resume Upload Issue
+
+I noticed you're trying to upload a PDF resume, but I'm having trouble accessing its content for analysis. This is a common issue with certain types of PDFs.
+
+## For Best Results:
+
+1. **Copy & Paste Your Resume Text Directly**
+   • Open your resume document
+   • Select all text (Ctrl+A or Cmd+A)
+   • Copy it (Ctrl+C or Cmd+C)
+   • Paste it directly in the text area below
+
+2. **Try Another Format**
+   If you have your resume in DOCX format, that often works better than PDF.
+
+## Why This Happens
+Some PDFs contain images of text rather than actual text characters, particularly if they were scanned. Others may have security settings that prevent text extraction.
+
+I'm ready to provide you with detailed, personalized analysis of your resume as soon as I can access its content!
+            `;
             
-            // Instead, let's try to get at least some content for analysis
-            if (extractedText && extractedText.length > 0) {
-              console.log("Using partial content extraction for analysis");
-              
-              // We'll use whatever content we were able to extract, even if it's not perfect
-              hasResumeContent = true;
-            } else {
-              console.log("No usable content could be extracted from the PDF");
-            }
-            // We're no longer using the Vision API for PDF fallback
-            // We'll work with whatever text we could extract from our PDF parser
+            // Mark that we do have content (our error message) to show the user
+            hasResumeContent = true;
           }
           
           // Check if the extracted text contains actual resume content by looking for common keywords
