@@ -38,15 +38,18 @@ export default function AICareerPage() {
     }
   });
 
-  // State for career advice type
+  // State for career advice options
   const [careerAdviceType, setCareerAdviceType] = useState<string>("");
+  const [customAdviceText, setCustomAdviceText] = useState<string>("");
+  const [showCustomTextInput, setShowCustomTextInput] = useState<boolean>(false);
 
   // Career advice mutation
   const careerAdviceMutation = useMutation({
     mutationFn: async () => {
       const res = await apiRequest("POST", "/api/ai/career-advice", {
         userId: DEMO_USER_ID,
-        adviceType: careerAdviceType
+        adviceType: careerAdviceType,
+        customAdviceText: showCustomTextInput ? customAdviceText : undefined
       });
       return res.json();
     },
@@ -198,7 +201,13 @@ export default function AICareerPage() {
                           <Label htmlFor="career-advice-type">What do you need help with?</Label>
                           <Select
                             value={careerAdviceType}
-                            onValueChange={setCareerAdviceType}
+                            onValueChange={(value) => {
+                              setCareerAdviceType(value);
+                              setShowCustomTextInput(value === "custom");
+                              if (value !== "custom") {
+                                setCustomAdviceText("");
+                              }
+                            }}
                           >
                             <SelectTrigger id="career-advice-type">
                               <SelectValue placeholder="Select advice type" />
@@ -213,14 +222,46 @@ export default function AICareerPage() {
                               <SelectItem value="prepare_interviews">Prepare for Job Interviews</SelectItem>
                               <SelectItem value="launch_startup">Launch My Own Startup</SelectItem>
                               <SelectItem value="international">Study and Work Internationally</SelectItem>
+                              <SelectItem value="custom">Custom Request</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
                         
+                        {showCustomTextInput && (
+                          <div className="space-y-2">
+                            <Label htmlFor="custom-advice-text">Describe your career question (max 400 words)</Label>
+                            <Textarea
+                              id="custom-advice-text"
+                              value={customAdviceText}
+                              onChange={(e) => {
+                                // Calculate word count
+                                const words = e.target.value.trim().split(/\s+/);
+                                const wordCount = e.target.value.trim() ? words.length : 0;
+                                
+                                // Limit to 400 words
+                                if (wordCount <= 400) {
+                                  setCustomAdviceText(e.target.value);
+                                }
+                              }}
+                              placeholder="Describe your specific career question or situation here..."
+                              className="min-h-[120px] resize-y"
+                            />
+                            <div className="text-xs text-right text-muted-foreground">
+                              {customAdviceText.trim() 
+                                ? `${customAdviceText.trim().split(/\s+/).length} / 400 words`
+                                : "0 / 400 words"}
+                            </div>
+                          </div>
+                        )}
+                        
                         <Button 
                           className="w-full"
                           onClick={() => careerAdviceMutation.mutate()}
-                          disabled={careerAdviceMutation.isPending || !careerAdviceType}
+                          disabled={
+                            careerAdviceMutation.isPending || 
+                            !careerAdviceType || 
+                            (careerAdviceType === "custom" && !customAdviceText.trim())
+                          }
                         >
                           {careerAdviceMutation.isPending && (
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
