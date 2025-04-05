@@ -1719,20 +1719,20 @@ export default function Profile() {
             
             {/* Profile Import Options section removed */}
             
-            {/* Work Experience */}
-            <WorkExperience />
-            <Education />
-            
-            {/* Education section removed as requested */}
-            
             {/* Skills Section */}
             <Skills />
+            
+            {/* Services Section */}
+            <Services />
             
             {/* Projects Section */}
             <Projects />
             
-            {/* Services Section */}
-            <Services />
+            {/* Work Experience Section */}
+            <WorkExperience />
+            
+            {/* Education Section */}
+            <Education />
             
             {/* Action Buttons */}
             <div className="flex justify-between mb-6">

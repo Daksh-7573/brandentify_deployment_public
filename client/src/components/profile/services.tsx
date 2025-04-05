@@ -100,7 +100,7 @@ export default function Services() {
     <Card className="mb-6">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <div>
-          <CardTitle className="text-xl font-bold">My Services</CardTitle>
+          <CardTitle className="text-xl font-bold">Services</CardTitle>
           <CardDescription>List professional services you provide (max 6)</CardDescription>
         </div>
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>

@@ -528,7 +528,7 @@ export default function Projects() {
       <Card className="mb-6">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <div>
-            <CardTitle className="text-xl font-bold">My Projects</CardTitle>
+            <CardTitle className="text-xl font-bold">Projects</CardTitle>
             <CardDescription>Showcase your professional projects and collaborations</CardDescription>
           </div>
           <Button 
