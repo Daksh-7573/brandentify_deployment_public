@@ -446,7 +446,7 @@ export default function AICareerPage() {
                               }
                             }}
                           />
-                          <p className="text-sm text-gray-500 mb-2">Upload your resume file</p>
+                          <p className="text-sm text-gray-500 mb-2">Option 1: Upload your resume file</p>
                           <p className="text-xs text-gray-400 mb-3">Supported formats: PDF, DOCX (Max 5MB)</p>
                           <Button 
                             variant="outline" 
@@ -461,6 +461,60 @@ export default function AICareerPage() {
                             )}
                             Upload Resume
                           </Button>
+                          
+                          <div className="w-full mt-6 pt-6 border-t border-gray-200">
+                            <p className="text-sm text-gray-500 mb-3 text-center">
+                              Option 2: Paste your resume text directly
+                            </p>
+                            <p className="text-xs text-gray-400 mb-3 text-center">
+                              Use this option if file upload doesn't work properly
+                            </p>
+                            <Textarea
+                              value={resumeText}
+                              onChange={(e) => setResumeText(e.target.value)}
+                              placeholder="Paste your resume content here..."
+                              className="w-full min-h-[200px] mb-3"
+                            />
+                            <div className="flex justify-center">
+                              <Button
+                                disabled={!resumeText.trim() || resumeAnalysisMutation.isPending}
+                                onClick={() => {
+                                  if (!user?.id) {
+                                    toast({
+                                      title: "User not found",
+                                      description: "Please log in to analyze your resume.",
+                                      variant: "destructive"
+                                    });
+                                    return;
+                                  }
+                                  
+                                  if (!resumeText.trim()) {
+                                    toast({
+                                      title: "Empty input",
+                                      description: "Please paste your resume content before analyzing.",
+                                      variant: "destructive"
+                                    });
+                                    return;
+                                  }
+                                  
+                                  resumeAnalysisMutation.mutate({
+                                    resumeText: resumeText.trim(),
+                                    userId: user.id
+                                  });
+                                  
+                                  toast({
+                                    title: "Processing resume",
+                                    description: "Your resume is being analyzed. This may take a moment."
+                                  });
+                                }}
+                              >
+                                {resumeAnalysisMutation.isPending && (
+                                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                )}
+                                Analyze Text
+                              </Button>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </Card>

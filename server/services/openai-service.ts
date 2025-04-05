@@ -170,12 +170,35 @@ export async function generateCareerAdvice(userProfile: {
  * @param isLink Whether the resumeText is a URL to a resume
  * @returns Analysis and suggestions based on the resume
  */
-export async function analyzeResume(resumeText: string, isBase64: boolean = false, isLink: boolean = false) {
+export interface ResumeAnalysisOptions {
+  resumeTextStart: string;
+  isBase64?: boolean;
+  isLink?: boolean;
+}
+
+export async function analyzeResume(options: ResumeAnalysisOptions | string, isBase64?: boolean, isLink?: boolean) {
   try {
+    let resumeText: string;
+    let isBase64Value: boolean = false;
+    let isLinkValue: boolean = false;
+
+    // Handle both old and new parameter formats for backward compatibility
+    if (typeof options === 'string') {
+      // Old format: (resumeText, isBase64, isLink)
+      resumeText = options;
+      isBase64Value = isBase64 || false;
+      isLinkValue = isLink || false;
+    } else {
+      // New format: ({ resumeTextStart, isBase64, isLink })
+      resumeText = options.resumeTextStart;
+      isBase64Value = options.isBase64 || false;
+      isLinkValue = options.isLink || false;
+    }
+
     console.log("analyzeResume called with parameters:", { 
       resumeTextStart: resumeText ? resumeText.substring(0, 50) + "..." : "null", 
-      isBase64, 
-      isLink 
+      isBase64: isBase64Value, 
+      isLink: isLinkValue 
     });
     
     // Check if this is a demo/example usage
@@ -200,10 +223,10 @@ export async function analyzeResume(resumeText: string, isBase64: boolean = fals
     }
     
     // If parameters are not explicitly provided, try to detect
-    if (!isLink && !isBase64) {
-      isLink = resumeText.startsWith('http://') || resumeText.startsWith('https://');
-      isBase64 = resumeText.startsWith('This is base64 encoded resume data:');
-      console.log("Auto-detected parameters:", { isLink, isBase64 });
+    if (!isLinkValue && !isBase64Value) {
+      isLinkValue = resumeText.startsWith('http://') || resumeText.startsWith('https://');
+      isBase64Value = resumeText.startsWith('This is base64 encoded resume data:');
+      console.log("Auto-detected parameters:", { isLinkValue, isBase64Value });
     }
     
     let systemPrompt = "You are Musk, an expert resume analyzer within the Brandentifier platform, with deep knowledge of professional development and hiring practices. Provide constructive feedback and actionable insights. When suggesting improvements, always mention how Brandentifier's features can help, including the Portfolio Builder for showcasing projects, Smart Connect for networking, and Services showcase for freelancers and consultants.";
