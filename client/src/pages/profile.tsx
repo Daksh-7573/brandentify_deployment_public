@@ -432,11 +432,15 @@ export default function Profile() {
   });
   
   // Define userNumericId based on the userData response
+  // Critical: Don't use a fallback value like 0 as it might fetch wrong user's data
   const userNumericId = isDemoMode ? 1 : (userData?.id || null);
   
   // Add debug logging to troubleshoot profile completion issues
   useEffect(() => {
     console.log("Current userData:", userData);
+    if (userData?.id) {
+      console.log(`Using numeric user ID: ${userData.id} for data fetching`);
+    }
   }, [userData]);
 
   // Fetch user skills for the badges

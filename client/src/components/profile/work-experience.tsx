@@ -394,7 +394,19 @@ export default function WorkExperience() {
   const { toast } = useToast();
   
   // Get user ID (use demo ID if in demo mode)
-  const userId = isDemoMode ? 1 : (user?.uid ? parseInt(user.uid) : 1);
+  // We need the Firebase UID as is - it's a string and will be converted to numeric ID on the server
+  const userId = isDemoMode ? 1 : (user?.uid || null);
+  
+  // Get user data from profile page
+  const { data: userData } = useQuery<any>({
+    queryKey: [`/api/users/${userId}`],
+    enabled: !!userId,
+  });
+  
+  // Get the numeric user ID from the fetched user data
+  const userNumericId = userData?.id || null;
+  
+  console.log("WorkExperience component - Using userNumericId:", userNumericId);
   
   // Form definition using useForm hook
   const form = useForm<z.infer<typeof workExperienceFormSchema>>({
@@ -408,7 +420,7 @@ export default function WorkExperience() {
       domain: "",
       description: "",
       isCurrentlyWorking: false,
-      userId: userId
+      userId: userNumericId
     }
   });
   
@@ -418,7 +430,11 @@ export default function WorkExperience() {
       const timestamp = new Date().getTime(); // Add timestamp to prevent caching
       console.log(`Work Experience - Directly fetching latest experiences data`, timestamp);
       try {
-        const response = await fetch(`/api/users/${userId}/experiences?_=${timestamp}`, {
+        // Use the numeric user ID for API requests
+        const endpointUserId = userNumericId || (isDemoMode ? 1 : 0);
+        console.log(`Work Experience - Fetching experiences with numeric userId: ${endpointUserId}`);
+        
+        const response = await fetch(`/api/users/${endpointUserId}/experiences?_=${timestamp}`, {
           method: 'GET',
           headers: { 
             'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -444,7 +460,7 @@ export default function WorkExperience() {
     // Poll every second
     const intervalId = setInterval(directFetch, 1000);
     return () => clearInterval(intervalId);
-  }, [userId]);
+  }, [userId, userNumericId, isDemoMode]);
   
   // Reference to hold the most recent data
   const latestDataRef = useRef<any[]>([]);
@@ -468,7 +484,7 @@ export default function WorkExperience() {
     startDate: undefined as Date | undefined,
     endDate: undefined as Date | undefined,
     description: '',
-    userId,
+    userId: userNumericId || 0,
     isCurrentlyWorking: false
   });
   
@@ -497,7 +513,7 @@ export default function WorkExperience() {
       startDate: undefined,
       endDate: undefined,
       description: '',
-      userId,
+      userId: userNumericId || 0,
       isCurrentlyWorking: false
     });
     setFormErrors({
@@ -510,10 +526,11 @@ export default function WorkExperience() {
     });
   };
   
-  // Fetch user experiences
+  // Fetch user experiences - use numeric ID when available
+  const endpointUserId = userNumericId || (isDemoMode ? 1 : 0);
   const { data: experiences = [], isLoading } = useQuery<any[]>({
-    queryKey: [`/api/users/${userId}/experiences`],
-    enabled: !!userId,
+    queryKey: [`/api/users/${endpointUserId}/experiences`],
+    enabled: !!endpointUserId,
     staleTime: 1000, // Consider data stale after 1 second to force refresh
     refetchOnMount: true,
     refetchOnWindowFocus: true,
@@ -527,7 +544,7 @@ export default function WorkExperience() {
       return await res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/experiences`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${endpointUserId}/experiences`] });
       toast({
         title: "Work experience added",
         description: "Your work experience has been added successfully",
@@ -552,7 +569,7 @@ export default function WorkExperience() {
       return await res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/experiences`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${endpointUserId}/experiences`] });
       toast({
         title: "Work experience updated",
         description: "Your work experience has been updated successfully",
@@ -584,7 +601,7 @@ export default function WorkExperience() {
       return await res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/experiences`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${endpointUserId}/experiences`] });
       toast({
         title: "Work experience deleted",
         description: "Your work experience has been deleted successfully",
