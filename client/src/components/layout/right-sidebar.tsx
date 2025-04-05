@@ -9,20 +9,20 @@ import { calculateOverallProfileCompletion } from "@/lib/profile-utils";
 export default function RightSidebar() {
   const { user, isDemoMode } = useAuth();
   
-  // Get the user ID for queries
-  const userId = isDemoMode ? 1 : user?.uid;
+  // Get the Firebase UID for initial query
+  const firebaseUid = isDemoMode ? 1 : user?.uid;
   
   // Use TanStack Query to fetch and cache user data
   const { data: userData } = useQuery({
-    queryKey: [`/api/users/${userId}`],
+    queryKey: [`/api/users/${firebaseUid}`],
     queryFn: async () => {
-      if (!userId) return null;
+      if (!firebaseUid) return null;
       
-      console.log(`RightSidebar: Fetching user data with ID: ${userId}`);
-      const response = await apiRequest('GET', `/api/users/${userId}`);
+      console.log(`RightSidebar: Fetching user data with ID: ${firebaseUid}`);
+      const response = await apiRequest('GET', `/api/users/${firebaseUid}`);
       
       if (response.status === 404) {
-        console.error(`User with ID ${userId} not found in backend`);
+        console.error(`User with ID ${firebaseUid} not found in backend`);
         return null;
       }
       
@@ -30,9 +30,12 @@ export default function RightSidebar() {
       console.log("RightSidebar: Fetched user data:", data);
       return data;
     },
-    enabled: !!userId, // Only run query if userId exists
+    enabled: !!firebaseUid, // Only run query if firebaseUid exists
     staleTime: 10000 // Consider data fresh for 10 seconds
   });
+  
+  // Extract the numeric user ID from the fetched user data
+  const userNumericId = userData?.id || (isDemoMode ? 1 : null);
 
   // Determine which photo URL to use (prioritize userData if available)
   const photoURL = userData?.photoURL || user?.photoURL;
@@ -41,46 +44,59 @@ export default function RightSidebar() {
 
   // Fetch user's skills to check if any exist
   const { data: skills = [] } = useQuery<Skill[]>({
-    queryKey: [`/api/users/${userId}/skills`],
+    queryKey: [`/api/users/${userNumericId}/skills`],
     queryFn: async () => {
-      if (!userId) return [];
-      const response = await apiRequest('GET', `/api/users/${userId}/skills`);
+      if (!userNumericId) return [];
+      const response = await apiRequest('GET', `/api/users/${userNumericId}/skills`);
       return await response.json();
     },
-    enabled: !!userId
+    enabled: !!userNumericId
   });
 
   // Fetch user experiences
   const { data: experiences = [] } = useQuery({
-    queryKey: [`/api/users/${userId}/experiences`],
+    queryKey: [`/api/users/${userNumericId}/experiences`],
     queryFn: async () => {
-      if (!userId) return [];
-      const response = await apiRequest('GET', `/api/users/${userId}/experiences`);
+      if (!userNumericId) return [];
+      // Use the numeric user ID for the experiences API
+      const response = await apiRequest('GET', `/api/users/${userNumericId}/experiences`);
+      console.log(`RightSidebar: Fetching experiences with numeric userId: ${userNumericId}`);
       return await response.json();
     },
-    enabled: !!userId
+    enabled: !!userNumericId
   });
   
   // Fetch user education
   const { data: educations = [] } = useQuery({
-    queryKey: [`/api/users/${userId}/educations`],
+    queryKey: [`/api/users/${userNumericId}/educations`],
     queryFn: async () => {
-      if (!userId) return [];
-      const response = await apiRequest('GET', `/api/users/${userId}/educations`);
+      if (!userNumericId) return [];
+      const response = await apiRequest('GET', `/api/users/${userNumericId}/educations`);
       return await response.json();
     },
-    enabled: !!userId
+    enabled: !!userNumericId
   });
   
   // Fetch user projects
   const { data: projects = [] } = useQuery({
-    queryKey: [`/api/users/${userId}/projects`],
+    queryKey: [`/api/users/${userNumericId}/projects`],
     queryFn: async () => {
-      if (!userId) return [];
-      const response = await apiRequest('GET', `/api/users/${userId}/projects`);
+      if (!userNumericId) return [];
+      const response = await apiRequest('GET', `/api/users/${userNumericId}/projects`);
       return await response.json();
     },
-    enabled: !!userId
+    enabled: !!userNumericId
+  });
+  
+  // Fetch user services
+  const { data: services = [] } = useQuery({
+    queryKey: [`/api/users/${userNumericId}/services`],
+    queryFn: async () => {
+      if (!userNumericId) return [];
+      const response = await apiRequest('GET', `/api/users/${userNumericId}/services`);
+      return await response.json();
+    },
+    enabled: !!userNumericId
   });
   
   // Calculate profile completion percentage
@@ -89,7 +105,8 @@ export default function RightSidebar() {
     experiences,
     educations,
     skills,
-    projects
+    projects,
+    services
   );
 
   const hasSkills = skills && skills.length > 0;
