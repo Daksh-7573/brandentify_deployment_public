@@ -213,8 +213,8 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
       isDirectTextInput: isDirectTextInput
     });
     
-    // Check if this is a demo/example usage
-    const isDemoMode = resumeText === "DEMO_MODE" || resumeText.includes("example") || resumeText.includes("demo");
+    // Only trigger demo mode when explicitly requested with the exact keyword
+    const isDemoMode = resumeText === "DEMO_MODE" || resumeText === "example" || resumeText === "demo";
     
     if (isDemoMode) {
       console.log("Using demo mode with sample resume analysis");
@@ -402,20 +402,27 @@ Make all sections extremely comprehensive and ensure the demonstration is impres
           const resumeKeywords = ['resume', 'experience', 'education', 'skills', 'work', 'job', 'university', 'degree', 'professional', 'profile', 'objective', 'certification'];
           // Always set this to true for PDF uploads to ensure we provide the demo analysis
           // This is a temporary fix until we implement better PDF extraction
-          const containsResumeKeywords = true; // Forcing demo mode for PDF uploads
+          // Check if extraction worked and if it contains resume-like content
+          const hasResumeKeywords = 
+              extractedText.includes("experience") || 
+              extractedText.includes("education") || 
+              extractedText.includes("skills") || 
+              extractedText.includes("professional") ||
+              extractedText.includes("resume") ||
+              extractedText.includes("summary") ||
+              extractedText.includes("employment");
           
           // Extract at least a small sample of the text to log for debugging
           const textSample = extractedText.substring(0, 200).replace(/\n/g, ' ');
           console.log(`Text sample: "${textSample}..."`);
-          console.log(`Contains resume keywords: ${containsResumeKeywords}`);
+          console.log(`Contains resume keywords: ${hasResumeKeywords}`);
           
-          // Always true for PDF uploads - we want to ensure users always get a valuable demo response
-          // even when PDF extraction fails
-          if (true) {
+          // Check if we have valid resume content
+          if (extractedText && extractedText.length > 100 && hasResumeKeywords) {
             console.log(`Successfully extracted readable resume content: ${extractedText.length} characters`);
             
             // Now we have the actual text content, analyze it
-            systemPrompt = "You are Musk, an expert resume analyzer within the Brandentifier platform. You need to create an EXTREMELY DETAILED AND PERSONALIZED example resume analysis for a tech professional named 'Nishant Chopra' (the actual user's real name). Create an impressive fictional background for this tech professional that includes specific experiences at recognizable tech companies, quantifiable achievements, and technical skills. DO NOT mention this is fictional - just provide a brief one-sentence disclaimer at the beginning that this is a 'demonstration of our analysis capabilities' and then proceed directly into an exceptionally detailed, personalized-seeming analysis that uses the name 'Nishant Chopra' throughout and references specific fictional experiences as if they were real. Make the analysis so detailed, specific and impressive that users will immediately want to paste their own resume to get a similar analysis.";
+            systemPrompt = "You are Musk, an expert resume analyzer within the Brandentifier platform, with deep knowledge of professional development and hiring practices across many industries. Your analysis must be EXTREMELY PERSONALIZED based on the resume text provided, directly referencing the specific experiences, skills, education, and background from the resume. Avoid generic advice at all costs - everything must be tailored to this specific individual's situation as detailed in their resume. Provide detailed, constructive feedback with highly actionable insights. When suggesting improvements, always mention how Brandentifier's features can help, including the Portfolio Builder for showcasing projects, Smart Connect for networking, and Services showcase for freelancers and consultants. Your analysis should be as detailed and helpful as what someone would receive directly from ChatGPT, with the same level of personalization and specificity.";
             
             // Limit the text to a reasonable size to avoid token limits
             const MAX_TEXT_LENGTH = 4000;
@@ -426,11 +433,13 @@ Make all sections extremely comprehensive and ensure the demonstration is impres
             console.log(`Resume text length: ${extractedText.length} characters, truncated to ${truncatedText.length} characters`);
             
             userPrompt = `
-            Create a complete, in-depth demonstration of our premium resume analysis service. This will serve as an example for the user "Nishant Chopra" whose resume we couldn't process but who should see exactly how detailed our analysis is when text is properly extracted.
+            I need an EXTREMELY detailed and personalized professional analysis of the resume text below. This must be a comprehensive, specific analysis that directly references the actual content in the resume, not generic advice. Make your response feel like it was written specifically for this individual after carefully studying their resume:
             
-            Create an extremely detailed, personalized-seeming analysis for a fictional tech professional with impressive qualifications. Make it so impressive and detailed that users will immediately want to paste their resume text to get their own personalized version.
+            ${truncatedText}
             
-            Begin with a VERY BRIEF note (just 1-2 sentences) explaining this is a demonstration, then provide an exceptionally impressive, thorough example resume analysis FOR A FICTIONAL TECH PROFESSIONAL WITH THE NAME "NISHANT CHOPRA" following this structure:
+            First, analyze the resume to identify the person's name, experience details, education background, skills, and other key information. Then, provide a comprehensive, personalized analysis that mentions the person by their EXACT name and references their SPECIFIC experiences, skills, and background throughout your entire response.
+            
+            Provide a HIGHLY personalized and comprehensive resume analysis with specific improvement suggestions using this structure:
 
             # Resume Analysis & Improvement Suggestions for [Name]
             
