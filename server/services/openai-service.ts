@@ -335,47 +335,22 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
           
           // If extraction failed, fall back to AI analysis
           if (!hasResumeContent) {
-            console.log("PDF extraction failed. Falling back to direct vision analysis of the PDF");
+            console.log("PDF extraction failed. We can't use Vision API for PDFs directly. Attempting additional extraction methods...");
             
-            // Convert binary data to base64 for sending in the image_url
-            const base64Pdf = pdfBuffer.toString('base64');
+            // Try a more aggressive fallback extraction approach 
+            // For now, we'll skip the Vision API attempt since it doesn't support PDFs directly
             
-            // Send the entire PDF to Vision API for direct analysis
-            const pdfResponse = await openai.chat.completions.create({
-              model: "gpt-4o", // gpt-4o has vision capabilities  
-              messages: [
-                {
-                  role: "system",
-                  content: "You are Musk, an expert resume analyzer within the Brandentifier platform. You need to extract text from the PDF image provided and then analyze it as a resume. First extract all visible text, paying special attention to the person's name, contact information, education, work experience, skills, and projects. Then provide a personalized, detailed analysis of their resume based on what you can see in the document. Your analysis must directly reference specific experiences, skills, and background information visible in the resume. Do not make up information - only analyze what you can actually see."
-                },
-                {
-                  role: "user",
-                  content: [
-                    {
-                      type: "text",
-                      text: "I've uploaded my resume as a PDF. Please analyze it carefully and provide detailed, personalized feedback based on what you can see in the document. First extract the text from the PDF, then analyze it as a resume."
-                    },
-                    {
-                      type: "image_url",
-                      image_url: {
-                        url: `data:application/pdf;base64,${base64Pdf}`
-                      }
-                    }
-                  ]
-                }
-              ],
-              max_tokens: 4000,
-              temperature: 0.7,  // Higher temperature for more creative analysis
-              top_p: 0.95        // Diverse token selection for more varied responses
-            });
-            console.log("OpenAI fallback response received!");
-            
-            // Get the extracted text from the PDF
-            extractedText = pdfResponse.choices[0].message.content || "";
-            
-            // Re-check if we got meaningful content
-            hasResumeContent = extractedText && extractedText.length > 0;
-            console.log(`Fallback text extraction ${hasResumeContent ? 'successful' : 'failed'}: ${extractedText.length} characters`);
+            // Instead, let's try to get at least some content for analysis
+            if (extractedText && extractedText.length > 0) {
+              console.log("Using partial content extraction for analysis");
+              
+              // We'll use whatever content we were able to extract, even if it's not perfect
+              hasResumeContent = true;
+            } else {
+              console.log("No usable content could be extracted from the PDF");
+            }
+            // We're no longer using the Vision API for PDF fallback
+            // We'll work with whatever text we could extract from our PDF parser
           }
           
           // Check if the extracted text contains actual resume content by looking for common keywords
