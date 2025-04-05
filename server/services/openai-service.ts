@@ -282,8 +282,21 @@ export async function analyzeResume(resumeText: string, isBase64: boolean = fals
         const { extractTextFromBinaryData } = await import('../services/simple-pdf-parser-new');
         const extractedText = await extractTextFromBinaryData(buffer);
         
-        if (extractedText && extractedText.length > 0) {
-          console.log(`Successfully extracted ${extractedText.length} characters from the resume file`);
+        const hasResumeContent = extractedText && extractedText.length > 0;
+        console.log(`Text extraction ${hasResumeContent ? 'successful' : 'failed'}: ${extractedText.length} characters`);
+        
+        // Check if the extracted text contains actual resume content by looking for common keywords
+        const resumeKeywords = ['resume', 'experience', 'education', 'skills', 'work', 'job', 'university', 'degree'];
+        const containsResumeKeywords = resumeKeywords.some(keyword => 
+          extractedText.toLowerCase().includes(keyword.toLowerCase())
+        );
+        
+        // Extract at least a small sample of the text to log for debugging
+        const textSample = extractedText.substring(0, 200).replace(/\n/g, ' ');
+        console.log(`Text sample: "${textSample}..."`);
+        
+        if (hasResumeContent && (containsResumeKeywords || extractedText.length > 500)) {
+          console.log(`Successfully extracted readable resume content: ${extractedText.length} characters`);
           
           // Now we have the actual text content, analyze it
           systemPrompt = "You are Musk, an expert resume analyzer within the Brandentifier platform, with deep knowledge of professional development and hiring practices. Provide constructive feedback and actionable insights based on the actual content of this resume. When suggesting improvements, always mention how Brandentifier's features can help, including the Portfolio Builder for showcasing projects, Smart Connect for networking, and Services showcase for freelancers and consultants.";
@@ -301,9 +314,9 @@ export async function analyzeResume(resumeText: string, isBase64: boolean = fals
           
           ${truncatedText}
           
-          First, identify the industry/field this person works in and their level of experience.
+          First, check if this is valid resume content. If it appears to be binary data, PDF markers, or non-resume content, please ask the user to upload a different file format or try a plain text resume.
           
-          Please provide an extremely personalized and comprehensive resume analysis with specific improvement suggestions using this structure:
+          If it is valid resume content, identify the industry/field this person works in and their level of experience, then provide an extremely personalized and comprehensive resume analysis with specific improvement suggestions using this structure:
 
           # Resume Analysis & Improvement Suggestions for [Name]
           

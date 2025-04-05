@@ -40,13 +40,52 @@ export async function extractTextFromBinaryData(fileBuffer: Buffer): Promise<str
  */
 async function extractTextFromPdf(fileBuffer: Buffer): Promise<string> {
   try {
-    // Skip attempting to use pdf.js directly as it causes import issues
-    console.log("Using basic pattern-based PDF text extraction as primary method");
-    return basicPdfTextExtraction(fileBuffer);
+    console.log("Attempting to use pdf.js to extract text");
+    
+    // Try to use pdfjs-dist
+    try {
+      const pdfjsLib = await import('pdfjs-dist');
+      
+      // Configure the worker source
+      if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
+        const pdfjsVersion = pdfjsLib.version;
+        console.log(`PDF.js version: ${pdfjsVersion}`);
+        
+        // For browser environments, this would be a CDN URL, but for Node.js, we need to use the node modules
+        pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsVersion}/pdf.worker.min.js`;
+      }
+      
+      console.log("Loading PDF document with pdf.js");
+      const pdf = await pdfjsLib.getDocument({ data: fileBuffer }).promise;
+      console.log(`PDF loaded successfully. Pages: ${pdf.numPages}`);
+      
+      let extractedText = '';
+      
+      // Process each page
+      for (let i = 1; i <= pdf.numPages; i++) {
+        console.log(`Extracting text from page ${i} of ${pdf.numPages}`);
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+        const strings = content.items.map((item: any) => item.str);
+        extractedText += strings.join(' ') + '\n';
+      }
+      
+      console.log(`Extracted ${extractedText.length} characters of text from PDF using pdf.js`);
+      return extractedText;
+    } catch (pdfJsError) {
+      console.error("Error using pdf.js:", pdfJsError);
+      console.log("Falling back to basic pattern-based extraction");
+      return basicPdfTextExtraction(fileBuffer);
+    }
   } catch (error: unknown) {
     console.error("Error in PDF text extraction:", error);
-    // Return empty string if extraction fails
-    return "";
+    // Fall back to basic pattern-based extraction as last resort
+    try {
+      return basicPdfTextExtraction(fileBuffer);
+    } catch (fallbackError) {
+      console.error("Error in fallback extraction:", fallbackError);
+      return "";
+    }
   }
 }
 
@@ -62,29 +101,131 @@ function basicPdfTextExtraction(fileBuffer: Buffer): string {
     // Convert buffer to string
     const pdfText = fileBuffer.toString('utf-8');
     
-    // Look for text markers in PDF
+    // Try multiple patterns to extract text
+    let extractedText = '';
+    
+    // Pattern 1: Look for text markers in PDF between parentheses
     const textContentPattern = /\(([^()]*(?:\([^()]*\)[^()]*)*)\)/g;
     const matches = pdfText.match(textContentPattern) || [];
     
     // Extract text from parentheses (simplified PDF text extraction)
-    let extractedText = matches
+    extractedText = matches
       .map(match => match.slice(1, -1)) // Remove surrounding parentheses
       .join(' ')
       .replace(/\\(\d{3})/g, (match, octal) => String.fromCharCode(parseInt(octal, 8)))
       .replace(/\\[nr]/g, '\n') // Replace PDF newlines and returns
       .replace(/\s+/g, ' '); // Normalize whitespace
     
-    // Fall back to first 5000 chars of raw content if pattern extraction failed
+    // Pattern 2: Try another approach if the first one doesn't yield much
     if (extractedText.length < 100) {
-      console.log("Pattern extraction produced insufficient text, using raw content");
-      extractedText = pdfText.substring(0, 5000);
+      console.log("Trying alternative pattern extraction method");
+      
+      // Look for text markers with BT ... ET tags in PDF
+      const textBlockPattern = /BT\s*([^]*?)\s*ET/g;
+      const textBlocks = pdfText.match(textBlockPattern) || [];
+      
+      if (textBlocks.length > 0) {
+        // Extract text content from text blocks
+        const blockText = textBlocks
+          .map(block => {
+            // Extract strings from the text block
+            const strings = block.match(/\(([^)]*)\)/g) || [];
+            return strings
+              .map(s => s.slice(1, -1)
+                .replace(/\\(\d{3})/g, (match, octal) => String.fromCharCode(parseInt(octal, 8)))
+                .replace(/\\[nr]/g, '\n'))
+              .join(' ');
+          })
+          .join('\n')
+          .replace(/\s+/g, ' '); // Normalize whitespace
+        
+        console.log(`Block pattern extraction produced ${blockText.length} characters`);
+        
+        if (blockText.length > extractedText.length) {
+          extractedText = blockText;
+        }
+      }
     }
     
-    console.log(`Basic extraction produced ${extractedText.length} characters`);
+    // Pattern 3: Look for Unicode text markers
+    if (extractedText.length < 100) {
+      console.log("Trying Unicode pattern extraction");
+      
+      // Look for Unicode text markers in PDF
+      const unicodePattern = /\<([0-9a-fA-F]+)\>/g; 
+      const unicodeMatches = pdfText.match(unicodePattern) || [];
+      
+      if (unicodeMatches.length > 0) {
+        const unicodeText = unicodeMatches
+          .map(match => {
+            // Convert hex to text
+            const hex = match.slice(1, -1);
+            let text = '';
+            for (let i = 0; i < hex.length; i += 2) {
+              const hexChar = hex.substring(i, i + 2);
+              text += String.fromCharCode(parseInt(hexChar, 16));
+            }
+            return text;
+          })
+          .join(' ')
+          .replace(/\s+/g, ' '); // Normalize whitespace
+          
+        console.log(`Unicode pattern extraction produced ${unicodeText.length} characters`);
+        
+        if (unicodeText.length > extractedText.length) {
+          extractedText = unicodeText;
+        }
+      }
+    }
+    
+    // Pattern 4: Look for keyword indicators
+    if (extractedText.length < 100) {
+      console.log("Searching for common resume keywords in raw text");
+      
+      // Check if the raw PDF text contains common resume keywords
+      const resumeKeywords = [
+        'resume', 'cv', 'curriculum', 'experience', 'education', 'skills', 
+        'employment', 'work', 'job', 'position', 'project', 'university',
+        'college', 'degree', 'certificate', 'reference', 'email', 'phone',
+        'address', 'summary', 'profile', 'objective', 'professional'
+      ];
+      
+      let keywordMatches = '';
+      
+      // For each keyword, find surrounding text
+      resumeKeywords.forEach(keyword => {
+        const regex = new RegExp(`[^\\(\\)\\<\\>]{0,30}${keyword}[^\\(\\)\\<\\>]{0,50}`, 'gi');
+        const keywordContexts = pdfText.match(regex) || [];
+        keywordMatches += keywordContexts.join(' ') + ' ';
+      });
+      
+      if (keywordMatches.length > 100) {
+        console.log(`Keyword extraction produced ${keywordMatches.length} characters`);
+        extractedText = keywordMatches;
+      }
+    }
+    
+    // Last resort: Fall back to extracting readable characters from raw content
+    if (extractedText.length < 100) {
+      console.log("All pattern extractions failed, extracting readable ASCII text from raw content");
+      
+      // Extract only readable ASCII characters (letters, numbers, punctuation)
+      const readableText = pdfText
+        .replace(/[^\x20-\x7E]/g, ' ') // Keep only ASCII printable characters
+        .replace(/\s+/g, ' ') // Normalize whitespace
+        .trim();
+      
+      // Take a reasonable chunk of readable text
+      const MAX_RAW_LENGTH = 10000;
+      extractedText = readableText.substring(0, MAX_RAW_LENGTH);
+      console.log(`Raw ASCII extraction produced ${extractedText.length} characters`);
+    }
+    
+    console.log(`Basic extraction produced ${extractedText.length} characters total`);
     return extractedText;
   } catch (error: unknown) {
     console.error("Error in basic PDF text extraction:", error);
-    // Return empty string if both methods fail
+    // Return empty string if all methods fail
     return "";
   }
 }
