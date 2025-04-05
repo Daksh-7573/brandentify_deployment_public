@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -189,6 +189,19 @@ export default function AICareerPage() {
     };
     return types[type] || 'AI Message';
   };
+  
+  // Function to scroll chat container to bottom when new messages arrive
+  const scrollToBottom = () => {
+    const chatContainer = document.getElementById('chat-container');
+    if (chatContainer) {
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+  };
+  
+  // Use effect to scroll to bottom when chat history changes
+  useEffect(() => {
+    scrollToBottom();
+  }, [chatHistory]);
 
   // Redirect to landing if not authenticated
   if (!isLoading && !isAuthenticated) {
@@ -497,8 +510,8 @@ export default function AICareerPage() {
                       <h3 className="text-lg font-medium mb-4">Ask Follow-up Questions</h3>
                       
                       <div className="space-y-4">
-                        {/* Chat messages */}
-                        <div className="space-y-3 max-h-[400px] overflow-y-auto p-2">
+                        {/* Chat messages - fixed height container */}
+                        <div className="space-y-3 h-[300px] overflow-y-auto p-2 border border-gray-100 rounded-lg" id="chat-container">
                           {chatHistory.map((message, index) => (
                             <div 
                               key={index} 
