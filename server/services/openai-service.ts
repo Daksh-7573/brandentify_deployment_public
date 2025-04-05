@@ -331,8 +331,11 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
           await fs.writeFile(tmpFilePath, buffer);
           console.log(`Saved PDF to temporary file: ${tmpFilePath}`);
           
+          // Read the file into a buffer for PDF extraction
+          const fileBuffer = await fs.readFile(tmpFilePath);
+          
           // Extract text from the PDF
-          const extractedText = await extractTextFromPdf(tmpFilePath);
+          const extractedText = await extractTextFromPdf(fileBuffer);
           
           // Clean up the temporary file
           await fs.unlink(tmpFilePath);
