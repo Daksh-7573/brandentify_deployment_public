@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Loader2, Send } from "lucide-react";
+import { Loader2, Send, Sparkles } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -520,38 +520,77 @@ export default function AICareerPage() {
                       
                       <div className="space-y-4">
                         {/* Chat messages - fixed height container */}
-                        <div className="space-y-3 h-[300px] overflow-y-auto p-2 border border-gray-100 rounded-lg" id="chat-container">
+                        <div className="space-y-3 h-[300px] overflow-y-auto p-3 border border-gray-100 rounded-lg bg-gray-50/50" id="chat-container">
                           {chatHistory.map((message, index) => (
                             <div 
                               key={index} 
-                              className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
+                              className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"} mb-2`}
                             >
+                              {message.sender !== "user" && (
+                                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 mr-2">
+                                  <Sparkles className="h-4 w-4 text-primary"/>
+                                </div>
+                              )}
                               <div 
-                                className={`max-w-[80%] p-3 rounded-lg ${
+                                className={`max-w-[85%] p-3 rounded-lg shadow-sm ${
                                   message.sender === "user" 
                                     ? "bg-primary text-primary-foreground" 
-                                    : "bg-muted"
+                                    : "bg-white border border-gray-100"
                                 }`}
                               >
                                 {message.sender === "user" ? (
                                   <p className="text-sm break-words">{message.content}</p>
                                 ) : (
                                   <div className="prose prose-sm dark:prose-invert max-w-none">
-                                    {message.content.split('\n').map((line, i) => (
-                                      <p 
-                                        key={i} 
-                                        className={line.trim() === '' ? 'my-2' : 
-                                                  line.startsWith('##') ? 'font-bold text-base mt-3 mb-2' :
-                                                  line.startsWith('#') ? 'font-bold text-lg mt-4 mb-2' :
-                                                  line.startsWith('*') && line.endsWith('*') ? 'italic' :
-                                                  line.startsWith('- ') ? 'ml-2' : ''}
-                                      >
-                                        {/* Remove markdown characters for display */}
-                                        {line.startsWith('#') ? line.replace(/^#+\s/, '') :
-                                         line.startsWith('*') && line.endsWith('*') ? line.replace(/^\*|\*$/g, '') :
-                                         line}
-                                      </p>
-                                    ))}
+                                    {message.content.split('\n').map((line, i) => {
+                                      // For main headings (# Title)
+                                      if (line.startsWith('# ')) {
+                                        return (
+                                          <h2 
+                                            key={i}
+                                            className="text-lg font-bold text-primary mt-4 mb-3 pb-1 border-b"
+                                          >
+                                            {line.replace(/^# /, '')}
+                                          </h2>
+                                        );
+                                      }
+                                      // For secondary headings (## Subtitle)
+                                      else if (line.startsWith('## ')) {
+                                        return (
+                                          <h3 
+                                            key={i}
+                                            className="text-base font-semibold mt-3 mb-2 text-foreground/90"
+                                          >
+                                            {line.replace(/^## /, '')}
+                                          </h3>
+                                        );
+                                      }
+                                      // For bullet points (- Item)
+                                      else if (line.startsWith('- ')) {
+                                        return (
+                                          <div key={i} className="flex items-start space-x-2 my-1">
+                                            <div className="text-primary mt-1">•</div>
+                                            <p className="m-0">{line.replace(/^- /, '')}</p>
+                                          </div>
+                                        );
+                                      }
+                                      // For italic text (*text*)
+                                      else if (line.startsWith('*') && line.endsWith('*')) {
+                                        return (
+                                          <p key={i} className="my-1 italic text-muted-foreground">
+                                            {line.replace(/^\*|\*$/g, '')}
+                                          </p>
+                                        );
+                                      }
+                                      // For empty lines - add spacing
+                                      else if (line.trim() === '') {
+                                        return <div key={i} className="my-2"></div>;
+                                      }
+                                      // For normal text
+                                      else {
+                                        return <p key={i} className="my-1">{line}</p>;
+                                      }
+                                    })}
                                   </div>
                                 )}
                                 <div className="text-xs mt-1 opacity-70">
