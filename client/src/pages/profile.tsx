@@ -440,6 +440,42 @@ export default function Profile() {
     refetchOnWindowFocus: true,
   });
   
+  // Fetch user experiences for profile completion calculation
+  const { data: experiences = [], isLoading: isLoadingExperiences } = useQuery<any[]>({
+    queryKey: [`/api/users/${userId}/experiences`],
+    enabled: !!userId && isAuthenticated,
+    staleTime: 1000,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+  });
+  
+  // Fetch user educations for profile completion calculation
+  const { data: educations = [], isLoading: isLoadingEducations } = useQuery<any[]>({
+    queryKey: [`/api/users/${userId}/educations`],
+    enabled: !!userId && isAuthenticated,
+    staleTime: 1000,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+  });
+  
+  // Fetch user projects for profile completion calculation
+  const { data: projects = [], isLoading: isLoadingProjects } = useQuery<any[]>({
+    queryKey: [`/api/users/${userId}/projects`],
+    enabled: !!userId && isAuthenticated,
+    staleTime: 1000,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+  });
+  
+  // Fetch user services for profile completion calculation
+  const { data: services = [], isLoading: isLoadingServices } = useQuery<any[]>({
+    queryKey: ['/api/users', userId, 'services'],
+    enabled: !!userId && isAuthenticated,
+    staleTime: 1000,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+  });
+  
   // Mutation for updating user basic info
   const updateUserMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -1529,11 +1565,25 @@ export default function Profile() {
                           <div 
                             id="profile-completion-bar" 
                             className="bg-primary h-2.5 rounded-full" 
-                            style={{ width: `${calculateOverallProfileCompletion(userData, skills)}%` }}
+                            style={{ 
+                              width: `${calculateOverallProfileCompletion(
+                                userData, 
+                                experiences, 
+                                educations, 
+                                skills, 
+                                projects
+                              )}%` 
+                            }}
                           ></div>
                         </div>
                         <span className="text-sm font-medium text-gray-900">
-                          {calculateOverallProfileCompletion(userData, skills)}%
+                          {calculateOverallProfileCompletion(
+                            userData, 
+                            experiences, 
+                            educations, 
+                            skills, 
+                            projects
+                          )}%
                         </span>
                       </>
                     )}
