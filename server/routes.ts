@@ -1487,15 +1487,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Either resume file data or resume text is required" });
       }
       
-      // Check if this is a demo/test request
-      const isTestRequest = (resumeText && 
-        (resumeText.toLowerCase().includes('test') || 
-         resumeText.length < 100 || 
-         resumeText.toLowerCase().includes('demo') || 
-         resumeText.toLowerCase().includes('example')));
+      // Check if this is a demo mode request (only if explicitly set to DEMO_MODE)
+      const isDemoMode = resumeText === "DEMO_MODE";
       
-      if (isTestRequest) {
-        console.log("Detected test/demo resume request - using sample analysis");
+      if (isDemoMode) {
+        console.log("Explicit DEMO_MODE requested - using sample analysis");
         try {
           const fs = await import('fs/promises');
           const path = await import('path');
@@ -1524,6 +1520,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Continue with normal analysis if sample fails
         }
       }
+      
+      // For non-demo mode, always process through OpenAI API
+      console.log("Processing user input through OpenAI for resume analysis");
       
       // Import OpenAI service
       const { analyzeResume } = await import('./services/openai-service');
@@ -1649,14 +1648,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           photoURL: null,
           title: "Professional",
           location: "Remote",
-          bio: null,
           industry: targetIndustry,
-          website: null,
-          twitter: null,
-          linkedin: null,
-          github: null,
-          verificationToken: null,
-          verified: false,
+          lookingFor: null,
+          profileCompleted: null,
+          emailVerified: false,
+          emailVerificationToken: null,
+          emailVerificationExpires: null,
           createdAt: new Date()
         };
       }
