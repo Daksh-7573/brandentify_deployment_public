@@ -26,6 +26,13 @@ interface ResumeScoreSummaryProps {
 }
 
 function ResumeScoreSummary({ content }: ResumeScoreSummaryProps) {
+  // Check if the content contains an error message about parsing failure
+  const isParsingError = content.includes("unable to analyze") || 
+                          content.includes("improperly formatted") ||
+                          content.includes("incomplete") ||
+                          content.includes("cannot extract") ||
+                          content.includes("could not process");
+  
   // Parse the content to extract score information
   const extractScores = () => {
     const scores: { [key: string]: number } = {
@@ -37,8 +44,19 @@ function ResumeScoreSummary({ content }: ResumeScoreSummaryProps) {
       "ATS Compatibility": 0
     };
     
-    // Pattern to match scores in format like "Category: 85%" or "Category Score: 85%"
+    // Patterns to match scores in various formats
+    // More precise patterns using the exact format required from the AI
     const scorePatterns = [
+      /Structure & Layout: (\d+)%/i,
+      /Content Quality: (\d+)%/i,
+      /Relevance to Role\/Industry: (\d+)%/i,
+      /Achievements & Metrics: (\d+)%/i,
+      /Soft Skills & Personality: (\d+)%/i,
+      /ATS Compatibility: (\d+)%/i
+    ];
+    
+    // Alternate patterns for fallback
+    const fallbackPatterns = [
       /Structure (?:&|and) Layout:?\s*(\d+)%/i,
       /Content Quality:?\s*(\d+)%/i,
       /Relevance to Role(?:\/|\/\s*|\s+)Industry:?\s*(\d+)%/i,
@@ -49,13 +67,31 @@ function ResumeScoreSummary({ content }: ResumeScoreSummaryProps) {
     
     const categoryNames = Object.keys(scores);
     
-    // Try to extract scores using patterns
+    // First try to extract scores using precise patterns
+    let foundScores = 0;
     for (let i = 0; i < scorePatterns.length; i++) {
       const match = content.match(scorePatterns[i]);
       if (match && match[1]) {
         const score = parseInt(match[1], 10);
         if (!isNaN(score) && score >= 0 && score <= 100) {
           scores[categoryNames[i]] = score;
+          foundScores++;
+        }
+      }
+    }
+    
+    // If fewer than 3 scores found, try fallback patterns
+    if (foundScores < 3) {
+      for (let i = 0; i < fallbackPatterns.length; i++) {
+        if (scores[categoryNames[i]] > 0) continue; // Skip if already found
+        
+        const match = content.match(fallbackPatterns[i]);
+        if (match && match[1]) {
+          const score = parseInt(match[1], 10);
+          if (!isNaN(score) && score >= 0 && score <= 100) {
+            scores[categoryNames[i]] = score;
+            foundScores++;
+          }
         }
       }
     }
@@ -75,42 +111,78 @@ function ResumeScoreSummary({ content }: ResumeScoreSummaryProps) {
   
   const { scores, overallScore, hasScores } = extractScores();
   
-  // Don't render if no scores were found
-  if (!hasScores) return null;
+  // Don't render if no scores were found and there's a parsing error
+  if (!hasScores && isParsingError) return null;
+  
+  // Get color based on score
+  const getScoreColor = (score: number) => {
+    if (score >= 85) return 'bg-emerald-500 text-white';
+    if (score >= 70) return 'bg-green-500 text-white';
+    if (score >= 50) return 'bg-amber-500 text-white';
+    return 'bg-rose-500 text-white';
+  };
+  
+  // Get color for progress bar based on score
+  const getProgressColor = (score: number) => {
+    if (score >= 85) return 'bg-emerald-500';
+    if (score >= 70) return 'bg-green-500';
+    if (score >= 50) return 'bg-amber-500';
+    return 'bg-rose-500';
+  };
+  
+  // Get description for overall score
+  const getScoreDescription = (score: number) => {
+    if (score >= 85) return 'Excellent';
+    if (score >= 70) return 'Good';
+    if (score >= 50) return 'Average';
+    return 'Needs Improvement';
+  };
   
   return (
-    <div className="border rounded-lg p-4 bg-muted/30">
+    <div className="border border-border rounded-lg p-5 bg-card shadow-sm">
       {/* Large centered overall score display */}
       <div className="text-center mb-6">
-        <h3 className="font-medium text-lg mb-1">Resume Overall Score</h3>
-        <div className="inline-flex items-center justify-center bg-primary/10 rounded-full p-6 mb-2">
-          <span className="text-4xl font-bold text-primary">{overallScore}</span>
-          <span className="text-xl font-bold text-primary">/100</span>
+        <h3 className="font-medium text-lg mb-3">Resume Overall Score</h3>
+        <div className="flex flex-col items-center">
+          <div className={`flex items-center justify-center ${getScoreColor(overallScore)} rounded-full w-28 h-28 mb-3 transition-all duration-300 shadow-md`}>
+            <div className="text-center">
+              <span className="text-4xl font-bold">{overallScore}</span>
+              <span className="text-sm font-medium block">/100</span>
+            </div>
+          </div>
+          <div className="text-sm font-medium text-center text-muted-foreground">
+            {getScoreDescription(overallScore)}
+          </div>
         </div>
-        <div className="text-sm text-muted-foreground">Based on 6 key resume evaluation factors</div>
+        <div className="text-xs text-muted-foreground mt-2">Based on 6 key resume evaluation factors</div>
       </div>
       
       {/* Score breakdown heading */}
       <div className="flex items-center mb-4">
-        <h3 className="font-medium text-base">Score Breakdown</h3>
+        <h3 className="font-semibold text-base">Score Breakdown</h3>
       </div>
       
-      {/* Individual category scores */}
-      <div className="space-y-3">
+      {/* Individual category scores with enhanced visuals */}
+      <div className="space-y-4">
         {Object.entries(scores).map(([category, score], index) => (
           <div key={index} className="space-y-1">
             <div className="flex justify-between text-sm">
-              <span>{category}</span>
-              <span className="font-medium">{score}%</span>
+              <span className="font-medium">{category}</span>
+              <span className={`font-semibold px-2 py-0.5 rounded-full text-xs ${getScoreColor(score)}`}>{score}%</span>
             </div>
-            <Progress value={score} className="h-2" />
+            <div className="w-full bg-muted rounded-full h-2.5 dark:bg-gray-700">
+              <div 
+                className={`h-2.5 rounded-full ${getProgressColor(score)}`} 
+                style={{ width: `${score}%`, transition: 'width 1s ease-in-out' }}
+              ></div>
+            </div>
           </div>
         ))}
       </div>
       
-      <div className="mt-4 text-xs text-muted-foreground">
+      <div className="mt-5 text-xs text-muted-foreground bg-muted/30 p-2 rounded-md">
         <div className="flex items-center gap-1">
-          <CheckCircle2 className="h-3 w-3" />
+          <CheckCircle2 className="h-3 w-3 text-primary" />
           <span>Scoring based on AI analysis of resume content</span>
         </div>
       </div>

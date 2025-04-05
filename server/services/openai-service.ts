@@ -1,6 +1,8 @@
 import OpenAI from "openai";
 import { WorkExperience, Education, Skill } from "@shared/schema";
 import { extractTextFromPdf } from "../utils/pdf-extractor";
+import { promises as fs } from 'fs';
+import path from 'path';
 
 // Initialize OpenAI client with extended timeout
 const openai = new OpenAI({ 
@@ -399,7 +401,18 @@ I'm ready to provide you with detailed, personalized analysis of your resume as 
             userPrompt = `
             I need an EXTREMELY detailed and personalized professional analysis of the resume text below. This must be a comprehensive, specific analysis that directly references the actual content in the resume, not generic advice. Make your response feel like it was written specifically for this individual after carefully studying their resume.
             
-            Analyze the resume using these critical evaluation criteria, providing a score (out of 100%) for each category and an overall score:
+            Analyze the resume using these critical evaluation criteria, providing a score (out of 100%) for each category and an overall score.
+            
+            EXTREMELY IMPORTANT: You MUST include the exact category name followed by the score percentage in this exact format for each category:
+            
+            "Structure & Layout: XX%"
+            "Content Quality: XX%"
+            "Relevance to Role/Industry: XX%"
+            "Achievements & Metrics: XX%"
+            "Soft Skills & Personality: XX%"
+            "ATS Compatibility: XX%"
+            
+            These exact formats must appear in your response as they will be automatically parsed to generate a visual score chart.
             
             1. STRUCTURE & LAYOUT (20% of total score)
                - Clear sections: Are key sections (Summary, Experience, Skills, Education, etc.) easy to find?
