@@ -158,7 +158,10 @@ export async function generateCareerAdvice(userProfile: {
         },
         { role: "user", content: prompt },
       ],
-      temperature: 0.7,
+      temperature: 0.8,  // Increased for more creative responses
+      max_tokens: 4000,
+      top_p: 0.95,       // Diverse token selection for more varied responses
+      presence_penalty: 0.3,  // Encourage including new topics
     });
 
     return response.choices[0].message.content || "Unable to generate career advice";
@@ -234,7 +237,7 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
       console.log("Auto-detected parameters:", { isLinkValue, isBase64Value });
     }
     
-    let systemPrompt = "You are Musk, an expert resume analyzer within the Brandentifier platform, with deep knowledge of professional development and hiring practices. Provide constructive feedback and actionable insights. When suggesting improvements, always mention how Brandentifier's features can help, including the Portfolio Builder for showcasing projects, Smart Connect for networking, and Services showcase for freelancers and consultants.";
+    let systemPrompt = "You are Musk, an expert resume analyzer within the Brandentifier platform, with deep knowledge of professional development and hiring practices across many industries. Your analysis must be EXTREMELY PERSONALIZED, using the person's specific name and directly referencing their exact experiences, skills, and background from their resume. Avoid generic advice - everything must be tailored to their specific situation. Provide detailed, constructive feedback with highly actionable insights. When suggesting improvements, always mention how Brandentifier's features can help, including the Portfolio Builder for showcasing projects, Smart Connect for networking, and Services showcase for freelancers and consultants. Above all, your analysis must be deeply personalized, conversational, and feel like it was written specifically for the individual based on their unique resume.";
     let userPrompt = "";
     
     if (isLinkValue) {
@@ -344,7 +347,8 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
                 }
               ],
               max_tokens: 4000,
-              temperature: 0.3,
+              temperature: 0.5,  // Moderate temperature for balance between creativity and accuracy
+              top_p: 0.95,       // Diverse token selection for more varied responses
             });
             console.log("OpenAI fallback response received!");
             
@@ -371,7 +375,7 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
             console.log(`Successfully extracted readable resume content: ${extractedText.length} characters`);
             
             // Now we have the actual text content, analyze it
-            systemPrompt = "You are Musk, an expert resume analyzer within the Brandentifier platform, with deep knowledge of professional development and hiring practices. Provide constructive feedback and actionable insights based on the actual content of this resume. When suggesting improvements, always mention how Brandentifier's features can help, including the Portfolio Builder for showcasing projects, Smart Connect for networking, and Services showcase for freelancers and consultants.";
+            systemPrompt = "You are Musk, an expert resume analyzer within the Brandentifier platform, with deep knowledge of professional development and hiring practices across many industries. Your analysis must be EXTREMELY PERSONALIZED, using the person's specific name and directly referencing their exact experiences, skills, and background from their resume. Avoid generic advice - everything must be tailored to their specific situation. Provide detailed, constructive feedback with highly actionable insights based on the actual content of this resume. When suggesting improvements, always mention how Brandentifier's features can help, including the Portfolio Builder for showcasing projects, Smart Connect for networking, and Services showcase for freelancers and consultants. Above all, your analysis must be deeply personalized, conversational, and feel like it was written specifically for the individual based on their unique resume.";
             
             // Limit the text to a reasonable size to avoid token limits
             const MAX_TEXT_LENGTH = 4000;
@@ -583,25 +587,27 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
       // Regular text resume
       console.log("Processing plain text resume");
       
-      // Limit the text to a reasonable size to avoid token limits
-      const MAX_TEXT_LENGTH = 4000;
+      // Increase text length limit to capture more of the resume
+      const MAX_TEXT_LENGTH = 6000;
       const truncatedText = resumeText.length > MAX_TEXT_LENGTH 
         ? resumeText.substring(0, MAX_TEXT_LENGTH) + "...(truncated due to length)"
         : resumeText;
       
       userPrompt = `
-      I need a detailed professional analysis of this resume:
+      I need an EXTREMELY detailed and personalized professional analysis of this resume. This must be a comprehensive, specific analysis that directly references the actual content in the resume, not generic advice. Make your response feel like it was written specifically for this individual after carefully studying their resume:
       
       ${truncatedText}
       
-      Provide an extremely personalized and comprehensive resume analysis with specific improvement suggestions using this structure:
+      First, analyze the resume to identify the person's name, experience details, education background, skills, and other key information. Then, provide a comprehensive, personalized analysis that mentions the person by their EXACT name and references their SPECIFIC experiences, skills, and background throughout your entire response.
 
-      # Resume Analysis & Improvement Suggestions for [Name]
+      Provide a HIGHLY personalized and comprehensive resume analysis with specific improvement suggestions using this structure:
+
+      # Resume Analysis & Improvement Suggestions for [EXACT NAME FROM RESUME]
       
       ## Career Overview & Industry Context
-      🔍 Identify the person's industry and career stage
-      📈 Briefly describe how their experience aligns with current trends in their industry
-      🎯 Note any career trajectory patterns visible in their work history
+      🔍 Identify the person's specific industry, role, and career stage based on the actual resume content
+      📈 Analyze how their specific experience aligns with current trends in their industry
+      🎯 Note any career trajectory patterns visible in their work history with specific examples from their resume
       
       ## Key Strengths:
       ✅ List 6-7 key strengths from the resume (be specific to their actual achievements)
@@ -686,8 +692,10 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt }
         ],
-        temperature: 0.7,
+        temperature: 0.8,  // Increased for more creative responses
         max_tokens: 4000,
+        top_p: 0.95,       // Diverse token selection for more varied responses
+        presence_penalty: 0.3,  // Encourage including new topics
       });
       console.log("Received response from OpenAI API");
     } catch (apiError) {
@@ -806,7 +814,10 @@ export async function generateNetworkingRecommendations(
         },
         { role: "user", content: prompt },
       ],
-      temperature: 0.7,
+      temperature: 0.8,  // Increased for more creative responses
+      max_tokens: 4000,
+      top_p: 0.95,       // Diverse token selection for more varied responses
+      presence_penalty: 0.3,  // Encourage including new topics
     });
 
     return response.choices[0].message.content || "Unable to generate networking recommendations";
