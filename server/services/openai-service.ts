@@ -190,26 +190,27 @@ export interface ResumeAnalysisOptions {
  * Analyze resume text to extract professional insights
  */
 export async function analyzeResume(options: ResumeAnalysisOptions | string, isBase64?: boolean, isLink?: boolean) {
-  try {
-    let resumeText: string;
-    let isBase64Value: boolean = false;
-    let isLinkValue: boolean = false;
-    let isDirectTextInput: boolean = false;
+  let resumeText: string;
+  let isBase64Value: boolean = false;
+  let isLinkValue: boolean = false;
+  let isDirectTextInput: boolean = false;
 
-    // Handle both old and new parameter formats for backward compatibility
-    if (typeof options === 'string') {
-      // Old format: (resumeText, isBase64, isLink)
-      resumeText = options;
-      isBase64Value = isBase64 || false;
-      isLinkValue = isLink || false;
-      isDirectTextInput = !isBase64Value && !isLinkValue; // If not base64 or link, it's direct text
-    } else {
-      // New format: ({ resumeTextStart, isBase64, isLink })
-      resumeText = options.resumeTextStart;
-      isBase64Value = options.isBase64 || false;
-      isLinkValue = options.isLink || false;
-      isDirectTextInput = !isBase64Value && !isLinkValue; // If not base64 or link, it's direct text
-    }
+  // Handle both old and new parameter formats for backward compatibility
+  if (typeof options === 'string') {
+    // Old format: (resumeText, isBase64, isLink)
+    resumeText = options;
+    isBase64Value = isBase64 || false;
+    isLinkValue = isLink || false;
+    isDirectTextInput = !isBase64Value && !isLinkValue; // If not base64 or link, it's direct text
+  } else {
+    // New format: ({ resumeTextStart, isBase64, isLink })
+    resumeText = options.resumeTextStart;
+    isBase64Value = options.isBase64 || false;
+    isLinkValue = options.isLink || false;
+    isDirectTextInput = !isBase64Value && !isLinkValue; // If not base64 or link, it's direct text
+  }
+  
+  try {
 
     console.log("analyzeResume called with parameters:", { 
       resumeTextStart: resumeText ? resumeText.substring(0, 50) + "..." : "null", 
@@ -338,9 +339,9 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
           
           // Additional check: Does the extracted text look like a resume?
           // Check for common resume keywords
-          const resumeKeywords = ["experience", "education", "skills", "work", "job", "employment", 
+          const pdfResumeKeywords = ["experience", "education", "skills", "work", "job", "employment", 
                                  "resume", "cv", "career", "professional", "contact", "project"];
-          const containsResumeKeywords = resumeKeywords.some(keyword => 
+          const containsResumeKeywords = pdfResumeKeywords.some(keyword => 
             extractedText.toLowerCase().includes(keyword.toLowerCase())
           );
           
@@ -461,10 +462,10 @@ I'm ready to provide you with detailed, personalized analysis of your resume as 
           }
           
           // Check if the extracted text contains actual resume content by looking for common keywords
-          const resumeKeywords = ['resume', 'experience', 'education', 'skills', 'work', 'job', 'university', 'degree', 'professional', 'profile', 'objective', 'certification'];
+          const commonResumeKeywords = ['resume', 'experience', 'education', 'skills', 'work', 'job', 'university', 'degree', 'professional', 'profile', 'objective', 'certification'];
           
           // Check if extraction worked and if it contains resume-like content
-          const hasResumeKeywords = resumeKeywords.some(keyword => 
+          const hasResumeKeywords = commonResumeKeywords.some(keyword => 
             extractedText.toLowerCase().includes(keyword.toLowerCase())
           );
           
@@ -751,7 +752,7 @@ I'm ready to provide you with detailed, personalized analysis of your resume as 
           ? resumeText.substring(0, MAX_TEXT_LENGTH) + "...(truncated due to length)"
           : resumeText;
       
-      userPrompt = `
+        userPrompt = `
       I need an EXTREMELY detailed and personalized professional analysis of this resume. This must be a comprehensive, specific analysis that directly references the actual content in the resume, not generic advice. Make your response feel like it was written specifically for this individual after carefully studying their resume.
             
       Analyze the resume using these critical evaluation criteria, providing a score (out of 100%) for each category and an overall score:

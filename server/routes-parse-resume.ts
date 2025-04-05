@@ -60,11 +60,14 @@ export async function handleParseResume(req: Request, res: Response) {
     console.log("Parsing extracted text into structured resume data");
     const parsedResume = await parseResumeText(extractedText);
     
-    // Return the structured resume data
+    // Return the structured resume data in the format expected by the client
     return res.json({
       success: true,
-      rawText: extractedText,
-      parsedResume,
+      experiences: parsedResume.experiences || [],
+      educations: parsedResume.educations || [],
+      skills: parsedResume.skills || [],
+      title: parsedResume.title || null,
+      location: parsedResume.location || null
     });
     
   } catch (error) {

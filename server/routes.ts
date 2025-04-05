@@ -7,7 +7,8 @@ import crypto from "crypto";
 import path from "path";
 import fileUpload from "express-fileupload";
 import { projectThumbnailUpload, getFileUrl } from "./utils/upload";
-// Resume parsing functionality removed
+// Resume parsing functionality
+import { handleParseResume } from "./routes-parse-resume";
 import { 
   insertUserSchema, 
   insertResumeSchema, 
@@ -408,6 +409,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Error fetching resume:", error);
       res.status(500).json({ message: "Internal server error" });
     }
+  });
+
+  // Resume parsing endpoint
+  apiRouter.post("/parse-resume", async (req: Request, res: Response) => {
+    console.log("[POST /parse-resume] Received resume parsing request");
+    return handleParseResume(req, res);
   });
 
   // Work Experience routes
@@ -1676,10 +1683,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Import OpenAI service
-      const { generateNetworkingRecommendations } = await import('./services/openai-service');
+      const openaiService = await import('./services/openai-service');
       
       // Generate networking recommendations
-      const recommendations = await generateNetworkingRecommendations(
+      const recommendations = await openaiService.generateNetworkingRecommendations(
         { user, workExperiences, skills, educations }, 
         targetIndustry, 
         purpose
