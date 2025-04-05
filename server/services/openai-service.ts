@@ -186,6 +186,9 @@ export interface ResumeAnalysisOptions {
   isLink?: boolean;
 }
 
+/**
+ * Analyze resume text to extract professional insights
+ */
 export async function analyzeResume(options: ResumeAnalysisOptions | string, isBase64?: boolean, isLink?: boolean) {
   try {
     let resumeText: string;
@@ -455,6 +458,7 @@ I'm ready to provide you with detailed, personalized analysis of your resume as 
               // Mark that we do have content (our error message) to show the user
               hasResumeContent = true;
             }
+          }
           
           // Check if the extracted text contains actual resume content by looking for common keywords
           const resumeKeywords = ['resume', 'experience', 'education', 'skills', 'work', 'job', 'university', 'degree', 'professional', 'profile', 'objective', 'certification'];
@@ -648,7 +652,7 @@ I'm ready to provide you with detailed, personalized analysis of your resume as 
             `;
           }
         } catch (error: any) {
-          console.error("Error calling OpenAI API:", error);
+          console.error("Error processing PDF:", error);
           
           // Check if the error is related to OpenAI API key
           if (error.message && (error.message.includes('API key') || error.message.includes('authentication'))) {
@@ -660,47 +664,43 @@ I'm ready to provide you with detailed, personalized analysis of your resume as 
             systemPrompt += " You cannot directly process this PDF file, but you can provide comprehensive, detailed guidance for resume improvement similar to what an expert resume coach would offer.";
             userPrompt = `
             The user has uploaded a resume file, but I encountered an error when trying to process it: ${error.message}. Please provide a comprehensive, detailed resume analysis and improvement guide structured like this example:
+        
+          Resume Analysis & Improvement Suggestions
           
-            Resume Analysis & Improvement Suggestions
-            
-            Strengths:
-            ✅ List 5-6 common strengths seen in professional resumes
-            ✅ Include specific areas like quantifiable achievements, technical skills, career progression
-            ✅ Mention industry exposure (tech, fintech, e-commerce, etc.)
-            
-            Areas for Improvement & Recommendations:
-            
-            1️⃣ Improve Profile Summary
-            Show examples of weak vs. strong profile summaries:
-            
-            ❌ Current (example of a generic summary)
-            ✅ Suggested Revision (example of a strong summary with specifics)
-            
-            2️⃣ Achievements Need More Quantifiable Impact
-            Provide specific examples:
-            
-            ❌ Generic achievement example
-            ✅ Achievement with metrics (e.g., "Led full-cycle product development for 5+ AI-powered products, achieving a 30% reduction in time-to-market")
-            
-            3️⃣ Better Formatting for Readability
-            Specific formatting tips for modern resumes
-            
-            4️⃣ Improve "Skills" Section
-            Suggested structure with modern skills relevant to various roles
-            
-            5️⃣ "Projects" Section Recommendations
-            Show how to structure a projects section with examples
-            
-            6️⃣ ATS Optimization Tips
-            Explain how to make resumes ATS-friendly with examples
-            
-            Make this extremely actionable, detailed, and formatted with emoji bullets (like ✅, 🔹, 📅) to make sections visually distinct. Use a professional yet conversational tone.
-            `;
-          }
+          Strengths:
+          ✅ List 5-6 common strengths seen in professional resumes
+          ✅ Include specific areas like quantifiable achievements, technical skills, career progression
+          ✅ Mention industry exposure (tech, fintech, e-commerce, etc.)
+          
+          Areas for Improvement & Recommendations:
+          
+          1️⃣ Improve Profile Summary
+          Show examples of weak vs. strong profile summaries:
+          
+          ❌ Current (example of a generic summary)
+          ✅ Suggested Revision (example of a strong summary with specifics)
+          
+          2️⃣ Achievements Need More Quantifiable Impact
+          Provide specific examples:
+          
+          ❌ Generic achievement example
+          ✅ Achievement with metrics (e.g., "Led full-cycle product development for 5+ AI-powered products, achieving a 30% reduction in time-to-market")
+          
+          3️⃣ Better Formatting for Readability
+          Specific formatting tips for modern resumes
+          
+          4️⃣ Improve "Skills" Section
+          Suggested structure with modern skills relevant to various roles
+          
+          5️⃣ "Projects" Section Recommendations
+          Show how to structure a projects section with examples
+          
+          6️⃣ ATS Optimization Tips
+          Explain how to make resumes ATS-friendly with examples
+          
+          Make this extremely actionable, detailed, and formatted with emoji bullets (like ✅, 🔹, 📅) to make sections visually distinct. Use a professional yet conversational tone.
+          `;
         }
-      } catch (error: any) {
-        console.error("Error processing PDF:", error);
-        systemPrompt += " You cannot directly process this PDF file, but you can provide comprehensive, detailed guidance for resume improvement similar to what an expert resume coach would offer.";
         userPrompt = `
         The user has uploaded a resume file, but I encountered an error when trying to process it. Please provide a comprehensive, detailed resume analysis and improvement guide structured like this example:
   
@@ -741,14 +741,15 @@ I'm ready to provide you with detailed, personalized analysis of your resume as 
         `;
       }
     } else {
-      // Regular text resume
-      console.log("Processing plain text resume");
-      
-      // Increase text length limit to capture more of the resume
-      const MAX_TEXT_LENGTH = 6000;
-      const truncatedText = resumeText.length > MAX_TEXT_LENGTH 
-        ? resumeText.substring(0, MAX_TEXT_LENGTH) + "...(truncated due to length)"
-        : resumeText;
+      try {
+        // Regular text resume
+        console.log("Processing plain text resume");
+        
+        // Increase text length limit to capture more of the resume
+        const MAX_TEXT_LENGTH = 6000;
+        const truncatedText = resumeText.length > MAX_TEXT_LENGTH 
+          ? resumeText.substring(0, MAX_TEXT_LENGTH) + "...(truncated due to length)"
+          : resumeText;
       
       userPrompt = `
       I need an EXTREMELY detailed and personalized professional analysis of this resume. This must be a comprehensive, specific analysis that directly references the actual content in the resume, not generic advice. Make your response feel like it was written specifically for this individual after carefully studying their resume.
@@ -882,6 +883,13 @@ I'm ready to provide you with detailed, personalized analysis of your resume as 
       
       Format with emoji bullets (like ✅, 🔹, 📅) to make sections visually distinct. Use a professional yet conversational tone, and make all advice extremely detailed, practical, and tailored specifically to their experience and industry.
       `;
+      } catch (error: any) {
+        console.error("Error processing text resume:", error);
+        systemPrompt += " I cannot directly process this resume text, but I can provide comprehensive, detailed guidance for resume improvement similar to what an expert resume coach would offer.";
+        userPrompt = `
+        I couldn't properly process the resume text you provided. Please provide a comprehensive, detailed resume analysis and improvement guide using standard best practices.
+        `;
+      }
     }
     
     // Send request to OpenAI API
