@@ -109,6 +109,17 @@ export default function RightSidebar() {
     services
   );
 
+  // Debug log the calculated percentage value
+  console.log("Profile completion percentage:", profileCompletionPercentage);
+  console.log("User data being used for calculation:", {
+    name: userData?.name,
+    photoURL: userData?.photoURL ? "exists" : "missing",
+    title: userData?.title,
+    location: userData?.location,
+    industry: userData?.industry,
+    lookingFor: userData?.lookingFor
+  });
+
   const hasSkills = skills && skills.length > 0;
   const isProfileComplete = userData?.profileCompleted === true;
   
