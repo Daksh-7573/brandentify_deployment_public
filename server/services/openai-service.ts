@@ -346,7 +346,7 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
         
         // Calculate noise ratio - if more than 5% of extracted strings are noise or 15% are binary characters, it's likely not valid resume content
         const noiseRatio = extractedText.length > 0 ? noiseMatches / (extractedText.length / 20) : 0;
-        const isProbablyPdfNoise = noiseRatio > 0.05 || binaryRatio > 0.15;
+        const isProbablyPdfNoise = noiseRatio > 0.05 || binaryRatio > 0.15 || extractedText.includes("JVBERi");
         
         // Check for readable text patterns - look for sentences, paragraphs and word boundaries
         const readableTextPatterns = [
@@ -366,16 +366,22 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
         // A resume with real content should have some readable patterns
         const hasReadableContent = readableMatches > 5;
         
+        // Add check for PDF header markers which indicate poorly encoded PDF data
+        const hasPdfHeaderMarkers = extractedText.includes("JVBERi") || 
+                                   extractedText.includes("%PDF-") || 
+                                   extractedText.includes("\x25\x50\x44\x46");
+        
         console.log(`Content analysis: 
           - Noise: ${noiseMatches} patterns, ratio: ${noiseRatio}
           - Binary: ${binaryCharCount} chars, ratio: ${binaryRatio} 
           - Readable patterns: ${readableMatches}
           - Has resume keywords: ${containsResumeKeywords}
           - Has readable content: ${hasReadableContent}
-          - Final decision: ${!isProbablyPdfNoise && (containsResumeKeywords || hasReadableContent)}
+          - Has PDF header markers: ${hasPdfHeaderMarkers}
+          - Final decision: ${!isProbablyPdfNoise && !hasPdfHeaderMarkers && (containsResumeKeywords || hasReadableContent)}
         `);
         
-        if (hasResumeContent && (containsResumeKeywords || hasReadableContent) && !isProbablyPdfNoise) {
+        if (hasResumeContent && (containsResumeKeywords || hasReadableContent) && !isProbablyPdfNoise && !hasPdfHeaderMarkers) {
           console.log(`Successfully extracted readable resume content: ${extractedText.length} characters`);
           
           // Now we have the actual text content, analyze it
