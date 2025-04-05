@@ -62,12 +62,11 @@ export async function extractTextFromPdf(pdfBuffer: Buffer): Promise<string> {
       console.log("Error in direct text extraction:", directError.message || "Unknown error");
     }
     
-    // Fall back to a simpler approach: Supply a real resume for analysis from our attached assets
-    console.log("Unable to extract meaningful text content from PDF, using provided Nishant Chopra resume for analysis");
+    // Return an error instead of a fallback resume
+    console.log("Unable to extract meaningful text content from PDF");
+    throw new Error("Could not extract text from the PDF. Please upload a different PDF or paste your resume text directly.");
     
-    // This approach uses a real resume to ensure the user gets a meaningful analysis response
-    // We're using an actual resume rather than just returning instructions
-    
+    /* Removed the fallback resume to prevent showing the same analysis for different uploads
     const fallbackResume = `
 NISHANT CHOPRA
 San Francisco, CA | nishant.chopra@example.com | linkedin.com/in/nishantchopra | (415) 555-1234
@@ -122,11 +121,11 @@ ACHIEVEMENTS
 - Received "Product Excellence Award" for outstanding contribution to business growth
 `;
 
-    return fallbackResume;
+    */
     
   } catch (error: any) {
     console.error("Error in PDF extraction process:", error);
-    return getHelpfulUploadInstructions();
+    throw new Error("Could not process the PDF. Please upload a different PDF or paste your resume text directly.");
   }
 }
 
