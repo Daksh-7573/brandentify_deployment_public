@@ -80,14 +80,22 @@ function ResumeScoreSummary({ content }: ResumeScoreSummaryProps) {
   
   return (
     <div className="border rounded-lg p-4 bg-muted/30">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-medium text-base">Resume Score Summary</h3>
-        <div className="flex items-center">
-          <span className="text-2xl font-bold mr-1">{overallScore}%</span>
-          <span className="text-xs text-muted-foreground">Overall</span>
+      {/* Large centered overall score display */}
+      <div className="text-center mb-6">
+        <h3 className="font-medium text-lg mb-1">Resume Overall Score</h3>
+        <div className="inline-flex items-center justify-center bg-primary/10 rounded-full p-6 mb-2">
+          <span className="text-4xl font-bold text-primary">{overallScore}</span>
+          <span className="text-xl font-bold text-primary">/100</span>
         </div>
+        <div className="text-sm text-muted-foreground">Based on 6 key resume evaluation factors</div>
       </div>
       
+      {/* Score breakdown heading */}
+      <div className="flex items-center mb-4">
+        <h3 className="font-medium text-base">Score Breakdown</h3>
+      </div>
+      
+      {/* Individual category scores */}
       <div className="space-y-3">
         {Object.entries(scores).map(([category, score], index) => (
           <div key={index} className="space-y-1">
@@ -103,7 +111,7 @@ function ResumeScoreSummary({ content }: ResumeScoreSummaryProps) {
       <div className="mt-4 text-xs text-muted-foreground">
         <div className="flex items-center gap-1">
           <CheckCircle2 className="h-3 w-3" />
-          <span>Scoring based on 6 key resume factors</span>
+          <span>Scoring based on AI analysis of resume content</span>
         </div>
       </div>
     </div>
