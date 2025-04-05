@@ -13,6 +13,7 @@ import Services from "@/components/profile/services";
 // Removed Resume and LinkedIn import components
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
+import { calculateOverallProfileCompletion } from "@/lib/profile-utils";
 import { useState, useEffect } from "react";
 import { Camera } from "lucide-react";
 import { useProfilePicture } from "@/hooks/use-profile-picture";
@@ -1522,10 +1523,20 @@ export default function Profile() {
                 <div className="text-right">
                   <p className="text-sm text-gray-500">Profile Completion</p>
                   <div className="flex items-center mt-1">
-                    <div className="w-36 bg-gray-200 rounded-full h-2.5 mr-2">
-                      <div id="profile-completion-bar" className="bg-primary h-2.5 rounded-full" style={{ width: '65%' }}></div>
-                    </div>
-                    <span className="text-sm font-medium text-gray-900">65%</span>
+                    {userData && (
+                      <>
+                        <div className="w-36 bg-gray-200 rounded-full h-2.5 mr-2">
+                          <div 
+                            id="profile-completion-bar" 
+                            className="bg-primary h-2.5 rounded-full" 
+                            style={{ width: `${calculateOverallProfileCompletion(userData, skills)}%` }}
+                          ></div>
+                        </div>
+                        <span className="text-sm font-medium text-gray-900">
+                          {calculateOverallProfileCompletion(userData, skills)}%
+                        </span>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
