@@ -1527,11 +1527,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Import OpenAI service
       const { analyzeResume } = await import('./services/openai-service');
       
-      let analysis;
+      // Create a special fallback demo response for PDF upload failures
+      const fallbackDemoResponse = `# Resume Analysis & Improvement Suggestions for Nishant Chopra
+
+This is a demonstration of our resume analysis capabilities. For a complete, personalized analysis of your actual resume, please paste your resume text directly in the text input field.
+
+## Career Overview & Industry Context
+🔍 Based on your profile, we've created this example to show how our AI analyzes resumes in detail. A real analysis would reference your specific experiences and career path.
+
+## Key Strengths (Example):
+✅ Strong technical expertise in relevant technologies
+✅ Experience with project management and team leadership
+✅ Demonstrated problem-solving skills across multiple domains
+
+## For a complete, personalized analysis:
+1️⃣ Please use the "Paste your resume text" option
+2️⃣ The text input method provides more reliable results
+3️⃣ You'll receive a comprehensive analysis tailored to your actual experience
+
+We're ready to provide valuable insights when you share your resume text directly!`;
+      
+      // Create a timeout function that will resolve with our fallback
+      const timeoutMs = 35000; // 35 seconds
+      const timeoutPromise = new Promise<string>((resolve) => 
+        setTimeout(() => {
+          console.log("OpenAI request timed out after 35 seconds, using fallback response");
+          resolve(fallbackDemoResponse);
+        }, timeoutMs)
+      );
+      
+      let analysis: string;
       
       try {
         if (resumeText) {
-          // Process the raw text directly
+          // Process the raw text directly - no timeout needed, text mode works well
           console.log("Processing resume text input directly");
           analysis = await analyzeResume({ 
             resumeTextStart: resumeText,
@@ -1539,13 +1568,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
             isLink: false
           } as any);
         } else {
-          // Process the file data
-          console.log("Processing resume file data");
-          analysis = await analyzeResume({ 
+          // Process the file data with a timeout to prevent indefinite loading
+          console.log("Processing resume file data with timeout protection");
+          
+          // Use Promise.race to handle timeouts for file uploads
+          const analysisPromise = analyzeResume({ 
             resumeTextStart: fileData,
             isBase64: true,
             isLink: false
           } as any);
+          
+          analysis = await Promise.race([analysisPromise, timeoutPromise]);
         }
       } catch (aiError: any) {
         console.error("Error from OpenAI API:", aiError);
@@ -1561,37 +1594,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
         }
         
-        // If connection times out or API error occurs, fall back to sample analysis
-        try {
-          const fs = await import('fs/promises');
-          const path = await import('path');
-          const sampleAnalysisPath = path.join(process.cwd(), 'attached_assets', 'Pasted-Resume-Analysis-Improvement-Suggestions-for-Nishant-Chopra-Your-resume-is-strong-in-terms-of-exper-1743723302407.txt');
-          
-          try {
-            const sampleAnalysis = await fs.readFile(sampleAnalysisPath, 'utf8');
-            console.log("OpenAI API error - falling back to sample analysis");
-            
-            // If userId is provided, save the analysis as a chat message
-            if (userId) {
-              await storage.createChatMessage({
-                userId,
-                sender: "ai",
-                content: sampleAnalysis,
-                messageType: "resume_analysis"
-              });
-            }
-            
-            return res.json({ analysis: sampleAnalysis });
-          } catch (readError) {
-            console.error("Error reading sample analysis file as fallback:", readError);
-            // If reading fails, re-throw the original error
-            throw aiError;
-          }
-        } catch (sampleError) {
-          console.error("Error importing modules for sample analysis fallback:", sampleError);
-          // If fallback fails, re-throw the original error
-          throw aiError;
-        }
+        // For connection timeouts or API errors, use our demo response
+        console.log("OpenAI API error - using fallback demo response");
+        analysis = fallbackDemoResponse;
       }
       
       // If userId is provided, save the analysis as a chat message
@@ -1604,10 +1609,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      res.json({ analysis });
+      return res.json({ analysis });
     } catch (error) {
       console.error("Error analyzing resume with OpenAI:", error);
-      res.status(500).json({ message: "Error analyzing resume" });
+      
+      // Check if headers have already been sent
+      if (!res.headersSent) {
+        return res.status(500).json({ 
+          message: "We encountered an issue analyzing your resume. Please try pasting your resume text directly instead of uploading a file." 
+        });
+      }
     }
   });
   

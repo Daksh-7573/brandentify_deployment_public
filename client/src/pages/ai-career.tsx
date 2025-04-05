@@ -421,21 +421,54 @@ export default function AICareerPage() {
                                     }
                                     
                                     // Set loading state
-                                    resumeAnalysisMutation.mutate({ 
+                                    toast({
+                                      title: "Processing resume",
+                                      description: "Your resume is being analyzed. This may take up to 30 seconds.",
+                                    });
+                                    
+                                    // Add a timeout to prevent UI from being stuck if the request takes too long
+                                    const timeoutMs = 40000; // 40 seconds
+                                    const timeoutPromise = new Promise((_, reject) => {
+                                      setTimeout(() => {
+                                        reject(new Error("Request timed out. For reliable results, please paste your resume text directly instead."));
+                                      }, timeoutMs);
+                                    });
+                                    
+                                    // Create the main request promise
+                                    const analysisPromise = resumeAnalysisMutation.mutateAsync({ 
                                       fileData: base64Data, 
                                       userId: user.id 
                                     } as any);
                                     
-                                    toast({
-                                      title: "Processing resume",
-                                      description: "Your resume is being analyzed. This may take a moment."
+                                    // Use Promise.race to handle potential timeouts
+                                    await Promise.race([analysisPromise, timeoutPromise]).catch(error => {
+                                      if (error.message?.includes("timed out")) {
+                                        // For timeout errors, update the toast with a more helpful message
+                                        toast({
+                                          title: "Process taking longer than expected",
+                                          description: "Please paste your resume text directly in the text box below for the best results.",
+                                          variant: "destructive",
+                                          duration: 6000
+                                        });
+                                        
+                                        // Abort the mutation if it's still pending
+                                        if (resumeAnalysisMutation.isPending) {
+                                          // We can't actually abort the API request, but we can set UI state correctly
+                                          console.log("Resume analysis request timed out - recommending text input method");
+                                        }
+                                        
+                                        throw error;
+                                      }
+                                      throw error;
                                     });
+                                    
                                   } catch (error) {
                                     console.error('Error analyzing resume file:', error);
                                     toast({
-                                      title: "Analysis failed",
-                                      description: error instanceof Error ? error.message : "Failed to analyze resume. Please try again.",
-                                      variant: "destructive"
+                                      title: "For best results:",
+                                      description: "Please use the text input option below instead of uploading your PDF.",
+                                      variant: "destructive",
+                                      duration: 5000
                                     });
                                   }
                                 };
@@ -443,7 +476,7 @@ export default function AICareerPage() {
                                 fileReader.onerror = () => {
                                   toast({
                                     title: "Upload failed",
-                                    description: "Failed to read file. Please try again.",
+                                    description: "Failed to read file. Please try again or paste your resume text directly.",
                                     variant: "destructive"
                                   });
                                 };
