@@ -340,6 +340,44 @@ export default function AICareerPage() {
       });
     }
   });
+  
+  // Clear resume analysis mutation
+  const clearResumeAnalysisMutation = useMutation({
+    mutationFn: async () => {
+      if (!user?.id) {
+        throw new Error("User ID not found");
+      }
+      
+      // Delete all resume analysis messages for this user
+      const res = await apiRequest("POST", "/api/chat-messages", {
+        userId: user.id,
+        content: "Resume analysis was cleared by the user",
+        messageType: "system_notification",
+        sender: "system",
+        clearExistingType: "resume_analysis" // This is a special flag for the server to clear messages of this type
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Resume analysis cleared",
+        description: "Your resume analysis has been cleared."
+      });
+      
+      if (user?.id) {
+        queryClient.invalidateQueries({
+          queryKey: ["/api/users", user.id, "chat-messages"]
+        });
+      }
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error clearing resume analysis",
+        description: "Failed to clear resume analysis. Please try again.",
+        variant: "destructive"
+      });
+    }
+  });
 
   // Get recent AI messages for display based on active tab
   const getRecentAIMessages = (messageType?: string) => {
@@ -731,9 +769,33 @@ export default function AICareerPage() {
                             <Sparkles className="h-5 w-5 text-primary" />
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between w-full">
                               <h3 className="font-medium">{getMessageTypeLabel(message.messageType)}</h3>
-                              <span className="text-xs text-muted-foreground">
-                                {formatTimestamp(message.timestamp)}
-                              </span>
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs text-muted-foreground">
+                                  {formatTimestamp(message.timestamp)}
+                                </span>
+                                
+                                {/* Clear button for resume analysis */}
+                                {message.messageType === "resume_analysis" && (
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm" 
+                                    onClick={() => clearResumeAnalysisMutation.mutate()}
+                                    disabled={clearResumeAnalysisMutation.isPending}
+                                    className="border-red-300 hover:bg-red-50 hover:text-red-600 text-red-500 flex items-center gap-1 h-7 text-xs px-2"
+                                  >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" 
+                                      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                      <path d="M3 6h18"></path>
+                                      <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                                      <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                                    </svg>
+                                    Clear
+                                    {clearResumeAnalysisMutation.isPending && (
+                                      <Loader2 className="ml-1 h-3 w-3 animate-spin" />
+                                    )}
+                                  </Button>
+                                )}
+                              </div>
                             </div>
                           </div>
                           

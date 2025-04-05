@@ -72,6 +72,7 @@ export interface IStorage {
   // Chat Message operations
   getChatMessagesByUserId(userId: number): Promise<ChatMessage[]>;
   createChatMessage(message: InsertChatMessage): Promise<ChatMessage>;
+  deleteChatMessagesByType(userId: number, messageType: string): Promise<number>;
   
   // OTP verification operations for phone login
   createOtpVerification(verification: InsertOtpVerification): Promise<OtpVerification>;
@@ -494,6 +495,25 @@ export class MemStorage implements IStorage {
     };
     this.chatMessages.set(id, message);
     return message;
+  }
+  
+  async deleteChatMessagesByType(userId: number, messageType: string): Promise<number> {
+    let deletedCount = 0;
+    
+    // Get all messages
+    const allMessages = Array.from(this.chatMessages.entries());
+    
+    // Filter messages by userId and messageType
+    for (const [id, message] of allMessages) {
+      if (message.userId === userId && message.messageType === messageType) {
+        // Delete the message
+        this.chatMessages.delete(id);
+        deletedCount++;
+      }
+    }
+    
+    console.log(`[deleteChatMessagesByType] Deleted ${deletedCount} messages of type '${messageType}' for user ${userId}`);
+    return deletedCount;
   }
   
   // OTP Verification operations

@@ -1287,6 +1287,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   apiRouter.post("/chat-messages", async (req: Request, res: Response) => {
     try {
+      // Check if this is a request to clear messages of a specific type
+      if (req.body.clearExistingType) {
+        const userId = Number(req.body.userId);
+        const messageType = req.body.clearExistingType;
+        
+        console.log(`[POST /chat-messages] Request to clear all messages of type: ${messageType} for user: ${userId}`);
+        
+        // Delete all messages of the specified type for this user
+        await storage.deleteChatMessagesByType(userId, messageType);
+        
+        console.log(`[POST /chat-messages] Cleared all messages of type: ${messageType} for user: ${userId}`);
+        
+        return res.status(200).json({ 
+          success: true, 
+          message: `Cleared all messages of type: ${messageType}` 
+        });
+      }
+      
       // Check if we have a Firebase UID instead of numeric userId
       if (typeof req.body.userId === 'string' && req.body.userId.length > 20) {
         console.log(`[POST /chat-messages] Received Firebase UID as userId: ${req.body.userId}`);
