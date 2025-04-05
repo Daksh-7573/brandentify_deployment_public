@@ -47,22 +47,22 @@ function ResumeScoreSummary({ content }: ResumeScoreSummaryProps) {
     // Patterns to match scores in various formats
     // More precise patterns using the exact format required from the AI
     const scorePatterns = [
-      /Structure & Layout: (\d+)%/i,
-      /Content Quality: (\d+)%/i,
-      /Relevance to Role\/Industry: (\d+)%/i,
-      /Achievements & Metrics: (\d+)%/i,
-      /Soft Skills & Personality: (\d+)%/i,
-      /ATS Compatibility: (\d+)%/i
+      /Structure (?:&|and) Layout:?\s*(\d+)(?:\s*\/\s*100|\s*%)/i,
+      /Content Quality:?\s*(\d+)(?:\s*\/\s*100|\s*%)/i,
+      /Relevance to Role(?:\/|\/\s*|\s+)Industry:?\s*(\d+)(?:\s*\/\s*100|\s*%)/i,
+      /Achievements (?:&|and) Metrics:?\s*(\d+)(?:\s*\/\s*100|\s*%)/i,
+      /Soft Skills (?:&|and) Personality:?\s*(\d+)(?:\s*\/\s*100|\s*%)/i,
+      /ATS Compatibility:?\s*(\d+)(?:\s*\/\s*100|\s*%)/i
     ];
     
-    // Alternate patterns for fallback
+    // Additional fallback patterns for more variation in formatting
     const fallbackPatterns = [
-      /Structure (?:&|and) Layout:?\s*(\d+)%/i,
-      /Content Quality:?\s*(\d+)%/i,
-      /Relevance to Role(?:\/|\/\s*|\s+)Industry:?\s*(\d+)%/i,
-      /Achievements (?:&|and) Metrics:?\s*(\d+)%/i,
-      /Soft Skills (?:&|and) Personality:?\s*(\d+)%/i,
-      /ATS Compatibility:?\s*(\d+)%/i
+      /Structure.*?Layout.*?score.*?(\d{1,3})(?:\s*\/\s*100|\s*%|\/100)?/i,
+      /Content.*?Quality.*?score.*?(\d{1,3})(?:\s*\/\s*100|\s*%|\/100)?/i,
+      /Relevance.*?(?:Role|Industry).*?score.*?(\d{1,3})(?:\s*\/\s*100|\s*%|\/100)?/i,
+      /Achievements.*?Metrics.*?score.*?(\d{1,3})(?:\s*\/\s*100|\s*%|\/100)?/i,
+      /(?:Soft|Personal).*?Skills.*?score.*?(\d{1,3})(?:\s*\/\s*100|\s*%|\/100)?/i,
+      /ATS.*?score.*?(\d{1,3})(?:\s*\/\s*100|\s*%|\/100)?/i
     ];
     
     const categoryNames = Object.keys(scores);
@@ -96,16 +96,35 @@ function ResumeScoreSummary({ content }: ResumeScoreSummaryProps) {
       }
     }
     
-    // Calculate overall score (average of all scores)
-    const validScores = Object.values(scores).filter(score => score > 0);
-    const overallScore = validScores.length > 0 
-      ? Math.round(validScores.reduce((a, b) => a + b, 0) / validScores.length) 
-      : 0;
+    // Try to extract the overall score directly if present
+    let overallScore = 0;
+    const overallScorePattern = /overall(?:\s+score|\s+rating):?\s*(\d{1,3})(?:\s*\/\s*100|\s*%|\/100)?/i;
+    const overallMatch = content.match(overallScorePattern);
+    
+    if (overallMatch && overallMatch[1]) {
+      const extractedOverall = parseInt(overallMatch[1], 10);
+      if (!isNaN(extractedOverall) && extractedOverall >= 0 && extractedOverall <= 100) {
+        overallScore = extractedOverall;
+        console.log("Found direct overall score:", overallScore);
+      }
+    }
+    
+    // If no overall score was found, calculate from individual scores
+    if (overallScore === 0) {
+      const validScores = Object.values(scores).filter(score => score > 0);
+      overallScore = validScores.length > 0 
+        ? Math.round(validScores.reduce((a, b) => a + b, 0) / validScores.length) 
+        : 0;
+    }
+    
+    // Re-check valid scores to ensure we have the latest data
+    const allValidScores = Object.values(scores).filter(score => score > 0);
+    const hasScores = allValidScores.length > 0 || overallScore > 0;
     
     return {
       scores,
       overallScore,
-      hasScores: validScores.length > 0
+      hasScores
     };
   };
   
