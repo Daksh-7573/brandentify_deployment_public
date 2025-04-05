@@ -1953,7 +1953,11 @@ ${extractedText.substring(0, 5000)}
       }
       
       // Save the confirmed data
-      const savedItems = {
+      const savedItems: {
+        experiences: any[],
+        educations: any[],
+        skills: any[]
+      } = {
         experiences: [],
         educations: [],
         skills: []
@@ -1968,7 +1972,7 @@ ${extractedText.substring(0, 5000)}
             userId: userIdNum
           };
           const savedExp = await storage.createWorkExperience(insertExp);
-          savedItems.experiences.push(savedExp);
+          savedItems.experiences.push(savedExp as any);
         }
         console.log(`Saved ${savedItems.experiences.length} work experiences`);
       }
@@ -1982,7 +1986,7 @@ ${extractedText.substring(0, 5000)}
             userId: userIdNum
           };
           const savedEdu = await storage.createEducation(insertEdu);
-          savedItems.educations.push(savedEdu);
+          savedItems.educations.push(savedEdu as any);
         }
         console.log(`Saved ${savedItems.educations.length} education items`);
       }
@@ -1996,7 +2000,7 @@ ${extractedText.substring(0, 5000)}
             userId: userIdNum
           };
           const savedSkill = await storage.createSkill(insertSkill);
-          savedItems.skills.push(savedSkill);
+          savedItems.skills.push(savedSkill as any);
         }
         console.log(`Saved ${savedItems.skills.length} skills`);
       }

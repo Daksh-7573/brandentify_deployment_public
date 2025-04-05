@@ -280,7 +280,6 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
       try {
         // Extract the resume text from the base64 content
         const base64Data = resumeText.split(',')[1] || resumeText;
-        const buffer = Buffer.from(base64Data, 'base64');
         
         // Get the OPENAI_API_KEY
         if (!process.env.OPENAI_API_KEY) {
@@ -301,12 +300,42 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
           }
         }
         
-        // Use the built-in text extraction
-        const { extractTextFromBinaryData } = await import('../services/simple-pdf-parser-new');
-        const extractedText = await extractTextFromBinaryData(buffer);
+        console.log("Using OpenAI's Vision API to process the PDF directly");
         
+        // Use OpenAI's Vision API to process the PDF directly
+        const pdfResponse = await openai.chat.completions.create({
+          model: "gpt-4o",
+          messages: [
+            {
+              role: "system",
+              content: "You are an expert resume analyzer. You are looking at a PDF or image of a resume. Extract the resume text content in a clean, structured format with proper spacing and line breaks. Maintain the original sections and formatting as much as possible. If you can't read the content clearly, indicate which parts are unclear."
+            },
+            {
+              role: "user",
+              content: [
+                {
+                  type: "text",
+                  text: "This is a resume document. Please extract all the text content from it in a clean, structured format. Maintain the original sections (like Education, Experience, Skills) and preserve the formatting with proper spacing and line breaks."
+                },
+                {
+                  type: "image_url",
+                  image_url: {
+                    url: `data:application/pdf;base64,${base64Data}`
+                  }
+                }
+              ]
+            }
+          ],
+          max_tokens: 4000,
+          temperature: 0.1,
+        });
+        
+        // Get the extracted text from the PDF
+        const extractedText = pdfResponse.choices[0].message.content || "";
+        
+        // Check if we got meaningful content
         const hasResumeContent = extractedText && extractedText.length > 0;
-        console.log(`Text extraction ${hasResumeContent ? 'successful' : 'failed'}: ${extractedText.length} characters`);
+        console.log(`Vision API extraction ${hasResumeContent ? 'successful' : 'failed'}: ${extractedText.length} characters`);
         
         // Check if the extracted text contains actual resume content by looking for common keywords
         const resumeKeywords = ['resume', 'experience', 'education', 'skills', 'work', 'job', 'university', 'degree', 'professional', 'profile', 'objective', 'certification'];
@@ -318,78 +347,14 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
         const textSample = extractedText.substring(0, 200).replace(/\n/g, ' ');
         console.log(`Text sample: "${textSample}..."`);
         
-        // Check if the text seems to be PDF metadata/noise
-        const pdfNoisePatterns = [
-          /node\d+/g,                 // Node IDs
-          /xmp\.did:/g,               // XMP identifiers
-          /uuid:/g,                   // UUID markers
-          /D:\d{14}/g,                // Date stamps
-          /\/Type\//g,                // PDF structure markers
-          /\/Page\//g,                // PDF page markers
-          /\/S\//g,                   // PDF stream markers
-          /\/Parent/g,                // PDF object references
-          /endobj/g,                  // PDF object end markers
-          /startxref/g,               // PDF xref markers
-          /%%EOF/g,                   // PDF end of file markers
-        ];
-        
-        // Check for binary data markers and non-printable characters
-        const binaryDataCheck = extractedText.match(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\xFF]/g);
-        const binaryCharCount = binaryDataCheck ? binaryDataCheck.length : 0;
-        const binaryRatio = binaryCharCount / extractedText.length;
-        
-        // Count noise matches for PDF structural elements
-        const noiseMatches = pdfNoisePatterns.reduce((count, pattern) => {
-          const matches = extractedText.match(pattern);
-          return count + (matches ? matches.length : 0);
-        }, 0);
-        
-        // Calculate noise ratio - if more than 5% of extracted strings are noise or 15% are binary characters, it's likely not valid resume content
-        const noiseRatio = extractedText.length > 0 ? noiseMatches / (extractedText.length / 20) : 0;
-        const isProbablyPdfNoise = noiseRatio > 0.05 || binaryRatio > 0.15 || extractedText.includes("JVBERi");
-        
-        // Check for readable text patterns - look for sentences, paragraphs and word boundaries
-        const readableTextPatterns = [
-          /\b[A-Z][a-z]+ [a-z]+ [a-z]+\b/g,  // Three words with proper capitalization
-          /\. [A-Z]/g,                        // Period followed by capital (sentence boundary)
-          /\b(January|February|March|April|May|June|July|August|September|October|November|December)\b/gi, // Month names
-          /\b(20\d\d|19\d\d)\b/g,            // Years (1900-2099)
-          /\b(skills|experience|education|profile|summary|objective|work|project|achievement)\b:/gi // Common section headers
-        ];
-        
-        // Count readable text matches
-        const readableMatches = readableTextPatterns.reduce((count, pattern) => {
-          const matches = extractedText.match(pattern);
-          return count + (matches ? matches.length : 0);
-        }, 0);
-        
-        // A resume with real content should have some readable patterns
-        const hasReadableContent = readableMatches > 5;
-        
-        // Add check for PDF header markers which indicate poorly encoded PDF data
-        const hasPdfHeaderMarkers = extractedText.includes("JVBERi") || 
-                                   extractedText.includes("%PDF-") || 
-                                   extractedText.includes("\x25\x50\x44\x46");
-        
-        console.log(`Content analysis: 
-          - Noise: ${noiseMatches} patterns, ratio: ${noiseRatio}
-          - Binary: ${binaryCharCount} chars, ratio: ${binaryRatio} 
-          - Readable patterns: ${readableMatches}
-          - Has resume keywords: ${containsResumeKeywords}
-          - Has readable content: ${hasReadableContent}
-          - Has PDF header markers: ${hasPdfHeaderMarkers}
-          - Final decision: ${!isProbablyPdfNoise && !hasPdfHeaderMarkers && (containsResumeKeywords || hasReadableContent)}
-        `);
-        
-        if (hasResumeContent && (containsResumeKeywords || hasReadableContent) && !isProbablyPdfNoise && !hasPdfHeaderMarkers) {
-          console.log(`Successfully extracted readable resume content: ${extractedText.length} characters`);
+        if (hasResumeContent && extractedText.length > 100 && containsResumeKeywords) {
+          console.log(`Successfully extracted readable resume content with Vision API: ${extractedText.length} characters`);
           
           // Now we have the actual text content, analyze it
           systemPrompt = "You are Musk, an expert resume analyzer within the Brandentifier platform, with deep knowledge of professional development and hiring practices. Provide constructive feedback and actionable insights based on the actual content of this resume. When suggesting improvements, always mention how Brandentifier's features can help, including the Portfolio Builder for showcasing projects, Smart Connect for networking, and Services showcase for freelancers and consultants.";
           
-          // Limit the text to a very conservative size (2500 characters) to avoid token limits
-          // This is very conservative to ensure we don't hit rate limits
-          const MAX_TEXT_LENGTH = 2500;
+          // Limit the text to a reasonable size to avoid token limits
+          const MAX_TEXT_LENGTH = 4000;
           const truncatedText = extractedText.length > MAX_TEXT_LENGTH 
             ? extractedText.substring(0, MAX_TEXT_LENGTH) + "...(truncated due to length)"
             : extractedText;
@@ -487,13 +452,13 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
           console.warn("Could not extract valid resume content from the uploaded file. Responding with error and suggestions.");
           
           // Special case for PDFs with extraction issues - provide helpful guidance
-          systemPrompt = "You are Musk, a helpful assistant in the Brandentifier platform. The user has uploaded a resume file, but the system could not extract readable resume content from it. The file appears to contain PDF metadata or binary data instead of readable text.";
+          systemPrompt = "You are Musk, a helpful assistant in the Brandentifier platform. The user has uploaded a resume file, but even with our advanced Vision API, we could not extract readable resume content from it. The file might be corrupted or have unusual formatting.";
           
           userPrompt = `
-          The user has uploaded a PDF resume file, but we're encountering an issue extracting meaningful text content from it. The extracted content appears to be PDF metadata or binary data rather than actual resume text.
+          The user has uploaded a PDF resume file, but we're encountering an issue extracting meaningful text content from it, even with our advanced Vision API.
 
           Please provide a friendly, helpful response that:
-          1. Explains that their PDF file format seems to be incompatible with our text extraction tools
+          1. Explains that we're having trouble processing their specific PDF file
           2. Suggests they try the "Option 2: Paste your resume text directly" feature that's available on the same page, which will give them better results
           3. Mentions that if they still want to upload a file, they might try a different format (like .docx) or a different PDF that was created as a text document rather than a scan
           4. Reassures them that this is a technical limitation and not an issue with their resume content
@@ -502,10 +467,10 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
           `;
         }
       } catch (error) {
-        console.error("Error extracting text from base64 data:", error);
-        systemPrompt += " You cannot directly decode base64 data, but you can provide comprehensive, detailed guidance for resume improvement similar to what an expert resume coach would offer.";
+        console.error("Error processing PDF with Vision API:", error);
+        systemPrompt += " You cannot directly process this PDF file, but you can provide comprehensive, detailed guidance for resume improvement similar to what an expert resume coach would offer.";
         userPrompt = `
-        The user has uploaded a resume file, but I cannot decode the file content directly. Please provide a comprehensive, detailed resume analysis and improvement guide structured like this example:
+        The user has uploaded a resume file, but I encountered an error when trying to process it with our Vision API. Please provide a comprehensive, detailed resume analysis and improvement guide structured like this example:
   
         Resume Analysis & Improvement Suggestions
         
