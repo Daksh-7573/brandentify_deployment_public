@@ -430,11 +430,24 @@ export default function Profile() {
     refetchOnMount: true,
     refetchOnWindowFocus: true,
   });
+  
+  // Define userNumericId based on the userData response
+  const userNumericId = isDemoMode ? 1 : (userData?.id || null);
+  
+  // Add debug logging to troubleshoot profile completion issues
+  useEffect(() => {
+    console.log("Current userData:", userData);
+  }, [userData]);
 
   // Fetch user skills for the badges
   const { data: skills = [], isLoading: isLoadingSkills } = useQuery<any[]>({
-    queryKey: [`/api/users/${userId}/skills`],
-    enabled: !!userId && isAuthenticated,
+    queryKey: [`/api/users/${userNumericId}/skills`],
+    queryFn: async () => {
+      if (!userNumericId) return [];
+      const response = await apiRequest('GET', `/api/users/${userNumericId}/skills`);
+      return await response.json();
+    },
+    enabled: !!userNumericId && isAuthenticated,
     staleTime: 1000, // Consider data stale after 1 second to force refresh
     refetchOnMount: true,
     refetchOnWindowFocus: true,
@@ -442,8 +455,13 @@ export default function Profile() {
   
   // Fetch user experiences for profile completion calculation
   const { data: experiences = [], isLoading: isLoadingExperiences } = useQuery<any[]>({
-    queryKey: [`/api/users/${userId}/experiences`],
-    enabled: !!userId && isAuthenticated,
+    queryKey: [`/api/users/${userNumericId}/experiences`],
+    queryFn: async () => {
+      if (!userNumericId) return [];
+      const response = await apiRequest('GET', `/api/users/${userNumericId}/experiences`);
+      return await response.json();
+    },
+    enabled: !!userNumericId && isAuthenticated,
     staleTime: 1000,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
@@ -451,8 +469,13 @@ export default function Profile() {
   
   // Fetch user educations for profile completion calculation
   const { data: educations = [], isLoading: isLoadingEducations } = useQuery<any[]>({
-    queryKey: [`/api/users/${userId}/educations`],
-    enabled: !!userId && isAuthenticated,
+    queryKey: [`/api/users/${userNumericId}/educations`],
+    queryFn: async () => {
+      if (!userNumericId) return [];
+      const response = await apiRequest('GET', `/api/users/${userNumericId}/educations`);
+      return await response.json();
+    },
+    enabled: !!userNumericId && isAuthenticated,
     staleTime: 1000,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
@@ -460,8 +483,13 @@ export default function Profile() {
   
   // Fetch user projects for profile completion calculation
   const { data: projects = [], isLoading: isLoadingProjects } = useQuery<any[]>({
-    queryKey: [`/api/users/${userId}/projects`],
-    enabled: !!userId && isAuthenticated,
+    queryKey: [`/api/users/${userNumericId}/projects`],
+    queryFn: async () => {
+      if (!userNumericId) return [];
+      const response = await apiRequest('GET', `/api/users/${userNumericId}/projects`);
+      return await response.json();
+    },
+    enabled: !!userNumericId && isAuthenticated,
     staleTime: 1000,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
@@ -469,8 +497,13 @@ export default function Profile() {
   
   // Fetch user services for profile completion calculation
   const { data: services = [], isLoading: isLoadingServices } = useQuery<any[]>({
-    queryKey: ['/api/users', userId, 'services'],
-    enabled: !!userId && isAuthenticated,
+    queryKey: ['/api/users', userNumericId, 'services'],
+    queryFn: async () => {
+      if (!userNumericId) return [];
+      const response = await apiRequest('GET', `/api/users/${userNumericId}/services`);
+      return await response.json();
+    },
+    enabled: !!userNumericId && isAuthenticated,
     staleTime: 1000,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
@@ -1571,19 +1604,31 @@ export default function Profile() {
                                 experiences, 
                                 educations, 
                                 skills, 
-                                projects
+                                projects,
+                                services
                               )}%` 
                             }}
                           ></div>
                         </div>
                         <span className="text-sm font-medium text-gray-900">
-                          {calculateOverallProfileCompletion(
-                            userData, 
-                            experiences, 
-                            educations, 
-                            skills, 
-                            projects
-                          )}%
+                          {(() => {
+                            console.log("Profile Completion Data:", {
+                              userData,
+                              experiences,
+                              educations,
+                              skills,
+                              projects,
+                              services
+                            });
+                            return calculateOverallProfileCompletion(
+                              userData, 
+                              experiences, 
+                              educations, 
+                              skills, 
+                              projects,
+                              services
+                            );
+                          })()}%
                         </span>
                       </>
                     )}

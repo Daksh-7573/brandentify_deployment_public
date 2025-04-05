@@ -47,19 +47,31 @@ export function calculateOverallProfileCompletion(
   experiences: any[] = [],
   educations: any[] = [],
   skills: any[] = [],
-  projects: any[] = []
+  projects: any[] = [],
+  services: any[] = []
 ): number {
   if (!userData) return 15; // Start with a base level of completion to encourage users
   
-  // Start with basic profile completion (max 60%)
+  // Debug logs
+  console.log("Profile Completion Input:", {
+    userData: userData ? `User ID: ${userData.id}` : "No user data",
+    experiences: experiences.length,
+    educations: educations.length,
+    skills: skills.length,
+    projects: projects.length,
+    services: services.length
+  });
+  
+  // Start with basic profile completion (max 50%)
   const basicCompletion = calculateProfileCompletion(userData);
   let totalCompletion = basicCompletion;
   
-  // Add points for each collection (max 40% total)
+  // Add points for each collection (max 50% total)
   if (experiences.length > 0) totalCompletion += 10; // 10% for having experiences
   if (educations.length > 0) totalCompletion += 10; // 10% for having educations
   if (skills.length > 0) totalCompletion += 10; // 10% for having skills
   if (projects.length > 0) totalCompletion += 10; // 10% for having projects
+  if (services.length > 0) totalCompletion += 10; // 10% for having services
   
   // Ensure a minimum of 15% to encourage users
   return Math.min(Math.max(Math.round(totalCompletion), 15), 100);
