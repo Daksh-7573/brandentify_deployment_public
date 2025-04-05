@@ -1606,6 +1606,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } catch (aiError: any) {
         console.error("Error from AI API:", aiError);
         
+        // Check if it's a PDF extraction error
+        if (aiError.message && aiError.message.includes("Could not extract text from the PDF")) {
+          return res.status(400).json({
+            message: "Unable to extract text from your PDF. Please upload a different PDF or paste your resume text directly.",
+            error: "PDF_EXTRACTION_ERROR"
+          });
+        }
+        
         // Check if it's a rate limit or token limit error
         if (aiError.message && 
             (aiError.message.includes("rate_limit_exceeded") || 
