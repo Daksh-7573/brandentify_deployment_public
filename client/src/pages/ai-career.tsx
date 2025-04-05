@@ -533,7 +533,27 @@ export default function AICareerPage() {
                                     : "bg-muted"
                                 }`}
                               >
-                                <p className="text-sm break-words">{message.content}</p>
+                                {message.sender === "user" ? (
+                                  <p className="text-sm break-words">{message.content}</p>
+                                ) : (
+                                  <div className="prose prose-sm dark:prose-invert max-w-none">
+                                    {message.content.split('\n').map((line, i) => (
+                                      <p 
+                                        key={i} 
+                                        className={line.trim() === '' ? 'my-2' : 
+                                                  line.startsWith('##') ? 'font-bold text-base mt-3 mb-2' :
+                                                  line.startsWith('#') ? 'font-bold text-lg mt-4 mb-2' :
+                                                  line.startsWith('*') && line.endsWith('*') ? 'italic' :
+                                                  line.startsWith('- ') ? 'ml-2' : ''}
+                                      >
+                                        {/* Remove markdown characters for display */}
+                                        {line.startsWith('#') ? line.replace(/^#+\s/, '') :
+                                         line.startsWith('*') && line.endsWith('*') ? line.replace(/^\*|\*$/g, '') :
+                                         line}
+                                      </p>
+                                    ))}
+                                  </div>
+                                )}
                                 <div className="text-xs mt-1 opacity-70">
                                   {message.timestamp.toLocaleTimeString([], {
                                     hour: '2-digit',

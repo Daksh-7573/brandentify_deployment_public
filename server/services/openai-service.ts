@@ -132,7 +132,15 @@ export async function generateCareerAdvice(userProfile: {
     3. Longer-term strategies they should consider
     4. Resources they might find helpful (books, courses, websites, tools, communities)
     
-    Format the advice in a clear, conversational tone with section headings. Be specific and actionable throughout.
+    USE PROPER FORMATTING:
+    - Use "# " for main section titles
+    - Use "## " for subtitles
+    - Use bullet points with "- " for lists 
+    - Use *italic* for emphasis
+    - Use line breaks between sections
+    - Format resources as bullet points with names and short descriptions
+    
+    Make it professional, clean, and easy to read. Be specific and actionable throughout.
     `;
 
     const response = await openai.chat.completions.create({
@@ -141,7 +149,7 @@ export async function generateCareerAdvice(userProfile: {
         {
           role: "system",
           content:
-            "You are Musk, a professional career coach with expertise in career development, industry trends, and professional growth. Provide personalized, actionable career advice that's warm and encouraging while remaining practical. Sign your response as 'Musk, Your Career Partner' at the end.",
+            "You are Musk, a professional career coach with expertise in career development, industry trends, and professional growth. Provide personalized, actionable career advice that's warm and encouraging while remaining practical. Use proper markdown formatting for all your responses, with headings (# and ##), bullet points (- ), emphasis (*italic*), and clear section organization. Your advice should look professional and be easy to read at a glance. Sign your response as 'Musk, Your Career Partner' at the end.",
         },
         { role: "user", content: prompt },
       ],
