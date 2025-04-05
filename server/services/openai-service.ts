@@ -397,7 +397,54 @@ I'm ready to provide you with detailed, personalized analysis of your resume as 
             console.log(`Resume text length: ${extractedText.length} characters, truncated to ${truncatedText.length} characters`);
             
             userPrompt = `
-            I need an EXTREMELY detailed and personalized professional analysis of the resume text below. This must be a comprehensive, specific analysis that directly references the actual content in the resume, not generic advice. Make your response feel like it was written specifically for this individual after carefully studying their resume:
+            I need an EXTREMELY detailed and personalized professional analysis of the resume text below. This must be a comprehensive, specific analysis that directly references the actual content in the resume, not generic advice. Make your response feel like it was written specifically for this individual after carefully studying their resume.
+            
+            Analyze the resume using these critical evaluation criteria, providing a score (out of 100%) for each category and an overall score:
+            
+            1. STRUCTURE & LAYOUT (20% of total score)
+               - Clear sections: Are key sections (Summary, Experience, Skills, Education, etc.) easy to find?
+               - Readable format: Is the layout clean, professional, and not cluttered?
+               - Consistency: Are fonts, bullet styles, and date formats consistent throughout?
+            
+            2. CONTENT QUALITY (30% of total score)
+               - Profile/Objective: Is it concise, relevant, and does it highlight strengths or achievements?
+               - Work Experience: Does it show career progression? Use strong action verbs? Focus on quantifiable achievements?
+               - Skills: Are they relevant to the role/industry?
+               - Education & Certifications: Are they properly listed in reverse chronological order?
+            
+            3. RELEVANCE TO ROLE/INDUSTRY (15% of total score)
+               - Are roles and responsibilities tailored toward the desired industry?
+               - Does it use appropriate industry-specific keywords (helpful for ATS parsing)?
+            
+            4. ACHIEVEMENTS & METRICS (20% of total score)
+               - Does the resume mention measurable outcomes and quantifiable results?
+               - Are achievements backed by specific metrics (percentages, numbers, etc.)?
+            
+            5. SOFT SKILLS & PERSONALITY (10% of total score)
+               - Does the CV reflect the candidate's attitude, values, or team collaboration abilities?
+               - Are soft skills like communication, leadership, and adaptability clear from the language?
+            
+            6. ATS COMPATIBILITY (5% of total score)
+               - Is it text-based (not image-heavy)?
+               - Does it use standard headings?
+               - Does it avoid graphics or tables that might confuse ATS bots?
+            
+            ALSO IDENTIFY CRITICAL RED FLAGS:
+            - Typos, grammar issues
+            - Overuse of buzzwords without substance
+            - No accomplishments, only duties
+            - Poor alignment or inconsistent formatting
+            - Outdated information or irrelevant jobs
+            
+            FOR YOUR RESPONSE:
+            1. Begin with an overall score out of 100% and a brief summary of key strengths and areas for improvement
+            2. For each of the 6 categories above, provide:
+               - The category score (e.g., "Structure & Layout: 18/20 (90%)")
+               - Specific, detailed feedback directly referencing elements from their resume
+               - Clear, actionable recommendations for improvement
+            3. End with a prioritized list of 3-5 most important improvements they should make first
+            
+            The resume text:
             
             ${truncatedText}
             
@@ -605,7 +652,52 @@ I'm ready to provide you with detailed, personalized analysis of your resume as 
         : resumeText;
       
       userPrompt = `
-      I need an EXTREMELY detailed and personalized professional analysis of this resume. This must be a comprehensive, specific analysis that directly references the actual content in the resume, not generic advice. Make your response feel like it was written specifically for this individual after carefully studying their resume:
+      I need an EXTREMELY detailed and personalized professional analysis of this resume. This must be a comprehensive, specific analysis that directly references the actual content in the resume, not generic advice. Make your response feel like it was written specifically for this individual after carefully studying their resume.
+            
+      Analyze the resume using these critical evaluation criteria, providing a score (out of 100%) for each category and an overall score:
+      
+      1. STRUCTURE & LAYOUT (20% of total score)
+         - Clear sections: Are key sections (Summary, Experience, Skills, Education, etc.) easy to find?
+         - Readable format: Is the layout clean, professional, and not cluttered?
+         - Consistency: Are fonts, bullet styles, and date formats consistent throughout?
+      
+      2. CONTENT QUALITY (30% of total score)
+         - Profile/Objective: Is it concise, relevant, and does it highlight strengths or achievements?
+         - Work Experience: Does it show career progression? Use strong action verbs? Focus on quantifiable achievements?
+         - Skills: Are they relevant to the role/industry?
+         - Education & Certifications: Are they properly listed in reverse chronological order?
+      
+      3. RELEVANCE TO ROLE/INDUSTRY (15% of total score)
+         - Are roles and responsibilities tailored toward the desired industry?
+         - Does it use appropriate industry-specific keywords (helpful for ATS parsing)?
+      
+      4. ACHIEVEMENTS & METRICS (20% of total score)
+         - Does the resume mention measurable outcomes and quantifiable results?
+         - Are achievements backed by specific metrics (percentages, numbers, etc.)?
+      
+      5. SOFT SKILLS & PERSONALITY (10% of total score)
+         - Does the CV reflect the candidate's attitude, values, or team collaboration abilities?
+         - Are soft skills like communication, leadership, and adaptability clear from the language?
+      
+      6. ATS COMPATIBILITY (5% of total score)
+         - Is it text-based (not image-heavy)?
+         - Does it use standard headings?
+         - Does it avoid graphics or tables that might confuse ATS bots?
+      
+      ALSO IDENTIFY CRITICAL RED FLAGS:
+      - Typos, grammar issues
+      - Overuse of buzzwords without substance
+      - No accomplishments, only duties
+      - Poor alignment or inconsistent formatting
+      - Outdated information or irrelevant jobs
+      
+      FOR YOUR RESPONSE:
+      1. Begin with an overall score out of 100% and a brief summary of key strengths and areas for improvement
+      2. For each of the 6 categories above, provide:
+         - The category score (e.g., "Structure & Layout: 18/20 (90%)")
+         - Specific, detailed feedback directly referencing elements from their resume
+         - Clear, actionable recommendations for improvement
+      3. End with a prioritized list of 3-5 most important improvements they should make first
       
       ${truncatedText}
       
