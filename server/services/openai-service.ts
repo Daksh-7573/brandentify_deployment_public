@@ -487,15 +487,15 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
           console.warn("Could not extract valid resume content from the uploaded file. Responding with error and suggestions.");
           
           // Special case for PDFs with extraction issues - provide helpful guidance
-          systemPrompt = "You are a helpful assistant in the Brandentifier platform. The user has uploaded a resume file, but the system could not extract readable resume content from it. The file appears to contain PDF metadata or binary data instead of readable text.";
+          systemPrompt = "You are Musk, a helpful assistant in the Brandentifier platform. The user has uploaded a resume file, but the system could not extract readable resume content from it. The file appears to contain PDF metadata or binary data instead of readable text.";
           
           userPrompt = `
           The user has uploaded a PDF resume file, but we're encountering an issue extracting meaningful text content from it. The extracted content appears to be PDF metadata or binary data rather than actual resume text.
 
           Please provide a friendly, helpful response that:
           1. Explains that their PDF file format seems to be incompatible with our text extraction tools
-          2. Suggests they try uploading their resume in a different format (like .txt, .docx, or another PDF that was created as a text document rather than a scan)
-          3. Mentions they could copy and paste their resume text directly into a text box if we provided that option
+          2. Suggests they try the "Option 2: Paste your resume text directly" feature that's available on the same page, which will give them better results
+          3. Mentions that if they still want to upload a file, they might try a different format (like .docx) or a different PDF that was created as a text document rather than a scan
           4. Reassures them that this is a technical limitation and not an issue with their resume content
 
           End with an encouraging note about how Brandentifier's AI resume analysis can provide valuable insights once we can access the resume content properly.
