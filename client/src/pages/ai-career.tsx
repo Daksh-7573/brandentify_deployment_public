@@ -520,7 +520,7 @@ export default function AICareerPage() {
                       
                       <div className="space-y-4">
                         {/* Chat messages - fixed height container */}
-                        <div className="space-y-3 h-[300px] overflow-y-auto p-3 border border-gray-100 rounded-lg bg-gray-50/50" id="chat-container">
+                        <div className="space-y-3 h-[400px] overflow-y-auto p-4 border border-gray-100 rounded-lg bg-gray-50/30 shadow-inner" id="chat-container">
                           {chatHistory.map((message, index) => (
                             <div 
                               key={index} 
@@ -543,33 +543,52 @@ export default function AICareerPage() {
                                 ) : (
                                   <div className="prose prose-sm dark:prose-invert max-w-none">
                                     {message.content.split('\n').map((line, i) => {
-                                      // For main headings (# Title)
-                                      if (line.startsWith('# ')) {
+                                      // Detect if this is a signature line from Musk
+                                      if (line.includes("Musk, Your Career Partner")) {
                                         return (
-                                          <h2 
-                                            key={i}
-                                            className="text-lg font-bold text-primary mt-4 mb-3 pb-1 border-b"
-                                          >
-                                            {line.replace(/^# /, '')}
-                                          </h2>
+                                          <div key={i} className="mt-4 pt-3 border-t border-gray-200 text-sm text-primary/80 font-medium flex items-center">
+                                            <Sparkles className="h-4 w-4 mr-2" />
+                                            {line}
+                                          </div>
+                                        );
+                                      }
+                                      // For main headings (# Title)
+                                      else if (line.startsWith('# ')) {
+                                        return (
+                                          <div key={i} className="flex items-center gap-2 text-lg font-bold text-primary mt-5 mb-3 pb-2 border-b">
+                                            <span>{line.replace(/^# /, '')}</span>
+                                          </div>
                                         );
                                       }
                                       // For secondary headings (## Subtitle)
                                       else if (line.startsWith('## ')) {
                                         return (
-                                          <h3 
-                                            key={i}
-                                            className="text-base font-semibold mt-3 mb-2 text-foreground/90"
-                                          >
-                                            {line.replace(/^## /, '')}
-                                          </h3>
+                                          <div key={i} className="flex items-center gap-2 text-base font-semibold mt-4 mb-2 text-foreground/90">
+                                            <div className="h-1.5 w-1.5 rounded-full bg-primary"></div>
+                                            <span>{line.replace(/^## /, '')}</span>
+                                          </div>
+                                        );
+                                      }
+                                      // For numbered list items (1. Item, 2. Item, etc.)
+                                      else if (/^\d+\.\s/.test(line)) {
+                                        // Safe extraction of the number with proper null check
+                                        const matchResult = line.match(/^\d+/);
+                                        const number = matchResult && matchResult[0] ? matchResult[0] : "•";
+                                        const text = line.replace(/^\d+\.\s/, '');
+                                        return (
+                                          <div key={i} className="flex items-start my-1.5 pl-1">
+                                            <div className="flex items-center justify-center min-w-[22px] h-[22px] rounded-full bg-primary/10 text-primary text-xs font-medium mr-2">
+                                              {number}
+                                            </div>
+                                            <p className="m-0 mt-0.5">{text}</p>
+                                          </div>
                                         );
                                       }
                                       // For bullet points (- Item)
                                       else if (line.startsWith('- ')) {
                                         return (
-                                          <div key={i} className="flex items-start space-x-2 my-1">
-                                            <div className="text-primary mt-1">•</div>
+                                          <div key={i} className="flex items-start space-x-2 my-1.5 pl-1">
+                                            <div className="text-primary mt-1.5 text-lg">•</div>
                                             <p className="m-0">{line.replace(/^- /, '')}</p>
                                           </div>
                                         );
@@ -577,7 +596,7 @@ export default function AICareerPage() {
                                       // For italic text (*text*)
                                       else if (line.startsWith('*') && line.endsWith('*')) {
                                         return (
-                                          <p key={i} className="my-1 italic text-muted-foreground">
+                                          <p key={i} className="my-1.5 italic text-muted-foreground">
                                             {line.replace(/^\*|\*$/g, '')}
                                           </p>
                                         );
@@ -588,7 +607,7 @@ export default function AICareerPage() {
                                       }
                                       // For normal text
                                       else {
-                                        return <p key={i} className="my-1">{line}</p>;
+                                        return <p key={i} className="my-1.5 leading-relaxed">{line}</p>;
                                       }
                                     })}
                                   </div>
@@ -605,40 +624,35 @@ export default function AICareerPage() {
                         </div>
                         
                         {/* Chat input */}
-                        <div className="flex items-end gap-2">
-                          <div className="flex-1">
-                            <Textarea
-                              value={chatMessage}
-                              onChange={(e) => setChatMessage(e.target.value)}
-                              placeholder="Ask Musk a follow-up question about your career..."
-                              className="resize-none min-h-[80px]"
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter' && !e.shiftKey) {
-                                  e.preventDefault();
-                                  if (chatMessage.trim() && !chatMessageMutation.isPending) {
-                                    // Add user message to chat history
-                                    setChatHistory(prev => [...prev, {
-                                      content: chatMessage,
-                                      sender: "user",
-                                      timestamp: new Date()
-                                    }]);
-                                    
-                                    // Send message to AI
-                                    chatMessageMutation.mutate(chatMessage);
-                                    
-                                    // Clear input
-                                    setChatMessage("");
-                                  }
+                        <div className="relative">
+                          <Textarea
+                            value={chatMessage}
+                            onChange={(e) => setChatMessage(e.target.value)}
+                            placeholder="Ask Musk a follow-up question about your career..."
+                            className="resize-none min-h-[80px] pr-14 border-gray-200 focus-visible:ring-primary/70"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault();
+                                if (chatMessage.trim() && !chatMessageMutation.isPending) {
+                                  // Add user message to chat history
+                                  setChatHistory(prev => [...prev, {
+                                    content: chatMessage,
+                                    sender: "user",
+                                    timestamp: new Date()
+                                  }]);
+                                  
+                                  // Send message to AI
+                                  chatMessageMutation.mutate(chatMessage);
+                                  
+                                  // Clear input
+                                  setChatMessage("");
                                 }
-                              }}
-                            />
-                            <p className="text-xs text-muted-foreground mt-1">
-                              Press Enter to send, Shift+Enter for new line
-                            </p>
-                          </div>
+                              }
+                            }}
+                          />
                           <Button 
                             size="icon" 
-                            className="h-10 w-10"
+                            className="h-8 w-8 absolute right-3 bottom-3 rounded-full"
                             onClick={() => {
                               if (chatMessage.trim() && !chatMessageMutation.isPending) {
                                 // Add user message to chat history
@@ -663,6 +677,9 @@ export default function AICareerPage() {
                               <Send className="h-4 w-4" />
                             )}
                           </Button>
+                          <p className="text-xs text-muted-foreground mt-1 ml-1">
+                            Press Enter to send, Shift+Enter for new line
+                          </p>
                         </div>
                       </div>
                     </div>
