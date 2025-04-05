@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, Send } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -23,6 +23,40 @@ export default function AICareerPage() {
   const { toast } = useToast();
   const [resumeText, setResumeText] = useState(""); // Add this back for file upload
   const [activeTab, setActiveTab] = useState("career");
+  
+  // Chat message mutation
+  const chatMessageMutation = useMutation({
+    mutationFn: async (message: string) => {
+      const res = await apiRequest("POST", "/api/chat-messages", {
+        userId: DEMO_USER_ID,
+        content: message,
+        messageType: "career_advice",
+        sender: "user"
+      });
+      return res.json();
+    },
+    onSuccess: (data) => {
+      // Add AI response to chat history
+      setTimeout(() => {
+        setChatHistory(prev => [...prev, {
+          content: data.aiResponse || "I'm analyzing your question. Let me think about this based on your profile and career goals.",
+          sender: "musk",
+          timestamp: new Date()
+        }]);
+      }, 1000); // Simulate AI thinking time
+      
+      queryClient.invalidateQueries({
+        queryKey: ["/api/users", DEMO_USER_ID, "chat-messages"]
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error sending message",
+        description: "Failed to send message. Please try again.",
+        variant: "destructive"
+      });
+    }
+  });
   const { user, isAuthenticated, isLoading } = useAuth();
   const [_, setLocation] = useLocation();
 
@@ -42,6 +76,9 @@ export default function AICareerPage() {
   const [careerAdviceType, setCareerAdviceType] = useState<string>("");
   const [customAdviceText, setCustomAdviceText] = useState<string>("");
   const [showCustomTextInput, setShowCustomTextInput] = useState<boolean>(false);
+  const [showChatWindow, setShowChatWindow] = useState<boolean>(false);
+  const [chatMessage, setChatMessage] = useState<string>("");
+  const [chatHistory, setChatHistory] = useState<Array<{content: string, sender: "user" | "musk", timestamp: Date}>>([]);
 
   // Career advice mutation
   const careerAdviceMutation = useMutation({
@@ -53,7 +90,7 @@ export default function AICareerPage() {
       });
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast({
         title: "Career advice generated",
         description: "Your personalized career advice has been generated."
@@ -61,6 +98,16 @@ export default function AICareerPage() {
       queryClient.invalidateQueries({
         queryKey: ["/api/users", DEMO_USER_ID, "chat-messages"]
       });
+      
+      // Show chat window with initial AI message
+      setShowChatWindow(true);
+      
+      // Add AI's initial message to chat history
+      setChatHistory(prev => [...prev, {
+        content: data.advice || "I've analyzed your profile and career goals. What specific questions do you have?",
+        sender: "musk",
+        timestamp: new Date()
+      }]);
     },
     onError: (error: Error) => {
       const isApiKeyMissing = error.message.includes("API key");
@@ -442,6 +489,104 @@ export default function AICareerPage() {
                     </div>
                   );
                 })()}
+                
+                {/* Chat Interface with Musk */}
+                {showChatWindow && activeTab === "career" && (
+                  <div className="mt-6">
+                    <div className="bg-gray-50 border rounded-lg p-4">
+                      <h3 className="text-lg font-medium mb-4">Ask Follow-up Questions</h3>
+                      
+                      <div className="space-y-4">
+                        {/* Chat messages */}
+                        <div className="space-y-3 max-h-[400px] overflow-y-auto p-2">
+                          {chatHistory.map((message, index) => (
+                            <div 
+                              key={index} 
+                              className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
+                            >
+                              <div 
+                                className={`max-w-[80%] p-3 rounded-lg ${
+                                  message.sender === "user" 
+                                    ? "bg-primary text-primary-foreground" 
+                                    : "bg-muted"
+                                }`}
+                              >
+                                <p className="text-sm break-words">{message.content}</p>
+                                <div className="text-xs mt-1 opacity-70">
+                                  {message.timestamp.toLocaleTimeString([], {
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        
+                        {/* Chat input */}
+                        <div className="flex items-end gap-2">
+                          <div className="flex-1">
+                            <Textarea
+                              value={chatMessage}
+                              onChange={(e) => setChatMessage(e.target.value)}
+                              placeholder="Ask Musk a follow-up question about your career..."
+                              className="resize-none min-h-[80px]"
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                  e.preventDefault();
+                                  if (chatMessage.trim() && !chatMessageMutation.isPending) {
+                                    // Add user message to chat history
+                                    setChatHistory(prev => [...prev, {
+                                      content: chatMessage,
+                                      sender: "user",
+                                      timestamp: new Date()
+                                    }]);
+                                    
+                                    // Send message to AI
+                                    chatMessageMutation.mutate(chatMessage);
+                                    
+                                    // Clear input
+                                    setChatMessage("");
+                                  }
+                                }
+                              }}
+                            />
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Press Enter to send, Shift+Enter for new line
+                            </p>
+                          </div>
+                          <Button 
+                            size="icon" 
+                            className="h-10 w-10"
+                            onClick={() => {
+                              if (chatMessage.trim() && !chatMessageMutation.isPending) {
+                                // Add user message to chat history
+                                setChatHistory(prev => [...prev, {
+                                  content: chatMessage,
+                                  sender: "user",
+                                  timestamp: new Date()
+                                }]);
+                                
+                                // Send message to AI
+                                chatMessageMutation.mutate(chatMessage);
+                                
+                                // Clear input
+                                setChatMessage("");
+                              }
+                            }}
+                            disabled={!chatMessage.trim() || chatMessageMutation.isPending}
+                          >
+                            {chatMessageMutation.isPending ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Send className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
