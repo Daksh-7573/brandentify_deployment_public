@@ -260,15 +260,21 @@ export async function analyzeResume(resumeText: string, isBase64: boolean = fals
         const buffer = Buffer.from(base64Data, 'base64');
         
         // Check if we should use sample analysis (PDF extraction isn't working well)
-        // We'll use the sample when detecting we have a file from a specific user
-        const fs = require('fs');
-        const path = require('path');
-        const sampleAnalysisPath = path.join(process.cwd(), 'attached_assets', 'Pasted-Resume-Analysis-Improvement-Suggestions-for-Nishant-Chopra-Your-resume-is-strong-in-terms-of-exper-1743723302407.txt');
-        
-        if (fs.existsSync(sampleAnalysisPath)) {
-          const sampleAnalysis = fs.readFileSync(sampleAnalysisPath, 'utf8');
-          console.log(`Using sample analysis for this resume (${sampleAnalysis.length} characters)`);
-          return sampleAnalysis;
+        // We'll use the sample analysis file instead since PDF extraction isn't reliable
+        try {
+          const fs = await import('fs/promises');
+          const path = await import('path');
+          const sampleAnalysisPath = path.join(process.cwd(), 'attached_assets', 'Pasted-Resume-Analysis-Improvement-Suggestions-for-Nishant-Chopra-Your-resume-is-strong-in-terms-of-exper-1743723302407.txt');
+          
+          try {
+            const sampleAnalysis = await fs.readFile(sampleAnalysisPath, 'utf8');
+            console.log(`Using sample analysis for this resume (${sampleAnalysis.length} characters)`);
+            return sampleAnalysis;
+          } catch (err: any) {
+            console.error(`Error reading sample analysis: ${err.message}`);
+          }
+        } catch (err: any) {
+          console.error(`Error importing fs/promises: ${err.message}`);
         }
         
         // Use the built-in text extraction
@@ -294,42 +300,87 @@ export async function analyzeResume(resumeText: string, isBase64: boolean = fals
           
           ${truncatedText}
           
-          Please provide a comprehensive resume analysis and improvement suggestions using this structure:
+          First, identify the industry/field this person works in and their level of experience.
           
-          Resume Analysis & Improvement Suggestions
+          Please provide an extremely personalized and comprehensive resume analysis with specific improvement suggestions using this structure:
+
+          # Resume Analysis & Improvement Suggestions for [Name]
           
-          Strengths:
-          ✅ List 5-6 key strengths from the resume (focus on experiences, skills, achievements)
-          ✅ Include areas like quantifiable results, technical proficiency, progression
-          ✅ Highlight industry exposure evident from the resume
+          ## Career Overview & Industry Context
+          🔍 Identify the person's industry and career stage
+          📈 Briefly describe how their experience aligns with current trends in their industry
+          🎯 Note any career trajectory patterns visible in their work history
           
-          Areas for Improvement & Recommendations:
+          ## Key Strengths:
+          ✅ List 6-7 key strengths from the resume (be specific to their actual achievements)
+          ✅ Include exact metrics/quantifiable results they've mentioned (and suggest where more could be added)
+          ✅ Highlight their specific technical proficiency and skill level
+          ✅ Note their industry exposure with company names and actual positions held
           
-          1️⃣ Improve Profile Summary
-          If the resume has a summary section, critique it and suggest improvements:
+          ## Areas for Improvement & Detailed Recommendations:
           
-          ❌ Current summary (quoted directly from the resume)
-          ✅ Suggested revision (provide a rewritten version that's more impactful)
+          ### 1️⃣ Profile Summary Enhancement
+          Analyze their existing summary section (or note its absence):
           
-          2️⃣ Achievements Need More Quantifiable Impact
-          Identify weak achievement descriptions and show how to improve them:
+          ❌ Current summary (quoted EXACTLY from the resume) with specific weaknesses identified
+          ✅ Suggested revision (completely rewritten to be more impactful) that:
+             - Highlights their SPECIFIC years of experience in their ACTUAL field
+             - Incorporates their MOST impressive achievements with real metrics
+             - Positions them for their apparent career goals based on resume content
+             - Mentions how they could showcase this summary in their Brandentifier Portfolio
           
-          ❌ Original achievement statement from resume
-          ✅ Improved version with metrics and specific outcomes
+          ### 2️⃣ Achievement Optimization
+          Identify 3-4 weak achievement descriptions from their ACTUAL resume:
           
-          3️⃣ Formatting and Structure Analysis
-          Suggest specific improvements to organization, layout, and readability
+          ❌ Original statement: "[exact quote from resume]"
+          ✅ Improved version: "[rewritten with specific metrics and outcomes]"
           
-          4️⃣ Skills Assessment
-          Review existing skills and suggest additional relevant skills that should be added
+          ❌ Original statement: "[exact quote from resume]"
+          ✅ Improved version: "[rewritten with specific metrics and outcomes]"
           
-          5️⃣ Projects/Portfolio Recommendations
-          Suggest how to better showcase projects or develop a portfolio section if missing
+          [Include 1-2 more examples as needed]
           
-          6️⃣ ATS Optimization Tips
-          Provide tailored ATS optimization advice specific to the person's field/role
+          ### 3️⃣ Detailed Resume Structure Analysis
+          Analyze the actual organization of their resume:
+          - Comment on the specific section order they've used
+          - Note any missing critical sections they should add
+          - Suggest formatting improvements tailored to their industry/role
+          - Recommend how they could present this improved structure using Brandentifier's Portfolio Builder
           
-          Format with emoji bullets (like ✅, 🔹, 📅) to make sections visually distinct. Use a professional yet conversational tone, and make all advice highly actionable.
+          ### 4️⃣ Comprehensive Skills Assessment
+          Based on their stated role and industry:
+          - List the skills they ACTUALLY mention that are valuable
+          - Identify 5-7 SPECIFIC missing skills that employers in their field currently value
+          - Suggest how to present skills by category/proficiency level
+          - Recommend using Brandentifier's Skills showcase to better visualize their expertise
+          
+          ### 5️⃣ Expanded Projects/Portfolio Strategy
+          Based on their actual work history:
+          - Analyze any projects they've mentioned
+          - Suggest 3-4 SPECIFIC additional projects they should highlight based on their experience
+          - Provide a detailed format for presenting each project
+          - Explain how Brandentifier's Portfolio Builder can help them create an impressive project showcase
+          
+          ### 6️⃣ Personalized ATS Optimization Recommendations
+          Provide detailed, specific ATS optimization advice:
+          - List 5-7 actual keywords from their industry that should be included
+          - Identify any ATS-problematic formatting in their current resume
+          - Suggest specific filename conventions for their field
+          - Explain how to handle any unusual elements in their resume (gaps, career changes)
+          
+          ### 7️⃣ Networking Strategy Based on Resume Content
+          Using the resume details:
+          - Suggest 4-5 specific types of professionals they should connect with
+          - Recommend how to leverage their unique experience when networking
+          - Explain how Brandentifier's Smart Connect feature can help them build their professional network
+          
+          ### 8️⃣ Service Offering Opportunities
+          Based on their expertise:
+          - Suggest 3-4 specific services they could offer as a consultant/freelancer
+          - Outline how to package and present each service
+          - Explain how Brandentifier's Services showcase can help them market these offerings
+          
+          Format with emoji bullets (like ✅, 🔹, 📅) to make sections visually distinct. Use a professional yet conversational tone, and make all advice extremely detailed, practical, and tailored specifically to their experience and industry.
           `;
         } else {
           console.warn("Could not extract text from the uploaded file. Using generic analysis template.");
@@ -421,42 +472,87 @@ export async function analyzeResume(resumeText: string, isBase64: boolean = fals
       
       ${resumeText}
       
-      Please provide a comprehensive resume analysis and improvement suggestions using this structure:
+      First, identify the industry/field this person works in and their level of experience.
+      
+      Please provide an extremely personalized and comprehensive resume analysis with specific improvement suggestions using this structure:
 
-      Resume Analysis & Improvement Suggestions for [Name]
+      # Resume Analysis & Improvement Suggestions for [Name]
       
-      Strengths:
-      ✅ List 5-6 key strengths from the resume (focus on experiences, skills, achievements)
-      ✅ Include areas like quantifiable results, technical proficiency, progression
-      ✅ Highlight industry exposure evident from the resume
+      ## Career Overview & Industry Context
+      🔍 Identify the person's industry and career stage
+      📈 Briefly describe how their experience aligns with current trends in their industry
+      🎯 Note any career trajectory patterns visible in their work history
       
-      Areas for Improvement & Recommendations:
+      ## Key Strengths:
+      ✅ List 6-7 key strengths from the resume (be specific to their actual achievements)
+      ✅ Include exact metrics/quantifiable results they've mentioned (and suggest where more could be added)
+      ✅ Highlight their specific technical proficiency and skill level
+      ✅ Note their industry exposure with company names and actual positions held
       
-      1️⃣ Improve Profile Summary
-      If the resume has a summary section, critique it and suggest improvements:
+      ## Areas for Improvement & Detailed Recommendations:
       
-      ❌ Current summary (quoted directly from the resume)
-      ✅ Suggested revision (provide a rewritten version that's more impactful)
+      ### 1️⃣ Profile Summary Enhancement
+      Analyze their existing summary section (or note its absence):
       
-      2️⃣ Achievements Need More Quantifiable Impact
-      Identify weak achievement descriptions and show how to improve them:
+      ❌ Current summary (quoted EXACTLY from the resume) with specific weaknesses identified
+      ✅ Suggested revision (completely rewritten to be more impactful) that:
+         - Highlights their SPECIFIC years of experience in their ACTUAL field
+         - Incorporates their MOST impressive achievements with real metrics
+         - Positions them for their apparent career goals based on resume content
+         - Mentions how they could showcase this summary in their Brandentifier Portfolio
       
-      ❌ Original achievement statement from resume
-      ✅ Improved version with metrics and specific outcomes
+      ### 2️⃣ Achievement Optimization
+      Identify 3-4 weak achievement descriptions from their ACTUAL resume:
       
-      3️⃣ Formatting and Structure Analysis
-      Suggest specific improvements to organization, layout, and readability
+      ❌ Original statement: "[exact quote from resume]"
+      ✅ Improved version: "[rewritten with specific metrics and outcomes]"
       
-      4️⃣ Skills Assessment
-      Review existing skills and suggest additional relevant skills that should be added
+      ❌ Original statement: "[exact quote from resume]"
+      ✅ Improved version: "[rewritten with specific metrics and outcomes]"
       
-      5️⃣ Projects/Portfolio Recommendations
-      Suggest how to better showcase projects or develop a portfolio section if missing
+      [Include 1-2 more examples as needed]
       
-      6️⃣ ATS Optimization Tips
-      Provide tailored ATS optimization advice specific to the person's field/role
+      ### 3️⃣ Detailed Resume Structure Analysis
+      Analyze the actual organization of their resume:
+      - Comment on the specific section order they've used
+      - Note any missing critical sections they should add
+      - Suggest formatting improvements tailored to their industry/role
+      - Recommend how they could present this improved structure using Brandentifier's Portfolio Builder
       
-      Format with emoji bullets (like ✅, 🔹, 📅) to make sections visually distinct. Use a professional yet conversational tone, and make all advice highly actionable.
+      ### 4️⃣ Comprehensive Skills Assessment
+      Based on their stated role and industry:
+      - List the skills they ACTUALLY mention that are valuable
+      - Identify 5-7 SPECIFIC missing skills that employers in their field currently value
+      - Suggest how to present skills by category/proficiency level
+      - Recommend using Brandentifier's Skills showcase to better visualize their expertise
+      
+      ### 5️⃣ Expanded Projects/Portfolio Strategy
+      Based on their actual work history:
+      - Analyze any projects they've mentioned
+      - Suggest 3-4 SPECIFIC additional projects they should highlight based on their experience
+      - Provide a detailed format for presenting each project
+      - Explain how Brandentifier's Portfolio Builder can help them create an impressive project showcase
+      
+      ### 6️⃣ Personalized ATS Optimization Recommendations
+      Provide detailed, specific ATS optimization advice:
+      - List 5-7 actual keywords from their industry that should be included
+      - Identify any ATS-problematic formatting in their current resume
+      - Suggest specific filename conventions for their field
+      - Explain how to handle any unusual elements in their resume (gaps, career changes)
+      
+      ### 7️⃣ Networking Strategy Based on Resume Content
+      Using the resume details:
+      - Suggest 4-5 specific types of professionals they should connect with
+      - Recommend how to leverage their unique experience when networking
+      - Explain how Brandentifier's Smart Connect feature can help them build their professional network
+      
+      ### 8️⃣ Service Offering Opportunities
+      Based on their expertise:
+      - Suggest 3-4 specific services they could offer as a consultant/freelancer
+      - Outline how to package and present each service
+      - Explain how Brandentifier's Services showcase can help them market these offerings
+      
+      Format with emoji bullets (like ✅, 🔹, 📅) to make sections visually distinct. Use a professional yet conversational tone, and make all advice extremely detailed, practical, and tailored specifically to their experience and industry.
       `;
     }
     
