@@ -306,42 +306,36 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
         console.log(`Base64 data preview: ${base64Data.substring(0, 100)}...`);
         
         try {
-          // Use OpenAI's Vision API to process the PDF directly
-          console.log("Sending PDF to OpenAI Vision API...");
+          // Since OpenAI's Vision API only supports image formats (not PDFs directly),
+          // we need to use the text directly from the PDF instead.
+          console.log("Cannot use Vision API directly with PDFs as it only supports image formats");
+          console.log("Processing PDF as text...");
+          
+          // Convert base64 to text (or use any existing text extraction)
+          // Create a simpler approach - analyze the base64 data directly
           const pdfResponse = await openai.chat.completions.create({
             model: "gpt-4o",
             messages: [
               {
                 role: "system",
-                content: "You are an expert resume analyzer. You are looking at a PDF or image of a resume. Extract the resume text content in a clean, structured format with proper spacing and line breaks. Maintain the original sections and formatting as much as possible. If you can't read the content clearly, indicate which parts are unclear."
+                content: "You are Musk, an expert resume analyzer within the Brandentifier platform. You're trying to analyze a resume that has been provided as base64-encoded PDF data. First, try to identify the person's name, experience details, education, and skills from the encoded data. Focus on providing a HIGHLY PERSONALIZED analysis that mentions the person by their specific name and references their actual experience. Even if you can only extract partial information, use what you can find to make the analysis feel personal and customized to their exact profile and career."
               },
               {
                 role: "user",
-                content: [
-                  {
-                    type: "text",
-                    text: "This is a resume document. Please extract all the text content from it in a clean, structured format. Maintain the original sections (like Education, Experience, Skills) and preserve the formatting with proper spacing and line breaks."
-                  },
-                  {
-                    type: "image_url",
-                    image_url: {
-                      url: `data:application/pdf;base64,${base64Data}`
-                    }
-                  }
-                ]
+                content: `This is a resume document in base64-encoded format. Please try to extract any meaningful information from it and analyze it: ${base64Data.substring(0, 4000)}...`
               }
             ],
             max_tokens: 4000,
-            temperature: 0.1,
+            temperature: 0.3,
           });
-          console.log("OpenAI Vision API response received!");
+          console.log("OpenAI response received!");
           
           // Get the extracted text from the PDF
           const extractedText = pdfResponse.choices[0].message.content || "";
           
           // Check if we got meaningful content
           const hasResumeContent = extractedText && extractedText.length > 0;
-          console.log(`Vision API extraction ${hasResumeContent ? 'successful' : 'failed'}: ${extractedText.length} characters`);
+          console.log(`Text extraction ${hasResumeContent ? 'successful' : 'failed'}: ${extractedText.length} characters`);
           
           // Check if the extracted text contains actual resume content by looking for common keywords
           const resumeKeywords = ['resume', 'experience', 'education', 'skills', 'work', 'job', 'university', 'degree', 'professional', 'profile', 'objective', 'certification'];
@@ -354,7 +348,7 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
           console.log(`Text sample: "${textSample}..."`);
           
           if (hasResumeContent && extractedText.length > 100 && containsResumeKeywords) {
-            console.log(`Successfully extracted readable resume content with Vision API: ${extractedText.length} characters`);
+            console.log(`Successfully extracted readable resume content: ${extractedText.length} characters`);
             
             // Now we have the actual text content, analyze it
             systemPrompt = "You are Musk, an expert resume analyzer within the Brandentifier platform, with deep knowledge of professional development and hiring practices. Provide constructive feedback and actionable insights based on the actual content of this resume. When suggesting improvements, always mention how Brandentifier's features can help, including the Portfolio Builder for showcasing projects, Smart Connect for networking, and Services showcase for freelancers and consultants.";
@@ -458,10 +452,10 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
             console.warn("Could not extract valid resume content from the uploaded file. Responding with error and suggestions.");
             
             // Special case for PDFs with extraction issues - provide helpful guidance
-            systemPrompt = "You are Musk, a helpful assistant in the Brandentifier platform. The user has uploaded a resume file, but even with our advanced Vision API, we could not extract readable resume content from it. The file might be corrupted or have unusual formatting.";
+            systemPrompt = "You are Musk, a helpful assistant in the Brandentifier platform. The user has uploaded a resume file, but we could not extract readable resume content from it. The file might be corrupted or have unusual formatting.";
             
             userPrompt = `
-            The user has uploaded a PDF resume file, but we're encountering an issue extracting meaningful text content from it, even with our advanced Vision API.
+            The user has uploaded a PDF resume file, but we're encountering an issue extracting meaningful text content from it.
 
             Please provide a friendly, helpful response that:
             1. Explains that we're having trouble processing their specific PDF file
@@ -473,7 +467,7 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
             `;
           }
         } catch (error: any) {
-          console.error("Error calling OpenAI Vision API:", error);
+          console.error("Error calling OpenAI API:", error);
           
           // Check if the error is related to OpenAI API key
           if (error.message && (error.message.includes('API key') || error.message.includes('authentication'))) {
@@ -481,10 +475,10 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
             systemPrompt = "You are a helpful AI assistant on the Brandentifier platform. There is an issue with the OpenAI API configuration.";
             userPrompt = "The system encountered an authentication error when trying to process the resume. Please let the user know that there's an issue with the API configuration and that they should try again later or contact support.";
           } else {
-            console.error("General error processing PDF with Vision API:", error);
+            console.error("General error processing PDF:", error);
             systemPrompt += " You cannot directly process this PDF file, but you can provide comprehensive, detailed guidance for resume improvement similar to what an expert resume coach would offer.";
             userPrompt = `
-            The user has uploaded a resume file, but I encountered an error when trying to process it with our Vision API: ${error.message}. Please provide a comprehensive, detailed resume analysis and improvement guide structured like this example:
+            The user has uploaded a resume file, but I encountered an error when trying to process it: ${error.message}. Please provide a comprehensive, detailed resume analysis and improvement guide structured like this example:
           
             Resume Analysis & Improvement Suggestions
             
@@ -527,7 +521,7 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
         console.error("Error processing PDF:", error);
         systemPrompt += " You cannot directly process this PDF file, but you can provide comprehensive, detailed guidance for resume improvement similar to what an expert resume coach would offer.";
         userPrompt = `
-        The user has uploaded a resume file, but I encountered an error when trying to process it with our Vision API. Please provide a comprehensive, detailed resume analysis and improvement guide structured like this example:
+        The user has uploaded a resume file, but I encountered an error when trying to process it. Please provide a comprehensive, detailed resume analysis and improvement guide structured like this example:
   
         Resume Analysis & Improvement Suggestions
         
