@@ -443,7 +443,9 @@ export default function AICareerPage() {
               </div>
               
               <div className="lg:col-span-2">
-                <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Your AI Insights</h2>
+                <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">
+                  {activeTab === "career" ? "Your Career Insights" : "Your Resume Analysis"}
+                </h2>
                 
                 {messagesLoading ? (
                   <div className="flex justify-center py-8 sm:py-12 border rounded-lg bg-muted/10">
@@ -484,7 +486,6 @@ export default function AICareerPage() {
                         <Card key={message.id} className="p-4 sm:p-6 overflow-hidden">
                           <div className="flex justify-between items-start mb-3 sm:mb-4">
                             <div>
-                              <h3 className="font-medium">{getMessageTypeLabel(message.messageType)}</h3>
                               <p className="text-xs text-muted-foreground">
                                 {formatTimestamp(message.timestamp)}
                               </p>
