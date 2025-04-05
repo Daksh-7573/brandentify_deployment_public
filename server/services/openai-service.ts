@@ -295,7 +295,27 @@ export async function analyzeResume(resumeText: string, isBase64: boolean = fals
         const textSample = extractedText.substring(0, 200).replace(/\n/g, ' ');
         console.log(`Text sample: "${textSample}..."`);
         
-        if (hasResumeContent && (containsResumeKeywords || extractedText.length > 500)) {
+        // Check if the text seems to be PDF metadata/noise
+        const pdfNoisePatterns = [
+          /node\d+/g,                 // Node IDs
+          /xmp\.did:/g,               // XMP identifiers
+          /uuid:/g,                   // UUID markers
+          /D:\d{14}/g,                // Date stamps
+        ];
+        
+        // Count noise matches
+        const noiseMatches = pdfNoisePatterns.reduce((count, pattern) => {
+          const matches = extractedText.match(pattern);
+          return count + (matches ? matches.length : 0);
+        }, 0);
+        
+        // Calculate noise ratio - if more than 10% of extracted strings are noise, it's likely not valid resume content
+        const noiseRatio = extractedText.length > 0 ? noiseMatches / (extractedText.length / 20) : 0;
+        const isProbablyPdfNoise = noiseRatio > 0.1;
+        
+        console.log(`Noise analysis: ${noiseMatches} noise patterns found, ratio: ${noiseRatio}, isProbablyPdfNoise: ${isProbablyPdfNoise}`);
+        
+        if (hasResumeContent && (containsResumeKeywords || extractedText.length > 500) && !isProbablyPdfNoise) {
           console.log(`Successfully extracted readable resume content: ${extractedText.length} characters`);
           
           // Now we have the actual text content, analyze it
@@ -397,45 +417,21 @@ export async function analyzeResume(resumeText: string, isBase64: boolean = fals
           Format with emoji bullets (like ✅, 🔹, 📅) to make sections visually distinct. Use a professional yet conversational tone, and make all advice extremely detailed, practical, and tailored specifically to their experience and industry.
           `;
         } else {
-          console.warn("Could not extract text from the uploaded file. Using generic analysis template.");
-          systemPrompt += " Provide comprehensive, detailed guidance for resume improvement similar to what an expert resume coach would offer.";
+          console.warn("Could not extract valid resume content from the uploaded file. Responding with error and suggestions.");
+          
+          // Special case for PDFs with extraction issues - provide helpful guidance
+          systemPrompt = "You are a helpful assistant in the Brandentifier platform. The user has uploaded a resume file, but the system could not extract readable resume content from it. The file appears to contain PDF metadata or binary data instead of readable text.";
+          
           userPrompt = `
-          The user has uploaded a resume file, but I cannot access all the content details. Please provide a comprehensive, detailed resume analysis and improvement guide structured like this example:
-    
-          Resume Analysis & Improvement Suggestions
-          
-          Strengths:
-          ✅ List 5-6 common strengths seen in professional resumes
-          ✅ Include specific areas like quantifiable achievements, technical skills, career progression
-          ✅ Mention industry exposure benefits
-          
-          Areas for Improvement & Recommendations:
-          
-          1️⃣ Improve Profile Summary
-          Show examples of weak vs. strong profile summaries:
-          
-          ❌ Current (example of a generic summary)
-          ✅ Suggested Revision (example of a strong summary with specifics)
-          
-          2️⃣ Achievements Need More Quantifiable Impact
-          Provide specific examples:
-          
-          ❌ Generic achievement example
-          ✅ Achievement with metrics (e.g., "Led full-cycle product development for 5+ AI-powered products, achieving a 30% reduction in time-to-market")
-          
-          3️⃣ Better Formatting for Readability
-          Specific formatting tips for modern resumes
-          
-          4️⃣ Improve "Skills" Section
-          Suggested structure with modern skills relevant to various roles
-          
-          5️⃣ "Projects" Section Recommendations
-          Show how to structure a projects section with examples
-          
-          6️⃣ ATS Optimization Tips
-          Explain how to make resumes ATS-friendly with examples
-          
-          Make this extremely actionable, detailed, and formatted with emoji bullets (like ✅, 🔹, 📅) to make sections visually distinct. Use a professional yet conversational tone.
+          The user has uploaded a PDF resume file, but we're encountering an issue extracting meaningful text content from it. The extracted content appears to be PDF metadata or binary data rather than actual resume text.
+
+          Please provide a friendly, helpful response that:
+          1. Explains that their PDF file format seems to be incompatible with our text extraction tools
+          2. Suggests they try uploading their resume in a different format (like .txt, .docx, or another PDF that was created as a text document rather than a scan)
+          3. Mentions they could copy and paste their resume text directly into a text box if we provided that option
+          4. Reassures them that this is a technical limitation and not an issue with their resume content
+
+          End with an encouraging note about how Brandentifier's AI resume analysis can provide valuable insights once we can access the resume content properly.
           `;
         }
       } catch (error) {

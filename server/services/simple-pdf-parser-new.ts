@@ -108,8 +108,39 @@ function basicPdfTextExtraction(fileBuffer: Buffer): string {
     const textContentPattern = /\(([^()]*(?:\([^()]*\)[^()]*)*)\)/g;
     const matches = pdfText.match(textContentPattern) || [];
     
+    // Create a list of common PDF metadata markers and noise patterns
+    const noisePatterns = [
+      /node\d+/g,                   // Node IDs
+      /D:\d{14}[-+]\d{2}'\d{2}'/g,  // Date stamps
+      /uuid:\S+/g,                  // UUID markers
+      /xmp\.did:\S+/g,              // XMP identifiers
+      /xmp\.iid:\S+/g,              // More XMP identifiers
+      /adobe:docid:\S+/g,           // Adobe document IDs
+      /^[A-Z][a-z]+ [A-Z][a-z]+$/,  // Just names (like "John Doe" alone)
+      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/g, // Isolated emails
+      /[A-Z0-9]{10,}/g,             // Random long strings of uppercase/numbers
+      /adobe\S*/gi,                 // Adobe metadata
+      /acrobat\S*/gi,               // Acrobat references
+      /^en\s/g,                     // 'en' prefixes for language markers
+      /\bTJ\b|\bTm\b|\bTf\b|\bTc\b|\bTw\b|\bTz\b|\bBT\b|\bET\b/g, // PDF operators
+    ];
+
+    // Filter out matches that are just PDF operators or metadata
+    const filteredMatches = matches.filter(match => {
+      // Skip if the content is too small (likely not real content)
+      const content = match.slice(1, -1);
+      if (content.length < 2) return false;
+      
+      // Skip if the content is likely metadata or noise
+      for (const pattern of noisePatterns) {
+        if (content.match(pattern)) return false;
+      }
+      
+      return true;
+    });
+    
     // Extract text from parentheses (simplified PDF text extraction)
-    extractedText = matches
+    extractedText = filteredMatches
       .map(match => match.slice(1, -1)) // Remove surrounding parentheses
       .join(' ')
       .replace(/\\(\d{3})/g, (match, octal) => String.fromCharCode(parseInt(octal, 8)))
