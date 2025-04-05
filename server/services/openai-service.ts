@@ -335,58 +335,38 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
           
           // If extraction failed, fall back to AI analysis
           if (!hasResumeContent) {
-            console.log("PDF extraction failed. Falling back to AI analysis of the binary data");
+            console.log("PDF extraction failed. Falling back to direct vision analysis of the PDF");
             
-            // Fall back to AI analysis as a last resort
+            // Convert binary data to base64 for sending in the image_url
+            const base64Pdf = pdfBuffer.toString('base64');
+            
+            // Send the entire PDF to Vision API for direct analysis
             const pdfResponse = await openai.chat.completions.create({
-              model: MODEL,
+              model: "gpt-4o", // gpt-4o has vision capabilities  
               messages: [
                 {
                   role: "system",
-                  content: "You are Musk, an expert resume analyzer within the Brandentifier platform. The user has uploaded a PDF resume file that needs analysis. Even though the PDF text extraction failed, you should provide a comprehensive resume analysis demonstration that shows the user what they would get with a successful analysis. Create a detailed, well-formatted resume analysis using the example structure below, but make it clear this is a demonstration of the capabilities they would receive with correctly processed text input. Emphasize they should try pasting the resume text directly or uploading a different format, while showcasing the detailed analysis format they'll receive."
+                  content: "You are Musk, an expert resume analyzer within the Brandentifier platform. You need to extract text from the PDF image provided and then analyze it as a resume. First extract all visible text, paying special attention to the person's name, contact information, education, work experience, skills, and projects. Then provide a personalized, detailed analysis of their resume based on what you can see in the document. Your analysis must directly reference specific experiences, skills, and background information visible in the resume. Do not make up information - only analyze what you can actually see."
                 },
                 {
                   role: "user",
-                  content: `I was unable to extract text from the user's PDF resume. Please provide a detailed, example resume analysis demonstration using the following structure. Make it clear this is a demonstration of our capabilities, but include rich, specific examples in each section to showcase what a full analysis would look like. The user should understand this is an example, but it should be impressive enough to show them what they'll get with proper text input:
-
-# Resume Analysis & Improvement Suggestions - DEMONSTRATION
-
-## Introduction (Important!)
-This is a demonstration of the detailed resume analysis you'll receive when you paste your resume text directly. Our system couldn't extract text from your PDF file, but we want to show you exactly what you'll get with a successful analysis. Try using the "Paste your resume text directly" option for a personalized analysis just like this example.
-
-## Example Analysis Structure:
-
-### Career Overview & Industry Context
-🔍 [Example of how we'd identify your industry and career stage]
-📈 [Example of how we'd analyze industry alignment]
-🎯 [Example of career trajectory insights]
-
-### Key Strengths:
-✅ [Example of quantifiable achievement analysis]
-✅ [Example of technical skill assessment]
-✅ [Example of leadership capability analysis]
-✅ [Example of industry exposure evaluation]
-✅ [Example of unique value proposition identification]
-✅ [Example of soft skill recognition]
-
-### Areas for Improvement & Detailed Recommendations:
-
-#### 1️⃣ Profile Summary Enhancement
-❌ Example Current Summary: "Experienced professional with a track record of success in delivering results."
-✅ Example Improved Summary: "Results-driven Senior Product Manager with 7+ years leading cross-functional teams in fintech. Launched 5 successful SaaS products generating $3.2M ARR and reduced time-to-market by 35% through agile implementation. Known for translating complex customer needs into intuitive product features that drive engagement and retention."
-
-#### 2️⃣ Achievement Optimization
-❌ Example Statement: "Responsible for leading the team that improved the product"
-✅ Example Improvement: "Led a cross-functional team of 8 engineers and designers to redesign core product features, resulting in 42% increase in user engagement and 27% reduction in customer churn within 3 months of launch"
-
-[Include multiple detailed examples for each section]
-
-Make all sections extremely comprehensive and ensure the demonstration is impressive enough that users will want to try pasting their resume text to get their own personalized analysis.`
+                  content: [
+                    {
+                      type: "text",
+                      text: "I've uploaded my resume as a PDF. Please analyze it carefully and provide detailed, personalized feedback based on what you can see in the document. First extract the text from the PDF, then analyze it as a resume."
+                    },
+                    {
+                      type: "image_url",
+                      image_url: {
+                        url: `data:application/pdf;base64,${base64Pdf}`
+                      }
+                    }
+                  ]
                 }
               ],
               max_tokens: 4000,
-              temperature: 0.5,  // Moderate temperature for balance between creativity and accuracy
-              top_p: 0.95,       // Diverse token selection for more varied responses
+              temperature: 0.7,  // Higher temperature for more creative analysis
+              top_p: 0.95        // Diverse token selection for more varied responses
             });
             console.log("OpenAI fallback response received!");
             
@@ -400,8 +380,6 @@ Make all sections extremely comprehensive and ensure the demonstration is impres
           
           // Check if the extracted text contains actual resume content by looking for common keywords
           const resumeKeywords = ['resume', 'experience', 'education', 'skills', 'work', 'job', 'university', 'degree', 'professional', 'profile', 'objective', 'certification'];
-          // Always set this to true for PDF uploads to ensure we provide the demo analysis
-          // This is a temporary fix until we implement better PDF extraction
           // Check if extraction worked and if it contains resume-like content
           const hasResumeKeywords = 
               extractedText.includes("experience") || 
