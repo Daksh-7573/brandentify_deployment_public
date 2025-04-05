@@ -314,11 +314,44 @@ export default function ResumeUpload() {
     });
   };
 
+  // Handle clear action to reset everything
+  const handleClear = () => {
+    // Reset file and states
+    setFile(null);
+    setParsedData(null);
+    setShowConfirmDialog(false);
+    setIsParsing(false);
+    setIsUploading(false);
+    
+    // Clear the file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+    
+    toast({
+      title: "Resume cleared",
+      description: "You can now upload a new resume for analysis.",
+    });
+  };
+
   return (
     <>
       <Card className="mb-6">
         <CardContent className="pt-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Resume</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-medium text-gray-900">Resume</h2>
+            
+            {/* Clear button to reset everything */}
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={handleClear}
+              disabled={isUploading || isParsing}
+              className="text-gray-500 hover:text-primary"
+            >
+              Clear
+            </Button>
+          </div>
           
           {/* Drop zone with drag and drop event handlers */}
           <div 
