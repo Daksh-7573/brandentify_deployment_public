@@ -156,14 +156,18 @@ export default function AICareerPage() {
       
       setResumeText("");
     },
-    onError: (error: Error) => {
-      const isApiKeyMissing = error.message.includes("API key");
+    onError: (error: any) => {
+      const isApiKeyMissing = error.message?.includes("API key");
+      const isTokenLimitError = error.response?.status === 413 || 
+                               (error.response?.data?.error === "TOKEN_LIMIT_EXCEEDED");
       
       toast({
         title: "Error analyzing resume",
         description: isApiKeyMissing 
           ? "OpenAI API key is missing. Please check your environment variables."
-          : "Failed to analyze resume. Please try again later.",
+          : isTokenLimitError
+            ? "Your resume is too large for our AI analysis. Please try with a shorter text (2500 characters or less)."
+            : "Failed to analyze resume. Please try again later.",
         variant: "destructive"
       });
     }

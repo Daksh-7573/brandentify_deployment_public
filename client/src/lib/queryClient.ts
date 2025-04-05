@@ -50,6 +50,22 @@ export async function apiRequest(
       // Log error details for debugging
       console.warn(`API request failed: ${method} ${url} - Status: ${res.status}`);
       
+      // For specific API errors, maintain the response object with the error data
+      if (res.status === 413 || res.status === 429) {
+        // Parse and attach error data to response
+        try {
+          const errorData = await res.json();
+          // Attach the error data to the response object for error handlers
+          (res as any).data = errorData;
+          
+          // Return the response with the error data
+          return res;
+        } catch (jsonError) {
+          // If we couldn't parse JSON, just continue with normal flow
+          console.error("Failed to parse error response:", jsonError);
+        }
+      }
+      
       // For network errors or server errors (5xx), retry a few times
       if ((res.status >= 500 || res.status === 0) && retries > 0) {
         console.log(`Retrying request (${retries} attempts left)...`);

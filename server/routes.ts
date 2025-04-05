@@ -1492,22 +1492,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       let analysis;
       
-      if (resumeText) {
-        // Process the raw text directly
-        console.log("Processing resume text input directly");
-        analysis = await analyzeResume({ 
-          resumeTextStart: resumeText,
-          isBase64: false,
-          isLink: false
-        } as any);
-      } else {
-        // Process the file data
-        console.log("Processing resume file data");
-        analysis = await analyzeResume({ 
-          resumeTextStart: fileData,
-          isBase64: true,
-          isLink: false
-        } as any);
+      try {
+        if (resumeText) {
+          // Process the raw text directly
+          console.log("Processing resume text input directly");
+          analysis = await analyzeResume({ 
+            resumeTextStart: resumeText,
+            isBase64: false,
+            isLink: false
+          } as any);
+        } else {
+          // Process the file data
+          console.log("Processing resume file data");
+          analysis = await analyzeResume({ 
+            resumeTextStart: fileData,
+            isBase64: true,
+            isLink: false
+          } as any);
+        }
+      } catch (aiError: any) {
+        console.error("Error from OpenAI API:", aiError);
+        
+        // Check if it's a rate limit or token limit error
+        if (aiError.message && 
+            (aiError.message.includes("rate_limit_exceeded") || 
+             aiError.message.includes("token") || 
+             aiError.message.includes("too large"))) {
+          return res.status(413).json({ 
+            message: "Your resume is too large for our AI analysis. Please try with a shorter text or a simplified version of your resume (2500 characters or less).",
+            error: "TOKEN_LIMIT_EXCEEDED"
+          });
+        }
+        
+        // If it's some other OpenAI error, rethrow to be caught by the outer catch
+        throw aiError;
       }
       
       // If userId is provided, save the analysis as a chat message

@@ -381,8 +381,9 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
           // Now we have the actual text content, analyze it
           systemPrompt = "You are Musk, an expert resume analyzer within the Brandentifier platform, with deep knowledge of professional development and hiring practices. Provide constructive feedback and actionable insights based on the actual content of this resume. When suggesting improvements, always mention how Brandentifier's features can help, including the Portfolio Builder for showcasing projects, Smart Connect for networking, and Services showcase for freelancers and consultants.";
           
-          // Limit the text to a reasonable size (around 8000 characters) to avoid token limits
-          const MAX_TEXT_LENGTH = 8000;
+          // Limit the text to a very conservative size (2500 characters) to avoid token limits
+          // This is very conservative to ensure we don't hit rate limits
+          const MAX_TEXT_LENGTH = 2500;
           const truncatedText = extractedText.length > MAX_TEXT_LENGTH 
             ? extractedText.substring(0, MAX_TEXT_LENGTH) + "...(truncated due to length)"
             : extractedText;
@@ -537,10 +538,18 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
         `;
       }
     } else {
+      // Limit the text to a very conservative size (2500 characters) to avoid token limits
+      const MAX_TEXT_LENGTH = 2500;
+      const truncatedText = resumeText.length > MAX_TEXT_LENGTH 
+        ? resumeText.substring(0, MAX_TEXT_LENGTH) + "...(truncated due to length)"
+        : resumeText;
+      
+      console.log(`Resume text length: ${resumeText.length} characters, truncated to ${truncatedText.length} characters`);
+      
       userPrompt = `
       I need a detailed professional analysis of this resume text:
       
-      ${resumeText}
+      ${truncatedText}
       
       First, identify the industry/field this person works in and their level of experience.
       
