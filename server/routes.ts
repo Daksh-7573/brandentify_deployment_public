@@ -1537,50 +1537,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
-      // Get the user's name if available, or use a default
-      const userName = req.body.userName || (user ? user.name : null) || "Nishant Chopra"; // Default to what we've seen in the UI
+      // No longer saving user name or creating any fallback response
+      console.log("No fallback response will be used - only actual OpenAI analysis");
       
-      // Create a personalized fallback response that works as real analysis but encourages direct text input
-      const fallbackResponse = `# Resume Analysis & Improvement Suggestions for ${userName}
-
-I've analyzed your resume PDF but encountered some technical limitations in extracting all the details. Here's a valuable analysis based on common patterns in professional resumes:
-
-## Resume Strengths Assessment
-✅ Strong educational credentials - Your academic background forms a solid foundation for your career path
-✅ Professional experience structure - Your work history demonstrates career progression
-✅ Technical skills presentation - Your skillset appears to be relevant to your industry
-
-## Areas for Improvement
-
-### 1️⃣ Enhance Your Professional Summary
-Your summary could be more impactful with:
-- A stronger opening statement highlighting your unique value proposition
-- Specific metrics and achievements 
-- Better alignment with target roles
-
-### 2️⃣ Quantify Your Achievements
-For maximum impact, always include metrics:
-- Revenue/cost impacts (%, $)
-- Efficiency improvements
-- Team size managed
-- Project scope and timelines
-
-### 3️⃣ Optimize for ATS Systems
-- Incorporate relevant keywords from target job descriptions
-- Use standard section headings
-- Keep formatting clean and consistent
-
-## For a complete, highly personalized analysis:
-For the most accurate and personalized analysis of your specific resume content, please use the "Paste your resume text directly" option below. I'll then provide detailed, tailored feedback on YOUR specific achievements, experience, and skills.`;
-      
-      // Create a timeout function that will resolve with our fallback, but only for file uploads
-      const timeoutMs = 65000; // 65 seconds (matching client-side timeout)
-      const timeoutPromise = new Promise<string>((resolve) => 
-        setTimeout(() => {
-          console.log("OpenAI request timed out after 65 seconds, using personalized fallback response");
-          resolve(fallbackResponse);
-        }, timeoutMs)
-      );
+      // We're removing timeouts altogether since they cause fallback responses
+      // Instead, we'll let the OpenAI API call run for as long as it needs
+      // The client-side will still have its own timeout for UI responsiveness
+      console.log("No timeout will be used - we'll wait for the real OpenAI response");
       
       let analysis: string;
       
@@ -1601,14 +1564,13 @@ For the most accurate and personalized analysis of your specific resume content,
           // Process the file data with a timeout to prevent indefinite loading
           console.log("Processing resume file data with timeout protection");
           
-          // Use Promise.race to handle timeouts for file uploads
-          const analysisPromise = analyzeResume({ 
+          // No more timeouts - we'll wait for the actual response
+          // This might take longer but will ensure we get the real OpenAI response
+          analysis = await analyzeResume({ 
             resumeTextStart: fileData,
             isBase64: true,
             isLink: false
           } as any);
-          
-          analysis = await Promise.race([analysisPromise, timeoutPromise]);
         }
       } catch (aiError: any) {
         console.error("Error from OpenAI API:", aiError);
@@ -1633,9 +1595,12 @@ For the most accurate and personalized analysis of your specific resume content,
           });
         }
         
-        // For file uploads, connection timeouts or API errors, use our personalized fallback response
-        console.log("OpenAI API error with file upload - using personalized fallback response");
-        analysis = fallbackResponse;
+        // No more fallback responses - we'll return a clear error message to the user
+        console.log("OpenAI API error with file upload - returning error message");
+        return res.status(500).json({
+          message: "There was an issue analyzing your resume file. For better results, please try pasting your resume text directly.",
+          error: "AI_SERVICE_ERROR_WITH_FILE"
+        });
       }
       
       // If userId is provided, save the analysis as a chat message
