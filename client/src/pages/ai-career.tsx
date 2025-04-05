@@ -486,7 +486,7 @@ export default function AICareerPage() {
                                     });
                                     
                                     // Add a timeout to prevent UI from being stuck if the request takes too long
-                                    const timeoutMs = 40000; // 40 seconds
+                                    const timeoutMs = 65000; // 65 seconds - slightly higher than server-side timeout of 60 seconds
                                     const timeoutPromise = new Promise((_, reject) => {
                                       setTimeout(() => {
                                         reject(new Error("Request timed out. For reliable results, please paste your resume text directly instead."));
@@ -542,19 +542,74 @@ export default function AICareerPage() {
                               }
                             }}
                           />
-                          <Button 
-                            variant="outline" 
-                            className="cursor-pointer"
-                            disabled={resumeAnalysisMutation.isPending}
-                            onClick={() => {
-                              document.getElementById('resume-file-input')?.click();
-                            }}
-                          >
-                            {resumeAnalysisMutation.isPending && (
-                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            )}
-                            Upload Resume
-                          </Button>
+                          <div className="space-y-4">
+                            <Button 
+                              variant="outline" 
+                              className="cursor-pointer"
+                              disabled={resumeAnalysisMutation.isPending}
+                              onClick={() => {
+                                document.getElementById('resume-file-input')?.click();
+                              }}
+                            >
+                              {resumeAnalysisMutation.isPending && (
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              )}
+                              Upload Resume
+                            </Button>
+                            
+                            <div className="w-full pt-6 border-t border-gray-200">
+                              <p className="text-sm text-gray-500 mb-2 font-medium">Paste your resume text directly (Recommended)</p>
+                              <p className="text-xs text-gray-400 mb-3">
+                                For more accurate and detailed analysis, paste your resume content directly
+                              </p>
+                              <Textarea
+                                value={resumeText}
+                                onChange={(e) => setResumeText(e.target.value)}
+                                placeholder="Paste your resume content here..."
+                                className="w-full min-h-[200px] mb-3"
+                              />
+                              <div className="flex justify-center">
+                                <Button
+                                  variant="default"
+                                  disabled={!resumeText.trim() || resumeAnalysisMutation.isPending}
+                                  onClick={() => {
+                                    if (!user?.id) {
+                                      toast({
+                                        title: "User not found",
+                                        description: "Please log in to analyze your resume.",
+                                        variant: "destructive"
+                                      });
+                                      return;
+                                    }
+                                    
+                                    if (!resumeText.trim()) {
+                                      toast({
+                                        title: "Empty input",
+                                        description: "Please paste your resume content before analyzing.",
+                                        variant: "destructive"
+                                      });
+                                      return;
+                                    }
+                                    
+                                    resumeAnalysisMutation.mutate({
+                                      resumeText: resumeText.trim(),
+                                      userId: user.id
+                                    });
+                                    
+                                    toast({
+                                      title: "Processing resume",
+                                      description: "Your resume is being analyzed. This may take a minute."
+                                    });
+                                  }}
+                                >
+                                  {resumeAnalysisMutation.isPending && (
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                  )}
+                                  Analyze Text Input
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </Card>

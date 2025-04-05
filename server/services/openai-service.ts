@@ -2,11 +2,11 @@ import OpenAI from "openai";
 import { WorkExperience, Education, Skill } from "@shared/schema";
 import { extractTextFromPdf } from "../utils/pdf-extractor";
 
-// Initialize OpenAI client with timeout
+// Initialize OpenAI client with extended timeout
 const openai = new OpenAI({ 
   apiKey: process.env.OPENAI_API_KEY,
-  timeout: 30000, // 30 seconds timeout
-  maxRetries: 2
+  timeout: 60000, // 60 seconds timeout
+  maxRetries: 3
 });
 
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
@@ -189,6 +189,7 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
     let resumeText: string;
     let isBase64Value: boolean = false;
     let isLinkValue: boolean = false;
+    let isDirectTextInput: boolean = false;
 
     // Handle both old and new parameter formats for backward compatibility
     if (typeof options === 'string') {
@@ -196,17 +197,20 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
       resumeText = options;
       isBase64Value = isBase64 || false;
       isLinkValue = isLink || false;
+      isDirectTextInput = !isBase64Value && !isLinkValue; // If not base64 or link, it's direct text
     } else {
       // New format: ({ resumeTextStart, isBase64, isLink })
       resumeText = options.resumeTextStart;
       isBase64Value = options.isBase64 || false;
       isLinkValue = options.isLink || false;
+      isDirectTextInput = !isBase64Value && !isLinkValue; // If not base64 or link, it's direct text
     }
 
     console.log("analyzeResume called with parameters:", { 
       resumeTextStart: resumeText ? resumeText.substring(0, 50) + "..." : "null", 
       isBase64: isBase64Value, 
-      isLink: isLinkValue 
+      isLink: isLinkValue,
+      isDirectTextInput: isDirectTextInput
     });
     
     // Check if this is a demo/example usage

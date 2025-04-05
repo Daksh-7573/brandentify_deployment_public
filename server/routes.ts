@@ -1573,11 +1573,11 @@ For maximum impact, always include metrics:
 ## For a complete, highly personalized analysis:
 For the most accurate and personalized analysis of your specific resume content, please use the "Paste your resume text directly" option below. I'll then provide detailed, tailored feedback on YOUR specific achievements, experience, and skills.`;
       
-      // Create a timeout function that will resolve with our fallback
-      const timeoutMs = 39000; // 39 seconds (just under the 40s client timeout)
+      // Create a timeout function that will resolve with our fallback, but only for file uploads
+      const timeoutMs = 65000; // 65 seconds (matching client-side timeout)
       const timeoutPromise = new Promise<string>((resolve) => 
         setTimeout(() => {
-          console.log("OpenAI request timed out after 39 seconds, using personalized fallback response");
+          console.log("OpenAI request timed out after 65 seconds, using personalized fallback response");
           resolve(fallbackResponse);
         }, timeoutMs)
       );
@@ -1586,13 +1586,17 @@ For the most accurate and personalized analysis of your specific resume content,
       
       try {
         if (resumeText) {
-          // Process the raw text directly - no timeout needed, text mode works well
-          console.log("Processing resume text input directly");
+          // Process the raw text directly - this should NEVER timeout or use fallback
+          console.log("Processing resume text input directly - this should always use OpenAI API");
+          // For text input, we don't use the fallback - we want to wait for the real OpenAI response
           analysis = await analyzeResume({ 
             resumeTextStart: resumeText,
             isBase64: false,
             isLink: false
           } as any);
+          
+          // Log completion for debugging
+          console.log("Successfully received OpenAI analysis for direct text input");
         } else {
           // Process the file data with a timeout to prevent indefinite loading
           console.log("Processing resume file data with timeout protection");
@@ -1620,8 +1624,17 @@ For the most accurate and personalized analysis of your specific resume content,
           });
         }
         
-        // For connection timeouts or API errors, use our personalized fallback response
-        console.log("OpenAI API error - using personalized fallback response");
+        // Check if this is direct text input - if so, we should NOT use the fallback response
+        if (resumeText) {
+          console.error("Error processing direct text input with OpenAI. We should retry or notify the user, not use fallback.");
+          return res.status(500).json({
+            message: "There was an issue analyzing your resume. Please try again in a few moments.",
+            error: "AI_SERVICE_ERROR"
+          });
+        }
+        
+        // For file uploads, connection timeouts or API errors, use our personalized fallback response
+        console.log("OpenAI API error with file upload - using personalized fallback response");
         analysis = fallbackResponse;
       }
       
