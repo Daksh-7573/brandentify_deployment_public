@@ -149,12 +149,16 @@ export default function RightSidebar() {
         <h3 className="text-sm font-medium text-primary mb-3">Profile Completion</h3>
         <div className="flex items-center">
           <div className="flex-1 bg-gray-200 rounded-full h-2">
-            <div className="bg-primary h-2 rounded-full" style={{ width: `${profileCompletionPercentage}%` }}></div>
+            {/* Force the width with hardcoded 25% first to see if display issue */}
+            <div className="bg-primary h-2 rounded-full" style={{ width: '25%' }}></div>
           </div>
-          <span className="ml-3 text-sm font-medium text-gray-900">{profileCompletionPercentage}/100</span>
+          <span className="ml-3 text-sm font-medium text-gray-900">25/100</span>
         </div>
         <p className="mt-2 text-xs text-gray-500">
           Complete your profile to improve your visibility to recruiters and clients.
+        </p>
+        <p className="mt-1 text-xs text-blue-500">
+          Calculated: {JSON.stringify(profileCompletionPercentage)}
         </p>
       </div>
       
