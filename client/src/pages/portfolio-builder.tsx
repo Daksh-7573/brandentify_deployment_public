@@ -322,50 +322,35 @@ export default function PortfolioBuilder() {
       id: "timeline-storyteller", 
       name: "The Timeline Storyteller", 
       description: `✔ Theme: Interactive & Storytelling-Based
-✔ Best For: Product Managers, Entrepreneurs, Creatives
-🎨 Color Palette: #FAFAFA (Soft White), #FF6B6B (Vibrant Coral Red), #FFD166 (Warm Yellow), #333333 (Deep Black)
-🖌 UI Elements: Horizontal/vertical scrolling timeline, circular profile picture at milestones, colorful progress dots
-🎬 Animations: Swipe-based scrolling, animated path with glowing career milestones`,
+✔ Best For: Product Managers, Entrepreneurs, Creatives`,
       theme: "#FF6B6B"
     },
     { 
       id: "visual-expert", 
       name: "The Visual Expert", 
       description: `✔ Theme: Image-First, Creative & Bold
-✔ Best For: Designers, Photographers, Marketers
-🎨 Color Palette: #181818 (Deep Charcoal Black), #F8C471 (Gold), #EC7063 (Warm Red), #FFFFFF (White)
-🖌 UI Elements: Masonry-style grid layout, large image thumbnails with hover animations, dark mode
-🎬 Animations: Hover zoom effect on portfolio images, parallax effect for project showcases`,
+✔ Best For: Designers, Photographers, Marketers`,
       theme: "#F8C471"
     },
     { 
       id: "corporate-executive", 
       name: "The Corporate Executive", 
       description: `✔ Theme: High-End, Premium, & Polished
-✔ Best For: Senior Executives, Investors, Industry Experts
-🎨 Color Palette: #0C1C2D (Deep Navy Blue), #DAA520 (Gold), #EAEAEA (Soft Silver), #FFFFFF (White)
-🖌 UI Elements: Card-based layout with elegant dividers, testimonial slider with executive quotes, gold gradient CTAs
-🎬 Animations: Slide-in effects for testimonials, interactive business cards with contact details`,
+✔ Best For: Senior Executives, Investors, Industry Experts`,
       theme: "#DAA520"
     },
     { 
       id: "dynamic-innovator", 
       name: "The Dynamic Innovator", 
       description: `✔ Theme: Futuristic & High-Tech
-✔ Best For: AI Experts, Engineers, Startups
-🎨 Color Palette: #000000 (Black), #0FF0FC (Neon Cyan), #FF007F (Neon Pink), #EAEAEA (Soft Gray)
-🖌 UI Elements: Glowing neon hover effects, data visualization elements, dark mode with floating UI elements
-🎬 Animations: Hacker-style glowing effects, AI-powered real-time animated skill visualization`,
+✔ Best For: AI Experts, Engineers, Startups`,
       theme: "#0FF0FC"
     },
     { 
       id: "freelancer-hub", 
       name: "The Freelancer Hub", 
       description: `✔ Theme: Vibrant & Playful
-✔ Best For: Freelancers, Influencers, Coaches
-🎨 Color Palette: #FFFFFF (White), #FF7F50 (Bright Coral), #6A0572 (Deep Purple), #333333 (Dark Gray) 
-🖌 UI Elements: Friendly rounded elements, colorful hand-drawn icons, Lobster/Nunito typography, pricing cards
-🎬 Animations: Fun bounce effects for CTAs, handwritten signature animation`,
+✔ Best For: Freelancers, Influencers, Coaches`,
       theme: "#FF7F50"
     }
   ];
