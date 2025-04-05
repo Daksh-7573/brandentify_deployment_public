@@ -475,33 +475,41 @@ export default function AICareerPage() {
                     );
                   }
                   
-                  // If we're on the resume tab, only show the most recent analysis
-                  const messagesToShow = activeTab === "resume" 
-                    ? [filteredMessages[0]] // Only the first/most recent resume analysis
-                    : filteredMessages;     // All career advice messages
-                  
-                  return (
-                    <div className="space-y-4 sm:space-y-6">
-                      {messagesToShow.map((message: any) => (
-                        <Card key={message.id} className="p-4 sm:p-6 overflow-hidden">
-                          <div className="flex justify-between items-start mb-3 sm:mb-4">
-                            <div>
-                              <p className="text-xs text-muted-foreground">
-                                {formatTimestamp(message.timestamp)}
-                              </p>
+                  // Only show card-style messages if:
+                  // 1. We're on the resume tab, OR
+                  // 2. We're on the career tab but the chat window isn't shown
+                  if (activeTab === "resume" || (activeTab === "career" && !showChatWindow)) {
+                    // If we're on the resume tab, only show the most recent analysis
+                    const messagesToShow = activeTab === "resume" 
+                      ? [filteredMessages[0]] // Only the first/most recent resume analysis
+                      : filteredMessages;     // All career advice messages
+                    
+                    return (
+                      <div className="space-y-4 sm:space-y-6">
+                        {messagesToShow.map((message: any) => (
+                          <Card key={message.id} className="p-4 sm:p-6 overflow-hidden">
+                            <div className="flex justify-between items-start mb-3 sm:mb-4">
+                              <div>
+                                <p className="text-xs text-muted-foreground">
+                                  {formatTimestamp(message.timestamp)}
+                                </p>
+                              </div>
                             </div>
-                          </div>
-                          <div className="prose max-w-none dark:prose-invert prose-sm overflow-x-auto">
-                            {message.content.split('\n').map((line: string, i: number) => (
-                              <p key={i} className={line.trim() === '' ? 'my-3 sm:my-4' : ''}>
-                                {line}
-                              </p>
-                            ))}
-                          </div>
-                        </Card>
-                      ))}
-                    </div>
-                  );
+                            <div className="prose max-w-none dark:prose-invert prose-sm overflow-x-auto">
+                              {message.content.split('\n').map((line: string, i: number) => (
+                                <p key={i} className={line.trim() === '' ? 'my-3 sm:my-4' : ''}>
+                                  {line}
+                                </p>
+                              ))}
+                            </div>
+                          </Card>
+                        ))}
+                      </div>
+                    );
+                  }
+                  
+                  // If we're on career tab with chat window shown, don't display the cards
+                  return null;
                 })()}
                 
                 {/* Chat Interface with Musk */}
