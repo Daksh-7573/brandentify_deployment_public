@@ -38,11 +38,15 @@ export default function AICareerPage() {
     }
   });
 
+  // State for career advice type
+  const [careerAdviceType, setCareerAdviceType] = useState<string>("");
+
   // Career advice mutation
   const careerAdviceMutation = useMutation({
     mutationFn: async () => {
       const res = await apiRequest("POST", "/api/ai/career-advice", {
-        userId: DEMO_USER_ID
+        userId: DEMO_USER_ID,
+        adviceType: careerAdviceType
       });
       return res.json();
     },
@@ -184,20 +188,46 @@ export default function AICareerPage() {
                   <TabsContent value="career" className="mt-2">
                     <Card className="p-4 sm:p-6">
                       <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Get Career Advice</h2>
-                      <p className="text-sm text-muted-foreground mb-5">
+                      <p className="text-sm text-muted-foreground mb-4">
                         Generate personalized career advice based on your profile. 
                         We'll analyze your work experience, skills, and education to provide tailored recommendations.
                       </p>
-                      <Button 
-                        className="w-full"
-                        onClick={() => careerAdviceMutation.mutate()}
-                        disabled={careerAdviceMutation.isPending}
-                      >
-                        {careerAdviceMutation.isPending && (
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        )}
-                        Generate Career Advice
-                      </Button>
+                      
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="career-advice-type">What do you need help with?</Label>
+                          <Select
+                            value={careerAdviceType}
+                            onValueChange={setCareerAdviceType}
+                          >
+                            <SelectTrigger id="career-advice-type">
+                              <SelectValue placeholder="Select advice type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="explore_options">Explore Career Options</SelectItem>
+                              <SelectItem value="switch_industry">Switch My Industry</SelectItem>
+                              <SelectItem value="build_skills">Build Core Skills for Future Roles</SelectItem>
+                              <SelectItem value="get_certifications">Get Certifications to Grow</SelectItem>
+                              <SelectItem value="expand_network">Expand My Professional Network</SelectItem>
+                              <SelectItem value="find_job">Find a Job</SelectItem>
+                              <SelectItem value="prepare_interviews">Prepare for Job Interviews</SelectItem>
+                              <SelectItem value="launch_startup">Launch My Own Startup</SelectItem>
+                              <SelectItem value="international">Study and Work Internationally</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        
+                        <Button 
+                          className="w-full"
+                          onClick={() => careerAdviceMutation.mutate()}
+                          disabled={careerAdviceMutation.isPending || !careerAdviceType}
+                        >
+                          {careerAdviceMutation.isPending && (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          )}
+                          Generate Career Advice
+                        </Button>
+                      </div>
                     </Card>
                   </TabsContent>
                   
