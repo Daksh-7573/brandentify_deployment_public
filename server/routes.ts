@@ -1472,14 +1472,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // AI Resume Analysis endpoint
   apiRouter.post("/ai/analyze-resume", async (req: Request, res: Response) => {
     try {
-      // Check if OPENAI_API_KEY is present
-      if (!process.env.OPENAI_API_KEY) {
-        return res.status(503).json({ 
-          message: "OpenAI service unavailable. API key is missing.",
-          requiresApiKey: true
-        });
-      }
-      
       const { userId, fileData, resumeText } = req.body;
       
       // Check if we have either file data or resume text
@@ -1521,12 +1513,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
-      // For non-demo mode, always process through OpenAI API
-      console.log("Processing user input through OpenAI for resume analysis");
-      
-      // Import OpenAI service
-      const { analyzeResume } = await import('./services/openai-service');
-      
       // Get user data if available
       let user = null;
       if (userId) {
@@ -1537,43 +1523,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
-      // No longer saving user name or creating any fallback response
-      console.log("No fallback response will be used - only actual OpenAI analysis");
-      
-      // We're removing timeouts altogether since they cause fallback responses
-      // Instead, we'll let the OpenAI API call run for as long as it needs
-      // The client-side will still have its own timeout for UI responsiveness
-      console.log("No timeout will be used - we'll wait for the real OpenAI response");
-      
       let analysis: string;
       
       try {
         if (resumeText) {
-          // Process the raw text directly - this should NEVER timeout or use fallback
-          console.log("Processing resume text input directly - this should always use OpenAI API");
-          // For text input, we don't use the fallback - we want to wait for the real OpenAI response
+          // For text input, use OpenAI
+          if (!process.env.OPENAI_API_KEY) {
+            return res.status(503).json({ 
+              message: "OpenAI service unavailable. API key is missing.",
+              requiresApiKey: true
+            });
+          }
+          
+          console.log("Processing resume text input with OpenAI");
+          const { analyzeResume } = await import('./services/openai-service');
           analysis = await analyzeResume({ 
             resumeTextStart: resumeText,
             isBase64: false,
             isLink: false
           } as any);
           
-          // Log completion for debugging
           console.log("Successfully received OpenAI analysis for direct text input");
         } else {
-          // Process the file data with a timeout to prevent indefinite loading
-          console.log("Processing resume file data with timeout protection");
+          // For PDF files, use Claude (Anthropic)
+          if (!process.env.ANTHROPIC_API_KEY) {
+            return res.status(503).json({ 
+              message: "Anthropic service unavailable. API key is missing.",
+              requiresApiKey: true
+            });
+          }
           
-          // No more timeouts - we'll wait for the actual response
-          // This might take longer but will ensure we get the real OpenAI response
-          analysis = await analyzeResume({ 
-            resumeTextStart: fileData,
-            isBase64: true,
-            isLink: false
-          } as any);
+          console.log("Processing PDF with Claude for advanced PDF analysis");
+          const { analyzeResumeWithClaude } = await import('./services/anthropic-service');
+          analysis = await analyzeResumeWithClaude(fileData);
+          
+          console.log("Successfully received Claude analysis for PDF");
         }
       } catch (aiError: any) {
-        console.error("Error from OpenAI API:", aiError);
+        console.error("Error from AI API:", aiError);
         
         // Check if it's a rate limit or token limit error
         if (aiError.message && 
@@ -1581,26 +1568,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
              aiError.message.includes("token") || 
              aiError.message.includes("too large"))) {
           return res.status(413).json({ 
-            message: "Your resume is too large for our AI analysis. Please try with a shorter text or a simplified version of your resume (2500 characters or less).",
+            message: "Your resume is too large for our AI analysis. Please try with a shorter text or a simplified version of your resume.",
             error: "TOKEN_LIMIT_EXCEEDED"
           });
         }
         
-        // Check if this is direct text input - if so, we should NOT use the fallback response
         if (resumeText) {
-          console.error("Error processing direct text input with OpenAI. We should retry or notify the user, not use fallback.");
           return res.status(500).json({
-            message: "There was an issue analyzing your resume. Please try again in a few moments.",
+            message: "There was an issue analyzing your resume text. Please try again in a few moments.",
             error: "AI_SERVICE_ERROR"
           });
+        } else {
+          return res.status(500).json({
+            message: "There was an issue analyzing your resume PDF. Please try pasting your resume text directly.",
+            error: "AI_SERVICE_ERROR_WITH_FILE"
+          });
         }
-        
-        // No more fallback responses - we'll return a clear error message to the user
-        console.log("OpenAI API error with file upload - returning error message");
-        return res.status(500).json({
-          message: "There was an issue analyzing your resume file. For better results, please try pasting your resume text directly.",
-          error: "AI_SERVICE_ERROR_WITH_FILE"
-        });
       }
       
       // If userId is provided, save the analysis as a chat message
@@ -1615,12 +1598,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       return res.json({ analysis });
     } catch (error) {
-      console.error("Error analyzing resume with OpenAI:", error);
+      console.error("Error analyzing resume:", error);
       
       // Check if headers have already been sent
       if (!res.headersSent) {
         return res.status(500).json({ 
-          message: "We encountered an issue analyzing your resume. Please try pasting your resume text directly instead of uploading a file." 
+          message: "We encountered an issue analyzing your resume. Please try again later." 
         });
       }
     }
