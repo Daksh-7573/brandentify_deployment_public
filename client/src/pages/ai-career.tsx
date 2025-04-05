@@ -364,12 +364,71 @@ export default function AICareerPage() {
                     <Card className="p-4 sm:p-6">
                       <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Resume Analysis</h2>
                       <p className="text-sm text-muted-foreground mb-4">
-                        Upload your resume file to get AI-powered analysis with suggestions for improvement by Musk.
+                        Get AI-powered resume analysis with improvement suggestions by Musk. 
+                        <span className="font-semibold"> For most reliable results, paste your resume text directly below!</span>
                       </p>
                       
-                      {/* File Upload Section */}
+                      {/* Direct Text Input Section - Promoted to top for better UX */}
+                      <div className="border-2 border-solid border-primary rounded-lg p-4 mb-6 bg-primary/5">
+                        <div className="flex flex-col items-center">
+                          <p className="text-lg text-primary font-medium mb-3 text-center">
+                            Recommended: Paste Your Resume Text
+                          </p>
+                          <p className="text-sm text-gray-500 mb-3 text-center">
+                            This direct text method provides the most accurate and reliable analysis
+                          </p>
+                          <Textarea
+                            value={resumeText}
+                            onChange={(e) => setResumeText(e.target.value)}
+                            placeholder="Paste your resume content here for the best analysis results..."
+                            className="w-full min-h-[200px] mb-3 border-primary/20"
+                          />
+                          <Button
+                            className="w-full md:w-auto"
+                            disabled={!resumeText.trim() || resumeAnalysisMutation.isPending}
+                            onClick={() => {
+                              if (!user?.id) {
+                                toast({
+                                  title: "User not found",
+                                  description: "Please log in to analyze your resume.",
+                                  variant: "destructive"
+                                });
+                                return;
+                              }
+                              
+                              if (!resumeText.trim()) {
+                                toast({
+                                  title: "Empty input",
+                                  description: "Please paste your resume content before analyzing.",
+                                  variant: "destructive"
+                                });
+                                return;
+                              }
+                              
+                              resumeAnalysisMutation.mutate({
+                                resumeText: resumeText.trim(),
+                                userId: user.id
+                              });
+                              
+                              toast({
+                                title: "Processing resume",
+                                description: "Your resume is being analyzed. This may take a moment."
+                              });
+                            }}
+                          >
+                            {resumeAnalysisMutation.isPending && (
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            )}
+                            Analyze Resume Text
+                          </Button>
+                        </div>
+                      </div>
+                      
+                      {/* File Upload Section - Now secondary option */}
                       <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-primary transition-colors">
                         <div className="flex flex-col items-center">
+                          <p className="text-sm text-gray-500 mb-2">Alternative Option: Upload Resume File</p>
+                          <p className="text-xs text-gray-400 mb-3">PDF extraction may be less reliable than direct text</p>
                           <input 
                             id="resume-file-input"
                             type="file" 
@@ -483,8 +542,6 @@ export default function AICareerPage() {
                               }
                             }}
                           />
-                          <p className="text-sm text-gray-500 mb-2">Option 1: Upload your resume file</p>
-                          <p className="text-xs text-gray-400 mb-3">Supported formats: PDF, DOCX (Max 5MB)</p>
                           <Button 
                             variant="outline" 
                             className="cursor-pointer"
@@ -498,60 +555,6 @@ export default function AICareerPage() {
                             )}
                             Upload Resume
                           </Button>
-                          
-                          <div className="w-full mt-6 pt-6 border-t border-gray-200">
-                            <p className="text-sm text-gray-500 mb-3 text-center">
-                              Option 2: Paste your resume text directly
-                            </p>
-                            <p className="text-xs text-gray-400 mb-3 text-center">
-                              Use this option if file upload doesn't work properly
-                            </p>
-                            <Textarea
-                              value={resumeText}
-                              onChange={(e) => setResumeText(e.target.value)}
-                              placeholder="Paste your resume content here..."
-                              className="w-full min-h-[200px] mb-3"
-                            />
-                            <div className="flex justify-center">
-                              <Button
-                                disabled={!resumeText.trim() || resumeAnalysisMutation.isPending}
-                                onClick={() => {
-                                  if (!user?.id) {
-                                    toast({
-                                      title: "User not found",
-                                      description: "Please log in to analyze your resume.",
-                                      variant: "destructive"
-                                    });
-                                    return;
-                                  }
-                                  
-                                  if (!resumeText.trim()) {
-                                    toast({
-                                      title: "Empty input",
-                                      description: "Please paste your resume content before analyzing.",
-                                      variant: "destructive"
-                                    });
-                                    return;
-                                  }
-                                  
-                                  resumeAnalysisMutation.mutate({
-                                    resumeText: resumeText.trim(),
-                                    userId: user.id
-                                  });
-                                  
-                                  toast({
-                                    title: "Processing resume",
-                                    description: "Your resume is being analyzed. This may take a moment."
-                                  });
-                                }}
-                              >
-                                {resumeAnalysisMutation.isPending && (
-                                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                )}
-                                Analyze Text
-                              </Button>
-                            </div>
-                          </div>
                         </div>
                       </div>
                     </Card>
