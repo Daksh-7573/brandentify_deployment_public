@@ -7,10 +7,81 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import ProfileCompletion from "@/components/common/profile-completion";
+import { calculateOverallProfileCompletion } from "@/lib/profile-utils";
+import { useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function Dashboard() {
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { user, isAuthenticated, isLoading, isDemoMode } = useAuth();
   const [_, setLocation] = useLocation();
+  
+  // Get the user ID for queries
+  const userId = isDemoMode ? 1 : user?.uid;
+  
+  // Use TanStack Query to fetch user data
+  const { data: userData } = useQuery({
+    queryKey: [`/api/users/${userId}`],
+    queryFn: async () => {
+      if (!userId) return null;
+      const response = await apiRequest('GET', `/api/users/${userId}`);
+      if (response.status === 404) return null;
+      return await response.json();
+    },
+    enabled: !!userId
+  });
+  
+  // Fetch user experiences
+  const { data: experiences = [] } = useQuery({
+    queryKey: [`/api/users/${userId}/experiences`],
+    queryFn: async () => {
+      if (!userId) return [];
+      const response = await apiRequest('GET', `/api/users/${userId}/experiences`);
+      return await response.json();
+    },
+    enabled: !!userId
+  });
+  
+  // Fetch user education
+  const { data: educations = [] } = useQuery({
+    queryKey: [`/api/users/${userId}/educations`],
+    queryFn: async () => {
+      if (!userId) return [];
+      const response = await apiRequest('GET', `/api/users/${userId}/educations`);
+      return await response.json();
+    },
+    enabled: !!userId
+  });
+  
+  // Fetch user skills
+  const { data: skills = [] } = useQuery({
+    queryKey: [`/api/users/${userId}/skills`],
+    queryFn: async () => {
+      if (!userId) return [];
+      const response = await apiRequest('GET', `/api/users/${userId}/skills`);
+      return await response.json();
+    },
+    enabled: !!userId
+  });
+  
+  // Fetch user projects
+  const { data: projects = [] } = useQuery({
+    queryKey: [`/api/users/${userId}/projects`],
+    queryFn: async () => {
+      if (!userId) return [];
+      const response = await apiRequest('GET', `/api/users/${userId}/projects`);
+      return await response.json();
+    },
+    enabled: !!userId
+  });
+  
+  // Calculate profile completion percentage
+  const profileCompletionPercentage = calculateOverallProfileCompletion(
+    userData,
+    experiences,
+    educations,
+    skills,
+    projects
+  );
 
   // Redirect to landing if not authenticated
   if (!isLoading && !isAuthenticated) {
@@ -47,9 +118,9 @@ export default function Dashboard() {
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-medium text-gray-900">Profile Completion</h2>
-                  <span className="text-sm font-medium text-primary">65%</span>
+                  <span className="text-sm font-medium text-primary">{profileCompletionPercentage}%</span>
                 </div>
-                <ProfileCompletion percentage={65} />
+                <ProfileCompletion percentage={profileCompletionPercentage} />
                 <p className="mt-3 text-sm text-gray-500">Complete your profile to get more accurate job matches and career insights.</p>
                 <Button 
                   variant="outline" 

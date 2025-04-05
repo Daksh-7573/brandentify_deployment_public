@@ -4,6 +4,7 @@ import SkillBar from "@/components/common/skill-bar";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
 import { Skill } from "@shared/schema";
+import { calculateOverallProfileCompletion } from "@/lib/profile-utils";
 
 export default function RightSidebar() {
   const { user, isDemoMode } = useAuth();
@@ -39,7 +40,7 @@ export default function RightSidebar() {
   const userTitle = userData?.title || '';
 
   // Fetch user's skills to check if any exist
-  const { data: skills } = useQuery<Skill[]>({
+  const { data: skills = [] } = useQuery<Skill[]>({
     queryKey: [`/api/users/${userId}/skills`],
     queryFn: async () => {
       if (!userId) return [];
@@ -48,6 +49,48 @@ export default function RightSidebar() {
     },
     enabled: !!userId
   });
+
+  // Fetch user experiences
+  const { data: experiences = [] } = useQuery({
+    queryKey: [`/api/users/${userId}/experiences`],
+    queryFn: async () => {
+      if (!userId) return [];
+      const response = await apiRequest('GET', `/api/users/${userId}/experiences`);
+      return await response.json();
+    },
+    enabled: !!userId
+  });
+  
+  // Fetch user education
+  const { data: educations = [] } = useQuery({
+    queryKey: [`/api/users/${userId}/educations`],
+    queryFn: async () => {
+      if (!userId) return [];
+      const response = await apiRequest('GET', `/api/users/${userId}/educations`);
+      return await response.json();
+    },
+    enabled: !!userId
+  });
+  
+  // Fetch user projects
+  const { data: projects = [] } = useQuery({
+    queryKey: [`/api/users/${userId}/projects`],
+    queryFn: async () => {
+      if (!userId) return [];
+      const response = await apiRequest('GET', `/api/users/${userId}/projects`);
+      return await response.json();
+    },
+    enabled: !!userId
+  });
+  
+  // Calculate profile completion percentage
+  const profileCompletionPercentage = calculateOverallProfileCompletion(
+    userData,
+    experiences,
+    educations,
+    skills,
+    projects
+  );
 
   const hasSkills = skills && skills.length > 0;
   const isProfileComplete = userData?.profileCompleted === true;
@@ -74,52 +117,51 @@ export default function RightSidebar() {
         </div>
       </div>
       
-      {!isProfileComplete && (
+      <div className="border-t border-gray-200 pt-4 mb-6">
+        <h3 className="text-sm font-medium text-primary mb-3">Profile Completion</h3>
+        <div className="flex items-center">
+          <div className="flex-1 bg-gray-200 rounded-full h-2">
+            <div className="bg-primary h-2 rounded-full" style={{ width: `${profileCompletionPercentage}%` }}></div>
+          </div>
+          <span className="ml-3 text-sm font-medium text-gray-900">{profileCompletionPercentage}/100</span>
+        </div>
+        <p className="mt-2 text-xs text-gray-500">
+          Complete your profile to improve your visibility to recruiters and clients.
+        </p>
+      </div>
+      
+      {/* Skills section - show regardless of profile completion status */}
+      {hasSkills ? (
         <div className="border-t border-gray-200 pt-4 mb-6">
-          <h3 className="text-sm font-medium text-primary mb-3">Complete Your Profile</h3>
-          <p className="text-xs text-gray-500">
-            To get the most out of Brandentifier, complete your profile with your professional information.
-          </p>
+          <h3 className="text-sm font-medium text-gray-900 mb-3">Skill Development</h3>
+          <div className="space-y-3">
+            {skills?.slice(0, 3).map((skill: Skill, index: number) => (
+              <SkillBar 
+                key={skill.id} 
+                name={skill.name} 
+                level={skill.level || 'Beginner'} 
+                percentage={skill.proficiency || 0}
+                color={skill.level === 'Advanced' ? 'green' : skill.level === 'Intermediate' ? 'yellow' : 'red'}
+              />
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="border-t border-gray-200 pt-4 mb-6">
+          <h3 className="text-sm font-medium text-gray-900 mb-3">Skill Development</h3>
+          <div className="flex flex-col items-center justify-center py-2 text-center text-gray-500">
+            <p className="text-xs">Add skills to your profile to showcase your expertise</p>
+          </div>
         </div>
       )}
       
       {isProfileComplete && (
-        <>
-          <div className="border-t border-gray-200 pt-4 mb-6">
-            <h3 className="text-sm font-medium text-gray-900 mb-3">Resume Score</h3>
-            <div className="flex items-center">
-              <div className="flex-1 bg-gray-200 rounded-full h-2">
-                <div className="bg-primary h-2 rounded-full" style={{ width: '72%' }}></div>
-              </div>
-              <span className="ml-3 text-sm font-medium text-gray-900">72/100</span>
-            </div>
-            <p className="mt-2 text-xs text-gray-500">Your resume outperforms 65% of professionals in your field.</p>
+        <div className="border-t border-gray-200 pt-4">
+          <h3 className="text-sm font-medium text-gray-900 mb-3">Notifications</h3>
+          <div className="flex flex-col items-center justify-center py-4 text-center text-gray-500">
+            <p className="text-xs">No notifications yet</p>
           </div>
-          
-          {hasSkills && (
-            <div className="border-t border-gray-200 pt-4 mb-6">
-              <h3 className="text-sm font-medium text-gray-900 mb-3">Skill Development</h3>
-              <div className="space-y-3">
-                {skills?.slice(0, 3).map((skill: Skill, index: number) => (
-                  <SkillBar 
-                    key={skill.id} 
-                    name={skill.name} 
-                    level={skill.level || 'Beginner'} 
-                    percentage={skill.proficiency || 0}
-                    color={skill.level === 'Advanced' ? 'green' : skill.level === 'Intermediate' ? 'yellow' : 'red'}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-
-          <div className="border-t border-gray-200 pt-4">
-            <h3 className="text-sm font-medium text-gray-900 mb-3">Notifications</h3>
-            <div className="flex flex-col items-center justify-center py-4 text-center text-gray-500">
-              <p className="text-xs">No notifications yet</p>
-            </div>
-          </div>
-        </>
+        </div>
       )}
     </div>
   );
