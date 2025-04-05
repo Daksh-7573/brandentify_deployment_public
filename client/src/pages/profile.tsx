@@ -1341,7 +1341,7 @@ export default function Profile() {
   };
   
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col profile-page">
       {/* Profile Picture Dialog */}
       <ProfilePictureDialog 
         open={showProfilePictureDialog}
@@ -1577,73 +1577,75 @@ export default function Profile() {
         <Sidebar activePage="profile" />
 
         {/* Center content */}
-        <div className="flex-1 overflow-auto p-6 bg-gray-50">
+        <div className="flex-1 overflow-auto p-6 bg-black">
           <div className="mx-auto max-w-3xl">
-            <div className="flex items-center justify-between mb-6">
-              <h1 className="text-2xl font-semibold text-gray-900">Profile</h1>
-              <div className="flex items-center gap-4">
-                <Button 
+            <div className="flex items-center justify-between mb-10">
+              <div className="flex items-center">
+                <div className="mr-4 h-10 w-1 bg-gradient-to-b from-blue-400 to-purple-500 animate-ping-slow"></div>
+                <h1 className="text-3xl font-orbitron font-semibold text-blue-400">PROFILE<span className="text-purple-500">_</span></h1>
+              </div>
+              <div className="flex items-center gap-6">
+                <button 
                   onClick={() => setLocation('/portfolio-builder')}
-                  className="flex items-center gap-2"
+                  className="futuristic-button flex items-center gap-2 py-2 px-4"
                 >
-                  <i className="fas fa-id-card"></i>
+                  <span className="text-xs mr-1 opacity-70">{">>"}</span>
                   Portfolio Builder
-                </Button>
-                <div className="text-right">
-                  <p className="text-sm text-gray-500">Profile Completion</p>
-                  <div className="flex items-center mt-1">
-                    {userData && (
-                      <>
-                        <div className="w-36 bg-gray-200 rounded-full h-2.5 mr-2">
-                          <div 
-                            id="profile-completion-bar" 
-                            className="bg-primary h-2.5 rounded-full" 
-                            style={{ 
-                              width: `${calculateOverallProfileCompletion(
-                                userData, 
-                                experiences, 
-                                educations, 
-                                skills, 
-                                projects,
-                                services
-                              )}%` 
-                            }}
-                          ></div>
-                        </div>
-                        <span className="text-sm font-medium text-gray-900">
-                          {(() => {
-                            console.log("Profile Completion Data:", {
-                              userData,
-                              experiences,
-                              educations,
-                              skills,
-                              projects,
-                              services
-                            });
-                            return calculateOverallProfileCompletion(
+                </button>
+                
+                {userData && (
+                  <div className="text-right">
+                    <p className="text-sm text-blue-400 font-semibold mb-1">PROFILE COMPLETION</p>
+                    <div className="flex items-center">
+                      <div className="w-40 progress-bar-bg mr-3">
+                        <div 
+                          id="profile-completion-bar" 
+                          className="progress-bar-fill" 
+                          style={{ 
+                            width: `${calculateOverallProfileCompletion(
                               userData, 
                               experiences, 
                               educations, 
                               skills, 
                               projects,
                               services
-                            );
-                          })()}%
-                        </span>
-                      </>
-                    )}
+                            )}%` 
+                          }}
+                        ></div>
+                      </div>
+                      <span className="text-sm font-bold text-white">
+                        {(() => {
+                          console.log("Profile Completion Data:", {
+                            userData,
+                            experiences,
+                            educations,
+                            skills,
+                            projects,
+                            services
+                          });
+                          return calculateOverallProfileCompletion(
+                            userData, 
+                            experiences, 
+                            educations, 
+                            skills, 
+                            projects,
+                            services
+                          );
+                        })()}%
+                      </span>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
             
-            {/* Profile Header */}
-            <Card className="mb-6 overflow-hidden">
-              <div className="h-32 bg-gradient-to-r from-primary to-purple-600"></div>
-              <CardContent className="relative pt-16 pb-4">
-                <div className="absolute -top-16 left-1/2 sm:left-6 transform -translate-x-1/2 sm:translate-x-0">
+            {/* Profile Header - Futuristic Neumorphic Design */}
+            <div className="neumorphic-card mb-8 profile-header">
+              <div className="h-40 profile-header-gradient"></div>
+              <div className="relative pt-20 pb-6 px-8">
+                <div className="absolute -top-20 left-1/2 sm:left-8 transform -translate-x-1/2 sm:translate-x-0">
                   <div className="relative group">
-                    <div className="h-24 w-24 overflow-hidden rounded-full bg-white ring-4 ring-white flex items-center justify-center">
+                    <div className="h-32 w-32 overflow-hidden profile-avatar rounded-full flex items-center justify-center glow-effect">
                       <img 
                         className="h-full w-full object-cover" 
                         src={userData?.photoURL || user?.photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
@@ -1656,62 +1658,81 @@ export default function Profile() {
                     </div>
                     <button 
                       onClick={() => setShowProfilePictureDialog(true)}
-                      className="absolute bottom-0 right-0 bg-primary hover:bg-primary/90 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="absolute bottom-0 right-0 futuristic-button p-2 rounded-full animate-bounce-button"
                       aria-label="Change profile picture"
                     >
                       <Camera size={16} />
                     </button>
                   </div>
                 </div>
-                <div className="pl-0 sm:pl-32 mt-12 sm:mt-2">
+                
+                <div className="pl-0 sm:pl-40 mt-16 sm:mt-1">
                   <div className="flex justify-between items-center group">
-                    <h2 className="text-xl text-gray-900">
-                      Hey there! <span className="font-bold text-2xl text-primary">{userData?.name || user?.name || 'User'}</span> here,
+                    <h2 className="text-xl text-white font-orbitron">
+                      <span className="text-sm text-blue-400 block animate-ping-slow">IDENTITY</span>
+                      <span className="font-bold text-3xl bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
+                        {userData?.name || user?.name || 'User'}
+                      </span>
                     </h2>
                     <button 
                       onClick={() => setShowEditBasicInfo(true)}
-                      className="text-sm text-primary opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="futuristic-button py-1 px-3 text-sm"
                     >
-                      Edit
+                      Edit Profile
                     </button>
                   </div>
-                  <p className="text-sm text-gray-500 mt-1">
-                    <span className="font-medium">I am:</span> {userData?.title || user?.title || 'Professional'}
-                  </p>
-                  <p className="text-sm text-gray-500 mt-1">
-                    <span className="font-medium">From:</span> {userData?.location || user?.location || 'Location not specified'}
-                  </p>
-                  {userData?.industry && (
-                    <>
-                      {/* Parse industry and domain if they're combined with ": " */}
-                      {userData.industry.includes(': ') ? (
+                  
+                  <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex flex-col space-y-3">
+                      <div className="flex items-center">
+                        <span className="text-xs text-blue-300 font-semibold w-24">OCCUPATION</span>
+                        <span className="text-white ml-2">{userData?.title || user?.title || 'Professional'}</span>
+                      </div>
+                      
+                      <div className="flex items-center">
+                        <span className="text-xs text-blue-300 font-semibold w-24">LOCATION</span>
+                        <span className="text-white ml-2">{userData?.location || user?.location || 'Location not specified'}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex flex-col space-y-3">
+                      {userData?.industry && (
                         <>
-                          <p className="text-sm text-gray-500 mt-1">
-                            <span className="font-medium">Industry:</span> {userData.industry.split(': ')[0]}
-                          </p>
-                          <p className="text-sm text-gray-500 mt-1">
-                            <span className="font-medium">Domain:</span> {userData.industry.split(': ')[1]}
-                          </p>
+                          {/* Parse industry and domain if they're combined with ": " */}
+                          {userData.industry.includes(': ') ? (
+                            <>
+                              <div className="flex items-center">
+                                <span className="text-xs text-blue-300 font-semibold w-24">INDUSTRY</span>
+                                <span className="text-white ml-2">{userData.industry.split(': ')[0]}</span>
+                              </div>
+                              <div className="flex items-center">
+                                <span className="text-xs text-blue-300 font-semibold w-24">DOMAIN</span>
+                                <span className="text-white ml-2">{userData.industry.split(': ')[1]}</span>
+                              </div>
+                            </>
+                          ) : (
+                            <div className="flex items-center">
+                              <span className="text-xs text-blue-300 font-semibold w-24">INDUSTRY</span>
+                              <span className="text-white ml-2">{userData.industry}</span>
+                            </div>
+                          )}
                         </>
-                      ) : (
-                        <p className="text-sm text-gray-500 mt-1">
-                          <span className="font-medium">Industry:</span> {userData.industry}
-                        </p>
                       )}
-                    </>
-                  )}
-                  {userData?.lookingFor && (
-                    <p className="text-sm text-gray-500 mt-1">
-                      <span className="font-medium">Looking for:</span> {
-                        // Display the human-readable label instead of the value
-                        LOOKING_FOR_CATEGORIES.find(cat => cat.value === userData.lookingFor)?.label || userData.lookingFor
-                      }
-                    </p>
-                  )}
+                      
+                      {userData?.lookingFor && (
+                        <div className="flex items-center">
+                          <span className="text-xs text-blue-300 font-semibold w-24">OBJECTIVE</span>
+                          <span className="text-white ml-2">{
+                            // Display the human-readable label instead of the value
+                            LOOKING_FOR_CATEGORIES.find(cat => cat.value === userData.lookingFor)?.label || userData.lookingFor
+                          }</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
-                {/* Skills section removed */}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
             
             {/* Profile Import Options section removed */}
             
@@ -1731,32 +1752,51 @@ export default function Profile() {
             <Services />
             
             {/* Action Buttons */}
-            <div className="flex justify-between mb-6">
-              <Button 
-                variant="outline" 
-                className="px-6"
-                onClick={() => {
-                  // Invalidate all queries to force fresh refetches
-                  console.log("Manual refresh triggered");
-                  
-                  // Refresh all profile data queries
-                  queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/experiences`] });
-                  queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/educations`] });
-                  queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/skills`] });
-                  queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'services'] });
-                  queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
-                  
-                  // Show toast notification
-                  window.alert("Profile data refreshed. If you still don't see your updated profile data, please try uploading your resume or LinkedIn profile again.");
-                }}
-              >
-                <i className="fas fa-sync-alt mr-2"></i>
-                Refresh Data
-              </Button>
-              
-              <Button className="px-6">
-                Save Profile
-              </Button>
+            <div className="neumorphic-card p-6 mb-8 mt-10">
+              <div className="flex justify-between items-center">
+                <button 
+                  className="futuristic-button py-3 px-8 flex items-center gap-2"
+                  onClick={() => {
+                    // Invalidate all queries to force fresh refetches
+                    console.log("Manual refresh triggered");
+                    
+                    // Refresh all profile data queries
+                    queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/experiences`] });
+                    queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/educations`] });
+                    queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/skills`] });
+                    queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'services'] });
+                    queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
+                    
+                    // Show toast
+                    toast({
+                      title: "Data Refreshed",
+                      description: "Your profile data has been refreshed.",
+                      duration: 3000
+                    });
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+                    <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38"/>
+                  </svg>
+                  SYNC DATA
+                </button>
+                
+                <div className="flex items-center gap-4">
+                  <div className="text-xs text-blue-300 animate-ping-slow">
+                    AUTO SAVE ENABLED
+                  </div>
+                  <button className="futuristic-button py-3 px-8">
+                    SHARE PROFILE
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            {/* Floating Action Button for quick navigation */}
+            <div className="floating-button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+              </svg>
             </div>
           </div>
         </div>

@@ -1,6 +1,287 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700&family=Manrope:wght@300;400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --primary-gradient: linear-gradient(to right, #7B61FF, #00F0FF);
+  --card-bg: rgba(20, 20, 25, 0.6);
+  --card-border: rgba(255, 255, 255, 0.05);
+  --neumorphic-shadow: 8px 8px 16px rgba(0, 0, 0, 0.25), 
+                      -8px -8px 16px rgba(255, 255, 255, 0.03);
+}
+
+/* Apply the futuristic styling to the profile page */
+.profile-page {
+  background: #0F0F0F;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+}
+
+.profile-page h1, 
+.profile-page h2, 
+.profile-page h3, 
+.profile-page h4, 
+.profile-page h5 {
+  font-family: 'Orbitron', sans-serif;
+}
+
+.profile-page p, 
+.profile-page span, 
+.profile-page div {
+  font-family: 'Manrope', sans-serif;
+}
+
+/* Neumorphic Card Styling */
+.neumorphic-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  box-shadow: var(--neumorphic-shadow);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.neumorphic-card:hover {
+  box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.3), 
+              -8px -8px 16px rgba(255, 255, 255, 0.05);
+  transform: translateY(-3px);
+}
+
+/* Profile header styling */
+.profile-header {
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-header-gradient {
+  background: linear-gradient(135deg, #8E2DE2, #4A00E0);
+}
+
+.profile-avatar {
+  position: relative;
+  border: 3px solid transparent;
+  background: linear-gradient(to right, #7B61FF, #00F0FF) border-box;
+  transition: all 0.3s ease;
+}
+
+.profile-avatar:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(123, 97, 255, 0.6);
+}
+
+.profile-avatar img {
+  border-radius: inherit;
+}
+
+/* Glowing elements */
+.glow-effect {
+  position: relative;
+}
+
+.glow-effect::after {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  background: var(--primary-gradient);
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.glow-effect:hover::after {
+  opacity: 0.5;
+  animation: glow 1.5s infinite alternate;
+}
+
+@keyframes glow {
+  from {
+    opacity: 0.2;
+  }
+  to {
+    opacity: 0.5;
+  }
+}
+
+/* Skill pills styling */
+.skill-pill {
+  background: rgba(30, 30, 35, 0.7);
+  border: 1px solid rgba(123, 97, 255, 0.3);
+  border-radius: 20px;
+  padding: 6px 12px;
+  display: inline-block;
+  margin: 4px;
+  transition: all 0.3s ease;
+}
+
+.skill-pill:hover {
+  background: rgba(123, 97, 255, 0.2);
+  box-shadow: 0 0 10px rgba(123, 97, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+/* Progress bar styling */
+.progress-bar-bg {
+  background: rgba(30, 30, 35, 0.5);
+  border-radius: 10px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  background: var(--primary-gradient);
+  height: 100%;
+  border-radius: 10px;
+  transition: width 1s ease-in-out;
+}
+
+/* Timeline styling */
+.timeline {
+  position: relative;
+  padding-left: 32px;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 8px;
+  width: 2px;
+  background: linear-gradient(to bottom, #7B61FF, #00F0FF);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 32px;
+}
+
+.timeline-dot {
+  position: absolute;
+  left: -32px;
+  top: 4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7B61FF, #00F0FF);
+  box-shadow: 0 0 10px rgba(123, 97, 255, 0.7);
+}
+
+/* Futuristic buttons */
+.futuristic-button {
+  background: linear-gradient(135deg, #7B61FF, #00F0FF);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  padding: 10px 20px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  z-index: 1;
+}
+
+.futuristic-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: all 0.5s ease;
+  z-index: -1;
+}
+
+.futuristic-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 7px 14px rgba(0, 0, 0, 0.2);
+}
+
+.futuristic-button:hover::before {
+  left: 100%;
+  animation: shine 1.5s infinite;
+}
+
+@keyframes shine {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Services cards */
+.service-card {
+  position: relative;
+  background: rgba(20, 20, 25, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.service-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(to right, #7B61FF, #00F0FF);
+}
+
+.service-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Project cards */
+.project-card {
+  position: relative;
+  background: rgba(20, 20, 25, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 24px;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.project-card:hover {
+  transform: perspective(1000px) rotateX(2deg) rotateY(2deg);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Floating action button */
+.floating-button {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7B61FF, #00F0FF);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.floating-button:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
 
 /* Custom animations */
 
@@ -37,6 +318,43 @@
 /* Animation delay utility */
 .animation-delay-500 {
   animation-delay: 1.5s;
+}
+
+/* Date picker styling */
+.date-picker-button {
+  background-color: rgba(30, 30, 35, 0.7) !important;
+  border-color: #2A2A35 !important;
+  color: white !important;
+  box-shadow: inset -2px -2px 5px rgba(255,255,255,0.05), inset 2px 2px 5px rgba(0,0,0,0.3) !important;
+  transition: all 0.2s ease !important;
+}
+
+.date-picker-button:hover {
+  background-color: rgba(35, 35, 40, 0.8) !important;
+  transform: translateY(-1px) !important;
+}
+
+.date-picker-button[data-placeholder] {
+  color: #6e6e80 !important;
+}
+
+/* Neumorphic form elements */
+.neumorphic-input,
+.neumorphic-select,
+.neumorphic-textarea {
+  background-color: rgba(30, 30, 35, 0.7) !important;
+  border-color: #2A2A35 !important;
+  color: white !important;
+  box-shadow: inset -2px -2px 5px rgba(255,255,255,0.05), inset 2px 2px 5px rgba(0,0,0,0.3) !important;
+}
+
+.neumorphic-select svg {
+  color: #7B61FF !important;
+}
+
+.neumorphic-calendar {
+  background-color: rgba(20, 20, 25, 0.95) !important;
+  border-color: #2A2A35 !important;
 }
 
 @layer base {

@@ -7,7 +7,12 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { popularLocations } from "@/lib/location-data";
-import { formatDate } from "@/lib/utils";
+import { formatDate, cn } from "@/lib/utils";
+
+// Helper for consistent neumorphic styling
+const getNeumorphicInputClass = (hasError: boolean = false) => 
+  cn("bg-[rgba(30,30,35,0.7)] border-[#2A2A35] text-white placeholder:text-[#6e6e80]", 
+     hasError && "border-red-500");
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -62,7 +67,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { JobTitleCombobox } from "@/components/ui/job-title-combobox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -881,83 +885,83 @@ export default function WorkExperience() {
   });
   
   return (
-    <Card className="mb-6">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+    <Card className="mb-6 neumorphic-card">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 border-b border-[#2A2A35]">
         <div>
-          <CardTitle className="text-xl font-bold">Work Experience</CardTitle>
-          <CardDescription>Add your professional experience</CardDescription>
+          <CardTitle className="text-xl font-bold text-white">Work Experience</CardTitle>
+          <CardDescription className="text-[#A0A0B0]">Add your professional experience</CardDescription>
         </div>
         <Button 
-          variant="outline" 
-          size="sm" 
-          className="h-8 gap-1" 
+          className="futuristic-button h-9 gap-1 animate-bounce-button" 
           onClick={openAddDialog}
         >
           <Plus className="h-3.5 w-3.5" />
           <span>Add</span>
         </Button>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-4">
         {isLoading ? (
           <div className="flex justify-center py-6">
-            <div className="animate-spin h-6 w-6 text-primary">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-loader-2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            <div className="animate-spin h-8 w-8 text-[#00F0FF]">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-loader-2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
             </div>
           </div>
         ) : sortedExperiences.length === 0 ? (
-          <div className="py-6 text-center">
-            <Briefcase className="mx-auto h-10 w-10 text-muted-foreground/50" />
-            <p className="mt-2 text-muted-foreground">No work experience added yet.</p>
+          <div className="py-8 text-center">
+            <Briefcase className="mx-auto h-12 w-12 text-[#7B61FF] opacity-50 animate-ping-slow" />
+            <p className="mt-3 text-[#A0A0B0]">No work experience added yet.</p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="timeline space-y-6 mt-2">
             {sortedExperiences.map((experience: any) => (
-              <div key={experience.id} className="rounded-md border p-4">
+              <div key={experience.id} className="timeline-item bg-[rgba(30,30,35,0.7)] rounded-lg backdrop-blur-sm border border-[rgba(255,255,255,0.05)] p-5 transition-all duration-300 hover:translate-y-[-3px]">
+                <div className="timeline-dot"></div>
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="font-medium">{experience.title}</h3>
-                    <p className="text-sm text-muted-foreground flex items-center mt-1">
-                      <Building className="h-3.5 w-3.5 mr-1.5" />
+                    <h3 className="font-medium text-white text-lg">{experience.title}</h3>
+                    <p className="text-sm text-[#A0A0B0] flex items-center mt-2">
+                      <Building className="h-4 w-4 mr-2 text-[#7B61FF]" />
                       {experience.company}
                       {experience.location && (
                         <>
-                          <span className="mx-1">•</span>
-                          <MapPin className="h-3.5 w-3.5 mr-1.5" />
+                          <span className="mx-2 text-[#555565]">•</span>
+                          <MapPin className="h-4 w-4 mr-2 text-[#7B61FF]" />
                           {experience.location}
                         </>
                       )}
                     </p>
-                    <p className="text-sm text-muted-foreground flex items-center mt-1">
-                      <CalendarIcon className="h-3.5 w-3.5 mr-1.5" />
+                    <p className="text-sm text-[#A0A0B0] flex items-center mt-2">
+                      <CalendarIcon className="h-4 w-4 mr-2 text-[#7B61FF]" />
                       {formatDate(experience.startDate)} - 
                       {experience.endDate ? formatDate(experience.endDate) : 'Present'}
                     </p>
                     
-                    <div className="flex flex-wrap gap-1.5 mt-2">
+                    <div className="flex flex-wrap gap-2 mt-3">
                       {experience.industry && (
-                        <Badge variant="outline" className="bg-gray-50 flex items-center">
-                          <Briefcase className="h-3 w-3 mr-1" />
+                        <Badge variant="outline" className="skill-pill flex items-center">
+                          <Briefcase className="h-3 w-3 mr-1.5 text-[#00F0FF]" />
                           {experience.industry}
                         </Badge>
                       )}
                       
                       {experience.domain && (
-                        <Badge variant="outline" className="bg-gray-50 flex items-center">
-                          <TagIcon className="h-3 w-3 mr-1" />
+                        <Badge variant="outline" className="skill-pill flex items-center">
+                          <TagIcon className="h-3 w-3 mr-1.5 text-[#00F0FF]" />
                           {experience.domain}
                         </Badge>
                       )}
                     </div>
                     
                     {experience.description && (
-                      <p className="mt-2 text-sm">{experience.description}</p>
+                      <p className="mt-3 text-sm text-[#CCCCDC]">{experience.description}</p>
                     )}
                   </div>
                   
-                  <div className="flex space-x-1">
+                  <div className="flex space-x-2">
                     <Button 
                       variant="ghost" 
                       size="sm"
+                      className="bg-[rgba(123,97,255,0.1)] text-[#7B61FF] hover:bg-[rgba(123,97,255,0.2)]"
                       onClick={() => openEditDialog(experience)}
                     >
                       <Edit className="h-4 w-4" />
@@ -965,6 +969,7 @@ export default function WorkExperience() {
                     <Button 
                       variant="ghost" 
                       size="sm"
+                      className="bg-[rgba(255,97,97,0.1)] text-[#FF6161] hover:bg-[rgba(255,97,97,0.2)]"
                       onClick={() => handleDelete(experience.id)}
                     >
                       <Trash2 className="h-4 w-4" />
@@ -979,17 +984,17 @@ export default function WorkExperience() {
       
       {/* Add Experience Dialog */}
       <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-        <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto bg-[#1A1A20] border-[#2A2A35] text-white">
           <DialogHeader>
-            <DialogTitle>Add Work Experience</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-xl font-bold text-white">Add Work Experience</DialogTitle>
+            <DialogDescription className="text-[#A0A0B0]">
               Add details about your work experience
             </DialogDescription>
           </DialogHeader>
           
-          <Alert className="mb-4 bg-blue-50 border-blue-100">
-            <AlertCircle className="h-4 w-4 text-blue-500" />
-            <AlertDescription className="text-blue-700 font-medium">
+          <Alert className="mb-4 bg-[rgba(123,97,255,0.1)] border-[#7B61FF]">
+            <AlertCircle className="h-4 w-4 text-[#00F0FF]" />
+            <AlertDescription className="text-[#CCCCDC] font-medium">
               Industry and Domain fields are essential for accurate job matching and smart networking recommendations.
             </AlertDescription>
           </Alert>
@@ -1020,7 +1025,10 @@ export default function WorkExperience() {
                 value={formData.company}
                 onChange={handleInputChange}
                 disabled={createExperienceMutation.isPending}
-                className={formErrors.company ? "border-red-500" : ""}
+                className={cn(
+                  formErrors.company ? "border-red-500" : "border-[#2A2A35]",
+                  "bg-[rgba(30,30,35,0.7)] text-white placeholder:text-[#6e6e80]"
+                )}
               />
               {formErrors.company && (
                 <p className="text-sm text-red-500">Company is required</p>
@@ -1092,7 +1100,7 @@ export default function WorkExperience() {
                 onChange={handleInputChange}
                 disabled={createExperienceMutation.isPending}
                 placeholder="Enter location (optional)"
-                className="bg-gray-50"
+                className="bg-[rgba(30,30,35,0.7)] border-[#2A2A35] text-white placeholder:text-[#6e6e80]"
               />
               
               {/* Location suggestions dropdown */}
@@ -1227,6 +1235,7 @@ export default function WorkExperience() {
                 disabled={createExperienceMutation.isPending}
                 placeholder="Describe your responsibilities and achievements..."
                 rows={3}
+                className="bg-[rgba(30,30,35,0.7)] border-[#2A2A35] text-white placeholder:text-[#6e6e80]"
               />
             </div>
           </div>
@@ -1236,14 +1245,18 @@ export default function WorkExperience() {
               variant="outline" 
               onClick={() => setShowAddDialog(false)}
               disabled={createExperienceMutation.isPending}
+              className="border-[#2A2A35] bg-[rgba(30,30,35,0.7)] text-[#A0A0B0] hover:bg-[rgba(30,30,35,0.9)]"
             >
               Cancel
             </Button>
             <Button 
               onClick={handleAddSubmit}
               disabled={createExperienceMutation.isPending}
+              className="futuristic-button"
             >
-              {createExperienceMutation.isPending ? "Adding..." : "Add Experience"}
+              {createExperienceMutation.isPending ? (
+                <><span className="animate-spin mr-2">⟳</span> Adding...</>
+              ) : "Add Experience"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -1251,17 +1264,17 @@ export default function WorkExperience() {
       
       {/* Edit Experience Dialog */}
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-        <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto bg-[#1A1A20] border-[#2A2A35] text-white">
           <DialogHeader>
-            <DialogTitle>Edit Work Experience</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-xl font-bold text-white">Edit Work Experience</DialogTitle>
+            <DialogDescription className="text-[#A0A0B0]">
               Update details about your work experience
             </DialogDescription>
           </DialogHeader>
           
-          <Alert className="mb-4 bg-blue-50 border-blue-100">
-            <AlertCircle className="h-4 w-4 text-blue-500" />
-            <AlertDescription className="text-blue-700 font-medium">
+          <Alert className="mb-4 bg-[rgba(123,97,255,0.1)] border-[#7B61FF]">
+            <AlertCircle className="h-4 w-4 text-[#00F0FF]" />
+            <AlertDescription className="text-[#CCCCDC] font-medium">
               Industry and Domain fields are essential for accurate job matching and smart networking recommendations.
             </AlertDescription>
           </Alert>
@@ -1292,7 +1305,10 @@ export default function WorkExperience() {
                 value={formData.company}
                 onChange={handleInputChange}
                 disabled={updateExperienceMutation.isPending}
-                className={formErrors.company ? "border-red-500" : ""}
+                className={cn(
+                  formErrors.company ? "border-red-500" : "border-[#2A2A35]",
+                  "bg-[rgba(30,30,35,0.7)] text-white placeholder:text-[#6e6e80]"
+                )}
               />
               {formErrors.company && (
                 <p className="text-sm text-red-500">Company is required</p>
@@ -1364,7 +1380,7 @@ export default function WorkExperience() {
                 onChange={handleInputChange}
                 disabled={updateExperienceMutation.isPending}
                 placeholder="Enter location (optional)"
-                className="bg-gray-50"
+                className="bg-[rgba(30,30,35,0.7)] border-[#2A2A35] text-white placeholder:text-[#6e6e80]"
               />
               
               {/* Location suggestions dropdown */}
@@ -1499,6 +1515,7 @@ export default function WorkExperience() {
                 disabled={updateExperienceMutation.isPending}
                 placeholder="Describe your responsibilities and achievements..."
                 rows={3}
+                className="bg-[rgba(30,30,35,0.7)] border-[#2A2A35] text-white placeholder:text-[#6e6e80]"
               />
             </div>
           </div>
@@ -1508,14 +1525,18 @@ export default function WorkExperience() {
               variant="outline" 
               onClick={() => setShowEditDialog(false)}
               disabled={updateExperienceMutation.isPending}
+              className="border-[#2A2A35] bg-[rgba(30,30,35,0.7)] text-[#A0A0B0] hover:bg-[rgba(30,30,35,0.9)]"
             >
               Cancel
             </Button>
             <Button 
               onClick={handleEditSubmit}
               disabled={updateExperienceMutation.isPending}
+              className="futuristic-button"
             >
-              {updateExperienceMutation.isPending ? "Updating..." : "Update Experience"}
+              {updateExperienceMutation.isPending ? (
+                <><span className="animate-spin mr-2">⟳</span> Updating...</>
+              ) : "Update Experience"}
             </Button>
           </DialogFooter>
         </DialogContent>
