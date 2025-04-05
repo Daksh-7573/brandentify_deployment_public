@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Loader2, Send, Sparkles, Lightbulb, BookOpen, BarChart, LucideIcon, Bot, UserRound } from "lucide-react";
+import { Loader2, Send, Sparkles, Lightbulb, BookOpen, BarChart, LucideIcon, Bot, UserRound, CheckCircle2 } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -18,6 +19,96 @@ import Header from "@/components/layout/header";
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
+
+// Component to extract and display resume scores from AI analysis
+interface ResumeScoreSummaryProps {
+  content: string;
+}
+
+function ResumeScoreSummary({ content }: ResumeScoreSummaryProps) {
+  // Parse the content to extract score information
+  const extractScores = () => {
+    const scores: { [key: string]: number } = {
+      "Structure & Layout": 0,
+      "Content Quality": 0,
+      "Relevance to Role/Industry": 0,
+      "Achievements & Metrics": 0,
+      "Soft Skills & Personality": 0,
+      "ATS Compatibility": 0
+    };
+    
+    // Pattern to match scores in format like "Category: 85%" or "Category Score: 85%"
+    const scorePatterns = [
+      /Structure (?:&|and) Layout:?\s*(\d+)%/i,
+      /Content Quality:?\s*(\d+)%/i,
+      /Relevance to Role(?:\/|\/\s*|\s+)Industry:?\s*(\d+)%/i,
+      /Achievements (?:&|and) Metrics:?\s*(\d+)%/i,
+      /Soft Skills (?:&|and) Personality:?\s*(\d+)%/i,
+      /ATS Compatibility:?\s*(\d+)%/i
+    ];
+    
+    const categoryNames = Object.keys(scores);
+    
+    // Try to extract scores using patterns
+    for (let i = 0; i < scorePatterns.length; i++) {
+      const match = content.match(scorePatterns[i]);
+      if (match && match[1]) {
+        const score = parseInt(match[1], 10);
+        if (!isNaN(score) && score >= 0 && score <= 100) {
+          scores[categoryNames[i]] = score;
+        }
+      }
+    }
+    
+    // Calculate overall score (average of all scores)
+    const validScores = Object.values(scores).filter(score => score > 0);
+    const overallScore = validScores.length > 0 
+      ? Math.round(validScores.reduce((a, b) => a + b, 0) / validScores.length) 
+      : 0;
+    
+    return {
+      scores,
+      overallScore,
+      hasScores: validScores.length > 0
+    };
+  };
+  
+  const { scores, overallScore, hasScores } = extractScores();
+  
+  // Don't render if no scores were found
+  if (!hasScores) return null;
+  
+  return (
+    <div className="border rounded-lg p-4 bg-muted/30">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-medium text-base">Resume Score Summary</h3>
+        <div className="flex items-center">
+          <span className="text-2xl font-bold mr-1">{overallScore}%</span>
+          <span className="text-xs text-muted-foreground">Overall</span>
+        </div>
+      </div>
+      
+      <div className="space-y-3">
+        {Object.entries(scores).map(([category, score], index) => (
+          <div key={index} className="space-y-1">
+            <div className="flex justify-between text-sm">
+              <span>{category}</span>
+              <span className="font-medium">{score}%</span>
+            </div>
+            <Progress value={score} className="h-2" />
+          </div>
+        ))}
+      </div>
+      
+      <div className="mt-4 text-xs text-muted-foreground">
+        <div className="flex items-center gap-1">
+          <CheckCircle2 className="h-3 w-3" />
+          <span>Scoring based on 6 key resume factors</span>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function AICareerPage() {
   // Hooks
@@ -565,6 +656,12 @@ export default function AICareerPage() {
                               </span>
                             </div>
                           </div>
+                          
+                          {message.messageType === "resume_analysis" && (
+                            <div className="mb-6">
+                              <ResumeScoreSummary content={message.content} />
+                            </div>
+                          )}
                           
                           <div className="prose prose-sm max-w-none dark:prose-invert prose-headings:font-medium 
                                         prose-headings:text-foreground prose-strong:font-semibold prose-strong:text-foreground
