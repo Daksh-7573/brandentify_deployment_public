@@ -1545,19 +1545,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           console.log("Successfully received OpenAI analysis for direct text input");
         } else {
-          // For PDF files, use Claude (Anthropic)
-          if (!process.env.ANTHROPIC_API_KEY) {
-            return res.status(503).json({ 
-              message: "Anthropic service unavailable. API key is missing.",
-              requiresApiKey: true
-            });
+          // For PDF files, try Claude first, fall back to OpenAI if needed
+          try {
+            if (process.env.ANTHROPIC_API_KEY) {
+              console.log("Attempting PDF analysis with Claude (Anthropic)");
+              const { analyzeResumeWithClaude } = await import('./services/anthropic-service');
+              analysis = await analyzeResumeWithClaude(fileData);
+              console.log("Successfully received Claude analysis for PDF");
+            } else {
+              throw new Error("Anthropic API key not available");
+            }
+          } catch (claudeError) {
+            // If Claude fails for any reason, fall back to OpenAI
+            console.log("Claude API failed, falling back to OpenAI:", claudeError.message);
+            
+            if (!process.env.OPENAI_API_KEY) {
+              return res.status(503).json({ 
+                message: "AI services unavailable. API keys are missing.",
+                requiresApiKey: true
+              });
+            }
+            
+            console.log("Processing PDF with OpenAI as fallback");
+            const { analyzeResume } = await import('./services/openai-service');
+            analysis = await analyzeResume({ 
+              resumeTextStart: fileData,
+              isBase64: true,
+              isLink: false
+            } as any);
+            console.log("Successfully received OpenAI analysis for PDF as fallback");
           }
-          
-          console.log("Processing PDF with Claude for advanced PDF analysis");
-          const { analyzeResumeWithClaude } = await import('./services/anthropic-service');
-          analysis = await analyzeResumeWithClaude(fileData);
-          
-          console.log("Successfully received Claude analysis for PDF");
         }
       } catch (aiError: any) {
         console.error("Error from AI API:", aiError);
