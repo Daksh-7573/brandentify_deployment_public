@@ -18,7 +18,7 @@ export default function CreatePulsePage() {
   const [pulseContent, setPulseContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState("compose");
-  const [pulseType, setPulseType] = useState("text-post");
+  const [pulseType, setPulseType] = useState("poll");
   const [pollOptions, setPollOptions] = useState(["", ""]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -69,29 +69,7 @@ export default function CreatePulsePage() {
             </div>
 
             {/* Pulse Type Selection */}
-            <div className="grid md:grid-cols-5 gap-4 mb-6">
-              <Card 
-                className={`cursor-pointer transition-all hover:shadow-md ${pulseType === 'text-post' ? 'ring-2 ring-primary' : ''}`}
-                onClick={() => setPulseType('text-post')}
-              >
-                <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                  <MessageSquare className={`h-10 w-10 mb-2 ${pulseType === 'text-post' ? 'text-primary' : 'text-gray-500'}`} />
-                  <h3 className="font-medium">Text Post</h3>
-                  <p className="text-xs text-gray-500 mt-1">Standard post with text</p>
-                </CardContent>
-              </Card>
-
-              <Card 
-                className={`cursor-pointer transition-all hover:shadow-md ${pulseType === 'news-trend' ? 'ring-2 ring-primary' : ''}`}
-                onClick={() => setPulseType('news-trend')}
-              >
-                <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                  <Newspaper className={`h-10 w-10 mb-2 ${pulseType === 'news-trend' ? 'text-primary' : 'text-gray-500'}`} />
-                  <h3 className="font-medium">News/Trend</h3>
-                  <p className="text-xs text-gray-500 mt-1">AI-curated industry news</p>
-                </CardContent>
-              </Card>
-
+            <div className="grid md:grid-cols-3 gap-4 mb-6">
               <Card 
                 className={`cursor-pointer transition-all hover:shadow-md ${pulseType === 'poll' ? 'ring-2 ring-primary' : ''}`}
                 onClick={() => setPulseType('poll')}
@@ -128,16 +106,6 @@ export default function CreatePulsePage() {
 
             <Card className="mb-6">
               <CardContent className="p-6">
-                {pulseType === 'news-trend' && (
-                  <Alert className="mb-6 bg-blue-50 border-blue-200">
-                    <Newspaper className="h-4 w-4 text-blue-500" />
-                    <AlertTitle className="text-blue-700">News/Trend Pulse</AlertTitle>
-                    <AlertDescription className="text-blue-600">
-                      Musk will fetch industry-specific news or emerging trends based on your profile and selected topics.
-                    </AlertDescription>
-                  </Alert>
-                )}
-
                 {pulseType === 'poll' && (
                   <Alert className="mb-6 bg-purple-50 border-purple-200">
                     <BarChart className="h-4 w-4 text-purple-500" />
@@ -168,113 +136,12 @@ export default function CreatePulsePage() {
                   </Alert>
                 )}
 
-                {pulseType === 'text-post' && (
-                  <Alert className="mb-6 bg-amber-50 border-amber-200">
-                    <AlertCircle className="h-4 w-4 text-amber-500" />
-                    <AlertTitle className="text-amber-700">Pro Tip</AlertTitle>
-                    <AlertDescription className="text-amber-600">
-                      Pulses with clear professional insights get 3x more engagement. Keep it focused on your expertise.
-                    </AlertDescription>
-                  </Alert>
-                )}
-
                 <Tabs defaultValue="compose" className="w-full" onValueChange={setActiveTab}>
                   <TabsList className="mb-4">
                     <TabsTrigger value="compose">Compose</TabsTrigger>
                     <TabsTrigger value="ai-assist">AI Assist</TabsTrigger>
                   </TabsList>
                   <TabsContent value="compose">
-                    {pulseType === 'text-post' && (
-                      <form onSubmit={handleSubmit} className="space-y-6">
-                        <div className="space-y-2">
-                          <Label htmlFor="title">Title</Label>
-                          <Input
-                            id="title"
-                            placeholder="Add a professional, attention-grabbing title"
-                            value={pulseTitle}
-                            onChange={(e) => setPulseTitle(e.target.value)}
-                            required
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="content">Content</Label>
-                          <Textarea
-                            id="content"
-                            placeholder="Share your professional insight, experience or expertise..."
-                            className="min-h-[200px]"
-                            value={pulseContent}
-                            onChange={(e) => setPulseContent(e.target.value)}
-                            required
-                          />
-                        </div>
-                        <div className="flex justify-end">
-                          <Button 
-                            type="submit" 
-                            className="px-6"
-                            disabled={isSubmitting}
-                          >
-                            {isSubmitting ? (
-                              <>
-                                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                                Publishing...
-                              </>
-                            ) : (
-                              "Publish Pulse"
-                            )}
-                          </Button>
-                        </div>
-                      </form>
-                    )}
-
-                    {pulseType === 'news-trend' && (
-                      <form onSubmit={handleSubmit} className="space-y-6">
-                        <div className="space-y-4">
-                          <div>
-                            <Label>Industry Focus</Label>
-                            <RadioGroup defaultValue="user-profile" className="mt-2">
-                              <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="user-profile" id="user-profile" />
-                                <Label htmlFor="user-profile" className="cursor-pointer">Use my profile industry</Label>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="custom" id="custom" />
-                                <Label htmlFor="custom" className="cursor-pointer">Custom industry selection</Label>
-                              </div>
-                            </RadioGroup>
-                          </div>
-                          
-                          <div className="space-y-2">
-                            <Label htmlFor="trend-type">Trend Type</Label>
-                            <div className="flex flex-wrap gap-2">
-                              {["Latest News", "Emerging Tech", "Industry Changes", "Career Trends", "Market Insights"].map((type) => (
-                                <Button 
-                                  key={type} 
-                                  variant="outline" 
-                                  className="rounded-full" 
-                                  type="button"
-                                >
-                                  {type}
-                                </Button>
-                              ))}
-                            </div>
-                          </div>
-                          
-                          <div className="space-y-2">
-                            <Label htmlFor="additional-context">Additional Context (Optional)</Label>
-                            <Textarea
-                              id="additional-context"
-                              placeholder="Add specific angles or aspects you'd like the AI to focus on..."
-                              className="min-h-[100px]"
-                            />
-                          </div>
-                        </div>
-                        <div className="flex justify-end">
-                          <Button className="px-6">
-                            Generate News/Trend Pulse
-                          </Button>
-                        </div>
-                      </form>
-                    )}
 
                     {pulseType === 'poll' && (
                       <form onSubmit={handleSubmit} className="space-y-6">
