@@ -229,7 +229,8 @@ export const portfolioLayoutEnum = pgEnum("portfolio_layout", [
   "creative", 
   "minimal", 
   "technical",
-  "executive"
+  "executive",
+  "minimalist_pro" // Added "The Minimalist Pro" theme with snake_case format
 ]);
 
 // Portfolio model

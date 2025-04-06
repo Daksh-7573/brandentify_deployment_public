@@ -206,6 +206,25 @@ export class MemStorage implements IStorage {
     };
     this.skills.set(skill1.id, skill1);
     this.currentSkillId++;
+    
+    // Create default portfolio for the demo user
+    const demoPortfolio: Portfolio = {
+      id: 1,
+      userId: 1,
+      layout: "professional", // Default layout
+      customTitle: null,
+      customBio: null,
+      customizationOptions: {},
+      isPublished: false,
+      publicUrl: null,
+      featuredProjects: [],
+      featuredSkills: [1], // Reference to the skill created above
+      featuredExperiences: [],
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    this.portfolios.set(demoPortfolio.id, demoPortfolio);
+    this.currentPortfolioId++;
   }
   
   /**
@@ -220,6 +239,7 @@ export class MemStorage implements IStorage {
     this.currentWorkExperienceId = 1;
     this.currentEducationId = 1;
     this.currentSkillId = 1;
+    this.currentPortfolioId = 1;
     
     // Initialize with minimal data (just one skill)
     const skill1: Skill = {
@@ -231,7 +251,26 @@ export class MemStorage implements IStorage {
     };
     this.skills.set(skill1.id, skill1);
     
-    console.log("Demo data reinitialized with minimal values and cleared all experience data");
+    // Create a default portfolio for the demo user
+    const portfolio: Portfolio = {
+      id: 1,
+      userId: 1,
+      layout: "professional", // Default layout
+      customTitle: null,
+      customBio: null,
+      customizationOptions: {},
+      isPublished: false,
+      publicUrl: null,
+      featuredProjects: [],
+      featuredSkills: [1], // Reference to the skill created above
+      featuredExperiences: [],
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    this.portfolios.set(portfolio.id, portfolio);
+    this.currentPortfolioId++;
+    
+    console.log("Demo data reinitialized with minimal values, skill, and portfolio");
   }
   
   /**
