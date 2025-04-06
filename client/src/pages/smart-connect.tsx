@@ -1345,7 +1345,7 @@ export default function SmartConnectPage() {
       <Header />
 
       {/* Main Content */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden pt-16"> {/* Added padding-top (pt-16) to account for fixed header */}
         {/* Sidebar */}
         <Sidebar activePage="smart-connect" />
 

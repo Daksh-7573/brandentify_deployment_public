@@ -1003,8 +1003,8 @@ export default function PortfolioBuilder() {
   return (
     <div className="flex h-screen flex-col">
       <Header />
-      <div className="flex flex-1 overflow-hidden">
-        <Sidebar activePage="profile" />
+      <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top (pt-16) to account for fixed header */}
+        <Sidebar activePage="portfolio-builder" />
         <div className="flex-1 overflow-auto">
           <div className="container px-6 py-8">
             <div className="flex items-center justify-between mb-8">
