@@ -70,6 +70,16 @@ export default function Header() {
             </div>
           </div>
           <div className="flex items-center gap-3">
+            {/* Create Pulse Button */}
+            <Button 
+              variant="default" 
+              size="sm"
+              className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-700 text-white shadow-md"
+              onClick={() => setLocation('/create-pulse')}
+            >
+              Create Pulse
+            </Button>
+            
             {/* User name */}
             <span className="text-sm font-medium text-gray-700 hidden md:block">
               {userData?.name || user?.displayName || "Profile"}
