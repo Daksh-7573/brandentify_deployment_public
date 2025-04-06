@@ -1541,7 +1541,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userName = user.name || "User";
       }
       
-      if (adviceType === 'switch_industry') {
+      // Check for strings "switch_industry" and also the object format fallback
+      if (adviceType === 'switch_industry' || (typeof adviceType === 'object' && adviceType.toString().includes('switch_industry'))) {
         console.log("DEMO ADVICE: Using SWITCH INDUSTRY template");
         return `# Industry Transition Analysis for ${userName}
 
