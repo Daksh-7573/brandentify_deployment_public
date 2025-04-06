@@ -13,7 +13,6 @@ import AICareer from "@/pages/ai-career";
 import SmartConnect from "@/pages/smart-connect";
 import PortfolioBuilder from "@/pages/portfolio-builder";
 import ServicesPage from "@/pages/services";
-import IndustryPulsePage from "@/pages/industry-pulse";
 import AuthPage from "@/pages/auth-page";
 import EmailVerification from "@/pages/email-verification";
 
@@ -62,9 +61,6 @@ function Router() {
       </Route>
       <Route path="/services">
         <ProtectedRoute path="/services" component={ServicesPage} />
-      </Route>
-      <Route path="/industry-pulse">
-        <ProtectedRoute path="/industry-pulse" component={IndustryPulsePage} />
       </Route>
       <Route component={NotFound} />
     </Switch>
