@@ -97,6 +97,7 @@ export default function Projects() {
   const [endorsements, setEndorsements] = useState<Endorsement[]>([]);
   const [activeTab, setActiveTab] = useState('details');
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [thumbnailError, setThumbnailError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Reference to hold the most recent data
@@ -244,6 +245,7 @@ export default function Projects() {
       mediaUrls: null,
     });
     setThumbnailFile(null);
+    setThumbnailError(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -263,6 +265,7 @@ export default function Projects() {
     });
     // Reset the thumbnail file when editing
     setThumbnailFile(null);
+    setThumbnailError(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -308,6 +311,20 @@ export default function Projects() {
 
   const onProjectSubmit = async (values: ProjectFormValues) => {
     if (!userId) return;
+    
+    // Validate thumbnail is required for new projects
+    if (!currentProject && !thumbnailFile) {
+      setThumbnailError("Project thumbnail is required");
+      toast({
+        title: "Validation Error",
+        description: "Project thumbnail is required. Please upload an image.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Clear any previous thumbnail errors
+    setThumbnailError(null);
     
     try {
       let response;
@@ -356,23 +373,21 @@ export default function Projects() {
         response = await apiRequest('POST', '/api/projects', newProjectData);
         projectData = await response.json();
         
-        // If we have a thumbnail file, upload it
-        if (thumbnailFile) {
-          const formData = new FormData();
-          formData.append('thumbnail', thumbnailFile);
-          formData.append('projectId', projectData.id.toString());
-          
-          // Use fetch directly as apiRequest doesn't handle FormData
-          const uploadResponse = await fetch('/api/projects/upload-thumbnail', {
-            method: 'POST',
-            body: formData,
-          });
-          
-          if (uploadResponse.ok) {
-            const uploadResult = await uploadResponse.json();
-            // Update the thumbnail URL
-            projectData.thumbnailUrl = uploadResult.thumbnailUrl;
-          }
+        // If we have a thumbnail file, upload it (we already validated it exists above)
+        const formData = new FormData();
+        formData.append('thumbnail', thumbnailFile!);
+        formData.append('projectId', projectData.id.toString());
+        
+        // Use fetch directly as apiRequest doesn't handle FormData
+        const uploadResponse = await fetch('/api/projects/upload-thumbnail', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        if (uploadResponse.ok) {
+          const uploadResult = await uploadResponse.json();
+          // Update the thumbnail URL
+          projectData.thumbnailUrl = uploadResult.thumbnailUrl;
         }
         
         // Add to projects state
@@ -388,6 +403,7 @@ export default function Projects() {
       // Reset form and thumbnail
       projectForm.reset();
       setThumbnailFile(null);
+      setThumbnailError(null);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
@@ -729,7 +745,7 @@ export default function Projects() {
                   />
                   
                   <FormItem>
-                    <FormLabel>Project Thumbnail</FormLabel>
+                    <FormLabel>Project Thumbnail*</FormLabel>
                     <FormControl>
                       <Input 
                         type="file" 
@@ -739,13 +755,15 @@ export default function Projects() {
                           const file = e.target.files?.[0];
                           if (file) {
                             setThumbnailFile(file);
+                            setThumbnailError(null);
                           }
                         }} 
                       />
                     </FormControl>
                     <FormDescription>
-                      Upload a preview image for your project
+                      Upload a preview image for your project (required)
                     </FormDescription>
+                    {thumbnailError && <p className="text-sm font-medium text-destructive">{thumbnailError}</p>}
                     <FormMessage />
                   </FormItem>
                 </TabsContent>
@@ -964,7 +982,7 @@ export default function Projects() {
                     />
                     
                     <FormItem>
-                      <FormLabel>Project Thumbnail</FormLabel>
+                      <FormLabel>Project Thumbnail*</FormLabel>
                       <FormControl>
                         <Input 
                           type="file" 
@@ -974,6 +992,7 @@ export default function Projects() {
                             const file = e.target.files?.[0];
                             if (file) {
                               setThumbnailFile(file);
+                              setThumbnailError(null);
                             }
                           }} 
                         />
@@ -990,9 +1009,10 @@ export default function Projects() {
                             <span className="text-xs text-muted-foreground">(Upload a new one to replace)</span>
                           </>
                         ) : (
-                          "Upload a preview image for your project"
+                          "A thumbnail image is required for your project"
                         )}
                       </FormDescription>
+                      {thumbnailError && <p className="text-sm font-medium text-destructive">{thumbnailError}</p>}
                       <FormMessage />
                     </FormItem>
                   </TabsContent>
