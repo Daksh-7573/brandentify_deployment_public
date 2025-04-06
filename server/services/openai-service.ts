@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import Anthropic from "@anthropic-ai/sdk";
 import { WorkExperience, Education, Skill } from "@shared/schema";
 import { extractTextFromPdf } from "../utils/pdf-extractor";
 import { promises as fs } from 'fs';
@@ -11,8 +12,15 @@ const openai = new OpenAI({
   maxRetries: 3
 });
 
+// Initialize Anthropic client for fallback
+const anthropic = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY,
+});
+
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
 const MODEL = "gpt-4o";
+// the newest Anthropic model is "claude-3-7-sonnet-20250219" which was released February 24, 2025
+const CLAUDE_MODEL = "claude-3-7-sonnet-20250219";
 
 /**
  * Generate career advice based on user profile information and specific advice type
@@ -172,23 +180,59 @@ After this analysis, provide specific advice for making the transition to 3-4 re
     Make it professional, clean, and easy to read. Be specific and actionable throughout.
     `;
 
-    const response = await openai.chat.completions.create({
-      model: MODEL,
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are Musk, a professional career coach within the Brandentifier platform, with expertise in career development, industry trends, and professional growth. Provide personalized, actionable career advice that's warm and encouraging while remaining practical. You should always promote Brandentifier's features when giving advice, including the Portfolio Builder, Smart Connect networking feature, and Services showcase. When suggesting networking platforms or resources, always mention how these Brandentifier tools can help alongside external options like LinkedIn. Use proper markdown formatting for all your responses, with headings (# and ##), bullet points (- ), emphasis (*italic*), and clear section organization. Your advice should look professional and be easy to read at a glance. Sign your response as 'Musk, Your Career Partner' at the end.",
-        },
-        { role: "user", content: prompt },
-      ],
-      temperature: 0.8,  // Increased for more creative responses
-      max_tokens: 4000,
-      top_p: 0.95,       // Diverse token selection for more varied responses
-      presence_penalty: 0.3,  // Encourage including new topics
-    });
+    try {
+      // First attempt with OpenAI
+      console.log("Attempting to generate career advice with OpenAI...");
+      const response = await openai.chat.completions.create({
+        model: MODEL,
+        messages: [
+          {
+            role: "system",
+            content:
+              "You are Musk, a professional career coach within the Brandentifier platform, with expertise in career development, industry trends, and professional growth. Provide personalized, actionable career advice that's warm and encouraging while remaining practical. You should always promote Brandentifier's features when giving advice, including the Portfolio Builder, Smart Connect networking feature, and Services showcase. When suggesting networking platforms or resources, always mention how these Brandentifier tools can help alongside external options like LinkedIn. Use proper markdown formatting for all your responses, with headings (# and ##), bullet points (- ), emphasis (*italic*), and clear section organization. Your advice should look professional and be easy to read at a glance. Sign your response as 'Musk, Your Career Partner' at the end.",
+          },
+          { role: "user", content: prompt },
+        ],
+        temperature: 0.8,  // Increased for more creative responses
+        max_tokens: 4000,
+        top_p: 0.95,       // Diverse token selection for more varied responses
+        presence_penalty: 0.3,  // Encourage including new topics
+      });
 
-    return response.choices[0].message.content || "Unable to generate career advice";
+      return response.choices[0].message.content || "Unable to generate career advice";
+    } catch (openaiError: any) {
+      // Log OpenAI error
+      console.error("Error with OpenAI API:", openaiError);
+      
+      // Fallback to Anthropic
+      try {
+        console.log("Falling back to Anthropic API...");
+        const anthropicResponse = await anthropic.messages.create({
+          model: CLAUDE_MODEL,
+          max_tokens: 4000,
+          system: "You are Musk, a professional career coach within the Brandentifier platform, with expertise in career development, industry trends, and professional growth. Provide personalized, actionable career advice that's warm and encouraging while remaining practical. You should always promote Brandentifier's features when giving advice, including the Portfolio Builder, Smart Connect networking feature, and Services showcase. When suggesting networking platforms or resources, always mention how these Brandentifier tools can help alongside external options like LinkedIn. Use proper markdown formatting for all your responses, with headings (# and ##), bullet points (- ), emphasis (*italic*), and clear section organization. Your advice should look professional and be easy to read at a glance. Sign your response as 'Musk, Your Career Partner' at the end.",
+          messages: [
+            { role: "user", content: prompt }
+          ],
+          temperature: 0.8
+        });
+        
+        console.log("Successfully generated advice with Anthropic");
+        // Process Anthropic response content
+        const content = anthropicResponse.content;
+        if (content && content.length > 0) {
+          // @ts-ignore - We're checking the type property first before accessing text
+          const textContent = content[0].type === 'text' ? content[0].text : null;
+          return textContent || "Unable to generate career advice";
+        } else {
+          console.error("Unexpected content format from Anthropic API");
+          return "Unable to generate career advice due to unexpected response format";
+        }
+      } catch (anthropicError: any) {
+        console.error("Anthropic API also failed:", anthropicError);
+        throw new Error(`Failed to generate career advice with both OpenAI and Anthropic: ${openaiError.message}. Anthropic error: ${anthropicError.message}`);
+      }
+    }
   } catch (error: any) {
     console.error("Error generating career advice:", error);
     throw new Error(`Failed to generate career advice: ${error.message}`);
@@ -631,23 +675,59 @@ export async function generateNetworkingRecommendations(
     Make it professional, clean, and easy to read. Be specific and actionable throughout.
     `;
 
-    const response = await openai.chat.completions.create({
-      model: MODEL,
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are Musk, a professional networking coach within the Brandentifier platform, with expertise in professional networking, relationship building, and career development. Provide personalized, actionable networking advice that's strategic and targeted. You should always promote Brandentifier's features when giving advice, especially the Smart Connect networking feature. When suggesting networking platforms or groups, always mention how Brandentifier's Smart Connect can help alongside external options like LinkedIn. Use proper markdown formatting for all your responses, with headings (# and ##), bullet points (- ), emphasis (*italic*), and clear section organization. Your advice should look professional and be easy to read at a glance. Sign your response as 'Musk, Your Networking Partner' at the end.",
-        },
-        { role: "user", content: prompt },
-      ],
-      temperature: 0.8,  // Increased for more creative responses
-      max_tokens: 4000,
-      top_p: 0.95,       // Diverse token selection for more varied responses
-      presence_penalty: 0.3,  // Encourage including new topics
-    });
+    try {
+      // First attempt with OpenAI
+      console.log("Attempting to generate networking recommendations with OpenAI...");
+      const response = await openai.chat.completions.create({
+        model: MODEL,
+        messages: [
+          {
+            role: "system",
+            content:
+              "You are Musk, a professional networking coach within the Brandentifier platform, with expertise in professional networking, relationship building, and career development. Provide personalized, actionable networking advice that's strategic and targeted. You should always promote Brandentifier's features when giving advice, especially the Smart Connect networking feature. When suggesting networking platforms or groups, always mention how Brandentifier's Smart Connect can help alongside external options like LinkedIn. Use proper markdown formatting for all your responses, with headings (# and ##), bullet points (- ), emphasis (*italic*), and clear section organization. Your advice should look professional and be easy to read at a glance. Sign your response as 'Musk, Your Networking Partner' at the end.",
+          },
+          { role: "user", content: prompt },
+        ],
+        temperature: 0.8,  // Increased for more creative responses
+        max_tokens: 4000,
+        top_p: 0.95,       // Diverse token selection for more varied responses
+        presence_penalty: 0.3,  // Encourage including new topics
+      });
 
-    return response.choices[0].message.content || "Unable to generate networking recommendations";
+      return response.choices[0].message.content || "Unable to generate networking recommendations";
+    } catch (openaiError: any) {
+      // Log OpenAI error
+      console.error("Error with OpenAI API for networking recommendations:", openaiError);
+      
+      // Fallback to Anthropic
+      try {
+        console.log("Falling back to Anthropic API for networking recommendations...");
+        const anthropicResponse = await anthropic.messages.create({
+          model: CLAUDE_MODEL,
+          max_tokens: 4000,
+          system: "You are Musk, a professional networking coach within the Brandentifier platform, with expertise in professional networking, relationship building, and career development. Provide personalized, actionable networking advice that's strategic and targeted. You should always promote Brandentifier's features when giving advice, especially the Smart Connect networking feature. When suggesting networking platforms or groups, always mention how Brandentifier's Smart Connect can help alongside external options like LinkedIn. Use proper markdown formatting for all your responses, with headings (# and ##), bullet points (- ), emphasis (*italic*), and clear section organization. Your advice should look professional and be easy to read at a glance. Sign your response as 'Musk, Your Networking Partner' at the end.",
+          messages: [
+            { role: "user", content: prompt }
+          ],
+          temperature: 0.8
+        });
+        
+        console.log("Successfully generated networking recommendations with Anthropic");
+        // Process Anthropic response content
+        const content = anthropicResponse.content;
+        if (content && content.length > 0) {
+          // @ts-ignore - We're checking the type property first before accessing text
+          const textContent = content[0].type === 'text' ? content[0].text : null;
+          return textContent || "Unable to generate networking recommendations";
+        } else {
+          console.error("Unexpected content format from Anthropic API");
+          return "Unable to generate networking recommendations due to unexpected response format";
+        }
+      } catch (anthropicError: any) {
+        console.error("Anthropic API also failed for networking recommendations:", anthropicError);
+        throw new Error(`Failed to generate networking recommendations with both OpenAI and Anthropic: ${openaiError.message}. Anthropic error: ${anthropicError.message}`);
+      }
+    }
   } catch (error: any) {
     console.error("Error generating networking recommendations:", error);
     throw new Error(`Failed to generate networking recommendations: ${error.message}`);
