@@ -51,6 +51,8 @@ export default function MinimalistPro({
     (a.order || 0) - (b.order || 0)
   );
   
+  console.log("MinimalistPro - sortedServices:", sortedServices);
+  
   // Initialize animations on component mount
   useEffect(() => {
     // Add CSS for animations

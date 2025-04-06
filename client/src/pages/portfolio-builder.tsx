@@ -702,6 +702,12 @@ export default function PortfolioBuilder() {
             {form.watch("layout") === "minimalist-pro" && (
               <>
                 {console.log("In MinimalistPro - Services data being passed:", services)}
+                {console.log("In MinimalistPro - Services check:", {
+                  servicesType: services ? typeof services : 'undefined',
+                  isArray: Array.isArray(services),
+                  length: services ? services.length : 0,
+                  directData: JSON.stringify(services)
+                })}
                 <MinimalistPro 
                   userInfo={userInfo}
                   userSkills={userSkills}
