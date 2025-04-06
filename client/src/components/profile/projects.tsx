@@ -898,59 +898,105 @@ export default function Projects() {
                     <FormMessage />
                   </FormItem>
                   
-                  <FormItem>
-                    <FormLabel>Project Images (Optional, Max 10)</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="file" 
-                        ref={multipleImagesInputRef}
-                        accept="image/*"
-                        multiple
-                        onChange={(e) => {
-                          const files = Array.from(e.target.files || []);
-                          if (files.length > 10) {
-                            setMediaErrors(prev => ({...prev, images: "Maximum 10 images allowed"}));
-                            return;
-                          }
-                          setProjectImages(files);
-                          setMediaErrors(prev => ({...prev, images: undefined}));
-                        }} 
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Upload up to 10 images to showcase your project
-                    </FormDescription>
-                    {mediaErrors?.images && <p className="text-sm font-medium text-destructive">{mediaErrors.images}</p>}
-                    <FormMessage />
-                  </FormItem>
-                  
-                  <FormItem>
-                    <FormLabel>Project Video (Optional, Max 120 sec)</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="file" 
-                        ref={videoInputRef}
-                        accept="video/*"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            // Check approximate video size (2MB/min is a rough estimate for decent quality)
-                            if (file.size > 4 * 1024 * 1024) {
-                              setMediaErrors(prev => ({...prev, video: "Video exceeds maximum size (max ~120 seconds)"}));
-                              return;
+                  <div className="space-y-4 border p-4 rounded-md">
+                    <h3 className="text-sm font-medium">Project Media (Choose One Type)</h3>
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="flex items-center">
+                        <input
+                          type="radio"
+                          id="media-type-images"
+                          name="media-type"
+                          className="h-4 w-4 border-gray-300 text-primary focus:ring-primary"
+                          checked={!projectVideo}
+                          onChange={() => {
+                            setProjectVideo(null);
+                            if (videoInputRef.current) {
+                              videoInputRef.current.value = '';
                             }
-                            setProjectVideo(file);
                             setMediaErrors(prev => ({...prev, video: undefined}));
-                          }
-                        }} 
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Upload a short video (max 120 seconds) to demonstrate your project
-                    </FormDescription>
-                    {mediaErrors?.video && <p className="text-sm font-medium text-destructive">{mediaErrors.video}</p>}
-                    <FormMessage />
-                  </FormItem>
+                          }}
+                        />
+                        <label htmlFor="media-type-images" className="ml-2 text-sm font-medium">
+                          Images (Max 10)
+                        </label>
+                      </div>
+                      <div className="flex items-center ml-6">
+                        <input
+                          type="radio"
+                          id="media-type-video"
+                          name="media-type"
+                          className="h-4 w-4 border-gray-300 text-primary focus:ring-primary"
+                          checked={!!projectVideo}
+                          onChange={() => {
+                            setProjectImages([]);
+                            if (multipleImagesInputRef.current) {
+                              multipleImagesInputRef.current.value = '';
+                            }
+                            setMediaErrors(prev => ({...prev, images: undefined}));
+                          }}
+                        />
+                        <label htmlFor="media-type-video" className="ml-2 text-sm font-medium">
+                          Video (Max 120 sec)
+                        </label>
+                      </div>
+                    </div>
+
+                    {!projectVideo ? (
+                      <FormItem>
+                        <FormLabel>Project Images</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="file" 
+                            ref={multipleImagesInputRef}
+                            accept="image/*"
+                            multiple
+                            onChange={(e) => {
+                              const files = Array.from(e.target.files || []);
+                              if (files.length > 10) {
+                                setMediaErrors(prev => ({...prev, images: "Maximum 10 images allowed"}));
+                                return;
+                              }
+                              setProjectImages(files);
+                              setMediaErrors(prev => ({...prev, images: undefined}));
+                            }} 
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Upload up to 10 images to showcase your project
+                        </FormDescription>
+                        {mediaErrors?.images && <p className="text-sm font-medium text-destructive">{mediaErrors.images}</p>}
+                        <FormMessage />
+                      </FormItem>
+                    ) : (
+                      <FormItem>
+                        <FormLabel>Project Video</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="file" 
+                            ref={videoInputRef}
+                            accept="video/*"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                // Check approximate video size (2MB/min is a rough estimate for decent quality)
+                                if (file.size > 4 * 1024 * 1024) {
+                                  setMediaErrors(prev => ({...prev, video: "Video exceeds maximum size (max ~120 seconds)"}));
+                                  return;
+                                }
+                                setProjectVideo(file);
+                                setMediaErrors(prev => ({...prev, video: undefined}));
+                              }
+                            }} 
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Upload a short video (max 120 seconds) to demonstrate your project
+                        </FormDescription>
+                        {mediaErrors?.video && <p className="text-sm font-medium text-destructive">{mediaErrors.video}</p>}
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  </div>
                 </TabsContent>
                 
                 <TabsContent value="team" className="space-y-4 pt-4">
@@ -1201,74 +1247,120 @@ export default function Projects() {
                       <FormMessage />
                     </FormItem>
                     
-                    <FormItem>
-                      <FormLabel>Project Images (Optional, Max 10)</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="file" 
-                          ref={multipleImagesInputRef}
-                          accept="image/*"
-                          multiple
-                          onChange={(e) => {
-                            const files = Array.from(e.target.files || []);
-                            if (files.length > 10) {
-                              setMediaErrors(prev => ({...prev, images: "Maximum 10 images allowed"}));
-                              return;
-                            }
-                            setProjectImages(files);
-                            setMediaErrors(prev => ({...prev, images: undefined}));
-                          }} 
-                        />
-                      </FormControl>
-                      <FormDescription className="flex flex-wrap items-center gap-2">
-                        {currentProject.mediaUrls && currentProject.mediaUrls.length > 0 ? (
-                          <>
-                            <span>Current media:</span>
-                            {currentProject.mediaUrls.map((url, index) => (
-                              <img 
-                                key={index}
-                                src={url} 
-                                alt={`Project media ${index + 1}`} 
-                                className="h-8 w-8 object-cover rounded"
-                              />
-                            ))}
-                            <span className="text-xs text-muted-foreground">(Upload new ones to replace)</span>
-                          </>
-                        ) : (
-                          "Upload up to 10 images to showcase your project"
-                        )}
-                      </FormDescription>
-                      {mediaErrors?.images && <p className="text-sm font-medium text-destructive">{mediaErrors.images}</p>}
-                      <FormMessage />
-                    </FormItem>
-                    
-                    <FormItem>
-                      <FormLabel>Project Video (Optional, Max 120 sec)</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="file" 
-                          ref={videoInputRef}
-                          accept="video/*"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                              // Check approximate video size (2MB/min is a rough estimate for decent quality)
-                              if (file.size > 4 * 1024 * 1024) {
-                                setMediaErrors(prev => ({...prev, video: "Video exceeds maximum size (max ~120 seconds)"}));
-                                return;
+                    <div className="space-y-4 border p-4 rounded-md">
+                      <h3 className="text-sm font-medium">Project Media (Choose One Type)</h3>
+                      <div className="flex items-center gap-2 mb-4">
+                        <div className="flex items-center">
+                          <input
+                            type="radio"
+                            id="media-type-images-edit"
+                            name="media-type-edit"
+                            className="h-4 w-4 border-gray-300 text-primary focus:ring-primary"
+                            checked={!projectVideo}
+                            onChange={() => {
+                              setProjectVideo(null);
+                              if (videoInputRef.current) {
+                                videoInputRef.current.value = '';
                               }
-                              setProjectVideo(file);
                               setMediaErrors(prev => ({...prev, video: undefined}));
-                            }
-                          }} 
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Upload a short video (max 120 seconds) to demonstrate your project
-                      </FormDescription>
-                      {mediaErrors?.video && <p className="text-sm font-medium text-destructive">{mediaErrors.video}</p>}
-                      <FormMessage />
-                    </FormItem>
+                            }}
+                          />
+                          <label htmlFor="media-type-images-edit" className="ml-2 text-sm font-medium">
+                            Images (Max 10)
+                          </label>
+                        </div>
+                        <div className="flex items-center ml-6">
+                          <input
+                            type="radio"
+                            id="media-type-video-edit"
+                            name="media-type-edit"
+                            className="h-4 w-4 border-gray-300 text-primary focus:ring-primary"
+                            checked={!!projectVideo}
+                            onChange={() => {
+                              setProjectImages([]);
+                              if (multipleImagesInputRef.current) {
+                                multipleImagesInputRef.current.value = '';
+                              }
+                              setMediaErrors(prev => ({...prev, images: undefined}));
+                            }}
+                          />
+                          <label htmlFor="media-type-video-edit" className="ml-2 text-sm font-medium">
+                            Video (Max 120 sec)
+                          </label>
+                        </div>
+                      </div>
+
+                      {!projectVideo ? (
+                        <FormItem>
+                          <FormLabel>Project Images</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="file" 
+                              ref={multipleImagesInputRef}
+                              accept="image/*"
+                              multiple
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                if (files.length > 10) {
+                                  setMediaErrors(prev => ({...prev, images: "Maximum 10 images allowed"}));
+                                  return;
+                                }
+                                setProjectImages(files);
+                                setMediaErrors(prev => ({...prev, images: undefined}));
+                              }} 
+                            />
+                          </FormControl>
+                          <FormDescription className="flex flex-wrap items-center gap-2">
+                            {currentProject.mediaUrls && currentProject.mediaUrls.length > 0 ? (
+                              <>
+                                <span>Current media:</span>
+                                {currentProject.mediaUrls.map((url, index) => (
+                                  <img 
+                                    key={index}
+                                    src={url} 
+                                    alt={`Project media ${index + 1}`} 
+                                    className="h-8 w-8 object-cover rounded"
+                                  />
+                                ))}
+                                <span className="text-xs text-muted-foreground">(Upload new ones to replace)</span>
+                              </>
+                            ) : (
+                              "Upload up to 10 images to showcase your project"
+                            )}
+                          </FormDescription>
+                          {mediaErrors?.images && <p className="text-sm font-medium text-destructive">{mediaErrors.images}</p>}
+                          <FormMessage />
+                        </FormItem>
+                      ) : (
+                        <FormItem>
+                          <FormLabel>Project Video</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="file" 
+                              ref={videoInputRef}
+                              accept="video/*"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  // Check approximate video size (2MB/min is a rough estimate for decent quality)
+                                  if (file.size > 4 * 1024 * 1024) {
+                                    setMediaErrors(prev => ({...prev, video: "Video exceeds maximum size (max ~120 seconds)"}));
+                                    return;
+                                  }
+                                  setProjectVideo(file);
+                                  setMediaErrors(prev => ({...prev, video: undefined}));
+                                }
+                              }} 
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Upload a short video (max 120 seconds) to demonstrate your project
+                          </FormDescription>
+                          {mediaErrors?.video && <p className="text-sm font-medium text-destructive">{mediaErrors.video}</p>}
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    </div>
                   </TabsContent>
                   
                   <TabsContent value="team" className="space-y-4 pt-4">
