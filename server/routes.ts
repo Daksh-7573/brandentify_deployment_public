@@ -1532,6 +1532,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     function generateDemoCareerAdvice(data: any): string {
       const { adviceType, user } = data;
       
+      // Debug log for selection
+      console.log("DEMO ADVICE SELECTION - Checking advice type:", adviceType, "Type is:", typeof adviceType);
+      
       // Safely extract the user's name
       let userName = "User";
       if (user && typeof user === 'object' && 'name' in user) {
@@ -1539,6 +1542,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       if (adviceType === 'switch_industry') {
+        console.log("DEMO ADVICE: Using SWITCH INDUSTRY template");
         return `# Industry Transition Analysis for ${userName}
 
 After conducting a comprehensive analysis of your professional profile, I've evaluated your potential for industry transition across 10 key factors. Here's my detailed assessment:
