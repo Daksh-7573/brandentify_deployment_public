@@ -1521,7 +1521,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userName = user.name || "User";
       }
       
-      if (adviceType === 'industry-switch') {
+      if (adviceType === 'switch_industry') {
         return `# Industry Transition Analysis for ${userName}
 
 After conducting a comprehensive analysis of your professional profile, I've evaluated your potential for industry transition across 10 key factors. Here's my detailed assessment:
