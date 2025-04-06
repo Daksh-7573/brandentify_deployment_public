@@ -2762,28 +2762,8 @@ ${extractedText.substring(0, 5000)}
         console.log(`[GET /users/:userId/services] Using numeric userId: ${userId}`);
       }
       
-      // Try to fetch services from the in-memory storage first
-      let services = await storage.getServicesByUserId(userId);
-      
-      // If no services found in memory, try to fetch from the database directly
-      if (services.length === 0) {
-        console.log(`[GET /users/:userId/services] No services found in memory, trying database directly`);
-        
-        // Import the necessary components from the schema and db files
-        const { db } = await import('./db');
-        const { services: servicesTable } = await import('@shared/schema');
-        const { eq } = await import('drizzle-orm');
-        
-        try {
-          // Query the database directly
-          services = await db.select().from(servicesTable).where(eq(servicesTable.userId, userId));
-          console.log(`[GET /users/:userId/services] Found ${services.length} services in database for userId: ${userId}`);
-        } catch (dbError) {
-          console.error(`[GET /users/:userId/services] Database query error:`, dbError);
-        }
-      }
-      
-      console.log(`[GET /users/:userId/services] Returning ${services.length} services for userId: ${userId}`);
+      const services = await storage.getServicesByUserId(userId);
+      console.log(`[GET /users/:userId/services] Found ${services.length} services for userId: ${userId}`);
       res.json(services);
     } catch (error) {
       console.error("Error fetching services:", error);
