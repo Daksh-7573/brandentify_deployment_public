@@ -20,10 +20,33 @@ import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 
+// Simple hash function to generate a hash from a string
+// This is used to detect if content has changed between renders
+function hashString(str: string): string {
+  let hash = 0;
+  if (str.length === 0) return hash.toString();
+  
+  for (let i = 0; i < Math.min(str.length, 1000); i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  
+  return hash.toString();
+}
+
 // Component to extract and display resume scores from AI analysis
 interface ResumeScoreSummaryProps {
   content: string;
 }
+
+// Maintain a cache of scores between renders to ensure consistency
+const scoreCache = {
+  overall: 0,
+  categories: {} as Record<string, number>,
+  timestamp: 0,
+  contentHash: ""
+};
 
 function ResumeScoreSummary({ content }: ResumeScoreSummaryProps) {
   // Check if the content contains an error message about parsing failure
@@ -35,6 +58,20 @@ function ResumeScoreSummary({ content }: ResumeScoreSummaryProps) {
   
   // Parse the content to extract score information
   const extractScores = () => {
+    // Generate a hash of the content to detect changes
+    const contentHash = hashString(content);
+    const now = Date.now();
+    
+    // If we have cached scores and they're from the same content, use them
+    // This prevents score fluctuations on the same analysis
+    if (scoreCache.timestamp > 0 && contentHash === scoreCache.contentHash && now - scoreCache.timestamp < 300000) {
+      console.log("Using cached scores to ensure consistency");
+      return {
+        scores: { ...scoreCache.categories },
+        overallScore: scoreCache.overall,
+        hasScores: true
+      };
+    }
     const scores: { [key: string]: number } = {
       "Structure & Layout": 0,
       "Content Quality": 0,
@@ -175,6 +212,15 @@ function ResumeScoreSummary({ content }: ResumeScoreSummaryProps) {
     // Re-check valid scores to ensure we have the latest data
     const allValidScores = Object.values(scores).filter(score => score > 0);
     const hasScores = allValidScores.length > 0 || overallScore > 0;
+    
+    // Update the score cache to maintain consistency
+    if (hasScores) {
+      scoreCache.overall = overallScore;
+      scoreCache.categories = {...scores};
+      scoreCache.timestamp = Date.now();
+      scoreCache.contentHash = contentHash;
+      console.log("Updated score cache for future consistency");
+    }
     
     return {
       scores,
@@ -433,6 +479,12 @@ export default function AICareerPage() {
       return res.json();
     },
     onSuccess: () => {
+      // Reset the score cache when clearing the analysis to avoid showing stale data
+      scoreCache.overall = 0;
+      scoreCache.categories = {};
+      scoreCache.timestamp = 0;
+      scoreCache.contentHash = "";
+      
       toast({
         title: "Resume analysis cleared",
         description: "Your resume analysis has been cleared."
