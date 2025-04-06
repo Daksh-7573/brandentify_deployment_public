@@ -22,6 +22,11 @@ import {
   insertProjectEndorsementSchema,
   insertPortfolioSchema,
   insertServiceSchema,
+  insertIndustryPulsePostSchema,
+  insertIndustryPulseReactionSchema,
+  insertIndustryPulseCommentSchema,
+  insertIndustryPulseBookmarkSchema,
+  insertIndustryPulsePollVoteSchema,
   InsertWorkExperience,
   InsertEducation,
   InsertSkill,
@@ -29,7 +34,12 @@ import {
   InsertProjectCollaborator,
   InsertProjectEndorsement,
   InsertPortfolio,
-  InsertService
+  InsertService,
+  InsertIndustryPulsePost,
+  InsertIndustryPulseReaction,
+  InsertIndustryPulseComment,
+  InsertIndustryPulseBookmark,
+  InsertIndustryPulsePollVote
 } from "@shared/schema";
 import { generateCareerAdvice } from "./services/ai-service";
 import { getJobTitleSuggestions } from "./services/title-suggestions";
@@ -3128,6 +3138,541 @@ ${extractedText.substring(0, 5000)}
     } catch (error) {
       console.error("Error deleting service:", error);
       res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Industry Pulse Posts routes
+  apiRouter.get("/industry-pulse/posts", async (req: Request, res: Response) => {
+    try {
+      console.log("[GET /industry-pulse/posts] Fetching all industry pulse posts");
+      const page = req.query.page ? parseInt(req.query.page as string) : 1;
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+      const industry = req.query.industry as string | undefined;
+      
+      let posts;
+      if (industry) {
+        console.log(`[GET /industry-pulse/posts] Filtering by industry: ${industry}`);
+        posts = await storage.getIndustryPulsePostsByIndustry(industry, page, limit);
+      } else {
+        posts = await storage.getIndustryPulsePosts(page, limit);
+      }
+      
+      console.log(`[GET /industry-pulse/posts] Found ${posts.length} posts`);
+      res.json(posts);
+    } catch (error) {
+      console.error("Error fetching industry pulse posts:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  apiRouter.get("/users/:userId/industry-pulse/posts", async (req: Request, res: Response) => {
+    try {
+      const userIdParam = req.params.userId;
+      console.log(`[GET /users/:userId/industry-pulse/posts] Request for posts with userId: ${userIdParam}`);
+      
+      let userId: number;
+      
+      // Check if this is a Firebase UID
+      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
+      
+      if (isFirebaseUid) {
+        console.log(`[GET /users/:userId/industry-pulse/posts] userId appears to be a Firebase UID: ${userIdParam}`);
+        // Try to find user with this username (Firebase UID)
+        const user = await storage.getUserByUsername(userIdParam);
+        
+        if (!user) {
+          console.log(`[GET /users/:userId/industry-pulse/posts] No user found with Firebase UID: ${userIdParam}`);
+          return res.status(404).json({ message: "User not found" });
+        }
+        
+        console.log(`[GET /users/:userId/industry-pulse/posts] Found user with ID: ${user.id} for Firebase UID: ${userIdParam}`);
+        userId = user.id;
+      } else {
+        // Try to parse as numeric ID
+        userId = parseInt(userIdParam);
+        
+        if (isNaN(userId)) {
+          console.log(`[GET /users/:userId/industry-pulse/posts] ID is not a valid numeric ID: ${userIdParam}`);
+          return res.status(400).json({ message: "Invalid user ID format" });
+        }
+        
+        console.log(`[GET /users/:userId/industry-pulse/posts] Using numeric userId: ${userId}`);
+      }
+      
+      const posts = await storage.getIndustryPulsePostsByUserId(userId);
+      console.log(`[GET /users/:userId/industry-pulse/posts] Found ${posts.length} posts for userId: ${userId}`);
+      res.json(posts);
+    } catch (error) {
+      console.error("Error fetching industry pulse posts for user:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  apiRouter.get("/industry-pulse/posts/:id", async (req: Request, res: Response) => {
+    try {
+      const postId = parseInt(req.params.id);
+      
+      if (isNaN(postId)) {
+        return res.status(400).json({ message: "Invalid post ID" });
+      }
+      
+      console.log(`[GET /industry-pulse/posts/:id] Fetching post with ID: ${postId}`);
+      
+      const post = await storage.getIndustryPulsePostById(postId);
+      
+      if (!post) {
+        return res.status(404).json({ message: "Post not found" });
+      }
+      
+      // Increment view count
+      await storage.incrementIndustryPulsePostViews(postId);
+      
+      console.log(`[GET /industry-pulse/posts/:id] Found post:`, post);
+      res.json(post);
+    } catch (error) {
+      console.error("Error fetching industry pulse post:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  apiRouter.post("/industry-pulse/posts", async (req: Request, res: Response) => {
+    try {
+      console.log(`[POST /industry-pulse/posts] Creating new industry pulse post:`, req.body);
+      
+      // Check if we have a Firebase UID instead of numeric userId
+      if (typeof req.body.userId === 'string' && req.body.userId.length > 20) {
+        console.log(`[POST /industry-pulse/posts] Received Firebase UID as userId: ${req.body.userId}`);
+        
+        // Look up the numeric userId for this Firebase UID
+        const user = await storage.getUserByUsername(req.body.userId);
+        
+        if (user) {
+          console.log(`[POST /industry-pulse/posts] Found matching user with ID: ${user.id}`);
+          // Replace the Firebase UID with the numeric userId
+          req.body.userId = user.id;
+        } else {
+          console.log(`[POST /industry-pulse/posts] No matching user found for Firebase UID: ${req.body.userId}`);
+          return res.status(404).json({ message: "User not found" });
+        }
+      }
+      
+      const postData = insertIndustryPulsePostSchema.parse(req.body);
+      const post = await storage.createIndustryPulsePost(postData);
+      
+      console.log(`[POST /industry-pulse/posts] Created post with ID: ${post.id}`);
+      res.status(201).json(post);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: error.errors });
+      } else {
+        console.error("Error creating industry pulse post:", error);
+        res.status(500).json({ message: "Internal server error" });
+      }
+    }
+  });
+
+  apiRouter.put("/industry-pulse/posts/:id", async (req: Request, res: Response) => {
+    try {
+      const postId = parseInt(req.params.id);
+      
+      if (isNaN(postId)) {
+        return res.status(400).json({ message: "Invalid post ID" });
+      }
+      
+      console.log(`[PUT /industry-pulse/posts/:id] Updating post with ID: ${postId}`);
+      
+      const post = await storage.updateIndustryPulsePost(postId, req.body);
+      
+      if (!post) {
+        return res.status(404).json({ message: "Post not found" });
+      }
+      
+      console.log(`[PUT /industry-pulse/posts/:id] Successfully updated post:`, post);
+      res.json(post);
+    } catch (error) {
+      console.error("Error updating industry pulse post:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  apiRouter.delete("/industry-pulse/posts/:id", async (req: Request, res: Response) => {
+    try {
+      const postId = parseInt(req.params.id);
+      
+      if (isNaN(postId)) {
+        return res.status(400).json({ message: "Invalid post ID" });
+      }
+      
+      console.log(`[DELETE /industry-pulse/posts/:id] Deleting post with ID: ${postId}`);
+      
+      const success = await storage.deleteIndustryPulsePost(postId);
+      
+      if (!success) {
+        return res.status(404).json({ message: "Post not found" });
+      }
+      
+      console.log(`[DELETE /industry-pulse/posts/:id] Successfully deleted post with ID: ${postId}`);
+      res.status(204).end();
+    } catch (error) {
+      console.error("Error deleting industry pulse post:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Industry Pulse Reactions routes
+  apiRouter.get("/industry-pulse/posts/:postId/reactions", async (req: Request, res: Response) => {
+    try {
+      const postId = parseInt(req.params.postId);
+      
+      if (isNaN(postId)) {
+        return res.status(400).json({ message: "Invalid post ID" });
+      }
+      
+      console.log(`[GET /industry-pulse/posts/:postId/reactions] Fetching reactions for post ID: ${postId}`);
+      
+      const reactions = await storage.getIndustryPulseReactionsByPostId(postId);
+      
+      console.log(`[GET /industry-pulse/posts/:postId/reactions] Found ${reactions.length} reactions`);
+      res.json(reactions);
+    } catch (error) {
+      console.error("Error fetching industry pulse reactions:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  apiRouter.post("/industry-pulse/reactions", async (req: Request, res: Response) => {
+    try {
+      console.log(`[POST /industry-pulse/reactions] Creating new reaction:`, req.body);
+      
+      // Replace Firebase UID with numeric userId if needed
+      if (typeof req.body.userId === 'string' && req.body.userId.length > 20) {
+        const user = await storage.getUserByUsername(req.body.userId);
+        if (user) {
+          req.body.userId = user.id;
+        } else {
+          return res.status(404).json({ message: "User not found" });
+        }
+      }
+      
+      // Check if user already reacted to this post
+      const existingReaction = await storage.getIndustryPulseReactionByUserAndPost(
+        req.body.userId, 
+        req.body.postId
+      );
+      
+      if (existingReaction) {
+        // User already reacted - delete the existing reaction if it's different
+        if (existingReaction.reactionType !== req.body.reactionType) {
+          await storage.deleteIndustryPulseReaction(existingReaction.id);
+        } else {
+          // Same reaction type - return the existing one
+          return res.status(200).json(existingReaction);
+        }
+      }
+      
+      const reactionData = insertIndustryPulseReactionSchema.parse(req.body);
+      const reaction = await storage.createIndustryPulseReaction(reactionData);
+      
+      console.log(`[POST /industry-pulse/reactions] Created reaction with ID: ${reaction.id}`);
+      res.status(201).json(reaction);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: error.errors });
+      } else {
+        console.error("Error creating industry pulse reaction:", error);
+        res.status(500).json({ message: "Internal server error" });
+      }
+    }
+  });
+
+  apiRouter.delete("/industry-pulse/reactions/:id", async (req: Request, res: Response) => {
+    try {
+      const reactionId = parseInt(req.params.id);
+      
+      if (isNaN(reactionId)) {
+        return res.status(400).json({ message: "Invalid reaction ID" });
+      }
+      
+      console.log(`[DELETE /industry-pulse/reactions/:id] Deleting reaction with ID: ${reactionId}`);
+      
+      const success = await storage.deleteIndustryPulseReaction(reactionId);
+      
+      if (!success) {
+        return res.status(404).json({ message: "Reaction not found" });
+      }
+      
+      console.log(`[DELETE /industry-pulse/reactions/:id] Successfully deleted reaction with ID: ${reactionId}`);
+      res.status(204).end();
+    } catch (error) {
+      console.error("Error deleting industry pulse reaction:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Industry Pulse Comments routes
+  apiRouter.get("/industry-pulse/posts/:postId/comments", async (req: Request, res: Response) => {
+    try {
+      const postId = parseInt(req.params.postId);
+      
+      if (isNaN(postId)) {
+        return res.status(400).json({ message: "Invalid post ID" });
+      }
+      
+      console.log(`[GET /industry-pulse/posts/:postId/comments] Fetching comments for post ID: ${postId}`);
+      
+      const comments = await storage.getIndustryPulseCommentsByPostId(postId);
+      
+      console.log(`[GET /industry-pulse/posts/:postId/comments] Found ${comments.length} comments`);
+      res.json(comments);
+    } catch (error) {
+      console.error("Error fetching industry pulse comments:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  apiRouter.post("/industry-pulse/comments", async (req: Request, res: Response) => {
+    try {
+      console.log(`[POST /industry-pulse/comments] Creating new comment:`, req.body);
+      
+      // Replace Firebase UID with numeric userId if needed
+      if (typeof req.body.userId === 'string' && req.body.userId.length > 20) {
+        const user = await storage.getUserByUsername(req.body.userId);
+        if (user) {
+          req.body.userId = user.id;
+        } else {
+          return res.status(404).json({ message: "User not found" });
+        }
+      }
+      
+      const commentData = insertIndustryPulseCommentSchema.parse(req.body);
+      const comment = await storage.createIndustryPulseComment(commentData);
+      
+      console.log(`[POST /industry-pulse/comments] Created comment with ID: ${comment.id}`);
+      res.status(201).json(comment);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: error.errors });
+      } else {
+        console.error("Error creating industry pulse comment:", error);
+        res.status(500).json({ message: "Internal server error" });
+      }
+    }
+  });
+
+  apiRouter.put("/industry-pulse/comments/:id", async (req: Request, res: Response) => {
+    try {
+      const commentId = parseInt(req.params.id);
+      
+      if (isNaN(commentId)) {
+        return res.status(400).json({ message: "Invalid comment ID" });
+      }
+      
+      console.log(`[PUT /industry-pulse/comments/:id] Updating comment with ID: ${commentId}`);
+      
+      const comment = await storage.updateIndustryPulseComment(commentId, req.body);
+      
+      if (!comment) {
+        return res.status(404).json({ message: "Comment not found" });
+      }
+      
+      console.log(`[PUT /industry-pulse/comments/:id] Successfully updated comment:`, comment);
+      res.json(comment);
+    } catch (error) {
+      console.error("Error updating industry pulse comment:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  apiRouter.delete("/industry-pulse/comments/:id", async (req: Request, res: Response) => {
+    try {
+      const commentId = parseInt(req.params.id);
+      
+      if (isNaN(commentId)) {
+        return res.status(400).json({ message: "Invalid comment ID" });
+      }
+      
+      console.log(`[DELETE /industry-pulse/comments/:id] Deleting comment with ID: ${commentId}`);
+      
+      const success = await storage.deleteIndustryPulseComment(commentId);
+      
+      if (!success) {
+        return res.status(404).json({ message: "Comment not found" });
+      }
+      
+      console.log(`[DELETE /industry-pulse/comments/:id] Successfully deleted comment with ID: ${commentId}`);
+      res.status(204).end();
+    } catch (error) {
+      console.error("Error deleting industry pulse comment:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Industry Pulse Bookmarks routes
+  apiRouter.get("/users/:userId/industry-pulse/bookmarks", async (req: Request, res: Response) => {
+    try {
+      const userIdParam = req.params.userId;
+      
+      let userId: number;
+      
+      // Check if this is a Firebase UID
+      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
+      
+      if (isFirebaseUid) {
+        // Try to find user with this username (Firebase UID)
+        const user = await storage.getUserByUsername(userIdParam);
+        
+        if (!user) {
+          return res.status(404).json({ message: "User not found" });
+        }
+        
+        userId = user.id;
+      } else {
+        // Try to parse as numeric ID
+        userId = parseInt(userIdParam);
+        
+        if (isNaN(userId)) {
+          return res.status(400).json({ message: "Invalid user ID format" });
+        }
+      }
+      
+      const bookmarks = await storage.getIndustryPulseBookmarksByUserId(userId);
+      res.json(bookmarks);
+    } catch (error) {
+      console.error("Error fetching industry pulse bookmarks:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  apiRouter.post("/industry-pulse/bookmarks", async (req: Request, res: Response) => {
+    try {
+      console.log(`[POST /industry-pulse/bookmarks] Creating new bookmark:`, req.body);
+      
+      // Replace Firebase UID with numeric userId if needed
+      if (typeof req.body.userId === 'string' && req.body.userId.length > 20) {
+        const user = await storage.getUserByUsername(req.body.userId);
+        if (user) {
+          req.body.userId = user.id;
+        } else {
+          return res.status(404).json({ message: "User not found" });
+        }
+      }
+      
+      // Check if user already bookmarked this post
+      const existingBookmark = await storage.getIndustryPulseBookmarkByUserAndPost(
+        req.body.userId, 
+        req.body.postId
+      );
+      
+      if (existingBookmark) {
+        // User already bookmarked this post
+        return res.status(200).json(existingBookmark);
+      }
+      
+      const bookmarkData = insertIndustryPulseBookmarkSchema.parse(req.body);
+      const bookmark = await storage.createIndustryPulseBookmark(bookmarkData);
+      
+      // Increment bookmark count on the post
+      await storage.incrementIndustryPulsePostBookmarks(req.body.postId);
+      
+      console.log(`[POST /industry-pulse/bookmarks] Created bookmark with ID: ${bookmark.id}`);
+      res.status(201).json(bookmark);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: error.errors });
+      } else {
+        console.error("Error creating industry pulse bookmark:", error);
+        res.status(500).json({ message: "Internal server error" });
+      }
+    }
+  });
+
+  apiRouter.delete("/industry-pulse/bookmarks/:id", async (req: Request, res: Response) => {
+    try {
+      const bookmarkId = parseInt(req.params.id);
+      
+      if (isNaN(bookmarkId)) {
+        return res.status(400).json({ message: "Invalid bookmark ID" });
+      }
+      
+      console.log(`[DELETE /industry-pulse/bookmarks/:id] Deleting bookmark with ID: ${bookmarkId}`);
+      
+      const success = await storage.deleteIndustryPulseBookmark(bookmarkId);
+      
+      if (!success) {
+        return res.status(404).json({ message: "Bookmark not found" });
+      }
+      
+      console.log(`[DELETE /industry-pulse/bookmarks/:id] Successfully deleted bookmark with ID: ${bookmarkId}`);
+      res.status(204).end();
+    } catch (error) {
+      console.error("Error deleting industry pulse bookmark:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Industry Pulse Poll Votes routes
+  apiRouter.get("/industry-pulse/posts/:postId/poll-votes", async (req: Request, res: Response) => {
+    try {
+      const postId = parseInt(req.params.postId);
+      
+      if (isNaN(postId)) {
+        return res.status(400).json({ message: "Invalid post ID" });
+      }
+      
+      console.log(`[GET /industry-pulse/posts/:postId/poll-votes] Fetching poll votes for post ID: ${postId}`);
+      
+      const votes = await storage.getIndustryPulsePollVotesByPostId(postId);
+      
+      console.log(`[GET /industry-pulse/posts/:postId/poll-votes] Found ${votes.length} votes`);
+      res.json(votes);
+    } catch (error) {
+      console.error("Error fetching industry pulse poll votes:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  apiRouter.post("/industry-pulse/poll-votes", async (req: Request, res: Response) => {
+    try {
+      console.log(`[POST /industry-pulse/poll-votes] Creating new poll vote:`, req.body);
+      
+      // Replace Firebase UID with numeric userId if needed
+      if (typeof req.body.userId === 'string' && req.body.userId.length > 20) {
+        const user = await storage.getUserByUsername(req.body.userId);
+        if (user) {
+          req.body.userId = user.id;
+        } else {
+          return res.status(404).json({ message: "User not found" });
+        }
+      }
+      
+      // Check if user already voted on this poll
+      const existingVote = await storage.getIndustryPulsePollVoteByUserAndPost(
+        req.body.userId, 
+        req.body.postId
+      );
+      
+      if (existingVote) {
+        // User already voted on this poll
+        if (existingVote.optionIndex === req.body.optionIndex) {
+          return res.status(200).json(existingVote);
+        } else {
+          // Different option - delete existing vote
+          await storage.deleteIndustryPulsePollVote(existingVote.id);
+        }
+      }
+      
+      const voteData = insertIndustryPulsePollVoteSchema.parse(req.body);
+      const vote = await storage.createIndustryPulsePollVote(voteData);
+      
+      console.log(`[POST /industry-pulse/poll-votes] Created poll vote with ID: ${vote.id}`);
+      res.status(201).json(vote);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: error.errors });
+      } else {
+        console.error("Error creating industry pulse poll vote:", error);
+        res.status(500).json({ message: "Internal server error" });
+      }
     }
   });
 
