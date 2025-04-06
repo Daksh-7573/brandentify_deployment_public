@@ -1345,7 +1345,7 @@ export default function Profile() {
   };
   
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex h-screen flex-col">
       {/* Profile Picture Dialog */}
       <ProfilePictureDialog 
         open={showProfilePictureDialog}
@@ -1576,7 +1576,7 @@ export default function Profile() {
       <Header />
 
       {/* Main Content */}
-      <div className="flex-1 flex overflow-hidden pt-16"> {/* Added padding-top for fixed header */}
+      <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top for fixed header */}
         {/* Sidebar */}
         <Sidebar activePage="profile" />
 
