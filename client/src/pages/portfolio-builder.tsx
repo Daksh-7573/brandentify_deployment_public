@@ -867,6 +867,8 @@ export default function PortfolioBuilder() {
                     }}
                     userSkills={userSkills || []}
                     userServices={userServices || []}
+                    userExperiences={userExperiences || []}
+                    userEducations={userEducations || []}
                     userProjects={userProjects?.map(p => ({
                       id: p.id,
                       title: p.title,

@@ -6,10 +6,12 @@ import { ProfileImage } from "@/components/ui/profile-image";
 import { 
   Download, FileImage, Laptop, Lightbulb, Linkedin, 
   Mail, PenTool, Quote, Instagram, Globe, Star, Heart, 
-  Palette, Camera, Music, Video, Coffee, ArrowRight
+  Palette, Camera, Music, Video, Coffee, ArrowRight,
+  Briefcase, GraduationCap, BookOpen, Calendar, MapPin
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Project, Skill, Service } from "@shared/schema";
+import { UserExperience, UserEducation } from "@/types";
 
 interface FreelancerHubProps {
   userInfo: {
@@ -26,10 +28,20 @@ interface FreelancerHubProps {
   userSkills: Skill[];
   userProjects: Project[];
   userServices: Service[];
+  userExperiences: UserExperience[];
+  userEducations: UserEducation[];
   publicUrl?: string | null;
 }
 
-export default function FreelancerHub({ userInfo, userSkills, userProjects, userServices, publicUrl }: FreelancerHubProps) {
+export default function FreelancerHub({ 
+  userInfo, 
+  userSkills, 
+  userProjects, 
+  userServices, 
+  userExperiences = [], 
+  userEducations = [],
+  publicUrl 
+}: FreelancerHubProps) {
   // Debug logs
   console.log("FreelancerHub received userServices:", userServices);
   console.log("userServices type:", typeof userServices, Array.isArray(userServices), userServices?.length);
@@ -319,6 +331,250 @@ export default function FreelancerHub({ userInfo, userSkills, userProjects, user
               </button>
             </div>
           </motion.div>
+        </div>
+        
+        {/* Work Experience section */}
+        <div className="mb-12">
+          <motion.h2 
+            className="text-2xl font-bold text-center mb-6 text-[#6A0572]" 
+            style={{ fontFamily: "Lobster, cursive" }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            Work Experience
+          </motion.h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {userExperiences.length > 0 ? (
+              userExperiences.map((experience, index) => (
+                <motion.div 
+                  key={experience.id}
+                  className="bg-white rounded-2xl p-6 hover:shadow-lg transition-all duration-300 border-2 border-[#FF7F50]/10 overflow-hidden relative"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  whileHover={{ y: -5 }}
+                >
+                  {/* Decorative corner shape */}
+                  <div className="absolute top-0 right-0 w-16 h-16 bg-[#FF7F50]/10 rounded-bl-3xl"></div>
+                  
+                  <div className="flex mb-4 items-start">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#FF7F50] to-[#6A0572] flex items-center justify-center text-white mr-4 flex-shrink-0 shadow-md">
+                      <Briefcase className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-lg" style={{ fontFamily: "Nunito, sans-serif" }}>{experience.title}</h3>
+                      <p className="text-gray-600 text-sm">{experience.company}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="pl-16">
+                    <div className="flex items-center text-xs text-gray-500 mb-3">
+                      <Calendar className="h-3 w-3 mr-1" />
+                      <span>{experience.startDate} - {experience.endDate || 'Present'}</span>
+                      <span className="mx-2">•</span>
+                      <MapPin className="h-3 w-3 mr-1" />
+                      <span>{experience.location}</span>
+                    </div>
+                    <p className="text-sm text-gray-600">{experience.description}</p>
+                    
+                    <div className="flex mt-4 flex-wrap gap-2">
+                      {experience.industry && (
+                        <Badge className="bg-[#FF7F50]/10 text-[#FF7F50] hover:bg-[#FF7F50]">{experience.industry}</Badge>
+                      )}
+                      {experience.domain && (
+                        <Badge className="bg-[#6A0572]/10 text-[#6A0572] hover:bg-[#6A0572]">{experience.domain}</Badge>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              ))
+            ) : (
+              <>
+                <motion.div 
+                  className="bg-white rounded-2xl p-6 hover:shadow-lg transition-all duration-300 border-2 border-[#FF7F50]/10 overflow-hidden relative"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  whileHover={{ y: -5 }}
+                >
+                  <div className="flex mb-4 items-start">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#FF7F50] to-[#6A0572] flex items-center justify-center text-white mr-4 flex-shrink-0 shadow-md">
+                      <Briefcase className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-lg" style={{ fontFamily: "Nunito, sans-serif" }}>Senior UI/UX Designer</h3>
+                      <p className="text-gray-600 text-sm">Creative Studios Inc.</p>
+                    </div>
+                  </div>
+                  
+                  <div className="pl-16">
+                    <div className="flex items-center text-xs text-gray-500 mb-3">
+                      <Calendar className="h-3 w-3 mr-1" />
+                      <span>Jan 2020 - Present</span>
+                      <span className="mx-2">•</span>
+                      <MapPin className="h-3 w-3 mr-1" />
+                      <span>New York, NY</span>
+                    </div>
+                    <p className="text-sm text-gray-600">Led the design team in creating intuitive and engaging user experiences for web and mobile applications. Collaborated with cross-functional teams to deliver exceptional design solutions.</p>
+                    
+                    <div className="flex mt-4 flex-wrap gap-2">
+                      <Badge className="bg-[#FF7F50]/10 text-[#FF7F50] hover:bg-[#FF7F50]">Design</Badge>
+                      <Badge className="bg-[#6A0572]/10 text-[#6A0572] hover:bg-[#6A0572]">Creative</Badge>
+                    </div>
+                  </div>
+                </motion.div>
+                
+                <motion.div 
+                  className="bg-white rounded-2xl p-6 hover:shadow-lg transition-all duration-300 border-2 border-[#FF7F50]/10 overflow-hidden relative"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.1 }}
+                  whileHover={{ y: -5 }}
+                >
+                  <div className="flex mb-4 items-start">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#FF7F50] to-[#6A0572] flex items-center justify-center text-white mr-4 flex-shrink-0 shadow-md">
+                      <Briefcase className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-lg" style={{ fontFamily: "Nunito, sans-serif" }}>UI Designer</h3>
+                      <p className="text-gray-600 text-sm">Digital Solutions Ltd.</p>
+                    </div>
+                  </div>
+                  
+                  <div className="pl-16">
+                    <div className="flex items-center text-xs text-gray-500 mb-3">
+                      <Calendar className="h-3 w-3 mr-1" />
+                      <span>Mar 2018 - Dec 2019</span>
+                      <span className="mx-2">•</span>
+                      <MapPin className="h-3 w-3 mr-1" />
+                      <span>San Francisco, CA</span>
+                    </div>
+                    <p className="text-sm text-gray-600">Designed user interfaces for web and mobile applications, focusing on creating visually appealing and user-friendly experiences. Worked closely with developers to ensure design implementation.</p>
+                    
+                    <div className="flex mt-4 flex-wrap gap-2">
+                      <Badge className="bg-[#FF7F50]/10 text-[#FF7F50] hover:bg-[#FF7F50]">UI Design</Badge>
+                      <Badge className="bg-[#6A0572]/10 text-[#6A0572] hover:bg-[#6A0572]">Tech</Badge>
+                    </div>
+                  </div>
+                </motion.div>
+              </>
+            )}
+          </div>
+        </div>
+        
+        {/* Education section */}
+        <div className="mb-12">
+          <motion.h2 
+            className="text-2xl font-bold text-center mb-6 text-[#6A0572]" 
+            style={{ fontFamily: "Lobster, cursive" }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            Education
+          </motion.h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {userEducations.length > 0 ? (
+              userEducations.map((education, index) => (
+                <motion.div 
+                  key={education.id}
+                  className="bg-white rounded-2xl p-6 hover:shadow-lg transition-all duration-300 border-2 border-[#FF7F50]/10 overflow-hidden relative"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  whileHover={{ y: -5 }}
+                >
+                  {/* Decorative corner shape */}
+                  <div className="absolute top-0 right-0 w-16 h-16 bg-[#FF7F50]/10 rounded-bl-3xl"></div>
+                  
+                  <div className="flex mb-4 items-start">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#6A0572] to-[#FF7F50] flex items-center justify-center text-white mr-4 flex-shrink-0 shadow-md">
+                      <GraduationCap className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-lg" style={{ fontFamily: "Nunito, sans-serif" }}>{education.institution}</h3>
+                      <p className="text-gray-600 text-sm">{education.degree}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="pl-16">
+                    <div className="flex items-center text-xs text-gray-500 mb-3">
+                      <Calendar className="h-3 w-3 mr-1" />
+                      <span>{education.startDate} - {education.endDate || 'Present'}</span>
+                      {education.location && (
+                        <>
+                          <span className="mx-2">•</span>
+                          <MapPin className="h-3 w-3 mr-1" />
+                          <span>{education.location}</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              ))
+            ) : (
+              <>
+                <motion.div 
+                  className="bg-white rounded-2xl p-6 hover:shadow-lg transition-all duration-300 border-2 border-[#FF7F50]/10 overflow-hidden relative"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  whileHover={{ y: -5 }}
+                >
+                  <div className="flex mb-4 items-start">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#6A0572] to-[#FF7F50] flex items-center justify-center text-white mr-4 flex-shrink-0 shadow-md">
+                      <GraduationCap className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-lg" style={{ fontFamily: "Nunito, sans-serif" }}>School of Visual Arts</h3>
+                      <p className="text-gray-600 text-sm">Master of Fine Arts, Graphic Design</p>
+                    </div>
+                  </div>
+                  
+                  <div className="pl-16">
+                    <div className="flex items-center text-xs text-gray-500 mb-3">
+                      <Calendar className="h-3 w-3 mr-1" />
+                      <span>2016 - 2018</span>
+                      <span className="mx-2">•</span>
+                      <MapPin className="h-3 w-3 mr-1" />
+                      <span>New York, NY</span>
+                    </div>
+                  </div>
+                </motion.div>
+                
+                <motion.div 
+                  className="bg-white rounded-2xl p-6 hover:shadow-lg transition-all duration-300 border-2 border-[#FF7F50]/10 overflow-hidden relative"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.1 }}
+                  whileHover={{ y: -5 }}
+                >
+                  <div className="flex mb-4 items-start">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#6A0572] to-[#FF7F50] flex items-center justify-center text-white mr-4 flex-shrink-0 shadow-md">
+                      <GraduationCap className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-lg" style={{ fontFamily: "Nunito, sans-serif" }}>California Institute of the Arts</h3>
+                      <p className="text-gray-600 text-sm">Bachelor of Fine Arts, Graphic Design</p>
+                    </div>
+                  </div>
+                  
+                  <div className="pl-16">
+                    <div className="flex items-center text-xs text-gray-500 mb-3">
+                      <Calendar className="h-3 w-3 mr-1" />
+                      <span>2012 - 2016</span>
+                      <span className="mx-2">•</span>
+                      <MapPin className="h-3 w-3 mr-1" />
+                      <span>Valencia, CA</span>
+                    </div>
+                  </div>
+                </motion.div>
+              </>
+            )}
+          </div>
         </div>
         
         {/* Projects section with playful styling */}
