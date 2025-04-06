@@ -30,6 +30,10 @@ interface FreelancerHubProps {
 }
 
 export default function FreelancerHub({ userInfo, userSkills, userProjects, userServices, publicUrl }: FreelancerHubProps) {
+  // Debug logs
+  console.log("FreelancerHub received userServices:", userServices);
+  console.log("userServices type:", typeof userServices, Array.isArray(userServices), userServices?.length);
+  
   // Sort skills by proficiency
   const sortedSkills = [...userSkills].sort((a, b) => (b.proficiency || 0) - (a.proficiency || 0));
   
@@ -218,7 +222,20 @@ export default function FreelancerHub({ userInfo, userSkills, userProjects, user
                   
                   <div className="pt-4 border-t border-gray-100">
                     <div className="text-lg font-bold text-[#6A0572]" style={{ fontFamily: "Nunito, sans-serif" }}>
-                      Starting at ${service.priceUsd ? Number(service.priceUsd).toFixed(2) : (service.priceInr ? `${Number(service.priceInr/80).toFixed(2)}` : '99.00')}
+                      Starting at ${
+                        service.priceUsd ? 
+                        (typeof service.priceUsd === 'string' ? 
+                          Number(service.priceUsd).toFixed(2) : 
+                          service.priceUsd.toFixed(2)
+                        ) : 
+                        (service.priceInr ? 
+                          (typeof service.priceInr === 'string' ? 
+                            (Number(service.priceInr)/80).toFixed(2) : 
+                            (service.priceInr/80).toFixed(2)
+                          ) : 
+                          '99.00'
+                        )
+                      }
                     </div>
                     <Button 
                       size="sm" 

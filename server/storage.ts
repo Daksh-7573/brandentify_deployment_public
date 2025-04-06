@@ -317,7 +317,63 @@ export class MemStorage implements IStorage {
     this.portfolios.set(portfolio.id, portfolio);
     this.currentPortfolioId++;
     
-    console.log("Demo data reinitialized with minimal values, skill, and portfolio");
+    // Create sample services for the demo user
+    const service1: Service = {
+      id: 1,
+      userId: 1,
+      title: 'Web Application Development',
+      description: 'Full-stack web application development using React, Node.js, and PostgreSQL.',
+      category: 'development',
+      priceUsd: 100,
+      priceInr: 8000,
+      isHourly: true,
+      duration: '2-4 weeks',
+      features: ['Custom UI/UX design', 'Database integration', 'API development'],
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      order: 1
+    };
+    this.services.set(service1.id, service1);
+    
+    const service2: Service = {
+      id: 2,
+      userId: 1,
+      title: 'Brand Identity Design',
+      description: 'Professional brand identity design including logo, color palette, and brand guidelines.',
+      category: 'design',
+      priceUsd: 500,
+      priceInr: 40000,
+      isHourly: false,
+      duration: '1-2 weeks',
+      features: ['Logo design', 'Brand guidelines', 'Social media assets'],
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      order: 2
+    };
+    this.services.set(service2.id, service2);
+    
+    const service3: Service = {
+      id: 3,
+      userId: 1,
+      title: 'SEO Optimization',
+      description: 'Improve your website visibility with professional SEO services.',
+      category: 'marketing',
+      priceUsd: 300,
+      priceInr: 24000,
+      isHourly: false,
+      duration: '2-3 weeks',
+      features: ['Keyword research', 'On-page optimization', 'Performance tracking'],
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      order: 3
+    };
+    this.services.set(service3.id, service3);
+    this.currentServiceId = 4;
+    
+    console.log("Demo data reinitialized with minimal values, skill, portfolio, and services");
   }
   
   /**

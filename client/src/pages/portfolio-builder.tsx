@@ -176,7 +176,9 @@ export default function PortfolioBuilder() {
     enabled: !!user && !!userNumericId, // Only fetch when we have the numeric ID
     staleTime: 30000,
     onSuccess: (data) => {
-      console.log("Fetched services data:", data);
+      console.log("Portfolio builder - Fetched services data:", data);
+      console.log("Portfolio builder - Services data length:", data?.length);
+      console.log("Portfolio builder - Services data type:", typeof data, Array.isArray(data));
     }
   });
   
