@@ -44,55 +44,55 @@ function ResumeScoreSummary({ content }: ResumeScoreSummaryProps) {
       "ATS Compatibility": 0
     };
     
-    // Patterns to match scores in various formats
-    // More precise patterns using the exact format required from the AI
-    const scorePatterns = [
-      /Structure (?:&|and) Layout:?\s*(\d+)(?:\s*\/\s*100|\s*%)/i,
-      /Content Quality:?\s*(\d+)(?:\s*\/\s*100|\s*%)/i,
-      /Relevance to Role(?:\/|\/\s*|\s+)Industry:?\s*(\d+)(?:\s*\/\s*100|\s*%)/i,
-      /Achievements (?:&|and) Metrics:?\s*(\d+)(?:\s*\/\s*100|\s*%)/i,
-      /Soft Skills (?:&|and) Personality:?\s*(\d+)(?:\s*\/\s*100|\s*%)/i,
-      /ATS Compatibility:?\s*(\d+)(?:\s*\/\s*100|\s*%)/i
+    // Define category keywords to look for in the content
+    const categoryKeywords = [
+      ["structure", "layout"],
+      ["content", "quality"],
+      ["relevance", "role", "industry"],
+      ["achievements", "metrics"],
+      ["soft", "skills", "personality"],
+      ["ats", "compatibility"]
     ];
     
-    // Additional fallback patterns for more variation in formatting
-    const fallbackPatterns = [
-      /Structure.*?Layout.*?score.*?(\d{1,3})(?:\s*\/\s*100|\s*%|\/100)?/i,
-      /Content.*?Quality.*?score.*?(\d{1,3})(?:\s*\/\s*100|\s*%|\/100)?/i,
-      /Relevance.*?(?:Role|Industry).*?score.*?(\d{1,3})(?:\s*\/\s*100|\s*%|\/100)?/i,
-      /Achievements.*?Metrics.*?score.*?(\d{1,3})(?:\s*\/\s*100|\s*%|\/100)?/i,
-      /(?:Soft|Personal).*?Skills.*?score.*?(\d{1,3})(?:\s*\/\s*100|\s*%|\/100)?/i,
-      /ATS.*?score.*?(\d{1,3})(?:\s*\/\s*100|\s*%|\/100)?/i
-    ];
+    // Function to search for scores near category keywords
+    const findScoreForCategory = (categoryIndex: number) => {
+      const keywords = categoryKeywords[categoryIndex];
+      const categoryName = Object.keys(scores)[categoryIndex];
+      
+      // Try to find paragraph containing these keywords
+      const lines = content.split("\n");
+      
+      for (const line of lines) {
+        // Check if this line contains the required keywords
+        const containsAllKeywords = keywords.every(keyword => 
+          line.toLowerCase().includes(keyword.toLowerCase())
+        );
+        
+        if (containsAllKeywords) {
+          // Look for a score pattern in this line
+          const scoreMatch = line.match(/(\d{1,3})(?:\s*\/\s*100|\s*%|\/100)?/);
+          if (scoreMatch && scoreMatch[1]) {
+            const score = parseInt(scoreMatch[1], 10);
+            if (!isNaN(score) && score >= 0 && score <= 100) {
+              console.log(`Found score for ${categoryName}: ${score} in "${line.trim()}"`);
+              return score;
+            }
+          }
+        }
+      }
+      
+      return 0; // No score found
+    };
     
     const categoryNames = Object.keys(scores);
     
-    // First try to extract scores using precise patterns
+    // Use the new keyword-based approach to find scores
     let foundScores = 0;
-    for (let i = 0; i < scorePatterns.length; i++) {
-      const match = content.match(scorePatterns[i]);
-      if (match && match[1]) {
-        const score = parseInt(match[1], 10);
-        if (!isNaN(score) && score >= 0 && score <= 100) {
-          scores[categoryNames[i]] = score;
-          foundScores++;
-        }
-      }
-    }
-    
-    // If fewer than 3 scores found, try fallback patterns
-    if (foundScores < 3) {
-      for (let i = 0; i < fallbackPatterns.length; i++) {
-        if (scores[categoryNames[i]] > 0) continue; // Skip if already found
-        
-        const match = content.match(fallbackPatterns[i]);
-        if (match && match[1]) {
-          const score = parseInt(match[1], 10);
-          if (!isNaN(score) && score >= 0 && score <= 100) {
-            scores[categoryNames[i]] = score;
-            foundScores++;
-          }
-        }
+    for (let i = 0; i < categoryNames.length; i++) {
+      const score = findScoreForCategory(i);
+      if (score > 0) {
+        scores[categoryNames[i]] = score;
+        foundScores++;
       }
     }
     
