@@ -225,6 +225,53 @@ export class MemStorage implements IStorage {
     };
     this.portfolios.set(demoPortfolio.id, demoPortfolio);
     this.currentPortfolioId++;
+    
+    // Create test services for the demo user
+    const now = new Date();
+    
+    // Service 1
+    const service1: Service = {
+      id: 1,
+      userId: 1,
+      title: "Web Development Consulting",
+      description: "Expert consulting for React, Node.js, and full-stack web applications",
+      category: "consulting",
+      priceUsd: "150",  // Using string format for decimal values
+      priceInr: "12000",
+      isHourly: true,
+      features: ["Requirements Analysis", "Architecture Design", "Code Review", "Performance Optimization"],
+      imageUrl: null,
+      order: 1,
+      isActive: true,
+      createdAt: now,
+      updatedAt: now
+    };
+    this.services.set(service1.id, service1);
+    
+    // Service 2
+    const service2: Service = {
+      id: 2,
+      userId: 1,
+      title: "Responsive UI Design",
+      description: "Create modern, responsive user interfaces with a focus on usability and aesthetics",
+      category: "design",
+      priceUsd: "1200",  // Using string format for decimal values
+      priceInr: "95000",
+      isHourly: false,
+      features: ["Wireframing", "Prototyping", "User Testing", "Implementation Support"],
+      imageUrl: null,
+      order: 2,
+      isActive: true,
+      createdAt: now,
+      updatedAt: now
+    };
+    this.services.set(service2.id, service2);
+    
+    // Update the service ID counter
+    this.currentServiceId = 3;
+    
+    console.log(`[storage.initializeDemoData] Added ${this.services.size} test services for the demo user`);
+    
   }
   
   /**
@@ -923,8 +970,19 @@ export class MemStorage implements IStorage {
   
   // Service operations
   async getServicesByUserId(userId: number): Promise<Service[]> {
-    return Array.from(this.services.values())
+    console.log(`[storage.getServicesByUserId] Looking for services with userId: ${userId}`);
+    console.log(`[storage.getServicesByUserId] Total services in database: ${this.services.size}`);
+    
+    // Convert to array and filter
+    const userServices = Array.from(this.services.values())
       .filter(service => service.userId === userId);
+    
+    console.log(`[storage.getServicesByUserId] Found ${userServices.length} services for userId: ${userId}`);
+    if (userServices.length > 0) {
+      console.log(`[storage.getServicesByUserId] First service: ${JSON.stringify(userServices[0])}`);
+    }
+    
+    return userServices;
   }
 
   async getServiceById(id: number): Promise<Service | undefined> {

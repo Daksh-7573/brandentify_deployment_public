@@ -10,17 +10,22 @@ export function useServices() {
   const queryClient = useQueryClient();
   
   const userNumericId = user?.id;
-  const userId = user?.username || userNumericId?.toString();
+  // Always use the numeric ID for API requests since our backend expects numeric IDs
+  const userId = userNumericId?.toString();
   
   const servicesQuery = useQuery<Service[]>({
     queryKey: ['/api/users', userId, 'services'],
     queryFn: async () => {
       if (!userId) return [];
+      console.log('useServices hook - fetching services for:', userId, 'userNumericId:', userNumericId);
       const response = await fetch(`/api/users/${userId}/services`);
       if (!response.ok) {
+        console.error('useServices hook - failed to fetch services:', response.status, response.statusText);
         throw new Error('Failed to fetch services');
       }
-      return response.json();
+      const data = await response.json();
+      console.log('useServices hook - received services data:', data);
+      return data;
     },
     enabled: !!userId,
   });
@@ -85,6 +90,13 @@ export function useServices() {
         variant: "destructive",
       });
     }
+  });
+  
+  console.log('useServices hook - returning data', { 
+    servicesData: servicesQuery.data,
+    isLoading: servicesQuery.isLoading,
+    isError: servicesQuery.isError,
+    error: servicesQuery.error?.message
   });
   
   return {
