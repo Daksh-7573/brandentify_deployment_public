@@ -1492,12 +1492,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Error generating AI career advice:", error);
       
       // DEMO FALLBACK: Provide fallback content when API services fail
-      const demoAdvice = generateDemoCareerAdvice(req.body);
+      const demoAdvice = generateDemoCareerAdvice({ 
+        adviceType, 
+        user 
+      });
       
       // Save the demo advice as a chat message if userId exists
-      if (req.body.userId) {
+      if (userId) {
         await storage.createChatMessage({
-          userId: req.body.userId,
+          userId,
           sender: "ai",
           content: demoAdvice,
           messageType: "career_advice"
