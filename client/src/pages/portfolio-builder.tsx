@@ -411,6 +411,7 @@ export default function PortfolioBuilder() {
         let experiencesData = [];
         let skillsData = [];
         let projectsData = [];
+        let educationsData = [];
         
         if (userNumericId) {
           try {
@@ -442,6 +443,22 @@ export default function PortfolioBuilder() {
                 if (fallbackResponse.ok) {
                   skillsData = await fallbackResponse.json();
                   console.log("Portfolio - Got fallback skills for userId=0:", skillsData);
+                }
+              }
+            }
+            
+            // Fetch latest educations from userNumericId
+            const educationsResponse = await fetch(`/api/users/${userNumericId}/educations`);
+            if (educationsResponse.ok) {
+              educationsData = await educationsResponse.json();
+              console.log("Portfolio - Got latest educations for userNumericId:", educationsData);
+              
+              // If no educations, try with userId=0 (for existing data)
+              if (educationsData.length === 0) {
+                const fallbackResponse = await fetch(`/api/users/0/educations`);
+                if (fallbackResponse.ok) {
+                  educationsData = await fallbackResponse.json();
+                  console.log("Portfolio - Got fallback educations for userId=0:", educationsData);
                 }
               }
             }
@@ -497,6 +514,7 @@ export default function PortfolioBuilder() {
           skills: skillsData,
           experiences: experiencesData,
           projects: projectsData,
+          educations: educationsData,
           userData: userDetails,
         };
         
@@ -690,6 +708,10 @@ export default function PortfolioBuilder() {
           new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
         );
         
+        // Extract educations, sorted by date
+        const userEducations = portfolioPreviewData?.educations || educations || [];
+        console.log("Preview step - Educations data:", userEducations);
+        
         return (
           <div className="space-y-8">
             <div className="bg-primary/5 p-6 rounded-lg border mb-8">
@@ -715,7 +737,7 @@ export default function PortfolioBuilder() {
                   userSkills={userSkills}
                   userExperiences={userExperiences || []}
                   userProjects={userProjects}
-                  userEducations={educations || []}
+                  userEducations={userEducations || []}
                   userServices={services || []}
                 />
               </>
