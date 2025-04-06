@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Loader2, Send, Sparkles, Lightbulb, BookOpen, BarChart, LucideIcon } from "lucide-react";
+import { Loader2, Send, Sparkles, Lightbulb, BookOpen, BarChart, MessageSquare, LucideIcon } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -542,52 +542,150 @@ export default function AICareerPage() {
                     return (
                       <div className="space-y-4 sm:space-y-6">
                         {messagesToShow.map((message: any) => (
-                          <Card key={message.id} className="p-4 sm:p-6 overflow-hidden border border-gray-100 shadow-md">
-                            <div className="flex justify-between items-start mb-3 sm:mb-4">
-                              <div className="flex items-center gap-2">
-                                <div className="flex items-center justify-center h-8 w-8 rounded-full bg-primary/10">
-                                  <Sparkles className="h-4 w-4 text-primary" />
-                                </div>
-                                <div>
-                                  <h4 className="font-medium text-sm">Musk AI Assistant</h4>
-                                  <p className="text-xs text-muted-foreground">
-                                    {formatTimestamp(message.timestamp)}
-                                  </p>
-                                </div>
+                          <Card key={message.id} className="p-0 overflow-hidden border border-gray-100 rounded-lg shadow-lg">
+                            <div className="bg-gradient-to-r from-primary/10 to-primary/5 px-4 sm:px-6 py-3 sm:py-4 border-b flex items-center gap-3">
+                              <div className="flex items-center justify-center h-9 w-9 rounded-full bg-white shadow-sm">
+                                <Sparkles className="h-5 w-5 text-primary" />
+                              </div>
+                              <div>
+                                <h4 className="font-semibold text-sm text-primary">Musk AI Assistant</h4>
+                                <p className="text-xs text-muted-foreground">
+                                  {formatTimestamp(message.timestamp)}
+                                </p>
                               </div>
                             </div>
-                            <div className="prose prose-sm dark:prose-invert max-w-none overflow-x-auto mt-2">
+                            
+                            <div className="p-5 sm:p-6 prose prose-sm dark:prose-invert max-w-none overflow-x-auto">
                               {message.content.split('\n').map((line: string, i: number) => {
-                                // For main headings
-                                if (line.trim().match(/^#+\s/)) {
-                                  const level = line.trim().match(/^(#+)\s/)?.[1].length || 1;
-                                  const text = line.replace(/^#+\s/, '');
+                                // For main headings (# Title)
+                                if (line.trim().match(/^#\s/)) {
+                                  const text = line.replace(/^#\s/, '');
                                   return (
-                                    <div key={i} className={`font-bold ${level === 1 ? 'text-lg text-primary pb-1 border-b mt-3 mb-2' : 'text-base mt-3 mb-1'}`}>
+                                    <div key={i} className="flex items-center gap-2 text-lg font-bold text-primary mt-3 mb-4 pb-2 border-b border-primary/20">
+                                      <BookOpen className="h-5 w-5 text-primary" />
+                                      <span>{text}</span>
+                                    </div>
+                                  );
+                                }
+                                // For secondary headings (## Subtitle)
+                                else if (line.trim().match(/^##\s/)) {
+                                  const text = line.replace(/^##\s/, '');
+                                  return (
+                                    <div key={i} className="flex items-center gap-2 text-base font-semibold mt-5 mb-2 text-primary/90 bg-primary/5 py-2 px-3 rounded">
+                                      <Lightbulb className="h-4 w-4 text-primary" />
+                                      <span>{text}</span>
+                                    </div>
+                                  );
+                                }
+                                // For tertiary headings (### Title)
+                                else if (line.trim().match(/^###\s/)) {
+                                  const text = line.replace(/^###\s/, '');
+                                  return (
+                                    <div key={i} className="font-semibold text-sm text-foreground/90 mt-4 mb-2 uppercase tracking-wide">
                                       {text}
                                     </div>
                                   );
-                                } 
-                                // For bullet points
-                                else if (line.trim().startsWith('- ')) {
+                                }
+                                // For numbered list items (1. Item, 2. Item, etc.)
+                                else if (/^\d+\.\s/.test(line)) {
+                                  // Safe extraction of the number with proper null check
+                                  const matchResult = line.match(/^\d+/);
+                                  const number = matchResult && matchResult[0] ? matchResult[0] : "•";
+                                  const text = line.replace(/^\d+\.\s/, '');
+                                  
+                                  // Bold the first few words for emphasis
+                                  const emphasisMatch = text.match(/^([^:.]+)[:.]?\s(.*)/);
+                                  const [firstPart, restPart] = emphasisMatch 
+                                    ? [emphasisMatch[1], emphasisMatch[2]] 
+                                    : [null, text];
+                                  
                                   return (
-                                    <div key={i} className="flex items-start my-1 ml-1">
-                                      <div className="flex items-center justify-center min-w-[18px] h-[18px] rounded-full bg-primary/10 text-primary mr-2 mt-0.5">
-                                        <div className="h-1.5 w-1.5 rounded-full bg-primary"></div>
+                                    <div key={i} className="flex items-start my-3 pl-1 group hover:bg-muted/20 rounded py-1 -mx-1 px-1 transition-colors">
+                                      <div className="flex items-center justify-center min-w-[24px] h-[24px] rounded-full bg-primary/15 text-primary text-xs font-semibold mr-3 shadow-sm group-hover:bg-primary group-hover:text-white transition-colors">
+                                        {number}
                                       </div>
-                                      <p className="m-0">{line.replace(/^- /, '')}</p>
+                                      <div className="mt-0.5">
+                                        {firstPart ? (
+                                          <p className="m-0 leading-relaxed">
+                                            <span className="font-semibold text-primary/90">{firstPart}:</span> {restPart}
+                                          </p>
+                                        ) : (
+                                          <p className="m-0 leading-relaxed">{text}</p>
+                                        )}
+                                      </div>
                                     </div>
                                   );
-                                } 
-                                // For empty lines
+                                }
+                                // For bullet points (- Item)
+                                else if (line.trim().startsWith('- ')) {
+                                  const text = line.replace(/^- /, '');
+                                  
+                                  // Bold any text between ** markers
+                                  const parts = text.split(/\*\*(.*?)\*\*/g);
+                                  const formattedText = parts.map((part, idx) => 
+                                    idx % 2 === 0 ? part : <span key={`bold-${idx}`} className="font-semibold text-primary/90">{part}</span>
+                                  );
+                                  
+                                  return (
+                                    <div key={i} className="flex items-start my-2 pl-1 group hover:bg-muted/20 rounded py-1 -mx-1 px-1 transition-colors">
+                                      <div className="flex items-center justify-center min-w-[18px] h-[18px] rounded-full bg-primary/15 text-primary mr-3 mt-0.5 group-hover:bg-primary/25 transition-colors">
+                                        <div className="h-1.5 w-1.5 rounded-full bg-primary"></div>
+                                      </div>
+                                      <p className="m-0 leading-relaxed">{formattedText}</p>
+                                    </div>
+                                  );
+                                }
+                                // For italic text (*text*)
+                                else if (line.startsWith('*') && line.endsWith('*')) {
+                                  return (
+                                    <p key={i} className="my-3 italic text-primary/70 pl-1 border-l-2 border-primary/20 bg-primary/5 py-2 px-3 rounded">
+                                      {line.replace(/^\*|\*$/g, '')}
+                                    </p>
+                                  );
+                                }
+                                // For signature line
+                                else if (line.includes("Musk, Your Career Partner")) {
+                                  return (
+                                    <div key={i} className="mt-5 pt-4 border-t border-gray-200 text-sm text-primary font-medium flex items-center">
+                                      <Sparkles className="h-4 w-4 mr-2" />
+                                      {line}
+                                    </div>
+                                  );
+                                }
+                                // For empty lines - add spacing
                                 else if (line.trim() === '') {
                                   return <div key={i} className="my-2"></div>;
-                                } 
+                                }
                                 // For normal text
                                 else {
-                                  return <p key={i} className="my-1.5 leading-relaxed">{line}</p>;
+                                  // Bold any text between ** markers
+                                  const parts = line.split(/\*\*(.*?)\*\*/g);
+                                  const formattedText = parts.map((part, idx) => 
+                                    idx % 2 === 0 ? part : <span key={`bold-${idx}`} className="font-semibold text-primary/90">{part}</span>
+                                  );
+                                  
+                                  return <p key={i} className="my-2 leading-relaxed">{formattedText}</p>;
                                 }
                               })}
+                            </div>
+                            <div className="bg-muted/5 border-t px-6 py-3 flex justify-between items-center">
+                              <p className="text-xs text-muted-foreground">
+                                Generated by AI based on your professional profile
+                              </p>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="ml-auto text-primary hover:text-primary hover:bg-primary/10"
+                                onClick={() => {
+                                  if (activeTab === "career") {
+                                    setShowChatWindow(true);
+                                    scrollToBottom();
+                                  }
+                                }}
+                              >
+                                <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
+                                Follow up
+                              </Button>
                             </div>
                           </Card>
                         ))}
@@ -602,30 +700,35 @@ export default function AICareerPage() {
                 {/* Chat Interface with Musk */}
                 {showChatWindow && activeTab === "career" && (
                   <div className="mt-6">
-                    <div className="bg-gray-50 border rounded-lg p-4 sm:p-5">
-                      <div className="flex items-center gap-2 mb-4">
-                        <Sparkles className="h-5 w-5 text-primary" />
-                        <h3 className="text-lg font-medium">Ask Follow-up Questions</h3>
+                    <div className="bg-gradient-to-b from-gray-50 to-white border rounded-lg p-4 sm:p-6 shadow-md">
+                      <div className="flex items-center gap-3 mb-5 pb-3 border-b border-gray-100">
+                        <div className="flex items-center justify-center h-9 w-9 rounded-full bg-primary/15 shadow-sm">
+                          <Sparkles className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold text-primary/90">Chat with Musk</h3>
+                          <p className="text-xs text-muted-foreground">Ask follow-up questions based on your career profile</p>
+                        </div>
                       </div>
                       
-                      <div className="space-y-4">
+                      <div className="space-y-5">
                         {/* Chat messages - fixed height container */}
-                        <div className="space-y-3 h-[400px] overflow-y-auto p-4 border border-gray-100 rounded-lg bg-gray-50/30 shadow-inner" id="chat-container">
+                        <div className="space-y-4 h-[450px] overflow-y-auto p-5 border border-gray-200 rounded-lg bg-gray-50/20 shadow-inner" id="chat-container">
                           {chatHistory.map((message, index) => (
                             <div 
                               key={index} 
-                              className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"} mb-3`}
+                              className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"} relative mb-3 group`}
                             >
                               {message.sender !== "user" && (
-                                <div className="flex items-center justify-center w-9 h-9 rounded-full bg-primary/15 mr-2.5 shadow-sm">
-                                  <Sparkles className="h-4.5 w-4.5 text-primary"/>
+                                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 mr-3 shadow-sm border border-primary/5">
+                                  <Sparkles className="h-5 w-5 text-primary"/>
                                 </div>
                               )}
                               <div 
-                                className={`max-w-[85%] p-3.5 rounded-lg ${
+                                className={`max-w-[85%] p-4 rounded-lg ${
                                   message.sender === "user" 
                                     ? "bg-primary text-primary-foreground shadow-sm" 
-                                    : "bg-white border border-gray-100 shadow-md"
+                                    : "bg-white border border-gray-100 shadow-md hover:shadow-lg transition-shadow"
                                 }`}
                               >
                                 {message.sender === "user" ? (
@@ -636,7 +739,7 @@ export default function AICareerPage() {
                                       // Detect if this is a signature line from Musk
                                       if (line.includes("Musk, Your Career Partner")) {
                                         return (
-                                          <div key={i} className="mt-4 pt-3 border-t border-gray-200 text-sm text-primary/80 font-medium flex items-center">
+                                          <div key={i} className="mt-5 pt-4 border-t border-gray-200 text-sm text-primary font-medium flex items-center">
                                             <Sparkles className="h-4 w-4 mr-2" />
                                             {line}
                                           </div>
@@ -645,8 +748,8 @@ export default function AICareerPage() {
                                       // For main headings (# Title)
                                       else if (line.startsWith('# ')) {
                                         return (
-                                          <div key={i} className="flex items-center gap-2 text-lg font-bold text-primary mt-5 mb-3 pb-2 border-b">
-                                            <BookOpen className="h-4 w-4 text-primary/80" />
+                                          <div key={i} className="flex items-center gap-2 text-lg font-bold text-primary mt-5 mb-3 pb-2 border-b border-primary/20">
+                                            <BookOpen className="h-4 w-4 text-primary" />
                                             <span>{line.replace(/^# /, '')}</span>
                                           </div>
                                         );
@@ -654,8 +757,8 @@ export default function AICareerPage() {
                                       // For secondary headings (## Subtitle)
                                       else if (line.startsWith('## ')) {
                                         return (
-                                          <div key={i} className="flex items-center gap-2 text-base font-semibold mt-4 mb-2 text-foreground/90">
-                                            <Lightbulb className="h-3.5 w-3.5 text-primary/80" />
+                                          <div key={i} className="flex items-center gap-2 text-base font-semibold mt-4 mb-2 text-primary/90">
+                                            <Lightbulb className="h-3.5 w-3.5 text-primary" />
                                             <span>{line.replace(/^## /, '')}</span>
                                           </div>
                                         );
@@ -666,30 +769,53 @@ export default function AICareerPage() {
                                         const matchResult = line.match(/^\d+/);
                                         const number = matchResult && matchResult[0] ? matchResult[0] : "•";
                                         const text = line.replace(/^\d+\.\s/, '');
+                                        
+                                        // Bold the first few words for emphasis
+                                        const emphasisMatch = text.match(/^([^:.]+)[:.]?\s(.*)/);
+                                        const [firstPart, restPart] = emphasisMatch 
+                                          ? [emphasisMatch[1], emphasisMatch[2]] 
+                                          : [null, text];
+                                        
                                         return (
-                                          <div key={i} className="flex items-start my-1.5 pl-1">
-                                            <div className="flex items-center justify-center min-w-[22px] h-[22px] rounded-full bg-primary/10 text-primary text-xs font-medium mr-2">
+                                          <div key={i} className="flex items-start my-2 pl-1 group">
+                                            <div className="flex items-center justify-center min-w-[24px] h-[24px] rounded-full bg-primary/15 text-primary text-xs font-semibold mr-3 shadow-sm group-hover:bg-primary group-hover:text-white transition-colors">
                                               {number}
                                             </div>
-                                            <p className="m-0 mt-0.5">{text}</p>
+                                            <div className="mt-0.5">
+                                              {firstPart ? (
+                                                <p className="m-0 leading-relaxed">
+                                                  <span className="font-semibold text-primary/90">{firstPart}:</span> {restPart}
+                                                </p>
+                                              ) : (
+                                                <p className="m-0 leading-relaxed">{text}</p>
+                                              )}
+                                            </div>
                                           </div>
                                         );
                                       }
                                       // For bullet points (- Item)
                                       else if (line.startsWith('- ')) {
+                                        const text = line.replace(/^- /, '');
+                                        
+                                        // Bold any text between ** markers
+                                        const parts = text.split(/\*\*(.*?)\*\*/g);
+                                        const formattedText = parts.map((part, idx) => 
+                                          idx % 2 === 0 ? part : <span key={`bold-${idx}`} className="font-semibold">{part}</span>
+                                        );
+                                        
                                         return (
-                                          <div key={i} className="flex items-start my-1.5 pl-1">
-                                            <div className="flex items-center justify-center min-w-[18px] h-[18px] rounded-full bg-primary/10 text-primary mr-2 mt-0.5">
+                                          <div key={i} className="flex items-start my-2 pl-1 group">
+                                            <div className="flex items-center justify-center min-w-[18px] h-[18px] rounded-full bg-primary/15 text-primary mr-3 mt-0.5 group-hover:bg-primary/25 transition-colors">
                                               <div className="h-1.5 w-1.5 rounded-full bg-primary"></div>
                                             </div>
-                                            <p className="m-0">{line.replace(/^- /, '')}</p>
+                                            <p className="m-0 leading-relaxed">{formattedText}</p>
                                           </div>
                                         );
                                       }
                                       // For italic text (*text*)
                                       else if (line.startsWith('*') && line.endsWith('*')) {
                                         return (
-                                          <p key={i} className="my-1.5 italic text-muted-foreground pl-1">
+                                          <p key={i} className="my-2 italic text-primary/70 pl-1 border-l-2 border-primary/20 bg-primary/5 py-1 px-3 rounded">
                                             {line.replace(/^\*|\*$/g, '')}
                                           </p>
                                         );
@@ -700,7 +826,13 @@ export default function AICareerPage() {
                                       }
                                       // For normal text
                                       else {
-                                        return <p key={i} className="my-1.5 leading-relaxed">{line}</p>;
+                                        // Bold any text between ** markers
+                                        const parts = line.split(/\*\*(.*?)\*\*/g);
+                                        const formattedText = parts.map((part, idx) => 
+                                          idx % 2 === 0 ? part : <span key={`bold-${idx}`} className="font-semibold text-primary/90">{part}</span>
+                                        );
+                                        
+                                        return <p key={i} className="my-2 leading-relaxed">{formattedText}</p>;
                                       }
                                     })}
                                   </div>
@@ -717,13 +849,13 @@ export default function AICareerPage() {
                         </div>
                         
                         {/* Chat input */}
-                        <div className="relative mt-2">
-                          <div className="border rounded-lg bg-white shadow-sm overflow-hidden focus-within:ring-1 focus-within:ring-primary/50">
+                        <div className="relative mt-3">
+                          <div className="border-2 rounded-xl bg-white shadow-md overflow-hidden focus-within:ring-2 focus-within:ring-primary/30 focus-within:border-primary/60 transition-all">
                             <Textarea
                               value={chatMessage}
                               onChange={(e) => setChatMessage(e.target.value)}
                               placeholder="Ask Musk a follow-up question about your career..."
-                              className="resize-none min-h-[80px] pr-14 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none"
+                              className="resize-none min-h-[90px] pr-14 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none text-sm"
                               onKeyDown={(e) => {
                                 if (e.key === 'Enter' && !e.shiftKey) {
                                   e.preventDefault();
@@ -746,7 +878,11 @@ export default function AICareerPage() {
                             />
                             <Button 
                               size="icon" 
-                              className={`h-9 w-9 absolute right-3 bottom-3 rounded-full transition-all ${!chatMessage.trim() ? 'opacity-70' : 'shadow-sm'}`}
+                              className={`h-10 w-10 absolute right-3 bottom-3 rounded-full transition-all ${
+                                !chatMessage.trim() 
+                                  ? 'opacity-60 bg-muted hover:bg-muted' 
+                                  : 'bg-primary shadow-md hover:shadow-lg hover:bg-primary/90'
+                              }`}
                               onClick={() => {
                                 if (chatMessage.trim() && !chatMessageMutation.isPending) {
                                   // Add user message to chat history
@@ -766,16 +902,19 @@ export default function AICareerPage() {
                               disabled={!chatMessage.trim() || chatMessageMutation.isPending}
                             >
                               {chatMessageMutation.isPending ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
+                                <Loader2 className="h-5 w-5 animate-spin" />
                               ) : (
-                                <Send className="h-4 w-4" />
+                                <Send className="h-5 w-5" />
                               )}
                             </Button>
                           </div>
-                          <p className="text-xs text-muted-foreground mt-1.5 ml-1.5 flex items-center">
-                            <Sparkles className="h-3 w-3 mr-1 text-primary/70" />
-                            Press Enter to send, Shift+Enter for new line
-                          </p>
+                          <div className="flex justify-between items-center mt-2">
+                            <p className="text-xs text-muted-foreground flex items-center ml-1.5">
+                              <Sparkles className="h-3 w-3 mr-1.5 text-primary/70" />
+                              Press Enter to send, Shift+Enter for new line
+                            </p>
+                            <p className="text-xs text-primary/60 font-medium">Powered by AI</p>
+                          </div>
                         </div>
                       </div>
                     </div>
