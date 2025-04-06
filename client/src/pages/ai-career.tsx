@@ -62,20 +62,50 @@ function ResumeScoreSummary({ content }: ResumeScoreSummaryProps) {
       // Try to find paragraph containing these keywords
       const lines = content.split("\n");
       
-      for (const line of lines) {
-        // Check if this line contains the required keywords
+      // Keep track of lines that match our category so we can search them and nearby lines
+      const matchingLineIndices: number[] = [];
+      
+      // First pass: find all lines containing our keywords
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
         const containsAllKeywords = keywords.every(keyword => 
           line.toLowerCase().includes(keyword.toLowerCase())
         );
         
         if (containsAllKeywords) {
-          // Look for a score pattern in this line
-          const scoreMatch = line.match(/(\d{1,3})(?:\s*\/\s*100|\s*%|\/100)?/);
-          if (scoreMatch && scoreMatch[1]) {
-            const score = parseInt(scoreMatch[1], 10);
-            if (!isNaN(score) && score >= 0 && score <= 100) {
-              console.log(`Found score for ${categoryName}: ${score} in "${line.trim()}"`);
-              return score;
+          matchingLineIndices.push(i);
+        }
+      }
+      
+      // Second pass: for each matching line, check it and the next few lines for score patterns
+      for (const lineIndex of matchingLineIndices) {
+        // Look at this line and the next 5 lines for scores
+        for (let i = lineIndex; i < Math.min(lineIndex + 5, lines.length); i++) {
+          const line = lines[i];
+          
+          // Skip section headings with small numbers (like "1. STRUCTURE & LAYOUT")
+          if (/^\s*\*?\*?\s*\d+\s*\.\s*[A-Z]/.test(line)) {
+            continue;
+          }
+          
+          // More specific score patterns to avoid picking up section numbers
+          const scorePatterns = [
+            /score\s*:?\s*(\d{1,3})(?:\s*\/\s*100|\s*%)?/i,            // "Score: 85/100" or "score: 85%"
+            /rated(?:\s+at)?\s*:?\s*(\d{1,3})(?:\s*\/\s*100|\s*%)?/i,  // "Rated at: 85/100"
+            /rating\s*:?\s*(\d{1,3})(?:\s*\/\s*100|\s*%)?/i,           // "Rating: 85/100"
+            /(\d{2,3})\s*\/\s*100/,                                    // "85/100" (only 2-3 digit numbers)
+            /(\d{2,3})(?:\s*%)/,                                       // "85%" (only 2-3 digit numbers)
+            /grade\s*:?\s*(\d{1,3})(?:\s*\/\s*100|\s*%)?/i,            // "Grade: 85/100"
+          ];
+          
+          for (const pattern of scorePatterns) {
+            const match = line.match(pattern);
+            if (match && match[1]) {
+              const score = parseInt(match[1], 10);
+              if (!isNaN(score) && score >= 0 && score <= 100) {
+                console.log(`Found score for ${categoryName}: ${score} in "${line.trim()}"`);
+                return score;
+              }
             }
           }
         }
@@ -98,14 +128,39 @@ function ResumeScoreSummary({ content }: ResumeScoreSummaryProps) {
     
     // Try to extract the overall score directly if present
     let overallScore = 0;
-    const overallScorePattern = /overall(?:\s+score|\s+rating):?\s*(\d{1,3})(?:\s*\/\s*100|\s*%|\/100)?/i;
-    const overallMatch = content.match(overallScorePattern);
     
-    if (overallMatch && overallMatch[1]) {
-      const extractedOverall = parseInt(overallMatch[1], 10);
-      if (!isNaN(extractedOverall) && extractedOverall >= 0 && extractedOverall <= 100) {
-        overallScore = extractedOverall;
-        console.log("Found direct overall score:", overallScore);
+    // Try multiple patterns to find the overall score, looking for common ways it would be presented
+    const overallScorePatterns = [
+      /overall(?:\s+score|\s+rating):?\s*(\d{2,3})(?:\s*\/\s*100|\s*%|\/100)?/i, // "Overall Score: 82/100"
+      /total(?:\s+score|\s+rating):?\s*(\d{2,3})(?:\s*\/\s*100|\s*%|\/100)?/i,   // "Total Score: 82/100"
+      /resume(?:\s+score|\s+rating):?\s*(\d{2,3})(?:\s*\/\s*100|\s*%|\/100)?/i,  // "Resume Score: 82/100"
+      /final(?:\s+score|\s+rating):?\s*(\d{2,3})(?:\s*\/\s*100|\s*%|\/100)?/i,   // "Final Score: 82/100"
+      /score:?\s*(\d{2,3})(?:\s*\/\s*100|\s*%|\/100)?/i,                        // "Score: 82/100" (on its own line)
+      /^.*(?:summary|overall|resume|final).*?(\d{2,3})(?:\s*\/\s*100|\s*%|\/100)/i // Lines containing summary/overall/etc with a score
+    ];
+    
+    // Look for these patterns line by line
+    const lines = content.split("\n");
+    
+    for (const line of lines) {
+      if (overallScore > 0) break; // Stop once we find a score
+      
+      // Skip section heading lines
+      if (/^\s*\*?\*?\s*\d+\s*\.\s*[A-Z]/.test(line)) {
+        continue;
+      }
+      
+      for (const pattern of overallScorePatterns) {
+        const match = line.match(pattern);
+        if (match && match[1]) {
+          const extractedScore = parseInt(match[1], 10);
+          // Only accept scores between 10-100 to avoid picking up section numbers
+          if (!isNaN(extractedScore) && extractedScore >= 10 && extractedScore <= 100) {
+            overallScore = extractedScore;
+            console.log("Found direct overall score:", overallScore, "in:", line.trim());
+            break;
+          }
+        }
       }
     }
     
