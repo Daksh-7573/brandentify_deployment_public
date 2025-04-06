@@ -1,9 +1,9 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ProfileImage } from "@/components/ui/profile-image";
-import { Project, Skill, WorkExperience } from "@shared/schema";
+import { Education, Project, Service, Skill, WorkExperience } from "@shared/schema";
 import { useEffect } from "react";
-import { Calendar, Compass, Mail, Linkedin, Instagram, Code, ChevronRight, MapPin, BriefcaseBusiness } from "lucide-react";
+import { Calendar, Compass, Mail, Linkedin, Instagram, Code, ChevronRight, MapPin, BriefcaseBusiness, BookOpen, Wallet } from "lucide-react";
 
 interface TimelineStorytellerProps {
   userInfo: {
@@ -20,9 +20,18 @@ interface TimelineStorytellerProps {
   userSkills: Skill[];
   userExperiences: WorkExperience[];
   userProjects: Project[];
+  userEducations?: Education[];
+  userServices?: Service[];
 }
 
-export default function TimelineStoryteller({ userInfo, userSkills, userExperiences, userProjects }: TimelineStorytellerProps) {
+export default function TimelineStoryteller({ 
+  userInfo, 
+  userSkills, 
+  userExperiences, 
+  userProjects,
+  userEducations = [],
+  userServices = []
+}: TimelineStorytellerProps) {
   // Sort skills by proficiency
   const sortedSkills = [...userSkills].sort((a, b) => (b.proficiency || 0) - (a.proficiency || 0));
   
@@ -35,6 +44,14 @@ export default function TimelineStoryteller({ userInfo, userSkills, userExperien
   const sortedProjects = [...userProjects].sort((a, b) => 
     new Date(b.startDate || '').getTime() - new Date(a.startDate || '').getTime()
   );
+  
+  // Sort educations by date (most recent first)
+  const sortedEducations = [...userEducations].sort((a, b) => 
+    new Date(b.startDate || '').getTime() - new Date(a.startDate || '').getTime()
+  );
+  
+  // Sort services
+  const sortedServices = [...userServices];
   
   // Initialize animations on component mount
   useEffect(() => {
@@ -236,9 +253,118 @@ export default function TimelineStoryteller({ userInfo, userSkills, userExperien
           </div>
         </div>
         
+        {/* Education timeline */}
+        {sortedEducations.length > 0 && (
+          <div className="mb-12 fade-in">
+            <h2 className="text-[#333333] text-2xl font-semibold mb-6 flex items-center" style={{ fontFamily: "Lora, serif" }}>
+              <span className="w-2 h-8 bg-[#FF6B6B] mr-3 rounded-sm"></span>
+              Education
+            </h2>
+            
+            {/* Timeline visualization */}
+            <div className="relative pt-4">
+              {/* Connecting line */}
+              <div className="absolute left-6 top-6 bottom-6 w-1 bg-gray-200"></div>
+              
+              <div className="space-y-10">
+                {sortedEducations.map((edu) => (
+                  <div key={edu.id} className="relative pl-16 fade-in">
+                    {/* Timeline dot */}
+                    <div className="absolute left-4 top-2 w-5 h-5 rounded-full bg-[#FFD166] border-4 border-white milestone"></div>
+                    
+                    <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+                      <div className="flex justify-between items-start">
+                        <h3 className="text-xl font-bold text-[#333333]" style={{ fontFamily: "Poppins, sans-serif" }}>
+                          {edu.degree}
+                        </h3>
+                        <Badge className="bg-[#FFD166] text-[#333333] hover:bg-[#FFD166]/80">
+                          {edu.startDate ? new Date(edu.startDate).getFullYear() : ''}
+                          {' - '}
+                          {edu.endDate ? new Date(edu.endDate).getFullYear() : 'Present'}
+                        </Badge>
+                      </div>
+                      
+                      <div className="flex items-center gap-2 text-gray-600 mt-2 mb-3">
+                        <BookOpen className="h-4 w-4 text-[#FFD166]" />
+                        <span className="font-medium">{edu.institution}</span>
+                        {edu.location && (
+                          <>
+                            <span className="mx-1">&middot;</span>
+                            <MapPin className="h-4 w-4 text-[#FFD166]" />
+                            <span>{edu.location}</span>
+                          </>
+                        )}
+                      </div>
+                      
+                      {edu.fieldOfStudy && (
+                        <p className="text-gray-700 mb-2">
+                          Field: {edu.fieldOfStudy}
+                        </p>
+                      )}
+                      
+                      {edu.description && (
+                        <p className="text-gray-700">
+                          {edu.description}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Services section */}
+        {sortedServices.length > 0 && (
+          <div className="mb-12 fade-in">
+            <h2 className="text-[#333333] text-2xl font-semibold mb-6 flex items-center" style={{ fontFamily: "Lora, serif" }}>
+              <span className="w-2 h-8 bg-[#FF6B6B] mr-3 rounded-sm"></span>
+              Services
+            </h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {sortedServices.map((service) => (
+                <div key={service.id} className="bg-white rounded-lg shadow-md overflow-hidden fade-in">
+                  <div className="h-3 bg-gradient-to-r from-[#FF6B6B] to-[#FFD166]"></div>
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold text-[#333333] mb-2" style={{ fontFamily: "Poppins, sans-serif" }}>
+                      {service.title}
+                    </h3>
+                    
+                    <div className="flex items-center gap-2 text-gray-600 mt-2 mb-3">
+                      <Wallet className="h-4 w-4 text-[#FF6B6B]" />
+                      <span className="font-medium">
+                        {service.priceUsd ? `$${service.priceUsd}` : ''}
+                        {service.isHourly ? '/hr' : ''}
+                      </span>
+                      <span className="mx-1">&middot;</span>
+                      <span>{service.category}</span>
+                    </div>
+                    
+                    {service.description && (
+                      <p className="text-gray-700 mb-3 line-clamp-3">
+                        {service.description}
+                      </p>
+                    )}
+                    
+                    {service.features && service.features.length > 0 && (
+                      <ul className="list-disc pl-5 mb-3 text-sm text-gray-600">
+                        {service.features.slice(0, 3).map((feature, index) => (
+                          <li key={index}>{feature}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Featured projects */}
         {userProjects.length > 0 && (
-          <div className="fade-in">
+          <div className="fade-in mb-12">
             <h2 className="text-[#333333] text-2xl font-semibold mb-6 flex items-center" style={{ fontFamily: "Lora, serif" }}>
               <span className="w-2 h-8 bg-[#FF6B6B] mr-3 rounded-sm"></span>
               Featured Projects

@@ -744,22 +744,28 @@ export default function PortfolioBuilder() {
             )}
             
             {form.watch("layout") === "timeline-storyteller" && (
-              <TimelineStoryteller 
-                userInfo={{
-                  name: userInfo.name,
-                  title: userInfo.title,
-                  industry: userInfo.industry,
-                  domain: userInfo.domain,
-                  location: userInfo.location,
-                  email: userInfo.email,
-                  photoURL: userInfo.photoURL,
-                  lookingFor: userData?.lookingFor || '',
-                  jobLevel: userData?.jobLevel || ''
-                }}
-                userSkills={userSkills}
-                userExperiences={userExperiences || []}
-                userProjects={userProjects}
-              />
+              <>
+                {console.log("Timeline Storyteller - Education data being passed:", userEducations)}
+                {console.log("Timeline Storyteller - Services data being passed:", services)}
+                <TimelineStoryteller 
+                  userInfo={{
+                    name: userInfo.name,
+                    title: userInfo.title,
+                    industry: userInfo.industry,
+                    domain: userInfo.domain,
+                    location: userInfo.location,
+                    email: userInfo.email,
+                    photoURL: userInfo.photoURL,
+                    lookingFor: userData?.lookingFor || '',
+                    jobLevel: userData?.jobLevel || ''
+                  }}
+                  userSkills={userSkills}
+                  userExperiences={userExperiences || []}
+                  userProjects={userProjects}
+                  userEducations={userEducations || []}
+                  userServices={services || []}
+                />
+              </>
             )}
             
             {form.watch("layout") === "visual-expert" && (
