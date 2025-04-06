@@ -174,8 +174,31 @@ export default function PortfolioBuilder() {
   const { data: services, isLoading: isLoadingServices } = useQuery<Service[]>({
     queryKey: [`/api/users/${userNumericId}/services`],
     enabled: !!user && !!userNumericId, // Only fetch when we have the numeric ID
-    staleTime: 30000
+    staleTime: 30000,
+    onSuccess: (data) => {
+      console.log("Fetched services data:", data);
+    }
   });
+  
+  // Direct fetch for services data to compare with the useQuery result
+  useEffect(() => {
+    if (!userNumericId) return;
+    
+    const fetchServices = async () => {
+      try {
+        console.log("Directly fetching services data");
+        const response = await fetch(`/api/users/${userNumericId}/services`);
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Direct services fetch result:", data);
+        }
+      } catch (error) {
+        console.error("Error fetching services:", error);
+      }
+    };
+    
+    fetchServices();
+  }, [userNumericId]);
   
   // For direct fetching when needed in useEffects and other places
   const fetchLatestExperiences = async () => {
@@ -677,14 +700,17 @@ export default function PortfolioBuilder() {
             {/* Dynamic portfolio preview based on selected layout */}
             {/* The Minimalist Pro */}
             {form.watch("layout") === "minimalist-pro" && (
-              <MinimalistPro 
-                userInfo={userInfo}
-                userSkills={userSkills}
-                userExperiences={userExperiences || []}
-                userProjects={userProjects}
-                userEducations={educations || []}
-                userServices={services || []}
-              />
+              <>
+                {console.log("In MinimalistPro - Services data being passed:", services)}
+                <MinimalistPro 
+                  userInfo={userInfo}
+                  userSkills={userSkills}
+                  userExperiences={userExperiences || []}
+                  userProjects={userProjects}
+                  userEducations={educations || []}
+                  userServices={services || []}
+                />
+              </>
             )}
             
             {form.watch("layout") === "timeline-storyteller" && (

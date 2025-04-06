@@ -32,6 +32,7 @@ export default function MinimalistPro({
   userEducations = [], 
   userServices = [] 
 }: MinimalistProProps) {
+  console.log("MinimalistPro received services data:", userServices);
   // Sort skills by proficiency
   const sortedSkills = [...userSkills].sort((a, b) => (b.proficiency || 0) - (a.proficiency || 0));
   
