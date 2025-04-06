@@ -50,3 +50,32 @@ export interface UserProject {
   mediaUrls?: string[];
   updatedAt?: string | null;
 }
+
+// Define user service type
+export interface UserService {
+  id: number;
+  userId: number;
+  title: string;
+  description: string | null;
+  category: string;
+  priceInr: number | null;
+  priceUsd: number | null;
+  isHourly: boolean;
+  features: string | null; // JSONB column stored as string
+  imageUrl: string | null;
+  order: number | null;
+  isActive: boolean;
+  createdAt?: Date | null;
+  updatedAt?: Date | null;
+}
+
+// Define user education type
+export interface UserEducation {
+  id: number;
+  userId: number;
+  institution: string;
+  degree: string;
+  location: string | null;
+  startDate: string;
+  endDate: string | null;
+}

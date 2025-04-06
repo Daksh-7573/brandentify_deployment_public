@@ -2,14 +2,16 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ProfileImage } from "@/components/ui/profile-image";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Bot, Brain, Code, Database, ExternalLink, Github, Layers, Linkedin, Mail, TerminalSquare, CircuitBoard } from "lucide-react";
-import { UserInfo, UserProject, UserExperience, UserSkill } from "@/types";
+import { ArrowRight, Bot, Brain, Code, Database, ExternalLink, Github, Layers, Linkedin, Mail, TerminalSquare, CircuitBoard, Briefcase, GraduationCap } from "lucide-react";
+import { UserInfo, UserProject, UserExperience, UserSkill, UserService, UserEducation } from "@/types";
 
 interface DynamicInnovatorProps {
   userInfo: UserInfo;
   userSkills: UserSkill[];
   userExperiences: UserExperience[];
   userProjects: UserProject[];
+  userServices?: UserService[];
+  userEducations?: UserEducation[];
 }
 
 export function DynamicInnovator({
@@ -17,6 +19,8 @@ export function DynamicInnovator({
   userSkills,
   userExperiences,
   userProjects,
+  userServices = [],
+  userEducations = [],
 }: DynamicInnovatorProps) {
   const [animatedText, setAnimatedText] = useState("");
   const [textIndex, setTextIndex] = useState(0);
@@ -428,6 +432,258 @@ export function DynamicInnovator({
                   Architected and implemented end-to-end ML pipelines for production environments.
                   Reduced model training time by 60% while improving accuracy.
                 </p>
+              </motion.div>
+            </>
+          )}
+        </div>
+      </div>
+      
+      {/* Professional Services Section */}
+      <div className="bg-[#080808] py-16 border-y border-[#0FF0FC]/10">
+        <div className="max-w-7xl mx-auto px-6">
+          <h2 className="text-2xl font-bold mb-10 flex items-center">
+            <Briefcase className="w-6 h-6 mr-3 text-[#0FF0FC]" />
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#0FF0FC] to-[#FF007F]">
+              Professional Services
+            </span>
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {userServices.length > 0 ? (
+              userServices.map((service, index) => (
+                <motion.div 
+                  key={service.id} 
+                  className="p-6 border border-[#0FF0FC]/20 rounded-lg bg-gradient-to-br from-black to-[#0FF0FC]/5 hover:to-[#0FF0FC]/10 transition-all"
+                  whileHover={{ scale: 1.02, boxShadow: '0 0 15px rgba(15, 240, 252, 0.3)' }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                >
+                  <div className="flex justify-between items-start mb-4">
+                    <h3 className="text-lg font-bold text-white">{service.title}</h3>
+                    <Badge className="bg-[#FF007F]/10 text-[#FF007F] border border-[#FF007F]/30">
+                      {service.category}
+                    </Badge>
+                  </div>
+                  
+                  <p className="text-[#EAEAEA]/70 mb-6 text-sm">
+                    {service.description}
+                  </p>
+                  
+                  {service.features && typeof service.features === 'string' && Array.isArray(JSON.parse(service.features)) && JSON.parse(service.features).length > 0 && (
+                    <div className="mb-6 space-y-2">
+                      <h4 className="text-xs uppercase text-[#0FF0FC] tracking-wider mb-3">Features</h4>
+                      <div className="grid grid-cols-1 gap-2">
+                        {JSON.parse(service.features).map((feature: string, featureIndex: number) => (
+                          <div key={featureIndex} className="flex items-center font-['Roboto_Mono',monospace] text-sm">
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#0FF0FC] mr-2"></div>
+                            <span className="text-[#EAEAEA]/80">{feature}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div className="flex justify-between items-center pt-4 border-t border-[#0FF0FC]/10">
+                    <div className="font-['Roboto_Mono',monospace] text-[#FF007F]">
+                      {(service.priceUsd || service.priceInr) ? (
+                        <div>
+                          {service.priceUsd && `$${service.priceUsd}`}
+                          {service.priceUsd && service.priceInr && ' / '}
+                          {service.priceInr && `₹${service.priceInr}`}
+                          {service.isHourly && ' per hour'}
+                        </div>
+                      ) : (
+                        <span>Custom pricing</span>
+                      )}
+                    </div>
+                    <div className="text-[#0FF0FC] text-xs">
+                      {service.isHourly ? 'Hourly Rate' : 'Fixed Price'}
+                    </div>
+                  </div>
+                </motion.div>
+              ))
+            ) : (
+              <>
+                <motion.div 
+                  className="p-6 border border-[#0FF0FC]/20 rounded-lg bg-gradient-to-br from-black to-[#0FF0FC]/5 hover:to-[#0FF0FC]/10 transition-all"
+                  whileHover={{ scale: 1.02, boxShadow: '0 0 15px rgba(15, 240, 252, 0.3)' }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <div className="flex justify-between items-start mb-4">
+                    <h3 className="text-lg font-bold text-white">AI Solution Development</h3>
+                    <Badge className="bg-[#FF007F]/10 text-[#FF007F] border border-[#FF007F]/30">
+                      development
+                    </Badge>
+                  </div>
+                  
+                  <p className="text-[#EAEAEA]/70 mb-6 text-sm">
+                    End-to-end development of custom AI solutions tailored to your business needs, from concept to deployment.
+                  </p>
+                  
+                  <div className="mb-6 space-y-2">
+                    <h4 className="text-xs uppercase text-[#0FF0FC] tracking-wider mb-3">Features</h4>
+                    <div className="grid grid-cols-1 gap-2">
+                      <div className="flex items-center font-['Roboto_Mono',monospace] text-sm">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#0FF0FC] mr-2"></div>
+                        <span className="text-[#EAEAEA]/80">Custom ML model development</span>
+                      </div>
+                      <div className="flex items-center font-['Roboto_Mono',monospace] text-sm">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#0FF0FC] mr-2"></div>
+                        <span className="text-[#EAEAEA]/80">API integration</span>
+                      </div>
+                      <div className="flex items-center font-['Roboto_Mono',monospace] text-sm">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#0FF0FC] mr-2"></div>
+                        <span className="text-[#EAEAEA]/80">Cloud deployment</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-between items-center pt-4 border-t border-[#0FF0FC]/10">
+                    <div className="font-['Roboto_Mono',monospace] text-[#FF007F]">
+                      <div>
+                        $150 / ₹12000
+                      </div>
+                    </div>
+                    <div className="text-[#0FF0FC] text-xs">
+                      Hourly Rate
+                    </div>
+                  </div>
+                </motion.div>
+                
+                <motion.div 
+                  className="p-6 border border-[#0FF0FC]/20 rounded-lg bg-gradient-to-br from-black to-[#0FF0FC]/5 hover:to-[#0FF0FC]/10 transition-all"
+                  whileHover={{ scale: 1.02, boxShadow: '0 0 15px rgba(15, 240, 252, 0.3)' }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.1 }}
+                >
+                  <div className="flex justify-between items-start mb-4">
+                    <h3 className="text-lg font-bold text-white">Technical Consultation</h3>
+                    <Badge className="bg-[#FF007F]/10 text-[#FF007F] border border-[#FF007F]/30">
+                      consulting
+                    </Badge>
+                  </div>
+                  
+                  <p className="text-[#EAEAEA]/70 mb-6 text-sm">
+                    Expert guidance on technical architecture, AI implementation strategies, and technology stack selection.
+                  </p>
+                  
+                  <div className="mb-6 space-y-2">
+                    <h4 className="text-xs uppercase text-[#0FF0FC] tracking-wider mb-3">Features</h4>
+                    <div className="grid grid-cols-1 gap-2">
+                      <div className="flex items-center font-['Roboto_Mono',monospace] text-sm">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#0FF0FC] mr-2"></div>
+                        <span className="text-[#EAEAEA]/80">Technology assessment</span>
+                      </div>
+                      <div className="flex items-center font-['Roboto_Mono',monospace] text-sm">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#0FF0FC] mr-2"></div>
+                        <span className="text-[#EAEAEA]/80">Architecture review</span>
+                      </div>
+                      <div className="flex items-center font-['Roboto_Mono',monospace] text-sm">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#0FF0FC] mr-2"></div>
+                        <span className="text-[#EAEAEA]/80">Implementation roadmap</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-between items-center pt-4 border-t border-[#0FF0FC]/10">
+                    <div className="font-['Roboto_Mono',monospace] text-[#FF007F]">
+                      <div>
+                        $200 / ₹15000
+                      </div>
+                    </div>
+                    <div className="text-[#0FF0FC] text-xs">
+                      Hourly Rate
+                    </div>
+                  </div>
+                </motion.div>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+      
+      {/* Education Section */}
+      <div className="py-16 max-w-7xl mx-auto px-6">
+        <h2 className="text-2xl font-bold mb-10 flex items-center">
+          <GraduationCap className="w-6 h-6 mr-3 text-[#FF007F]" />
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#FF007F] to-[#0FF0FC]">
+            Education & Credentials
+          </span>
+        </h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {userEducations.length > 0 ? (
+            userEducations.map((education, index) => (
+              <motion.div 
+                key={education.id} 
+                className="p-6 border border-[#0FF0FC]/20 rounded-lg bg-gradient-to-br from-black to-[#0FF0FC]/5 transition-all"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                <div className="mb-3">
+                  <h3 className="text-lg font-bold text-white">{education.institution}</h3>
+                  <p className="text-[#FF007F] font-medium">{education.degree}</p>
+                </div>
+                
+                <div className="flex items-center mb-4 font-['Roboto_Mono',monospace] text-xs">
+                  <span className="px-2 py-1 rounded bg-[#0FF0FC]/10 text-[#0FF0FC] border border-[#0FF0FC]/30">
+                    {education.startDate} - {education.endDate || 'Present'}
+                  </span>
+                  {education.location && (
+                    <span className="ml-3 text-[#EAEAEA]/50">
+                      {education.location}
+                    </span>
+                  )}
+                </div>
+              </motion.div>
+            ))
+          ) : (
+            <>
+              <motion.div 
+                className="p-6 border border-[#0FF0FC]/20 rounded-lg bg-gradient-to-br from-black to-[#0FF0FC]/5 transition-all"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <div className="mb-3">
+                  <h3 className="text-lg font-bold text-white">Stanford University</h3>
+                  <p className="text-[#FF007F] font-medium">M.S. in Computer Science, AI Specialization</p>
+                </div>
+                
+                <div className="flex items-center mb-4 font-['Roboto_Mono',monospace] text-xs">
+                  <span className="px-2 py-1 rounded bg-[#0FF0FC]/10 text-[#0FF0FC] border border-[#0FF0FC]/30">
+                    2018 - 2020
+                  </span>
+                  <span className="ml-3 text-[#EAEAEA]/50">
+                    Palo Alto, CA
+                  </span>
+                </div>
+              </motion.div>
+              
+              <motion.div 
+                className="p-6 border border-[#0FF0FC]/20 rounded-lg bg-gradient-to-br from-black to-[#0FF0FC]/5 transition-all"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+              >
+                <div className="mb-3">
+                  <h3 className="text-lg font-bold text-white">University of California, Berkeley</h3>
+                  <p className="text-[#FF007F] font-medium">B.S. in Electrical Engineering & Computer Science</p>
+                </div>
+                
+                <div className="flex items-center mb-4 font-['Roboto_Mono',monospace] text-xs">
+                  <span className="px-2 py-1 rounded bg-[#0FF0FC]/10 text-[#0FF0FC] border border-[#0FF0FC]/30">
+                    2014 - 2018
+                  </span>
+                  <span className="ml-3 text-[#EAEAEA]/50">
+                    Berkeley, CA
+                  </span>
+                </div>
               </motion.div>
             </>
           )}
