@@ -811,6 +811,7 @@ export default function PortfolioBuilder() {
                       jobLevel: userData?.jobLevel || ''
                     }}
                     userSkills={skills || []}
+                    userServices={services || []}
                     userProjects={projects?.map(p => ({
                       id: p.id,
                       title: p.title,

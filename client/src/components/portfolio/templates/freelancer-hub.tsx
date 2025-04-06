@@ -9,7 +9,7 @@ import {
   Palette, Camera, Music, Video, Coffee, ArrowRight
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { Project, Skill } from "@shared/schema";
+import { Project, Skill, Service } from "@shared/schema";
 
 interface FreelancerHubProps {
   userInfo: {
@@ -25,10 +25,11 @@ interface FreelancerHubProps {
   };
   userSkills: Skill[];
   userProjects: Project[];
+  userServices: Service[];
   publicUrl?: string | null;
 }
 
-export default function FreelancerHub({ userInfo, userSkills, userProjects, publicUrl }: FreelancerHubProps) {
+export default function FreelancerHub({ userInfo, userSkills, userProjects, userServices, publicUrl }: FreelancerHubProps) {
   // Sort skills by proficiency
   const sortedSkills = [...userSkills].sort((a, b) => (b.proficiency || 0) - (a.proficiency || 0));
   
@@ -189,7 +190,46 @@ export default function FreelancerHub({ userInfo, userSkills, userProjects, publ
           </motion.h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {userSkills.length > 0 ? (
+            {userServices && userServices.length > 0 ? (
+              userServices.slice(0, 3).map((service, index) => (
+                <motion.div 
+                  key={service.id} 
+                  className="bg-white rounded-2xl p-6 text-center hover:shadow-lg transition-all duration-300 border-2 border-[#FF7F50]/20 overflow-hidden relative"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.1 }}
+                  whileHover={{ y: -5 }}
+                >
+                  {/* Decorative corner shape */}
+                  <div className="absolute top-0 right-0 w-16 h-16 bg-[#FF7F50]/10 rounded-bl-3xl"></div>
+                  
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#FF7F50] to-[#6A0572] mx-auto mb-4 flex items-center justify-center text-white shadow-md transform transition-transform duration-300 hover:rotate-12">
+                    {skillIcons[index % skillIcons.length]}
+                  </div>
+                  <h3 className="font-bold text-xl mb-2" style={{ fontFamily: "Nunito, sans-serif" }}>{service.title}</h3>
+                  <p className="text-sm text-gray-600 mb-4">{service.description || "Professional service with attention to detail and quick turnaround times."}</p>
+                  
+                  <div className="flex justify-center gap-2 mb-3">
+                    <Badge className="bg-[#FF7F50]/10 text-[#FF7F50] hover:bg-[#FF7F50]">{service.category}</Badge>
+                    {Array.isArray(service.features) && service.features.length > 0 && (
+                      <Badge className="bg-[#6A0572]/10 text-[#6A0572] hover:bg-[#6A0572]">{service.features[0]}</Badge>
+                    )}
+                  </div>
+                  
+                  <div className="pt-4 border-t border-gray-100">
+                    <div className="text-lg font-bold text-[#6A0572]" style={{ fontFamily: "Nunito, sans-serif" }}>
+                      Starting at ${service.priceUsd ? Number(service.priceUsd).toFixed(2) : (service.priceInr ? `${Number(service.priceInr/80).toFixed(2)}` : '99.00')}
+                    </div>
+                    <Button 
+                      size="sm" 
+                      className="mt-3 rounded-full bg-[#FF7F50]/10 text-[#FF7F50] hover:bg-[#FF7F50] hover:text-white animate-bounce-button"
+                    >
+                      Learn More
+                    </Button>
+                  </div>
+                </motion.div>
+              ))
+            ) : userSkills.length > 0 ? (
               sortedSkills.slice(0, 3).map((skill, index) => (
                 <motion.div 
                   key={skill.id} 
@@ -223,7 +263,6 @@ export default function FreelancerHub({ userInfo, userSkills, userProjects, publ
               ))
             ) : (
               <>
-                {/* Creative Consulting Service Card */}
                 <motion.div 
                   className="bg-white rounded-2xl p-6 text-center hover:shadow-lg transition-all duration-300 border-2 border-[#FF7F50]/20 overflow-hidden relative"
                   initial={{ opacity: 0, y: 20 }}
@@ -231,101 +270,11 @@ export default function FreelancerHub({ userInfo, userSkills, userProjects, publ
                   transition={{ duration: 0.4 }}
                   whileHover={{ y: -5 }}
                 >
-                  {/* Decorative corner shape */}
-                  <div className="absolute top-0 right-0 w-16 h-16 bg-[#FF7F50]/10 rounded-bl-3xl"></div>
-                  
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#FF7F50] to-[#6A0572] mx-auto mb-4 flex items-center justify-center text-white shadow-md transform transition-transform duration-300 hover:rotate-12">
-                    <Lightbulb className="h-7 w-7" />
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#FF7F50] to-[#6A0572] mx-auto mb-4 flex items-center justify-center text-white">
+                    <Coffee className="h-6 w-6" />
                   </div>
-                  <h3 className="font-bold text-xl mb-2" style={{ fontFamily: "Nunito, sans-serif" }}>Creative Consulting</h3>
-                  <p className="text-sm text-gray-600 mb-4">Strategic creative direction for brands and businesses looking to stand out.</p>
-                  
-                  <div className="flex justify-center gap-2 mb-3">
-                    <Badge className="bg-[#FF7F50]/10 text-[#FF7F50] hover:bg-[#FF7F50]">Strategy</Badge>
-                    <Badge className="bg-[#6A0572]/10 text-[#6A0572] hover:bg-[#6A0572]">Branding</Badge>
-                  </div>
-                  
-                  <div className="pt-4 border-t border-gray-100">
-                    <div className="text-lg font-bold text-[#6A0572]" style={{ fontFamily: "Nunito, sans-serif" }}>
-                      Starting at $250
-                    </div>
-                    <Button 
-                      size="sm" 
-                      className="mt-3 rounded-full bg-[#FF7F50]/10 text-[#FF7F50] hover:bg-[#FF7F50] hover:text-white animate-bounce-button"
-                    >
-                      Learn More
-                    </Button>
-                  </div>
-                </motion.div>
-
-                {/* Content Creation Service Card */}
-                <motion.div 
-                  className="bg-white rounded-2xl p-6 text-center hover:shadow-lg transition-all duration-300 border-2 border-[#FF7F50]/20 overflow-hidden relative"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.1 }}
-                  whileHover={{ y: -5 }}
-                >
-                  {/* Decorative corner shape */}
-                  <div className="absolute top-0 right-0 w-16 h-16 bg-[#FF7F50]/10 rounded-bl-3xl"></div>
-                  
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#FF7F50] to-[#6A0572] mx-auto mb-4 flex items-center justify-center text-white shadow-md transform transition-transform duration-300 hover:rotate-12">
-                    <PenTool className="h-7 w-7" />
-                  </div>
-                  <h3 className="font-bold text-xl mb-2" style={{ fontFamily: "Nunito, sans-serif" }}>Content Creation</h3>
-                  <p className="text-sm text-gray-600 mb-4">High-quality content that engages audiences and drives conversions.</p>
-                  
-                  <div className="flex justify-center gap-2 mb-3">
-                    <Badge className="bg-[#FF7F50]/10 text-[#FF7F50] hover:bg-[#FF7F50]">Copywriting</Badge>
-                    <Badge className="bg-[#6A0572]/10 text-[#6A0572] hover:bg-[#6A0572]">Design</Badge>
-                  </div>
-                  
-                  <div className="pt-4 border-t border-gray-100">
-                    <div className="text-lg font-bold text-[#6A0572]" style={{ fontFamily: "Nunito, sans-serif" }}>
-                      Starting at $175
-                    </div>
-                    <Button 
-                      size="sm" 
-                      className="mt-3 rounded-full bg-[#FF7F50]/10 text-[#FF7F50] hover:bg-[#FF7F50] hover:text-white animate-bounce-button"
-                    >
-                      Learn More
-                    </Button>
-                  </div>
-                </motion.div>
-
-                {/* Digital Solutions Service Card */}
-                <motion.div 
-                  className="bg-white rounded-2xl p-6 text-center hover:shadow-lg transition-all duration-300 border-2 border-[#FF7F50]/20 overflow-hidden relative"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.2 }}
-                  whileHover={{ y: -5 }}
-                >
-                  {/* Decorative corner shape */}
-                  <div className="absolute top-0 right-0 w-16 h-16 bg-[#FF7F50]/10 rounded-bl-3xl"></div>
-                  
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#FF7F50] to-[#6A0572] mx-auto mb-4 flex items-center justify-center text-white shadow-md transform transition-transform duration-300 hover:rotate-12">
-                    <Laptop className="h-7 w-7" />
-                  </div>
-                  <h3 className="font-bold text-xl mb-2" style={{ fontFamily: "Nunito, sans-serif" }}>Digital Solutions</h3>
-                  <p className="text-sm text-gray-600 mb-4">Custom digital strategies and implementations for modern businesses.</p>
-                  
-                  <div className="flex justify-center gap-2 mb-3">
-                    <Badge className="bg-[#FF7F50]/10 text-[#FF7F50] hover:bg-[#FF7F50]">Web Dev</Badge>
-                    <Badge className="bg-[#6A0572]/10 text-[#6A0572] hover:bg-[#6A0572]">SEO</Badge>
-                  </div>
-                  
-                  <div className="pt-4 border-t border-gray-100">
-                    <div className="text-lg font-bold text-[#6A0572]" style={{ fontFamily: "Nunito, sans-serif" }}>
-                      Starting at $350
-                    </div>
-                    <Button 
-                      size="sm" 
-                      className="mt-3 rounded-full bg-[#FF7F50]/10 text-[#FF7F50] hover:bg-[#FF7F50] hover:text-white animate-bounce-button"
-                    >
-                      Learn More
-                    </Button>
-                  </div>
+                  <h3 className="font-bold text-xl mb-2">No Services Yet</h3>
+                  <p className="text-gray-600">Add services to showcase your professional offerings here.</p>
                 </motion.div>
               </>
             )}
