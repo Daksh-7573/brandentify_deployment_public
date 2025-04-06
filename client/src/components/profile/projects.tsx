@@ -98,7 +98,12 @@ export default function Projects() {
   const [activeTab, setActiveTab] = useState('details');
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [thumbnailError, setThumbnailError] = useState<string | null>(null);
+  const [projectImages, setProjectImages] = useState<File[]>([]);
+  const [projectVideo, setProjectVideo] = useState<File | null>(null);
+  const [mediaErrors, setMediaErrors] = useState<{images?: string, video?: string} | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
+  const multipleImagesInputRef = useRef<HTMLInputElement>(null);
   
   // Reference to hold the most recent data
   const latestProjectsRef = useRef<Project[]>([]);
@@ -246,9 +251,21 @@ export default function Projects() {
     });
     setThumbnailFile(null);
     setThumbnailError(null);
+    setProjectImages([]);
+    setProjectVideo(null);
+    setMediaErrors(null);
+    
+    // Reset all file inputs
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
+    if (videoInputRef.current) {
+      videoInputRef.current.value = '';
+    }
+    if (multipleImagesInputRef.current) {
+      multipleImagesInputRef.current.value = '';
+    }
+    
     setActiveTab('details');
     setIsAddModalOpen(true);
   };
@@ -263,12 +280,24 @@ export default function Projects() {
       projectUrl: project.projectUrl,
       mediaUrls: project.mediaUrls,
     });
-    // Reset the thumbnail file when editing
+    // Reset all file inputs when editing
     setThumbnailFile(null);
     setThumbnailError(null);
+    setProjectImages([]);
+    setProjectVideo(null);
+    setMediaErrors(null);
+    
+    // Reset all file input elements
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
+    if (videoInputRef.current) {
+      videoInputRef.current.value = '';
+    }
+    if (multipleImagesInputRef.current) {
+      multipleImagesInputRef.current.value = '';
+    }
+    
     setActiveTab('details');
     setIsEditModalOpen(true);
   };
@@ -323,8 +352,35 @@ export default function Projects() {
       return;
     }
     
-    // Clear any previous thumbnail errors
+    // Validate additional media files
+    let validationFailed = false;
+    const newMediaErrors: {images?: string, video?: string} = {};
+    
+    // Validate project images (max 10)
+    if (projectImages.length > 10) {
+      newMediaErrors.images = "Maximum 10 images allowed";
+      validationFailed = true;
+    }
+    
+    // Validate video file size for 120 seconds max (rough estimate - 2MB per minute as a baseline check)
+    if (projectVideo && projectVideo.size > 4 * 1024 * 1024) {
+      newMediaErrors.video = "Video exceeds maximum size (max ~120 seconds)";
+      validationFailed = true;
+    }
+    
+    if (validationFailed) {
+      setMediaErrors(newMediaErrors);
+      toast({
+        title: "Validation Error",
+        description: "Please fix the errors with your media files.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Clear any previous errors
     setThumbnailError(null);
+    setMediaErrors(null);
     
     try {
       let response;
@@ -351,6 +407,38 @@ export default function Projects() {
             const uploadResult = await uploadResponse.json();
             // Update the thumbnail URL
             projectData.thumbnailUrl = uploadResult.thumbnailUrl;
+          }
+        }
+        
+        // Handle additional media uploads (project images and video)
+        if (projectImages.length > 0 || projectVideo) {
+          const mediaFormData = new FormData();
+          
+          // Add project images
+          projectImages.forEach((file, index) => {
+            mediaFormData.append(`projectImage_${index}`, file);
+          });
+          
+          // Add project video
+          if (projectVideo) {
+            mediaFormData.append('projectVideo', projectVideo);
+          }
+          
+          mediaFormData.append('projectId', projectData.id.toString());
+          mediaFormData.append('imageCount', projectImages.length.toString());
+          
+          // Use fetch directly for media uploads
+          const mediaUploadResponse = await fetch('/api/projects/upload-media', {
+            method: 'POST',
+            body: mediaFormData,
+          });
+          
+          if (mediaUploadResponse.ok) {
+            const mediaUploadResult = await mediaUploadResponse.json();
+            // Update the media URLs
+            if (mediaUploadResult.mediaUrls) {
+              projectData.mediaUrls = mediaUploadResult.mediaUrls;
+            }
           }
         }
         
@@ -390,6 +478,38 @@ export default function Projects() {
           projectData.thumbnailUrl = uploadResult.thumbnailUrl;
         }
         
+        // Handle additional media uploads (project images and video)
+        if (projectImages.length > 0 || projectVideo) {
+          const mediaFormData = new FormData();
+          
+          // Add project images
+          projectImages.forEach((file, index) => {
+            mediaFormData.append(`projectImage_${index}`, file);
+          });
+          
+          // Add project video
+          if (projectVideo) {
+            mediaFormData.append('projectVideo', projectVideo);
+          }
+          
+          mediaFormData.append('projectId', projectData.id.toString());
+          mediaFormData.append('imageCount', projectImages.length.toString());
+          
+          // Use fetch directly for media uploads
+          const mediaUploadResponse = await fetch('/api/projects/upload-media', {
+            method: 'POST',
+            body: mediaFormData,
+          });
+          
+          if (mediaUploadResponse.ok) {
+            const mediaUploadResult = await mediaUploadResponse.json();
+            // Update the media URLs
+            if (mediaUploadResult.mediaUrls) {
+              projectData.mediaUrls = mediaUploadResult.mediaUrls;
+            }
+          }
+        }
+        
         // Add to projects state
         setProjects([...projects, projectData]);
         setIsAddModalOpen(false);
@@ -400,12 +520,23 @@ export default function Projects() {
         });
       }
       
-      // Reset form and thumbnail
+      // Reset form and all media files
       projectForm.reset();
       setThumbnailFile(null);
       setThumbnailError(null);
+      setProjectImages([]);
+      setProjectVideo(null);
+      setMediaErrors(null);
+      
+      // Reset all file input elements
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
+      }
+      if (videoInputRef.current) {
+        videoInputRef.current.value = '';
+      }
+      if (multipleImagesInputRef.current) {
+        multipleImagesInputRef.current.value = '';
       }
       
       // Refresh data
@@ -766,6 +897,60 @@ export default function Projects() {
                     {thumbnailError && <p className="text-sm font-medium text-destructive">{thumbnailError}</p>}
                     <FormMessage />
                   </FormItem>
+                  
+                  <FormItem>
+                    <FormLabel>Project Images (Optional, Max 10)</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="file" 
+                        ref={multipleImagesInputRef}
+                        accept="image/*"
+                        multiple
+                        onChange={(e) => {
+                          const files = Array.from(e.target.files || []);
+                          if (files.length > 10) {
+                            setMediaErrors(prev => ({...prev, images: "Maximum 10 images allowed"}));
+                            return;
+                          }
+                          setProjectImages(files);
+                          setMediaErrors(prev => ({...prev, images: undefined}));
+                        }} 
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Upload up to 10 images to showcase your project
+                    </FormDescription>
+                    {mediaErrors?.images && <p className="text-sm font-medium text-destructive">{mediaErrors.images}</p>}
+                    <FormMessage />
+                  </FormItem>
+                  
+                  <FormItem>
+                    <FormLabel>Project Video (Optional, Max 120 sec)</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="file" 
+                        ref={videoInputRef}
+                        accept="video/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            // Check approximate video size (2MB/min is a rough estimate for decent quality)
+                            if (file.size > 4 * 1024 * 1024) {
+                              setMediaErrors(prev => ({...prev, video: "Video exceeds maximum size (max ~120 seconds)"}));
+                              return;
+                            }
+                            setProjectVideo(file);
+                            setMediaErrors(prev => ({...prev, video: undefined}));
+                          }
+                        }} 
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Upload a short video (max 120 seconds) to demonstrate your project
+                    </FormDescription>
+                    {mediaErrors?.video && <p className="text-sm font-medium text-destructive">{mediaErrors.video}</p>}
+                    <FormMessage />
+                  </FormItem>
                 </TabsContent>
                 
                 <TabsContent value="team" className="space-y-4 pt-4">
@@ -1013,6 +1198,75 @@ export default function Projects() {
                         )}
                       </FormDescription>
                       {thumbnailError && <p className="text-sm font-medium text-destructive">{thumbnailError}</p>}
+                      <FormMessage />
+                    </FormItem>
+                    
+                    <FormItem>
+                      <FormLabel>Project Images (Optional, Max 10)</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="file" 
+                          ref={multipleImagesInputRef}
+                          accept="image/*"
+                          multiple
+                          onChange={(e) => {
+                            const files = Array.from(e.target.files || []);
+                            if (files.length > 10) {
+                              setMediaErrors(prev => ({...prev, images: "Maximum 10 images allowed"}));
+                              return;
+                            }
+                            setProjectImages(files);
+                            setMediaErrors(prev => ({...prev, images: undefined}));
+                          }} 
+                        />
+                      </FormControl>
+                      <FormDescription className="flex flex-wrap items-center gap-2">
+                        {currentProject.mediaUrls && currentProject.mediaUrls.length > 0 ? (
+                          <>
+                            <span>Current media:</span>
+                            {currentProject.mediaUrls.map((url, index) => (
+                              <img 
+                                key={index}
+                                src={url} 
+                                alt={`Project media ${index + 1}`} 
+                                className="h-8 w-8 object-cover rounded"
+                              />
+                            ))}
+                            <span className="text-xs text-muted-foreground">(Upload new ones to replace)</span>
+                          </>
+                        ) : (
+                          "Upload up to 10 images to showcase your project"
+                        )}
+                      </FormDescription>
+                      {mediaErrors?.images && <p className="text-sm font-medium text-destructive">{mediaErrors.images}</p>}
+                      <FormMessage />
+                    </FormItem>
+                    
+                    <FormItem>
+                      <FormLabel>Project Video (Optional, Max 120 sec)</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="file" 
+                          ref={videoInputRef}
+                          accept="video/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              // Check approximate video size (2MB/min is a rough estimate for decent quality)
+                              if (file.size > 4 * 1024 * 1024) {
+                                setMediaErrors(prev => ({...prev, video: "Video exceeds maximum size (max ~120 seconds)"}));
+                                return;
+                              }
+                              setProjectVideo(file);
+                              setMediaErrors(prev => ({...prev, video: undefined}));
+                            }
+                          }} 
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Upload a short video (max 120 seconds) to demonstrate your project
+                      </FormDescription>
+                      {mediaErrors?.video && <p className="text-sm font-medium text-destructive">{mediaErrors.video}</p>}
                       <FormMessage />
                     </FormItem>
                   </TabsContent>

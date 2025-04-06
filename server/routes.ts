@@ -893,6 +893,115 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
   });
+  
+  apiRouter.post("/projects/upload-media", async (req: Request, res: Response) => {
+    try {
+      console.log(`[POST /projects/upload-media] Received upload request:`, req.files);
+      
+      if (!req.files) {
+        return res.status(400).json({ message: "No files uploaded" });
+      }
+      
+      // Get project ID and other metadata
+      const projectId = req.body.projectId;
+      const imageCount = parseInt(req.body.imageCount) || 0;
+      
+      if (!projectId) {
+        return res.status(400).json({ message: "Project ID is required" });
+      }
+      
+      // Arrays to store file information
+      const uploadedMediaUrls: string[] = [];
+      const uploadedFileNames: string[] = [];
+      
+      // Process images
+      for (let i = 0; i < imageCount; i++) {
+        const imageKey = `projectImage_${i}`;
+        
+        if (req.files[imageKey]) {
+          const imageFile = req.files[imageKey];
+          const file = Array.isArray(imageFile) ? imageFile[0] : imageFile;
+          
+          // Generate unique filename
+          const timestamp = Date.now() + i; // Add index to ensure uniqueness
+          const ext = path.extname(file.name);
+          const filename = `project_${projectId}_image_${timestamp}${ext}`;
+          
+          // Define upload path
+          const uploadPath = path.join(process.cwd(), 'public', 'uploads', 'projects', filename);
+          
+          // Move the file to the upload directory (using await with promises)
+          await new Promise<void>((resolve, reject) => {
+            file.mv(uploadPath, (err) => {
+              if (err) {
+                console.error(`[POST /projects/upload-media] File move error:`, err);
+                reject(err);
+              } else {
+                const fileUrl = getFileUrl(filename);
+                uploadedMediaUrls.push(fileUrl);
+                uploadedFileNames.push(filename);
+                resolve();
+              }
+            });
+          });
+        }
+      }
+      
+      // Process video if it exists
+      if (req.files.projectVideo) {
+        const videoFile = req.files.projectVideo;
+        const file = Array.isArray(videoFile) ? videoFile[0] : videoFile;
+        
+        // Generate unique filename
+        const timestamp = Date.now();
+        const ext = path.extname(file.name);
+        const filename = `project_${projectId}_video_${timestamp}${ext}`;
+        
+        // Define upload path
+        const uploadPath = path.join(process.cwd(), 'public', 'uploads', 'projects', filename);
+        
+        // Move the file to the upload directory
+        await new Promise<void>((resolve, reject) => {
+          file.mv(uploadPath, (err) => {
+            if (err) {
+              console.error(`[POST /projects/upload-media] Video file move error:`, err);
+              reject(err);
+            } else {
+              const fileUrl = getFileUrl(filename);
+              uploadedMediaUrls.push(fileUrl);
+              uploadedFileNames.push(filename);
+              resolve();
+            }
+          });
+        });
+      }
+      
+      // Get the project and update the mediaUrls field
+      const project = await storage.getProjectById(parseInt(projectId));
+      
+      if (!project) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+      
+      // Update the mediaUrls field in the database
+      const updatedProject = await storage.updateProject(
+        parseInt(projectId),
+        { mediaUrls: JSON.stringify(uploadedMediaUrls) }
+      );
+      
+      res.status(200).json({
+        mediaUrls: uploadedMediaUrls,
+        message: "Media files uploaded successfully"
+      });
+      
+    } catch (error) {
+      console.error(`[POST /projects/upload-media] Error:`, error);
+      res.status(500).json({ 
+        message: `Error processing upload: ${error instanceof Error ? error.message : String(error)}`,
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
 
   apiRouter.post("/projects", async (req: Request, res: Response) => {
     try {
