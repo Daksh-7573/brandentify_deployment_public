@@ -7,8 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AlertCircle, Zap, Newspaper, BarChart, Video, Image, MessageSquare } from "lucide-react";
+import { AlertCircle, BarChart, Video, Image } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
@@ -17,7 +16,6 @@ export default function CreatePulsePage() {
   const [pulseTitle, setPulseTitle] = useState("");
   const [pulseContent, setPulseContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [activeTab, setActiveTab] = useState("compose");
   const [pulseType, setPulseType] = useState("poll");
   const [pollOptions, setPollOptions] = useState(["", ""]);
 
@@ -136,237 +134,173 @@ export default function CreatePulsePage() {
                   </Alert>
                 )}
 
-                <Tabs defaultValue="compose" className="w-full" onValueChange={setActiveTab}>
-                  <TabsList className="mb-4">
-                    <TabsTrigger value="compose">Compose</TabsTrigger>
-                    <TabsTrigger value="ai-assist">AI Assist</TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="compose">
-
-                    {pulseType === 'poll' && (
-                      <form onSubmit={handleSubmit} className="space-y-6">
-                        <div className="space-y-2">
-                          <Label htmlFor="poll-question">Poll Question</Label>
-                          <Input
-                            id="poll-question"
-                            placeholder="What's your question for your network?"
-                            required
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between">
-                            <Label>Poll Options</Label>
-                            <Button 
-                              type="button" 
-                              variant="outline" 
-                              size="sm"
-                              onClick={addPollOption}
-                              disabled={pollOptions.length >= 6}
-                            >
-                              + Add Option
-                            </Button>
-                          </div>
-                          <div className="space-y-2">
-                            {pollOptions.map((option, index) => (
-                              <div key={index} className="flex gap-2">
-                                <Input
-                                  placeholder={`Option ${index + 1}`}
-                                  value={option}
-                                  onChange={(e) => updatePollOption(index, e.target.value)}
-                                  required
-                                />
-                                {pollOptions.length > 2 && (
-                                  <Button 
-                                    type="button" 
-                                    variant="ghost" 
-                                    size="icon"
-                                    onClick={() => removePollOption(index)}
-                                    className="text-gray-500 hover:text-red-500"
-                                  >
-                                    ✕
-                                  </Button>
-                                )}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                        <div className="space-y-2">
-                          <Label>Poll Settings</Label>
-                          <div className="flex flex-wrap gap-4">
-                            <div className="flex items-center gap-2">
-                              <input type="checkbox" id="allow-multiple" />
-                              <Label htmlFor="allow-multiple" className="text-sm font-normal">Allow multiple selections</Label>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <input type="checkbox" id="hide-results" />
-                              <Label htmlFor="hide-results" className="text-sm font-normal">Hide results until voting</Label>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <input type="checkbox" id="allow-comments" defaultChecked />
-                              <Label htmlFor="allow-comments" className="text-sm font-normal">Allow comments</Label>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex justify-end">
-                          <Button className="px-6">
-                            Create Poll
-                          </Button>
-                        </div>
-                      </form>
-                    )}
-
-                    {pulseType === 'video-post' && (
-                      <form onSubmit={handleSubmit} className="space-y-6">
-                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 flex flex-col items-center justify-center text-center">
-                          <Video className="h-12 w-12 text-gray-400 mb-4" />
-                          <h3 className="font-medium text-lg mb-2">Upload Video</h3>
-                          <p className="text-sm text-gray-500 mb-4">
-                            Drag and drop a video file here, or click to browse.<br />
-                            Maximum length: 120 seconds | Supported formats: MP4, MOV, WebM
-                          </p>
-                          <Button variant="outline" className="mb-4">
-                            Select File
-                          </Button>
-                          <input type="file" className="hidden" accept="video/*" />
-                          <p className="text-xs text-gray-400">Max file size: 100 MB</p>
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="video-title">Title</Label>
-                          <Input
-                            id="video-title"
-                            placeholder="Add a descriptive title for your video"
-                            required
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="video-description">Description</Label>
-                          <Textarea
-                            id="video-description"
-                            placeholder="Add context or details about your video..."
-                            className="min-h-[100px]"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label>Auto-Generate Captions</Label>
-                          <div className="flex items-center space-x-2">
-                            <input type="checkbox" id="auto-captions" defaultChecked />
-                            <Label htmlFor="auto-captions" className="text-sm font-normal">
-                              Use AI to automatically generate captions
-                            </Label>
-                          </div>
-                        </div>
-                        <div className="flex justify-end">
-                          <Button className="px-6">
-                            Upload & Publish Video
-                          </Button>
-                        </div>
-                      </form>
-                    )}
-
-                    {pulseType === 'image-post' && (
-                      <form onSubmit={handleSubmit} className="space-y-6">
-                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 flex flex-col items-center justify-center text-center">
-                          <Image className="h-12 w-12 text-gray-400 mb-4" />
-                          <h3 className="font-medium text-lg mb-2">Upload Images</h3>
-                          <p className="text-sm text-gray-500 mb-4">
-                            Drag and drop up to 5 images here, or click to browse.<br />
-                            Supported formats: JPG, PNG, WebP, GIF
-                          </p>
-                          <Button variant="outline" className="mb-4">
-                            Select Files
-                          </Button>
-                          <input type="file" className="hidden" accept="image/*" multiple />
-                          <p className="text-xs text-gray-400">Max file size: 20 MB per image</p>
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="image-title">Title</Label>
-                          <Input
-                            id="image-title"
-                            placeholder="Add a caption for your images"
-                            required
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="image-description">Description</Label>
-                          <Textarea
-                            id="image-description"
-                            placeholder="Add context or details about your images..."
-                            className="min-h-[100px]"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label>AI Image Analysis</Label>
-                          <div className="flex items-center space-x-2">
-                            <input type="checkbox" id="ai-tags" defaultChecked />
-                            <Label htmlFor="ai-tags" className="text-sm font-normal">
-                              Generate suggested hashtags & keywords from my images
-                            </Label>
-                          </div>
-                        </div>
-                        <div className="flex justify-end">
-                          <Button className="px-6">
-                            Upload & Publish Images
-                          </Button>
-                        </div>
-                      </form>
-                    )}
-                  </TabsContent>
-                  <TabsContent value="ai-assist">
-                    <div className="space-y-6">
-                      <Alert className="bg-blue-50 border-blue-200">
-                        <Zap className="h-4 w-4 text-blue-500" />
-                        <AlertTitle className="text-blue-700">AI Pulse Assistant</AlertTitle>
-                        <AlertDescription className="text-blue-600">
-                          Let Musk help you craft a professional {pulseType.replace('-', ' ')} from a simple idea or topic.
-                        </AlertDescription>
-                      </Alert>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="ai-prompt">What would you like to write about?</Label>
-                        <Textarea
-                          id="ai-prompt"
-                          placeholder="E.g., My recent project using React and Firebase, Key insights from my industry conference..."
-                          className="min-h-[120px]"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Style & Tone</Label>
-                        <div className="flex flex-wrap gap-2">
-                          {["Professional", "Thought Leadership", "Educational", "Case Study", "Opinion"].map((tone) => (
-                            <Button 
-                              key={tone} 
-                              variant="outline" 
-                              className="rounded-full" 
-                              type="button"
-                            >
-                              {tone}
-                            </Button>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Length</Label>
-                        <div className="flex flex-wrap gap-2">
-                          {["Brief", "Standard", "Detailed"].map((length) => (
-                            <Button 
-                              key={length} 
-                              variant="outline" 
-                              className="rounded-full" 
-                              type="button"
-                            >
-                              {length}
-                            </Button>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="flex justify-end">
-                        <Button className="px-6">
-                          Generate {pulseType.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                {pulseType === 'poll' && (
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="poll-question">Poll Question</Label>
+                      <Input
+                        id="poll-question"
+                        placeholder="What's your question for your network?"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Label>Poll Options</Label>
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          size="sm"
+                          onClick={addPollOption}
+                          disabled={pollOptions.length >= 6}
+                        >
+                          + Add Option
                         </Button>
                       </div>
+                      <div className="space-y-2">
+                        {pollOptions.map((option, index) => (
+                          <div key={index} className="flex gap-2">
+                            <Input
+                              placeholder={`Option ${index + 1}`}
+                              value={option}
+                              onChange={(e) => updatePollOption(index, e.target.value)}
+                              required
+                            />
+                            {pollOptions.length > 2 && (
+                              <Button 
+                                type="button" 
+                                variant="ghost" 
+                                size="icon"
+                                onClick={() => removePollOption(index)}
+                                className="text-gray-500 hover:text-red-500"
+                              >
+                                ✕
+                              </Button>
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </TabsContent>
-                </Tabs>
+                    <div className="space-y-2">
+                      <Label>Poll Settings</Label>
+                      <div className="flex flex-wrap gap-4">
+                        <div className="flex items-center gap-2">
+                          <input type="checkbox" id="allow-multiple" />
+                          <Label htmlFor="allow-multiple" className="text-sm font-normal">Allow multiple selections</Label>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <input type="checkbox" id="hide-results" />
+                          <Label htmlFor="hide-results" className="text-sm font-normal">Hide results until voting</Label>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <input type="checkbox" id="allow-comments" defaultChecked />
+                          <Label htmlFor="allow-comments" className="text-sm font-normal">Allow comments</Label>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex justify-end">
+                      <Button className="px-6">
+                        Create Poll
+                      </Button>
+                    </div>
+                  </form>
+                )}
+
+                {pulseType === 'video-post' && (
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 flex flex-col items-center justify-center text-center">
+                      <Video className="h-12 w-12 text-gray-400 mb-4" />
+                      <h3 className="font-medium text-lg mb-2">Upload Video</h3>
+                      <p className="text-sm text-gray-500 mb-4">
+                        Drag and drop a video file here, or click to browse.<br />
+                        Maximum length: 120 seconds | Supported formats: MP4, MOV, WebM
+                      </p>
+                      <Button variant="outline" className="mb-4">
+                        Select File
+                      </Button>
+                      <input type="file" className="hidden" accept="video/*" />
+                      <p className="text-xs text-gray-400">Max file size: 100 MB</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="video-title">Title</Label>
+                      <Input
+                        id="video-title"
+                        placeholder="Add a descriptive title for your video"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="video-description">Description</Label>
+                      <Textarea
+                        id="video-description"
+                        placeholder="Add context or details about your video..."
+                        className="min-h-[100px]"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Auto-Generate Captions</Label>
+                      <div className="flex items-center space-x-2">
+                        <input type="checkbox" id="auto-captions" defaultChecked />
+                        <Label htmlFor="auto-captions" className="text-sm font-normal">
+                          Use AI to automatically generate captions
+                        </Label>
+                      </div>
+                    </div>
+                    <div className="flex justify-end">
+                      <Button className="px-6">
+                        Upload & Publish Video
+                      </Button>
+                    </div>
+                  </form>
+                )}
+
+                {pulseType === 'image-post' && (
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 flex flex-col items-center justify-center text-center">
+                      <Image className="h-12 w-12 text-gray-400 mb-4" />
+                      <h3 className="font-medium text-lg mb-2">Upload Images</h3>
+                      <p className="text-sm text-gray-500 mb-4">
+                        Drag and drop up to 5 images here, or click to browse.<br />
+                        Supported formats: JPG, PNG, WebP, GIF
+                      </p>
+                      <Button variant="outline" className="mb-4">
+                        Select Files
+                      </Button>
+                      <input type="file" className="hidden" accept="image/*" multiple />
+                      <p className="text-xs text-gray-400">Max file size: 20 MB per image</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="image-title">Title</Label>
+                      <Input
+                        id="image-title"
+                        placeholder="Add a caption for your images"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="image-description">Description</Label>
+                      <Textarea
+                        id="image-description"
+                        placeholder="Add context or details about your images..."
+                        className="min-h-[100px]"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>AI Image Analysis</Label>
+                      <div className="flex items-center space-x-2">
+                        <input type="checkbox" id="ai-tags" defaultChecked />
+                        <Label htmlFor="ai-tags" className="text-sm font-normal">
+                          Generate suggested hashtags & keywords from my images
+                        </Label>
+                      </div>
+                    </div>
+                    <div className="flex justify-end">
+                      <Button className="px-6">
+                        Upload & Publish Images
+                      </Button>
+                    </div>
+                  </form>
+                )}
               </CardContent>
             </Card>
 
