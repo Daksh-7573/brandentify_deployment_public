@@ -11,7 +11,13 @@ import {
   projectCollaborators, ProjectCollaborator, InsertProjectCollaborator,
   projectEndorsements, ProjectEndorsement, InsertProjectEndorsement,
   portfolios, Portfolio, InsertPortfolio,
-  services, Service, InsertService
+  services, Service, InsertService,
+  // Industry Pulse imports
+  industryPulsePosts, IndustryPulsePost, InsertIndustryPulsePost,
+  industryPulseReactions, IndustryPulseReaction, InsertIndustryPulseReaction,
+  industryPulseComments, IndustryPulseComment, InsertIndustryPulseComment,
+  industryPulseBookmarks, IndustryPulseBookmark, InsertIndustryPulseBookmark,
+  industryPulsePollVotes, IndustryPulsePollVote, InsertIndustryPulsePollVote
 } from "@shared/schema";
 
 // Interface for all storage operations
@@ -99,6 +105,44 @@ export interface IStorage {
   updateService(id: number, service: Partial<Service>): Promise<Service | undefined>;
   deleteService(id: number): Promise<boolean>;
   
+  // Industry Pulse Posts operations
+  getIndustryPulsePosts(page?: number, limit?: number): Promise<IndustryPulsePost[]>;
+  getIndustryPulsePostsByUserId(userId: number): Promise<IndustryPulsePost[]>;
+  getIndustryPulsePostsByIndustry(industry: string, page?: number, limit?: number): Promise<IndustryPulsePost[]>;
+  getIndustryPulsePostById(id: number): Promise<IndustryPulsePost | undefined>;
+  createIndustryPulsePost(post: InsertIndustryPulsePost): Promise<IndustryPulsePost>;
+  updateIndustryPulsePost(id: number, post: Partial<IndustryPulsePost>): Promise<IndustryPulsePost | undefined>;
+  deleteIndustryPulsePost(id: number): Promise<boolean>;
+  incrementIndustryPulsePostViews(id: number): Promise<IndustryPulsePost | undefined>;
+  incrementIndustryPulsePostBookmarks(id: number): Promise<IndustryPulsePost | undefined>;
+  incrementIndustryPulsePostShares(id: number): Promise<IndustryPulsePost | undefined>;
+  
+  // Industry Pulse Reactions operations
+  getIndustryPulseReactionsByPostId(postId: number): Promise<IndustryPulseReaction[]>;
+  getIndustryPulseReactionByUserAndPost(userId: number, postId: number): Promise<IndustryPulseReaction | undefined>;
+  createIndustryPulseReaction(reaction: InsertIndustryPulseReaction): Promise<IndustryPulseReaction>;
+  deleteIndustryPulseReaction(id: number): Promise<boolean>;
+  
+  // Industry Pulse Comments operations
+  getIndustryPulseCommentsByPostId(postId: number): Promise<IndustryPulseComment[]>;
+  getIndustryPulseNestedComments(parentId: number): Promise<IndustryPulseComment[]>;
+  createIndustryPulseComment(comment: InsertIndustryPulseComment): Promise<IndustryPulseComment>;
+  updateIndustryPulseComment(id: number, comment: Partial<IndustryPulseComment>): Promise<IndustryPulseComment | undefined>;
+  deleteIndustryPulseComment(id: number): Promise<boolean>;
+  incrementIndustryPulseCommentLikes(id: number): Promise<IndustryPulseComment | undefined>;
+  
+  // Industry Pulse Bookmarks operations
+  getIndustryPulseBookmarksByUserId(userId: number): Promise<IndustryPulseBookmark[]>;
+  getIndustryPulseBookmarkByUserAndPost(userId: number, postId: number): Promise<IndustryPulseBookmark | undefined>;
+  createIndustryPulseBookmark(bookmark: InsertIndustryPulseBookmark): Promise<IndustryPulseBookmark>;
+  deleteIndustryPulseBookmark(id: number): Promise<boolean>;
+  
+  // Industry Pulse Poll Votes operations
+  getIndustryPulsePollVotesByPostId(postId: number): Promise<IndustryPulsePollVote[]>;
+  getIndustryPulsePollVoteByUserAndPost(userId: number, postId: number): Promise<IndustryPulsePollVote | undefined>;
+  createIndustryPulsePollVote(vote: InsertIndustryPulsePollVote): Promise<IndustryPulsePollVote>;
+  deleteIndustryPulsePollVote(id: number): Promise<boolean>;
+  
   // Debug and maintenance operations
   reinitializeDemoData(): Promise<void>;
   clearAllUsers(): Promise<void>;
@@ -120,6 +164,13 @@ export class MemStorage implements IStorage {
   private portfolios: Map<number, Portfolio>;
   private services: Map<number, Service>;
   
+  // Industry Pulse collections
+  private industryPulsePosts: Map<number, IndustryPulsePost>;
+  private industryPulseReactions: Map<number, IndustryPulseReaction>;
+  private industryPulseComments: Map<number, IndustryPulseComment>;
+  private industryPulseBookmarks: Map<number, IndustryPulseBookmark>;
+  private industryPulsePollVotes: Map<number, IndustryPulsePollVote>;
+  
   private currentUserId: number;
   private currentResumeId: number;
   private currentWorkExperienceId: number;
@@ -133,6 +184,13 @@ export class MemStorage implements IStorage {
   private currentProjectEndorsementId: number;
   private currentPortfolioId: number;
   private currentServiceId: number;
+  
+  // Industry Pulse IDs
+  private currentIndustryPulsePostId: number;
+  private currentIndustryPulseReactionId: number;
+  private currentIndustryPulseCommentId: number;
+  private currentIndustryPulseBookmarkId: number;
+  private currentIndustryPulsePollVoteId: number;
 
   constructor() {
     this.users = new Map();
@@ -149,6 +207,13 @@ export class MemStorage implements IStorage {
     this.portfolios = new Map();
     this.services = new Map();
     
+    // Initialize Industry Pulse collections
+    this.industryPulsePosts = new Map();
+    this.industryPulseReactions = new Map();
+    this.industryPulseComments = new Map();
+    this.industryPulseBookmarks = new Map();
+    this.industryPulsePollVotes = new Map();
+    
     this.currentUserId = 1;
     this.currentResumeId = 1;
     this.currentWorkExperienceId = 1;
@@ -162,6 +227,13 @@ export class MemStorage implements IStorage {
     this.currentProjectEndorsementId = 1;
     this.currentPortfolioId = 1;
     this.currentServiceId = 1;
+    
+    // Initialize Industry Pulse IDs
+    this.currentIndustryPulsePostId = 1;
+    this.currentIndustryPulseReactionId = 1;
+    this.currentIndustryPulseCommentId = 1;
+    this.currentIndustryPulseBookmarkId = 1;
+    this.currentIndustryPulsePollVoteId = 1;
     
     // Initialize with a default user for development/demo
     this.initializeDemoData();
@@ -348,6 +420,13 @@ export class MemStorage implements IStorage {
     
     // Clear all existing services
     this.services.clear();
+    
+    // Clear all Industry Pulse collections
+    this.industryPulsePosts.clear();
+    this.industryPulseReactions.clear();
+    this.industryPulseComments.clear();
+    this.industryPulseBookmarks.clear();
+    this.industryPulsePollVotes.clear();
   }
   
   /**
@@ -1030,6 +1109,349 @@ export class MemStorage implements IStorage {
    * Clears all users except the demo user (id: 1)
    * This is primarily for development and testing purposes
    */
+  // Industry Pulse Posts operations
+  async getIndustryPulsePosts(page: number = 1, limit: number = 10): Promise<IndustryPulsePost[]> {
+    const allPosts = Array.from(this.industryPulsePosts.values());
+    const sortedPosts = allPosts.sort((a, b) => {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
+    
+    const start = (page - 1) * limit;
+    const end = start + limit;
+    
+    return sortedPosts.slice(start, end);
+  }
+  
+  async getIndustryPulsePostsByUserId(userId: number): Promise<IndustryPulsePost[]> {
+    return Array.from(this.industryPulsePosts.values())
+      .filter(post => post.userId === userId)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }
+  
+  async getIndustryPulsePostsByIndustry(industry: string, page: number = 1, limit: number = 10): Promise<IndustryPulsePost[]> {
+    const filteredPosts = Array.from(this.industryPulsePosts.values())
+      .filter(post => post.industry === industry)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    
+    const start = (page - 1) * limit;
+    const end = start + limit;
+    
+    return filteredPosts.slice(start, end);
+  }
+  
+  async getIndustryPulsePostById(id: number): Promise<IndustryPulsePost | undefined> {
+    return this.industryPulsePosts.get(id);
+  }
+  
+  async createIndustryPulsePost(insertPost: InsertIndustryPulsePost): Promise<IndustryPulsePost> {
+    const id = this.currentIndustryPulsePostId++;
+    const createdAt = new Date();
+    
+    const post: IndustryPulsePost = {
+      ...insertPost,
+      id,
+      createdAt,
+      updatedAt: createdAt,
+      views: 0,
+      bookmarks: 0,
+      shares: 0
+    };
+    
+    this.industryPulsePosts.set(id, post);
+    return post;
+  }
+  
+  async updateIndustryPulsePost(id: number, postData: Partial<IndustryPulsePost>): Promise<IndustryPulsePost | undefined> {
+    const post = this.industryPulsePosts.get(id);
+    if (!post) return undefined;
+    
+    const updatedPost = { 
+      ...post, 
+      ...postData,
+      updatedAt: new Date()
+    };
+    
+    this.industryPulsePosts.set(id, updatedPost);
+    return updatedPost;
+  }
+  
+  async deleteIndustryPulsePost(id: number): Promise<boolean> {
+    return this.industryPulsePosts.delete(id);
+  }
+  
+  async incrementIndustryPulsePostViews(id: number): Promise<IndustryPulsePost | undefined> {
+    const post = this.industryPulsePosts.get(id);
+    if (!post) return undefined;
+    
+    const updatedPost = {
+      ...post,
+      views: post.views + 1,
+      updatedAt: new Date()
+    };
+    
+    this.industryPulsePosts.set(id, updatedPost);
+    return updatedPost;
+  }
+  
+  async incrementIndustryPulsePostBookmarks(id: number): Promise<IndustryPulsePost | undefined> {
+    const post = this.industryPulsePosts.get(id);
+    if (!post) return undefined;
+    
+    const updatedPost = {
+      ...post,
+      bookmarks: post.bookmarks + 1,
+      updatedAt: new Date()
+    };
+    
+    this.industryPulsePosts.set(id, updatedPost);
+    return updatedPost;
+  }
+  
+  async incrementIndustryPulsePostShares(id: number): Promise<IndustryPulsePost | undefined> {
+    const post = this.industryPulsePosts.get(id);
+    if (!post) return undefined;
+    
+    const updatedPost = {
+      ...post,
+      shares: post.shares + 1,
+      updatedAt: new Date()
+    };
+    
+    this.industryPulsePosts.set(id, updatedPost);
+    return updatedPost;
+  }
+  
+  // Industry Pulse Reactions operations
+  async getIndustryPulseReactionsByPostId(postId: number): Promise<IndustryPulseReaction[]> {
+    return Array.from(this.industryPulseReactions.values())
+      .filter(reaction => reaction.postId === postId);
+  }
+  
+  async getIndustryPulseReactionByUserAndPost(userId: number, postId: number): Promise<IndustryPulseReaction | undefined> {
+    return Array.from(this.industryPulseReactions.values())
+      .find(reaction => reaction.userId === userId && reaction.postId === postId);
+  }
+  
+  async createIndustryPulseReaction(insertReaction: InsertIndustryPulseReaction): Promise<IndustryPulseReaction> {
+    // First check if the user already reacted to this post
+    const existingReaction = await this.getIndustryPulseReactionByUserAndPost(
+      insertReaction.userId,
+      insertReaction.postId
+    );
+    
+    if (existingReaction) {
+      // If the reaction type is the same, just return the existing one
+      if (existingReaction.reactionType === insertReaction.reactionType) {
+        return existingReaction;
+      }
+      
+      // Otherwise, update the existing reaction's type
+      const updatedReaction = {
+        ...existingReaction,
+        reactionType: insertReaction.reactionType,
+        createdAt: new Date()
+      };
+      
+      this.industryPulseReactions.set(existingReaction.id, updatedReaction);
+      return updatedReaction;
+    }
+    
+    // Create a new reaction
+    const id = this.currentIndustryPulseReactionId++;
+    const reaction: IndustryPulseReaction = {
+      ...insertReaction,
+      id,
+      createdAt: new Date()
+    };
+    
+    this.industryPulseReactions.set(id, reaction);
+    return reaction;
+  }
+  
+  async deleteIndustryPulseReaction(id: number): Promise<boolean> {
+    return this.industryPulseReactions.delete(id);
+  }
+  
+  // Industry Pulse Comments operations
+  async getIndustryPulseCommentsByPostId(postId: number): Promise<IndustryPulseComment[]> {
+    return Array.from(this.industryPulseComments.values())
+      .filter(comment => comment.postId === postId && comment.parentId === null)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }
+  
+  async getIndustryPulseNestedComments(parentId: number): Promise<IndustryPulseComment[]> {
+    return Array.from(this.industryPulseComments.values())
+      .filter(comment => comment.parentId === parentId)
+      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+  }
+  
+  async createIndustryPulseComment(insertComment: InsertIndustryPulseComment): Promise<IndustryPulseComment> {
+    const id = this.currentIndustryPulseCommentId++;
+    const now = new Date();
+    
+    const comment: IndustryPulseComment = {
+      ...insertComment,
+      id,
+      likes: 0,
+      createdAt: now,
+      updatedAt: now,
+      parentId: insertComment.parentId || null
+    };
+    
+    this.industryPulseComments.set(id, comment);
+    return comment;
+  }
+  
+  async updateIndustryPulseComment(id: number, commentData: Partial<IndustryPulseComment>): Promise<IndustryPulseComment | undefined> {
+    const comment = this.industryPulseComments.get(id);
+    if (!comment) return undefined;
+    
+    const updatedComment = {
+      ...comment,
+      ...commentData,
+      updatedAt: new Date()
+    };
+    
+    this.industryPulseComments.set(id, updatedComment);
+    return updatedComment;
+  }
+  
+  async deleteIndustryPulseComment(id: number): Promise<boolean> {
+    // Also delete all nested comments
+    const nestedComments = await this.getIndustryPulseNestedComments(id);
+    for (const comment of nestedComments) {
+      this.industryPulseComments.delete(comment.id);
+    }
+    
+    // Delete the comment itself
+    return this.industryPulseComments.delete(id);
+  }
+  
+  async incrementIndustryPulseCommentLikes(id: number): Promise<IndustryPulseComment | undefined> {
+    const comment = this.industryPulseComments.get(id);
+    if (!comment) return undefined;
+    
+    const updatedComment = {
+      ...comment,
+      likes: comment.likes + 1,
+      updatedAt: new Date()
+    };
+    
+    this.industryPulseComments.set(id, updatedComment);
+    return updatedComment;
+  }
+  
+  // Industry Pulse Bookmarks operations
+  async getIndustryPulseBookmarksByUserId(userId: number): Promise<IndustryPulseBookmark[]> {
+    return Array.from(this.industryPulseBookmarks.values())
+      .filter(bookmark => bookmark.userId === userId)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }
+  
+  async getIndustryPulseBookmarkByUserAndPost(userId: number, postId: number): Promise<IndustryPulseBookmark | undefined> {
+    return Array.from(this.industryPulseBookmarks.values())
+      .find(bookmark => bookmark.userId === userId && bookmark.postId === postId);
+  }
+  
+  async createIndustryPulseBookmark(insertBookmark: InsertIndustryPulseBookmark): Promise<IndustryPulseBookmark> {
+    // Check if the bookmark already exists
+    const existingBookmark = await this.getIndustryPulseBookmarkByUserAndPost(
+      insertBookmark.userId,
+      insertBookmark.postId
+    );
+    
+    if (existingBookmark) {
+      return existingBookmark;
+    }
+    
+    const id = this.currentIndustryPulseBookmarkId++;
+    const bookmark: IndustryPulseBookmark = {
+      ...insertBookmark,
+      id,
+      createdAt: new Date()
+    };
+    
+    this.industryPulseBookmarks.set(id, bookmark);
+    
+    // Increment the bookmark count on the post
+    await this.incrementIndustryPulsePostBookmarks(insertBookmark.postId);
+    
+    return bookmark;
+  }
+  
+  async deleteIndustryPulseBookmark(id: number): Promise<boolean> {
+    const bookmark = this.industryPulseBookmarks.get(id);
+    if (!bookmark) return false;
+    
+    const deleted = this.industryPulseBookmarks.delete(id);
+    
+    // Decrement the bookmark count on the post
+    if (deleted) {
+      const post = this.industryPulsePosts.get(bookmark.postId);
+      if (post && post.bookmarks > 0) {
+        const updatedPost = {
+          ...post,
+          bookmarks: post.bookmarks - 1,
+          updatedAt: new Date()
+        };
+        this.industryPulsePosts.set(post.id, updatedPost);
+      }
+    }
+    
+    return deleted;
+  }
+  
+  // Industry Pulse Poll Votes operations
+  async getIndustryPulsePollVotesByPostId(postId: number): Promise<IndustryPulsePollVote[]> {
+    return Array.from(this.industryPulsePollVotes.values())
+      .filter(vote => vote.postId === postId);
+  }
+  
+  async getIndustryPulsePollVoteByUserAndPost(userId: number, postId: number): Promise<IndustryPulsePollVote | undefined> {
+    return Array.from(this.industryPulsePollVotes.values())
+      .find(vote => vote.userId === userId && vote.postId === postId);
+  }
+  
+  async createIndustryPulsePollVote(insertVote: InsertIndustryPulsePollVote): Promise<IndustryPulsePollVote> {
+    // Check if the user already voted on this poll
+    const existingVote = await this.getIndustryPulsePollVoteByUserAndPost(
+      insertVote.userId,
+      insertVote.postId
+    );
+    
+    if (existingVote) {
+      // If option is the same, just return existing vote
+      if (existingVote.optionIndex === insertVote.optionIndex) {
+        return existingVote;
+      }
+      
+      // Otherwise, update the vote
+      const updatedVote = {
+        ...existingVote,
+        optionIndex: insertVote.optionIndex,
+        createdAt: new Date()
+      };
+      
+      this.industryPulsePollVotes.set(existingVote.id, updatedVote);
+      return updatedVote;
+    }
+    
+    // Create a new vote
+    const id = this.currentIndustryPulsePollVoteId++;
+    const vote: IndustryPulsePollVote = {
+      ...insertVote,
+      id,
+      createdAt: new Date()
+    };
+    
+    this.industryPulsePollVotes.set(id, vote);
+    return vote;
+  }
+  
+  async deleteIndustryPulsePollVote(id: number): Promise<boolean> {
+    return this.industryPulsePollVotes.delete(id);
+  }
+  
   async clearAllUsers(): Promise<void> {
     console.log("[storage] clearAllUsers: Clearing all registered users except the demo user");
     
