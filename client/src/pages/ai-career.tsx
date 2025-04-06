@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Loader2, Send, Sparkles, Lightbulb, BookOpen, BarChart, MessageSquare, LucideIcon } from "lucide-react";
+import { Loader2, Send, Sparkles, Lightbulb, BookOpen, BarChart, MessageSquare, ExternalLink, LucideIcon } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -812,6 +812,14 @@ export default function AICareerPage() {
                                           </div>
                                         );
                                       }
+                                      // For book titles or emphasized terms (_text_)
+                                      else if (line.match(/^_.*_$/)) {
+                                        return (
+                                          <p key={i} className="my-2 italic font-medium text-primary/90 pl-1 border-l-2 border-primary/20 bg-primary/5 py-1 px-3 rounded">
+                                            {line.replace(/^_|_$/g, '')}
+                                          </p>
+                                        );
+                                      }
                                       // For italic text (*text*)
                                       else if (line.startsWith('*') && line.endsWith('*')) {
                                         return (
@@ -823,6 +831,61 @@ export default function AICareerPage() {
                                       // For empty lines - add spacing
                                       else if (line.trim() === '') {
                                         return <div key={i} className="my-2"></div>;
+                                      }
+                                      // For links [text](url)
+                                      else if (line.match(/\[.*?\]\(https?:\/\/.*?\)/)) {
+                                        const linkMatches = line.match(/\[(.*?)\]\((https?:\/\/.*?)\)/g) || [];
+                                        let remainingText = line;
+                                        const elements = [];
+                                        
+                                        // Process each link in the line
+                                        linkMatches.forEach((match, idx) => {
+                                          const [beforeLink, afterLink] = remainingText.split(match, 2);
+                                          
+                                          // Extract link text and URL with safe null checks
+                                          const linkTextMatch = match.match(/\[(.*?)\]/);
+                                          const linkUrlMatch = match.match(/\((https?:\/\/.*?)\)/);
+                                          
+                                          const linkText = linkTextMatch && linkTextMatch[1] ? linkTextMatch[1] : "Link";
+                                          const linkUrl = linkUrlMatch && linkUrlMatch[1] ? linkUrlMatch[1] : "#";
+                                          
+                                          // Add text before the link if it exists
+                                          if (beforeLink) {
+                                            elements.push(
+                                              <span key={`text-before-${idx}`} className="leading-relaxed">
+                                                {beforeLink}
+                                              </span>
+                                            );
+                                          }
+                                          
+                                          // Add the link
+                                          elements.push(
+                                            <a 
+                                              key={`link-${idx}`}
+                                              href={linkUrl}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                              className="text-primary font-medium hover:underline inline-flex items-center gap-1"
+                                            >
+                                              {linkText}
+                                              <ExternalLink className="h-3 w-3 mb-0.5" />
+                                            </a>
+                                          );
+                                          
+                                          // Update remaining text
+                                          remainingText = afterLink;
+                                        });
+                                        
+                                        // Add any remaining text after the last link
+                                        if (remainingText) {
+                                          elements.push(
+                                            <span key="text-after" className="leading-relaxed">
+                                              {remainingText}
+                                            </span>
+                                          );
+                                        }
+                                        
+                                        return <p key={i} className="my-2 leading-relaxed">{elements}</p>;
                                       }
                                       // For normal text
                                       else {
