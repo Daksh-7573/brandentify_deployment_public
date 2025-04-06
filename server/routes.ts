@@ -1502,7 +1502,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // DEMO FALLBACK: Provide fallback content when API services fail
-      console.log("Generating fallback advice with type:", req.body.adviceType);
+      console.log("Generating fallback advice with type:", req.body.adviceType, "of type:", typeof req.body.adviceType);
       
       const demoAdvice = generateDemoCareerAdvice({ 
         adviceType: req.body.adviceType, 

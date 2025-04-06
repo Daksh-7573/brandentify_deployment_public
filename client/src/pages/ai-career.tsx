@@ -111,6 +111,10 @@ export default function AICareerPage() {
       if (!user?.id) {
         throw new Error("User ID not found");
       }
+      
+      // Debug log to see what's being sent
+      console.log("Sending career advice request with type:", careerAdviceType);
+      
       const res = await apiRequest("POST", "/api/ai/career-advice", {
         userId: user.id,
         adviceType: careerAdviceType,
