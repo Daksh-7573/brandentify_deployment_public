@@ -1576,12 +1576,12 @@ export default function Profile() {
       <Header />
 
       {/* Main Content */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden pt-16"> {/* Added padding-top for fixed header */}
         {/* Sidebar */}
         <Sidebar activePage="profile" />
 
         {/* Center content */}
-        <div className="flex-1 overflow-auto p-6 pt-24 bg-gray-50">
+        <div className="flex-1 overflow-auto p-6 bg-gray-50">
           <div className="mx-auto max-w-3xl">
             <div className="flex items-center justify-between mb-6">
               <h1 className="text-2xl font-semibold text-gray-900">Profile</h1>
