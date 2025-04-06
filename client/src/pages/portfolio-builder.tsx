@@ -412,6 +412,7 @@ export default function PortfolioBuilder() {
         let skillsData = [];
         let projectsData = [];
         let educationsData = [];
+        let servicesData = [];
         
         if (userNumericId) {
           try {
@@ -469,6 +470,22 @@ export default function PortfolioBuilder() {
               projectsData = await projectsResponse.json();
               console.log("Portfolio - Got latest projects:", projectsData);
             }
+            
+            // Fetch latest services from userNumericId
+            const servicesResponse = await fetch(`/api/users/${userNumericId}/services`);
+            if (servicesResponse.ok) {
+              servicesData = await servicesResponse.json();
+              console.log("Portfolio - Got latest services for userNumericId:", servicesData);
+              
+              // If no services, try with userId=0 (for existing data)
+              if (servicesData.length === 0) {
+                const fallbackResponse = await fetch(`/api/users/0/services`);
+                if (fallbackResponse.ok) {
+                  servicesData = await fallbackResponse.json();
+                  console.log("Portfolio - Got fallback services for userId=0:", servicesData);
+                }
+              }
+            }
           } catch (error) {
             console.error("Failed to fetch latest user data:", error);
           }
@@ -515,6 +532,7 @@ export default function PortfolioBuilder() {
           experiences: experiencesData,
           projects: projectsData,
           educations: educationsData,
+          services: servicesData,
           userData: userDetails,
         };
         
@@ -712,6 +730,10 @@ export default function PortfolioBuilder() {
         const userEducations = portfolioPreviewData?.educations || educations || [];
         console.log("Preview step - Educations data:", userEducations);
         
+        // Extract services
+        const userServices = portfolioPreviewData?.services || services || [];
+        console.log("Preview step - Services data:", userServices, "Source:", portfolioPreviewData?.services ? "portfolioPreviewData" : services ? "services query" : "empty array");
+        
         return (
           <div className="space-y-8">
             <div className="bg-primary/5 p-6 rounded-lg border mb-8">
@@ -725,12 +747,12 @@ export default function PortfolioBuilder() {
             {/* The Minimalist Pro */}
             {form.watch("layout") === "minimalist-pro" && (
               <>
-                {console.log("In MinimalistPro - Services data being passed:", services)}
+                {console.log("In MinimalistPro - Services data being passed:", userServices)}
                 {console.log("In MinimalistPro - Services check:", {
-                  servicesType: services ? typeof services : 'undefined',
-                  isArray: Array.isArray(services),
-                  length: services ? services.length : 0,
-                  directData: JSON.stringify(services)
+                  servicesType: userServices ? typeof userServices : 'undefined',
+                  isArray: Array.isArray(userServices),
+                  length: userServices ? userServices.length : 0,
+                  directData: JSON.stringify(userServices)
                 })}
                 <MinimalistPro 
                   userInfo={userInfo}
@@ -738,7 +760,7 @@ export default function PortfolioBuilder() {
                   userExperiences={userExperiences || []}
                   userProjects={userProjects}
                   userEducations={userEducations || []}
-                  userServices={services || []}
+                  userServices={userServices || []}
                 />
               </>
             )}
@@ -746,7 +768,7 @@ export default function PortfolioBuilder() {
             {form.watch("layout") === "timeline-storyteller" && (
               <>
                 {console.log("Timeline Storyteller - Education data being passed:", userEducations)}
-                {console.log("Timeline Storyteller - Services data being passed:", services)}
+                {console.log("Timeline Storyteller - Services data being passed:", userServices)}
                 <TimelineStoryteller 
                   userInfo={{
                     name: userInfo.name,
@@ -763,7 +785,7 @@ export default function PortfolioBuilder() {
                   userExperiences={userExperiences || []}
                   userProjects={userProjects}
                   userEducations={userEducations || []}
-                  userServices={services || []}
+                  userServices={userServices || []}
                 />
               </>
             )}
@@ -784,6 +806,8 @@ export default function PortfolioBuilder() {
                 userSkills={userSkills || []}
                 userExperiences={userExperiences || []}
                 userProjects={userProjects || []}
+                userEducations={userEducations || []}
+                userServices={userServices || []}
               />
             )}
             
@@ -840,9 +864,9 @@ export default function PortfolioBuilder() {
                       lookingFor: userData?.lookingFor || '',
                       jobLevel: userData?.jobLevel || ''
                     }}
-                    userSkills={skills || []}
-                    userServices={services || []}
-                    userProjects={projects?.map(p => ({
+                    userSkills={userSkills || []}
+                    userServices={userServices || []}
+                    userProjects={userProjects?.map(p => ({
                       id: p.id,
                       title: p.title,
                       description: p.description,

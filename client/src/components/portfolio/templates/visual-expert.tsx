@@ -1,9 +1,9 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ProfileImage } from "@/components/ui/profile-image";
-import { Project, Skill, WorkExperience } from "@shared/schema";
+import { Education, Project, Service, Skill, WorkExperience } from "@shared/schema";
 import { useEffect } from "react";
-import { Mail, Linkedin, Instagram, Camera, Film, ExternalLink, Calendar, Eye } from "lucide-react";
+import { Mail, Linkedin, Instagram, Camera, Film, ExternalLink, Calendar, Eye, BookOpen, Wallet } from "lucide-react";
 
 interface VisualExpertProps {
   userInfo: {
@@ -20,15 +20,38 @@ interface VisualExpertProps {
   userSkills: Skill[];
   userExperiences: WorkExperience[];
   userProjects: Project[];
+  userEducations?: Education[];
+  userServices?: Service[];
 }
 
-export default function VisualExpert({ userInfo, userSkills, userExperiences, userProjects }: VisualExpertProps) {
+export default function VisualExpert({ 
+  userInfo, 
+  userSkills, 
+  userExperiences, 
+  userProjects,
+  userEducations = [],
+  userServices = []
+}: VisualExpertProps) {
+  // Debug logs
+  console.log("VisualExpert received services data:", userServices);
+  console.log("userServices type:", typeof userServices, Array.isArray(userServices), userServices?.length);
+  
   // Sort skills by proficiency
   const sortedSkills = [...userSkills].sort((a, b) => (b.proficiency || 0) - (a.proficiency || 0));
   
   // Sort projects by date (most recent first)
   const sortedProjects = [...userProjects].sort((a, b) => 
     new Date(b.startDate || '').getTime() - new Date(a.startDate || '').getTime()
+  );
+  
+  // Sort educations by date (most recent first)
+  const sortedEducations = [...userEducations].sort((a, b) => 
+    new Date(b.startDate || '').getTime() - new Date(a.startDate || '').getTime()
+  );
+  
+  // Sort services by title
+  const sortedServices = [...userServices].sort((a, b) => 
+    (a.title || '').localeCompare(b.title || '')
   );
   
   // Initialize animations and styles on component mount
@@ -380,6 +403,91 @@ export default function VisualExpert({ userInfo, userSkills, userExperiences, us
                     <p className="text-white" style={{ fontFamily: "Jost, sans-serif" }}>Creative Direction</p>
                   </div>
                 </div>
+              </div>
+            )}
+          </div>
+        </div>
+        
+        {/* Education Section */}
+        <div className="mb-16 fade-in">
+          <h2 className="text-[#FFFFFF] text-3xl mb-8 section-title">
+            Education
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {sortedEducations.length > 0 ? (
+              sortedEducations.slice(0, 4).map((edu) => (
+                <div key={edu.id} className="bg-[#232323] p-6 rounded-md fade-in hover:border-l-2 hover:border-[#EC7063] transition-all duration-300">
+                  <div className="flex justify-between items-start mb-3">
+                    <h3 className="text-[#EC7063] text-lg font-bold" style={{ fontFamily: "Playfair Display, serif" }}>
+                      {edu.degree}
+                    </h3>
+                    <Badge className="bg-[#181818] text-[#F8C471] border border-[#F8C471]">
+                      {edu.startDate.substring(0, 4)}
+                      {edu.endDate ? `-${edu.endDate.substring(0, 4)}` : '-Present'}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <BookOpen className="h-4 w-4 text-white/70" />
+                    <p className="text-white text-sm" style={{ fontFamily: "Jost, sans-serif" }}>
+                      {edu.institution} {edu.location && `· ${edu.location}`}
+                    </p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              // Alternative content when no education entries
+              <div className="col-span-2 bg-[#232323] p-8 rounded-md text-center">
+                <BookOpen className="h-12 w-12 text-[#EC7063]/50 mx-auto mb-4" />
+                <p className="text-[#FFFFFF]/50" style={{ fontFamily: "Jost, sans-serif" }}>
+                  Your education details will appear here
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+        
+        {/* Services Section */}
+        <div className="mb-16 fade-in">
+          <h2 className="text-[#FFFFFF] text-3xl mb-8 section-title">
+            Services
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {sortedServices.length > 0 ? (
+              sortedServices.slice(0, 6).map((service) => (
+                <div key={service.id} className="bg-[#232323] p-6 rounded-md fade-in hover:shadow-lg hover:shadow-[#F8C471]/10 transition-all duration-300 flex flex-col">
+                  <h3 className="text-[#F8C471] text-lg font-bold mb-2" style={{ fontFamily: "Playfair Display, serif" }}>
+                    {service.title}
+                  </h3>
+                  
+                  {service.description && (
+                    <p className="text-white/70 text-sm mb-4 flex-grow" style={{ fontFamily: "Jost, sans-serif" }}>
+                      {service.description}
+                    </p>
+                  )}
+                  
+                  <div className="flex items-center justify-between mt-auto pt-4 border-t border-white/10">
+                    <Badge className="bg-[#181818] border border-[#F8C471]/50 text-[#F8C471]" style={{ fontFamily: "Jost, sans-serif" }}>
+                      {service.category}
+                    </Badge>
+                    
+                    <div className="flex items-center gap-2">
+                      <Wallet className="h-4 w-4 text-[#EC7063]" />
+                      <span className="text-white text-sm font-semibold" style={{ fontFamily: "Jost, sans-serif" }}>
+                        {service.isHourly ? 'Hourly' : 'Fixed'}: ${service.priceUsd}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              // Alternative content when no services
+              <div className="col-span-3 bg-[#232323] p-8 rounded-md text-center">
+                <Wallet className="h-12 w-12 text-[#F8C471]/50 mx-auto mb-4" />
+                <p className="text-[#FFFFFF]/50" style={{ fontFamily: "Jost, sans-serif" }}>
+                  Your service offerings will appear here
+                </p>
               </div>
             )}
           </div>
