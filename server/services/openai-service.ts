@@ -79,7 +79,29 @@ export async function generateCareerAdvice(userProfile: {
         break;
       case "switch_industry":
         adviceTypeText = "switching industries";
-        specificPrompt = `Focus on strategies for transitioning from ${userIndustry} to other industries. Identify 3-4 potential target industries where ${userName}'s skills would be transferable, and provide specific advice for making the switch.`;
+        specificPrompt = `Perform a detailed analysis of ${userName}'s profile for industry transition, considering these 10 key factors:
+
+1. Transferable Skills Mapping: Analyze both hard and soft skills from ${userIndustry} and identify industries where these skills are in high demand.
+
+2. Industry Overlaps: Identify 3-4 industries with operational, functional, or technological overlap with ${userIndustry} (e.g., IT services → Fintech, EdTech, HealthTech).
+
+3. Growth & Opportunity Analysis: Suggest rapidly growing industries or those with hiring gaps, focusing on future-proof sectors like AI, Green Tech, Cybersecurity, and Creator Economy.
+
+4. Job Role Flexibility: Recommend industries where ${userName}'s current role exists or can evolve (e.g., "${userTitle} in ${userIndustry}" → similar role in new industry).
+
+5. Learning Curve & Effort: Evaluate how much upskilling would be required for different industries, suggesting those with smoother transitions.
+
+6. Network Access: Assess if ${userName} likely has connections or previous exposure in potential new industries based on their background.
+
+7. Career Goal Alignment: Compare their current profile with potential industries that align with typical career progression.
+
+8. Previous Cross-Industry Experience: Check if there's evidence of past work or certifications that indicate partial experience in other industries.
+
+9. Behavioral Traits & Passion Areas: Infer from their profile possible passion areas and matching industries.
+
+10. Feasibility & Practical Fit: Consider practical factors like location (${userLocation}), typical salary expectations, job availability, and any potential cultural fit.
+
+After this analysis, provide specific advice for making the transition to 3-4 recommended industries.`;
         break;
       case "build_skills":
         adviceTypeText = "building core skills for future roles";
