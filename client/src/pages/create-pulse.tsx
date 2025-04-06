@@ -91,12 +91,12 @@ export default function CreatePulsePage() {
               </Card>
 
               <Card 
-                className={`cursor-pointer transition-all hover:shadow-md ${pulseType === 'image-post' ? 'ring-2 ring-primary' : ''}`}
-                onClick={() => setPulseType('image-post')}
+                className={`cursor-pointer transition-all hover:shadow-md ${pulseType === 'project-post' ? 'ring-2 ring-primary' : ''}`}
+                onClick={() => setPulseType('project-post')}
               >
                 <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                  <Image className={`h-10 w-10 mb-2 ${pulseType === 'image-post' ? 'text-primary' : 'text-gray-500'}`} />
-                  <h3 className="font-medium">Image Post</h3>
+                  <Image className={`h-10 w-10 mb-2 ${pulseType === 'project-post' ? 'text-primary' : 'text-gray-500'}`} />
+                  <h3 className="font-medium">Project Post</h3>
                   <p className="text-xs text-gray-500 mt-1">Portfolio & project visuals</p>
                 </CardContent>
               </Card>
@@ -124,10 +124,10 @@ export default function CreatePulsePage() {
                   </Alert>
                 )}
 
-                {pulseType === 'image-post' && (
+                {pulseType === 'project-post' && (
                   <Alert className="mb-6 bg-emerald-50 border-emerald-200">
                     <Image className="h-4 w-4 text-emerald-500" />
-                    <AlertTitle className="text-emerald-700">Image Pulse</AlertTitle>
+                    <AlertTitle className="text-emerald-700">Project Pulse</AlertTitle>
                     <AlertDescription className="text-emerald-600">
                       Share portfolio/project visuals, infographics, or professional event photos with your network.
                     </AlertDescription>
@@ -254,11 +254,11 @@ export default function CreatePulsePage() {
                   </form>
                 )}
 
-                {pulseType === 'image-post' && (
+                {pulseType === 'project-post' && (
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 flex flex-col items-center justify-center text-center">
                       <Image className="h-12 w-12 text-gray-400 mb-4" />
-                      <h3 className="font-medium text-lg mb-2">Upload Images</h3>
+                      <h3 className="font-medium text-lg mb-2">Upload Project Images</h3>
                       <p className="text-sm text-gray-500 mb-4">
                         Drag and drop up to 5 images here, or click to browse.<br />
                         Supported formats: JPG, PNG, WebP, GIF
@@ -270,18 +270,18 @@ export default function CreatePulsePage() {
                       <p className="text-xs text-gray-400">Max file size: 20 MB per image</p>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="image-title">Title</Label>
+                      <Label htmlFor="project-title">Project Title</Label>
                       <Input
-                        id="image-title"
-                        placeholder="Add a caption for your images"
+                        id="project-title"
+                        placeholder="Add a title for your project"
                         required
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="image-description">Description</Label>
+                      <Label htmlFor="project-description">Description</Label>
                       <Textarea
-                        id="image-description"
-                        placeholder="Add context or details about your images..."
+                        id="project-description"
+                        placeholder="Add context or details about your project..."
                         className="min-h-[100px]"
                       />
                     </div>
@@ -296,7 +296,7 @@ export default function CreatePulsePage() {
                     </div>
                     <div className="flex justify-end">
                       <Button className="px-6">
-                        Upload & Publish Images
+                        Upload & Publish Project
                       </Button>
                     </div>
                   </form>
