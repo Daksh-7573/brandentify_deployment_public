@@ -196,16 +196,9 @@ export class MemStorage implements IStorage {
     // Clear any existing work experiences, education, and skills for the demo user
     this.clearDemoDataMaps();
     
-    // Add just minimal placeholder skills (no default work experience or education)
-    const skill1: Skill = {
-      id: 1,
-      userId: 1,
-      name: "Communication",
-      level: "Intermediate",
-      proficiency: 70
-    };
-    this.skills.set(skill1.id, skill1);
-    this.currentSkillId++;
+    // No pre-created skills either
+    // Skills will be added by the user as needed
+    this.currentSkillId = 1;
     
     // Create default portfolio for the demo user
     const demoPortfolio: Portfolio = {
@@ -218,7 +211,7 @@ export class MemStorage implements IStorage {
       isPublished: false,
       publicUrl: null,
       featuredProjects: [],
-      featuredSkills: [1], // Reference to the skill created above
+      featuredSkills: [], // No featured skills yet
       featuredExperiences: [],
       createdAt: new Date(),
       updatedAt: new Date()
@@ -248,15 +241,7 @@ export class MemStorage implements IStorage {
     this.currentSkillId = 1;
     this.currentPortfolioId = 1;
     
-    // Initialize with minimal data (just one skill)
-    const skill1: Skill = {
-      id: 1,
-      userId: 1,
-      name: "Basic Skills",
-      level: "Beginner",
-      proficiency: 50
-    };
-    this.skills.set(skill1.id, skill1);
+    // No pre-created skills
     
     // Create a default portfolio for the demo user
     const portfolio: Portfolio = {
@@ -269,7 +254,7 @@ export class MemStorage implements IStorage {
       isPublished: false,
       publicUrl: null,
       featuredProjects: [],
-      featuredSkills: [1], // Reference to the skill created above
+      featuredSkills: [], // No featured skills
       featuredExperiences: [],
       createdAt: new Date(),
       updatedAt: new Date()
