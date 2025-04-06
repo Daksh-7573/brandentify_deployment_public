@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Loader2, Send, Sparkles, Lightbulb, BookOpen, BarChart, LucideIcon, Bot, UserRound, CheckCircle2 } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
+import { Loader2, Send, Sparkles, Lightbulb, BookOpen, BarChart, LucideIcon } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -16,26 +15,6 @@ import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import Sidebar from "@/components/layout/sidebar";
 import Header from "@/components/layout/header";
-import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
-import remarkGfm from 'remark-gfm';
-
-// Simple hash function to generate a hash from a string
-// This is used to detect if content has changed between renders
-function hashString(str: string): string {
-  let hash = 0;
-  if (str.length === 0) return hash.toString();
-  
-  for (let i = 0; i < Math.min(str.length, 1000); i++) {
-    const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash; // Convert to 32bit integer
-  }
-  
-  return hash.toString();
-}
-
-// The hashString function is declared earlier
 
 export default function AICareerPage() {
   // Hooks
@@ -44,6 +23,7 @@ export default function AICareerPage() {
   const [_, setLocation] = useLocation();
   
   // Form states
+  const [resumeText, setResumeText] = useState("");
   const [activeTab, setActiveTab] = useState("career");
   const [careerAdviceType, setCareerAdviceType] = useState<string>("");
   const [customAdviceText, setCustomAdviceText] = useState<string>("");
@@ -111,10 +91,6 @@ export default function AICareerPage() {
       if (!user?.id) {
         throw new Error("User ID not found");
       }
-      
-      // Debug log to see what's being sent
-      console.log("Sending career advice request with type:", careerAdviceType);
-      
       const res = await apiRequest("POST", "/api/ai/career-advice", {
         userId: user.id,
         adviceType: careerAdviceType,
@@ -159,7 +135,7 @@ export default function AICareerPage() {
 
   // Resume analysis mutation
   const resumeAnalysisMutation = useMutation({
-    mutationFn: async (data: { fileData: string; userId: number }) => {
+    mutationFn: async (data: { resumeText?: string; fileData?: string; userId: number }) => {
       const res = await apiRequest("POST", "/api/ai/analyze-resume", data);
       return res.json();
     },
@@ -174,61 +150,23 @@ export default function AICareerPage() {
           queryKey: ["/api/users", user.id, "chat-messages"]
         });
       }
+      
+      setResumeText("");
     },
-    onError: (error: any) => {
-      const isApiKeyMissing = error.message?.includes("API key");
-      const isTokenLimitError = error.response?.status === 413 || 
-                               (error.response?.data?.error === "TOKEN_LIMIT_EXCEEDED");
+    onError: (error: Error) => {
+      const isApiKeyMissing = error.message.includes("API key");
       
       toast({
         title: "Error analyzing resume",
         description: isApiKeyMissing 
           ? "OpenAI API key is missing. Please check your environment variables."
-          : isTokenLimitError
-            ? "Your resume is too large for our AI analysis. Please try with a shorter text (2500 characters or less)."
-            : "Failed to analyze resume. Please try again later.",
+          : "Failed to analyze resume. Please try again later.",
         variant: "destructive"
       });
     }
   });
-  
-  // Clear resume analysis mutation
-  const clearResumeAnalysisMutation = useMutation({
-    mutationFn: async () => {
-      if (!user?.id) {
-        throw new Error("User ID not found");
-      }
-      
-      // Delete all resume analysis messages for this user
-      const res = await apiRequest("POST", "/api/chat-messages", {
-        userId: user.id,
-        content: "Resume analysis was cleared by the user",
-        messageType: "system_notification",
-        sender: "system",
-        clearExistingType: "resume_analysis" // This is a special flag for the server to clear messages of this type
-      });
-      return res.json();
-    },
-    onSuccess: () => {
-      toast({
-        title: "Resume analysis cleared",
-        description: "Your resume analysis has been cleared."
-      });
-      
-      if (user?.id) {
-        queryClient.invalidateQueries({
-          queryKey: ["/api/users", user.id, "chat-messages"]
-        });
-      }
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error clearing resume analysis",
-        description: "Failed to clear resume analysis. Please try again.",
-        variant: "destructive"
-      });
-    }
-  });
+
+  // We've removed the networking recommendations mutation
 
   // Get recent AI messages for display based on active tab
   const getRecentAIMessages = (messageType?: string) => {
@@ -318,11 +256,15 @@ export default function AICareerPage() {
           <div className="mx-auto max-w-6xl">
             <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">AI Career Assistant</h1>
       
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-              <div className="lg:col-span-1">
+            <div className="grid grid-cols-1 gap-6">
+              <div className="w-full">
                 <Tabs defaultValue="career" className="w-full" onValueChange={(value) => {
-                    // Update active tab
+                    // Update active tab and reset appropriate state
                     setActiveTab(value);
+                    
+                    if (value === 'resume') {
+                      setResumeText("");
+                    }
                   }}>
                   <TabsList className="grid w-full grid-cols-2 mb-4">
                     <TabsTrigger value="career">Career Advice</TabsTrigger>
@@ -333,8 +275,8 @@ export default function AICareerPage() {
                     <Card className="p-4 sm:p-6">
                       <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Get Career Advice</h2>
                       <p className="text-sm text-muted-foreground mb-4">
-                        Generate personalized career advice based on your profile. 
-                        We'll analyze your work experience, skills, and education to provide tailored recommendations.
+                        Get personalized career advice from Musk, your AI career assistant. 
+                        Choose a topic below and Musk will analyze your profile to provide tailored guidance and answer your follow-up questions.
                       </p>
                       
                       <div className="space-y-4">
@@ -407,7 +349,7 @@ export default function AICareerPage() {
                           {careerAdviceMutation.isPending && (
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                           )}
-                          Generate Career Advice
+                          Chat with Musk about Your Career
                         </Button>
                       </div>
                     </Card>
@@ -417,15 +359,12 @@ export default function AICareerPage() {
                     <Card className="p-4 sm:p-6">
                       <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Resume Analysis</h2>
                       <p className="text-sm text-muted-foreground mb-4">
-                        Get AI-powered resume analysis with improvement suggestions by Musk.
-                        Upload your resume file to get started.
+                        Upload your resume file to get AI-powered analysis with suggestions for improvement by Musk.
                       </p>
                       
                       {/* File Upload Section */}
                       <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-primary transition-colors">
                         <div className="flex flex-col items-center">
-                          <p className="text-sm text-gray-500 mb-2">Upload Resume File</p>
-                          <p className="text-xs text-gray-400 mb-3">Supported formats: PDF, DOCX (Max 5MB)</p>
                           <input 
                             id="resume-file-input"
                             type="file" 
@@ -472,59 +411,22 @@ export default function AICareerPage() {
                                   }
                                   
                                   try {
-                                    if (!user?.id) {
-                                      throw new Error("User ID not found");
-                                    }
-                                    
                                     // Set loading state
-                                    toast({
-                                      title: "Processing resume",
-                                      description: "Your resume is being analyzed. This may take up to 30 seconds.",
-                                    });
-                                    
-                                    // Add a timeout to prevent UI from being stuck if the request takes too long
-                                    const timeoutMs = 65000; // 65 seconds - slightly higher than server-side timeout of 60 seconds
-                                    const timeoutPromise = new Promise((_, reject) => {
-                                      setTimeout(() => {
-                                        reject(new Error("Request timed out. Please try again later."));
-                                      }, timeoutMs);
-                                    });
-                                    
-                                    // Create the main request promise
-                                    const analysisPromise = resumeAnalysisMutation.mutateAsync({ 
+                                    resumeAnalysisMutation.mutate({ 
                                       fileData: base64Data, 
-                                      userId: user.id 
+                                      userId: user?.id || 0 
                                     } as any);
                                     
-                                    // Use Promise.race to handle potential timeouts
-                                    await Promise.race([analysisPromise, timeoutPromise]).catch(error => {
-                                      if (error.message?.includes("timed out")) {
-                                        // For timeout errors, update the toast with a more helpful message
-                                        toast({
-                                          title: "Process taking longer than expected",
-                                          description: "The analysis is taking longer than anticipated. Please try again later.",
-                                          variant: "destructive",
-                                          duration: 6000
-                                        });
-                                        
-                                        // Abort the mutation if it's still pending
-                                        if (resumeAnalysisMutation.isPending) {
-                                          // We can't actually abort the API request, but we can set UI state correctly
-                                          console.log("Resume analysis request timed out");
-                                        }
-                                        
-                                        throw error;
-                                      }
-                                      throw error;
+                                    toast({
+                                      title: "Processing resume",
+                                      description: "Your resume is being analyzed. This may take a moment."
                                     });
-                                    
                                   } catch (error) {
                                     console.error('Error analyzing resume file:', error);
                                     toast({
                                       title: "Analysis failed",
-                                      description: "We couldn't analyze your resume. Please try again later.",
-                                      variant: "destructive",
-                                      duration: 5000
+                                      description: error instanceof Error ? error.message : "Failed to analyze resume. Please try again.",
+                                      variant: "destructive"
                                     });
                                   }
                                 };
@@ -532,13 +434,15 @@ export default function AICareerPage() {
                                 fileReader.onerror = () => {
                                   toast({
                                     title: "Upload failed",
-                                    description: "Failed to read file. Please try again with a different file.",
+                                    description: "Failed to read file. Please try again.",
                                     variant: "destructive"
                                   });
                                 };
                               }
                             }}
                           />
+                          <p className="text-sm text-gray-500 mb-2">Upload your resume file</p>
+                          <p className="text-xs text-gray-400 mb-3">Supported formats: PDF, DOCX (Max 5MB)</p>
                           <Button 
                             variant="outline" 
                             className="cursor-pointer"
@@ -556,6 +460,8 @@ export default function AICareerPage() {
                       </div>
                     </Card>
                   </TabsContent>
+                  
+
                 </Tabs>
               </div>
               
@@ -591,186 +497,290 @@ export default function AICareerPage() {
                     return (
                       <div className="text-center py-10 sm:py-14 border rounded-lg bg-muted/10 flex flex-col items-center">
                         {activeTab === "career" ? (
-                          <>
-                            <BarChart className="h-10 w-10 text-muted-foreground mb-4" />
-                            <h3 className="text-lg font-medium mb-2">No Career Insights Yet</h3>
-                            <p className="text-sm text-muted-foreground max-w-md">
-                              Use the career advice tool to get personalized insights based on your profile and career goals.
-                            </p>
-                          </>
+                          <div className="bg-primary/10 rounded-full p-3 mb-4">
+                            <BarChart className="h-7 w-7 text-primary" />
+                          </div>
                         ) : (
-                          <>
-                            <BookOpen className="h-10 w-10 text-muted-foreground mb-4" />
-                            <h3 className="text-lg font-medium mb-2">No Resume Analysis Yet</h3>
-                            <p className="text-sm text-muted-foreground max-w-md">
-                              Upload your resume to get AI-powered analysis with suggestions for improvements.
-                            </p>
-                          </>
+                          <div className="bg-primary/10 rounded-full p-3 mb-4">
+                            <BookOpen className="h-7 w-7 text-primary" />
+                          </div>
                         )}
+                        <h3 className="text-base sm:text-lg font-medium">No AI insights yet</h3>
+                        <p className="text-sm text-muted-foreground mt-2 max-w-md mx-auto">
+                          {activeTab === "career" ? 
+                            "Choose a career advice topic from the menu on the left to start a conversation with Musk." :
+                            "Upload your resume to get AI-powered analysis and improvement suggestions."}
+                        </p>
+                        <div className="mt-6">
+                          <Button 
+                            size="sm"
+                            variant="outline"
+                            className="flex items-center gap-2"
+                            onClick={() => {
+                              if (activeTab === "resume") {
+                                document.getElementById('resume-file-input')?.click();
+                              }
+                            }}
+                          >
+                            <Sparkles className="h-4 w-4" />
+                            {activeTab === "career" ? "Select advice type above" : "Upload your resume"}
+                          </Button>
+                        </div>
                       </div>
                     );
                   }
                   
-                  // Display messages
-                  return (
-                    <div className="space-y-4">
-                      {filteredMessages.map((message: any, index: number) => (
-                        <Card key={index} className="p-4 sm:p-6">
-                          <div className="flex items-center gap-2 mb-3">
-                            <Sparkles className="h-5 w-5 text-primary" />
-                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between w-full">
-                              <h3 className="font-medium">{getMessageTypeLabel(message.messageType)}</h3>
+                  // Only show card-style messages if:
+                  // 1. We're on the resume tab, OR
+                  // 2. We're on the career tab but the chat window isn't shown
+                  if (activeTab === "resume" || (activeTab === "career" && !showChatWindow)) {
+                    // If we're on the resume tab, only show the most recent analysis
+                    const messagesToShow = activeTab === "resume" 
+                      ? [filteredMessages[0]] // Only the first/most recent resume analysis
+                      : filteredMessages;     // All career advice messages
+                    
+                    return (
+                      <div className="space-y-4 sm:space-y-6">
+                        {messagesToShow.map((message: any) => (
+                          <Card key={message.id} className="p-4 sm:p-6 overflow-hidden border border-gray-100 shadow-md">
+                            <div className="flex justify-between items-start mb-3 sm:mb-4">
                               <div className="flex items-center gap-2">
-                                <span className="text-xs text-muted-foreground">
-                                  {formatTimestamp(message.timestamp)}
-                                </span>
-                                
-                                {/* Clear button for resume analysis */}
-                                {message.messageType === "resume_analysis" && (
-                                  <Button 
-                                    variant="outline" 
-                                    size="sm" 
-                                    onClick={() => clearResumeAnalysisMutation.mutate()}
-                                    disabled={clearResumeAnalysisMutation.isPending}
-                                    className="border-red-300 hover:bg-red-50 hover:text-red-600 text-red-500 flex items-center gap-1 h-7 text-xs px-2"
-                                  >
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" 
-                                      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                      <path d="M3 6h18"></path>
-                                      <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                                      <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                                    </svg>
-                                    Clear
-                                    {clearResumeAnalysisMutation.isPending && (
-                                      <Loader2 className="ml-1 h-3 w-3 animate-spin" />
-                                    )}
-                                  </Button>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                          
-                          {/* Score visualizations have been removed */}
-                          
-                          <div className="prose prose-sm max-w-none dark:prose-invert prose-headings:font-medium 
-                                        prose-headings:text-foreground prose-strong:font-semibold prose-strong:text-foreground
-                                        prose-code:text-muted-foreground prose-code:font-mono prose-code:bg-muted
-                                        prose-code:rounded prose-code:px-1 prose-code:py-0.5 prose-code:text-sm">
-                            <div className="break-words">
-                              <ReactMarkdown
-                                remarkPlugins={[remarkGfm]}
-                                rehypePlugins={[rehypeRaw]}
-                              >
-                                {message.content}
-                              </ReactMarkdown>
-                            </div>
-                          </div>
-                        </Card>
-                      ))}
-                      
-                      {/* Chat interface for Career Advice */}
-                      {activeTab === "career" && showChatWindow && (
-                        <div className="mt-6 border rounded-lg overflow-hidden">
-                          <div className="bg-muted/25 p-3 border-b">
-                            <div className="flex items-center gap-2">
-                              <Bot className="h-5 w-5 text-primary" />
-                              <span className="font-medium">Chat with Musk</span>
-                            </div>
-                          </div>
-                          
-                          <div 
-                            id="chat-container"
-                            className="bg-background h-96 overflow-y-auto p-4 space-y-4"
-                          >
-                            {chatHistory.map((message, index) => (
-                              <div 
-                                key={index} 
-                                className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"} mb-3`}
-                              >
-                                {message.sender !== "user" && (
-                                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 mr-2">
-                                    <Bot className="h-4 w-4 text-primary" />
-                                  </div>
-                                )}
-                                
-                                <div 
-                                  className={`px-4 py-2 rounded-lg max-w-[75%] ${
-                                    message.sender === "user" 
-                                      ? "bg-primary text-primary-foreground ml-2" 
-                                      : "bg-muted"
-                                  }`}
-                                >
-                                  {message.sender === "user" ? (
-                                    <p>{message.content}</p>
-                                  ) : (
-                                    <div className="break-words prose-sm max-w-none prose-p:mb-1 prose-p:mt-1">
-                                      <ReactMarkdown
-                                        remarkPlugins={[remarkGfm]}
-                                        rehypePlugins={[rehypeRaw]}
-                                      >
-                                        {message.content}
-                                      </ReactMarkdown>
-                                    </div>
-                                  )}
-                                  <div className="text-xs opacity-70 mt-1 text-right">
-                                    {message.timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                                  </div>
+                                <div className="flex items-center justify-center h-8 w-8 rounded-full bg-primary/10">
+                                  <Sparkles className="h-4 w-4 text-primary" />
                                 </div>
-                                
-                                {message.sender === "user" && (
-                                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 ml-2">
-                                    <UserRound className="h-4 w-4 text-primary" />
+                                <div>
+                                  <h4 className="font-medium text-sm">Musk AI Assistant</h4>
+                                  <p className="text-xs text-muted-foreground">
+                                    {formatTimestamp(message.timestamp)}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="prose prose-sm dark:prose-invert max-w-none overflow-x-auto mt-2">
+                              {message.content.split('\n').map((line: string, i: number) => {
+                                // For main headings
+                                if (line.trim().match(/^#+\s/)) {
+                                  const level = line.trim().match(/^(#+)\s/)?.[1].length || 1;
+                                  const text = line.replace(/^#+\s/, '');
+                                  return (
+                                    <div key={i} className={`font-bold ${level === 1 ? 'text-lg text-primary pb-1 border-b mt-3 mb-2' : 'text-base mt-3 mb-1'}`}>
+                                      {text}
+                                    </div>
+                                  );
+                                } 
+                                // For bullet points
+                                else if (line.trim().startsWith('- ')) {
+                                  return (
+                                    <div key={i} className="flex items-start my-1 ml-1">
+                                      <div className="flex items-center justify-center min-w-[18px] h-[18px] rounded-full bg-primary/10 text-primary mr-2 mt-0.5">
+                                        <div className="h-1.5 w-1.5 rounded-full bg-primary"></div>
+                                      </div>
+                                      <p className="m-0">{line.replace(/^- /, '')}</p>
+                                    </div>
+                                  );
+                                } 
+                                // For empty lines
+                                else if (line.trim() === '') {
+                                  return <div key={i} className="my-2"></div>;
+                                } 
+                                // For normal text
+                                else {
+                                  return <p key={i} className="my-1.5 leading-relaxed">{line}</p>;
+                                }
+                              })}
+                            </div>
+                          </Card>
+                        ))}
+                      </div>
+                    );
+                  }
+                  
+                  // If we're on career tab with chat window shown, don't display the cards
+                  return null;
+                })()}
+                
+                {/* Chat Interface with Musk */}
+                {showChatWindow && activeTab === "career" && (
+                  <div className="mt-6">
+                    <div className="bg-gray-50 border rounded-lg p-4 sm:p-5">
+                      <div className="flex items-center gap-2 mb-4">
+                        <Sparkles className="h-5 w-5 text-primary" />
+                        <h3 className="text-lg font-medium">Ask Follow-up Questions</h3>
+                      </div>
+                      
+                      <div className="space-y-4">
+                        {/* Chat messages - fixed height container */}
+                        <div className="space-y-3 h-[400px] overflow-y-auto p-4 border border-gray-100 rounded-lg bg-gray-50/30 shadow-inner" id="chat-container">
+                          {chatHistory.map((message, index) => (
+                            <div 
+                              key={index} 
+                              className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"} mb-3`}
+                            >
+                              {message.sender !== "user" && (
+                                <div className="flex items-center justify-center w-9 h-9 rounded-full bg-primary/15 mr-2.5 shadow-sm">
+                                  <Sparkles className="h-4.5 w-4.5 text-primary"/>
+                                </div>
+                              )}
+                              <div 
+                                className={`max-w-[85%] p-3.5 rounded-lg ${
+                                  message.sender === "user" 
+                                    ? "bg-primary text-primary-foreground shadow-sm" 
+                                    : "bg-white border border-gray-100 shadow-md"
+                                }`}
+                              >
+                                {message.sender === "user" ? (
+                                  <p className="text-sm break-words">{message.content}</p>
+                                ) : (
+                                  <div className="prose prose-sm dark:prose-invert max-w-none">
+                                    {message.content.split('\n').map((line, i) => {
+                                      // Detect if this is a signature line from Musk
+                                      if (line.includes("Musk, Your Career Partner")) {
+                                        return (
+                                          <div key={i} className="mt-4 pt-3 border-t border-gray-200 text-sm text-primary/80 font-medium flex items-center">
+                                            <Sparkles className="h-4 w-4 mr-2" />
+                                            {line}
+                                          </div>
+                                        );
+                                      }
+                                      // For main headings (# Title)
+                                      else if (line.startsWith('# ')) {
+                                        return (
+                                          <div key={i} className="flex items-center gap-2 text-lg font-bold text-primary mt-5 mb-3 pb-2 border-b">
+                                            <BookOpen className="h-4 w-4 text-primary/80" />
+                                            <span>{line.replace(/^# /, '')}</span>
+                                          </div>
+                                        );
+                                      }
+                                      // For secondary headings (## Subtitle)
+                                      else if (line.startsWith('## ')) {
+                                        return (
+                                          <div key={i} className="flex items-center gap-2 text-base font-semibold mt-4 mb-2 text-foreground/90">
+                                            <Lightbulb className="h-3.5 w-3.5 text-primary/80" />
+                                            <span>{line.replace(/^## /, '')}</span>
+                                          </div>
+                                        );
+                                      }
+                                      // For numbered list items (1. Item, 2. Item, etc.)
+                                      else if (/^\d+\.\s/.test(line)) {
+                                        // Safe extraction of the number with proper null check
+                                        const matchResult = line.match(/^\d+/);
+                                        const number = matchResult && matchResult[0] ? matchResult[0] : "•";
+                                        const text = line.replace(/^\d+\.\s/, '');
+                                        return (
+                                          <div key={i} className="flex items-start my-1.5 pl-1">
+                                            <div className="flex items-center justify-center min-w-[22px] h-[22px] rounded-full bg-primary/10 text-primary text-xs font-medium mr-2">
+                                              {number}
+                                            </div>
+                                            <p className="m-0 mt-0.5">{text}</p>
+                                          </div>
+                                        );
+                                      }
+                                      // For bullet points (- Item)
+                                      else if (line.startsWith('- ')) {
+                                        return (
+                                          <div key={i} className="flex items-start my-1.5 pl-1">
+                                            <div className="flex items-center justify-center min-w-[18px] h-[18px] rounded-full bg-primary/10 text-primary mr-2 mt-0.5">
+                                              <div className="h-1.5 w-1.5 rounded-full bg-primary"></div>
+                                            </div>
+                                            <p className="m-0">{line.replace(/^- /, '')}</p>
+                                          </div>
+                                        );
+                                      }
+                                      // For italic text (*text*)
+                                      else if (line.startsWith('*') && line.endsWith('*')) {
+                                        return (
+                                          <p key={i} className="my-1.5 italic text-muted-foreground pl-1">
+                                            {line.replace(/^\*|\*$/g, '')}
+                                          </p>
+                                        );
+                                      }
+                                      // For empty lines - add spacing
+                                      else if (line.trim() === '') {
+                                        return <div key={i} className="my-2"></div>;
+                                      }
+                                      // For normal text
+                                      else {
+                                        return <p key={i} className="my-1.5 leading-relaxed">{line}</p>;
+                                      }
+                                    })}
                                   </div>
                                 )}
+                                <div className="text-xs mt-1 opacity-70">
+                                  {message.timestamp.toLocaleTimeString([], {
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })}
+                                </div>
                               </div>
-                            ))}
-                          </div>
-                          
-                          <div className="p-3 border-t bg-muted/20">
-                            <form 
-                              className="flex items-end gap-2"
-                              onSubmit={(e) => {
-                                e.preventDefault();
-                                if (!chatMessage.trim()) return;
-                                
-                                // Add user message to chat history
-                                setChatHistory(prev => [...prev, {
-                                  content: chatMessage,
-                                  sender: "user",
-                                  timestamp: new Date()
-                                }]);
-                                
-                                // Send message to AI
-                                chatMessageMutation.mutate(chatMessage);
-                                
-                                // Clear input
-                                setChatMessage("");
-                              }}
-                            >
-                              <Textarea
-                                value={chatMessage}
-                                onChange={(e) => setChatMessage(e.target.value)}
-                                placeholder="Ask a follow-up question..."
-                                className="min-h-[80px] flex-1 resize-none"
-                              />
-                              <Button 
-                                type="submit" 
-                                size="icon" 
-                                className="h-10 w-10"
-                                disabled={!chatMessage.trim() || chatMessageMutation.isPending}
-                              >
-                                {chatMessageMutation.isPending ? 
-                                  <Loader2 className="h-4 w-4 animate-spin" /> : 
-                                  <Send className="h-4 w-4" />
-                                }
-                              </Button>
-                            </form>
-                          </div>
+                            </div>
+                          ))}
                         </div>
-                      )}
+                        
+                        {/* Chat input */}
+                        <div className="relative mt-2">
+                          <div className="border rounded-lg bg-white shadow-sm overflow-hidden focus-within:ring-1 focus-within:ring-primary/50">
+                            <Textarea
+                              value={chatMessage}
+                              onChange={(e) => setChatMessage(e.target.value)}
+                              placeholder="Ask Musk a follow-up question about your career..."
+                              className="resize-none min-h-[80px] pr-14 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none"
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                  e.preventDefault();
+                                  if (chatMessage.trim() && !chatMessageMutation.isPending) {
+                                    // Add user message to chat history
+                                    setChatHistory(prev => [...prev, {
+                                      content: chatMessage,
+                                      sender: "user",
+                                      timestamp: new Date()
+                                    }]);
+                                    
+                                    // Send message to AI
+                                    chatMessageMutation.mutate(chatMessage);
+                                    
+                                    // Clear input
+                                    setChatMessage("");
+                                  }
+                                }
+                              }}
+                            />
+                            <Button 
+                              size="icon" 
+                              className={`h-9 w-9 absolute right-3 bottom-3 rounded-full transition-all ${!chatMessage.trim() ? 'opacity-70' : 'shadow-sm'}`}
+                              onClick={() => {
+                                if (chatMessage.trim() && !chatMessageMutation.isPending) {
+                                  // Add user message to chat history
+                                  setChatHistory(prev => [...prev, {
+                                    content: chatMessage,
+                                    sender: "user",
+                                    timestamp: new Date()
+                                  }]);
+                                  
+                                  // Send message to AI
+                                  chatMessageMutation.mutate(chatMessage);
+                                  
+                                  // Clear input
+                                  setChatMessage("");
+                                }
+                              }}
+                              disabled={!chatMessage.trim() || chatMessageMutation.isPending}
+                            >
+                              {chatMessageMutation.isPending ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <Send className="h-4 w-4" />
+                              )}
+                            </Button>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-1.5 ml-1.5 flex items-center">
+                            <Sparkles className="h-3 w-3 mr-1 text-primary/70" />
+                            Press Enter to send, Shift+Enter for new line
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                  );
-                })()}
+                  </div>
+                )}
               </div>
             </div>
           </div>
