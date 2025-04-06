@@ -49,14 +49,14 @@ export default function Header() {
   const photoURL = userData?.photoURL || user?.photoURL;
 
   return (
-    <nav className="bg-white shadow-sm">
+    <nav className="bg-gradient-to-r from-white to-gray-50 border-b border-gray-100 shadow-sm fixed top-0 left-0 right-0 z-50">
       <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <div className="flex-shrink-0 flex items-center">
               <div className="flex items-center">
                 <span 
-                  className="text-primary text-2xl font-bold cursor-pointer"
+                  className="text-primary text-2xl font-bold cursor-pointer bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/80"
                   onClick={() => setLocation('/dashboard')}
                 >
                   Brandentifier
@@ -69,31 +69,38 @@ export default function Header() {
               </div>
             </div>
           </div>
-          <div className="flex items-center">
-            <div className="ml-3 relative">
-              <div>
-                <button 
-                  className="max-w-xs bg-white flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-                  onClick={() => setLocation('/profile')}
-                >
-                  <span className="sr-only">Open user menu</span>
-                  <div className="h-8 w-8 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
-                    <img 
-                      className="h-full w-full object-cover" 
-                      src={photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
-                      alt="User profile"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
-                      }}
-                    />
-                  </div>
-                </button>
-              </div>
+          <div className="flex items-center gap-3">
+            {/* User name */}
+            <span className="text-sm font-medium text-gray-700 hidden md:block">
+              {userData?.name || user?.displayName || "Profile"}
+            </span>
+            
+            {/* User avatar */}
+            <div className="relative">
+              <button 
+                className="max-w-xs flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary/70 transition-all hover:shadow-md"
+                onClick={() => setLocation('/profile')}
+              >
+                <span className="sr-only">Open user menu</span>
+                <div className="h-9 w-9 rounded-full overflow-hidden bg-primary/5 flex items-center justify-center border border-primary/10 shadow-sm">
+                  <img 
+                    className="h-full w-full object-cover" 
+                    src={photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
+                    alt="User profile"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
+                    }}
+                  />
+                </div>
+              </button>
             </div>
+            
+            {/* Sign out button */}
             <Button 
               variant="ghost" 
-              className="ml-4"
+              size="sm"
+              className="ml-1 px-3 py-1.5 text-sm font-medium hover:bg-gray-100"
               onClick={signOut}
             >
               Sign out

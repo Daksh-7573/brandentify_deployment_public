@@ -18,18 +18,18 @@ export default function Sidebar({ activePage }: SidebarProps) {
   ];
 
   return (
-    <div className="bg-white w-64 border-r border-gray-200 pt-5 pb-4 flex flex-col">
-      <div className="flex items-center flex-shrink-0 px-4">
+    <div className="bg-white w-64 border-r border-gray-200 flex flex-col h-full">
+      <div className="flex items-center flex-shrink-0 px-4 pt-4 pb-2">
         <span className="text-lg font-semibold text-gray-900">Dashboard</span>
       </div>
-      <div className="mt-5 flex-1 flex flex-col overflow-y-auto">
-        <nav className="flex-1 px-2 space-y-1">
+      <div className="flex-1 flex flex-col overflow-y-auto">
+        <nav className="flex-1 px-2 space-y-1 py-2">
           {menuItems.map((item) => (
             <div
               key={item.id}
-              className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md cursor-pointer ${
+              className={`group flex items-center px-3 py-2.5 text-sm font-medium rounded-md cursor-pointer transition-colors ${
                 activePage === item.id
-                  ? "bg-primary-100 text-primary"
+                  ? "bg-primary/10 text-primary"
                   : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
               }`}
               onClick={() => setLocation(item.path)}
