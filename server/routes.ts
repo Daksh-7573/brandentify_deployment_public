@@ -1524,35 +1524,78 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (adviceType === 'industry-switch') {
         return `# Industry Transition Analysis for ${userName}
 
-After conducting a comprehensive analysis of your professional profile, I've evaluated your potential for industry transition across 10 key factors. Here's my assessment:
+After conducting a comprehensive analysis of your professional profile, I've evaluated your potential for industry transition across 10 key factors. Here's my detailed assessment:
 
-## Situation Assessment
+## 1. Transferable Skills Mapping 🔄
 
-Your background provides you with a strong foundation for exploring new industries. The skills you've developed are highly transferable, and several adjacent industries could benefit from your expertise.
+Your hard skills in product management, strategic planning, and team leadership are highly transferable across various industries. Your soft skills in communication, stakeholder management, and problem-solving make you adaptable to different work environments and business contexts.
 
-### Transferable Skills Mapping
-Your hard skills in product management, strategic planning, and team leadership are in high demand across multiple industries. Your soft skills in communication, stakeholder management, and problem-solving are universal assets that translate well to any new sector.
+**Key transferable skills:**
+- Strategic planning and execution
+- Team leadership and management
+- Stakeholder communication
+- Project management methodologies
+- Data analysis and insight generation
 
-### Industry Overlaps
+## 2. Industry Overlaps 🔄
+
 Based on your profile, these industries have significant operational or functional overlap with your current experience:
-- FinTech: Similar technology stack and product development approach
-- HealthTech: Growing demand for professionals who understand user experience and data systems
-- EdTech: Increasing need for product expertise as the sector undergoes digital transformation
-- Green Technology: Emerging field where product development skills are highly valuable
 
-### Growth & Opportunity Analysis
+- **FinTech**: Similar technology stack and product development approach
+- **HealthTech**: Growing demand for professionals who understand user experience and data systems
+- **EdTech**: Increasing need for product expertise as the sector undergoes digital transformation  
+- **Green Technology**: Emerging field where product development skills are highly valuable
+
+## 3. Growth & Opportunity Analysis 📈
+
 Among fast-growing sectors where your skills would be valuable:
-- AI & Machine Learning: Projected 38% annual growth through 2027
-- Cybersecurity: 33% projected job growth over the next decade
-- Green Tech: Expected to grow 25% annually with significant government investment
-- Digital Health: 27% compound annual growth rate expected through 2028
 
-### Learning Curve & Effort Assessment
+- **AI & Machine Learning**: Projected 38% annual growth through 2027
+- **Cybersecurity**: 33% projected job growth over the next decade
+- **Green Tech**: Expected to grow 25% annually with significant government investment
+- **Digital Health**: 27% compound annual growth rate expected through 2028
+
+## 4. Job Role Flexibility 🧩
+
+Your current position could evolve into these roles in new industries:
+
+- **Product Manager in HealthTech** (focusing on patient experience platforms)
+- **Director of Product Strategy in EdTech** (developing learning management systems)
+- **Head of Digital Transformation in Financial Services**
+- **Product Innovation Lead in Sustainability Tech**
+
+## 5. Learning Curve & Effort Assessment 🔁
+
 Industry transition difficulty ranking (1-10, where 10 is most difficult):
-- FinTech: 3/10 (Minimal upskilling required)
-- HealthTech: 5/10 (Some domain-specific knowledge needed)
-- EdTech: 4/10 (Moderate learning curve with familiar technology components)
-- Green Tech: 6/10 (Domain expertise needed but high demand for your underlying skills)
+
+- **FinTech**: 3/10 (Minimal upskilling required)
+- **HealthTech**: 5/10 (Some domain-specific knowledge needed)
+- **EdTech**: 4/10 (Moderate learning curve with familiar technology components)
+- **Green Tech**: 6/10 (Domain expertise needed but high demand for your underlying skills)
+
+## 6. Network Access 🤝
+
+Your professional background likely provides you with some connections to FinTech and EdTech through overlapping technology communities. Brandentifier's Smart Connect feature can help you identify existing connections in your target industries and suggest strategic networking opportunities to build presence in sectors where your network is currently limited.
+
+## 7. Career Goal Alignment 🧭
+
+The industries I've highlighted align well with typical career progression paths for someone with your background. FinTech and HealthTech particularly offer clear advancement opportunities for product leaders.
+
+## 8. Previous Cross-Industry Experience 🔄
+
+Your portfolio suggests you've already worked on projects that crossed industry boundaries, which demonstrates adaptability and will make your transition more credible to potential employers.
+
+## 9. Behavioral Traits & Passion Areas 🧠
+
+Your profile indicates strength in innovation and problem-solving, which matches well with emerging technologies in healthcare and education. Your analytical approach would be particularly valuable in data-heavy sectors like FinTech.
+
+## 10. Feasibility & Practical Fit ✅
+
+Considering practical factors:
+- **Geographic accessibility**: All recommended industries have strong presence in major tech hubs
+- **Salary expectations**: Comparable or higher compensation in all suggested industries  
+- **Work-life balance**: Varies by company, with EdTech typically offering better balance than FinTech
+- **Cultural fit**: Your adaptability suggests you could thrive in any of these environments
 
 ## Immediate Action Steps
 
