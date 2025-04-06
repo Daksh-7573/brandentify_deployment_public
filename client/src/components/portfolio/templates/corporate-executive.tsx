@@ -385,11 +385,11 @@ export default function CorporateExecutive({ userInfo, userSkills, userExperienc
                         {service.description}
                       </p>
                       
-                      {service.features && Array.isArray(JSON.parse(service.features as string)) && JSON.parse(service.features as string).length > 0 && (
+                      {service.features && ((typeof service.features === 'string' && service.features.trim() !== '' && JSON.parse(service.features).length > 0) || (Array.isArray(service.features) && service.features.length > 0)) && (
                         <div className="mt-3">
                           <p className="text-white text-xs uppercase mb-2" style={{ fontFamily: "IBM Plex Sans, sans-serif" }}>Service Includes:</p>
                           <div className="grid grid-cols-1 gap-1">
-                            {JSON.parse(service.features as string).map((feature: string, featureIndex: number) => (
+                            {(typeof service.features === 'string' ? JSON.parse(service.features) : service.features).map((feature: string, featureIndex: number) => (
                               <div key={featureIndex} className="flex items-center">
                                 <div className="w-1.5 h-1.5 rounded-full bg-[#DAA520] mr-2"></div>
                                 <span className="text-[#EAEAEA]/80 text-sm" style={{ fontFamily: "IBM Plex Sans, sans-serif" }}>{feature}</span>
