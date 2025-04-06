@@ -827,6 +827,7 @@ export default function PortfolioBuilder() {
                 userSkills={userSkills || []}
                 userExperiences={userExperiences || []}
                 userProjects={userProjects || []}
+                userServices={userServices || []}
               />
             )}
             

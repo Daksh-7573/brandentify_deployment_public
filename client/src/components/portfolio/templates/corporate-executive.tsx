@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ProfileImage } from "@/components/ui/profile-image";
-import { Project, Skill, WorkExperience } from "@shared/schema";
+import { Project, Service, Skill, WorkExperience } from "@shared/schema";
 import { useEffect } from "react";
 import { Mail, Linkedin, Phone, Award, Briefcase, Building, User, ArrowRight, Quote, ChevronRight, Star } from "lucide-react";
 
@@ -20,9 +20,10 @@ interface CorporateExecutiveProps {
   userSkills: Skill[];
   userExperiences: WorkExperience[];
   userProjects: Project[];
+  userServices: Service[];
 }
 
-export default function CorporateExecutive({ userInfo, userSkills, userExperiences, userProjects }: CorporateExecutiveProps) {
+export default function CorporateExecutive({ userInfo, userSkills, userExperiences, userProjects, userServices = [] }: CorporateExecutiveProps) {
   // Sort skills by proficiency
   const sortedSkills = [...userSkills].sort((a, b) => (b.proficiency || 0) - (a.proficiency || 0));
   
@@ -357,6 +358,67 @@ export default function CorporateExecutive({ userInfo, userSkills, userExperienc
                       cultivating key partnerships, and ensuring sustainable business performance.
                     </p>
                     <div className="h-px w-full bg-[#EAEAEA]/10 mt-4"></div>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            {/* Professional Services */}
+            <div className="mb-8 fade-in">
+              <h2 className="text-xl text-white mb-6 section-title" style={{ fontFamily: "EB Garamond, serif" }}>
+                Professional Services
+              </h2>
+              
+              <div className="grid grid-cols-1 gap-6 mt-6">
+                {userServices.length > 0 ? (
+                  userServices.map((service, index) => (
+                    <div key={service.id} className="bg-[#0E223A] p-5 border border-[#EAEAEA]/10 rounded-lg slide-in" style={{ animationDelay: `${0.2 * index}s` }}>
+                      <div className="flex justify-between items-start mb-2">
+                        <h3 className="text-[#DAA520] font-medium" style={{ fontFamily: "IBM Plex Sans, sans-serif" }}>
+                          {service.title}
+                        </h3>
+                        <Badge className="bg-[#DAA520]/10 text-[#DAA520] border-[#DAA520] hover:bg-[#DAA520]/20">
+                          {service.category}
+                        </Badge>
+                      </div>
+                      <p className="text-[#EAEAEA]/80 text-sm mb-3" style={{ fontFamily: "IBM Plex Sans, sans-serif" }}>
+                        {service.description}
+                      </p>
+                      
+                      {service.features && Array.isArray(JSON.parse(service.features as string)) && JSON.parse(service.features as string).length > 0 && (
+                        <div className="mt-3">
+                          <p className="text-white text-xs uppercase mb-2" style={{ fontFamily: "IBM Plex Sans, sans-serif" }}>Service Includes:</p>
+                          <div className="grid grid-cols-1 gap-1">
+                            {JSON.parse(service.features as string).map((feature: string, featureIndex: number) => (
+                              <div key={featureIndex} className="flex items-center">
+                                <div className="w-1.5 h-1.5 rounded-full bg-[#DAA520] mr-2"></div>
+                                <span className="text-[#EAEAEA]/80 text-sm" style={{ fontFamily: "IBM Plex Sans, sans-serif" }}>{feature}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {(service.priceUsd || service.priceInr) && (
+                        <div className="mt-3 pt-2 border-t border-[#EAEAEA]/10">
+                          <p className="text-[#DAA520] text-sm font-medium" style={{ fontFamily: "IBM Plex Sans, sans-serif" }}>
+                            {service.priceUsd && `$${service.priceUsd}`}
+                            {service.priceUsd && service.priceInr && ' / '}
+                            {service.priceInr && `₹${service.priceInr}`}
+                            {service.isHourly && ' per hour'}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <div className="bg-[#0E223A] p-5 border border-[#EAEAEA]/10 rounded-lg slide-in">
+                    <h3 className="text-[#DAA520] font-medium mb-2" style={{ fontFamily: "IBM Plex Sans, sans-serif" }}>
+                      Strategic Consulting
+                    </h3>
+                    <p className="text-[#EAEAEA]/80 text-sm" style={{ fontFamily: "IBM Plex Sans, sans-serif" }}>
+                      Providing high-level strategic guidance to help businesses navigate complex challenges and capitalize on growth opportunities.
+                    </p>
                   </div>
                 )}
               </div>
