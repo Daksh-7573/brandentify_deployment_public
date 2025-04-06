@@ -1491,12 +1491,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error generating AI career advice:", error);
       
+      // Get user data for fallback content
+      let userData = null;
+      try {
+        if (req.body.userId) {
+          userData = await storage.getUser(req.body.userId);
+        }
+      } catch (userError) {
+        console.log("Error fetching user for fallback:", userError);
+      }
+      
       // DEMO FALLBACK: Provide fallback content when API services fail
       console.log("Generating fallback advice with type:", req.body.adviceType);
       
       const demoAdvice = generateDemoCareerAdvice({ 
         adviceType: req.body.adviceType, 
-        user: user 
+        user: userData 
       });
       
       console.log("Fallback advice type used:", req.body.adviceType);
