@@ -1383,7 +1383,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
         
         console.log(`[POST /chat-messages] AI message saved with ID: ${aiMessage.id}`);
-        res.status(201).json({ userMessage: message, aiMessage });
+        // Include the actual AI response content in the response for immediate display
+        res.status(201).json({ 
+          userMessage: message, 
+          aiMessage,
+          aiResponse: aiResponse // Add this field for the frontend to use
+        });
       } else {
         console.log(`[POST /chat-messages] Non-user message, returning directly`);
         res.status(201).json(message);
