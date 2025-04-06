@@ -1,9 +1,9 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ProfileImage } from "@/components/ui/profile-image";
-import { Project, Skill, WorkExperience } from "@shared/schema";
+import { Project, Skill, WorkExperience, Education, Service } from "@shared/schema";
 import { useEffect } from "react";
-import { Mail, Linkedin, ExternalLink, Calendar } from "lucide-react";
+import { Mail, Linkedin, ExternalLink, Calendar, GraduationCap, Star, Package } from "lucide-react";
 
 interface MinimalistProProps {
   userInfo: {
@@ -20,15 +20,34 @@ interface MinimalistProProps {
   userSkills: Skill[];
   userExperiences: WorkExperience[];
   userProjects: Project[];
+  userEducations?: Education[];
+  userServices?: Service[];
 }
 
-export default function MinimalistPro({ userInfo, userSkills, userExperiences, userProjects }: MinimalistProProps) {
+export default function MinimalistPro({ 
+  userInfo, 
+  userSkills, 
+  userExperiences, 
+  userProjects,
+  userEducations = [], 
+  userServices = [] 
+}: MinimalistProProps) {
   // Sort skills by proficiency
   const sortedSkills = [...userSkills].sort((a, b) => (b.proficiency || 0) - (a.proficiency || 0));
   
   // Sort experiences by date (most recent first)
   const sortedExperiences = [...userExperiences].sort((a, b) => 
     new Date(b.startDate || '').getTime() - new Date(a.startDate || '').getTime()
+  );
+  
+  // Sort educations by date (most recent first)
+  const sortedEducations = [...userEducations].sort((a, b) => 
+    new Date(b.startDate || '').getTime() - new Date(a.startDate || '').getTime()
+  );
+  
+  // Sort services by order field (for featured services)
+  const sortedServices = [...userServices].sort((a, b) => 
+    (a.order || 0) - (b.order || 0)
   );
   
   // Initialize animations on component mount
@@ -190,7 +209,7 @@ export default function MinimalistPro({ userInfo, userSkills, userExperiences, u
         </div>
         
         {/* Projects section */}
-        <div>
+        <div className="mb-8">
           <h3 className="text-[#0044CC] text-lg font-medium mb-4 flex items-center">
             <span className="w-1.5 h-6 bg-[#0044CC] mr-2 rounded-sm"></span>
             Featured Projects
@@ -204,9 +223,11 @@ export default function MinimalistPro({ userInfo, userSkills, userExperiences, u
                 >
                   <div className="flex justify-between items-start mb-2">
                     <h4 className="font-medium text-[#333333]">{project.title}</h4>
-                    <a href="#" className="text-[#0044CC] hover:text-[#0044CC]/80">
-                      <ExternalLink className="h-4 w-4" />
-                    </a>
+                    {project.projectUrl && (
+                      <a href={project.projectUrl} target="_blank" rel="noopener noreferrer" className="text-[#0044CC] hover:text-[#0044CC]/80">
+                        <ExternalLink className="h-4 w-4" />
+                      </a>
+                    )}
                   </div>
                   <p className="text-xs text-[#333333]/70 mb-2">
                     {project.startDate ? new Date(project.startDate).toLocaleDateString() : 'No date'}
@@ -222,6 +243,100 @@ export default function MinimalistPro({ userInfo, userSkills, userExperiences, u
               // Empty state for projects
               <div className="col-span-2 text-center py-6 bg-white rounded-lg border border-[#EAEAEA]">
                 <p className="text-[#333333]/50">Projects will appear here</p>
+              </div>
+            )}
+          </div>
+        </div>
+        
+        {/* Education section */}
+        <div className="mb-8">
+          <h3 className="text-[#0044CC] text-lg font-medium mb-4 flex items-center">
+            <span className="w-1.5 h-6 bg-[#0044CC] mr-2 rounded-sm"></span>
+            <GraduationCap className="h-5 w-5 mr-2 text-[#0044CC]" />
+            Education
+          </h3>
+          <div className="space-y-5">
+            {sortedEducations.length > 0 ? (
+              sortedEducations.slice(0, 3).map((edu) => (
+                <div 
+                  key={edu.id} 
+                  className="bg-white p-5 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-[#EAEAEA]"
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <div>
+                      <h4 className="font-medium text-[#333333]">{edu.degree}</h4>
+                      <p className="text-sm text-[#333333] font-medium mt-1">
+                        {edu.institution}
+                      </p>
+                      {edu.location && (
+                        <p className="text-sm text-[#333333]/70">
+                          {edu.location}
+                        </p>
+                      )}
+                    </div>
+                    <div className="text-right flex items-center text-xs text-[#333333]/70">
+                      <Calendar className="h-3 w-3 mr-1 text-[#0044CC]" />
+                      <span>
+                        {edu.startDate.substring(0, 4)}
+                        {edu.endDate ? `-${edu.endDate.substring(0, 4)}` : '-Present'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              // Empty state for education
+              <div className="text-center py-6 bg-white rounded-lg border border-[#EAEAEA]">
+                <p className="text-[#333333]/50">Education will appear here</p>
+              </div>
+            )}
+          </div>
+        </div>
+        
+        {/* Services section */}
+        <div className="mb-8">
+          <h3 className="text-[#0044CC] text-lg font-medium mb-4 flex items-center">
+            <span className="w-1.5 h-6 bg-[#0044CC] mr-2 rounded-sm"></span>
+            <Package className="h-5 w-5 mr-2 text-[#0044CC]" />
+            Services
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {sortedServices.length > 0 ? (
+              sortedServices.slice(0, 4).map((service) => (
+                <div 
+                  key={service.id} 
+                  className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-[#EAEAEA]"
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="font-medium text-[#333333]">{service.title}</h4>
+                    <Badge 
+                      className="bg-[#0044CC]/10 text-[#0044CC] hover:bg-[#0044CC]/20 border-none"
+                    >
+                      {service.category}
+                    </Badge>
+                  </div>
+                  
+                  {service.description && (
+                    <p className="text-sm text-[#333333]/80 mb-3 line-clamp-2">
+                      {service.description}
+                    </p>
+                  )}
+                  
+                  {(service.priceUsd || service.priceInr) && (
+                    <div className="flex items-center gap-1 text-sm font-medium text-[#0044CC]">
+                      <Star className="h-4 w-4 fill-[#0044CC] text-[#0044CC]" />
+                      {service.priceUsd && `$${service.priceUsd}`}
+                      {service.priceUsd && service.priceInr && ' / '}
+                      {service.priceInr && `₹${service.priceInr}`}
+                      {service.isHourly && ' per hour'}
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : (
+              // Empty state for services
+              <div className="col-span-2 text-center py-6 bg-white rounded-lg border border-[#EAEAEA]">
+                <p className="text-[#333333]/50">Services will appear here</p>
               </div>
             )}
           </div>

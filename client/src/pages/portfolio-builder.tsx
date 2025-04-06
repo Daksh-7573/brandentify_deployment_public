@@ -9,6 +9,7 @@ import {
   CardHeader, 
   CardTitle 
 } from "@/components/ui/card";
+import { Education, Service } from "@shared/schema";
 import { 
   Form, 
   FormControl, 
@@ -152,10 +153,26 @@ export default function PortfolioBuilder() {
     startDate: string;
     // Other project fields
   };
+  
+  // Education and Service types are imported from @shared/schema at the top of file
 
   // Fetch user experiences - use the numerical ID instead of Firebase UID
   const { data: experiences, isLoading: isLoadingExperiences } = useQuery<WorkExperience[]>({
     queryKey: [`/api/users/${userNumericId}/experiences`],
+    enabled: !!user && !!userNumericId, // Only fetch when we have the numeric ID
+    staleTime: 30000
+  });
+  
+  // Fetch user education
+  const { data: educations, isLoading: isLoadingEducations } = useQuery<Education[]>({
+    queryKey: [`/api/users/${userNumericId}/educations`],
+    enabled: !!user && !!userNumericId, // Only fetch when we have the numeric ID
+    staleTime: 30000
+  });
+  
+  // Fetch user services
+  const { data: services, isLoading: isLoadingServices } = useQuery<Service[]>({
+    queryKey: [`/api/users/${userNumericId}/services`],
     enabled: !!user && !!userNumericId, // Only fetch when we have the numeric ID
     staleTime: 30000
   });
@@ -665,6 +682,8 @@ export default function PortfolioBuilder() {
                 userSkills={userSkills}
                 userExperiences={userExperiences || []}
                 userProjects={userProjects}
+                userEducations={educations || []}
+                userServices={services || []}
               />
             )}
             
