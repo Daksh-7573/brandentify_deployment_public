@@ -226,51 +226,11 @@ export class MemStorage implements IStorage {
     this.portfolios.set(demoPortfolio.id, demoPortfolio);
     this.currentPortfolioId++;
     
-    // Create test services for the demo user
-    const now = new Date();
+    // No pre-created services for new accounts
+    // Starting service ID at 1 for the first service a user creates
+    this.currentServiceId = 1;
     
-    // Service 1
-    const service1: Service = {
-      id: 1,
-      userId: 1,
-      title: "Web Development Consulting",
-      description: "Expert consulting for React, Node.js, and full-stack web applications",
-      category: "consulting",
-      priceUsd: "150",  // Using string format for decimal values
-      priceInr: "12000",
-      isHourly: true,
-      features: ["Requirements Analysis", "Architecture Design", "Code Review", "Performance Optimization"],
-      imageUrl: null,
-      order: 1,
-      isActive: true,
-      createdAt: now,
-      updatedAt: now
-    };
-    this.services.set(service1.id, service1);
-    
-    // Service 2
-    const service2: Service = {
-      id: 2,
-      userId: 1,
-      title: "Responsive UI Design",
-      description: "Create modern, responsive user interfaces with a focus on usability and aesthetics",
-      category: "design",
-      priceUsd: "1200",  // Using string format for decimal values
-      priceInr: "95000",
-      isHourly: false,
-      features: ["Wireframing", "Prototyping", "User Testing", "Implementation Support"],
-      imageUrl: null,
-      order: 2,
-      isActive: true,
-      createdAt: now,
-      updatedAt: now
-    };
-    this.services.set(service2.id, service2);
-    
-    // Update the service ID counter
-    this.currentServiceId = 3;
-    
-    console.log(`[storage.initializeDemoData] Added ${this.services.size} test services for the demo user`);
+    console.log(`[storage.initializeDemoData] No pre-created services - users will add their own`);
     
   }
   
@@ -324,8 +284,8 @@ export class MemStorage implements IStorage {
       title: 'Web Application Development',
       description: 'Full-stack web application development using React, Node.js, and PostgreSQL.',
       category: 'development',
-      priceUsd: 100,
-      priceInr: 8000,
+      priceUsd: "100",  // Using string format for decimal values
+      priceInr: "8000", // Using string format for decimal values
       isHourly: true,
       duration: '2-4 weeks',
       features: ['Custom UI/UX design', 'Database integration', 'API development'],
@@ -342,8 +302,8 @@ export class MemStorage implements IStorage {
       title: 'Brand Identity Design',
       description: 'Professional brand identity design including logo, color palette, and brand guidelines.',
       category: 'design',
-      priceUsd: 500,
-      priceInr: 40000,
+      priceUsd: "500",  // Using string format for decimal values
+      priceInr: "40000", // Using string format for decimal values
       isHourly: false,
       duration: '1-2 weeks',
       features: ['Logo design', 'Brand guidelines', 'Social media assets'],
@@ -360,8 +320,8 @@ export class MemStorage implements IStorage {
       title: 'SEO Optimization',
       description: 'Improve your website visibility with professional SEO services.',
       category: 'marketing',
-      priceUsd: 300,
-      priceInr: 24000,
+      priceUsd: "300",  // Using string format for decimal values
+      priceInr: "24000", // Using string format for decimal values
       isHourly: false,
       duration: '2-3 weeks',
       features: ['Keyword research', 'On-page optimization', 'Performance tracking'],
