@@ -26,7 +26,7 @@ export default function CreatePulsePage() {
   const [pulseType, setPulseType] = useState("poll");
   const [mediaType, setMediaType] = useState("image");
   const [pollOptions, setPollOptions] = useState(["", ""]);
-  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+  // Project tab state
   const [activeProjectTab, setActiveProjectTab] = useState('details');
   const [selectedProject, setSelectedProject] = useState<number | null>(null);
   const [mediaUrls, setMediaUrls] = useState<string[]>([]);
@@ -813,104 +813,72 @@ export default function CreatePulsePage() {
                 )}
 
                 {pulseType === 'project' && (
-                  <div className="space-y-6">
-                    <div className="border-2 border-dashed border-green-200 rounded-lg p-8 flex flex-col items-center justify-center text-center bg-green-50/30">
-                      <FileCode className="h-12 w-12 text-green-500 mb-4" />
-                      <h3 className="font-medium text-lg mb-2">Create Project Pulse</h3>
-                      <p className="text-sm text-green-700/70 mb-4">
-                        Showcase your work and expertise with a detailed project.<br />
-                        Add details, images and links to demonstrate your professional skills.
+                  <div className="space-y-6" data-pulse-type="project">
+                    <div className="space-y-2 mb-6">
+                      <div className="flex items-center gap-2 mb-2">
+                        <FileCode className="h-5 w-5 text-green-500" />
+                        <h3 className="font-medium text-lg">Create Project Pulse</h3>
+                      </div>
+                      <p className="text-sm text-green-700/70">
+                        Showcase your work and expertise with a detailed project. Add details, images and links to demonstrate your professional skills.
                       </p>
-                      <Button 
-                        variant="outline" 
-                        className="mb-4 border-green-200 text-green-700 hover:bg-green-100"
-                        onClick={() => setIsProjectModalOpen(true)}
-                      >
-                        Add New Project
-                      </Button>
                     </div>
-
-                    <Dialog open={isProjectModalOpen} onOpenChange={setIsProjectModalOpen}>
-                      <DialogContent className="sm:max-w-[650px] max-h-[90vh] overflow-y-auto">
-                        <DialogHeader>
-                          <DialogTitle className="flex items-center gap-2 text-green-700">
-                            <FileCode className="h-5 w-5 text-green-500" />
-                            Add New Project
-                          </DialogTitle>
-                        </DialogHeader>
+                    
+                    {selectedProject ? (
+                      <div className="space-y-6">
+                        <div className="p-4 bg-green-50 border border-green-100 rounded-md">
+                          <h3 className="font-medium text-green-800">Project ready to publish!</h3>
+                          <p className="text-sm text-green-700 mt-1">
+                            Your project has been created and is ready to be published as a pulse.
+                          </p>
+                        </div>
                         
-                        <Tabs value={activeProjectTab} onValueChange={setActiveProjectTab} className="mt-4">
-                          <TabsList className="grid w-full grid-cols-3 bg-green-50">
-                            <TabsTrigger value="details" className="data-[state=active]:bg-white data-[state=active]:text-green-700">Details</TabsTrigger>
-                            <TabsTrigger value="team" className="data-[state=active]:bg-white data-[state=active]:text-green-700">Team</TabsTrigger>
-                            <TabsTrigger value="endorsements" className="data-[state=active]:bg-white data-[state=active]:text-green-700">Endorsements</TabsTrigger>
-                          </TabsList>
-                          
-                          <TabsContent value="details" className="space-y-4 pt-4">
-                            <ProjectForm 
-                              onSuccess={() => {
-                                setIsProjectModalOpen(false);
+                        <div className="flex justify-end mt-6">
+                          <Button 
+                            type="button"
+                            className="px-6 bg-green-600 hover:bg-green-700 text-white"
+                            onClick={() => {
+                              if (!user) {
                                 toast({
-                                  title: "Project created",
-                                  description: "Your project has been created successfully and added to your profile",
+                                  title: "Error",
+                                  description: "You must be logged in to create a pulse",
+                                  variant: "destructive",
                                 });
-                              }}
-                              onCancel={() => setIsProjectModalOpen(false)}
-                              closeModal={() => setIsProjectModalOpen(false)}
-                            />
-                          </TabsContent>
-                          
-                          <TabsContent value="team" className="space-y-4 pt-4">
-                            <div className="space-y-4">
-                              <h3 className="text-sm font-medium">Add Team Member</h3>
-                              <div className="space-y-4 border rounded-lg p-4">
-                                <div className="space-y-2">
-                                  <Label>Profile Link*</Label>
-                                  <Input placeholder="https://brandentifier.replit.app/profile/username" disabled />
-                                  <p className="text-xs text-muted-foreground">
-                                    Add Brandentifier profile link to connect with users
-                                  </p>
-                                </div>
-                                <Button size="sm" className="mt-2" disabled>
-                                  Add Team Member
-                                </Button>
-                              </div>
-                              <p className="text-sm text-muted-foreground">
-                                You can add team members after saving the project
-                              </p>
-                            </div>
-                          </TabsContent>
-                          
-                          <TabsContent value="endorsements" className="space-y-4 pt-4">
-                            <div className="space-y-4">
-                              <h3 className="text-sm font-medium">Add Client</h3>
-                              <p className="text-sm text-muted-foreground">
-                                Add a client's profile link to invite them to endorse your project.
-                              </p>
-                              <div className="space-y-4 border rounded-lg p-4">
-                                <div className="space-y-2">
-                                  <Label>Client Profile Link*</Label>
-                                  <Input placeholder="https://brandentifier.replit.app/profile/username" disabled />
-                                  <p className="text-xs text-muted-foreground">
-                                    Add Brandentifier profile link of your client
-                                  </p>
-                                </div>
-                                <Button 
-                                  size="sm" 
-                                  className="mt-2"
-                                  disabled
-                                >
-                                  Add Client
-                                </Button>
-                              </div>
-                              <p className="text-xs text-muted-foreground italic">
-                                Note: You'll need to save the project first before client endorsements can be processed.
-                              </p>
-                            </div>
-                          </TabsContent>
-                        </Tabs>
-                      </DialogContent>
-                    </Dialog>
+                                return;
+                              }
+                              
+                              createPulseMutation.mutate({
+                                userId: user.id,
+                                type: "project" as any,
+                                title: pulseTitle,
+                                content: pulseContent,
+                                isPublished: true,
+                                projectId: selectedProject
+                              });
+                            }}
+                          >
+                            Publish Project Pulse
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <ProjectForm 
+                        onSuccess={(project) => {
+                          if (project && project.id) {
+                            setSelectedProject(project.id);
+                            
+                            // Auto-populate the pulse title and content
+                            setPulseTitle(project.title || "");
+                            setPulseContent(project.description || "");
+                            
+                            toast({
+                              title: "Project created",
+                              description: "Your project has been created successfully and added to your profile. You can now publish it as a pulse.",
+                            });
+                          }
+                        }}
+                      />
+                    )}
                   </div>
                 )}
               </CardContent>
