@@ -7,9 +7,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { AlertCircle, BarChart, Video, Image } from "lucide-react";
+import { AlertCircle, BarChart, Video, Image, FileCode } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import ProjectForm from "@/components/shared/project-form";
 
 export default function CreatePulsePage() {
   const { user } = useAuth();
@@ -19,6 +21,7 @@ export default function CreatePulsePage() {
   const [pulseType, setPulseType] = useState("poll");
   const [mediaType, setMediaType] = useState("image");
   const [pollOptions, setPollOptions] = useState(["", ""]);
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,6 +105,17 @@ export default function CreatePulsePage() {
                   <p className="text-xs text-gray-500 mt-1">Images or video for your branding</p>
                 </CardContent>
               </Card>
+
+              <Card 
+                className={`cursor-pointer transition-all hover:shadow-md ${pulseType === 'project' ? 'ring-2 ring-primary' : ''}`}
+                onClick={() => setPulseType('project')}
+              >
+                <CardContent className="p-4 flex flex-col items-center justify-center text-center">
+                  <FileCode className={`h-10 w-10 mb-2 ${pulseType === 'project' ? 'text-primary' : 'text-gray-500'}`} />
+                  <h3 className="font-medium">Project</h3>
+                  <p className="text-xs text-gray-500 mt-1">Showcase your work and skills</p>
+                </CardContent>
+              </Card>
             </div>
 
             <Card className="mb-6">
@@ -126,6 +140,16 @@ export default function CreatePulsePage() {
                     <AlertTitle className="text-blue-700">Media Pulse</AlertTitle>
                     <AlertDescription className="text-blue-600">
                       Share branding visuals through images (max 5) or a video (max 120 seconds).
+                    </AlertDescription>
+                  </Alert>
+                )}
+                
+                {pulseType === 'project' && (
+                  <Alert className="mb-6 bg-green-50 border-green-200">
+                    <FileCode className="h-4 w-4 text-green-500" />
+                    <AlertTitle className="text-green-700">Project</AlertTitle>
+                    <AlertDescription className="text-green-600">
+                      Showcase your work and achievements with projects. Add images, videos, and details about your contribution.
                     </AlertDescription>
                   </Alert>
                 )}
@@ -322,6 +346,43 @@ export default function CreatePulsePage() {
                       </Button>
                     </div>
                   </form>
+                )}
+
+                {pulseType === 'project' && (
+                  <div className="space-y-6">
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 flex flex-col items-center justify-center text-center">
+                      <FileCode className="h-12 w-12 text-gray-400 mb-4" />
+                      <h3 className="font-medium text-lg mb-2">Create Project</h3>
+                      <p className="text-sm text-gray-500 mb-4">
+                        Showcase your work and expertise with a detailed project.<br />
+                        Add details, images and links to demonstrate your professional skills.
+                      </p>
+                      <Button 
+                        variant="outline" 
+                        className="mb-4"
+                        onClick={() => setIsProjectModalOpen(true)}
+                      >
+                        Create New Project
+                      </Button>
+                    </div>
+
+                    <Dialog open={isProjectModalOpen} onOpenChange={setIsProjectModalOpen}>
+                      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+                        <DialogHeader>
+                          <DialogTitle>Create Project</DialogTitle>
+                        </DialogHeader>
+                        <ProjectForm 
+                          onSuccess={() => {
+                            setIsProjectModalOpen(false);
+                            // Add any success message or notification here
+                            alert("Project created successfully and added to your profile!");
+                          }}
+                          onCancel={() => setIsProjectModalOpen(false)}
+                          closeModal={() => setIsProjectModalOpen(false)}
+                        />
+                      </DialogContent>
+                    </Dialog>
+                  </div>
                 )}
               </CardContent>
             </Card>
