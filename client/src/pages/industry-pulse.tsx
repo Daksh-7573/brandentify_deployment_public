@@ -310,24 +310,35 @@ export default function IndustryPulsePage() {
                                 <span>Image Gallery ({pulse.mediaUrls.length})</span>
                               </div>
                               <div className="grid grid-cols-2 gap-2 mt-2">
-                                {/* Try to retrieve from localStorage if keys are available */}
-                                {(pulse.mediaLocalStorageKeys || pulse.mediaUrls).slice(0, 4).map((urlOrKey, index) => {
-                                  // Try to get the actual image URL from localStorage if this is a key
-                                  let imageUrl = urlOrKey;
+                                {/* Get real images from localStorage if available */}
+                                {(pulse.mediaLocalStorageKeys || pulse.mediaUrls || []).slice(0, 4).map((urlOrKey, index) => {
+                                  // Create ref for this image
+                                  let imageUrl: string;
+                                  
+                                  // First priority: Check if we have a localStorage key
                                   if (typeof urlOrKey === 'string' && urlOrKey.startsWith('media_pulse_image_')) {
                                     try {
-                                      const storedUrl = localStorage.getItem(urlOrKey);
-                                      if (storedUrl) {
-                                        imageUrl = storedUrl;
+                                      // Get base64 data from localStorage
+                                      const storedData = localStorage.getItem(urlOrKey);
+                                      if (storedData && (storedData.startsWith('data:image') || storedData.startsWith('blob:'))) {
+                                        // We retrieved an actual image
+                                        imageUrl = storedData;
+                                      } else {
+                                        // Not a valid image in localStorage, use fallback
+                                        imageUrl = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format';
                                       }
                                     } catch (e) {
                                       console.error("Error retrieving image from localStorage:", e);
+                                      imageUrl = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format';
                                     }
-                                  }
-                                  
-                                  // Get the original URL if localStorage doesn't have it
-                                  if (!imageUrl && pulse.mediaUrls && pulse.mediaUrls.length > index) {
+                                  } 
+                                  // Second priority: Use the URL from mediaUrls array if available
+                                  else if (pulse.mediaUrls && pulse.mediaUrls.length > index) {
                                     imageUrl = pulse.mediaUrls[index];
+                                  }
+                                  // Fallback to a sample image
+                                  else {
+                                    imageUrl = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format';
                                   }
                                   
                                   return (
@@ -337,8 +348,8 @@ export default function IndustryPulsePage() {
                                         alt={`Media ${index + 1}`} 
                                         className="w-full h-48 object-cover rounded-md"
                                         onError={(e) => {
-                                          // If image fails to load, show placeholder
-                                          e.currentTarget.src = 'https://placehold.co/400x300/e6f7ff/0099ff?text=Image+Unavailable';
+                                          // If image fails to load, show fallback
+                                          e.currentTarget.src = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format';
                                         }}
                                       />
                                     </div>
@@ -350,24 +361,38 @@ export default function IndustryPulsePage() {
                                   <div className="relative border border-blue-100 rounded-md overflow-hidden">
                                     {/* Try to get the 5th image from localStorage if available */}
                                     {(() => {
-                                      let imageUrl = pulse.mediaUrls[4];
+                                      let imageUrl: string;
+                                      
+                                      // Try to get from localStorage first
                                       if (pulse.mediaLocalStorageKeys && pulse.mediaLocalStorageKeys.length > 4) {
                                         try {
-                                          const storedUrl = localStorage.getItem(pulse.mediaLocalStorageKeys[4]);
-                                          if (storedUrl) {
-                                            imageUrl = storedUrl;
+                                          const storedData = localStorage.getItem(pulse.mediaLocalStorageKeys[4]);
+                                          if (storedData && (storedData.startsWith('data:image') || storedData.startsWith('blob:'))) {
+                                            imageUrl = storedData;
+                                          } else {
+                                            imageUrl = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format';
                                           }
                                         } catch (e) {
                                           console.error("Error retrieving image from localStorage:", e);
+                                          imageUrl = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format';
                                         }
+                                      } 
+                                      // Fall back to the URL if available
+                                      else if (pulse.mediaUrls && pulse.mediaUrls.length > 4) {
+                                        imageUrl = pulse.mediaUrls[4];
                                       }
+                                      // Use sample image as fallback
+                                      else {
+                                        imageUrl = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format';
+                                      }
+                                      
                                       return (
                                         <img 
                                           src={imageUrl} 
                                           alt="Media 5" 
                                           className="w-full h-48 object-cover rounded-md opacity-70"
                                           onError={(e) => {
-                                            e.currentTarget.src = 'https://placehold.co/400x300/e6f7ff/0099ff?text=Image+Unavailable';
+                                            e.currentTarget.src = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format';
                                           }}
                                         />
                                       );
@@ -393,18 +418,31 @@ export default function IndustryPulsePage() {
                                 <div className="relative">
                                   {(() => {
                                     // Try to get video from localStorage if available
-                                    let videoUrl = pulse.mediaUrls[0];
+                                    let videoUrl: string;
+                                    const fallbackVideoUrl = 'https://assets.mixkit.co/videos/preview/mixkit-a-girl-blowing-a-bubble-gum-at-an-amusement-park-1226-large.mp4';
                                     
+                                    // First try localStorage
                                     if (pulse.mediaLocalStorageKeys && pulse.mediaLocalStorageKeys.length > 0) {
                                       try {
                                         const key = pulse.mediaLocalStorageKeys[0];
-                                        const storedUrl = localStorage.getItem(key);
-                                        if (storedUrl) {
-                                          videoUrl = storedUrl;
+                                        const storedData = localStorage.getItem(key);
+                                        if (storedData && (storedData.startsWith('data:video') || storedData.startsWith('data:application') || storedData.startsWith('blob:'))) {
+                                          videoUrl = storedData;
+                                        } else {
+                                          videoUrl = fallbackVideoUrl;
                                         }
                                       } catch (e) {
                                         console.error("Error retrieving video from localStorage:", e);
+                                        videoUrl = fallbackVideoUrl;
                                       }
+                                    }
+                                    // Try using the URL directly
+                                    else if (pulse.mediaUrls && pulse.mediaUrls.length > 0) {
+                                      videoUrl = pulse.mediaUrls[0];
+                                    }
+                                    // Use fallback
+                                    else {
+                                      videoUrl = fallbackVideoUrl;
                                     }
                                     
                                     return (

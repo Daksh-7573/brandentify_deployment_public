@@ -1109,6 +1109,7 @@ export class MemStorage implements IStorage {
       content: insertPulse.content ?? null,
       mediaType: insertPulse.mediaType ?? null,
       mediaUrls: insertPulse.mediaUrls ?? [],
+      mediaLocalStorageKeys: insertPulse.mediaLocalStorageKeys ?? [],
       pollOptions: insertPulse.pollOptions ?? [],
       projectId: insertPulse.projectId ?? null,
       likes: 0,

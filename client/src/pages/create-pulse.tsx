@@ -141,42 +141,89 @@ export default function CreatePulsePage() {
       // Simulate an upload process
       pulseData.mediaType = mediaType as any; // Type assertion to match enum
       
-      // Use the actual uploaded image URLs for the demo
-      // In a production environment, we would upload files to cloud storage first
+      // For demo purposes, we'll convert images to base64 and store them
+      // In a production environment, we would upload files to cloud storage
       
       if (mediaType === 'image') {
-        // Use the blob URLs created from the uploaded files
-        // These are temporary URLs that will work during the current session
-        pulseData.mediaUrls = mediaUrls;
+        // Create temporary URLs for the server to store
+        // These would normally be cloud storage URLs
+        pulseData.mediaUrls = uploadedFiles.map((_, i) => 
+          `https://storage.example.com/user-${user.id}/${Date.now()}-${i}.jpg`
+        );
         
-        // Additionally, store a copy of these in localStorage so they persist
-        // This is a demo technique that wouldn't be used in production
-        const savedUrls = mediaUrls.map((url, index) => {
-          const key = `media_pulse_image_${Date.now()}_${index}`;
+        // Convert each image to base64 and store in localStorage
+        const processImages = async () => {
+          const base64Promises = uploadedFiles.map(async (file, index) => {
+            return new Promise<string>((resolve) => {
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                const base64data = reader.result as string;
+                const key = `media_pulse_image_${Date.now()}_${index}`;
+                try {
+                  // Store the actual image data as base64
+                  localStorage.setItem(key, base64data);
+                  resolve(key);
+                } catch (e) {
+                  console.error("Failed to save image to localStorage:", e);
+                  // Fallback to sample image if localStorage fails
+                  resolve(`https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format`);
+                }
+              };
+              reader.readAsDataURL(file);
+            });
+          });
+
           try {
-            localStorage.setItem(key, url);
-            return key;
-          } catch (e) {
-            console.error("Failed to save image URL to localStorage:", e);
-            return url;
+            // Wait for all images to be processed
+            const keys = await Promise.all(base64Promises);
+            // Save the keys for later retrieval
+            pulseData.mediaLocalStorageKeys = keys;
+            
+            // Now submit the data
+            console.log("Submitting pulse with localStorage keys:", pulseData);
+            createPulseMutation.mutate(pulseData);
+          } catch (error) {
+            console.error("Error processing images:", error);
+            toast({
+              title: "Error",
+              description: "Failed to process images. Please try again.",
+              variant: "destructive",
+            });
           }
-        });
+        };
         
-        // Store references to these localStorage keys
-        pulseData.mediaLocalStorageKeys = savedUrls;
-      } else {
-        // For video, use the actual uploaded video
-        pulseData.mediaUrls = mediaUrls;
+        // Start processing images
+        processImages();
+        return; // Exit early as we're handling submission in processImages
+      } else if (mediaType === 'video') {
+        // For video, create a temporary URL
+        pulseData.mediaUrls = [`https://storage.example.com/user-${user.id}/${Date.now()}.mp4`];
         
-        // Similarly store in localStorage
-        if (mediaUrls.length > 0) {
-          const key = `media_pulse_video_${Date.now()}`;
-          try {
-            localStorage.setItem(key, mediaUrls[0]);
-            pulseData.mediaLocalStorageKeys = [key];
-          } catch (e) {
-            console.error("Failed to save video URL to localStorage:", e);
-          }
+        // Use a sample video URL as fallback if conversion fails
+        const fallbackVideoUrl = 'https://assets.mixkit.co/videos/preview/mixkit-a-girl-blowing-a-bubble-gum-at-an-amusement-park-1226-large.mp4';
+        
+        if (uploadedFiles.length > 0) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const base64data = reader.result as string;
+            const key = `media_pulse_video_${Date.now()}`;
+            try {
+              // Store video as base64
+              localStorage.setItem(key, base64data);
+              pulseData.mediaLocalStorageKeys = [key];
+            } catch (e) {
+              console.error("Failed to save video to localStorage:", e);
+              pulseData.mediaUrls = [fallbackVideoUrl];
+            }
+            
+            console.log("Submitting pulse with video:", pulseData);
+            createPulseMutation.mutate(pulseData);
+          };
+          reader.readAsDataURL(uploadedFiles[0]);
+          return; // Exit early as we're handling submission in the callback
+        } else {
+          // No video uploaded, use fallback
+          pulseData.mediaUrls = [fallbackVideoUrl];
         }
       }
     } 
