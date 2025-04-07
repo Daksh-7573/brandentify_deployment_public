@@ -453,29 +453,6 @@ export default function ProjectForm({
                 )}
               />
               
-              <FormItem>
-                <FormLabel>Project Thumbnail*</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="file" 
-                    ref={fileInputRef}
-                    accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        setThumbnailFile(file);
-                        setThumbnailError(null);
-                      }
-                    }} 
-                  />
-                </FormControl>
-                <FormDescription>
-                  Upload a thumbnail image for your project (required)
-                </FormDescription>
-                {thumbnailError && <p className="text-sm font-medium text-destructive">{thumbnailError}</p>}
-                <FormMessage />
-              </FormItem>
-              
               <div className="flex justify-end gap-2">
                 {onCancel && (
                   <Button type="button" variant="outline" onClick={onCancel}>
@@ -493,7 +470,33 @@ export default function ProjectForm({
         <TabsContent value="media" className="space-y-4 pt-4">
           <Form {...projectForm}>
             <form onSubmit={projectForm.handleSubmit(onSubmit)} className="space-y-4">
-              <div className="space-y-4">
+              <div className="space-y-6">
+                <FormItem className="mb-6 pb-4 border-b">
+                  <FormLabel>Project Thumbnail*</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="file" 
+                      ref={fileInputRef}
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setThumbnailFile(file);
+                          setThumbnailError(null);
+                        }
+                      }} 
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Upload a thumbnail image for your project (required)
+                  </FormDescription>
+                  {thumbnailError && <p className="text-sm font-medium text-destructive">{thumbnailError}</p>}
+                  <FormMessage />
+                </FormItem>
+                
+                <h3 className="text-base font-medium">Additional Project Media (Optional)</h3>
+                <p className="text-sm text-muted-foreground mb-4">Choose one of the following media types to enhance your project showcase</p>
+
                 <div className="flex space-x-4">
                   <div className="flex-1">
                     <Label className="block mb-2">Media Type</Label>
