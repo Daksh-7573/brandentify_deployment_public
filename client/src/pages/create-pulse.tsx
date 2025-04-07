@@ -461,7 +461,7 @@ export default function CreatePulsePage() {
                     <div className="space-y-2">
                       <Label htmlFor="poll-question" className="flex items-center gap-2">
                         <BarChart className="h-4 w-4 text-purple-500" />
-                        <span>Poll Question</span>
+                        <span>Title</span>
                       </Label>
                       <Input
                         id="poll-question"
@@ -536,8 +536,7 @@ export default function CreatePulsePage() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="poll-content" className="flex items-center gap-2">
-                        <BarChart className="h-4 w-4 text-purple-500" />
-                        <span>Additional Context (Optional)</span>
+                        <span>Description</span>
                       </Label>
                       <Textarea
                         id="poll-content"
@@ -659,7 +658,7 @@ export default function CreatePulsePage() {
                         <div className="space-y-2">
                           <Label htmlFor="media-title" className="flex items-center gap-2">
                             <Video className="h-4 w-4 text-blue-500" />
-                            <span>Video Title</span>
+                            <span>Title</span>
                           </Label>
                           <Input
                             id="media-title"
@@ -673,7 +672,7 @@ export default function CreatePulsePage() {
                         <div className="space-y-2">
                           <Label htmlFor="media-description" className="flex items-center gap-2">
                             <Video className="h-4 w-4 text-blue-500" />
-                            <span>Video Description</span>
+                            <span>Description</span>
                           </Label>
                           <Textarea
                             id="media-description"
@@ -756,7 +755,7 @@ export default function CreatePulsePage() {
                         <div className="space-y-2">
                           <Label htmlFor="image-title" className="flex items-center gap-2">
                             <Image className="h-4 w-4 text-blue-500" />
-                            <span>Gallery Title</span>
+                            <span>Title</span>
                           </Label>
                           <Input
                             id="image-title"
@@ -770,7 +769,7 @@ export default function CreatePulsePage() {
                         <div className="space-y-2">
                           <Label htmlFor="image-description" className="flex items-center gap-2">
                             <Image className="h-4 w-4 text-blue-500" />
-                            <span>Gallery Description</span>
+                            <span>Description</span>
                           </Label>
                           <Textarea
                             id="image-description"
