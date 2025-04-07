@@ -24,6 +24,7 @@ import {
   insertServiceSchema,
   insertPulseSchema,
   insertPulseCommentSchema,
+  insertPollVoteSchema,
   InsertWorkExperience,
   InsertEducation,
   InsertSkill,
@@ -31,7 +32,8 @@ import {
   InsertProjectCollaborator,
   InsertProjectEndorsement,
   InsertPortfolio,
-  InsertService
+  InsertService,
+  InsertPollVote
 } from "@shared/schema";
 import { generateCareerAdvice } from "./services/ai-service";
 import { getJobTitleSuggestions } from "./services/title-suggestions";
@@ -2259,6 +2261,9 @@ Musk, Your Career Partner`;
     } catch (error) {
       console.error("Error generating networking recommendations with OpenAI:", error);
       
+      // Get values from the request body
+      const { userId, targetIndustry, purpose } = req.body;
+      
       // Generate fallback demo networking recommendations
       const demoRecommendations = generateDemoNetworkingRecommendations(
         targetIndustry || "Technology", 
@@ -2267,7 +2272,7 @@ Musk, Your Career Partner`;
       
       // Save the demo recommendations as a chat message
       await storage.createChatMessage({
-        userId,
+        userId: userId,
         sender: "ai",
         content: demoRecommendations,
         messageType: "networking_recommendations"
