@@ -302,27 +302,35 @@ export default function IndustryPulsePage() {
                             <PollVoting pulse={pulse} />
                           )}
                           
-                          {pulse.type === 'media-pulse' && pulse.mediaType === 'image' && pulse.mediaUrls && (
+                          {pulse.type === 'media-pulse' && pulse.mediaType === 'image' && pulse.mediaUrls && pulse.mediaUrls.length > 0 && (
                             <div className="mt-4 space-y-2">
                               <div className="text-sm font-medium flex items-center gap-2">
                                 <Image className="h-4 w-4 text-blue-500" />
-                                <span>Image Gallery</span>
+                                <span>Image Gallery ({pulse.mediaUrls.length})</span>
                               </div>
                               <div className="grid grid-cols-2 gap-2 mt-2">
                                 {pulse.mediaUrls.slice(0, 4).map((url, index) => (
-                                  <img 
-                                    key={index} 
-                                    src={url} 
-                                    alt={`Media ${index + 1}`} 
-                                    className="w-full h-48 object-cover rounded-md"
-                                  />
+                                  <div key={index} className="border border-blue-100 rounded-md overflow-hidden bg-blue-50/20">
+                                    <img 
+                                      src={url} 
+                                      alt={`Media ${index + 1}`} 
+                                      className="w-full h-48 object-cover rounded-md"
+                                      onError={(e) => {
+                                        // If image fails to load, show placeholder
+                                        e.currentTarget.src = 'https://placehold.co/400x300/e6f7ff/0099ff?text=Image+Unavailable';
+                                      }}
+                                    />
+                                  </div>
                                 ))}
                                 {pulse.mediaUrls.length > 4 && (
-                                  <div className="relative">
+                                  <div className="relative border border-blue-100 rounded-md overflow-hidden">
                                     <img 
                                       src={pulse.mediaUrls[4]} 
                                       alt="Media 5" 
                                       className="w-full h-48 object-cover rounded-md opacity-70"
+                                      onError={(e) => {
+                                        e.currentTarget.src = 'https://placehold.co/400x300/e6f7ff/0099ff?text=Image+Unavailable';
+                                      }}
                                     />
                                     <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-md">
                                       <span className="text-white font-bold text-lg">+{pulse.mediaUrls.length - 4} more</span>
@@ -333,19 +341,39 @@ export default function IndustryPulsePage() {
                             </div>
                           )}
                           
-                          {pulse.type === 'media-pulse' && pulse.mediaType === 'video' && pulse.mediaUrls && (
+                          {pulse.type === 'media-pulse' && pulse.mediaType === 'video' && pulse.mediaUrls && pulse.mediaUrls.length > 0 && (
                             <div className="mt-4 space-y-2">
                               <div className="text-sm font-medium flex items-center gap-2">
                                 <Video className="h-4 w-4 text-blue-500" />
                                 <span>Video</span>
                               </div>
-                              <div className="bg-blue-50/30 border rounded-md p-2">
-                                <video 
-                                  src={pulse.mediaUrls.length > 0 ? pulse.mediaUrls[0] : ''} 
-                                  controls 
-                                  className="w-full rounded-md"
-                                  style={{ maxHeight: "400px" }}
-                                />
+                              <div className="bg-blue-50/30 border border-blue-100 rounded-md p-2">
+                                <div className="relative">
+                                  <video 
+                                    src={pulse.mediaUrls[0]} 
+                                    controls 
+                                    className="w-full rounded-md"
+                                    style={{ maxHeight: "400px" }}
+                                    onError={(e) => {
+                                      // If video fails to load, show message
+                                      const parent = e.currentTarget.parentElement;
+                                      if (parent) {
+                                        parent.innerHTML = `
+                                          <div class="h-64 flex items-center justify-center bg-blue-50 rounded-md">
+                                            <div class="text-center">
+                                              <div class="mb-2">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-300 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                              </div>
+                                              <p class="text-blue-500">Video could not be loaded</p>
+                                            </div>
+                                          </div>
+                                        `;
+                                      }
+                                    }}
+                                  />
+                                </div>
                               </div>
                             </div>
                           )}
