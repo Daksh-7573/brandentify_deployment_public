@@ -161,27 +161,37 @@ export default function CreatePulsePage() {
                 {pulseType === 'poll' && (
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="space-y-2">
-                      <Label htmlFor="poll-question">Poll Question</Label>
+                      <Label htmlFor="poll-question" className="flex items-center gap-2">
+                        <BarChart className="h-4 w-4 text-purple-500" />
+                        <span>Poll Question</span>
+                      </Label>
                       <Input
                         id="poll-question"
                         placeholder="What's your question for your network?"
+                        value={pulseTitle}
+                        onChange={(e) => setPulseTitle(e.target.value)}
                         required
+                        className="border-purple-100 focus-visible:ring-purple-500"
                       />
                     </div>
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <Label>Poll Options</Label>
+                        <Label className="flex items-center gap-2">
+                          <BarChart className="h-4 w-4 text-purple-500" />
+                          <span>Poll Options</span>
+                        </Label>
                         <Button 
                           type="button" 
                           variant="outline" 
                           size="sm"
                           onClick={addPollOption}
                           disabled={pollOptions.length >= 6}
+                          className="border-purple-200 text-purple-700 hover:bg-purple-50"
                         >
                           + Add Option
                         </Button>
                       </div>
-                      <div className="space-y-2">
+                      <div className="space-y-2 bg-purple-50/30 p-4 border border-purple-100 rounded-md">
                         {pollOptions.map((option, index) => (
                           <div key={index} className="flex gap-2">
                             <Input
@@ -189,6 +199,7 @@ export default function CreatePulsePage() {
                               value={option}
                               onChange={(e) => updatePollOption(index, e.target.value)}
                               required
+                              className="border-purple-100 focus-visible:ring-purple-500"
                             />
                             {pollOptions.length > 2 && (
                               <Button 
@@ -196,7 +207,7 @@ export default function CreatePulsePage() {
                                 variant="ghost" 
                                 size="icon"
                                 onClick={() => removePollOption(index)}
-                                className="text-gray-500 hover:text-red-500"
+                                className="text-purple-400 hover:text-purple-700 hover:bg-purple-50"
                               >
                                 ✕
                               </Button>
@@ -206,24 +217,40 @@ export default function CreatePulsePage() {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label>Poll Settings</Label>
-                      <div className="flex flex-wrap gap-4">
+                      <Label className="flex items-center gap-2">
+                        <BarChart className="h-4 w-4 text-purple-500" />
+                        <span>Poll Settings</span>
+                      </Label>
+                      <div className="flex flex-wrap gap-4 bg-purple-50/30 p-4 border border-purple-100 rounded-md">
                         <div className="flex items-center gap-2">
-                          <input type="checkbox" id="allow-multiple" />
+                          <input type="checkbox" id="allow-multiple" className="text-purple-500 focus:ring-purple-500" />
                           <Label htmlFor="allow-multiple" className="text-sm font-normal">Allow multiple selections</Label>
                         </div>
                         <div className="flex items-center gap-2">
-                          <input type="checkbox" id="hide-results" />
+                          <input type="checkbox" id="hide-results" className="text-purple-500 focus:ring-purple-500" />
                           <Label htmlFor="hide-results" className="text-sm font-normal">Hide results until voting</Label>
                         </div>
                         <div className="flex items-center gap-2">
-                          <input type="checkbox" id="allow-comments" defaultChecked />
+                          <input type="checkbox" id="allow-comments" defaultChecked className="text-purple-500 focus:ring-purple-500" />
                           <Label htmlFor="allow-comments" className="text-sm font-normal">Allow comments</Label>
                         </div>
                       </div>
                     </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="poll-content" className="flex items-center gap-2">
+                        <BarChart className="h-4 w-4 text-purple-500" />
+                        <span>Additional Context (Optional)</span>
+                      </Label>
+                      <Textarea
+                        id="poll-content"
+                        placeholder="Provide additional context for your poll question..."
+                        className="min-h-[80px] border-purple-100 focus-visible:ring-purple-500"
+                        value={pulseContent}
+                        onChange={(e) => setPulseContent(e.target.value)}
+                      />
+                    </div>
                     <div className="flex justify-end">
-                      <Button className="px-6">
+                      <Button className="px-6 bg-purple-600 hover:bg-purple-700">
                         Create Poll
                       </Button>
                     </div>
@@ -233,25 +260,36 @@ export default function CreatePulsePage() {
                 {pulseType === 'media-pulse' && (
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="mb-6">
-                      <Label className="text-base font-medium mb-3 block">Media Type</Label>
+                      <Label className="text-base font-medium mb-3 block flex items-center gap-2">
+                        <span className="text-blue-500">
+                          {mediaType === 'video' ? <Video className="h-4 w-4" /> : <Image className="h-4 w-4" />}
+                        </span>
+                        Media Type
+                      </Label>
                       <RadioGroup 
                         value={mediaType} 
                         onValueChange={setMediaType}
                         className="flex flex-col sm:flex-row gap-4"
                       >
-                        <div className="flex items-start space-x-2">
-                          <RadioGroupItem value="image" id="media-image" />
+                        <div className="flex items-start space-x-2 p-3 rounded-md hover:bg-blue-50/30 transition-colors">
+                          <RadioGroupItem value="image" id="media-image" className="text-blue-500" />
                           <div className="grid gap-1.5">
-                            <Label htmlFor="media-image" className="font-medium">Images (Max 5)</Label>
+                            <Label htmlFor="media-image" className="font-medium flex items-center gap-2">
+                              <Image className="h-4 w-4 text-blue-500" />
+                              Images (Max 5)
+                            </Label>
                             <p className="text-sm text-muted-foreground">
                               Upload up to 5 images for your personal branding
                             </p>
                           </div>
                         </div>
-                        <div className="flex items-start space-x-2">
-                          <RadioGroupItem value="video" id="media-video" />
+                        <div className="flex items-start space-x-2 p-3 rounded-md hover:bg-blue-50/30 transition-colors">
+                          <RadioGroupItem value="video" id="media-video" className="text-blue-500" />
                           <div className="grid gap-1.5">
-                            <Label htmlFor="media-video" className="font-medium">Video (Max 120 sec)</Label>
+                            <Label htmlFor="media-video" className="font-medium flex items-center gap-2">
+                              <Video className="h-4 w-4 text-blue-500" />
+                              Video (Max 120 sec)
+                            </Label>
                             <p className="text-sm text-muted-foreground">
                               Upload a single video for your personal branding
                             </p>
@@ -262,39 +300,53 @@ export default function CreatePulsePage() {
 
                     {mediaType === 'video' ? (
                       <>
-                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 flex flex-col items-center justify-center text-center">
-                          <Video className="h-12 w-12 text-gray-400 mb-4" />
+                        <div className="border-2 border-dashed border-blue-200 rounded-lg p-8 flex flex-col items-center justify-center text-center bg-blue-50/30">
+                          <Video className="h-12 w-12 text-blue-500 mb-4" />
                           <h3 className="font-medium text-lg mb-2">Upload Video</h3>
-                          <p className="text-sm text-gray-500 mb-4">
+                          <p className="text-sm text-blue-700/70 mb-4">
                             Drag and drop a video file here, or click to browse.<br />
                             Maximum length: 120 seconds | Supported formats: MP4, MOV, WebM
                           </p>
-                          <Button variant="outline" className="mb-4">
+                          <Button variant="outline" className="mb-4 border-blue-200 text-blue-700 hover:bg-blue-100">
                             Select File
                           </Button>
                           <input type="file" className="hidden" accept="video/*" />
-                          <p className="text-xs text-gray-400">Max file size: 100 MB</p>
+                          <p className="text-xs text-blue-500/70">Max file size: 100 MB</p>
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="media-title">Title</Label>
+                          <Label htmlFor="media-title" className="flex items-center gap-2">
+                            <Video className="h-4 w-4 text-blue-500" />
+                            <span>Video Title</span>
+                          </Label>
                           <Input
                             id="media-title"
                             placeholder="Add a descriptive title for your video"
                             required
+                            value={pulseTitle}
+                            onChange={(e) => setPulseTitle(e.target.value)}
+                            className="border-blue-100 focus-visible:ring-blue-500"
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="media-description">Description</Label>
+                          <Label htmlFor="media-description" className="flex items-center gap-2">
+                            <Video className="h-4 w-4 text-blue-500" />
+                            <span>Video Description</span>
+                          </Label>
                           <Textarea
                             id="media-description"
                             placeholder="Add context or details about your video..."
-                            className="min-h-[100px]"
+                            className="min-h-[100px] border-blue-100 focus-visible:ring-blue-500"
+                            value={pulseContent}
+                            onChange={(e) => setPulseContent(e.target.value)}
                           />
                         </div>
-                        <div className="space-y-2">
-                          <Label>Auto-Generate Captions</Label>
+                        <div className="space-y-2 bg-blue-50/30 p-4 border border-blue-100 rounded-md">
+                          <Label className="flex items-center gap-2 mb-2">
+                            <Video className="h-4 w-4 text-blue-500" />
+                            <span>Video Settings</span>
+                          </Label>
                           <div className="flex items-center space-x-2">
-                            <input type="checkbox" id="auto-captions" defaultChecked />
+                            <input type="checkbox" id="auto-captions" defaultChecked className="text-blue-500 focus:ring-blue-500" />
                             <Label htmlFor="auto-captions" className="text-sm font-normal">
                               Use AI to automatically generate captions
                             </Label>
@@ -303,39 +355,53 @@ export default function CreatePulsePage() {
                       </>
                     ) : (
                       <>
-                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 flex flex-col items-center justify-center text-center">
-                          <Image className="h-12 w-12 text-gray-400 mb-4" />
+                        <div className="border-2 border-dashed border-blue-200 rounded-lg p-8 flex flex-col items-center justify-center text-center bg-blue-50/30">
+                          <Image className="h-12 w-12 text-blue-500 mb-4" />
                           <h3 className="font-medium text-lg mb-2">Upload Images</h3>
-                          <p className="text-sm text-gray-500 mb-4">
+                          <p className="text-sm text-blue-700/70 mb-4">
                             Drag and drop up to 5 images here, or click to browse.<br />
                             Supported formats: JPG, PNG, WebP, GIF
                           </p>
-                          <Button variant="outline" className="mb-4">
+                          <Button variant="outline" className="mb-4 border-blue-200 text-blue-700 hover:bg-blue-100">
                             Select Files
                           </Button>
                           <input type="file" className="hidden" accept="image/*" multiple />
-                          <p className="text-xs text-gray-400">Max file size: 20 MB per image</p>
+                          <p className="text-xs text-blue-500/70">Max file size: 20 MB per image</p>
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="media-title">Title</Label>
+                          <Label htmlFor="image-title" className="flex items-center gap-2">
+                            <Image className="h-4 w-4 text-blue-500" />
+                            <span>Gallery Title</span>
+                          </Label>
                           <Input
-                            id="media-title"
+                            id="image-title"
                             placeholder="Add a title for your images"
                             required
+                            value={pulseTitle}
+                            onChange={(e) => setPulseTitle(e.target.value)}
+                            className="border-blue-100 focus-visible:ring-blue-500"
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="media-description">Description</Label>
+                          <Label htmlFor="image-description" className="flex items-center gap-2">
+                            <Image className="h-4 w-4 text-blue-500" />
+                            <span>Gallery Description</span>
+                          </Label>
                           <Textarea
-                            id="media-description"
+                            id="image-description"
                             placeholder="Add context or details about your images..."
-                            className="min-h-[100px]"
+                            className="min-h-[100px] border-blue-100 focus-visible:ring-blue-500"
+                            value={pulseContent}
+                            onChange={(e) => setPulseContent(e.target.value)}
                           />
                         </div>
-                        <div className="space-y-2">
-                          <Label>AI Image Analysis</Label>
+                        <div className="space-y-2 bg-blue-50/30 p-4 border border-blue-100 rounded-md">
+                          <Label className="flex items-center gap-2 mb-2">
+                            <Image className="h-4 w-4 text-blue-500" />
+                            <span>Image Settings</span>
+                          </Label>
                           <div className="flex items-center space-x-2">
-                            <input type="checkbox" id="ai-tags" defaultChecked />
+                            <input type="checkbox" id="ai-tags" defaultChecked className="text-blue-500 focus:ring-blue-500" />
                             <Label htmlFor="ai-tags" className="text-sm font-normal">
                               Generate suggested hashtags & keywords from my images
                             </Label>
@@ -345,7 +411,7 @@ export default function CreatePulsePage() {
                     )}
                     
                     <div className="flex justify-end">
-                      <Button className="px-6">
+                      <Button className="px-6 bg-blue-600 hover:bg-blue-700">
                         Upload & Publish Media
                       </Button>
                     </div>
@@ -354,16 +420,16 @@ export default function CreatePulsePage() {
 
                 {pulseType === 'project' && (
                   <div className="space-y-6">
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 flex flex-col items-center justify-center text-center">
-                      <FileCode className="h-12 w-12 text-gray-400 mb-4" />
-                      <h3 className="font-medium text-lg mb-2">Create Project</h3>
-                      <p className="text-sm text-gray-500 mb-4">
+                    <div className="border-2 border-dashed border-green-200 rounded-lg p-8 flex flex-col items-center justify-center text-center bg-green-50/30">
+                      <FileCode className="h-12 w-12 text-green-500 mb-4" />
+                      <h3 className="font-medium text-lg mb-2">Create Project Pulse</h3>
+                      <p className="text-sm text-green-700/70 mb-4">
                         Showcase your work and expertise with a detailed project.<br />
                         Add details, images and links to demonstrate your professional skills.
                       </p>
                       <Button 
                         variant="outline" 
-                        className="mb-4"
+                        className="mb-4 border-green-200 text-green-700 hover:bg-green-100"
                         onClick={() => setIsProjectModalOpen(true)}
                       >
                         Add New Project
@@ -373,14 +439,17 @@ export default function CreatePulsePage() {
                     <Dialog open={isProjectModalOpen} onOpenChange={setIsProjectModalOpen}>
                       <DialogContent className="sm:max-w-[650px] max-h-[90vh] overflow-y-auto">
                         <DialogHeader>
-                          <DialogTitle>Add New Project</DialogTitle>
+                          <DialogTitle className="flex items-center gap-2 text-green-700">
+                            <FileCode className="h-5 w-5 text-green-500" />
+                            Add New Project
+                          </DialogTitle>
                         </DialogHeader>
                         
                         <Tabs value={activeProjectTab} onValueChange={setActiveProjectTab} className="mt-4">
-                          <TabsList className="grid w-full grid-cols-3">
-                            <TabsTrigger value="details">Details</TabsTrigger>
-                            <TabsTrigger value="team">Team</TabsTrigger>
-                            <TabsTrigger value="endorsements">Endorsements</TabsTrigger>
+                          <TabsList className="grid w-full grid-cols-3 bg-green-50">
+                            <TabsTrigger value="details" className="data-[state=active]:bg-white data-[state=active]:text-green-700">Details</TabsTrigger>
+                            <TabsTrigger value="team" className="data-[state=active]:bg-white data-[state=active]:text-green-700">Team</TabsTrigger>
+                            <TabsTrigger value="endorsements" className="data-[state=active]:bg-white data-[state=active]:text-green-700">Endorsements</TabsTrigger>
                           </TabsList>
                           
                           <TabsContent value="details" className="space-y-4 pt-4">
@@ -456,22 +525,31 @@ export default function CreatePulsePage() {
             <div className="mt-8">
               <h2 className="text-xl font-semibold mb-4">Pulse Best Practices</h2>
               <div className="grid md:grid-cols-3 gap-4">
-                <Card>
+                <Card className="border-purple-100">
                   <CardContent className="p-4">
-                    <h3 className="font-medium mb-2">Focus on Value</h3>
-                    <p className="text-sm text-gray-600">Share unique insights from your professional experience that others can learn from.</p>
+                    <div className="flex items-center gap-2 mb-2">
+                      <BarChart className="h-4 w-4 text-purple-500" />
+                      <h3 className="font-medium">Focus on Value</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground">Share unique insights from your professional experience that others can learn from.</p>
                   </CardContent>
                 </Card>
-                <Card>
+                <Card className="border-blue-100">
                   <CardContent className="p-4">
-                    <h3 className="font-medium mb-2">Be Authentic</h3>
-                    <p className="text-sm text-gray-600">Your unique voice and perspective are what make your content valuable to your network.</p>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Image className="h-4 w-4 text-blue-500" />
+                      <h3 className="font-medium">Be Authentic</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground">Your unique voice and perspective are what make your content valuable to your network.</p>
                   </CardContent>
                 </Card>
-                <Card>
+                <Card className="border-green-100">
                   <CardContent className="p-4">
-                    <h3 className="font-medium mb-2">Engage Actively</h3>
-                    <p className="text-sm text-gray-600">Respond to comments and engage with those who interact with your pulse to build relationships.</p>
+                    <div className="flex items-center gap-2 mb-2">
+                      <FileCode className="h-4 w-4 text-green-500" />
+                      <h3 className="font-medium">Engage Actively</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground">Respond to comments and engage with those who interact with your pulse to build relationships.</p>
                   </CardContent>
                 </Card>
               </div>

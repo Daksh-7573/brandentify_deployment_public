@@ -11,14 +11,28 @@ import { MessageSquare, ThumbsUp, Calendar, Users, BarChart, Video, Image, FileC
 import { formatDistanceToNow } from "date-fns";
 
 // Extended Pulse type with user info for display purposes
-interface PulseWithUser extends Pulse {
+// Using Pick instead of extends to avoid type issues
+interface PulseWithUser {
+  id: number;
+  userId: number;
+  type: "poll" | "media-pulse" | "project";
+  title: string;
+  content: string | null;
+  mediaType: "image" | "video" | null;
+  mediaUrls: unknown; // Keep the mediaUrls as required but using the unknown type
+  pollOptions: unknown;
+  projectId: number | null;
+  likes: number | null;
+  comments: number | null;
+  isPublished: boolean | null;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+  // Additional display properties
   user?: {
     name: string | null;
     photoURL: string | null;
   };
   projectDetails?: string;
-  pollOptions?: string[];
-  mediaUrls?: string[];
 }
 
 export default function IndustryPulsePage() {
@@ -129,57 +143,77 @@ export default function IndustryPulsePage() {
                           
                           {/* Render pulse content based on type */}
                           {pulse.type === 'poll' && (
-                            <div className="mt-4 space-y-2 border rounded-md p-3">
-                              <div className="text-sm font-medium">Poll Options</div>
-                              {pulse.pollOptions?.map((option, index) => (
-                                <div key={index} className="flex items-center space-x-2">
-                                  <div className="h-2 w-2 rounded-full bg-primary" />
-                                  <span>{option}</span>
-                                </div>
-                              ))}
+                            <div className="mt-4 space-y-2 border rounded-md p-4 bg-purple-50/30">
+                              <div className="text-sm font-medium flex items-center gap-2">
+                                <BarChart className="h-4 w-4 text-purple-500" />
+                                <span>Poll Options</span>
+                              </div>
+                              <div className="space-y-2 pl-2">
+                                {Array.isArray(pulse.pollOptions) && pulse.pollOptions.map((option, index) => (
+                                  <div key={index} className="flex items-center space-x-2">
+                                    <div className="h-2 w-2 rounded-full bg-purple-500" />
+                                    <span>{option}</span>
+                                  </div>
+                                ))}
+                              </div>
                             </div>
                           )}
                           
                           {pulse.type === 'media-pulse' && pulse.mediaType === 'image' && pulse.mediaUrls && (
-                            <div className="mt-4 grid grid-cols-2 gap-2">
-                              {pulse.mediaUrls.slice(0, 4).map((url, index) => (
-                                <img 
-                                  key={index} 
-                                  src={url} 
-                                  alt={`Media ${index + 1}`} 
-                                  className="w-full h-48 object-cover rounded-md"
-                                />
-                              ))}
-                              {pulse.mediaUrls.length > 4 && (
-                                <div className="relative">
+                            <div className="mt-4 space-y-2">
+                              <div className="text-sm font-medium flex items-center gap-2">
+                                <Image className="h-4 w-4 text-blue-500" />
+                                <span>Image Gallery</span>
+                              </div>
+                              <div className="grid grid-cols-2 gap-2 mt-2">
+                                {Array.isArray(pulse.mediaUrls) && pulse.mediaUrls.slice(0, 4).map((url, index) => (
                                   <img 
-                                    src={pulse.mediaUrls[4]} 
-                                    alt="Media 5" 
-                                    className="w-full h-48 object-cover rounded-md opacity-70"
+                                    key={index} 
+                                    src={url} 
+                                    alt={`Media ${index + 1}`} 
+                                    className="w-full h-48 object-cover rounded-md"
                                   />
-                                  <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-md">
-                                    <span className="text-white font-bold text-lg">+{pulse.mediaUrls.length - 4} more</span>
+                                ))}
+                                {Array.isArray(pulse.mediaUrls) && pulse.mediaUrls.length > 4 && (
+                                  <div className="relative">
+                                    <img 
+                                      src={Array.isArray(pulse.mediaUrls) ? pulse.mediaUrls[4] : ''} 
+                                      alt="Media 5" 
+                                      className="w-full h-48 object-cover rounded-md opacity-70"
+                                    />
+                                    <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-md">
+                                      <span className="text-white font-bold text-lg">+{Array.isArray(pulse.mediaUrls) ? pulse.mediaUrls.length - 4 : 0} more</span>
+                                    </div>
                                   </div>
-                                </div>
-                              )}
+                                )}
+                              </div>
                             </div>
                           )}
                           
                           {pulse.type === 'media-pulse' && pulse.mediaType === 'video' && pulse.mediaUrls && (
-                            <div className="mt-4">
-                              <video 
-                                src={pulse.mediaUrls[0]} 
-                                controls 
-                                className="w-full rounded-md"
-                                style={{ maxHeight: "400px" }}
-                              />
+                            <div className="mt-4 space-y-2">
+                              <div className="text-sm font-medium flex items-center gap-2">
+                                <Video className="h-4 w-4 text-blue-500" />
+                                <span>Video</span>
+                              </div>
+                              <div className="bg-blue-50/30 border rounded-md p-2">
+                                <video 
+                                  src={Array.isArray(pulse.mediaUrls) && pulse.mediaUrls.length > 0 ? pulse.mediaUrls[0] : ''} 
+                                  controls 
+                                  className="w-full rounded-md"
+                                  style={{ maxHeight: "400px" }}
+                                />
+                              </div>
                             </div>
                           )}
                           
                           {pulse.type === 'project' && (
-                            <div className="mt-4 space-y-2 p-3 border rounded-md">
-                              <div className="text-sm font-medium">Project Details</div>
-                              <p className="text-sm">{pulse.projectDetails || "No details available"}</p>
+                            <div className="mt-4 space-y-2 border rounded-md p-4 bg-green-50/30">
+                              <div className="text-sm font-medium flex items-center gap-2">
+                                <FileCode className="h-4 w-4 text-green-500" />
+                                <span>Project Details</span>
+                              </div>
+                              <p className="text-sm pl-2">{pulse.projectDetails || "No details available"}</p>
                             </div>
                           )}
                         </CardContent>
