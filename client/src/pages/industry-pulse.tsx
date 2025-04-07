@@ -11,7 +11,6 @@ import { MessageSquare, ThumbsUp, Calendar, Users, BarChart, Video, Image, FileC
 import { formatDistanceToNow } from "date-fns";
 
 // Extended Pulse type with user info for display purposes
-// Using Pick instead of extends to avoid type issues
 interface PulseWithUser {
   id: number;
   userId: number;
@@ -19,14 +18,14 @@ interface PulseWithUser {
   title: string;
   content: string | null;
   mediaType: "image" | "video" | null;
-  mediaUrls: unknown; // Keep the mediaUrls as required but using the unknown type
-  pollOptions: unknown;
+  mediaUrls: string[]; // Array of media URLs
+  pollOptions: string[]; // Array of poll options
   projectId: number | null;
-  likes: number | null;
-  comments: number | null;
-  isPublished: boolean | null;
-  createdAt: Date | null;
-  updatedAt: Date | null;
+  likes: number;
+  comments: number;
+  isPublished: boolean;
+  createdAt: string | Date; // Can be a string from the API
+  updatedAt: string | Date;
   // Additional display properties
   user?: {
     name: string | null;
@@ -149,7 +148,7 @@ export default function IndustryPulsePage() {
                                 <span>Poll Options</span>
                               </div>
                               <div className="space-y-2 pl-2">
-                                {Array.isArray(pulse.pollOptions) && pulse.pollOptions.map((option, index) => (
+                                {pulse.pollOptions.map((option, index) => (
                                   <div key={index} className="flex items-center space-x-2">
                                     <div className="h-2 w-2 rounded-full bg-purple-500" />
                                     <span>{option}</span>
@@ -166,7 +165,7 @@ export default function IndustryPulsePage() {
                                 <span>Image Gallery</span>
                               </div>
                               <div className="grid grid-cols-2 gap-2 mt-2">
-                                {Array.isArray(pulse.mediaUrls) && pulse.mediaUrls.slice(0, 4).map((url, index) => (
+                                {pulse.mediaUrls.slice(0, 4).map((url, index) => (
                                   <img 
                                     key={index} 
                                     src={url} 
@@ -174,15 +173,15 @@ export default function IndustryPulsePage() {
                                     className="w-full h-48 object-cover rounded-md"
                                   />
                                 ))}
-                                {Array.isArray(pulse.mediaUrls) && pulse.mediaUrls.length > 4 && (
+                                {pulse.mediaUrls.length > 4 && (
                                   <div className="relative">
                                     <img 
-                                      src={Array.isArray(pulse.mediaUrls) ? pulse.mediaUrls[4] : ''} 
+                                      src={pulse.mediaUrls[4]} 
                                       alt="Media 5" 
                                       className="w-full h-48 object-cover rounded-md opacity-70"
                                     />
                                     <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-md">
-                                      <span className="text-white font-bold text-lg">+{Array.isArray(pulse.mediaUrls) ? pulse.mediaUrls.length - 4 : 0} more</span>
+                                      <span className="text-white font-bold text-lg">+{pulse.mediaUrls.length - 4} more</span>
                                     </div>
                                   </div>
                                 )}
@@ -198,7 +197,7 @@ export default function IndustryPulsePage() {
                               </div>
                               <div className="bg-blue-50/30 border rounded-md p-2">
                                 <video 
-                                  src={Array.isArray(pulse.mediaUrls) && pulse.mediaUrls.length > 0 ? pulse.mediaUrls[0] : ''} 
+                                  src={pulse.mediaUrls.length > 0 ? pulse.mediaUrls[0] : ''} 
                                   controls 
                                   className="w-full rounded-md"
                                   style={{ maxHeight: "400px" }}

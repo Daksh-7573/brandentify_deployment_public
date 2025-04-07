@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
+import { useMutation } from "@tanstack/react-query";
 import Header from "@/components/layout/header";
 import Sidebar from "@/components/layout/sidebar";
 import { Button } from "@/components/ui/button";
@@ -7,45 +8,118 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { AlertCircle, BarChart, Video, Image, FileCode } from "lucide-react";
+import { AlertCircle, BarChart, Video, Image, FileCode, Loader2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProjectForm, { Project } from "@/components/shared/project-form";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { InsertPulse } from "@shared/schema";
 
 export default function CreatePulsePage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [pulseTitle, setPulseTitle] = useState("");
   const [pulseContent, setPulseContent] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [pulseType, setPulseType] = useState("poll");
   const [mediaType, setMediaType] = useState("image");
   const [pollOptions, setPollOptions] = useState(["", ""]);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [activeProjectTab, setActiveProjectTab] = useState('details');
+  const [selectedProject, setSelectedProject] = useState<number | null>(null);
+  const [mediaUrls, setMediaUrls] = useState<string[]>([]);
+
+  // Create a mutation for submitting the pulse
+  const createPulseMutation = useMutation({
+    mutationFn: async (pulseData: InsertPulse) => {
+      const res = await apiRequest('POST', '/api/pulses', pulseData);
+      return res.json();
+    },
+    onSuccess: () => {
+      // Invalidate the pulses query to refresh the list
+      queryClient.invalidateQueries({ queryKey: ['/api/pulses'] });
+      
+      // Reset form
+      setPulseTitle("");
+      setPulseContent("");
+      setPollOptions(["", ""]);
+      setMediaUrls([]);
+      
+      // Show success message
+      toast({
+        title: "Success",
+        description: `Your ${pulseType} has been created successfully`,
+        variant: "default",
+      });
+    },
+    onError: (error: Error) => {
+      console.error("Error creating pulse:", error);
+      toast({
+        title: "Error",
+        description: `Failed to create pulse: ${error.message}`,
+        variant: "destructive",
+      });
+    }
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
     
-    // Log the submission based on type
-    console.log("Submitting pulse:", { 
-      type: pulseType,
-      mediaType: pulseType === 'media-pulse' ? mediaType : undefined,
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to create a pulse",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Prepare pulse data based on type
+    let pulseData: InsertPulse = {
+      userId: user.id,
+      type: pulseType as any, // Type assertion to match enum
       title: pulseTitle,
-      content: pulseContent
-    });
+      content: pulseContent,
+      isPublished: true
+    };
     
-    // Simulate submission delay
-    setTimeout(() => {
-      setIsSubmitting(false);
-      alert("Pulse created successfully! This is a placeholder. Actual implementation will be added later.");
-      setPulseTitle("");
-      setPulseContent("");
-    }, 1500);
+    // Add type-specific data
+    if (pulseType === 'poll') {
+      // Filter out any empty options
+      const validOptions = pollOptions.filter(option => option.trim() !== "");
+      if (validOptions.length < 2) {
+        toast({
+          title: "Error",
+          description: "Please provide at least two poll options",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      pulseData.pollOptions = validOptions;
+    } 
+    else if (pulseType === 'media-pulse') {
+      pulseData.mediaType = mediaType as any; // Type assertion to match enum
+      pulseData.mediaUrls = mediaUrls;
+    } 
+    else if (pulseType === 'project') {
+      if (!selectedProject) {
+        toast({
+          title: "Error",
+          description: "Please select a project to share",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      pulseData.projectId = selectedProject;
+    }
+    
+    // Submit the pulse
+    console.log("Submitting pulse:", pulseData);
+    createPulseMutation.mutate(pulseData);
   };
 
   const addPollOption = () => {
@@ -250,8 +324,18 @@ export default function CreatePulsePage() {
                       />
                     </div>
                     <div className="flex justify-end">
-                      <Button className="px-6 bg-purple-600 hover:bg-purple-700">
-                        Create Poll
+                      <Button 
+                        className="px-6 bg-purple-600 hover:bg-purple-700"
+                        disabled={createPulseMutation.isPending}
+                      >
+                        {createPulseMutation.isPending ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Creating...
+                          </>
+                        ) : (
+                          "Create Poll"
+                        )}
                       </Button>
                     </div>
                   </form>
@@ -411,8 +495,18 @@ export default function CreatePulsePage() {
                     )}
                     
                     <div className="flex justify-end">
-                      <Button className="px-6 bg-blue-600 hover:bg-blue-700">
-                        Upload & Publish Media
+                      <Button 
+                        className="px-6 bg-blue-600 hover:bg-blue-700"
+                        disabled={createPulseMutation.isPending}
+                      >
+                        {createPulseMutation.isPending ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Uploading...
+                          </>
+                        ) : (
+                          "Upload & Publish Media"
+                        )}
                       </Button>
                     </div>
                   </form>
