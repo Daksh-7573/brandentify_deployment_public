@@ -258,6 +258,9 @@ export class MemStorage implements IStorage {
     // Starting service ID at 1 for the first service a user creates
     this.currentServiceId = 1;
     
+    // Add demo pulses for testing image carousel
+    this.createDemoPulses(demoUser.id);
+    
     console.log(`[storage.initializeDemoData] No pre-created services - users will add their own`);
     
   }
@@ -1073,6 +1076,79 @@ export class MemStorage implements IStorage {
     return this.services.delete(id);
   }
   
+  /**
+   * Create demo pulses for testing carousel/image gallery functionality
+   */
+  private createDemoPulses(userId: number): void {
+    // Create a demo media pulse with multiple images for carousel testing
+    const imagePulse: Pulse = {
+      id: 1,
+      userId: userId,
+      type: "media-pulse",
+      title: "My Latest UI Design Work",
+      content: "Showcasing some of my recent UI design work on product dashboards and analytics interfaces. I focused on creating clean, intuitive layouts with strong visual hierarchy.",
+      mediaType: "image",
+      mediaUrls: [
+        "https://images.unsplash.com/photo-1551651653-c5dcb914d348?auto=format&fit=crop&w=1050&h=700&q=80",
+        "https://images.unsplash.com/photo-1545235617-7a424c1a60cc?auto=format&fit=crop&w=1050&h=700&q=80", 
+        "https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?auto=format&fit=crop&w=1050&h=700&q=80",
+        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1050&h=700&q=80",
+        "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&w=1050&h=700&q=80"
+      ],
+      pollOptions: [],
+      projectId: null,
+      likes: 24,
+      comments: 7,
+      isPublished: true,
+      createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
+      updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)
+    };
+    
+    // Create a poll pulse
+    const pollPulse: Pulse = {
+      id: 2,
+      userId: userId,
+      type: "poll",
+      title: "What's your preferred development stack?",
+      content: "I'm curious about what technologies other professionals are using for their projects.",
+      mediaType: null,
+      mediaUrls: [],
+      pollOptions: ["MERN (MongoDB, Express, React, Node)", "LAMP (Linux, Apache, MySQL, PHP)", "JAMstack", "Python + Django/Flask", ".NET Core + Angular/React"],
+      projectId: null,
+      likes: 42,
+      comments: 18,
+      isPublished: true,
+      createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
+      updatedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000)
+    };
+    
+    // Create a video pulse
+    const videoPulse: Pulse = {
+      id: 3,
+      userId: userId,
+      type: "media-pulse",
+      title: "Quick Demo of My New App",
+      content: "A brief walkthrough of the application I've been developing for the past few months. Would love your feedback!",
+      mediaType: "video",
+      mediaUrls: ["https://assets.mixkit.co/videos/preview/mixkit-designer-working-on-their-graphic-design-app-610-large.mp4"],
+      pollOptions: [],
+      projectId: null,
+      likes: 17,
+      comments: 5,
+      isPublished: true,
+      createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 days ago
+      updatedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+    };
+    
+    // Add pulses to storage
+    this.pulses.set(imagePulse.id, imagePulse);
+    this.pulses.set(pollPulse.id, pollPulse);
+    this.pulses.set(videoPulse.id, videoPulse);
+    this.currentPulseId = 4; // Set next pulse ID
+    
+    console.log("[storage.createDemoPulses] Created demo pulses for image carousel testing");
+  }
+
   // Pulse operations
   async getPulses(): Promise<Pulse[]> {
     return Array.from(this.pulses.values())
