@@ -397,18 +397,51 @@ export default function CreatePulsePage() {
                             />
                           </TabsContent>
                           
-                          <TabsContent value="team" className="pt-4">
-                            <div className="text-center p-6">
-                              <p className="text-muted-foreground">
-                                After creating your project, you can add team members and collaborators here.
+                          <TabsContent value="team" className="space-y-4 pt-4">
+                            <div className="space-y-4">
+                              <h3 className="text-sm font-medium">Add Team Member</h3>
+                              <div className="space-y-4 border rounded-lg p-4">
+                                <div className="space-y-2">
+                                  <Label>Profile Link*</Label>
+                                  <Input placeholder="https://brandentifier.replit.app/profile/username" disabled />
+                                  <p className="text-xs text-muted-foreground">
+                                    Add Brandentifier profile link to connect with users
+                                  </p>
+                                </div>
+                                <Button size="sm" className="mt-2" disabled>
+                                  Add Team Member
+                                </Button>
+                              </div>
+                              <p className="text-sm text-muted-foreground">
+                                You can add team members after saving the project
                               </p>
                             </div>
                           </TabsContent>
                           
-                          <TabsContent value="endorsements" className="pt-4">
-                            <div className="text-center p-6">
-                              <p className="text-muted-foreground">
-                                After creating your project, you can add client endorsements here.
+                          <TabsContent value="endorsements" className="space-y-4 pt-4">
+                            <div className="space-y-4">
+                              <h3 className="text-sm font-medium">Add Client</h3>
+                              <p className="text-sm text-muted-foreground">
+                                Add a client's profile link to invite them to endorse your project.
+                              </p>
+                              <div className="space-y-4 border rounded-lg p-4">
+                                <div className="space-y-2">
+                                  <Label>Client Profile Link*</Label>
+                                  <Input placeholder="https://brandentifier.replit.app/profile/username" disabled />
+                                  <p className="text-xs text-muted-foreground">
+                                    Add Brandentifier profile link of your client
+                                  </p>
+                                </div>
+                                <Button 
+                                  size="sm" 
+                                  className="mt-2"
+                                  disabled
+                                >
+                                  Add Client
+                                </Button>
+                              </div>
+                              <p className="text-xs text-muted-foreground italic">
+                                Note: You'll need to save the project first before client endorsements can be processed.
                               </p>
                             </div>
                           </TabsContent>
