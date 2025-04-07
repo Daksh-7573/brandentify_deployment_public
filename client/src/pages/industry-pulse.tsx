@@ -208,18 +208,26 @@ function ImageCarousel({ pulse }: { pulse: PulseWithUser }) {
     
     // First try to use mediaUrls if they exist
     if (pulse.mediaUrls && pulse.mediaUrls.length > 0) {
-      mediaImages = [...pulse.mediaUrls];
+      // Filter out any invalid URLs (empty strings, undefined, etc.)
+      mediaImages = pulse.mediaUrls.filter(url => url && url.trim() !== '');
       console.log("Using mediaUrls for carousel:", mediaImages);
     } 
     // If no mediaUrls, try mediaLocalStorageKeys
     else if (pulse.mediaLocalStorageKeys && pulse.mediaLocalStorageKeys.length > 0) {
       // Check if these are URLs (from newer uploads) or localStorage keys (from older uploads)
-      if (pulse.mediaLocalStorageKeys[0].startsWith('http')) {
-        mediaImages = [...pulse.mediaLocalStorageKeys];
+      const allStartWithHttp = pulse.mediaLocalStorageKeys.every(
+        key => key && (key.startsWith('http://') || key.startsWith('https://'))
+      );
+      
+      if (allStartWithHttp) {
+        // These are already URLs (from server)
+        mediaImages = pulse.mediaLocalStorageKeys.filter(url => url && url.trim() !== '');
         console.log("Using mediaLocalStorageKeys as direct URLs:", mediaImages);
       } else {
         // These might be old localStorage keys, try to retrieve them
         pulse.mediaLocalStorageKeys.forEach(key => {
+          if (!key) return;
+          
           try {
             const storedData = localStorage.getItem(key);
             if (storedData && storedData.startsWith('data:image')) {
@@ -233,15 +241,9 @@ function ImageCarousel({ pulse }: { pulse: PulseWithUser }) {
       }
     }
     
-    // If we still don't have images, use demo images
+    // Log an alert if we couldn't find any images
     if (mediaImages.length === 0) {
-      mediaImages = [
-        'https://images.unsplash.com/photo-1551651653-c5dcb914d348?auto=format&fit=crop&w=1050&h=700&q=80',
-        'https://images.unsplash.com/photo-1545235617-7a424c1a60cc?auto=format&fit=crop&w=1050&h=700&q=80', 
-        'https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?auto=format&fit=crop&w=1050&h=700&q=80',
-        'https://images.unsplash.com/photo-1502945015378-0e284ca1a5be?auto=format&fit=crop&w=1050&h=700&q=80'
-      ];
-      console.log("Using demo images as fallback");
+      console.warn("No images found for this pulse. This pulse might be missing image data.");
     }
     
     setImages(mediaImages);
@@ -311,26 +313,29 @@ function VideoPlayer({ pulse }: { pulse: PulseWithUser }) {
     console.log("Video media URLs:", pulse.mediaUrls);
     console.log("Video localStorage keys:", pulse.mediaLocalStorageKeys);
     
-    // Default fallback video URL if no user video is available
-    const defaultVideoUrl = 'https://assets.mixkit.co/videos/preview/mixkit-a-girl-blowing-a-bubble-gum-at-an-amusement-park-1226-large.mp4';
-    let videoUrl = defaultVideoUrl;
+    let videoUrl = '';
     
     // First try to use mediaUrls if they exist
     if (pulse.mediaUrls && pulse.mediaUrls.length > 0) {
-      videoUrl = pulse.mediaUrls[0];
-      console.log("Using mediaUrls for video:", videoUrl);
+      // Get the first valid URL
+      const validUrl = pulse.mediaUrls.find(url => url && url.trim() !== '');
+      if (validUrl) {
+        videoUrl = validUrl;
+        console.log("Using mediaUrls for video:", videoUrl);
+      }
     } 
     // If no mediaUrls, try mediaLocalStorageKeys
     else if (pulse.mediaLocalStorageKeys && pulse.mediaLocalStorageKeys.length > 0) {
       // Check if these are URLs (from newer uploads) or localStorage keys (from older uploads)
-      if (pulse.mediaLocalStorageKeys[0].startsWith('http')) {
-        videoUrl = pulse.mediaLocalStorageKeys[0];
+      const firstKey = pulse.mediaLocalStorageKeys[0];
+      
+      if (firstKey && (firstKey.startsWith('http://') || firstKey.startsWith('https://'))) {
+        videoUrl = firstKey;
         console.log("Using mediaLocalStorageKeys as direct URL:", videoUrl);
-      } else {
+      } else if (firstKey) {
         // These might be old localStorage keys, try to retrieve the first one
-        const key = pulse.mediaLocalStorageKeys[0];
         try {
-          const storedData = localStorage.getItem(key);
+          const storedData = localStorage.getItem(firstKey);
           if (storedData && (storedData.startsWith('data:video') || storedData.startsWith('blob:'))) {
             videoUrl = storedData;
             console.log("Retrieved video from localStorage");
@@ -339,6 +344,11 @@ function VideoPlayer({ pulse }: { pulse: PulseWithUser }) {
           console.error("Error retrieving video from localStorage:", e);
         }
       }
+    }
+    
+    // Log if no video URL was found
+    if (!videoUrl) {
+      console.warn("No video URL found for this pulse. This pulse might be missing video data.");
     }
     
     setVideoSrc(videoUrl);
@@ -358,31 +368,42 @@ function VideoPlayer({ pulse }: { pulse: PulseWithUser }) {
           </div>
         ) : (
           <div className="relative">
-            <video 
-              src={videoSrc} 
-              controls 
-              className="w-full rounded-md"
-              style={{ maxHeight: "400px" }}
-              onError={(e) => {
-                console.error(`Failed to load video: ${videoSrc}`);
-                // If video fails to load, show message
-                const parent = e.currentTarget.parentElement;
-                if (parent) {
-                  parent.innerHTML = `
-                    <div class="h-64 flex items-center justify-center bg-blue-50 rounded-md">
-                      <div class="text-center">
-                        <div class="mb-2">
-                          <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-300 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
+            {videoSrc ? (
+              <video 
+                src={videoSrc} 
+                controls 
+                className="w-full rounded-md"
+                style={{ maxHeight: "400px" }}
+                onError={(e) => {
+                  console.error(`Failed to load video: ${videoSrc}`);
+                  // If video fails to load, show message
+                  const parent = e.currentTarget.parentElement;
+                  if (parent) {
+                    parent.innerHTML = `
+                      <div class="h-64 flex items-center justify-center bg-blue-50 rounded-md">
+                        <div class="text-center">
+                          <div class="mb-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-300 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          </div>
+                          <p class="text-blue-500">Video could not be loaded</p>
                         </div>
-                        <p class="text-blue-500">Video could not be loaded</p>
                       </div>
-                    </div>
-                  `;
-                }
-              }}
-            />
+                    `;
+                  }
+                }}
+              />
+            ) : (
+              <div className="h-64 flex items-center justify-center bg-blue-50 rounded-md">
+                <div className="text-center">
+                  <div className="mb-2">
+                    <Video className="h-10 w-10 text-blue-300 mx-auto" />
+                  </div>
+                  <p className="text-blue-500">No video available for this pulse</p>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

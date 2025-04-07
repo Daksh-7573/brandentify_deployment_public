@@ -122,7 +122,7 @@ export default function CreatePulsePage() {
       pulseData.pollOptions = validOptions;
     } 
     else if (pulseType === 'media-pulse') {
-      if (mediaUrls.length === 0 || uploadedFiles.length === 0) {
+      if (mediaUrls.length === 0) {
         toast({
           title: "Error",
           description: `Please upload at least one ${mediaType === 'video' ? 'video' : 'image'}`,
@@ -131,48 +131,16 @@ export default function CreatePulsePage() {
         return;
       }
       
-      // In a real implementation, we would:
-      // 1. Upload the file(s) to a server/cloud storage
-      // 2. Get the URLs from the response
-      // 3. Add those URLs to the pulse data
-      // 
-      // For now, we'll simulate this with the object URLs we created
-      
-      // Simulate an upload process
+      // Set the proper media type
       pulseData.mediaType = mediaType as any; // Type assertion to match enum
       
-      // For demo purposes, we'll convert images to base64 and store them
-      // In a production environment, we would upload files to cloud storage
+      // Use the mediaUrls that have been updated from server upload
+      pulseData.mediaUrls = mediaUrls;
       
-      if (mediaType === 'image') {
-        // Use the actual mediaUrls from the locally uploaded files
-        // In a real application, these would be uploaded to a server first
-        pulseData.mediaUrls = mediaUrls;
-        
-        // Save the mediaUrls directly to ensure they are passed to the component
-        pulseData.mediaLocalStorageKeys = mediaUrls;
-        
-        // Submit the data directly without trying to store in localStorage
-        console.log("Submitting pulse with direct image URLs:", pulseData);
-        createPulseMutation.mutate(pulseData);
-        return; // Exit early as we've handled the submission
-      } else if (mediaType === 'video') {
-        // Use the actual mediaUrls from the locally uploaded files
-        // In a real application, these would be uploaded to a server first
-        if (mediaUrls.length > 0) {
-          pulseData.mediaUrls = mediaUrls;
-          pulseData.mediaLocalStorageKeys = mediaUrls;
-          
-          console.log("Submitting pulse with video:", pulseData);
-          createPulseMutation.mutate(pulseData);
-          return; // Exit early as we've handled the submission
-        } else {
-          // No video uploaded, use fallback
-          const fallbackVideoUrl = 'https://assets.mixkit.co/videos/preview/mixkit-a-girl-blowing-a-bubble-gum-at-an-amusement-park-1226-large.mp4';
-          pulseData.mediaUrls = [fallbackVideoUrl];
-          pulseData.mediaLocalStorageKeys = [fallbackVideoUrl];
-        }
-      }
+      // For backward compatibility with the viewer component
+      pulseData.mediaLocalStorageKeys = mediaUrls;
+      
+      console.log(`Submitting pulse with ${mediaType} URLs:`, pulseData);
     } 
     else if (pulseType === 'project') {
       if (!selectedProject) {
@@ -191,10 +159,8 @@ export default function CreatePulsePage() {
     console.log("Submitting pulse:", pulseData);
     createPulseMutation.mutate(pulseData);
     
-    // Clean up any object URLs to avoid memory leaks
-    if (pulseType === 'media-pulse' && mediaUrls.length > 0) {
-      mediaUrls.forEach(url => URL.revokeObjectURL(url));
-    }
+    // We don't need to clean up the object URLs here anymore as they're real server URLs
+    // We'll do cleanup for preview URLs in the success handler of the mutation
   };
 
   const addPollOption = () => {
@@ -230,7 +196,7 @@ export default function CreatePulsePage() {
     }
   };
   
-  const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
     
@@ -246,18 +212,64 @@ export default function CreatePulsePage() {
       return;
     }
     
-    // Create a preview URL
-    const url = URL.createObjectURL(file);
-    setMediaUrls([url]);
+    // Create a preview URL for immediate display
+    const previewUrl = URL.createObjectURL(file);
+    setMediaUrls([previewUrl]);
     setUploadedFiles([file]);
     
-    toast({
-      title: "Video uploaded",
-      description: "Video file ready for upload",
-    });
+    try {
+      // Create FormData to send file to server
+      const formData = new FormData();
+      if (!user) {
+        throw new Error("User not logged in");
+      }
+      
+      formData.append("userId", user.id.toString());
+      formData.append("media", file);
+      
+      // Show uploading toast
+      toast({
+        title: "Uploading",
+        description: "Uploading video to the server...",
+      });
+      
+      // Upload file to server
+      const response = await fetch('/api/pulses/upload-media', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      console.log("Video upload successful:", data);
+      
+      // Update mediaUrls with server URL
+      if (data.mediaUrls && data.mediaUrls.length > 0) {
+        setMediaUrls(data.mediaUrls);
+        
+        toast({
+          title: "Video uploaded",
+          description: "Video file uploaded successfully",
+        });
+      }
+    } catch (error) {
+      console.error("Error uploading video:", error);
+      
+      toast({
+        title: "Upload Error",
+        description: error instanceof Error ? error.message : "Failed to upload video",
+        variant: "destructive",
+      });
+      
+      // Keep the local preview URL so the user can still see what they uploaded
+      // but they should know the upload to server failed
+    }
   };
   
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
     
@@ -279,15 +291,65 @@ export default function CreatePulsePage() {
     
     if (validFiles.length === 0) return;
     
-    // Create preview URLs
-    const urls = validFiles.map(file => URL.createObjectURL(file));
-    setMediaUrls(urls);
+    // Create preview URLs for immediate display
+    const previewUrls = validFiles.map(file => URL.createObjectURL(file));
+    setMediaUrls(previewUrls);
     setUploadedFiles(validFiles);
     
-    toast({
-      title: "Images uploaded",
-      description: `${validFiles.length} image(s) ready for upload`,
-    });
+    try {
+      // Create FormData to send files to server
+      const formData = new FormData();
+      if (!user) {
+        throw new Error("User not logged in");
+      }
+      
+      formData.append("userId", user.id.toString());
+      
+      // Append each file to the form data
+      validFiles.forEach((file, index) => {
+        formData.append("media", file);
+      });
+      
+      // Show uploading toast
+      toast({
+        title: "Uploading",
+        description: `Uploading ${validFiles.length} image(s) to the server...`,
+      });
+      
+      // Upload files to server
+      const response = await fetch('/api/pulses/upload-media', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      console.log("Image upload successful:", data);
+      
+      // Update mediaUrls with server URLs
+      if (data.mediaUrls && data.mediaUrls.length > 0) {
+        setMediaUrls(data.mediaUrls);
+        
+        toast({
+          title: "Images uploaded",
+          description: `${validFiles.length} image(s) uploaded successfully`,
+        });
+      }
+    } catch (error) {
+      console.error("Error uploading images:", error);
+      
+      toast({
+        title: "Upload Error",
+        description: error instanceof Error ? error.message : "Failed to upload images",
+        variant: "destructive",
+      });
+      
+      // Keep the local preview URLs so the user can still see what they uploaded
+      // but they should know the upload to server failed
+    }
   };
   
   const removeMedia = (index: number) => {

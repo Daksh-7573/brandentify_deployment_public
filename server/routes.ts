@@ -1425,6 +1425,101 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // POST /api/pulses/upload-media - Upload media files for pulses
+  apiRouter.post("/pulses/upload-media", async (req: Request, res: Response) => {
+    try {
+      console.log(`[POST /pulses/upload-media] Received upload request:`, req.files);
+      
+      if (!req.files) {
+        return res.status(400).json({ message: "No files uploaded" });
+      }
+      
+      // Get user ID and other metadata
+      const userId = req.body.userId;
+      
+      if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
+      }
+      
+      // Arrays to store file information
+      const uploadedMediaUrls: string[] = [];
+      const uploadedFileNames: string[] = [];
+      
+      // Process files from the request (could be an array or single file)
+      const mediaFiles = req.files.media;
+      
+      if (Array.isArray(mediaFiles)) {
+        // Handle multiple files
+        for (let i = 0; i < mediaFiles.length; i++) {
+          const file = mediaFiles[i];
+          
+          // Generate unique filename
+          const timestamp = Date.now() + i; // Add index to ensure uniqueness
+          const ext = path.extname(file.name);
+          const filename = `media_${userId}_${timestamp}${ext}`;
+          
+          // Define upload path
+          const uploadPath = path.join(process.cwd(), 'public', 'uploads', 'media', filename);
+          
+          // Move the file to the upload directory
+          await new Promise<void>((resolve, reject) => {
+            file.mv(uploadPath, (err) => {
+              if (err) {
+                console.error(`[POST /pulses/upload-media] File move error:`, err);
+                reject(err);
+              } else {
+                const fileUrl = getFileUrl(filename, 'media');
+                uploadedMediaUrls.push(fileUrl);
+                uploadedFileNames.push(filename);
+                resolve();
+              }
+            });
+          });
+        }
+      } else if (mediaFiles) {
+        // Handle single file
+        const file = mediaFiles;
+        
+        // Generate unique filename
+        const timestamp = Date.now();
+        const ext = path.extname(file.name);
+        const filename = `media_${userId}_${timestamp}${ext}`;
+        
+        // Define upload path
+        const uploadPath = path.join(process.cwd(), 'public', 'uploads', 'media', filename);
+        
+        // Move the file to the upload directory
+        await new Promise<void>((resolve, reject) => {
+          file.mv(uploadPath, (err) => {
+            if (err) {
+              console.error(`[POST /pulses/upload-media] File move error:`, err);
+              reject(err);
+            } else {
+              const fileUrl = getFileUrl(filename, 'media');
+              uploadedMediaUrls.push(fileUrl);
+              uploadedFileNames.push(filename);
+              resolve();
+            }
+          });
+        });
+      }
+      
+      // Return the uploaded media URLs
+      res.status(200).json({
+        mediaUrls: uploadedMediaUrls,
+        mediaFiles: uploadedFileNames,
+        message: "Media files uploaded successfully"
+      });
+      
+    } catch (error) {
+      console.error(`[POST /pulses/upload-media] Error:`, error);
+      res.status(500).json({ 
+        message: `Error processing upload: ${error instanceof Error ? error.message : String(error)}`,
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
   // POST /api/pulses - Create a new pulse
   apiRouter.post("/pulses", async (req: Request, res: Response) => {
     try {

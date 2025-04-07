@@ -43,6 +43,7 @@ app.use(fileUpload({
 // Create uploads directory if it doesn't exist
 const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
 const projectDir = path.join(uploadsDir, 'projects');
+const mediaDir = path.join(uploadsDir, 'media');
 
 // Ensure directories exist
 import fs from 'fs';
@@ -51,6 +52,9 @@ if (!fs.existsSync(uploadsDir)) {
 }
 if (!fs.existsSync(projectDir)) {
   fs.mkdirSync(projectDir, { recursive: true });
+}
+if (!fs.existsSync(mediaDir)) {
+  fs.mkdirSync(mediaDir, { recursive: true });
 }
 
 // Serve static files from public directory
