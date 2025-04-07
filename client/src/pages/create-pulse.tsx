@@ -141,22 +141,43 @@ export default function CreatePulsePage() {
       // Simulate an upload process
       pulseData.mediaType = mediaType as any; // Type assertion to match enum
       
-      // For demo purposes, we'll use actual sample image URLs instead of mock storage URLs
-      // In a real implementation, we would upload these files to cloud storage
+      // Use the actual uploaded image URLs for the demo
+      // In a production environment, we would upload files to cloud storage first
+      
       if (mediaType === 'image') {
-        // Use sample image URLs that actually work
-        pulseData.mediaUrls = [
-          'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format',
-          'https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?w=600&auto=format',
-          'https://images.unsplash.com/photo-1516321165247-4aa89a48be28?w=600&auto=format',
-          'https://images.unsplash.com/photo-1600880292089-90a7e086ee0c?w=600&auto=format',
-          'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=600&auto=format'
-        ].slice(0, mediaUrls.length); // Only use as many URLs as we have uploaded files
+        // Use the blob URLs created from the uploaded files
+        // These are temporary URLs that will work during the current session
+        pulseData.mediaUrls = mediaUrls;
+        
+        // Additionally, store a copy of these in localStorage so they persist
+        // This is a demo technique that wouldn't be used in production
+        const savedUrls = mediaUrls.map((url, index) => {
+          const key = `media_pulse_image_${Date.now()}_${index}`;
+          try {
+            localStorage.setItem(key, url);
+            return key;
+          } catch (e) {
+            console.error("Failed to save image URL to localStorage:", e);
+            return url;
+          }
+        });
+        
+        // Store references to these localStorage keys
+        pulseData.mediaLocalStorageKeys = savedUrls;
       } else {
-        // For video, use a sample video URL
-        pulseData.mediaUrls = [
-          'https://assets.mixkit.co/videos/preview/mixkit-a-girl-blowing-a-bubble-gum-at-an-amusement-park-1226-large.mp4'
-        ];
+        // For video, use the actual uploaded video
+        pulseData.mediaUrls = mediaUrls;
+        
+        // Similarly store in localStorage
+        if (mediaUrls.length > 0) {
+          const key = `media_pulse_video_${Date.now()}`;
+          try {
+            localStorage.setItem(key, mediaUrls[0]);
+            pulseData.mediaLocalStorageKeys = [key];
+          } catch (e) {
+            console.error("Failed to save video URL to localStorage:", e);
+          }
+        }
       }
     } 
     else if (pulseType === 'project') {

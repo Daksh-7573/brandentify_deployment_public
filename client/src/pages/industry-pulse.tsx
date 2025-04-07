@@ -23,6 +23,7 @@ interface PulseWithUser {
   content: string | null;
   mediaType: "image" | "video" | null;
   mediaUrls: string[]; // Array of media URLs
+  mediaLocalStorageKeys?: string[]; // Array of localStorage keys for media
   pollOptions: string[]; // Array of poll options
   projectId: number | null;
   likes: number;
@@ -309,31 +310,72 @@ export default function IndustryPulsePage() {
                                 <span>Image Gallery ({pulse.mediaUrls.length})</span>
                               </div>
                               <div className="grid grid-cols-2 gap-2 mt-2">
-                                {pulse.mediaUrls.slice(0, 4).map((url, index) => (
-                                  <div key={index} className="border border-blue-100 rounded-md overflow-hidden bg-blue-50/20">
-                                    <img 
-                                      src={url} 
-                                      alt={`Media ${index + 1}`} 
-                                      className="w-full h-48 object-cover rounded-md"
-                                      onError={(e) => {
-                                        // If image fails to load, show placeholder
-                                        e.currentTarget.src = 'https://placehold.co/400x300/e6f7ff/0099ff?text=Image+Unavailable';
-                                      }}
-                                    />
-                                  </div>
-                                ))}
-                                {pulse.mediaUrls.length > 4 && (
+                                {/* Try to retrieve from localStorage if keys are available */}
+                                {(pulse.mediaLocalStorageKeys || pulse.mediaUrls).slice(0, 4).map((urlOrKey, index) => {
+                                  // Try to get the actual image URL from localStorage if this is a key
+                                  let imageUrl = urlOrKey;
+                                  if (typeof urlOrKey === 'string' && urlOrKey.startsWith('media_pulse_image_')) {
+                                    try {
+                                      const storedUrl = localStorage.getItem(urlOrKey);
+                                      if (storedUrl) {
+                                        imageUrl = storedUrl;
+                                      }
+                                    } catch (e) {
+                                      console.error("Error retrieving image from localStorage:", e);
+                                    }
+                                  }
+                                  
+                                  // Get the original URL if localStorage doesn't have it
+                                  if (!imageUrl && pulse.mediaUrls && pulse.mediaUrls.length > index) {
+                                    imageUrl = pulse.mediaUrls[index];
+                                  }
+                                  
+                                  return (
+                                    <div key={index} className="border border-blue-100 rounded-md overflow-hidden bg-blue-50/20">
+                                      <img 
+                                        src={imageUrl} 
+                                        alt={`Media ${index + 1}`} 
+                                        className="w-full h-48 object-cover rounded-md"
+                                        onError={(e) => {
+                                          // If image fails to load, show placeholder
+                                          e.currentTarget.src = 'https://placehold.co/400x300/e6f7ff/0099ff?text=Image+Unavailable';
+                                        }}
+                                      />
+                                    </div>
+                                  );
+                                })}
+                                
+                                {/* Display the "more" indicator if more than 4 images */}
+                                {(pulse.mediaLocalStorageKeys?.length || pulse.mediaUrls.length) > 4 && (
                                   <div className="relative border border-blue-100 rounded-md overflow-hidden">
-                                    <img 
-                                      src={pulse.mediaUrls[4]} 
-                                      alt="Media 5" 
-                                      className="w-full h-48 object-cover rounded-md opacity-70"
-                                      onError={(e) => {
-                                        e.currentTarget.src = 'https://placehold.co/400x300/e6f7ff/0099ff?text=Image+Unavailable';
-                                      }}
-                                    />
+                                    {/* Try to get the 5th image from localStorage if available */}
+                                    {(() => {
+                                      let imageUrl = pulse.mediaUrls[4];
+                                      if (pulse.mediaLocalStorageKeys && pulse.mediaLocalStorageKeys.length > 4) {
+                                        try {
+                                          const storedUrl = localStorage.getItem(pulse.mediaLocalStorageKeys[4]);
+                                          if (storedUrl) {
+                                            imageUrl = storedUrl;
+                                          }
+                                        } catch (e) {
+                                          console.error("Error retrieving image from localStorage:", e);
+                                        }
+                                      }
+                                      return (
+                                        <img 
+                                          src={imageUrl} 
+                                          alt="Media 5" 
+                                          className="w-full h-48 object-cover rounded-md opacity-70"
+                                          onError={(e) => {
+                                            e.currentTarget.src = 'https://placehold.co/400x300/e6f7ff/0099ff?text=Image+Unavailable';
+                                          }}
+                                        />
+                                      );
+                                    })()}
                                     <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-md">
-                                      <span className="text-white font-bold text-lg">+{pulse.mediaUrls.length - 4} more</span>
+                                      <span className="text-white font-bold text-lg">
+                                        +{(pulse.mediaLocalStorageKeys?.length || pulse.mediaUrls.length) - 4} more
+                                      </span>
                                     </div>
                                   </div>
                                 )}
@@ -349,30 +391,49 @@ export default function IndustryPulsePage() {
                               </div>
                               <div className="bg-blue-50/30 border border-blue-100 rounded-md p-2">
                                 <div className="relative">
-                                  <video 
-                                    src={pulse.mediaUrls[0]} 
-                                    controls 
-                                    className="w-full rounded-md"
-                                    style={{ maxHeight: "400px" }}
-                                    onError={(e) => {
-                                      // If video fails to load, show message
-                                      const parent = e.currentTarget.parentElement;
-                                      if (parent) {
-                                        parent.innerHTML = `
-                                          <div class="h-64 flex items-center justify-center bg-blue-50 rounded-md">
-                                            <div class="text-center">
-                                              <div class="mb-2">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-300 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
-                                              </div>
-                                              <p class="text-blue-500">Video could not be loaded</p>
-                                            </div>
-                                          </div>
-                                        `;
+                                  {(() => {
+                                    // Try to get video from localStorage if available
+                                    let videoUrl = pulse.mediaUrls[0];
+                                    
+                                    if (pulse.mediaLocalStorageKeys && pulse.mediaLocalStorageKeys.length > 0) {
+                                      try {
+                                        const key = pulse.mediaLocalStorageKeys[0];
+                                        const storedUrl = localStorage.getItem(key);
+                                        if (storedUrl) {
+                                          videoUrl = storedUrl;
+                                        }
+                                      } catch (e) {
+                                        console.error("Error retrieving video from localStorage:", e);
                                       }
-                                    }}
-                                  />
+                                    }
+                                    
+                                    return (
+                                      <video 
+                                        src={videoUrl} 
+                                        controls 
+                                        className="w-full rounded-md"
+                                        style={{ maxHeight: "400px" }}
+                                        onError={(e) => {
+                                          // If video fails to load, show message
+                                          const parent = e.currentTarget.parentElement;
+                                          if (parent) {
+                                            parent.innerHTML = `
+                                              <div class="h-64 flex items-center justify-center bg-blue-50 rounded-md">
+                                                <div class="text-center">
+                                                  <div class="mb-2">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-300 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    </svg>
+                                                  </div>
+                                                  <p class="text-blue-500">Video could not be loaded</p>
+                                                </div>
+                                              </div>
+                                            `;
+                                          }
+                                        }}
+                                      />
+                                    );
+                                  })()}
                                 </div>
                               </div>
                             </div>

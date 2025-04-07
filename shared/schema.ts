@@ -312,6 +312,7 @@ export const pulses = pgTable("pulses", {
   content: text("content"),
   mediaType: mediaTypeEnum("media_type"),
   mediaUrls: jsonb("media_urls").default('[]'), // URLs to images or videos stored as JSON array
+  mediaLocalStorageKeys: jsonb("media_local_storage_keys").default('[]'), // Keys to access images/videos in localStorage
   pollOptions: jsonb("poll_options").default('[]'), // For poll type pulses
   projectId: integer("project_id").references(() => projects.id), // For project type pulses
   likes: integer("likes").default(0),
