@@ -10,11 +10,14 @@ import { Label } from "@/components/ui/label";
 import { AlertCircle, BarChart, Video, Image, FileCode } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import ProjectForm from "@/components/shared/project-form";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ProjectForm, { Project } from "@/components/shared/project-form";
+import { useToast } from "@/hooks/use-toast";
 
 export default function CreatePulsePage() {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [pulseTitle, setPulseTitle] = useState("");
   const [pulseContent, setPulseContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -22,6 +25,7 @@ export default function CreatePulsePage() {
   const [mediaType, setMediaType] = useState("image");
   const [pollOptions, setPollOptions] = useState(["", ""]);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+  const [activeProjectTab, setActiveProjectTab] = useState('details');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -367,19 +371,51 @@ export default function CreatePulsePage() {
                     </div>
 
                     <Dialog open={isProjectModalOpen} onOpenChange={setIsProjectModalOpen}>
-                      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+                      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                         <DialogHeader>
                           <DialogTitle>Create Project</DialogTitle>
+                          <DialogDescription>
+                            Add a new project to your professional portfolio
+                          </DialogDescription>
                         </DialogHeader>
-                        <ProjectForm 
-                          onSuccess={() => {
-                            setIsProjectModalOpen(false);
-                            // Add any success message or notification here
-                            alert("Project created successfully and added to your profile!");
-                          }}
-                          onCancel={() => setIsProjectModalOpen(false)}
-                          closeModal={() => setIsProjectModalOpen(false)}
-                        />
+                        
+                        <Tabs value={activeProjectTab} onValueChange={setActiveProjectTab} className="mt-4">
+                          <TabsList className="grid w-full grid-cols-3">
+                            <TabsTrigger value="details">Project Details</TabsTrigger>
+                            <TabsTrigger value="collaborators">Collaborators</TabsTrigger>
+                            <TabsTrigger value="endorsements">Endorsements</TabsTrigger>
+                          </TabsList>
+                          
+                          <TabsContent value="details" className="pt-4">
+                            <ProjectForm 
+                              onSuccess={() => {
+                                setIsProjectModalOpen(false);
+                                toast({
+                                  title: "Project created",
+                                  description: "Your project has been created successfully and added to your profile",
+                                });
+                              }}
+                              onCancel={() => setIsProjectModalOpen(false)}
+                              closeModal={() => setIsProjectModalOpen(false)}
+                            />
+                          </TabsContent>
+                          
+                          <TabsContent value="collaborators" className="pt-4">
+                            <div className="text-center p-6">
+                              <p className="text-muted-foreground">
+                                After creating your project, you can add collaborators here.
+                              </p>
+                            </div>
+                          </TabsContent>
+                          
+                          <TabsContent value="endorsements" className="pt-4">
+                            <div className="text-center p-6">
+                              <p className="text-muted-foreground">
+                                After creating your project, you can add client endorsements here.
+                              </p>
+                            </div>
+                          </TabsContent>
+                        </Tabs>
                       </DialogContent>
                     </Dialog>
                   </div>
