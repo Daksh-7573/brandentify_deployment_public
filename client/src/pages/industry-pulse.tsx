@@ -195,45 +195,83 @@ function PollVoting({ pulse }: PollVotingProps) {
 
 // Image Carousel Component for Media Pulses
 function ImageCarousel({ pulse }: { pulse: PulseWithUser }) {
-  // Function to get the best image URL for each image
-  const getImageUrls = () => {
-    // If there are localStorage keys, try to use them first
-    if (pulse.mediaLocalStorageKeys && pulse.mediaLocalStorageKeys.length > 0) {
-      return pulse.mediaLocalStorageKeys.map((key, index) => {
-        try {
-          // Get base64 data from localStorage
-          const storedData = localStorage.getItem(key);
-          if (storedData && (storedData.startsWith('data:image') || storedData.startsWith('blob:'))) {
-            return storedData;
-          } else if (pulse.mediaUrls && pulse.mediaUrls.length > index) {
-            // Fallback to URL if available
-            return pulse.mediaUrls[index];
-          }
-        } catch (e) {
-          console.error("Error retrieving image from localStorage:", e);
-          // If localStorage fails and we have a mediaUrl, use that
-          if (pulse.mediaUrls && pulse.mediaUrls.length > index) {
-            return pulse.mediaUrls[index];
-          }
-        }
-        // Last resort fallback
-        return 'https://via.placeholder.com/600x400?text=Image+Not+Available';
-      });
-    } 
-    // Otherwise just use mediaUrls
-    else if (pulse.mediaUrls && pulse.mediaUrls.length > 0) {
-      return pulse.mediaUrls;
-    }
-    
-    return [];
-  };
+  const [loadedImages, setLoadedImages] = useState<Record<number, boolean>>({});
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
   
-  const imageUrls = getImageUrls();
+  // Use effect to load images only once when component mounts
+  useEffect(() => {
+    // Function to get the best image URL for each image
+    const loadImageUrls = () => {
+      // First try using mediaUrls as they'll load faster than localStorage
+      if (pulse.mediaUrls && pulse.mediaUrls.length > 0) {
+        setImageUrls(pulse.mediaUrls);
+        return;
+      }
+      
+      // If there are localStorage keys, try to use them as fallback
+      if (pulse.mediaLocalStorageKeys && pulse.mediaLocalStorageKeys.length > 0) {
+        // First set placeholder URLs to render the carousel
+        const placeholders = pulse.mediaLocalStorageKeys.map(() => 
+          'https://via.placeholder.com/600x400?text=Loading...'
+        );
+        setImageUrls(placeholders);
+        
+        // Then load the actual images asynchronously
+        const loadFromLocalStorage = async () => {
+          const loadedUrls = await Promise.all(
+            pulse.mediaLocalStorageKeys!.map((key, index) => {
+              return new Promise<string>((resolve) => {
+                try {
+                  // Get base64 data from localStorage with a small timeout
+                  // to prevent blocking the UI thread
+                  setTimeout(() => {
+                    const storedData = localStorage.getItem(key);
+                    if (storedData && (storedData.startsWith('data:image') || storedData.startsWith('blob:'))) {
+                      resolve(storedData);
+                    } else if (pulse.mediaUrls && pulse.mediaUrls.length > index) {
+                      // Fallback to URL if available
+                      resolve(pulse.mediaUrls[index]);
+                    } else {
+                      // Last resort fallback
+                      resolve('https://via.placeholder.com/600x400?text=Image+Not+Available');
+                    }
+                  }, index * 50); // Stagger the loads slightly
+                } catch (e) {
+                  console.error("Error retrieving image from localStorage:", e);
+                  // If localStorage fails and we have a mediaUrl, use that
+                  if (pulse.mediaUrls && pulse.mediaUrls.length > index) {
+                    resolve(pulse.mediaUrls[index]);
+                  } else {
+                    resolve('https://via.placeholder.com/600x400?text=Error+Loading+Image');
+                  }
+                }
+              });
+            })
+          );
+          
+          // Update state with the loaded URLs
+          setImageUrls(loadedUrls);
+        };
+        
+        loadFromLocalStorage();
+      }
+    };
+    
+    loadImageUrls();
+  }, [pulse.mediaLocalStorageKeys, pulse.mediaUrls]);
+  
   const hasImages = imageUrls.length > 0;
   
   if (!hasImages) {
     return null;
   }
+  
+  const handleImageLoad = (index: number) => {
+    setLoadedImages(prev => ({
+      ...prev,
+      [index]: true
+    }));
+  };
   
   return (
     <div className="mt-4 space-y-2">
@@ -247,14 +285,25 @@ function ImageCarousel({ pulse }: { pulse: PulseWithUser }) {
             {imageUrls.map((url, index) => (
               <CarouselItem key={index}>
                 <div className="p-1">
-                  <div className="overflow-hidden rounded-md border border-blue-100">
+                  <div className="overflow-hidden rounded-md border border-blue-100 relative">
+                    {!loadedImages[index] && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                      </div>
+                    )}
                     <img 
                       src={url} 
                       alt={`Media ${index + 1}`} 
                       className="w-full h-64 object-cover"
+                      onLoad={() => handleImageLoad(index)}
                       onError={(e) => {
                         // If image fails to load, show helpful message
                         e.currentTarget.src = 'https://via.placeholder.com/600x400?text=Image+Loading+Failed';
+                        handleImageLoad(index);
+                      }}
+                      style={{ 
+                        opacity: loadedImages[index] ? 1 : 0,
+                        transition: 'opacity 0.3s ease-in-out'
                       }}
                     />
                   </div>
