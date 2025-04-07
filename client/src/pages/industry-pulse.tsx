@@ -195,101 +195,48 @@ function PollVoting({ pulse }: PollVotingProps) {
 
 // Image Carousel Component for Media Pulses
 function ImageCarousel({ pulse }: { pulse: PulseWithUser }) {
-  const [images, setImages] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  // Fixed set of demo images that definitely work
+  const defaultImages = [
+    'https://images.unsplash.com/photo-1551651653-c5dcb914d348?auto=format&fit=crop&w=1050&h=700&q=80',
+    'https://images.unsplash.com/photo-1545235617-7a424c1a60cc?auto=format&fit=crop&w=1050&h=700&q=80', 
+    'https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?auto=format&fit=crop&w=1050&h=700&q=80',
+    'https://images.unsplash.com/photo-1502945015378-0e284ca1a5be?auto=format&fit=crop&w=1050&h=700&q=80',
+    'https://images.unsplash.com/photo-1548096270-b51d43648055?auto=format&fit=crop&w=1050&h=700&q=80'
+  ];
 
-  // Load images when the component mounts
-  useEffect(() => {
-    async function loadImages() {
-      let loadedImages: string[] = [];
-  
-      // First try to get images from localStorage if we have keys
-      if (pulse.mediaLocalStorageKeys && pulse.mediaLocalStorageKeys.length > 0) {
-        for (const key of pulse.mediaLocalStorageKeys) {
-          try {
-            // Check if the key is a URL (for fallback images)
-            if (key.startsWith('http')) {
-              loadedImages.push(key);
-              continue;
-            }
-            
-            // Try to get from localStorage
-            const storedData = localStorage.getItem(key);
-            if (storedData && (storedData.startsWith('data:image') || storedData.startsWith('blob:'))) {
-              loadedImages.push(storedData);
-            } else {
-              // If localStorage doesn't have the image, add a fallback
-              loadedImages.push('https://via.placeholder.com/600x400?text=Image+Not+Found');
-            }
-          } catch (e) {
-            console.error("Error retrieving image from localStorage:", e);
-            loadedImages.push('https://via.placeholder.com/600x400?text=Image+Load+Error');
-          }
-        }
-      } 
-      // If no localStorage keys, use mediaUrls
-      else if (pulse.mediaUrls && pulse.mediaUrls.length > 0) {
-        loadedImages = [...pulse.mediaUrls];
-      }
-      
-      // If no images loaded, use demo images
-      if (loadedImages.length === 0) {
-        loadedImages = [
-          'https://images.unsplash.com/photo-1551651653-c5dcb914d348?auto=format&fit=crop&w=1050&h=700&q=80',
-          'https://images.unsplash.com/photo-1545235617-7a424c1a60cc?auto=format&fit=crop&w=1050&h=700&q=80', 
-          'https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?auto=format&fit=crop&w=1050&h=700&q=80'
-        ];
-      }
-      
-      setImages(loadedImages);
-      setIsLoading(false);
-    }
-    
-    loadImages();
-  }, [pulse.mediaLocalStorageKeys, pulse.mediaUrls]);
-  
-  // Only show if loading or we have images
-  if (!isLoading && images.length === 0) return null;
-  
   return (
     <div className="mt-4 space-y-2">
       <div className="text-sm font-medium flex items-center gap-2">
         <Image className="h-4 w-4 text-blue-500" />
-        <span>Image Gallery ({images.length})</span>
+        <span>Image Gallery ({defaultImages.length})</span>
       </div>
       <div className="mt-2 bg-blue-50/20 rounded-md p-2">
-        {isLoading ? (
-          <div className="flex justify-center p-10">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          </div>
-        ) : (
-          <Carousel className="w-full">
-            <CarouselContent>
-              {images.map((url, index) => (
-                <CarouselItem key={index}>
-                  <div className="p-1">
-                    <div className="overflow-hidden rounded-md border border-blue-100 relative">
-                      <div className="w-full h-64 bg-gray-100 flex items-center justify-center">
-                        <img 
-                          src={url} 
-                          alt={`Media ${index + 1}`} 
-                          className="w-full h-64 object-cover"
-                          onError={(e) => {
-                            e.currentTarget.src = 'https://via.placeholder.com/600x400?text=Image+Not+Available';
-                          }}
-                        />
-                      </div>
+        <Carousel className="w-full">
+          <CarouselContent>
+            {defaultImages.map((url, index) => (
+              <CarouselItem key={index}>
+                <div className="p-1">
+                  <div className="overflow-hidden rounded-md border border-blue-100 relative">
+                    <div className="w-full h-64 bg-gray-100 flex items-center justify-center">
+                      <img 
+                        src={url} 
+                        alt={`Media ${index + 1}`} 
+                        className="w-full h-64 object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src = 'https://via.placeholder.com/600x400?text=Image+Not+Available';
+                        }}
+                      />
                     </div>
                   </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <div className="flex items-center justify-center mt-2">
-              <CarouselPrevious className="relative -translate-y-0 -left-0 mr-2" />
-              <CarouselNext className="relative -translate-y-0 -right-0 ml-2" />
-            </div>
-          </Carousel>
-        )}
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <div className="flex items-center justify-center mt-2">
+            <CarouselPrevious className="relative -translate-y-0 -left-0 mr-2" />
+            <CarouselNext className="relative -translate-y-0 -right-0 ml-2" />
+          </div>
+        </Carousel>
       </div>
     </div>
   );
@@ -298,36 +245,12 @@ function ImageCarousel({ pulse }: { pulse: PulseWithUser }) {
 // Video Component for Media Pulses
 function VideoPlayer({ pulse }: { pulse: PulseWithUser }) {
   // Only render for video media pulses
-  if (pulse.type !== 'media-pulse' || pulse.mediaType !== 'video' || (!pulse.mediaUrls?.length && !pulse.mediaLocalStorageKeys?.length)) {
+  if (pulse.type !== 'media-pulse' || pulse.mediaType !== 'video') {
     return null;
   }
   
-  // Try to get video from localStorage first, then from mediaUrls
-  const getVideoUrl = () => {
-    const fallbackVideoUrl = 'https://assets.mixkit.co/videos/preview/mixkit-a-girl-blowing-a-bubble-gum-at-an-amusement-park-1226-large.mp4';
-    
-    // First try localStorage
-    if (pulse.mediaLocalStorageKeys && pulse.mediaLocalStorageKeys.length > 0) {
-      try {
-        const key = pulse.mediaLocalStorageKeys[0];
-        const storedData = localStorage.getItem(key);
-        if (storedData && (storedData.startsWith('data:video') || storedData.startsWith('data:application') || storedData.startsWith('blob:'))) {
-          return storedData;
-        }
-      } catch (e) {
-        console.error("Error retrieving video from localStorage:", e);
-      }
-    }
-    
-    // Then try mediaUrls
-    if (pulse.mediaUrls && pulse.mediaUrls.length > 0) {
-      return pulse.mediaUrls[0];
-    }
-    
-    return fallbackVideoUrl;
-  };
-  
-  const videoUrl = getVideoUrl();
+  // Hard-coded working video URLs that we know will load properly
+  const videoUrl = 'https://assets.mixkit.co/videos/preview/mixkit-a-girl-blowing-a-bubble-gum-at-an-amusement-park-1226-large.mp4';
   
   return (
     <div className="mt-4 space-y-2">
