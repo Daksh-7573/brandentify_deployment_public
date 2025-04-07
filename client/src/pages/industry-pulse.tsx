@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Pulse } from "@shared/schema";
 import Header from "@/components/layout/header";
@@ -58,7 +58,7 @@ function PollVoting({ pulse }: PollVotingProps) {
   const userId = user?.id || 1; // Default to 1 (demo user) if not authenticated
   
   // Fetch user's vote for this poll
-  const { data: userVoteData, isLoading: isLoadingUserVote } = useQuery<any>({
+  const { data: userVoteData } = useQuery<any>({
     queryKey: [`/api/poll-votes/user/${userId}/pulse/${pulse.id}`],
   });
   
@@ -71,7 +71,7 @@ function PollVoting({ pulse }: PollVotingProps) {
   }, [userVoteData]);
   
   // Fetch all votes for this poll
-  const { data: pollVotesData, isLoading: isLoadingPollVotes } = useQuery<any[]>({
+  const { data: pollVotesData } = useQuery<any[]>({
     queryKey: [`/api/pulses/${pulse.id}/poll-votes`],
   });
   
@@ -115,7 +115,7 @@ function PollVoting({ pulse }: PollVotingProps) {
     onError: (error) => {
       toast({
         title: "Failed to submit vote",
-        description: error.message,
+        description: 'Error submitting your vote',
         variant: "destructive",
       });
     },
@@ -126,7 +126,7 @@ function PollVoting({ pulse }: PollVotingProps) {
     voteMutation.mutate(optionIndex);
   };
   
-  const isLoading = isLoadingUserVote || isLoadingPollVotes || voteMutation.isPending;
+  const isLoading = voteMutation.isPending;
   
   return (
     <div className="mt-4 space-y-3 border rounded-md p-4 bg-purple-50/30">
@@ -189,6 +189,174 @@ function PollVoting({ pulse }: PollVotingProps) {
           Total votes: {totalVotes}
         </div>
       )}
+    </div>
+  );
+}
+
+// Image Carousel Component for Media Pulses
+function ImageCarousel({ pulse }: { pulse: PulseWithUser }) {
+  // Function to get the best image URL for each image
+  const getImageUrls = () => {
+    // If there are localStorage keys, try to use them first
+    if (pulse.mediaLocalStorageKeys && pulse.mediaLocalStorageKeys.length > 0) {
+      return pulse.mediaLocalStorageKeys.map((key, index) => {
+        try {
+          // Get base64 data from localStorage
+          const storedData = localStorage.getItem(key);
+          if (storedData && (storedData.startsWith('data:image') || storedData.startsWith('blob:'))) {
+            return storedData;
+          } else if (pulse.mediaUrls && pulse.mediaUrls.length > index) {
+            // Fallback to URL if available
+            return pulse.mediaUrls[index];
+          }
+        } catch (e) {
+          console.error("Error retrieving image from localStorage:", e);
+          // If localStorage fails and we have a mediaUrl, use that
+          if (pulse.mediaUrls && pulse.mediaUrls.length > index) {
+            return pulse.mediaUrls[index];
+          }
+        }
+        // Last resort fallback
+        return 'https://via.placeholder.com/600x400?text=Image+Not+Available';
+      });
+    } 
+    // Otherwise just use mediaUrls
+    else if (pulse.mediaUrls && pulse.mediaUrls.length > 0) {
+      return pulse.mediaUrls;
+    }
+    
+    return [];
+  };
+  
+  const imageUrls = getImageUrls();
+  const hasImages = imageUrls.length > 0;
+  
+  if (!hasImages) {
+    return null;
+  }
+  
+  return (
+    <div className="mt-4 space-y-2">
+      <div className="text-sm font-medium flex items-center gap-2">
+        <Image className="h-4 w-4 text-blue-500" />
+        <span>Image Gallery ({imageUrls.length})</span>
+      </div>
+      <div className="mt-2 bg-blue-50/20 rounded-md p-2">
+        <Carousel className="w-full">
+          <CarouselContent>
+            {imageUrls.map((url, index) => (
+              <CarouselItem key={index}>
+                <div className="p-1">
+                  <div className="overflow-hidden rounded-md border border-blue-100">
+                    <img 
+                      src={url} 
+                      alt={`Media ${index + 1}`} 
+                      className="w-full h-64 object-cover"
+                      onError={(e) => {
+                        // If image fails to load, show helpful message
+                        e.currentTarget.src = 'https://via.placeholder.com/600x400?text=Image+Loading+Failed';
+                      }}
+                    />
+                  </div>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <div className="flex items-center justify-center mt-2">
+            <CarouselPrevious className="relative -translate-y-0 -left-0 mr-2" />
+            <CarouselNext className="relative -translate-y-0 -right-0 ml-2" />
+          </div>
+        </Carousel>
+      </div>
+    </div>
+  );
+}
+
+// Video Component for Media Pulses
+function VideoPlayer({ pulse }: { pulse: PulseWithUser }) {
+  // Only render for video media pulses
+  if (pulse.type !== 'media-pulse' || pulse.mediaType !== 'video' || (!pulse.mediaUrls?.length && !pulse.mediaLocalStorageKeys?.length)) {
+    return null;
+  }
+  
+  // Try to get video from localStorage first, then from mediaUrls
+  const getVideoUrl = () => {
+    const fallbackVideoUrl = 'https://assets.mixkit.co/videos/preview/mixkit-a-girl-blowing-a-bubble-gum-at-an-amusement-park-1226-large.mp4';
+    
+    // First try localStorage
+    if (pulse.mediaLocalStorageKeys && pulse.mediaLocalStorageKeys.length > 0) {
+      try {
+        const key = pulse.mediaLocalStorageKeys[0];
+        const storedData = localStorage.getItem(key);
+        if (storedData && (storedData.startsWith('data:video') || storedData.startsWith('data:application') || storedData.startsWith('blob:'))) {
+          return storedData;
+        }
+      } catch (e) {
+        console.error("Error retrieving video from localStorage:", e);
+      }
+    }
+    
+    // Then try mediaUrls
+    if (pulse.mediaUrls && pulse.mediaUrls.length > 0) {
+      return pulse.mediaUrls[0];
+    }
+    
+    return fallbackVideoUrl;
+  };
+  
+  const videoUrl = getVideoUrl();
+  
+  return (
+    <div className="mt-4 space-y-2">
+      <div className="text-sm font-medium flex items-center gap-2">
+        <Video className="h-4 w-4 text-blue-500" />
+        <span>Video</span>
+      </div>
+      <div className="bg-blue-50/30 border border-blue-100 rounded-md p-2">
+        <div className="relative">
+          <video 
+            src={videoUrl} 
+            controls 
+            className="w-full rounded-md"
+            style={{ maxHeight: "400px" }}
+            onError={(e) => {
+              // If video fails to load, show message
+              const parent = e.currentTarget.parentElement;
+              if (parent) {
+                parent.innerHTML = `
+                  <div class="h-64 flex items-center justify-center bg-blue-50 rounded-md">
+                    <div class="text-center">
+                      <div class="mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-300 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                      <p class="text-blue-500">Video could not be loaded</p>
+                    </div>
+                  </div>
+                `;
+              }
+            }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Project Details Component
+function ProjectDetails({ pulse }: { pulse: PulseWithUser }) {
+  if (pulse.type !== 'project') {
+    return null;
+  }
+  
+  return (
+    <div className="mt-4 space-y-2 border rounded-md p-4 bg-green-50/30">
+      <div className="text-sm font-medium flex items-center gap-2">
+        <FileCode className="h-4 w-4 text-green-500" />
+        <span>Project Details</span>
+      </div>
+      <p className="text-sm pl-2">{pulse.projectDetails || "No details available"}</p>
     </div>
   );
 }
@@ -304,151 +472,16 @@ export default function IndustryPulsePage() {
                             <PollVoting pulse={pulse} />
                           )}
                           
-                          {pulse.type === 'media-pulse' && pulse.mediaType === 'image' && pulse.mediaUrls && pulse.mediaUrls.length > 0 && (
-                            <div className="mt-4 space-y-2">
-                              <div className="text-sm font-medium flex items-center gap-2">
-                                <Image className="h-4 w-4 text-blue-500" />
-                                <span>Image Gallery ({pulse.mediaUrls.length})</span>
-                              </div>
-                              <div className="mt-2 bg-blue-50/20 rounded-md p-2">
-                                <Carousel className="w-full">
-                                  <CarouselContent>
-                                    {/* Get real images from localStorage if available */}
-                                    {(pulse.mediaLocalStorageKeys || pulse.mediaUrls || []).map((urlOrKey, index) => {
-                                      // Create ref for this image
-                                      let imageUrl: string;
-                                      
-                                      // First priority: Check if we have a localStorage key
-                                      if (typeof urlOrKey === 'string' && urlOrKey.startsWith('media_pulse_image_')) {
-                                        try {
-                                          // Get base64 data from localStorage
-                                          const storedData = localStorage.getItem(urlOrKey);
-                                          if (storedData && (storedData.startsWith('data:image') || storedData.startsWith('blob:'))) {
-                                            // We retrieved an actual image
-                                            imageUrl = storedData;
-                                          } else {
-                                            // Not a valid image in localStorage, use fallback
-                                            imageUrl = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format';
-                                          }
-                                        } catch (e) {
-                                          console.error("Error retrieving image from localStorage:", e);
-                                          imageUrl = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format';
-                                        }
-                                      } 
-                                      // Second priority: Use the URL from mediaUrls array if available
-                                      else if (pulse.mediaUrls && pulse.mediaUrls.length > index) {
-                                        imageUrl = pulse.mediaUrls[index];
-                                      }
-                                      // Fallback to a sample image
-                                      else {
-                                        imageUrl = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format';
-                                      }
-                                      
-                                      return (
-                                        <CarouselItem key={index}>
-                                          <div className="p-1">
-                                            <div className="overflow-hidden rounded-md border border-blue-100">
-                                              <img 
-                                                src={imageUrl} 
-                                                alt={`Media ${index + 1}`} 
-                                                className="w-full h-64 object-cover"
-                                                onError={(e) => {
-                                                  // If image fails to load, show fallback
-                                                  e.currentTarget.src = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format';
-                                                }}
-                                              />
-                                            </div>
-                                          </div>
-                                        </CarouselItem>
-                                      );
-                                    })}
-                                  </CarouselContent>
-                                  <div className="flex items-center justify-center mt-2">
-                                    <CarouselPrevious className="relative -translate-y-0 -left-0 mr-2" />
-                                    <CarouselNext className="relative -translate-y-0 -right-0 ml-2" />
-                                  </div>
-                                </Carousel>
-                              </div>
-                            </div>
+                          {pulse.type === 'media-pulse' && pulse.mediaType === 'image' && (
+                            <ImageCarousel pulse={pulse} />
                           )}
                           
-                          {pulse.type === 'media-pulse' && pulse.mediaType === 'video' && pulse.mediaUrls && pulse.mediaUrls.length > 0 && (
-                            <div className="mt-4 space-y-2">
-                              <div className="text-sm font-medium flex items-center gap-2">
-                                <Video className="h-4 w-4 text-blue-500" />
-                                <span>Video</span>
-                              </div>
-                              <div className="bg-blue-50/30 border border-blue-100 rounded-md p-2">
-                                <div className="relative">
-                                  {(() => {
-                                    // Try to get video from localStorage if available
-                                    let videoUrl: string;
-                                    const fallbackVideoUrl = 'https://assets.mixkit.co/videos/preview/mixkit-a-girl-blowing-a-bubble-gum-at-an-amusement-park-1226-large.mp4';
-                                    
-                                    // First try localStorage
-                                    if (pulse.mediaLocalStorageKeys && pulse.mediaLocalStorageKeys.length > 0) {
-                                      try {
-                                        const key = pulse.mediaLocalStorageKeys[0];
-                                        const storedData = localStorage.getItem(key);
-                                        if (storedData && (storedData.startsWith('data:video') || storedData.startsWith('data:application') || storedData.startsWith('blob:'))) {
-                                          videoUrl = storedData;
-                                        } else {
-                                          videoUrl = fallbackVideoUrl;
-                                        }
-                                      } catch (e) {
-                                        console.error("Error retrieving video from localStorage:", e);
-                                        videoUrl = fallbackVideoUrl;
-                                      }
-                                    }
-                                    // Try using the URL directly
-                                    else if (pulse.mediaUrls && pulse.mediaUrls.length > 0) {
-                                      videoUrl = pulse.mediaUrls[0];
-                                    }
-                                    // Use fallback
-                                    else {
-                                      videoUrl = fallbackVideoUrl;
-                                    }
-                                    
-                                    return (
-                                      <video 
-                                        src={videoUrl} 
-                                        controls 
-                                        className="w-full rounded-md"
-                                        style={{ maxHeight: "400px" }}
-                                        onError={(e) => {
-                                          // If video fails to load, show message
-                                          const parent = e.currentTarget.parentElement;
-                                          if (parent) {
-                                            parent.innerHTML = `
-                                              <div class="h-64 flex items-center justify-center bg-blue-50 rounded-md">
-                                                <div class="text-center">
-                                                  <div class="mb-2">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-300 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                    </svg>
-                                                  </div>
-                                                  <p class="text-blue-500">Video could not be loaded</p>
-                                                </div>
-                                              </div>
-                                            `;
-                                          }
-                                        }}
-                                      />
-                                    );
-                                  })()}
-                                </div>
-                              </div>
-                            </div>
+                          {pulse.type === 'media-pulse' && pulse.mediaType === 'video' && (
+                            <VideoPlayer pulse={pulse} />
                           )}
                           
                           {pulse.type === 'project' && (
-                            <div className="mt-4 space-y-2 border rounded-md p-4 bg-green-50/30">
-                              <div className="text-sm font-medium flex items-center gap-2">
-                                <FileCode className="h-4 w-4 text-green-500" />
-                                <span>Project Details</span>
-                              </div>
-                              <p className="text-sm pl-2">{pulse.projectDetails || "No details available"}</p>
-                            </div>
+                            <ProjectDetails pulse={pulse} />
                           )}
                         </CardContent>
                         <CardFooter className="flex justify-between pt-0">

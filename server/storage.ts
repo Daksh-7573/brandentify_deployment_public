@@ -1095,6 +1095,7 @@ export class MemStorage implements IStorage {
         "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1050&h=700&q=80",
         "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&w=1050&h=700&q=80"
       ],
+      mediaLocalStorageKeys: [],
       pollOptions: [],
       projectId: null,
       likes: 24,
@@ -1113,6 +1114,7 @@ export class MemStorage implements IStorage {
       content: "I'm curious about what technologies other professionals are using for their projects.",
       mediaType: null,
       mediaUrls: [],
+      mediaLocalStorageKeys: [],
       pollOptions: ["MERN (MongoDB, Express, React, Node)", "LAMP (Linux, Apache, MySQL, PHP)", "JAMstack", "Python + Django/Flask", ".NET Core + Angular/React"],
       projectId: null,
       likes: 42,
@@ -1131,6 +1133,7 @@ export class MemStorage implements IStorage {
       content: "A brief walkthrough of the application I've been developing for the past few months. Would love your feedback!",
       mediaType: "video",
       mediaUrls: ["https://assets.mixkit.co/videos/preview/mixkit-designer-working-on-their-graphic-design-app-610-large.mp4"],
+      mediaLocalStorageKeys: [],
       pollOptions: [],
       projectId: null,
       likes: 17,
