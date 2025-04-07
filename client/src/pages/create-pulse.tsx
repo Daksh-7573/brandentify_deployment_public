@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useMutation } from "@tanstack/react-query";
 import Header from "@/components/layout/header";
@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { AlertCircle, BarChart, Video, Image, FileCode, Loader2 } from "lucide-react";
+import { AlertCircle, BarChart, Video, Image, FileCode, Loader2, X } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -30,6 +30,9 @@ export default function CreatePulsePage() {
   const [activeProjectTab, setActiveProjectTab] = useState('details');
   const [selectedProject, setSelectedProject] = useState<number | null>(null);
   const [mediaUrls, setMediaUrls] = useState<string[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const videoInputRef = useRef<HTMLInputElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   // Create a mutation for submitting the pulse
   const createPulseMutation = useMutation({
@@ -45,7 +48,15 @@ export default function CreatePulsePage() {
       setPulseTitle("");
       setPulseContent("");
       setPollOptions(["", ""]);
+      
+      // Clean up file resources
+      mediaUrls.forEach(url => URL.revokeObjectURL(url));
       setMediaUrls([]);
+      setUploadedFiles([]);
+      
+      // Reset file inputs
+      if (videoInputRef.current) videoInputRef.current.value = "";
+      if (imageInputRef.current) imageInputRef.current.value = "";
       
       // Show success message
       toast({
@@ -76,6 +87,16 @@ export default function CreatePulsePage() {
       return;
     }
     
+    // Validate form data
+    if (!pulseTitle.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a title",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     // Prepare pulse data based on type
     let pulseData: InsertPulse = {
       userId: user.id,
@@ -101,8 +122,30 @@ export default function CreatePulsePage() {
       pulseData.pollOptions = validOptions;
     } 
     else if (pulseType === 'media-pulse') {
+      if (mediaUrls.length === 0 || uploadedFiles.length === 0) {
+        toast({
+          title: "Error",
+          description: `Please upload at least one ${mediaType === 'video' ? 'video' : 'image'}`,
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      // In a real implementation, we would:
+      // 1. Upload the file(s) to a server/cloud storage
+      // 2. Get the URLs from the response
+      // 3. Add those URLs to the pulse data
+      // 
+      // For now, we'll simulate this with the object URLs we created
+      
+      // Simulate an upload process
       pulseData.mediaType = mediaType as any; // Type assertion to match enum
-      pulseData.mediaUrls = mediaUrls;
+      
+      // In a real implementation, these would be permanent URLs to the uploaded files
+      pulseData.mediaUrls = mediaUrls.map((_, i) => 
+        // This is a mock URL that would come from the server in a real implementation
+        `https://storage.example.com/user-${user.id}/${Date.now()}-${i}.${mediaType === 'video' ? 'mp4' : 'jpg'}`
+      );
     } 
     else if (pulseType === 'project') {
       if (!selectedProject) {
@@ -120,6 +163,11 @@ export default function CreatePulsePage() {
     // Submit the pulse
     console.log("Submitting pulse:", pulseData);
     createPulseMutation.mutate(pulseData);
+    
+    // Clean up any object URLs to avoid memory leaks
+    if (pulseType === 'media-pulse' && mediaUrls.length > 0) {
+      mediaUrls.forEach(url => URL.revokeObjectURL(url));
+    }
   };
 
   const addPollOption = () => {
@@ -140,6 +188,93 @@ export default function CreatePulsePage() {
       newOptions.splice(index, 1);
       setPollOptions(newOptions);
     }
+  };
+  
+  // Media file handlers
+  const handleVideoClick = () => {
+    if (videoInputRef.current) {
+      videoInputRef.current.click();
+    }
+  };
+  
+  const handleImageClick = () => {
+    if (imageInputRef.current) {
+      imageInputRef.current.click();
+    }
+  };
+  
+  const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    
+    const file = files[0]; // Only take the first video
+    
+    // Check file size (100MB limit)
+    if (file.size > 100 * 1024 * 1024) {
+      toast({
+        title: "Error",
+        description: "Video file must be less than 100MB",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Create a preview URL
+    const url = URL.createObjectURL(file);
+    setMediaUrls([url]);
+    setUploadedFiles([file]);
+    
+    toast({
+      title: "Video uploaded",
+      description: "Video file ready for upload",
+    });
+  };
+  
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    
+    // Limit to 5 images
+    const imageFiles = Array.from(files).slice(0, 5);
+    
+    // Check each file size (20MB limit)
+    const validFiles = imageFiles.filter(file => {
+      if (file.size > 20 * 1024 * 1024) {
+        toast({
+          title: "Warning",
+          description: `Image ${file.name} exceeds 20MB limit and was ignored`,
+          variant: "destructive",
+        });
+        return false;
+      }
+      return true;
+    });
+    
+    if (validFiles.length === 0) return;
+    
+    // Create preview URLs
+    const urls = validFiles.map(file => URL.createObjectURL(file));
+    setMediaUrls(urls);
+    setUploadedFiles(validFiles);
+    
+    toast({
+      title: "Images uploaded",
+      description: `${validFiles.length} image(s) ready for upload`,
+    });
+  };
+  
+  const removeMedia = (index: number) => {
+    const newUrls = [...mediaUrls];
+    const newFiles = [...uploadedFiles];
+    
+    // Revoke the URL to prevent memory leaks
+    URL.revokeObjectURL(newUrls[index]);
+    
+    newUrls.splice(index, 1);
+    newFiles.splice(index, 1);
+    
+    setMediaUrls(newUrls);
+    setUploadedFiles(newFiles);
   };
 
   return (
@@ -391,11 +526,46 @@ export default function CreatePulsePage() {
                             Drag and drop a video file here, or click to browse.<br />
                             Maximum length: 120 seconds | Supported formats: MP4, MOV, WebM
                           </p>
-                          <Button variant="outline" className="mb-4 border-blue-200 text-blue-700 hover:bg-blue-100">
+                          <Button 
+                            variant="outline" 
+                            className="mb-4 border-blue-200 text-blue-700 hover:bg-blue-100"
+                            onClick={handleVideoClick}
+                            type="button"
+                          >
                             Select File
                           </Button>
-                          <input type="file" className="hidden" accept="video/*" />
+                          <input 
+                            type="file" 
+                            className="hidden" 
+                            accept="video/*" 
+                            ref={videoInputRef}
+                            onChange={handleVideoUpload}
+                          />
                           <p className="text-xs text-blue-500/70">Max file size: 100 MB</p>
+                          
+                          {mediaUrls.length > 0 && mediaType === 'video' && (
+                            <div className="mt-4 border border-blue-100 rounded-lg p-4">
+                              <div className="flex items-center justify-between mb-2">
+                                <h4 className="text-sm font-medium text-blue-700">Video Preview</h4>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="h-8 w-8 p-0 text-blue-500 hover:text-blue-700"
+                                  onClick={() => removeMedia(0)}
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              </div>
+                              <video 
+                                controls
+                                className="w-full h-auto max-h-[300px] rounded-md"
+                                src={mediaUrls[0]}
+                              />
+                              <p className="text-xs text-blue-500/70 mt-2">
+                                {uploadedFiles[0]?.name} ({Math.round(uploadedFiles[0]?.size / 1024 / 1024 * 10) / 10} MB)
+                              </p>
+                            </div>
+                          )}
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="media-title" className="flex items-center gap-2">
@@ -446,11 +616,53 @@ export default function CreatePulsePage() {
                             Drag and drop up to 5 images here, or click to browse.<br />
                             Supported formats: JPG, PNG, WebP, GIF
                           </p>
-                          <Button variant="outline" className="mb-4 border-blue-200 text-blue-700 hover:bg-blue-100">
+                          <Button 
+                            variant="outline" 
+                            className="mb-4 border-blue-200 text-blue-700 hover:bg-blue-100"
+                            onClick={handleImageClick}
+                            type="button"
+                          >
                             Select Files
                           </Button>
-                          <input type="file" className="hidden" accept="image/*" multiple />
+                          <input 
+                            type="file" 
+                            className="hidden" 
+                            accept="image/*" 
+                            multiple 
+                            ref={imageInputRef}
+                            onChange={handleImageUpload}
+                          />
                           <p className="text-xs text-blue-500/70">Max file size: 20 MB per image</p>
+                          
+                          {mediaUrls.length > 0 && mediaType === 'image' && (
+                            <div className="mt-4 border border-blue-100 rounded-lg p-4">
+                              <div className="flex items-center justify-between mb-2">
+                                <h4 className="text-sm font-medium text-blue-700">Image Gallery ({mediaUrls.length}/5)</h4>
+                              </div>
+                              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                                {mediaUrls.map((url, index) => (
+                                  <div key={index} className="relative group">
+                                    <img 
+                                      src={url} 
+                                      alt={`Preview ${index + 1}`}
+                                      className="w-full h-[150px] object-cover rounded-md border border-blue-50"
+                                    />
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="absolute top-1 right-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 bg-white/80 hover:bg-white text-blue-500"
+                                      onClick={() => removeMedia(index)}
+                                    >
+                                      <X className="h-3 w-3" />
+                                    </Button>
+                                    <p className="text-xs text-blue-500/70 mt-1 truncate">
+                                      {uploadedFiles[index]?.name} ({Math.round(uploadedFiles[index]?.size / 1024 / 1024 * 10) / 10} MB)
+                                    </p>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="image-title" className="flex items-center gap-2">
