@@ -7,7 +7,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MessageSquare, ThumbsUp, Calendar, Users, BarChart, Video, Image, FileCode, Check, Loader2 } from "lucide-react";
+import { MessageSquare, ThumbsUp, Calendar, Users, BarChart, Video, Image, FileCode, Check, Loader2, Maximize2, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -197,6 +197,8 @@ function PollVoting({ pulse }: PollVotingProps) {
 function ImageCarousel({ pulse }: { pulse: PulseWithUser }) {
   const [isLoading, setIsLoading] = useState(true);
   const [images, setImages] = useState<string[]>([]);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   
   useEffect(() => {
     // Log what we received from the server
@@ -250,50 +252,165 @@ function ImageCarousel({ pulse }: { pulse: PulseWithUser }) {
     setIsLoading(false);
   }, [pulse]);
 
+  // Lightbox navigation functions
+  const openLightbox = (index: number) => {
+    setCurrentImageIndex(index);
+    setIsLightboxOpen(true);
+    // Prevent scrolling when lightbox is open
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeLightbox = () => {
+    setIsLightboxOpen(false);
+    // Re-enable scrolling
+    document.body.style.overflow = 'auto';
+  };
+
+  const nextImage = () => {
+    setCurrentImageIndex((prevIndex) => 
+      prevIndex === images.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prevIndex) => 
+      prevIndex === 0 ? images.length - 1 : prevIndex - 1
+    );
+  };
+
+  // Keyboard navigation for lightbox
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isLightboxOpen) return;
+      
+      switch (e.key) {
+        case 'ArrowRight':
+          nextImage();
+          break;
+        case 'ArrowLeft':
+          prevImage();
+          break;
+        case 'Escape':
+          closeLightbox();
+          break;
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isLightboxOpen, images.length]);
+
   return (
-    <div className="mt-4 space-y-2">
-      <div className="text-sm font-medium flex items-center gap-2">
-        <Image className="h-4 w-4 text-blue-500" />
-        <span>Image Gallery ({images.length})</span>
-      </div>
-      <div className="mt-2 bg-blue-50/20 rounded-md p-2">
-        {isLoading ? (
-          <div className="h-64 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          </div>
-        ) : (
-          <Carousel className="w-full">
-            <CarouselContent>
-              {images.map((url, index) => (
-                <CarouselItem key={index}>
-                  <div className="p-1">
-                    <div className="overflow-hidden rounded-md border border-blue-100 relative">
-                      <div className="w-full h-64 bg-gray-100 flex items-center justify-center">
-                        <img 
-                          src={url} 
-                          alt={`Media ${index + 1}`} 
-                          className="w-full h-64 object-cover"
-                          onError={(e) => {
-                            console.error(`Failed to load image: ${url}`);
-                            e.currentTarget.src = 'https://via.placeholder.com/600x400?text=Image+Not+Available';
-                          }}
-                        />
+    <>
+      <div className="mt-4 space-y-2">
+        <div className="text-sm font-medium flex items-center gap-2">
+          <Image className="h-4 w-4 text-blue-500" />
+          <span>Image Gallery ({images.length})</span>
+        </div>
+        <div className="mt-2 bg-blue-50/20 rounded-md p-2">
+          {isLoading ? (
+            <div className="h-64 flex items-center justify-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+          ) : (
+            <Carousel className="w-full">
+              <CarouselContent>
+                {images.map((url, index) => (
+                  <CarouselItem key={index}>
+                    <div className="p-1">
+                      <div 
+                        className="overflow-hidden rounded-md border border-blue-100 relative cursor-pointer"
+                        onClick={() => openLightbox(index)}
+                      >
+                        <div className="w-full h-64 bg-gray-100 flex items-center justify-center">
+                          <img 
+                            src={url} 
+                            alt={`Media ${index + 1}`} 
+                            className="w-full h-64 object-cover"
+                            onError={(e) => {
+                              console.error(`Failed to load image: ${url}`);
+                              e.currentTarget.src = 'https://via.placeholder.com/600x400?text=Image+Not+Available';
+                            }}
+                          />
+                          <div className="absolute inset-0 bg-black opacity-0 hover:opacity-10 transition-opacity flex items-center justify-center">
+                            <Maximize2 className="w-8 h-8 text-white" />
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              {images.length > 1 && (
+                <div className="flex items-center justify-center mt-2">
+                  <CarouselPrevious className="relative -translate-y-0 -left-0 mr-2" />
+                  <CarouselNext className="relative -translate-y-0 -right-0 ml-2" />
+                </div>
+              )}
+            </Carousel>
+          )}
+        </div>
+      </div>
+
+      {/* Lightbox */}
+      {isLightboxOpen && images.length > 0 && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center"
+          onClick={closeLightbox}
+        >
+          <div 
+            className="relative max-w-screen-xl max-h-screen w-full h-full flex flex-col items-center justify-center p-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button 
+              className="absolute top-4 right-4 z-10 text-white p-2 rounded-full hover:bg-gray-800"
+              onClick={closeLightbox}
+            >
+              <X className="w-6 h-6" />
+            </button>
+            
+            {/* Image counter */}
+            <div className="absolute top-4 left-4 text-white">
+              {currentImageIndex + 1} / {images.length}
+            </div>
+            
+            {/* Main image */}
+            <div className="relative flex-1 w-full flex items-center justify-center overflow-hidden">
+              <img 
+                src={images[currentImageIndex]} 
+                alt={`Fullscreen ${currentImageIndex + 1}`}
+                className="max-h-full max-w-full object-contain"
+                onError={(e) => {
+                  console.error(`Failed to load lightbox image: ${images[currentImageIndex]}`);
+                  e.currentTarget.src = 'https://via.placeholder.com/800x600?text=Image+Not+Available';
+                }}
+              />
+            </div>
+            
+            {/* Navigation buttons */}
             {images.length > 1 && (
-              <div className="flex items-center justify-center mt-2">
-                <CarouselPrevious className="relative -translate-y-0 -left-0 mr-2" />
-                <CarouselNext className="relative -translate-y-0 -right-0 ml-2" />
+              <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-4">
+                <button 
+                  className="p-2 rounded-full bg-black bg-opacity-50 text-white hover:bg-opacity-80"
+                  onClick={(e) => { e.stopPropagation(); prevImage(); }}
+                >
+                  <ChevronLeft className="w-8 h-8" />
+                </button>
+                <button 
+                  className="p-2 rounded-full bg-black bg-opacity-50 text-white hover:bg-opacity-80"
+                  onClick={(e) => { e.stopPropagation(); nextImage(); }}
+                >
+                  <ChevronRight className="w-8 h-8" />
+                </button>
               </div>
             )}
-          </Carousel>
-        )}
-      </div>
-    </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
