@@ -1089,11 +1089,11 @@ export class MemStorage implements IStorage {
       content: "Showcasing some of my recent UI design work on product dashboards and analytics interfaces. I focused on creating clean, intuitive layouts with strong visual hierarchy.",
       mediaType: "image",
       mediaUrls: [
-        "https://images.unsplash.com/photo-1551651653-c5dcb914d348?auto=format&fit=crop&w=1050&h=700&q=80",
-        "https://images.unsplash.com/photo-1545235617-7a424c1a60cc?auto=format&fit=crop&w=1050&h=700&q=80", 
-        "https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?auto=format&fit=crop&w=1050&h=700&q=80",
-        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1050&h=700&q=80",
-        "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&w=1050&h=700&q=80"
+        "https://via.placeholder.com/1050x700/3B82F6/FFFFFF?text=UI+Design+1",
+        "https://via.placeholder.com/1050x700/2563EB/FFFFFF?text=UI+Design+2", 
+        "https://via.placeholder.com/1050x700/1D4ED8/FFFFFF?text=UI+Design+3",
+        "https://via.placeholder.com/1050x700/1E40AF/FFFFFF?text=UI+Design+4",
+        "https://via.placeholder.com/1050x700/1E3A8A/FFFFFF?text=UI+Design+5"
       ],
       mediaLocalStorageKeys: [],
       pollOptions: [],
@@ -1132,7 +1132,7 @@ export class MemStorage implements IStorage {
       title: "Quick Demo of My New App",
       content: "A brief walkthrough of the application I've been developing for the past few months. Would love your feedback!",
       mediaType: "video",
-      mediaUrls: ["https://assets.mixkit.co/videos/preview/mixkit-designer-working-on-their-graphic-design-app-610-large.mp4"],
+      mediaUrls: ["https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"],
       mediaLocalStorageKeys: [],
       pollOptions: [],
       projectId: null,
