@@ -11,7 +11,9 @@ import {
   projectCollaborators, ProjectCollaborator, InsertProjectCollaborator,
   projectEndorsements, ProjectEndorsement, InsertProjectEndorsement,
   portfolios, Portfolio, InsertPortfolio,
-  services, Service, InsertService
+  services, Service, InsertService,
+  pulses, Pulse, InsertPulse,
+  pulseComments, PulseComment, InsertPulseComment
 } from "@shared/schema";
 
 // Interface for all storage operations
@@ -99,6 +101,19 @@ export interface IStorage {
   updateService(id: number, service: Partial<Service>): Promise<Service | undefined>;
   deleteService(id: number): Promise<boolean>;
   
+  // Pulse operations
+  getPulses(): Promise<Pulse[]>;
+  getPulsesByUserId(userId: number): Promise<Pulse[]>;
+  getPulseById(id: number): Promise<Pulse | undefined>;
+  createPulse(pulse: InsertPulse): Promise<Pulse>;
+  updatePulse(id: number, pulse: Partial<Pulse>): Promise<Pulse | undefined>;
+  deletePulse(id: number): Promise<boolean>;
+  
+  // Pulse Comment operations
+  getPulseCommentsByPulseId(pulseId: number): Promise<PulseComment[]>;
+  createPulseComment(comment: InsertPulseComment): Promise<PulseComment>;
+  deletePulseComment(id: number): Promise<boolean>;
+  
   // Debug and maintenance operations
   reinitializeDemoData(): Promise<void>;
   clearAllUsers(): Promise<void>;
@@ -119,6 +134,8 @@ export class MemStorage implements IStorage {
   private projectEndorsements: Map<number, ProjectEndorsement>;
   private portfolios: Map<number, Portfolio>;
   private services: Map<number, Service>;
+  private pulses: Map<number, Pulse>;
+  private pulseComments: Map<number, PulseComment>;
   
   private currentUserId: number;
   private currentResumeId: number;
@@ -133,6 +150,8 @@ export class MemStorage implements IStorage {
   private currentProjectEndorsementId: number;
   private currentPortfolioId: number;
   private currentServiceId: number;
+  private currentPulseId: number;
+  private currentPulseCommentId: number;
 
   constructor() {
     this.users = new Map();
@@ -148,6 +167,8 @@ export class MemStorage implements IStorage {
     this.projectEndorsements = new Map();
     this.portfolios = new Map();
     this.services = new Map();
+    this.pulses = new Map();
+    this.pulseComments = new Map();
     
     this.currentUserId = 1;
     this.currentResumeId = 1;
@@ -162,6 +183,8 @@ export class MemStorage implements IStorage {
     this.currentProjectEndorsementId = 1;
     this.currentPortfolioId = 1;
     this.currentServiceId = 1;
+    this.currentPulseId = 1;
+    this.currentPulseCommentId = 1;
     
     // Initialize with a default user for development/demo
     this.initializeDemoData();
@@ -240,6 +263,8 @@ export class MemStorage implements IStorage {
     this.currentEducationId = 1;
     this.currentSkillId = 1;
     this.currentPortfolioId = 1;
+    this.currentPulseId = 1;
+    this.currentPulseCommentId = 1;
     
     // No pre-created skills
     
@@ -272,8 +297,8 @@ export class MemStorage implements IStorage {
       priceUsd: "100",  // Using string format for decimal values
       priceInr: "8000", // Using string format for decimal values
       isHourly: true,
-      duration: '2-4 weeks',
-      features: ['Custom UI/UX design', 'Database integration', 'API development'],
+      features: ['Custom UI/UX design', 'Database integration', 'API development', 'Delivery: 2-4 weeks'],
+      imageUrl: "https://placehold.co/400x300/4f46e5/ffffff?text=Web+Development",
       isActive: true,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -290,8 +315,8 @@ export class MemStorage implements IStorage {
       priceUsd: "500",  // Using string format for decimal values
       priceInr: "40000", // Using string format for decimal values
       isHourly: false,
-      duration: '1-2 weeks',
-      features: ['Logo design', 'Brand guidelines', 'Social media assets'],
+      features: ['Logo design', 'Brand guidelines', 'Social media assets', 'Delivery: 1-2 weeks'],
+      imageUrl: "https://placehold.co/400x300/e95800/ffffff?text=Brand+Design",
       isActive: true,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -308,8 +333,8 @@ export class MemStorage implements IStorage {
       priceUsd: "300",  // Using string format for decimal values
       priceInr: "24000", // Using string format for decimal values
       isHourly: false,
-      duration: '2-3 weeks',
-      features: ['Keyword research', 'On-page optimization', 'Performance tracking'],
+      features: ['Keyword research', 'On-page optimization', 'Performance tracking', 'Delivery: 2-3 weeks'],
+      imageUrl: "https://placehold.co/400x300/22c55e/ffffff?text=SEO+Services",
       isActive: true,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -348,6 +373,12 @@ export class MemStorage implements IStorage {
     
     // Clear all existing services
     this.services.clear();
+    
+    // Clear all existing pulses
+    this.pulses.clear();
+    
+    // Clear all existing pulse comments
+    this.pulseComments.clear();
   }
   
   /**
@@ -1024,6 +1055,136 @@ export class MemStorage implements IStorage {
 
   async deleteService(id: number): Promise<boolean> {
     return this.services.delete(id);
+  }
+  
+  // Pulse operations
+  async getPulses(): Promise<Pulse[]> {
+    return Array.from(this.pulses.values())
+      .sort((a, b) => {
+        const timeA = a.createdAt ? a.createdAt.getTime() : 0;
+        const timeB = b.createdAt ? b.createdAt.getTime() : 0;
+        return timeB - timeA; // Sort newest first
+      });
+  }
+  
+  async getPulsesByUserId(userId: number): Promise<Pulse[]> {
+    return Array.from(this.pulses.values())
+      .filter(pulse => pulse.userId === userId)
+      .sort((a, b) => {
+        const timeA = a.createdAt ? a.createdAt.getTime() : 0;
+        const timeB = b.createdAt ? b.createdAt.getTime() : 0;
+        return timeB - timeA; // Sort newest first
+      });
+  }
+  
+  async getPulseById(id: number): Promise<Pulse | undefined> {
+    return this.pulses.get(id);
+  }
+  
+  async createPulse(insertPulse: InsertPulse): Promise<Pulse> {
+    const id = this.currentPulseId++;
+    const createdAt = new Date();
+    
+    const pulse: Pulse = {
+      id,
+      userId: insertPulse.userId,
+      type: insertPulse.type,
+      title: insertPulse.title,
+      content: insertPulse.content ?? null,
+      mediaType: insertPulse.mediaType ?? null,
+      mediaUrls: insertPulse.mediaUrls ?? [],
+      pollOptions: insertPulse.pollOptions ?? [],
+      projectId: insertPulse.projectId ?? null,
+      likes: 0,
+      comments: 0,
+      isPublished: insertPulse.isPublished ?? true,
+      createdAt,
+      updatedAt: createdAt
+    };
+    
+    this.pulses.set(id, pulse);
+    return pulse;
+  }
+  
+  async updatePulse(id: number, pulseData: Partial<Pulse>): Promise<Pulse | undefined> {
+    const pulse = this.pulses.get(id);
+    if (!pulse) return undefined;
+    
+    const updatedAt = new Date();
+    const updatedPulse = { 
+      ...pulse, 
+      ...pulseData,
+      updatedAt 
+    };
+    
+    this.pulses.set(id, updatedPulse);
+    return updatedPulse;
+  }
+  
+  async deletePulse(id: number): Promise<boolean> {
+    // First, delete all comments for this pulse
+    const commentsToDelete = Array.from(this.pulseComments.entries())
+      .filter(([_, comment]) => comment.pulseId === id)
+      .map(([commentId, _]) => commentId);
+    
+    commentsToDelete.forEach(commentId => {
+      this.pulseComments.delete(commentId);
+    });
+    
+    // Then delete the pulse itself
+    return this.pulses.delete(id);
+  }
+  
+  // Pulse Comment operations
+  async getPulseCommentsByPulseId(pulseId: number): Promise<PulseComment[]> {
+    return Array.from(this.pulseComments.values())
+      .filter(comment => comment.pulseId === pulseId)
+      .sort((a, b) => {
+        const timeA = a.createdAt ? a.createdAt.getTime() : 0;
+        const timeB = b.createdAt ? b.createdAt.getTime() : 0;
+        return timeA - timeB; // Sort oldest first
+      });
+  }
+  
+  async createPulseComment(insertComment: InsertPulseComment): Promise<PulseComment> {
+    const id = this.currentPulseCommentId++;
+    const createdAt = new Date();
+    
+    const comment: PulseComment = {
+      ...insertComment,
+      id,
+      createdAt,
+      likes: 0
+    };
+    
+    this.pulseComments.set(id, comment);
+    
+    // Update the comment count on the pulse
+    const pulse = this.pulses.get(insertComment.pulseId);
+    if (pulse) {
+      this.pulses.set(pulse.id, {
+        ...pulse,
+        comments: (pulse.comments || 0) + 1
+      });
+    }
+    
+    return comment;
+  }
+  
+  async deletePulseComment(id: number): Promise<boolean> {
+    const comment = this.pulseComments.get(id);
+    if (!comment) return false;
+    
+    // Decrease the comment count on the pulse
+    const pulse = this.pulses.get(comment.pulseId);
+    if (pulse && pulse.comments && pulse.comments > 0) {
+      this.pulses.set(pulse.id, {
+        ...pulse,
+        comments: pulse.comments - 1
+      });
+    }
+    
+    return this.pulseComments.delete(id);
   }
 
   /**

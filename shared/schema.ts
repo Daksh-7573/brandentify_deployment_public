@@ -289,3 +289,66 @@ export const insertServiceSchema = createInsertSchema(services).omit({
 // Export types for Services
 export type Service = typeof services.$inferSelect;
 export type InsertService = z.infer<typeof insertServiceSchema>;
+
+// Pulse type enum
+export const pulseTypeEnum = pgEnum("pulse_type", [
+  "poll", 
+  "media-pulse", 
+  "project"
+]);
+
+// Media type enum for Media Pulses
+export const mediaTypeEnum = pgEnum("media_type", [
+  "image",
+  "video"
+]);
+
+// Pulses model for user-created content
+export const pulses = pgTable("pulses", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  type: pulseTypeEnum("type").notNull(),
+  title: text("title").notNull(),
+  content: text("content"),
+  mediaType: mediaTypeEnum("media_type"),
+  mediaUrls: jsonb("media_urls").default('[]'), // URLs to images or videos stored as JSON array
+  pollOptions: jsonb("poll_options").default('[]'), // For poll type pulses
+  projectId: integer("project_id").references(() => projects.id), // For project type pulses
+  likes: integer("likes").default(0),
+  comments: integer("comments").default(0),
+  isPublished: boolean("is_published").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Pulse comments model
+export const pulseComments = pgTable("pulse_comments", {
+  id: serial("id").primaryKey(),
+  pulseId: integer("pulse_id").references(() => pulses.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  content: text("content").notNull(),
+  likes: integer("likes").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Insert schemas for Pulses
+export const insertPulseSchema = createInsertSchema(pulses).omit({
+  id: true,
+  likes: true,
+  comments: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export const insertPulseCommentSchema = createInsertSchema(pulseComments).omit({
+  id: true,
+  likes: true,
+  createdAt: true
+});
+
+// Export types for Pulses
+export type Pulse = typeof pulses.$inferSelect;
+export type InsertPulse = z.infer<typeof insertPulseSchema>;
+
+export type PulseComment = typeof pulseComments.$inferSelect;
+export type InsertPulseComment = z.infer<typeof insertPulseCommentSchema>;
