@@ -141,11 +141,23 @@ export default function CreatePulsePage() {
       // Simulate an upload process
       pulseData.mediaType = mediaType as any; // Type assertion to match enum
       
-      // In a real implementation, these would be permanent URLs to the uploaded files
-      pulseData.mediaUrls = mediaUrls.map((_, i) => 
-        // This is a mock URL that would come from the server in a real implementation
-        `https://storage.example.com/user-${user.id}/${Date.now()}-${i}.${mediaType === 'video' ? 'mp4' : 'jpg'}`
-      );
+      // For demo purposes, we'll use actual sample image URLs instead of mock storage URLs
+      // In a real implementation, we would upload these files to cloud storage
+      if (mediaType === 'image') {
+        // Use sample image URLs that actually work
+        pulseData.mediaUrls = [
+          'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format',
+          'https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?w=600&auto=format',
+          'https://images.unsplash.com/photo-1516321165247-4aa89a48be28?w=600&auto=format',
+          'https://images.unsplash.com/photo-1600880292089-90a7e086ee0c?w=600&auto=format',
+          'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=600&auto=format'
+        ].slice(0, mediaUrls.length); // Only use as many URLs as we have uploaded files
+      } else {
+        // For video, use a sample video URL
+        pulseData.mediaUrls = [
+          'https://assets.mixkit.co/videos/preview/mixkit-a-girl-blowing-a-bubble-gum-at-an-amusement-park-1226-large.mp4'
+        ];
+      }
     } 
     else if (pulseType === 'project') {
       if (!selectedProject) {
