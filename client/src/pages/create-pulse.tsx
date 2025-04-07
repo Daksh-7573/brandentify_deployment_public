@@ -145,48 +145,32 @@ export default function CreatePulsePage() {
       // In a production environment, we would upload files to cloud storage
       
       if (mediaType === 'image') {
-        // Create temporary URLs for the server to store
-        // These would normally be cloud storage URLs
-        pulseData.mediaUrls = uploadedFiles.map((_, i) => 
-          `https://images.unsplash.com/photo-1551651653-c5dcb914d348?auto=format&fit=crop&w=1050&h=700&q=80`
-        );
+        // Use the actual mediaUrls from the locally uploaded files
+        // In a real application, these would be uploaded to a server first
+        pulseData.mediaUrls = mediaUrls;
         
-        // Use direct image URLs instead of localStorage for better reliability
-        pulseData.mediaLocalStorageKeys = pulseData.mediaUrls;
+        // Save the mediaUrls directly to ensure they are passed to the component
+        pulseData.mediaLocalStorageKeys = mediaUrls;
         
         // Submit the data directly without trying to store in localStorage
         console.log("Submitting pulse with direct image URLs:", pulseData);
         createPulseMutation.mutate(pulseData);
         return; // Exit early as we've handled the submission
       } else if (mediaType === 'video') {
-        // For video, create a temporary URL
-        pulseData.mediaUrls = [`https://storage.example.com/user-${user.id}/${Date.now()}.mp4`];
-        
-        // Use a sample video URL as fallback if conversion fails
-        const fallbackVideoUrl = 'https://assets.mixkit.co/videos/preview/mixkit-a-girl-blowing-a-bubble-gum-at-an-amusement-park-1226-large.mp4';
-        
-        if (uploadedFiles.length > 0) {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            const base64data = reader.result as string;
-            const key = `media_pulse_video_${Date.now()}`;
-            try {
-              // Store video as base64
-              localStorage.setItem(key, base64data);
-              pulseData.mediaLocalStorageKeys = [key];
-            } catch (e) {
-              console.error("Failed to save video to localStorage:", e);
-              pulseData.mediaUrls = [fallbackVideoUrl];
-            }
-            
-            console.log("Submitting pulse with video:", pulseData);
-            createPulseMutation.mutate(pulseData);
-          };
-          reader.readAsDataURL(uploadedFiles[0]);
-          return; // Exit early as we're handling submission in the callback
+        // Use the actual mediaUrls from the locally uploaded files
+        // In a real application, these would be uploaded to a server first
+        if (mediaUrls.length > 0) {
+          pulseData.mediaUrls = mediaUrls;
+          pulseData.mediaLocalStorageKeys = mediaUrls;
+          
+          console.log("Submitting pulse with video:", pulseData);
+          createPulseMutation.mutate(pulseData);
+          return; // Exit early as we've handled the submission
         } else {
           // No video uploaded, use fallback
+          const fallbackVideoUrl = 'https://assets.mixkit.co/videos/preview/mixkit-a-girl-blowing-a-bubble-gum-at-an-amusement-park-1226-large.mp4';
           pulseData.mediaUrls = [fallbackVideoUrl];
+          pulseData.mediaLocalStorageKeys = [fallbackVideoUrl];
         }
       }
     } 

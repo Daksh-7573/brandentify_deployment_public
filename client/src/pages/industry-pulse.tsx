@@ -195,7 +195,7 @@ function PollVoting({ pulse }: PollVotingProps) {
 
 // Image Carousel Component for Media Pulses
 function ImageCarousel({ pulse }: { pulse: PulseWithUser }) {
-  // Fixed set of demo images that definitely work
+  // Default images to show if no user-uploaded images are found
   const defaultImages = [
     'https://images.unsplash.com/photo-1551651653-c5dcb914d348?auto=format&fit=crop&w=1050&h=700&q=80',
     'https://images.unsplash.com/photo-1545235617-7a424c1a60cc?auto=format&fit=crop&w=1050&h=700&q=80', 
@@ -204,16 +204,23 @@ function ImageCarousel({ pulse }: { pulse: PulseWithUser }) {
     'https://images.unsplash.com/photo-1548096270-b51d43648055?auto=format&fit=crop&w=1050&h=700&q=80'
   ];
 
+  // Use actual uploaded image URLs from the pulse if available
+  const imagesToDisplay = pulse.mediaUrls && pulse.mediaUrls.length > 0 
+    ? pulse.mediaUrls 
+    : defaultImages;
+
+  const imageCount = imagesToDisplay.length;
+
   return (
     <div className="mt-4 space-y-2">
       <div className="text-sm font-medium flex items-center gap-2">
         <Image className="h-4 w-4 text-blue-500" />
-        <span>Image Gallery ({defaultImages.length})</span>
+        <span>Image Gallery ({imageCount})</span>
       </div>
       <div className="mt-2 bg-blue-50/20 rounded-md p-2">
         <Carousel className="w-full">
           <CarouselContent>
-            {defaultImages.map((url, index) => (
+            {imagesToDisplay.map((url, index) => (
               <CarouselItem key={index}>
                 <div className="p-1">
                   <div className="overflow-hidden rounded-md border border-blue-100 relative">
@@ -223,6 +230,7 @@ function ImageCarousel({ pulse }: { pulse: PulseWithUser }) {
                         alt={`Media ${index + 1}`} 
                         className="w-full h-64 object-cover"
                         onError={(e) => {
+                          console.error(`Failed to load image: ${url}`);
                           e.currentTarget.src = 'https://via.placeholder.com/600x400?text=Image+Not+Available';
                         }}
                       />
@@ -232,10 +240,12 @@ function ImageCarousel({ pulse }: { pulse: PulseWithUser }) {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <div className="flex items-center justify-center mt-2">
-            <CarouselPrevious className="relative -translate-y-0 -left-0 mr-2" />
-            <CarouselNext className="relative -translate-y-0 -right-0 ml-2" />
-          </div>
+          {imageCount > 1 && (
+            <div className="flex items-center justify-center mt-2">
+              <CarouselPrevious className="relative -translate-y-0 -left-0 mr-2" />
+              <CarouselNext className="relative -translate-y-0 -right-0 ml-2" />
+            </div>
+          )}
         </Carousel>
       </div>
     </div>
@@ -249,8 +259,13 @@ function VideoPlayer({ pulse }: { pulse: PulseWithUser }) {
     return null;
   }
   
-  // Hard-coded working video URLs that we know will load properly
-  const videoUrl = 'https://assets.mixkit.co/videos/preview/mixkit-a-girl-blowing-a-bubble-gum-at-an-amusement-park-1226-large.mp4';
+  // Default fallback video URL if no user video is available
+  const defaultVideoUrl = 'https://assets.mixkit.co/videos/preview/mixkit-a-girl-blowing-a-bubble-gum-at-an-amusement-park-1226-large.mp4';
+  
+  // Use actual uploaded video URL from the pulse if available
+  const videoUrl = pulse.mediaUrls && pulse.mediaUrls.length > 0 
+    ? pulse.mediaUrls[0]
+    : defaultVideoUrl;
   
   return (
     <div className="mt-4 space-y-2">
@@ -266,6 +281,7 @@ function VideoPlayer({ pulse }: { pulse: PulseWithUser }) {
             className="w-full rounded-md"
             style={{ maxHeight: "400px" }}
             onError={(e) => {
+              console.error(`Failed to load video: ${videoUrl}`);
               // If video fails to load, show message
               const parent = e.currentTarget.parentElement;
               if (parent) {
