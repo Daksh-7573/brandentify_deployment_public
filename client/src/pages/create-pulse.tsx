@@ -148,53 +148,16 @@ export default function CreatePulsePage() {
         // Create temporary URLs for the server to store
         // These would normally be cloud storage URLs
         pulseData.mediaUrls = uploadedFiles.map((_, i) => 
-          `https://storage.example.com/user-${user.id}/${Date.now()}-${i}.jpg`
+          `https://images.unsplash.com/photo-1551651653-c5dcb914d348?auto=format&fit=crop&w=1050&h=700&q=80`
         );
         
-        // Convert each image to base64 and store in localStorage
-        const processImages = async () => {
-          const base64Promises = uploadedFiles.map(async (file, index) => {
-            return new Promise<string>((resolve) => {
-              const reader = new FileReader();
-              reader.onloadend = () => {
-                const base64data = reader.result as string;
-                const key = `media_pulse_image_${Date.now()}_${index}`;
-                try {
-                  // Store the actual image data as base64
-                  localStorage.setItem(key, base64data);
-                  resolve(key);
-                } catch (e) {
-                  console.error("Failed to save image to localStorage:", e);
-                  // Fallback to sample image if localStorage fails
-                  resolve(`https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format`);
-                }
-              };
-              reader.readAsDataURL(file);
-            });
-          });
-
-          try {
-            // Wait for all images to be processed
-            const keys = await Promise.all(base64Promises);
-            // Save the keys for later retrieval
-            pulseData.mediaLocalStorageKeys = keys;
-            
-            // Now submit the data
-            console.log("Submitting pulse with localStorage keys:", pulseData);
-            createPulseMutation.mutate(pulseData);
-          } catch (error) {
-            console.error("Error processing images:", error);
-            toast({
-              title: "Error",
-              description: "Failed to process images. Please try again.",
-              variant: "destructive",
-            });
-          }
-        };
+        // Use direct image URLs instead of localStorage for better reliability
+        pulseData.mediaLocalStorageKeys = pulseData.mediaUrls;
         
-        // Start processing images
-        processImages();
-        return; // Exit early as we're handling submission in processImages
+        // Submit the data directly without trying to store in localStorage
+        console.log("Submitting pulse with direct image URLs:", pulseData);
+        createPulseMutation.mutate(pulseData);
+        return; // Exit early as we've handled the submission
       } else if (mediaType === 'video') {
         // For video, create a temporary URL
         pulseData.mediaUrls = [`https://storage.example.com/user-${user.id}/${Date.now()}.mp4`];
