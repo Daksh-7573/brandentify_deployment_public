@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Zap } from "lucide-react";
 
 export default function Header() {
   const { user, isDemoMode, signOut, refreshUserData } = useAuth();
@@ -74,10 +75,10 @@ export default function Header() {
             <Button 
               variant="default" 
               size="sm"
-              className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-700 text-white shadow-md"
+              className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-700 text-white shadow-md flex items-center gap-1.5"
               onClick={() => setLocation('/create-pulse')}
             >
-              Create Pulse
+              <Zap className="h-4 w-4" /> Create Pulse
             </Button>
             
             {/* User name */}
