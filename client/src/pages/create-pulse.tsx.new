@@ -157,6 +157,9 @@ export default function CreatePulsePage() {
     // Submit the pulse
     console.log("Submitting pulse:", pulseData);
     createPulseMutation.mutate(pulseData);
+    
+    // We don't need to clean up the object URLs here anymore as they're real server URLs
+    // We'll do cleanup for preview URLs in the success handler of the mutation
   };
 
   const addPollOption = () => {
@@ -259,6 +262,9 @@ export default function CreatePulsePage() {
         description: error instanceof Error ? error.message : "Failed to upload video",
         variant: "destructive",
       });
+      
+      // Keep the local preview URL so the user can still see what they uploaded
+      // but they should know the upload to server failed
     }
   };
   
@@ -339,6 +345,9 @@ export default function CreatePulsePage() {
         description: error instanceof Error ? error.message : "Failed to upload images",
         variant: "destructive",
       });
+      
+      // Keep the local preview URLs so the user can still see what they uploaded
+      // but they should know the upload to server failed
     }
   };
   

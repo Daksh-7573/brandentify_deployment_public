@@ -4,12 +4,14 @@ import { useMutation } from "@tanstack/react-query";
 import Header from "@/components/layout/header";
 import Sidebar from "@/components/layout/sidebar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { AlertCircle, BarChart, Video, Image, FileCode, Loader2, X } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProjectForm, { Project } from "@/components/shared/project-form";
 import { useToast } from "@/hooks/use-toast";
@@ -46,7 +48,6 @@ export default function CreatePulsePage() {
       setPulseTitle("");
       setPulseContent("");
       setPollOptions(["", ""]);
-      setSelectedProject(null);
       
       // Clean up file resources
       mediaUrls.forEach(url => URL.revokeObjectURL(url));
@@ -157,6 +158,9 @@ export default function CreatePulsePage() {
     // Submit the pulse
     console.log("Submitting pulse:", pulseData);
     createPulseMutation.mutate(pulseData);
+    
+    // We don't need to clean up the object URLs here anymore as they're real server URLs
+    // We'll do cleanup for preview URLs in the success handler of the mutation
   };
 
   const addPollOption = () => {
@@ -259,6 +263,9 @@ export default function CreatePulsePage() {
         description: error instanceof Error ? error.message : "Failed to upload video",
         variant: "destructive",
       });
+      
+      // Keep the local preview URL so the user can still see what they uploaded
+      // but they should know the upload to server failed
     }
   };
   
@@ -339,6 +346,9 @@ export default function CreatePulsePage() {
         description: error instanceof Error ? error.message : "Failed to upload images",
         variant: "destructive",
       });
+      
+      // Keep the local preview URLs so the user can still see what they uploaded
+      // but they should know the upload to server failed
     }
   };
   
@@ -464,69 +474,87 @@ export default function CreatePulsePage() {
                     </div>
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <Label htmlFor="poll-description" className="flex items-center gap-2">
-                          <AlertCircle className="h-4 w-4 text-purple-500" />
-                          <span>Description (optional)</span>
+                        <Label className="flex items-center gap-2">
+                          <BarChart className="h-4 w-4 text-purple-500" />
+                          <span>Poll Options</span>
                         </Label>
-                      </div>
-                      <Textarea
-                        id="poll-description"
-                        placeholder="Add context to your question..."
-                        value={pulseContent}
-                        onChange={(e) => setPulseContent(e.target.value)}
-                        className="resize-none border-purple-100 focus-visible:ring-purple-500"
-                        rows={3}
-                      />
-                    </div>
-                    <div className="space-y-4">
-                      <Label className="flex items-center gap-2">
-                        <BarChart className="h-4 w-4 text-purple-500" />
-                        <span>Poll Options</span>
-                      </Label>
-                      {pollOptions.map((option, index) => (
-                        <div key={index} className="flex items-center gap-2">
-                          <Input
-                            placeholder={`Option ${index + 1}`}
-                            value={option}
-                            onChange={(e) => updatePollOption(index, e.target.value)}
-                            className="border-purple-100 focus-visible:ring-purple-500"
-                            required={index < 2} // First two options are required
-                          />
-                          {index >= 2 && (
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => removePollOption(index)}
-                              className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          )}
-                        </div>
-                      ))}
-                      {pollOptions.length < 6 && (
-                        <Button
-                          type="button"
-                          variant="outline"
+                        <Button 
+                          type="button" 
+                          variant="outline" 
                           size="sm"
                           onClick={addPollOption}
-                          className="mt-2 border-purple-200 text-purple-700 hover:bg-purple-50"
+                          disabled={pollOptions.length >= 6}
+                          className="border-purple-200 text-purple-700 hover:bg-purple-50"
                         >
-                          Add Option
+                          + Add Option
                         </Button>
-                      )}
+                      </div>
+                      <div className="space-y-2 bg-purple-50/30 p-4 border border-purple-100 rounded-md">
+                        {pollOptions.map((option, index) => (
+                          <div key={index} className="flex gap-2">
+                            <Input
+                              placeholder={`Option ${index + 1}`}
+                              value={option}
+                              onChange={(e) => updatePollOption(index, e.target.value)}
+                              required
+                              className="border-purple-100 focus-visible:ring-purple-500"
+                            />
+                            {pollOptions.length > 2 && (
+                              <Button 
+                                type="button" 
+                                variant="ghost" 
+                                size="icon"
+                                onClick={() => removePollOption(index)}
+                                className="text-purple-400 hover:text-purple-700 hover:bg-purple-50"
+                              >
+                                ✕
+                              </Button>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="flex items-center gap-2">
+                        <BarChart className="h-4 w-4 text-purple-500" />
+                        <span>Poll Settings</span>
+                      </Label>
+                      <div className="flex flex-wrap gap-4 bg-purple-50/30 p-4 border border-purple-100 rounded-md">
+                        <div className="flex items-center gap-2">
+                          <input type="checkbox" id="allow-multiple" className="text-purple-500 focus:ring-purple-500" />
+                          <Label htmlFor="allow-multiple" className="text-sm font-normal">Allow multiple selections</Label>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <input type="checkbox" id="hide-results" className="text-purple-500 focus:ring-purple-500" />
+                          <Label htmlFor="hide-results" className="text-sm font-normal">Hide results until voting</Label>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <input type="checkbox" id="allow-comments" defaultChecked className="text-purple-500 focus:ring-purple-500" />
+                          <Label htmlFor="allow-comments" className="text-sm font-normal">Allow comments</Label>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="poll-content" className="flex items-center gap-2">
+                        <span>Description</span>
+                      </Label>
+                      <Textarea
+                        id="poll-content"
+                        placeholder="Provide additional context for your poll question..."
+                        className="min-h-[80px] border-purple-100 focus-visible:ring-purple-500"
+                        value={pulseContent}
+                        onChange={(e) => setPulseContent(e.target.value)}
+                      />
                     </div>
                     <div className="flex justify-end">
-                      <Button
-                        type="submit"
-                        className="bg-purple-600 hover:bg-purple-700"
+                      <Button 
+                        className="px-6 bg-purple-600 hover:bg-purple-700"
                         disabled={createPulseMutation.isPending}
                       >
                         {createPulseMutation.isPending ? (
                           <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Creating Poll...
+                            Creating...
                           </>
                         ) : (
                           "Create Poll"
@@ -538,195 +566,246 @@ export default function CreatePulsePage() {
 
                 {pulseType === 'media-pulse' && (
                   <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="media-type" className="flex items-center gap-2">
-                        {mediaType === 'video' ? (
-                          <Video className="h-4 w-4 text-blue-500" />
-                        ) : (
-                          <Image className="h-4 w-4 text-blue-500" />
-                        )}
-                        <span>Media Type</span>
+                    <div className="mb-6">
+                      <Label className="text-base font-medium mb-3 block flex items-center gap-2">
+                        <span className="text-blue-500">
+                          {mediaType === 'video' ? <Video className="h-4 w-4" /> : <Image className="h-4 w-4" />}
+                        </span>
+                        Media Type
                       </Label>
-                      <div className="flex flex-wrap gap-4">
-                        <button
-                          type="button"
-                          onClick={() => setMediaType('image')}
-                          className={`flex items-center gap-2 px-4 py-2 rounded-md ${
-                            mediaType === 'image'
-                              ? 'bg-blue-100 text-blue-700 font-medium'
-                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                          }`}
-                        >
-                          <Image className="h-4 w-4" />
-                          <span>Images</span>
-                          <span className="text-xs ml-1">(max 5)</span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setMediaType('video')}
-                          className={`flex items-center gap-2 px-4 py-2 rounded-md ${
-                            mediaType === 'video'
-                              ? 'bg-blue-100 text-blue-700 font-medium'
-                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                          }`}
-                        >
-                          <Video className="h-4 w-4" />
-                          <span>Video</span>
-                          <span className="text-xs ml-1">(max 2 min)</span>
-                        </button>
-                      </div>
+                      <RadioGroup 
+                        value={mediaType} 
+                        onValueChange={setMediaType}
+                        className="flex flex-col sm:flex-row gap-4"
+                      >
+                        <div className="flex items-start space-x-2 p-3 rounded-md hover:bg-blue-50/30 transition-colors">
+                          <RadioGroupItem value="image" id="media-image" className="text-blue-500" />
+                          <div className="grid gap-1.5">
+                            <Label htmlFor="media-image" className="font-medium flex items-center gap-2">
+                              <Image className="h-4 w-4 text-blue-500" />
+                              Images (Max 5)
+                            </Label>
+                            <p className="text-sm text-muted-foreground">
+                              Upload up to 5 images for your personal branding
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-start space-x-2 p-3 rounded-md hover:bg-blue-50/30 transition-colors">
+                          <RadioGroupItem value="video" id="media-video" className="text-blue-500" />
+                          <div className="grid gap-1.5">
+                            <Label htmlFor="media-video" className="font-medium flex items-center gap-2">
+                              <Video className="h-4 w-4 text-blue-500" />
+                              Video (Max 120 sec)
+                            </Label>
+                            <p className="text-sm text-muted-foreground">
+                              Upload a single video for your personal branding
+                            </p>
+                          </div>
+                        </div>
+                      </RadioGroup>
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="media-title" className="flex items-center gap-2">
-                        {mediaType === 'video' ? (
-                          <Video className="h-4 w-4 text-blue-500" />
-                        ) : (
-                          <Image className="h-4 w-4 text-blue-500" />
-                        )}
-                        <span>Title</span>
-                      </Label>
-                      <Input
-                        id="media-title"
-                        placeholder={`Add a title for your ${mediaType === 'video' ? 'video' : 'images'}`}
-                        value={pulseTitle}
-                        onChange={(e) => setPulseTitle(e.target.value)}
-                        required
-                        className="border-blue-100 focus-visible:ring-blue-500"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <Label htmlFor="media-description" className="flex items-center gap-2">
-                          <AlertCircle className="h-4 w-4 text-blue-500" />
-                          <span>Description (optional)</span>
-                        </Label>
-                      </div>
-                      <Textarea
-                        id="media-description"
-                        placeholder={`Add context to your ${mediaType === 'video' ? 'video' : 'images'}...`}
-                        value={pulseContent}
-                        onChange={(e) => setPulseContent(e.target.value)}
-                        className="resize-none border-blue-100 focus-visible:ring-blue-500"
-                        rows={3}
-                      />
-                    </div>
-                    <div className="space-y-4">
-                      <Label className="flex items-center gap-2">
-                        {mediaType === 'video' ? (
-                          <Video className="h-4 w-4 text-blue-500" />
-                        ) : (
-                          <Image className="h-4 w-4 text-blue-500" />
-                        )}
-                        <span>Upload {mediaType === 'video' ? 'Video' : 'Images'}</span>
-                      </Label>
-                      
-                      {mediaType === 'video' ? (
-                        <div className="space-y-4">
-                          <input
-                            type="file"
-                            accept="video/*"
-                            className="hidden"
+
+                    {mediaType === 'video' ? (
+                      <>
+                        <div className="border-2 border-dashed border-blue-200 rounded-lg p-8 flex flex-col items-center justify-center text-center bg-blue-50/30">
+                          <Video className="h-12 w-12 text-blue-500 mb-4" />
+                          <h3 className="font-medium text-lg mb-2">Upload Video</h3>
+                          <p className="text-sm text-blue-700/70 mb-4">
+                            Drag and drop a video file here, or click to browse.<br />
+                            Maximum length: 120 seconds | Supported formats: MP4, MOV, WebM
+                          </p>
+                          <Button 
+                            variant="outline" 
+                            className="mb-4 border-blue-200 text-blue-700 hover:bg-blue-100"
+                            onClick={handleVideoClick}
+                            type="button"
+                          >
+                            Select File
+                          </Button>
+                          <input 
+                            type="file" 
+                            className="hidden" 
+                            accept="video/*" 
                             ref={videoInputRef}
                             onChange={handleVideoUpload}
                           />
+                          <p className="text-xs text-blue-500/70">Max file size: 100 MB</p>
                           
-                          {mediaUrls.length === 0 ? (
-                            <div
-                              className="border-2 border-dashed border-blue-200 rounded-lg p-8 text-center cursor-pointer hover:bg-blue-50 transition-colors"
-                              onClick={handleVideoClick}
-                            >
-                              <Video className="h-10 w-10 text-blue-400 mx-auto mb-2" />
-                              <p className="text-blue-600 font-medium">Upload Video</p>
-                              <p className="text-xs text-gray-500 mt-1">Maximum 100MB, MP4 format recommended</p>
-                            </div>
-                          ) : (
-                            <div className="border rounded-lg overflow-hidden">
-                              <div className="relative aspect-video">
-                                <video
-                                  src={mediaUrls[0]}
-                                  controls
-                                  className="w-full h-full object-cover"
-                                />
-                                <button
-                                  type="button"
-                                  className="absolute top-2 right-2 bg-red-600 text-white p-1 rounded-full"
+                          {mediaUrls.length > 0 && mediaType === 'video' && (
+                            <div className="mt-4 border border-blue-100 rounded-lg p-4">
+                              <div className="flex items-center justify-between mb-2">
+                                <h4 className="text-sm font-medium text-blue-700">Video Preview</h4>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="h-8 w-8 p-0 text-blue-500 hover:text-blue-700"
                                   onClick={() => removeMedia(0)}
                                 >
                                   <X className="h-4 w-4" />
-                                </button>
+                                </Button>
+                              </div>
+                              <video 
+                                controls
+                                className="w-full h-auto max-h-[300px] rounded-md"
+                                src={mediaUrls[0]}
+                              />
+                              <p className="text-xs text-blue-500/70 mt-2">
+                                {uploadedFiles[0]?.name} ({Math.round(uploadedFiles[0]?.size / 1024 / 1024 * 10) / 10} MB)
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="media-title" className="flex items-center gap-2">
+                            <Video className="h-4 w-4 text-blue-500" />
+                            <span>Title</span>
+                          </Label>
+                          <Input
+                            id="media-title"
+                            placeholder="Add a descriptive title for your video"
+                            required
+                            value={pulseTitle}
+                            onChange={(e) => setPulseTitle(e.target.value)}
+                            className="border-blue-100 focus-visible:ring-blue-500"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="media-description" className="flex items-center gap-2">
+                            <Video className="h-4 w-4 text-blue-500" />
+                            <span>Description</span>
+                          </Label>
+                          <Textarea
+                            id="media-description"
+                            placeholder="Add context or details about your video..."
+                            className="min-h-[100px] border-blue-100 focus-visible:ring-blue-500"
+                            value={pulseContent}
+                            onChange={(e) => setPulseContent(e.target.value)}
+                          />
+                        </div>
+                        <div className="space-y-2 bg-blue-50/30 p-4 border border-blue-100 rounded-md">
+                          <Label className="flex items-center gap-2 mb-2">
+                            <Video className="h-4 w-4 text-blue-500" />
+                            <span>Video Settings</span>
+                          </Label>
+                          <div className="flex items-center space-x-2">
+                            <input type="checkbox" id="auto-captions" defaultChecked className="text-blue-500 focus:ring-blue-500" />
+                            <Label htmlFor="auto-captions" className="text-sm font-normal">
+                              Use AI to automatically generate captions
+                            </Label>
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="border-2 border-dashed border-blue-200 rounded-lg p-8 flex flex-col items-center justify-center text-center bg-blue-50/30">
+                          <Image className="h-12 w-12 text-blue-500 mb-4" />
+                          <h3 className="font-medium text-lg mb-2">Upload Images</h3>
+                          <p className="text-sm text-blue-700/70 mb-4">
+                            Drag and drop up to 5 images here, or click to browse.<br />
+                            Supported formats: JPG, PNG, WebP, GIF
+                          </p>
+                          <Button 
+                            variant="outline" 
+                            className="mb-4 border-blue-200 text-blue-700 hover:bg-blue-100"
+                            onClick={handleImageClick}
+                            type="button"
+                          >
+                            Select Files
+                          </Button>
+                          <input 
+                            type="file" 
+                            className="hidden" 
+                            accept="image/*" 
+                            multiple 
+                            ref={imageInputRef}
+                            onChange={handleImageUpload}
+                          />
+                          <p className="text-xs text-blue-500/70">Max file size: 20 MB per image</p>
+                          
+                          {mediaUrls.length > 0 && mediaType === 'image' && (
+                            <div className="mt-4 border border-blue-100 rounded-lg p-4">
+                              <div className="flex items-center justify-between mb-2">
+                                <h4 className="text-sm font-medium text-blue-700">Image Gallery ({mediaUrls.length}/5)</h4>
+                              </div>
+                              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                                {mediaUrls.map((url, index) => (
+                                  <div key={index} className="relative group">
+                                    <img 
+                                      src={url} 
+                                      alt={`Preview ${index + 1}`}
+                                      className="w-full h-[150px] object-cover rounded-md border border-blue-50"
+                                    />
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="absolute top-1 right-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 bg-white/80 hover:bg-white text-blue-500"
+                                      onClick={() => removeMedia(index)}
+                                    >
+                                      <X className="h-3 w-3" />
+                                    </Button>
+                                    <p className="text-xs text-blue-500/70 mt-1 truncate">
+                                      {uploadedFiles[index]?.name} ({Math.round(uploadedFiles[index]?.size / 1024 / 1024 * 10) / 10} MB)
+                                    </p>
+                                  </div>
+                                ))}
                               </div>
                             </div>
                           )}
                         </div>
-                      ) : (
-                        <div className="space-y-4">
-                          <input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            ref={imageInputRef}
-                            onChange={handleImageUpload}
-                            multiple
+                        <div className="space-y-2">
+                          <Label htmlFor="image-title" className="flex items-center gap-2">
+                            <Image className="h-4 w-4 text-blue-500" />
+                            <span>Title</span>
+                          </Label>
+                          <Input
+                            id="image-title"
+                            placeholder="Add a title for your images"
+                            required
+                            value={pulseTitle}
+                            onChange={(e) => setPulseTitle(e.target.value)}
+                            className="border-blue-100 focus-visible:ring-blue-500"
                           />
-                          
-                          <div 
-                            className={`border-2 border-dashed border-blue-200 rounded-lg p-8 text-center cursor-pointer hover:bg-blue-50 transition-colors ${mediaUrls.length > 0 ? 'p-4' : 'p-8'}`}
-                            onClick={handleImageClick}
-                          >
-                            {mediaUrls.length === 0 ? (
-                              <>
-                                <Image className="h-10 w-10 text-blue-400 mx-auto mb-2" />
-                                <p className="text-blue-600 font-medium">Upload Images</p>
-                                <p className="text-xs text-gray-500 mt-1">Up to 5 images, 20MB max each</p>
-                              </>
-                            ) : (
-                              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                                {mediaUrls.map((url, index) => (
-                                  <div key={index} className="relative aspect-video rounded-lg overflow-hidden">
-                                    <img
-                                      src={url}
-                                      alt={`Uploaded image ${index + 1}`}
-                                      className="w-full h-full object-cover"
-                                    />
-                                    <button
-                                      type="button"
-                                      className="absolute top-2 right-2 bg-red-600 text-white p-1 rounded-full"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        removeMedia(index);
-                                      }}
-                                    >
-                                      <X className="h-4 w-4" />
-                                    </button>
-                                  </div>
-                                ))}
-                                {mediaUrls.length < 5 && (
-                                  <div className="aspect-video flex items-center justify-center border-2 border-dashed border-blue-200 rounded-lg">
-                                    <div className="text-center">
-                                      <Image className="h-6 w-6 text-blue-400 mx-auto mb-1" />
-                                      <p className="text-sm text-blue-600">Add More</p>
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-                            )}
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="image-description" className="flex items-center gap-2">
+                            <Image className="h-4 w-4 text-blue-500" />
+                            <span>Description</span>
+                          </Label>
+                          <Textarea
+                            id="image-description"
+                            placeholder="Add context or details about your images..."
+                            className="min-h-[100px] border-blue-100 focus-visible:ring-blue-500"
+                            value={pulseContent}
+                            onChange={(e) => setPulseContent(e.target.value)}
+                          />
+                        </div>
+                        <div className="space-y-2 bg-blue-50/30 p-4 border border-blue-100 rounded-md">
+                          <Label className="flex items-center gap-2 mb-2">
+                            <Image className="h-4 w-4 text-blue-500" />
+                            <span>Image Settings</span>
+                          </Label>
+                          <div className="flex items-center space-x-2">
+                            <input type="checkbox" id="ai-tags" defaultChecked className="text-blue-500 focus:ring-blue-500" />
+                            <Label htmlFor="ai-tags" className="text-sm font-normal">
+                              Generate suggested hashtags & keywords from my images
+                            </Label>
                           </div>
                         </div>
-                      )}
-                    </div>
+                      </>
+                    )}
+                    
                     <div className="flex justify-end">
-                      <Button
-                        type="submit"
-                        className="bg-blue-600 hover:bg-blue-700"
+                      <Button 
+                        className="px-6 bg-blue-600 hover:bg-blue-700"
                         disabled={createPulseMutation.isPending}
                       >
                         {createPulseMutation.isPending ? (
                           <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Creating Pulse...
+                            Uploading...
                           </>
                         ) : (
-                          "Create Media Pulse"
+                          "Upload & Publish Media"
                         )}
                       </Button>
                     </div>
@@ -863,8 +942,6 @@ export default function CreatePulsePage() {
                         </div>
                       </TabsContent>
                     </Tabs>
-                  </div>
-                )}
               </CardContent>
             </Card>
 
