@@ -1089,11 +1089,11 @@ export class MemStorage implements IStorage {
       content: "Showcasing some of my recent UI design work on product dashboards and analytics interfaces. I focused on creating clean, intuitive layouts with strong visual hierarchy.",
       mediaType: "image",
       mediaUrls: [
-        "https://via.placeholder.com/1050x700/3B82F6/FFFFFF?text=UI+Design+1",
-        "https://via.placeholder.com/1050x700/2563EB/FFFFFF?text=UI+Design+2", 
-        "https://via.placeholder.com/1050x700/1D4ED8/FFFFFF?text=UI+Design+3",
-        "https://via.placeholder.com/1050x700/1E40AF/FFFFFF?text=UI+Design+4",
-        "https://via.placeholder.com/1050x700/1E3A8A/FFFFFF?text=UI+Design+5"
+        "/images/demo/ui-design-1.svg",
+        "/images/demo/ui-design-2.svg", 
+        "/images/demo/ui-design-3.svg",
+        "/images/demo/ui-design-4.svg",
+        "/images/demo/ui-design-5.svg"
       ],
       mediaLocalStorageKeys: [],
       pollOptions: [],
