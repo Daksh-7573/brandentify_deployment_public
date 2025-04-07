@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { formatDistanceToNow } from "date-fns";
 import { useAuth } from "@/context/auth-context";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 // Extended Pulse type with user info for display purposes
 interface PulseWithUser {
@@ -309,67 +310,24 @@ export default function IndustryPulsePage() {
                                 <Image className="h-4 w-4 text-blue-500" />
                                 <span>Image Gallery ({pulse.mediaUrls.length})</span>
                               </div>
-                              <div className="grid grid-cols-2 gap-2 mt-2">
-                                {/* Get real images from localStorage if available */}
-                                {(pulse.mediaLocalStorageKeys || pulse.mediaUrls || []).slice(0, 4).map((urlOrKey, index) => {
-                                  // Create ref for this image
-                                  let imageUrl: string;
-                                  
-                                  // First priority: Check if we have a localStorage key
-                                  if (typeof urlOrKey === 'string' && urlOrKey.startsWith('media_pulse_image_')) {
-                                    try {
-                                      // Get base64 data from localStorage
-                                      const storedData = localStorage.getItem(urlOrKey);
-                                      if (storedData && (storedData.startsWith('data:image') || storedData.startsWith('blob:'))) {
-                                        // We retrieved an actual image
-                                        imageUrl = storedData;
-                                      } else {
-                                        // Not a valid image in localStorage, use fallback
-                                        imageUrl = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format';
-                                      }
-                                    } catch (e) {
-                                      console.error("Error retrieving image from localStorage:", e);
-                                      imageUrl = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format';
-                                    }
-                                  } 
-                                  // Second priority: Use the URL from mediaUrls array if available
-                                  else if (pulse.mediaUrls && pulse.mediaUrls.length > index) {
-                                    imageUrl = pulse.mediaUrls[index];
-                                  }
-                                  // Fallback to a sample image
-                                  else {
-                                    imageUrl = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format';
-                                  }
-                                  
-                                  return (
-                                    <div key={index} className="border border-blue-100 rounded-md overflow-hidden bg-blue-50/20">
-                                      <img 
-                                        src={imageUrl} 
-                                        alt={`Media ${index + 1}`} 
-                                        className="w-full h-48 object-cover rounded-md"
-                                        onError={(e) => {
-                                          // If image fails to load, show fallback
-                                          e.currentTarget.src = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format';
-                                        }}
-                                      />
-                                    </div>
-                                  );
-                                })}
-                                
-                                {/* Display the "more" indicator if more than 4 images */}
-                                {(pulse.mediaLocalStorageKeys?.length || pulse.mediaUrls.length) > 4 && (
-                                  <div className="relative border border-blue-100 rounded-md overflow-hidden">
-                                    {/* Try to get the 5th image from localStorage if available */}
-                                    {(() => {
+                              <div className="mt-2 bg-blue-50/20 rounded-md p-2">
+                                <Carousel className="w-full">
+                                  <CarouselContent>
+                                    {/* Get real images from localStorage if available */}
+                                    {(pulse.mediaLocalStorageKeys || pulse.mediaUrls || []).map((urlOrKey, index) => {
+                                      // Create ref for this image
                                       let imageUrl: string;
                                       
-                                      // Try to get from localStorage first
-                                      if (pulse.mediaLocalStorageKeys && pulse.mediaLocalStorageKeys.length > 4) {
+                                      // First priority: Check if we have a localStorage key
+                                      if (typeof urlOrKey === 'string' && urlOrKey.startsWith('media_pulse_image_')) {
                                         try {
-                                          const storedData = localStorage.getItem(pulse.mediaLocalStorageKeys[4]);
+                                          // Get base64 data from localStorage
+                                          const storedData = localStorage.getItem(urlOrKey);
                                           if (storedData && (storedData.startsWith('data:image') || storedData.startsWith('blob:'))) {
+                                            // We retrieved an actual image
                                             imageUrl = storedData;
                                           } else {
+                                            // Not a valid image in localStorage, use fallback
                                             imageUrl = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format';
                                           }
                                         } catch (e) {
@@ -377,33 +335,39 @@ export default function IndustryPulsePage() {
                                           imageUrl = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format';
                                         }
                                       } 
-                                      // Fall back to the URL if available
-                                      else if (pulse.mediaUrls && pulse.mediaUrls.length > 4) {
-                                        imageUrl = pulse.mediaUrls[4];
+                                      // Second priority: Use the URL from mediaUrls array if available
+                                      else if (pulse.mediaUrls && pulse.mediaUrls.length > index) {
+                                        imageUrl = pulse.mediaUrls[index];
                                       }
-                                      // Use sample image as fallback
+                                      // Fallback to a sample image
                                       else {
                                         imageUrl = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format';
                                       }
                                       
                                       return (
-                                        <img 
-                                          src={imageUrl} 
-                                          alt="Media 5" 
-                                          className="w-full h-48 object-cover rounded-md opacity-70"
-                                          onError={(e) => {
-                                            e.currentTarget.src = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format';
-                                          }}
-                                        />
+                                        <CarouselItem key={index}>
+                                          <div className="p-1">
+                                            <div className="overflow-hidden rounded-md border border-blue-100">
+                                              <img 
+                                                src={imageUrl} 
+                                                alt={`Media ${index + 1}`} 
+                                                className="w-full h-64 object-cover"
+                                                onError={(e) => {
+                                                  // If image fails to load, show fallback
+                                                  e.currentTarget.src = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format';
+                                                }}
+                                              />
+                                            </div>
+                                          </div>
+                                        </CarouselItem>
                                       );
-                                    })()}
-                                    <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-md">
-                                      <span className="text-white font-bold text-lg">
-                                        +{(pulse.mediaLocalStorageKeys?.length || pulse.mediaUrls.length) - 4} more
-                                      </span>
-                                    </div>
+                                    })}
+                                  </CarouselContent>
+                                  <div className="flex items-center justify-center mt-2">
+                                    <CarouselPrevious className="relative -translate-y-0 -left-0 mr-2" />
+                                    <CarouselNext className="relative -translate-y-0 -right-0 ml-2" />
                                   </div>
-                                )}
+                                </Carousel>
                               </div>
                             </div>
                           )}
