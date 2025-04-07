@@ -27,7 +27,7 @@ export default function CreatePulsePage() {
     // Log the submission based on type
     console.log("Submitting pulse:", { 
       type: pulseType,
-      mediaType: pulseType === 'media-post' ? mediaType : undefined,
+      mediaType: pulseType === 'media-pulse' ? mediaType : undefined,
       title: pulseTitle,
       content: pulseContent
     });
@@ -89,16 +89,16 @@ export default function CreatePulsePage() {
               </Card>
 
               <Card 
-                className={`cursor-pointer transition-all hover:shadow-md ${pulseType === 'media-post' ? 'ring-2 ring-primary' : ''}`}
-                onClick={() => setPulseType('media-post')}
+                className={`cursor-pointer transition-all hover:shadow-md ${pulseType === 'media-pulse' ? 'ring-2 ring-primary' : ''}`}
+                onClick={() => setPulseType('media-pulse')}
               >
                 <CardContent className="p-4 flex flex-col items-center justify-center text-center">
                   {mediaType === 'video' ? (
-                    <Video className={`h-10 w-10 mb-2 ${pulseType === 'media-post' ? 'text-primary' : 'text-gray-500'}`} />
+                    <Video className={`h-10 w-10 mb-2 ${pulseType === 'media-pulse' ? 'text-primary' : 'text-gray-500'}`} />
                   ) : (
-                    <Image className={`h-10 w-10 mb-2 ${pulseType === 'media-post' ? 'text-primary' : 'text-gray-500'}`} />
+                    <Image className={`h-10 w-10 mb-2 ${pulseType === 'media-pulse' ? 'text-primary' : 'text-gray-500'}`} />
                   )}
-                  <h3 className="font-medium">Media Post</h3>
+                  <h3 className="font-medium">Media Pulse</h3>
                   <p className="text-xs text-gray-500 mt-1">Images or video for your portfolio</p>
                 </CardContent>
               </Card>
@@ -116,7 +116,7 @@ export default function CreatePulsePage() {
                   </Alert>
                 )}
 
-                {pulseType === 'media-post' && (
+                {pulseType === 'media-pulse' && (
                   <Alert className="mb-6 bg-blue-50 border-blue-200">
                     {mediaType === 'video' ? (
                       <Video className="h-4 w-4 text-blue-500" />
@@ -202,7 +202,7 @@ export default function CreatePulsePage() {
                   </form>
                 )}
 
-                {pulseType === 'media-post' && (
+                {pulseType === 'media-pulse' && (
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="mb-6">
                       <Label className="text-base font-medium mb-3 block">Media Type</Label>
