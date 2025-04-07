@@ -195,58 +195,101 @@ function PollVoting({ pulse }: PollVotingProps) {
 
 // Image Carousel Component for Media Pulses
 function ImageCarousel({ pulse }: { pulse: PulseWithUser }) {
-  // Default images to show if no user-uploaded images are found
-  const defaultImages = [
-    'https://images.unsplash.com/photo-1551651653-c5dcb914d348?auto=format&fit=crop&w=1050&h=700&q=80',
-    'https://images.unsplash.com/photo-1545235617-7a424c1a60cc?auto=format&fit=crop&w=1050&h=700&q=80', 
-    'https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?auto=format&fit=crop&w=1050&h=700&q=80',
-    'https://images.unsplash.com/photo-1502945015378-0e284ca1a5be?auto=format&fit=crop&w=1050&h=700&q=80',
-    'https://images.unsplash.com/photo-1548096270-b51d43648055?auto=format&fit=crop&w=1050&h=700&q=80'
-  ];
-
-  // Use actual uploaded image URLs from the pulse if available
-  const imagesToDisplay = pulse.mediaUrls && pulse.mediaUrls.length > 0 
-    ? pulse.mediaUrls 
-    : defaultImages;
-
-  const imageCount = imagesToDisplay.length;
+  const [isLoading, setIsLoading] = useState(true);
+  const [images, setImages] = useState<string[]>([]);
+  
+  useEffect(() => {
+    // Log what we received from the server
+    console.log("Pulse received for carousel:", pulse);
+    console.log("Media URLs:", pulse.mediaUrls);
+    console.log("Media localStorage keys:", pulse.mediaLocalStorageKeys);
+    
+    let mediaImages: string[] = [];
+    
+    // First try to use mediaUrls if they exist
+    if (pulse.mediaUrls && pulse.mediaUrls.length > 0) {
+      mediaImages = [...pulse.mediaUrls];
+      console.log("Using mediaUrls for carousel:", mediaImages);
+    } 
+    // If no mediaUrls, try mediaLocalStorageKeys
+    else if (pulse.mediaLocalStorageKeys && pulse.mediaLocalStorageKeys.length > 0) {
+      // Check if these are URLs (from newer uploads) or localStorage keys (from older uploads)
+      if (pulse.mediaLocalStorageKeys[0].startsWith('http')) {
+        mediaImages = [...pulse.mediaLocalStorageKeys];
+        console.log("Using mediaLocalStorageKeys as direct URLs:", mediaImages);
+      } else {
+        // These might be old localStorage keys, try to retrieve them
+        pulse.mediaLocalStorageKeys.forEach(key => {
+          try {
+            const storedData = localStorage.getItem(key);
+            if (storedData && storedData.startsWith('data:image')) {
+              mediaImages.push(storedData);
+            }
+          } catch (e) {
+            console.error("Error retrieving image from localStorage:", e);
+          }
+        });
+        console.log("Retrieved images from localStorage:", mediaImages.length);
+      }
+    }
+    
+    // If we still don't have images, use demo images
+    if (mediaImages.length === 0) {
+      mediaImages = [
+        'https://images.unsplash.com/photo-1551651653-c5dcb914d348?auto=format&fit=crop&w=1050&h=700&q=80',
+        'https://images.unsplash.com/photo-1545235617-7a424c1a60cc?auto=format&fit=crop&w=1050&h=700&q=80', 
+        'https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?auto=format&fit=crop&w=1050&h=700&q=80',
+        'https://images.unsplash.com/photo-1502945015378-0e284ca1a5be?auto=format&fit=crop&w=1050&h=700&q=80'
+      ];
+      console.log("Using demo images as fallback");
+    }
+    
+    setImages(mediaImages);
+    setIsLoading(false);
+  }, [pulse]);
 
   return (
     <div className="mt-4 space-y-2">
       <div className="text-sm font-medium flex items-center gap-2">
         <Image className="h-4 w-4 text-blue-500" />
-        <span>Image Gallery ({imageCount})</span>
+        <span>Image Gallery ({images.length})</span>
       </div>
       <div className="mt-2 bg-blue-50/20 rounded-md p-2">
-        <Carousel className="w-full">
-          <CarouselContent>
-            {imagesToDisplay.map((url, index) => (
-              <CarouselItem key={index}>
-                <div className="p-1">
-                  <div className="overflow-hidden rounded-md border border-blue-100 relative">
-                    <div className="w-full h-64 bg-gray-100 flex items-center justify-center">
-                      <img 
-                        src={url} 
-                        alt={`Media ${index + 1}`} 
-                        className="w-full h-64 object-cover"
-                        onError={(e) => {
-                          console.error(`Failed to load image: ${url}`);
-                          e.currentTarget.src = 'https://via.placeholder.com/600x400?text=Image+Not+Available';
-                        }}
-                      />
+        {isLoading ? (
+          <div className="h-64 flex items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        ) : (
+          <Carousel className="w-full">
+            <CarouselContent>
+              {images.map((url, index) => (
+                <CarouselItem key={index}>
+                  <div className="p-1">
+                    <div className="overflow-hidden rounded-md border border-blue-100 relative">
+                      <div className="w-full h-64 bg-gray-100 flex items-center justify-center">
+                        <img 
+                          src={url} 
+                          alt={`Media ${index + 1}`} 
+                          className="w-full h-64 object-cover"
+                          onError={(e) => {
+                            console.error(`Failed to load image: ${url}`);
+                            e.currentTarget.src = 'https://via.placeholder.com/600x400?text=Image+Not+Available';
+                          }}
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          {imageCount > 1 && (
-            <div className="flex items-center justify-center mt-2">
-              <CarouselPrevious className="relative -translate-y-0 -left-0 mr-2" />
-              <CarouselNext className="relative -translate-y-0 -right-0 ml-2" />
-            </div>
-          )}
-        </Carousel>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            {images.length > 1 && (
+              <div className="flex items-center justify-center mt-2">
+                <CarouselPrevious className="relative -translate-y-0 -left-0 mr-2" />
+                <CarouselNext className="relative -translate-y-0 -right-0 ml-2" />
+              </div>
+            )}
+          </Carousel>
+        )}
       </div>
     </div>
   );
@@ -259,13 +302,48 @@ function VideoPlayer({ pulse }: { pulse: PulseWithUser }) {
     return null;
   }
   
-  // Default fallback video URL if no user video is available
-  const defaultVideoUrl = 'https://assets.mixkit.co/videos/preview/mixkit-a-girl-blowing-a-bubble-gum-at-an-amusement-park-1226-large.mp4';
+  const [isLoading, setIsLoading] = useState(true);
+  const [videoSrc, setVideoSrc] = useState<string>('');
   
-  // Use actual uploaded video URL from the pulse if available
-  const videoUrl = pulse.mediaUrls && pulse.mediaUrls.length > 0 
-    ? pulse.mediaUrls[0]
-    : defaultVideoUrl;
+  useEffect(() => {
+    // Log what we received from the server
+    console.log("Pulse received for video player:", pulse);
+    console.log("Video media URLs:", pulse.mediaUrls);
+    console.log("Video localStorage keys:", pulse.mediaLocalStorageKeys);
+    
+    // Default fallback video URL if no user video is available
+    const defaultVideoUrl = 'https://assets.mixkit.co/videos/preview/mixkit-a-girl-blowing-a-bubble-gum-at-an-amusement-park-1226-large.mp4';
+    let videoUrl = defaultVideoUrl;
+    
+    // First try to use mediaUrls if they exist
+    if (pulse.mediaUrls && pulse.mediaUrls.length > 0) {
+      videoUrl = pulse.mediaUrls[0];
+      console.log("Using mediaUrls for video:", videoUrl);
+    } 
+    // If no mediaUrls, try mediaLocalStorageKeys
+    else if (pulse.mediaLocalStorageKeys && pulse.mediaLocalStorageKeys.length > 0) {
+      // Check if these are URLs (from newer uploads) or localStorage keys (from older uploads)
+      if (pulse.mediaLocalStorageKeys[0].startsWith('http')) {
+        videoUrl = pulse.mediaLocalStorageKeys[0];
+        console.log("Using mediaLocalStorageKeys as direct URL:", videoUrl);
+      } else {
+        // These might be old localStorage keys, try to retrieve the first one
+        const key = pulse.mediaLocalStorageKeys[0];
+        try {
+          const storedData = localStorage.getItem(key);
+          if (storedData && (storedData.startsWith('data:video') || storedData.startsWith('blob:'))) {
+            videoUrl = storedData;
+            console.log("Retrieved video from localStorage");
+          }
+        } catch (e) {
+          console.error("Error retrieving video from localStorage:", e);
+        }
+      }
+    }
+    
+    setVideoSrc(videoUrl);
+    setIsLoading(false);
+  }, [pulse]);
   
   return (
     <div className="mt-4 space-y-2">
@@ -274,33 +352,39 @@ function VideoPlayer({ pulse }: { pulse: PulseWithUser }) {
         <span>Video</span>
       </div>
       <div className="bg-blue-50/30 border border-blue-100 rounded-md p-2">
-        <div className="relative">
-          <video 
-            src={videoUrl} 
-            controls 
-            className="w-full rounded-md"
-            style={{ maxHeight: "400px" }}
-            onError={(e) => {
-              console.error(`Failed to load video: ${videoUrl}`);
-              // If video fails to load, show message
-              const parent = e.currentTarget.parentElement;
-              if (parent) {
-                parent.innerHTML = `
-                  <div class="h-64 flex items-center justify-center bg-blue-50 rounded-md">
-                    <div class="text-center">
-                      <div class="mb-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-300 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
+        {isLoading ? (
+          <div className="h-64 flex items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        ) : (
+          <div className="relative">
+            <video 
+              src={videoSrc} 
+              controls 
+              className="w-full rounded-md"
+              style={{ maxHeight: "400px" }}
+              onError={(e) => {
+                console.error(`Failed to load video: ${videoSrc}`);
+                // If video fails to load, show message
+                const parent = e.currentTarget.parentElement;
+                if (parent) {
+                  parent.innerHTML = `
+                    <div class="h-64 flex items-center justify-center bg-blue-50 rounded-md">
+                      <div class="text-center">
+                        <div class="mb-2">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-300 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        </div>
+                        <p class="text-blue-500">Video could not be loaded</p>
                       </div>
-                      <p class="text-blue-500">Video could not be loaded</p>
                     </div>
-                  </div>
-                `;
-              }
-            }}
-          />
-        </div>
+                  `;
+                }
+              }}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
