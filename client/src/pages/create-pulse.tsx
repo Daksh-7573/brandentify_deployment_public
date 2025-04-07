@@ -99,7 +99,7 @@ export default function CreatePulsePage() {
                     <Image className={`h-10 w-10 mb-2 ${pulseType === 'media-pulse' ? 'text-primary' : 'text-gray-500'}`} />
                   )}
                   <h3 className="font-medium">Media Pulse</h3>
-                  <p className="text-xs text-gray-500 mt-1">Images or video for your portfolio</p>
+                  <p className="text-xs text-gray-500 mt-1">Images or video for your branding</p>
                 </CardContent>
               </Card>
             </div>
@@ -125,7 +125,7 @@ export default function CreatePulsePage() {
                     )}
                     <AlertTitle className="text-blue-700">Media Pulse</AlertTitle>
                     <AlertDescription className="text-blue-600">
-                      Share portfolio visuals through images (max 5) or a video (max 120 seconds).
+                      Share branding visuals through images (max 5) or a video (max 120 seconds).
                     </AlertDescription>
                   </Alert>
                 )}
@@ -216,7 +216,7 @@ export default function CreatePulsePage() {
                           <div className="grid gap-1.5">
                             <Label htmlFor="media-image" className="font-medium">Images (Max 5)</Label>
                             <p className="text-sm text-muted-foreground">
-                              Upload up to 5 images for your portfolio or projects
+                              Upload up to 5 images for your personal branding
                             </p>
                           </div>
                         </div>
@@ -225,7 +225,7 @@ export default function CreatePulsePage() {
                           <div className="grid gap-1.5">
                             <Label htmlFor="media-video" className="font-medium">Video (Max 120 sec)</Label>
                             <p className="text-sm text-muted-foreground">
-                              Upload a single video up to 120 seconds long
+                              Upload a single video for your personal branding
                             </p>
                           </div>
                         </div>
