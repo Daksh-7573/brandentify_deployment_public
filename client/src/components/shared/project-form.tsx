@@ -341,9 +341,11 @@ export default function ProjectForm({
   return (
     <div className="space-y-6">
       <Tabs defaultValue="details" value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-2">
-          <TabsTrigger value="details">Project Details</TabsTrigger>
+        <TabsList className="grid grid-cols-4">
+          <TabsTrigger value="details">Details</TabsTrigger>
           <TabsTrigger value="media">Project Media</TabsTrigger>
+          <TabsTrigger value="team">Team</TabsTrigger>
+          <TabsTrigger value="endorsements">Endorsements</TabsTrigger>
         </TabsList>
         
         <TabsContent value="details" className="space-y-4 pt-4">
@@ -615,6 +617,63 @@ export default function ProjectForm({
               <div className="flex justify-between gap-2 pt-4">
                 <Button type="button" variant="outline" onClick={() => setActiveTab('details')}>
                   Back to Details
+                </Button>
+                <div className="space-x-2">
+                  {onCancel && (
+                    <Button type="button" variant="outline" onClick={onCancel}>
+                      Cancel
+                    </Button>
+                  )}
+                  <Button type="button" onClick={() => setActiveTab('team')}>
+                    Next: Team
+                  </Button>
+                </div>
+              </div>
+            </form>
+          </Form>
+        </TabsContent>
+
+        <TabsContent value="team" className="space-y-4 pt-4">
+          <Form {...projectForm}>
+            <form onSubmit={projectForm.handleSubmit(onSubmit)} className="space-y-4">
+              <div className="space-y-6">
+                <h3 className="text-base font-medium">Project Team Members</h3>
+                <p className="text-sm text-muted-foreground mb-4">Add team members who contributed to this project</p>
+                
+                <div className="rounded-md border p-4 bg-muted/20">
+                  <p className="text-sm text-center py-6">Team member management features coming soon</p>
+                </div>
+              </div>
+              
+              <div className="flex justify-between gap-2 pt-4">
+                <Button type="button" variant="outline" onClick={() => setActiveTab('media')}>
+                  Back to Media
+                </Button>
+                <div className="space-x-2">
+                  <Button type="button" onClick={() => setActiveTab('endorsements')}>
+                    Next: Endorsements
+                  </Button>
+                </div>
+              </div>
+            </form>
+          </Form>
+        </TabsContent>
+        
+        <TabsContent value="endorsements" className="space-y-4 pt-4">
+          <Form {...projectForm}>
+            <form onSubmit={projectForm.handleSubmit(onSubmit)} className="space-y-4">
+              <div className="space-y-6">
+                <h3 className="text-base font-medium">Project Endorsements</h3>
+                <p className="text-sm text-muted-foreground mb-4">Add endorsements and testimonials from colleagues or clients</p>
+                
+                <div className="rounded-md border p-4 bg-muted/20">
+                  <p className="text-sm text-center py-6">Endorsement features coming soon</p>
+                </div>
+              </div>
+              
+              <div className="flex justify-between gap-2 pt-4">
+                <Button type="button" variant="outline" onClick={() => setActiveTab('team')}>
+                  Back to Team
                 </Button>
                 <div className="space-x-2">
                   {onCancel && (
