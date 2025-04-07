@@ -1532,6 +1532,96 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     }
   });
+  
+  // GET /api/pulses/:pulseId/poll-votes - Get all votes for a poll
+  apiRouter.get("/pulses/:pulseId/poll-votes", async (req: Request, res: Response) => {
+    try {
+      const pulseId = Number(req.params.pulseId);
+      
+      if (isNaN(pulseId)) {
+        return res.status(400).json({ message: 'Invalid pulse ID' });
+      }
+      
+      console.log(`[GET /pulses/${pulseId}/poll-votes] Fetching votes`);
+      const votes = await storage.getPollVotesByPulseId(pulseId);
+      
+      console.log(`[GET /pulses/${pulseId}/poll-votes] Found ${votes.length} votes`);
+      res.json(votes);
+    } catch (error) {
+      console.error(`[GET /pulses/:pulseId/poll-votes] Error:`, error);
+      res.status(500).json({ message: 'Error fetching poll votes' });
+    }
+  });
+  
+  // GET /api/poll-votes/user/:userId/pulse/:pulseId - Check if a user has voted on a specific poll
+  apiRouter.get("/poll-votes/user/:userId/pulse/:pulseId", async (req: Request, res: Response) => {
+    try {
+      const userId = Number(req.params.userId);
+      const pulseId = Number(req.params.pulseId);
+      
+      if (isNaN(userId) || isNaN(pulseId)) {
+        return res.status(400).json({ message: 'Invalid user ID or pulse ID' });
+      }
+      
+      console.log(`[GET /poll-votes/user/${userId}/pulse/${pulseId}] Checking if user has voted`);
+      const vote = await storage.getPollVoteByUserAndPulse(userId, pulseId);
+      
+      if (vote) {
+        console.log(`[GET /poll-votes/user/${userId}/pulse/${pulseId}] User has voted for option: ${vote.optionIndex}`);
+        res.json(vote);
+      } else {
+        console.log(`[GET /poll-votes/user/${userId}/pulse/${pulseId}] User has not voted`);
+        res.status(404).json({ message: 'No vote found' });
+      }
+    } catch (error) {
+      console.error(`[GET /poll-votes/user/:userId/pulse/:pulseId] Error:`, error);
+      res.status(500).json({ message: 'Error checking poll vote' });
+    }
+  });
+  
+  // POST /api/poll-votes - Create or update a poll vote
+  apiRouter.post("/poll-votes", async (req: Request, res: Response) => {
+    try {
+      console.log('[POST /poll-votes] Processing vote:', req.body);
+      
+      // Parse and validate the vote data
+      const voteData = insertPollVoteSchema.parse(req.body);
+      
+      // Check if the user has already voted on this poll
+      const existingVote = await storage.getPollVoteByUserAndPulse(voteData.userId, voteData.pulseId);
+      
+      let vote;
+      if (existingVote) {
+        // If the user is voting for the same option, return the existing vote
+        if (existingVote.optionIndex === voteData.optionIndex) {
+          console.log(`[POST /poll-votes] User already voted for this option`);
+          return res.json(existingVote);
+        }
+        
+        // Otherwise, update the existing vote
+        console.log(`[POST /poll-votes] Updating existing vote from option ${existingVote.optionIndex} to ${voteData.optionIndex}`);
+        vote = await storage.updatePollVote(existingVote.id, { optionIndex: voteData.optionIndex });
+      } else {
+        // Create a new vote
+        console.log(`[POST /poll-votes] Creating new vote for option ${voteData.optionIndex}`);
+        vote = await storage.createPollVote(voteData);
+      }
+      
+      console.log(`[POST /poll-votes] Processed vote successfully`);
+      res.status(201).json(vote);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        console.error('[POST /poll-votes] Validation error:', error.errors);
+        res.status(400).json({ 
+          message: 'Invalid vote data',
+          errors: error.errors 
+        });
+      } else {
+        console.error('[POST /poll-votes] Error processing vote:', error);
+        res.status(500).json({ message: 'Error processing vote' });
+      }
+    }
+  });
 
   apiRouter.post("/chat-messages", async (req: Request, res: Response) => {
     try {

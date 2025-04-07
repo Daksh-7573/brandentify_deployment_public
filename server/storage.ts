@@ -13,7 +13,8 @@ import {
   portfolios, Portfolio, InsertPortfolio,
   services, Service, InsertService,
   pulses, Pulse, InsertPulse,
-  pulseComments, PulseComment, InsertPulseComment
+  pulseComments, PulseComment, InsertPulseComment,
+  pollVotes, PollVote, InsertPollVote
 } from "@shared/schema";
 
 // Interface for all storage operations
@@ -25,6 +26,13 @@ export interface IStorage {
   getUserByPhoneNumber(phoneNumber: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, user: Partial<User>): Promise<User | undefined>;
+  
+  // Poll Vote operations
+  getPollVotesByPulseId(pulseId: number): Promise<PollVote[]>;
+  getPollVoteByUserAndPulse(userId: number, pulseId: number): Promise<PollVote | undefined>;
+  createPollVote(vote: InsertPollVote): Promise<PollVote>;
+  updatePollVote(id: number, vote: Partial<PollVote>): Promise<PollVote | undefined>;
+  deletePollVote(id: number): Promise<boolean>;
   
   // Resume operations
   getResumeByUserId(userId: number): Promise<Resume | undefined>;
@@ -136,6 +144,7 @@ export class MemStorage implements IStorage {
   private services: Map<number, Service>;
   private pulses: Map<number, Pulse>;
   private pulseComments: Map<number, PulseComment>;
+  private pollVotes: Map<number, PollVote>;
   
   private currentUserId: number;
   private currentResumeId: number;
@@ -152,6 +161,7 @@ export class MemStorage implements IStorage {
   private currentServiceId: number;
   private currentPulseId: number;
   private currentPulseCommentId: number;
+  private currentPollVoteId: number;
 
   constructor() {
     this.users = new Map();
@@ -169,6 +179,7 @@ export class MemStorage implements IStorage {
     this.services = new Map();
     this.pulses = new Map();
     this.pulseComments = new Map();
+    this.pollVotes = new Map();
     
     this.currentUserId = 1;
     this.currentResumeId = 1;
@@ -185,6 +196,7 @@ export class MemStorage implements IStorage {
     this.currentServiceId = 1;
     this.currentPulseId = 1;
     this.currentPulseCommentId = 1;
+    this.currentPollVoteId = 1;
     
     // Initialize with a default user for development/demo
     this.initializeDemoData();
@@ -265,6 +277,7 @@ export class MemStorage implements IStorage {
     this.currentPortfolioId = 1;
     this.currentPulseId = 1;
     this.currentPulseCommentId = 1;
+    this.currentPollVoteId = 1;
     
     // No pre-created skills
     
@@ -379,6 +392,9 @@ export class MemStorage implements IStorage {
     
     // Clear all existing pulse comments
     this.pulseComments.clear();
+    
+    // Clear all existing poll votes
+    this.pollVotes.clear();
   }
   
   /**
@@ -1185,6 +1201,44 @@ export class MemStorage implements IStorage {
     }
     
     return this.pulseComments.delete(id);
+  }
+  
+  // Poll Vote operations
+  async getPollVotesByPulseId(pulseId: number): Promise<PollVote[]> {
+    return Array.from(this.pollVotes.values())
+      .filter(vote => vote.pulseId === pulseId);
+  }
+  
+  async getPollVoteByUserAndPulse(userId: number, pulseId: number): Promise<PollVote | undefined> {
+    return Array.from(this.pollVotes.values())
+      .find(vote => vote.userId === userId && vote.pulseId === pulseId);
+  }
+  
+  async createPollVote(insertVote: InsertPollVote): Promise<PollVote> {
+    const id = this.currentPollVoteId++;
+    const createdAt = new Date();
+    
+    const vote: PollVote = {
+      ...insertVote,
+      id,
+      createdAt
+    };
+    
+    this.pollVotes.set(id, vote);
+    return vote;
+  }
+  
+  async updatePollVote(id: number, voteData: Partial<PollVote>): Promise<PollVote | undefined> {
+    const vote = this.pollVotes.get(id);
+    if (!vote) return undefined;
+    
+    const updatedVote = { ...vote, ...voteData };
+    this.pollVotes.set(id, updatedVote);
+    return updatedVote;
+  }
+  
+  async deletePollVote(id: number): Promise<boolean> {
+    return this.pollVotes.delete(id);
   }
 
   /**

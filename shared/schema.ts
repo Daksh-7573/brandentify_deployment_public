@@ -331,6 +331,15 @@ export const pulseComments = pgTable("pulse_comments", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Poll votes model - tracks votes on poll options
+export const pollVotes = pgTable("poll_votes", {
+  id: serial("id").primaryKey(),
+  pulseId: integer("pulse_id").references(() => pulses.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  optionIndex: integer("option_index").notNull(), // Index of the option that was voted for
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Insert schemas for Pulses
 export const insertPulseSchema = createInsertSchema(pulses).omit({
   id: true,
@@ -346,9 +355,17 @@ export const insertPulseCommentSchema = createInsertSchema(pulseComments).omit({
   createdAt: true
 });
 
+export const insertPollVoteSchema = createInsertSchema(pollVotes).omit({
+  id: true,
+  createdAt: true
+});
+
 // Export types for Pulses
 export type Pulse = typeof pulses.$inferSelect;
 export type InsertPulse = z.infer<typeof insertPulseSchema>;
 
 export type PulseComment = typeof pulseComments.$inferSelect;
 export type InsertPulseComment = z.infer<typeof insertPulseCommentSchema>;
+
+export type PollVote = typeof pollVotes.$inferSelect;
+export type InsertPollVote = z.infer<typeof insertPollVoteSchema>;

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Pulse } from "@shared/schema";
 import Header from "@/components/layout/header";
 import Sidebar from "@/components/layout/sidebar";
@@ -7,8 +7,12 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MessageSquare, ThumbsUp, Calendar, Users, BarChart, Video, Image, FileCode } from "lucide-react";
+import { MessageSquare, ThumbsUp, Calendar, Users, BarChart, Video, Image, FileCode, Check, Loader2 } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { formatDistanceToNow } from "date-fns";
+import { useAuth } from "@/context/auth-context";
 
 // Extended Pulse type with user info for display purposes
 interface PulseWithUser {
@@ -32,6 +36,159 @@ interface PulseWithUser {
     photoURL: string | null;
   };
   projectDetails?: string;
+}
+
+// Poll Voting Component
+interface PollVotingProps {
+  pulse: PulseWithUser;
+}
+
+function PollVoting({ pulse }: PollVotingProps) {
+  const { toast } = useToast();
+  const [selectedOption, setSelectedOption] = useState<number | null>(null);
+  const [userVote, setUserVote] = useState<number | null>(null);
+  const [pollVotes, setPollVotes] = useState<any[]>([]);
+  const [voteCounts, setVoteCounts] = useState<number[]>([]);
+  const [totalVotes, setTotalVotes] = useState(0);
+  
+  // Get the current user ID from auth context
+  const { user } = useAuth();
+  const userId = user?.id || 1; // Default to 1 (demo user) if not authenticated
+  
+  // Fetch user's vote for this poll
+  const { data: userVoteData, isLoading: isLoadingUserVote } = useQuery<any>({
+    queryKey: [`/api/poll-votes/user/${userId}/pulse/${pulse.id}`],
+  });
+  
+  // Effect to handle the user vote data
+  useEffect(() => {
+    if (userVoteData) {
+      setUserVote(userVoteData.optionIndex);
+      setSelectedOption(userVoteData.optionIndex);
+    }
+  }, [userVoteData]);
+  
+  // Fetch all votes for this poll
+  const { data: pollVotesData, isLoading: isLoadingPollVotes } = useQuery<any[]>({
+    queryKey: [`/api/pulses/${pulse.id}/poll-votes`],
+  });
+  
+  // Effect to handle all poll votes data
+  useEffect(() => {
+    if (pollVotesData) {
+      setPollVotes(pollVotesData);
+      
+      // Calculate vote counts for each option
+      const counts = pulse.pollOptions.map((_, index) => {
+        return pollVotesData.filter(vote => vote.optionIndex === index).length;
+      });
+      
+      setVoteCounts(counts);
+      setTotalVotes(pollVotesData.length);
+    }
+  }, [pollVotesData, pulse.pollOptions]);
+  
+  // Submit vote mutation
+  const voteMutation = useMutation({
+    mutationFn: async (optionIndex: number) => {
+      const res = await apiRequest("POST", "/api/poll-votes", {
+        userId,
+        pulseId: pulse.id,
+        optionIndex
+      });
+      return await res.json();
+    },
+    onSuccess: (data) => {
+      setUserVote(data.optionIndex);
+      
+      // Invalidate queries to refresh vote data
+      queryClient.invalidateQueries({ queryKey: [`/api/pulses/${pulse.id}/poll-votes`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/poll-votes/user/${userId}/pulse/${pulse.id}`] });
+      
+      toast({
+        title: "Vote submitted!",
+        description: "Your vote has been recorded.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Failed to submit vote",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+  
+  const handleVote = (optionIndex: number) => {
+    setSelectedOption(optionIndex);
+    voteMutation.mutate(optionIndex);
+  };
+  
+  const isLoading = isLoadingUserVote || isLoadingPollVotes || voteMutation.isPending;
+  
+  return (
+    <div className="mt-4 space-y-3 border rounded-md p-4 bg-purple-50/30">
+      <div className="text-sm font-medium flex items-center gap-2">
+        <BarChart className="h-4 w-4 text-purple-500" />
+        <span>Poll Options</span>
+      </div>
+      
+      {pulse.pollOptions.map((option, index) => (
+        <div key={index} className="space-y-1">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className={`h-8 ${userVote === index ? 'bg-purple-100 border-purple-300' : ''}`}
+                onClick={() => handleVote(index)}
+                disabled={isLoading}
+              >
+                {userVote === index && <Check className="h-3 w-3 mr-1 text-purple-600" />}
+                {option}
+              </Button>
+              
+              {userVote !== null && (
+                <span className="text-xs text-muted-foreground">
+                  {voteCounts[index] || 0} vote{voteCounts[index] !== 1 ? 's' : ''}
+                </span>
+              )}
+            </div>
+            
+            {userVote !== null && (
+              <span className="text-xs font-medium">
+                {totalVotes > 0 ? Math.round((voteCounts[index] || 0) / totalVotes * 100) : 0}%
+              </span>
+            )}
+          </div>
+          
+          {userVote !== null && (
+            <div className="h-2 bg-purple-100 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-purple-500 transition-all duration-500 ease-in-out"
+                style={{ 
+                  width: `${totalVotes > 0 ? (voteCounts[index] || 0) / totalVotes * 100 : 0}%` 
+                }} 
+              />
+            </div>
+          )}
+        </div>
+      ))}
+      
+      {isLoading && (
+        <div className="flex justify-center py-2">
+          <Loader2 className="h-4 w-4 animate-spin text-purple-500" />
+        </div>
+      )}
+      
+      {userVote !== null && (
+        <div className="text-xs text-right text-muted-foreground pt-2">
+          Total votes: {totalVotes}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function IndustryPulsePage() {
@@ -142,20 +299,7 @@ export default function IndustryPulsePage() {
                           
                           {/* Render pulse content based on type */}
                           {pulse.type === 'poll' && (
-                            <div className="mt-4 space-y-2 border rounded-md p-4 bg-purple-50/30">
-                              <div className="text-sm font-medium flex items-center gap-2">
-                                <BarChart className="h-4 w-4 text-purple-500" />
-                                <span>Poll Options</span>
-                              </div>
-                              <div className="space-y-2 pl-2">
-                                {pulse.pollOptions.map((option, index) => (
-                                  <div key={index} className="flex items-center space-x-2">
-                                    <div className="h-2 w-2 rounded-full bg-purple-500" />
-                                    <span>{option}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
+                            <PollVoting pulse={pulse} />
                           )}
                           
                           {pulse.type === 'media-pulse' && pulse.mediaType === 'image' && pulse.mediaUrls && (
