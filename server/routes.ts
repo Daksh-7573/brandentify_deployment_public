@@ -22,6 +22,8 @@ import {
   insertProjectEndorsementSchema,
   insertPortfolioSchema,
   insertServiceSchema,
+  insertPulseSchema,
+  insertPulseCommentSchema,
   InsertWorkExperience,
   InsertEducation,
   InsertSkill,
@@ -1391,6 +1393,143 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching chat messages:", error);
       res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  // GET /api/pulses - Get all pulses for the industry pulse feed
+  apiRouter.get("/pulses", async (req: Request, res: Response) => {
+    try {
+      const pulses = await storage.getPulses();
+      
+      // Get user data for each pulse to display in the UI
+      const pulsesWithUserData = await Promise.all(
+        pulses.map(async (pulse) => {
+          const user = await storage.getUser(pulse.userId);
+          return {
+            ...pulse,
+            user: user ? {
+              name: user.name,
+              photoURL: user.photoURL
+            } : undefined
+          };
+        })
+      );
+      
+      console.log(`[GET /pulses] Found ${pulses.length} pulses`);
+      res.json(pulsesWithUserData);
+    } catch (error) {
+      console.error('[GET /pulses] Error fetching pulses:', error);
+      res.status(500).json({ message: 'Error fetching pulses' });
+    }
+  });
+  
+  // POST /api/pulses - Create a new pulse
+  apiRouter.post("/pulses", async (req: Request, res: Response) => {
+    try {
+      console.log('[POST /pulses] Creating new pulse:', req.body);
+      
+      // Parse and validate the pulse data
+      const pulseData = insertPulseSchema.parse(req.body);
+      
+      // Create the new pulse
+      const newPulse = await storage.createPulse(pulseData);
+      
+      console.log(`[POST /pulses] Created new pulse with ID: ${newPulse.id}`);
+      
+      // Get the user data to return with the response
+      const user = await storage.getUser(newPulse.userId);
+      const pulseWithUser = {
+        ...newPulse,
+        user: user ? {
+          name: user.name,
+          photoURL: user.photoURL
+        } : undefined
+      };
+      
+      res.status(201).json(pulseWithUser);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        console.error('[POST /pulses] Validation error:', error.errors);
+        res.status(400).json({ 
+          message: 'Invalid pulse data',
+          errors: error.errors 
+        });
+      } else {
+        console.error('[POST /pulses] Error creating pulse:', error);
+        res.status(500).json({ message: 'Error creating pulse' });
+      }
+    }
+  });
+  
+  // GET /api/pulses/:pulseId/comments - Get comments for a specific pulse
+  apiRouter.get("/pulses/:pulseId/comments", async (req: Request, res: Response) => {
+    try {
+      const pulseId = Number(req.params.pulseId);
+      
+      if (isNaN(pulseId)) {
+        return res.status(400).json({ message: 'Invalid pulse ID' });
+      }
+      
+      console.log(`[GET /pulses/${pulseId}/comments] Fetching comments`);
+      const comments = await storage.getPulseCommentsByPulseId(pulseId);
+      
+      // Get user data for each comment
+      const commentsWithUserData = await Promise.all(
+        comments.map(async (comment) => {
+          const user = await storage.getUser(comment.userId);
+          return {
+            ...comment,
+            user: user ? {
+              name: user.name,
+              photoURL: user.photoURL
+            } : undefined
+          };
+        })
+      );
+      
+      console.log(`[GET /pulses/${pulseId}/comments] Found ${comments.length} comments`);
+      res.json(commentsWithUserData);
+    } catch (error) {
+      console.error(`[GET /pulses/:pulseId/comments] Error:`, error);
+      res.status(500).json({ message: 'Error fetching comments' });
+    }
+  });
+  
+  // POST /api/pulse-comments - Create a new comment on a pulse
+  apiRouter.post("/pulse-comments", async (req: Request, res: Response) => {
+    try {
+      console.log('[POST /pulse-comments] Creating new comment:', req.body);
+      
+      // Parse and validate the comment data
+      const commentData = insertPulseCommentSchema.parse(req.body);
+      
+      // Create the new comment
+      const newComment = await storage.createPulseComment(commentData);
+      
+      console.log(`[POST /pulse-comments] Created new comment with ID: ${newComment.id}`);
+      
+      // Get the user data to return with the response
+      const user = await storage.getUser(newComment.userId);
+      const commentWithUser = {
+        ...newComment,
+        user: user ? {
+          name: user.name,
+          photoURL: user.photoURL
+        } : undefined
+      };
+      
+      res.status(201).json(commentWithUser);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        console.error('[POST /pulse-comments] Validation error:', error.errors);
+        res.status(400).json({ 
+          message: 'Invalid comment data',
+          errors: error.errors 
+        });
+      } else {
+        console.error('[POST /pulse-comments] Error creating comment:', error);
+        res.status(500).json({ message: 'Error creating comment' });
+      }
     }
   });
 
