@@ -17,11 +17,20 @@ export default function CreatePulsePage() {
   const [pulseContent, setPulseContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [pulseType, setPulseType] = useState("poll");
+  const [mediaType, setMediaType] = useState("image");
   const [pollOptions, setPollOptions] = useState(["", ""]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    
+    // Log the submission based on type
+    console.log("Submitting pulse:", { 
+      type: pulseType,
+      mediaType: pulseType === 'media-post' ? mediaType : undefined,
+      title: pulseTitle,
+      content: pulseContent
+    });
     
     // Simulate submission delay
     setTimeout(() => {
@@ -80,24 +89,17 @@ export default function CreatePulsePage() {
               </Card>
 
               <Card 
-                className={`cursor-pointer transition-all hover:shadow-md ${pulseType === 'video-post' ? 'ring-2 ring-primary' : ''}`}
-                onClick={() => setPulseType('video-post')}
+                className={`cursor-pointer transition-all hover:shadow-md ${pulseType === 'media-post' ? 'ring-2 ring-primary' : ''}`}
+                onClick={() => setPulseType('media-post')}
               >
                 <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                  <Video className={`h-10 w-10 mb-2 ${pulseType === 'video-post' ? 'text-primary' : 'text-gray-500'}`} />
-                  <h3 className="font-medium">Video Post</h3>
-                  <p className="text-xs text-gray-500 mt-1">120 sec max with captions</p>
-                </CardContent>
-              </Card>
-
-              <Card 
-                className={`cursor-pointer transition-all hover:shadow-md ${pulseType === 'project-post' ? 'ring-2 ring-primary' : ''}`}
-                onClick={() => setPulseType('project-post')}
-              >
-                <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                  <Image className={`h-10 w-10 mb-2 ${pulseType === 'project-post' ? 'text-primary' : 'text-gray-500'}`} />
-                  <h3 className="font-medium">Image Post</h3>
-                  <p className="text-xs text-gray-500 mt-1">Portfolio & project visuals</p>
+                  {mediaType === 'video' ? (
+                    <Video className={`h-10 w-10 mb-2 ${pulseType === 'media-post' ? 'text-primary' : 'text-gray-500'}`} />
+                  ) : (
+                    <Image className={`h-10 w-10 mb-2 ${pulseType === 'media-post' ? 'text-primary' : 'text-gray-500'}`} />
+                  )}
+                  <h3 className="font-medium">Media Post</h3>
+                  <p className="text-xs text-gray-500 mt-1">Images or video for your portfolio</p>
                 </CardContent>
               </Card>
             </div>
@@ -114,22 +116,16 @@ export default function CreatePulsePage() {
                   </Alert>
                 )}
 
-                {pulseType === 'video-post' && (
-                  <Alert className="mb-6 bg-red-50 border-red-200">
-                    <Video className="h-4 w-4 text-red-500" />
-                    <AlertTitle className="text-red-700">Video Pulse</AlertTitle>
-                    <AlertDescription className="text-red-600">
-                      Upload videos up to 120 seconds. AI will generate captions and recommend soundtracks.
-                    </AlertDescription>
-                  </Alert>
-                )}
-
-                {pulseType === 'project-post' && (
-                  <Alert className="mb-6 bg-emerald-50 border-emerald-200">
-                    <Image className="h-4 w-4 text-emerald-500" />
-                    <AlertTitle className="text-emerald-700">Image Pulse</AlertTitle>
-                    <AlertDescription className="text-emerald-600">
-                      Share portfolio/project visuals, infographics, or professional event photos with your network.
+                {pulseType === 'media-post' && (
+                  <Alert className="mb-6 bg-blue-50 border-blue-200">
+                    {mediaType === 'video' ? (
+                      <Video className="h-4 w-4 text-blue-500" />
+                    ) : (
+                      <Image className="h-4 w-4 text-blue-500" />
+                    )}
+                    <AlertTitle className="text-blue-700">Media Pulse</AlertTitle>
+                    <AlertDescription className="text-blue-600">
+                      Share portfolio visuals through images (max 5) or a video (max 120 seconds).
                     </AlertDescription>
                   </Alert>
                 )}
@@ -206,97 +202,123 @@ export default function CreatePulsePage() {
                   </form>
                 )}
 
-                {pulseType === 'video-post' && (
+                {pulseType === 'media-post' && (
                   <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 flex flex-col items-center justify-center text-center">
-                      <Video className="h-12 w-12 text-gray-400 mb-4" />
-                      <h3 className="font-medium text-lg mb-2">Upload Video</h3>
-                      <p className="text-sm text-gray-500 mb-4">
-                        Drag and drop a video file here, or click to browse.<br />
-                        Maximum length: 120 seconds | Supported formats: MP4, MOV, WebM
-                      </p>
-                      <Button variant="outline" className="mb-4">
-                        Select File
-                      </Button>
-                      <input type="file" className="hidden" accept="video/*" />
-                      <p className="text-xs text-gray-400">Max file size: 100 MB</p>
+                    <div className="mb-6">
+                      <Label className="text-base font-medium mb-3 block">Media Type</Label>
+                      <RadioGroup 
+                        value={mediaType} 
+                        onValueChange={setMediaType}
+                        className="flex flex-col sm:flex-row gap-4"
+                      >
+                        <div className="flex items-start space-x-2">
+                          <RadioGroupItem value="image" id="media-image" />
+                          <div className="grid gap-1.5">
+                            <Label htmlFor="media-image" className="font-medium">Images (Max 5)</Label>
+                            <p className="text-sm text-muted-foreground">
+                              Upload up to 5 images for your portfolio or projects
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-start space-x-2">
+                          <RadioGroupItem value="video" id="media-video" />
+                          <div className="grid gap-1.5">
+                            <Label htmlFor="media-video" className="font-medium">Video (Max 120 sec)</Label>
+                            <p className="text-sm text-muted-foreground">
+                              Upload a single video up to 120 seconds long
+                            </p>
+                          </div>
+                        </div>
+                      </RadioGroup>
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="video-title">Title</Label>
-                      <Input
-                        id="video-title"
-                        placeholder="Add a descriptive title for your video"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="video-description">Description</Label>
-                      <Textarea
-                        id="video-description"
-                        placeholder="Add context or details about your video..."
-                        className="min-h-[100px]"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Auto-Generate Captions</Label>
-                      <div className="flex items-center space-x-2">
-                        <input type="checkbox" id="auto-captions" defaultChecked />
-                        <Label htmlFor="auto-captions" className="text-sm font-normal">
-                          Use AI to automatically generate captions
-                        </Label>
-                      </div>
-                    </div>
-                    <div className="flex justify-end">
-                      <Button className="px-6">
-                        Upload & Publish Video
-                      </Button>
-                    </div>
-                  </form>
-                )}
 
-                {pulseType === 'project-post' && (
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 flex flex-col items-center justify-center text-center">
-                      <Image className="h-12 w-12 text-gray-400 mb-4" />
-                      <h3 className="font-medium text-lg mb-2">Upload Images</h3>
-                      <p className="text-sm text-gray-500 mb-4">
-                        Drag and drop up to 5 images here, or click to browse.<br />
-                        Supported formats: JPG, PNG, WebP, GIF
-                      </p>
-                      <Button variant="outline" className="mb-4">
-                        Select Files
-                      </Button>
-                      <input type="file" className="hidden" accept="image/*" multiple />
-                      <p className="text-xs text-gray-400">Max file size: 20 MB per image</p>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="project-title">Image Title</Label>
-                      <Input
-                        id="project-title"
-                        placeholder="Add a title for your images"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="project-description">Description</Label>
-                      <Textarea
-                        id="project-description"
-                        placeholder="Add context or details about your images..."
-                        className="min-h-[100px]"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>AI Image Analysis</Label>
-                      <div className="flex items-center space-x-2">
-                        <input type="checkbox" id="ai-tags" defaultChecked />
-                        <Label htmlFor="ai-tags" className="text-sm font-normal">
-                          Generate suggested hashtags & keywords from my images
-                        </Label>
-                      </div>
-                    </div>
+                    {mediaType === 'video' ? (
+                      <>
+                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 flex flex-col items-center justify-center text-center">
+                          <Video className="h-12 w-12 text-gray-400 mb-4" />
+                          <h3 className="font-medium text-lg mb-2">Upload Video</h3>
+                          <p className="text-sm text-gray-500 mb-4">
+                            Drag and drop a video file here, or click to browse.<br />
+                            Maximum length: 120 seconds | Supported formats: MP4, MOV, WebM
+                          </p>
+                          <Button variant="outline" className="mb-4">
+                            Select File
+                          </Button>
+                          <input type="file" className="hidden" accept="video/*" />
+                          <p className="text-xs text-gray-400">Max file size: 100 MB</p>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="media-title">Title</Label>
+                          <Input
+                            id="media-title"
+                            placeholder="Add a descriptive title for your video"
+                            required
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="media-description">Description</Label>
+                          <Textarea
+                            id="media-description"
+                            placeholder="Add context or details about your video..."
+                            className="min-h-[100px]"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Auto-Generate Captions</Label>
+                          <div className="flex items-center space-x-2">
+                            <input type="checkbox" id="auto-captions" defaultChecked />
+                            <Label htmlFor="auto-captions" className="text-sm font-normal">
+                              Use AI to automatically generate captions
+                            </Label>
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 flex flex-col items-center justify-center text-center">
+                          <Image className="h-12 w-12 text-gray-400 mb-4" />
+                          <h3 className="font-medium text-lg mb-2">Upload Images</h3>
+                          <p className="text-sm text-gray-500 mb-4">
+                            Drag and drop up to 5 images here, or click to browse.<br />
+                            Supported formats: JPG, PNG, WebP, GIF
+                          </p>
+                          <Button variant="outline" className="mb-4">
+                            Select Files
+                          </Button>
+                          <input type="file" className="hidden" accept="image/*" multiple />
+                          <p className="text-xs text-gray-400">Max file size: 20 MB per image</p>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="media-title">Title</Label>
+                          <Input
+                            id="media-title"
+                            placeholder="Add a title for your images"
+                            required
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="media-description">Description</Label>
+                          <Textarea
+                            id="media-description"
+                            placeholder="Add context or details about your images..."
+                            className="min-h-[100px]"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>AI Image Analysis</Label>
+                          <div className="flex items-center space-x-2">
+                            <input type="checkbox" id="ai-tags" defaultChecked />
+                            <Label htmlFor="ai-tags" className="text-sm font-normal">
+                              Generate suggested hashtags & keywords from my images
+                            </Label>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                    
                     <div className="flex justify-end">
                       <Button className="px-6">
-                        Upload & Publish Images
+                        Upload & Publish Media
                       </Button>
                     </div>
                   </form>
