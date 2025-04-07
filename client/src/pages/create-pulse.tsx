@@ -366,27 +366,24 @@ export default function CreatePulsePage() {
                         className="mb-4"
                         onClick={() => setIsProjectModalOpen(true)}
                       >
-                        Create New Project
+                        Add New Project
                       </Button>
                     </div>
 
                     <Dialog open={isProjectModalOpen} onOpenChange={setIsProjectModalOpen}>
-                      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                      <DialogContent className="sm:max-w-[650px] max-h-[90vh] overflow-y-auto">
                         <DialogHeader>
-                          <DialogTitle>Create Project</DialogTitle>
-                          <DialogDescription>
-                            Add a new project to your professional portfolio
-                          </DialogDescription>
+                          <DialogTitle>Add New Project</DialogTitle>
                         </DialogHeader>
                         
                         <Tabs value={activeProjectTab} onValueChange={setActiveProjectTab} className="mt-4">
                           <TabsList className="grid w-full grid-cols-3">
-                            <TabsTrigger value="details">Project Details</TabsTrigger>
-                            <TabsTrigger value="collaborators">Collaborators</TabsTrigger>
+                            <TabsTrigger value="details">Details</TabsTrigger>
+                            <TabsTrigger value="team">Team</TabsTrigger>
                             <TabsTrigger value="endorsements">Endorsements</TabsTrigger>
                           </TabsList>
                           
-                          <TabsContent value="details" className="pt-4">
+                          <TabsContent value="details" className="space-y-4 pt-4">
                             <ProjectForm 
                               onSuccess={() => {
                                 setIsProjectModalOpen(false);
@@ -400,10 +397,10 @@ export default function CreatePulsePage() {
                             />
                           </TabsContent>
                           
-                          <TabsContent value="collaborators" className="pt-4">
+                          <TabsContent value="team" className="pt-4">
                             <div className="text-center p-6">
                               <p className="text-muted-foreground">
-                                After creating your project, you can add collaborators here.
+                                After creating your project, you can add team members and collaborators here.
                               </p>
                             </div>
                           </TabsContent>
