@@ -11,7 +11,7 @@ export default function Sidebar({ activePage }: SidebarProps) {
     { id: "dashboard", icon: "fas fa-home", label: "Dashboard", path: "/dashboard" },
     { id: "profile", icon: "fas fa-user", label: "Profile", path: "/profile" },
     { id: "smart-connect", icon: "fas fa-users", label: "Smart Connect", path: "/smart-connect" },
-    { id: "search", icon: "fas fa-search", label: "Search", path: "/search" },
+    { id: "search", icon: "fas fa-search", label: "Discover & Connect", path: "/search" },
     { id: "ai-career", icon: "fas fa-robot", label: "AI Career Booster", path: "/ai-career" },
     { id: "create-pulse", icon: "fas fa-bolt", label: "Create Pulse", path: "/create-pulse" },
     { id: "industry-pulse", icon: "fas fa-newspaper", label: "Industry Pulse", path: "/industry-pulse" },
