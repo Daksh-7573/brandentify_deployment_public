@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
@@ -11,16 +11,61 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import DashboardLayout from "@/components/layout/dashboard-layout";
-import { Search, Users, MessageSquare, Hash } from "lucide-react";
+import { Search as SearchIcon, Users, MessageSquare, Hash } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 
-type SearchCategory = "all" | "pulses" | "profiles" | "hashtags";
+// Types for search
+type SearchCategory = "pulses" | "profiles" | "hashtags";
+
+type SearchResultsType = {
+  pulses: Array<{
+    id: number;
+    title: string;
+    content: string;
+    type: "poll" | "media-pulse" | "project";
+    createdAt: string;
+    user: {
+      name: string;
+      photoURL: string | null;
+    };
+  }>;
+  profiles: Array<{
+    id: number;
+    name: string;
+    title: string | null;
+    photoURL: string | null;
+    location: string | null;
+    industry: string | null;
+  }>;
+  hashtags: Array<{
+    id: number;
+    name: string;
+    count: number;
+  }>;
+};
 
 const SearchPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeCategory, setActiveCategory] = useState<SearchCategory>("all");
+  const [activeCategory, setActiveCategory] = useState<SearchCategory>("pulses");
   const [submittedQuery, setSubmittedQuery] = useState("");
   const [location, setLocation] = useLocation();
   const { toast } = useToast();
+
+  // Parse URL search params on mount
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const q = url.searchParams.get("q");
+    const category = url.searchParams.get("category") as SearchCategory;
+    
+    if (q) {
+      setSearchQuery(q);
+      setSubmittedQuery(q);
+    }
+    
+    if (category && ["pulses", "profiles", "hashtags"].includes(category)) {
+      setActiveCategory(category);
+    }
+  }, []);
 
   // Query for search results
   const { data: searchResults, isLoading } = useQuery({
@@ -58,242 +103,246 @@ const SearchPage = () => {
     }
   };
 
+  // Helper to get initial letters for avatar fallback
+  const getInitials = (name: string | null) => {
+    if (!name) return "?";
+    return name
+      .split(" ")
+      .map(n => n[0])
+      .join("")
+      .toUpperCase()
+      .substring(0, 2);
+  };
+
   return (
     <DashboardLayout>
-      <div className="container max-w-6xl mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-6">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight mb-2">Search</h1>
-          <p className="text-muted-foreground">Find pulses, profiles, and hashtags in the Brandentifier community</p>
+          <h1 className="text-3xl font-bold mb-2">Search</h1>
+          <p className="text-gray-600">Find pulses, profiles, and hashtags in the Brandentifier network</p>
         </div>
 
+        {/* Search Form */}
         <form onSubmit={handleSearch} className="flex gap-2 mb-6">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+            <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
             <Input
-              placeholder="Search for pulses, profiles, or hashtags..."
+              type="text"
+              placeholder="Search by keywords..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
             />
           </div>
-          <Button type="submit">Search</Button>
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? "Searching..." : "Search"}
+          </Button>
         </form>
 
-        <Tabs defaultValue="all" value={activeCategory} onValueChange={handleTabChange} className="mb-8">
-          <TabsList className="grid grid-cols-4 mb-6">
-            <TabsTrigger value="all">All</TabsTrigger>
-            <TabsTrigger value="pulses">Pulses</TabsTrigger>
-            <TabsTrigger value="profiles">Profiles</TabsTrigger>
-            <TabsTrigger value="hashtags">Hashtags</TabsTrigger>
+        {/* Tabs for different search categories */}
+        <Tabs defaultValue={activeCategory} onValueChange={handleTabChange} value={activeCategory}>
+          <TabsList className="mb-6">
+            <TabsTrigger value="pulses" className="flex items-center gap-2">
+              <MessageSquare size={16} />
+              Pulses
+            </TabsTrigger>
+            <TabsTrigger value="profiles" className="flex items-center gap-2">
+              <Users size={16} />
+              Profiles
+            </TabsTrigger>
+            <TabsTrigger value="hashtags" className="flex items-center gap-2">
+              <Hash size={16} />
+              Hashtags
+            </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="all" className="space-y-6">
-            {submittedQuery ? (
-              isLoading ? (
-                <SearchResultsSkeleton count={6} />
-              ) : (
-                <>
-                  {/* Pulse Results */}
-                  {(searchResults?.pulses?.length || 0) > 0 && (
-                    <div>
-                      <div className="flex items-center mb-4">
-                        <MessageSquare className="mr-2 h-5 w-5" />
-                        <h2 className="text-xl font-semibold">Pulses</h2>
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                        {searchResults?.pulses?.slice(0, 4).map((pulse: any) => (
-                          <PulseCard key={pulse.id} pulse={pulse} />
-                        ))}
-                      </div>
-                      {(searchResults?.pulses?.length || 0) > 4 && (
-                        <div className="text-center mb-6">
-                          <Button variant="outline" onClick={() => handleTabChange("pulses")}>
-                            View all {searchResults?.pulses?.length} pulse results
-                          </Button>
-                        </div>
-                      )}
-                      <Separator className="my-6" />
-                    </div>
-                  )}
-
-                  {/* Profile Results */}
-                  {(searchResults?.profiles?.length || 0) > 0 && (
-                    <div>
-                      <div className="flex items-center mb-4">
-                        <Users className="mr-2 h-5 w-5" />
-                        <h2 className="text-xl font-semibold">Profiles</h2>
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                        {searchResults?.profiles?.slice(0, 3).map((profile: any) => (
-                          <ProfileCard key={profile.id} profile={profile} />
-                        ))}
-                      </div>
-                      {(searchResults?.profiles?.length || 0) > 3 && (
-                        <div className="text-center mb-6">
-                          <Button variant="outline" onClick={() => handleTabChange("profiles")}>
-                            View all {searchResults?.profiles?.length} profile results
-                          </Button>
-                        </div>
-                      )}
-                      <Separator className="my-6" />
-                    </div>
-                  )}
-
-                  {/* Hashtag Results */}
-                  {(searchResults?.hashtags?.length || 0) > 0 && (
-                    <div>
-                      <div className="flex items-center mb-4">
-                        <Hash className="mr-2 h-5 w-5" />
-                        <h2 className="text-xl font-semibold">Hashtags</h2>
-                      </div>
-                      <div className="flex flex-wrap gap-2 mb-6">
-                        {searchResults?.hashtags?.slice(0, 10).map((hashtag: any) => (
-                          <Badge key={hashtag.id} className="text-sm py-1 px-3 cursor-pointer hover:bg-primary/90">
-                            #{hashtag.name} <span className="ml-1 text-xs opacity-70">({hashtag.count})</span>
-                          </Badge>
-                        ))}
-                      </div>
-                      {(searchResults?.hashtags?.length || 0) > 10 && (
-                        <div className="text-center mb-6">
-                          <Button variant="outline" onClick={() => handleTabChange("hashtags")}>
-                            View all {searchResults?.hashtags?.length} hashtag results
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* No Results */}
-                  {(!searchResults?.pulses?.length && !searchResults?.profiles?.length && !searchResults?.hashtags?.length) && (
-                    <div className="text-center py-12">
-                      <Search className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
-                      <h3 className="text-xl font-medium mb-2">No results found</h3>
-                      <p className="text-muted-foreground">
-                        We couldn't find anything matching "{submittedQuery}". Try different keywords or check your spelling.
-                      </p>
-                    </div>
-                  )}
-                </>
-              )
-            ) : (
-              <div className="text-center py-16">
-                <Search className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-30" />
-                <h2 className="text-xl font-medium mb-2">Search the Brandentifier community</h2>
-                <p className="text-muted-foreground max-w-md mx-auto">
-                  Enter keywords in the search box above to find pulses, profiles, and trending hashtags
-                </p>
-              </div>
-            )}
-          </TabsContent>
-
+          {/* Pulses Results */}
           <TabsContent value="pulses">
-            {submittedQuery ? (
-              isLoading ? (
-                <SearchResultsSkeleton count={6} />
-              ) : (
-                <>
-                  {(searchResults?.pulses?.length || 0) > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {searchResults?.pulses?.map((pulse: any) => (
-                        <PulseCard key={pulse.id} pulse={pulse} />
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-12">
-                      <MessageSquare className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
-                      <h3 className="text-xl font-medium mb-2">No pulses found</h3>
-                      <p className="text-muted-foreground">
-                        We couldn't find any pulses matching "{submittedQuery}". Try different keywords.
-                      </p>
-                    </div>
-                  )}
-                </>
-              )
+            {!submittedQuery ? (
+              <div className="text-center py-12">
+                <SearchIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                <h3 className="text-lg font-medium">Search for pulses</h3>
+                <p className="text-gray-500 mt-2">
+                  Enter keywords to find pulses related to specific topics or interests
+                </p>
+              </div>
+            ) : isLoading ? (
+              <div className="grid grid-cols-1 gap-4">
+                {[1, 2, 3].map((i) => (
+                  <Card key={i}>
+                    <CardHeader>
+                      <div className="flex items-center gap-4">
+                        <Skeleton className="h-12 w-12 rounded-full" />
+                        <div className="space-y-2">
+                          <Skeleton className="h-4 w-[250px]" />
+                          <Skeleton className="h-4 w-[150px]" />
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <Skeleton className="h-4 w-full mb-2" />
+                      <Skeleton className="h-4 w-3/4" />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : searchResults?.pulses?.length > 0 ? (
+              <div className="grid grid-cols-1 gap-4">
+                {searchResults.pulses.map((pulse) => (
+                  <Card key={pulse.id}>
+                    <CardHeader>
+                      <div className="flex items-center gap-4">
+                        <Avatar>
+                          <AvatarImage src={pulse.user?.photoURL || undefined} />
+                          <AvatarFallback>{getInitials(pulse.user?.name)}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <CardTitle className="text-lg">{pulse.title}</CardTitle>
+                          <CardDescription>
+                            {pulse.user?.name} • {formatDistanceToNow(new Date(pulse.createdAt), { addSuffix: true })}
+                          </CardDescription>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-gray-700">{pulse.content}</p>
+                    </CardContent>
+                    <CardFooter>
+                      <Badge variant="outline" className="mr-2">{pulse.type}</Badge>
+                    </CardFooter>
+                  </Card>
+                ))}
+              </div>
             ) : (
-              <div className="text-center py-16">
-                <MessageSquare className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-30" />
-                <h2 className="text-xl font-medium mb-2">Search for pulses</h2>
-                <p className="text-muted-foreground max-w-md mx-auto">
-                  Find industry insights, polls, and project updates from the community
+              <div className="text-center py-12 border rounded-lg bg-gray-50">
+                <MessageSquare className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                <h3 className="text-lg font-medium">No pulses found</h3>
+                <p className="text-gray-500 mt-2">
+                  Try a different search term or check for typos
                 </p>
               </div>
             )}
           </TabsContent>
 
+          {/* Profiles Results */}
           <TabsContent value="profiles">
-            {submittedQuery ? (
-              isLoading ? (
-                <SearchResultsSkeleton count={6} />
-              ) : (
-                <>
-                  {(searchResults?.profiles?.length || 0) > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {searchResults?.profiles?.map((profile: any) => (
-                        <ProfileCard key={profile.id} profile={profile} />
-                      ))}
+            {!submittedQuery ? (
+              <div className="text-center py-12">
+                <Users className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                <h3 className="text-lg font-medium">Search for profiles</h3>
+                <p className="text-gray-500 mt-2">
+                  Find professionals by name, title, location, or industry
+                </p>
+              </div>
+            ) : isLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[1, 2, 3].map((i) => (
+                  <Card key={i} className="overflow-hidden">
+                    <div className="bg-gray-100 h-24"></div>
+                    <div className="px-6 pb-6">
+                      <div className="flex justify-center -mt-10 mb-4">
+                        <Skeleton className="h-20 w-20 rounded-full border-4 border-white" />
+                      </div>
+                      <div className="text-center space-y-2">
+                        <Skeleton className="h-4 w-[150px] mx-auto" />
+                        <Skeleton className="h-4 w-[100px] mx-auto" />
+                        <Skeleton className="h-4 w-[180px] mx-auto" />
+                      </div>
                     </div>
-                  ) : (
-                    <div className="text-center py-12">
-                      <Users className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
-                      <h3 className="text-xl font-medium mb-2">No profiles found</h3>
-                      <p className="text-muted-foreground">
-                        We couldn't find any profiles matching "{submittedQuery}". Try different keywords.
-                      </p>
+                  </Card>
+                ))}
+              </div>
+            ) : searchResults?.profiles?.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {searchResults.profiles.map((profile) => (
+                  <Card key={profile.id} className="overflow-hidden">
+                    <div className="bg-gradient-to-r from-primary/20 to-primary/10 h-24"></div>
+                    <div className="px-6 pb-6">
+                      <div className="flex justify-center -mt-10 mb-4">
+                        <Avatar className="h-20 w-20 border-4 border-white">
+                          <AvatarImage src={profile.photoURL || undefined} />
+                          <AvatarFallback className="text-lg">{getInitials(profile.name)}</AvatarFallback>
+                        </Avatar>
+                      </div>
+                      <div className="text-center">
+                        <h3 className="text-xl font-semibold">{profile.name}</h3>
+                        {profile.title && (
+                          <p className="text-gray-600 mt-1">{profile.title}</p>
+                        )}
+                        {(profile.location || profile.industry) && (
+                          <p className="text-gray-500 text-sm mt-2">
+                            {profile.location && profile.location}
+                            {profile.location && profile.industry && " • "}
+                            {profile.industry && profile.industry}
+                          </p>
+                        )}
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="mt-4"
+                          onClick={() => setLocation(`/profile/${profile.id}`)}
+                        >
+                          View Profile
+                        </Button>
+                      </div>
                     </div>
-                  )}
-                </>
-              )
+                  </Card>
+                ))}
+              </div>
             ) : (
-              <div className="text-center py-16">
-                <Users className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-30" />
-                <h2 className="text-xl font-medium mb-2">Search for profiles</h2>
-                <p className="text-muted-foreground max-w-md mx-auto">
-                  Connect with professionals in your industry or discover new talent
+              <div className="text-center py-12 border rounded-lg bg-gray-50">
+                <Users className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                <h3 className="text-lg font-medium">No profiles found</h3>
+                <p className="text-gray-500 mt-2">
+                  Try a different search term or check for typos
                 </p>
               </div>
             )}
           </TabsContent>
 
+          {/* Hashtags Results */}
           <TabsContent value="hashtags">
-            {submittedQuery ? (
-              isLoading ? (
-                <SearchResultsSkeleton count={12} />
-              ) : (
-                <>
-                  {(searchResults?.hashtags?.length || 0) > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {searchResults?.hashtags?.map((hashtag: any) => (
-                        <Card key={hashtag.id} className="border hover:shadow-sm transition-shadow duration-200 cursor-pointer">
-                          <CardHeader>
-                            <CardTitle className="flex items-center">
-                              <Hash className="mr-2 h-5 w-5" />
-                              #{hashtag.name}
-                            </CardTitle>
-                            <CardDescription>Used in {hashtag.count} posts</CardDescription>
-                          </CardHeader>
-                          <CardFooter>
-                            <Button variant="outline" size="sm">View Posts</Button>
-                          </CardFooter>
-                        </Card>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-12">
-                      <Hash className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
-                      <h3 className="text-xl font-medium mb-2">No hashtags found</h3>
-                      <p className="text-muted-foreground">
-                        We couldn't find any hashtags matching "{submittedQuery}". Try different keywords.
-                      </p>
-                    </div>
-                  )}
-                </>
-              )
+            {!submittedQuery ? (
+              <div className="text-center py-12">
+                <Hash className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                <h3 className="text-lg font-medium">Search for hashtags</h3>
+                <p className="text-gray-500 mt-2">
+                  Discover trending topics and hashtags across the platform
+                </p>
+              </div>
+            ) : isLoading ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                  <Card key={i}>
+                    <CardContent className="p-4">
+                      <Skeleton className="h-6 w-24 mb-2" />
+                      <Skeleton className="h-4 w-16" />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : searchResults?.hashtags?.length > 0 ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {searchResults.hashtags.map((tag) => (
+                  <Card key={tag.id} className="hover:border-primary/50 transition-colors cursor-pointer">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="text-lg font-medium">#{tag.name}</h3>
+                          <p className="text-gray-500 text-sm">{tag.count} {tag.count === 1 ? 'post' : 'posts'}</p>
+                        </div>
+                        <Hash className="h-8 w-8 text-primary/40" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             ) : (
-              <div className="text-center py-16">
-                <Hash className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-30" />
-                <h2 className="text-xl font-medium mb-2">Search for hashtags</h2>
-                <p className="text-muted-foreground max-w-md mx-auto">
-                  Discover trending topics and join the conversation
+              <div className="text-center py-12 border rounded-lg bg-gray-50">
+                <Hash className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                <h3 className="text-lg font-medium">No hashtags found</h3>
+                <p className="text-gray-500 mt-2">
+                  Try a different search term or check for typos
                 </p>
               </div>
             )}
@@ -301,107 +350,6 @@ const SearchPage = () => {
         </Tabs>
       </div>
     </DashboardLayout>
-  );
-};
-
-// Card components for search results
-const PulseCard = ({ pulse }: { pulse: any }) => {
-  const [location, setLocation] = useLocation();
-
-  return (
-    <Card className="overflow-hidden border hover:shadow-sm transition-shadow duration-200 cursor-pointer"
-          onClick={() => setLocation(`/pulse/${pulse.id}`)}>
-      <CardHeader className="p-4">
-        <div className="flex justify-between items-start">
-          <div className="flex items-center">
-            <Avatar className="h-8 w-8 mr-2">
-              <AvatarImage src={pulse.user?.photoURL} alt={pulse.user?.name} />
-              <AvatarFallback>{pulse.user?.name?.charAt(0) || "U"}</AvatarFallback>
-            </Avatar>
-            <div>
-              <p className="text-sm font-medium">{pulse.user?.name}</p>
-              <p className="text-xs text-muted-foreground">{new Date(pulse.createdAt).toLocaleDateString()}</p>
-            </div>
-          </div>
-        </div>
-        <CardTitle className="text-lg mt-2">{pulse.title}</CardTitle>
-      </CardHeader>
-      <CardContent className="p-4 pt-0">
-        <CardDescription className="line-clamp-2">
-          {pulse.description}
-        </CardDescription>
-        {pulse.tags && pulse.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1 mt-3">
-            {pulse.tags.map((tag: string) => (
-              <Badge key={tag} variant="secondary" className="text-xs">
-                #{tag}
-              </Badge>
-            ))}
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-};
-
-const ProfileCard = ({ profile }: { profile: any }) => {
-  const [location, setLocation] = useLocation();
-
-  return (
-    <Card className="border hover:shadow-sm transition-shadow duration-200 cursor-pointer"
-          onClick={() => setLocation(`/profile/${profile.username}`)}>
-      <CardHeader className="text-center">
-        <Avatar className="h-16 w-16 mx-auto mb-2">
-          <AvatarImage src={profile.photoURL} alt={profile.name} />
-          <AvatarFallback>{profile.name?.charAt(0) || "U"}</AvatarFallback>
-        </Avatar>
-        <CardTitle className="text-lg">{profile.name}</CardTitle>
-        <CardDescription>{profile.title || "Brandentifier Member"}</CardDescription>
-      </CardHeader>
-      <CardContent className="text-center">
-        {profile.location && (
-          <p className="text-sm text-muted-foreground mb-2">{profile.location}</p>
-        )}
-        {profile.industry && (
-          <Badge variant="outline" className="mx-auto mt-1">
-            {profile.industry}
-          </Badge>
-        )}
-      </CardContent>
-      <CardFooter className="flex justify-center">
-        <Button variant="outline" size="sm">View Profile</Button>
-      </CardFooter>
-    </Card>
-  );
-};
-
-// Skeleton loader for search results
-const SearchResultsSkeleton = ({ count = 6 }: { count?: number }) => {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {Array(count).fill(0).map((_, i) => (
-        <Card key={i} className="overflow-hidden">
-          <CardHeader className="p-4">
-            <div className="flex items-center">
-              <Skeleton className="h-8 w-8 rounded-full mr-2" />
-              <div>
-                <Skeleton className="h-4 w-32 mb-1" />
-                <Skeleton className="h-3 w-24" />
-              </div>
-            </div>
-            <Skeleton className="h-5 w-full mt-3" />
-          </CardHeader>
-          <CardContent className="p-4 pt-0">
-            <Skeleton className="h-4 w-full mb-2" />
-            <Skeleton className="h-4 w-3/4" />
-            <div className="flex gap-1 mt-3">
-              <Skeleton className="h-5 w-16 rounded-full" />
-              <Skeleton className="h-5 w-20 rounded-full" />
-            </div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
   );
 };
 
