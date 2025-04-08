@@ -8,14 +8,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { AlertCircle, BarChart, Video, Image, FileCode, Loader2, X, Globe } from "lucide-react";
+import { AlertCircle, BarChart, Video, Image, FileCode, Loader2, X } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProjectForm, { Project } from "@/components/shared/project-form";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { InsertPulse } from "@shared/schema";
-import { IndustryCombobox } from "@/components/ui/industry-combobox";
 
 export default function CreatePulsePage() {
   const { user } = useAuth();
@@ -25,7 +24,6 @@ export default function CreatePulsePage() {
   const [pulseType, setPulseType] = useState("poll");
   const [mediaType, setMediaType] = useState("image");
   const [pollOptions, setPollOptions] = useState(["", ""]);
-  const [industry, setIndustry] = useState("");
   // Project tab state
   const [activeProjectTab, setActiveProjectTab] = useState('details');
   const [selectedProject, setSelectedProject] = useState<number | null>(null);
@@ -49,7 +47,6 @@ export default function CreatePulsePage() {
       setPulseContent("");
       setPollOptions(["", ""]);
       setSelectedProject(null);
-      setIndustry("");
       
       // Clean up file resources
       mediaUrls.forEach(url => URL.revokeObjectURL(url));
@@ -105,7 +102,6 @@ export default function CreatePulsePage() {
       type: pulseType as any, // Type assertion to match enum
       title: pulseTitle,
       content: pulseContent,
-      industry: industry || undefined, // Only include if it has a value
       isPublished: true
     };
     
