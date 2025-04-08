@@ -11,7 +11,6 @@ export default function Sidebar({ activePage }: SidebarProps) {
     { id: "industry-pulse", icon: "fas fa-home", label: "Industry Pulse", path: "/industry-pulse" },
     { id: "search", icon: "fas fa-search", label: "Discover & Connect", path: "/search" },
     { id: "ai-career", icon: "fas fa-robot", label: "AI Career Booster", path: "/ai-career" },
-    { id: "portfolio-builder", icon: "fas fa-briefcase", label: "Portfolio Builder", path: "/portfolio-builder" },
     { id: "services", icon: "fas fa-concierge-bell", label: "Services", path: "/services" },
     { id: "settings", icon: "fas fa-cog", label: "Settings", path: "/settings" },
   ];
