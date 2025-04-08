@@ -8,19 +8,18 @@ export default function Sidebar({ activePage }: SidebarProps) {
   const [_, setLocation] = useLocation();
 
   const menuItems = [
-    { id: "dashboard", icon: "fas fa-home", label: "Dashboard", path: "/dashboard" },
+    { id: "industry-pulse", icon: "fas fa-home", label: "Industry Pulse", path: "/industry-pulse" },
     { id: "search", icon: "fas fa-search", label: "Discover & Connect", path: "/search" },
     { id: "ai-career", icon: "fas fa-robot", label: "AI Career Booster", path: "/ai-career" },
-    { id: "industry-pulse", icon: "fas fa-newspaper", label: "Industry Pulse", path: "/industry-pulse" },
     { id: "portfolio-builder", icon: "fas fa-briefcase", label: "Portfolio Builder", path: "/portfolio-builder" },
     { id: "services", icon: "fas fa-concierge-bell", label: "Services", path: "/services" },
-    { id: "settings", icon: "fas fa-cog", label: "Settings", path: "/dashboard" },
+    { id: "settings", icon: "fas fa-cog", label: "Settings", path: "/settings" },
   ];
 
   return (
     <div className="bg-white w-64 border-r border-gray-200 flex flex-col h-full">
       <div className="flex items-center flex-shrink-0 px-4 pt-4 pb-2">
-        <span className="text-lg font-semibold text-gray-900">Dashboard</span>
+        <span className="text-lg font-semibold text-gray-900">Brandentifier</span>
       </div>
       <div className="flex-1 flex flex-col overflow-y-auto">
         <nav className="flex-1 px-2 space-y-1 py-2">

@@ -47,7 +47,17 @@ function Router() {
       <Route path="/auth" component={AuthPage} />
       <Route path="/verify-email" component={EmailVerification} />
       <Route path="/dashboard">
-        <ProtectedRoute path="/dashboard" component={Dashboard} />
+        <ProtectedRoute path="/dashboard" component={() => {
+          const [_, navigate] = useLocation();
+          useEffect(() => {
+            navigate("/industry-pulse");
+          }, [navigate]);
+          return (
+            <div className="flex items-center justify-center min-h-screen">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            </div>
+          );
+        }} />
       </Route>
       <Route path="/profile">
         <ProtectedRoute path="/profile" component={Profile} />
