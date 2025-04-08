@@ -11,7 +11,6 @@ import Dashboard from "@/pages/dashboard";
 import Profile from "@/pages/profile";
 import AICareer from "@/pages/ai-career";
 import PortfolioBuilder from "@/pages/portfolio-builder";
-import ServicesPage from "@/pages/services";
 import CreatePulsePage from "@/pages/create-pulse";
 import IndustryPulsePage from "@/pages/industry-pulse";
 import SearchPage from "@/pages/search";
@@ -79,7 +78,14 @@ function Router() {
         <ProtectedRoute path="/portfolio-builder" component={PortfolioBuilder} />
       </Route>
       <Route path="/services">
-        <ProtectedRoute path="/services" component={ServicesPage} />
+        {/* Redirect services to industry-pulse for now */}
+        {() => {
+          const [_, navigate] = useLocation();
+          useEffect(() => {
+            navigate("/industry-pulse");
+          }, [navigate]);
+          return null;
+        }}
       </Route>
       <Route path="/create-pulse">
         <ProtectedRoute path="/create-pulse" component={CreatePulsePage} />

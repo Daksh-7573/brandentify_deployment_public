@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Zap, Settings, Menu, X, Home, Search, Bot, BookOpen, User } from "lucide-react";
+import { Zap, Settings, Menu, X, Home, Search, Bot, User } from "lucide-react";
 
 export default function Header() {
   const { user, isDemoMode, signOut, refreshUserData } = useAuth();
@@ -123,19 +123,7 @@ export default function Header() {
                 <span>AI Career Booster</span>
               </Button>
               
-              <Button
-                variant="ghost"
-                size="sm"
-                className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
-                  isActive('/services') 
-                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
-                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
-                }`}
-                onClick={() => setLocation('/services')}
-              >
-                <BookOpen className="h-4 w-4" />
-                <span>Services</span>
-              </Button>
+
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -268,22 +256,7 @@ export default function Header() {
               <span>AI Career Booster</span>
             </Button>
             
-            <Button
-              variant="ghost"
-              size="sm"
-              className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
-                isActive('/services') 
-                  ? 'text-primary bg-primary/5' 
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
-              }`}
-              onClick={() => {
-                setLocation('/services');
-                setIsMobileMenuOpen(false);
-              }}
-            >
-              <BookOpen className="h-4 w-4 mr-3 ml-0.5" />
-              <span>Services</span>
-            </Button>
+
 
             <div className="pt-4 mt-2 border-t border-gray-200">
               <Button
