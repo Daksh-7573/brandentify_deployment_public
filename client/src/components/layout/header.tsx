@@ -5,12 +5,15 @@ import { Badge } from "@/components/ui/badge";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Zap, Settings, Menu, X } from "lucide-react";
+import { Zap, Settings, Menu, X, Home, Search, Bot, BookOpen, User } from "lucide-react";
 
 export default function Header() {
   const { user, isDemoMode, signOut, refreshUserData } = useAuth();
-  const [_, setLocation] = useLocation();
+  const [path, setLocation] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
+  // Helper function to check if current path matches
+  const isActive = (routePath: string) => path === routePath;
   
   // Get the user ID for queries
   const userId = isDemoMode ? 1 : user?.uid;
@@ -57,12 +60,17 @@ export default function Header() {
           <div className="flex items-center">
             <div className="flex-shrink-0 flex items-center mr-8">
               <div className="flex items-center">
-                <span 
-                  className="text-primary text-2xl font-bold cursor-pointer bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/80"
+                <div
+                  className="flex items-center gap-1.5 cursor-pointer group"
                   onClick={() => setLocation('/dashboard')}
                 >
-                  Brandentifier
-                </span>
+                  <div className="h-8 w-8 bg-gradient-to-br from-primary to-indigo-600 rounded-lg flex items-center justify-center shadow-sm transition-transform group-hover:scale-105">
+                    <span className="text-white font-bold text-lg">B</span>
+                  </div>
+                  <span className="text-primary text-xl font-bold cursor-pointer bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/80">
+                    Brandentifier
+                  </span>
+                </div>
                 {isDemoMode && (
                   <Badge variant="outline" className="ml-2 text-orange-500 border-orange-500">
                     Demo Mode
@@ -72,44 +80,60 @@ export default function Header() {
             </div>
             
             {/* Main Navigation */}
-            <div className="hidden md:flex space-x-4">
+            <div className="hidden md:flex space-x-6">
               <Button
                 variant="ghost"
                 size="sm"
-                className="flex items-center gap-1.5 text-gray-700 hover:text-primary font-medium"
+                className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
+                  isActive('/industry-pulse') 
+                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
+                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
+                }`}
                 onClick={() => setLocation('/industry-pulse')}
               >
-                <i className="fas fa-home text-sm"></i>
+                <Home className="h-4 w-4" />
                 <span>Industry Pulse</span>
               </Button>
               
               <Button
                 variant="ghost"
                 size="sm"
-                className="flex items-center gap-1.5 text-gray-700 hover:text-primary font-medium"
+                className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
+                  isActive('/search') 
+                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
+                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
+                }`}
                 onClick={() => setLocation('/search')}
               >
-                <i className="fas fa-search text-sm"></i>
+                <Search className="h-4 w-4" />
                 <span>Discover & Connect</span>
               </Button>
               
               <Button
                 variant="ghost"
-                size="sm"
-                className="flex items-center gap-1.5 text-gray-700 hover:text-primary font-medium"
+                size="sm" 
+                className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
+                  isActive('/ai-career') 
+                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
+                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
+                }`}
                 onClick={() => setLocation('/ai-career')}
               >
-                <i className="fas fa-robot text-sm"></i>
+                <Bot className="h-4 w-4" />
                 <span>AI Career Booster</span>
               </Button>
               
               <Button
                 variant="ghost"
                 size="sm"
-                className="flex items-center gap-1.5 text-gray-700 hover:text-primary font-medium"
+                className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
+                  isActive('/services') 
+                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
+                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
+                }`}
                 onClick={() => setLocation('/services')}
               >
-                <i className="fas fa-concierge-bell text-sm"></i>
+                <BookOpen className="h-4 w-4" />
                 <span>Services</span>
               </Button>
             </div>
@@ -153,7 +177,11 @@ export default function Header() {
             
             {/* User profile section - combined name and avatar */}
             <div 
-              className="flex items-center gap-2 cursor-pointer px-3 py-1.5 rounded-md border border-gray-100 hover:bg-gray-50 transition-all duration-200"
+              className={`flex items-center gap-2 cursor-pointer px-3 py-1.5 rounded-lg border ${
+                isActive('/profile') 
+                  ? 'border-primary/30 bg-primary/5 shadow-sm' 
+                  : 'border-gray-100 hover:bg-gray-50 hover:border-gray-200'
+              } transition-all duration-200 group`}
               onClick={() => setLocation('/profile')}
             >
               {/* User name */}
@@ -167,7 +195,7 @@ export default function Header() {
                   className="flex items-center rounded-full focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary/70 transition-all"
                 >
                   <span className="sr-only">Open user menu</span>
-                  <div className="h-8 w-8 rounded-full overflow-hidden bg-primary/5 flex items-center justify-center border border-primary/10 shadow-sm">
+                  <div className="h-8 w-8 rounded-full overflow-hidden bg-primary/5 flex items-center justify-center border border-primary/10 shadow-sm group-hover:shadow-md transition-all">
                     <img 
                       className="h-full w-full object-cover" 
                       src={photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
@@ -192,52 +220,68 @@ export default function Header() {
             <Button
               variant="ghost"
               size="sm"
-              className="w-full justify-start py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-primary rounded-md"
+              className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
+                isActive('/industry-pulse') 
+                  ? 'text-primary bg-primary/5' 
+                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+              }`}
               onClick={() => {
                 setLocation('/industry-pulse');
                 setIsMobileMenuOpen(false);
               }}
             >
-              <i className="fas fa-home text-sm mr-3 w-5 text-center"></i>
+              <Home className="h-4 w-4 mr-3 ml-0.5" />
               <span>Industry Pulse</span>
             </Button>
             
             <Button
               variant="ghost"
               size="sm"
-              className="w-full justify-start py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-primary rounded-md"
+              className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
+                isActive('/search') 
+                  ? 'text-primary bg-primary/5' 
+                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+              }`}
               onClick={() => {
                 setLocation('/search');
                 setIsMobileMenuOpen(false);
               }}
             >
-              <i className="fas fa-search text-sm mr-3 w-5 text-center"></i>
+              <Search className="h-4 w-4 mr-3 ml-0.5" />
               <span>Discover & Connect</span>
             </Button>
             
             <Button
               variant="ghost"
               size="sm"
-              className="w-full justify-start py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-primary rounded-md"
+              className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
+                isActive('/ai-career') 
+                  ? 'text-primary bg-primary/5' 
+                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+              }`}
               onClick={() => {
                 setLocation('/ai-career');
                 setIsMobileMenuOpen(false);
               }}
             >
-              <i className="fas fa-robot text-sm mr-3 w-5 text-center"></i>
+              <Bot className="h-4 w-4 mr-3 ml-0.5" />
               <span>AI Career Booster</span>
             </Button>
             
             <Button
               variant="ghost"
               size="sm"
-              className="w-full justify-start py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-primary rounded-md"
+              className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
+                isActive('/services') 
+                  ? 'text-primary bg-primary/5' 
+                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+              }`}
               onClick={() => {
                 setLocation('/services');
                 setIsMobileMenuOpen(false);
               }}
             >
-              <i className="fas fa-concierge-bell text-sm mr-3 w-5 text-center"></i>
+              <BookOpen className="h-4 w-4 mr-3 ml-0.5" />
               <span>Services</span>
             </Button>
 
@@ -245,26 +289,34 @@ export default function Header() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="w-full justify-start py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-primary rounded-md"
+                className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
+                  isActive('/profile') 
+                    ? 'text-primary bg-primary/5' 
+                    : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                }`}
                 onClick={() => {
                   setLocation('/profile');
                   setIsMobileMenuOpen(false);
                 }}
               >
-                <i className="fas fa-user text-sm mr-3 w-5 text-center"></i>
+                <User className="h-4 w-4 mr-3 ml-0.5" />
                 <span>My Profile</span>
               </Button>
               
               <Button
                 variant="ghost"
                 size="sm"
-                className="w-full justify-start py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-primary rounded-md"
+                className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
+                  isActive('/settings') 
+                    ? 'text-primary bg-primary/5' 
+                    : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                }`}
                 onClick={() => {
                   setLocation('/settings');
                   setIsMobileMenuOpen(false);
                 }}
               >
-                <Settings className="h-4 w-4 mr-3 ml-0.5 w-5" />
+                <Settings className="h-4 w-4 mr-3 ml-0.5" />
                 <span>Settings</span>
               </Button>
               
