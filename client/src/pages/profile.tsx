@@ -1,6 +1,6 @@
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
-import Sidebar from "@/components/layout/sidebar";
+// Removed Sidebar import, using top navigation only
 import Header from "@/components/layout/header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -1578,7 +1578,7 @@ export default function Profile() {
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top for fixed header */}
         {/* Sidebar */}
-        <Sidebar activePage="profile" />
+        
 
         {/* Center content */}
         <div className="flex-1 overflow-auto p-6 bg-gray-50">

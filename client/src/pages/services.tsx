@@ -22,7 +22,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Service } from "@shared/schema";
-import Sidebar from "@/components/layout/sidebar";
+// Removed Sidebar import, using top navigation only
 import Header from "@/components/layout/header";
 import {
   AlertDialog,
@@ -98,7 +98,7 @@ export default function ServicesPage() {
     <div className="flex h-screen flex-col">
       <Header />
       <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top for fixed header */}
-        <Sidebar activePage="services" />
+        
         <div className="flex-1 overflow-auto">
           <div className="container p-8 max-w-6xl mx-auto">
             <div className="flex justify-between items-center mb-8">

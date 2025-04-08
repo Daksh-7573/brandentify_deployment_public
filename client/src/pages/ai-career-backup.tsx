@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
-import Sidebar from "@/components/layout/sidebar";
+// Removed Sidebar import, using top navigation only
 import Header from "@/components/layout/header";
 
 export default function AICareerPage() {
@@ -249,7 +249,7 @@ export default function AICareerPage() {
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
         {/* Sidebar */}
-        <Sidebar activePage="ai-career" />
+        
         
         {/* Main content area */}
         <div className="flex-1 overflow-auto p-4 sm:p-6 bg-gray-50">

@@ -43,7 +43,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useAuth } from "@/hooks/use-auth";
-import Sidebar from "@/components/layout/sidebar";
+// Removed Sidebar import, using top navigation only
 import { apiRequest } from "@/lib/queryClient";
 
 // Define AuthUser type to match Firebase user structure
@@ -1010,7 +1010,7 @@ export default function PortfolioBuilder() {
     <div className="flex h-screen flex-col">
       <Header />
       <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top (pt-16) to account for fixed header */}
-        <Sidebar activePage="portfolio-builder" />
+        
         <div className="flex-1 overflow-auto">
             <div className="container px-6 py-8">
               <div className="flex items-center justify-between mb-8">

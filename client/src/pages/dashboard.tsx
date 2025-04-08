@@ -1,6 +1,6 @@
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
-import Sidebar from "@/components/layout/sidebar";
+// Removed Sidebar import, using top navigation only
 import Header from "@/components/layout/header";
 import RightSidebar from "@/components/layout/right-sidebar";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
@@ -402,7 +402,7 @@ export default function Dashboard() {
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden pt-16"> {/* Added padding-top (pt-16) to account for fixed header */}
         {/* Sidebar */}
-        <Sidebar activePage="dashboard" />
+        
 
         {/* Center content */}
         <div className="flex-1 overflow-auto p-6 bg-gray-50">
