@@ -575,6 +575,9 @@ function ProjectDetails({ pulse }: { pulse: PulseWithUser }) {
   // Add project data state to show UI while fetching in background
   const [localProject, setLocalProject] = useState<any>(null);
   
+  // Use location hook at the component level (NOT inside event handlers)
+  const [_, setLocation] = useLocation();
+  
   // Use React Query for better caching and performance
   const { data: project } = useQuery({
     queryKey: [`/api/projects/${pulse.projectId}`],
@@ -674,8 +677,7 @@ function ProjectDetails({ pulse }: { pulse: PulseWithUser }) {
                 variant="outline" 
                 className="text-xs border-green-200 text-green-700 hover:bg-green-50"
                 onClick={() => {
-                  // Use wouter for client-side navigation with no page refresh
-                  const [_, setLocation] = useLocation();
+                  // Use the already declared setLocation hook
                   setLocation(`/dashboard?view=project&projectId=${pulse.projectId}`);
                 }}
               >
@@ -693,6 +695,7 @@ function ProjectDetails({ pulse }: { pulse: PulseWithUser }) {
 
 export default function IndustryPulsePage() {
   const [activeTab, setActiveTab] = useState("all");
+  const [_, setLocation] = useLocation();
   
   // Fetch all pulses
   const { data: pulses = [], isLoading } = useQuery<PulseWithUser[]>({
@@ -763,11 +766,7 @@ export default function IndustryPulsePage() {
                   Discover insights, polls, and media from your professional network
                 </p>
               </div>
-              <Button onClick={() => {
-                // Use wouter for client-side navigation with no page refresh
-                const [_, setLocation] = useLocation();
-                setLocation("/create-pulse");
-              }}>
+              <Button onClick={() => setLocation("/create-pulse")}>
                 Create Pulse
               </Button>
             </div>
@@ -795,10 +794,7 @@ export default function IndustryPulsePage() {
                           ? "Be the first to create a pulse in your professional network!" 
                           : `No ${activeTab} pulses available yet. Create one to get started!`}
                       </p>
-                      <Button onClick={() => {
-                        const [_, setLocation] = useLocation();
-                        setLocation("/create-pulse");
-                      }}>
+                      <Button onClick={() => setLocation("/create-pulse")}>
                         Create Your First Pulse
                       </Button>
                     </CardContent>
