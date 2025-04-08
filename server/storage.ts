@@ -1080,6 +1080,35 @@ export class MemStorage implements IStorage {
    * Create demo pulses for testing carousel/image gallery functionality
    */
   private createDemoPulses(userId: number): void {
+    // Create a demo project for project-type pulse
+    const demoProject: Project = {
+      id: 1,
+      userId: userId,
+      title: "AI-Powered Career Platform",
+      description: "A professional networking platform with intelligent career guidance and portfolio showcase",
+      status: "in-progress",
+      startDate: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000), // 60 days ago
+      endDate: null,
+      thumbnailUrl: "/images/demo/ui-design-1.svg",
+      mediaUrls: [
+        "/images/demo/ui-design-1.svg",
+        "/images/demo/ui-design-2.svg",
+        "/images/demo/ui-design-3.svg"
+      ],
+      skills: ["React", "TypeScript", "Node.js", "AI Integration", "UX/UI Design"],
+      links: [
+        { label: "GitHub", url: "https://github.com/example/career-platform" },
+        { label: "Live Demo", url: "https://example.com/demo" }
+      ],
+      isPublished: true,
+      createdAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000), // 60 days ago
+      updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)  // 2 days ago
+    };
+    
+    // Add project to storage
+    this.projects.set(demoProject.id, demoProject);
+    this.currentProjectId = 2; // Set next project ID
+    
     // Create a demo media pulse with multiple images for carousel testing
     const imagePulse: Pulse = {
       id: 1,
@@ -1143,11 +1172,31 @@ export class MemStorage implements IStorage {
       updatedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
     };
     
+    // Create a project pulse
+    const projectPulse: Pulse = {
+      id: 4,
+      userId: userId,
+      type: "project",
+      title: "Just Launched: AI-Powered Career Platform",
+      content: "Excited to share my latest project! I've been working on a professional networking platform that uses AI to provide personalized career guidance and a sleek portfolio showcase. Looking for beta testers and feedback.",
+      mediaType: null,
+      mediaUrls: [],
+      mediaLocalStorageKeys: [],
+      pollOptions: [],
+      projectId: demoProject.id,
+      likes: 31,
+      comments: 12,
+      isPublished: true,
+      createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
+      updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
+    };
+    
     // Add pulses to storage
     this.pulses.set(imagePulse.id, imagePulse);
     this.pulses.set(pollPulse.id, pollPulse);
     this.pulses.set(videoPulse.id, videoPulse);
-    this.currentPulseId = 4; // Set next pulse ID
+    this.pulses.set(projectPulse.id, projectPulse);
+    this.currentPulseId = 5; // Set next pulse ID
     
     console.log("[storage.createDemoPulses] Created demo pulses for image carousel testing");
   }
