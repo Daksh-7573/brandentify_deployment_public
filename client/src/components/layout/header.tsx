@@ -81,30 +81,35 @@ export default function Header() {
               <Zap className="h-4 w-4" /> Create Pulse
             </Button>
             
-            {/* User name */}
-            <span className="text-sm font-medium text-gray-700 hidden md:block">
-              {userData?.name || user?.displayName || "Profile"}
-            </span>
-            
-            {/* User avatar */}
-            <div className="relative">
-              <button 
-                className="max-w-xs flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary/70 transition-all hover:shadow-md"
-                onClick={() => setLocation('/profile')}
-              >
-                <span className="sr-only">Open user menu</span>
-                <div className="h-9 w-9 rounded-full overflow-hidden bg-primary/5 flex items-center justify-center border border-primary/10 shadow-sm">
-                  <img 
-                    className="h-full w-full object-cover" 
-                    src={photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
-                    alt="User profile"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
-                    }}
-                  />
+            {/* User profile section - combined name and avatar */}
+            <div 
+              className="flex items-center gap-2 cursor-pointer px-2 py-1 rounded-full hover:bg-gray-100 transition-colors duration-200"
+              onClick={() => setLocation('/profile')}
+            >
+              {/* User name */}
+              <span className="text-sm font-medium text-gray-700 hidden md:block">
+                {userData?.name || user?.displayName || "Profile"}
+              </span>
+              
+              {/* User avatar */}
+              <div className="relative">
+                <div 
+                  className="max-w-xs flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary/70 transition-all hover:shadow-md"
+                >
+                  <span className="sr-only">Open user menu</span>
+                  <div className="h-9 w-9 rounded-full overflow-hidden bg-primary/5 flex items-center justify-center border border-primary/10 shadow-sm">
+                    <img 
+                      className="h-full w-full object-cover" 
+                      src={photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
+                      alt="User profile"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
+                      }}
+                    />
+                  </div>
                 </div>
-              </button>
+              </div>
             </div>
             
             {/* Sign out button */}
