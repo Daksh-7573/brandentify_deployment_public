@@ -14,10 +14,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
-import DashboardLayout from "@/components/layout/dashboard-layout";
-import { Search as SearchIcon, Users, MessageSquare, Hash, UserPlus, Star, MapPin, ArrowUpRight, ArrowDownRight, SparkleIcon, NetworkIcon, LinkIcon, UsersRound } from "lucide-react";
+import { Search as SearchIcon, Users, MessageSquare, Hash, UserPlus, Star, MapPin, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { JobTitleCombobox } from "@/components/ui/job-title-combobox";
+import DashboardLayout from "@/components/layout/dashboard-layout";
 
 // Types for search
 type SearchCategory = "pulses" | "profiles" | "hashtags" | "smart-connect";
@@ -335,7 +335,7 @@ const SearchPage = () => {
   }, [formData.industry]);
 
   // Query for search results
-  const { data: searchResults, isLoading } = useQuery({
+  const { data: searchResults, isLoading } = useQuery<SearchResultsType>({
     queryKey: ['/api/search', activeCategory, submittedQuery],
     queryFn: async () => {
       if (!submittedQuery || activeCategory === "smart-connect") return { pulses: [], profiles: [], hashtags: [] };
@@ -349,7 +349,7 @@ const SearchPage = () => {
   });
 
   // Smart Connect mutation
-  const matchMutation = useMutation({
+  const matchMutation = useMutation<MatchResult[]>({
     mutationFn: async () => {
       // In a real implementation, this would call an API endpoint
       // Here we're creating mock data for demonstration
@@ -446,242 +446,284 @@ const SearchPage = () => {
     <DashboardLayout hideRightSidebar={true}>
       <div className="container mx-auto px-4 py-6">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Search</h1>
-          <p className="text-gray-600">Find pulses, profiles, and hashtags in the Brandentifier network</p>
+          <h1 className="text-3xl font-bold mb-2">Discover & Connect</h1>
+          <p className="text-gray-600">Find content, professionals, and networking opportunities in one place</p>
         </div>
 
-        {/* Search Form */}
-        <form onSubmit={handleSearch} className="flex gap-2 mb-6">
-          <div className="relative flex-1">
-            <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-            <Input
-              type="text"
-              placeholder="Search by keywords..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-          <Button type="submit" disabled={isLoading}>
-            {isLoading ? "Searching..." : "Search"}
-          </Button>
-        </form>
-
-        {/* Tabs for different search categories */}
-        <Tabs defaultValue={activeCategory} onValueChange={handleTabChange} value={activeCategory}>
-          <TabsList className="mb-6">
-            <TabsTrigger value="pulses" className="flex items-center gap-2">
-              <MessageSquare size={16} />
-              Pulses
+        {/* Main Tabs: Search vs Smart Connect */}
+        <Tabs defaultValue={activeCategory === "smart-connect" ? "smart-connect" : "search"} className="mb-6">
+          <TabsList className="w-full border-b-0">
+            <TabsTrigger 
+              value="search" 
+              className="flex items-center gap-2 flex-1 py-3"
+              onClick={() => activeCategory !== "pulses" && setActiveCategory("pulses")}
+            >
+              <SearchIcon size={18} />
+              <span className="text-base">Search</span>
             </TabsTrigger>
-            <TabsTrigger value="profiles" className="flex items-center gap-2">
-              <Users size={16} />
-              Profiles
-            </TabsTrigger>
-            <TabsTrigger value="hashtags" className="flex items-center gap-2">
-              <Hash size={16} />
-              Hashtags
-            </TabsTrigger>
-            <TabsTrigger value="smart-connect" className="flex items-center gap-2">
-              <UserPlus size={16} />
-              Smart Connect
+            <TabsTrigger 
+              value="smart-connect" 
+              className="flex items-center gap-2 flex-1 py-3"
+              onClick={() => activeCategory !== "smart-connect" && setActiveCategory("smart-connect")}
+            >
+              <UserPlus size={18} />
+              <span className="text-base">Smart Connect</span>
             </TabsTrigger>
           </TabsList>
 
-          {/* Pulses Results */}
-          <TabsContent value="pulses">
-            {!submittedQuery ? (
-              <div className="text-center py-12">
-                <SearchIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                <h3 className="text-lg font-medium">Search for pulses</h3>
-                <p className="text-gray-500 mt-2">
-                  Enter keywords to find pulses related to specific topics or interests
-                </p>
+          {/* Search Tab Content */}
+          <TabsContent value="search" className="mt-6">
+            {/* Search Form */}
+            <form onSubmit={handleSearch} className="flex gap-2 mb-6">
+              <div className="relative flex-1">
+                <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                <Input
+                  type="text"
+                  placeholder="Search by keywords..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
               </div>
-            ) : isLoading ? (
-              <div className="grid grid-cols-1 gap-4">
-                {[1, 2, 3].map((i) => (
-                  <Card key={i}>
-                    <CardHeader>
-                      <div className="flex items-center gap-4">
-                        <Skeleton className="h-12 w-12 rounded-full" />
-                        <div className="space-y-2">
-                          <Skeleton className="h-4 w-[250px]" />
-                          <Skeleton className="h-4 w-[150px]" />
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? "Searching..." : "Search"}
+              </Button>
+            </form>
+
+            {/* Search Category Tabs */}
+            <Tabs defaultValue={activeCategory} onValueChange={handleTabChange} value={activeCategory}>
+              <TabsList className="mb-6">
+                <TabsTrigger value="pulses" className="flex items-center gap-2">
+                  <MessageSquare size={16} />
+                  Pulses
+                </TabsTrigger>
+                <TabsTrigger value="profiles" className="flex items-center gap-2">
+                  <Users size={16} />
+                  Profiles
+                </TabsTrigger>
+                <TabsTrigger value="hashtags" className="flex items-center gap-2">
+                  <Hash size={16} />
+                  Hashtags
+                </TabsTrigger>
+              </TabsList>
+
+              {/* Pulses Results */}
+              <TabsContent value="pulses">
+                {!submittedQuery ? (
+                  <div className="text-center py-12">
+                    <SearchIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                    <h3 className="text-lg font-medium">Search for pulses</h3>
+                    <p className="text-gray-500 mt-2">
+                      Enter keywords to find pulses related to specific topics or interests
+                    </p>
+                  </div>
+                ) : isLoading ? (
+                  <div className="grid grid-cols-1 gap-4">
+                    {[1, 2, 3].map((i) => (
+                      <Card key={i}>
+                        <CardHeader>
+                          <div className="flex items-center gap-4">
+                            <Skeleton className="h-12 w-12 rounded-full" />
+                            <div className="space-y-2">
+                              <Skeleton className="h-4 w-[250px]" />
+                              <Skeleton className="h-4 w-[150px]" />
+                            </div>
+                          </div>
+                        </CardHeader>
+                        <CardContent>
+                          <Skeleton className="h-4 w-full mb-2" />
+                          <Skeleton className="h-4 w-3/4" />
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                ) : searchResults?.pulses?.length > 0 ? (
+                  <div className="grid grid-cols-1 gap-4">
+                    {searchResults.pulses.map((pulse: {
+                      id: number;
+                      title: string;
+                      content: string;
+                      type: "poll" | "media-pulse" | "project";
+                      createdAt: string;
+                      user: {
+                        name: string;
+                        photoURL: string | null;
+                      };
+                    }) => (
+                      <Card key={pulse.id}>
+                        <CardHeader>
+                          <div className="flex items-center gap-4">
+                            <Avatar>
+                              <AvatarImage src={pulse.user?.photoURL || undefined} />
+                              <AvatarFallback>{getInitials(pulse.user?.name)}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <CardTitle className="text-lg">{pulse.title}</CardTitle>
+                              <CardDescription>
+                                {pulse.user?.name} • {formatDistanceToNow(new Date(pulse.createdAt), { addSuffix: true })}
+                              </CardDescription>
+                            </div>
+                          </div>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-gray-700">{pulse.content}</p>
+                        </CardContent>
+                        <CardFooter>
+                          <Badge variant="outline" className="mr-2">{pulse.type}</Badge>
+                        </CardFooter>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12 border rounded-lg bg-gray-50">
+                    <MessageSquare className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                    <h3 className="text-lg font-medium">No pulses found</h3>
+                    <p className="text-gray-500 mt-2">
+                      Try a different search term or check for typos
+                    </p>
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* Profiles Results */}
+              <TabsContent value="profiles">
+                {!submittedQuery ? (
+                  <div className="text-center py-12">
+                    <Users className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                    <h3 className="text-lg font-medium">Search for profiles</h3>
+                    <p className="text-gray-500 mt-2">
+                      Find professionals by name, title, location, or industry
+                    </p>
+                  </div>
+                ) : isLoading ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {[1, 2, 3].map((i) => (
+                      <Card key={i} className="overflow-hidden">
+                        <div className="bg-gray-100 h-24"></div>
+                        <div className="px-6 pb-6">
+                          <div className="flex justify-center -mt-10 mb-4">
+                            <Skeleton className="h-20 w-20 rounded-full border-4 border-white" />
+                          </div>
+                          <div className="text-center space-y-2">
+                            <Skeleton className="h-4 w-[150px] mx-auto" />
+                            <Skeleton className="h-4 w-[100px] mx-auto" />
+                            <Skeleton className="h-4 w-[180px] mx-auto" />
+                          </div>
                         </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <Skeleton className="h-4 w-full mb-2" />
-                      <Skeleton className="h-4 w-3/4" />
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            ) : searchResults?.pulses?.length > 0 ? (
-              <div className="grid grid-cols-1 gap-4">
-                {searchResults.pulses.map((pulse) => (
-                  <Card key={pulse.id}>
-                    <CardHeader>
-                      <div className="flex items-center gap-4">
-                        <Avatar>
-                          <AvatarImage src={pulse.user?.photoURL || undefined} />
-                          <AvatarFallback>{getInitials(pulse.user?.name)}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <CardTitle className="text-lg">{pulse.title}</CardTitle>
-                          <CardDescription>
-                            {pulse.user?.name} • {formatDistanceToNow(new Date(pulse.createdAt), { addSuffix: true })}
-                          </CardDescription>
+                      </Card>
+                    ))}
+                  </div>
+                ) : searchResults?.profiles?.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {searchResults.profiles.map((profile: {
+                      id: number;
+                      name: string;
+                      title: string | null;
+                      photoURL: string | null;
+                      location: string | null;
+                      industry: string | null;
+                    }) => (
+                      <Card key={profile.id} className="overflow-hidden">
+                        <div className="bg-gradient-to-r from-primary/20 to-primary/10 h-24"></div>
+                        <div className="px-6 pb-6">
+                          <div className="flex justify-center -mt-10 mb-4">
+                            <Avatar className="h-20 w-20 border-4 border-white">
+                              <AvatarImage src={profile.photoURL || undefined} />
+                              <AvatarFallback className="text-lg">{getInitials(profile.name)}</AvatarFallback>
+                            </Avatar>
+                          </div>
+                          <div className="text-center">
+                            <h3 className="text-xl font-semibold">{profile.name}</h3>
+                            {profile.title && (
+                              <p className="text-gray-600 mt-1">{profile.title}</p>
+                            )}
+                            {(profile.location || profile.industry) && (
+                              <p className="text-gray-500 text-sm mt-2">
+                                {profile.location && profile.location}
+                                {profile.location && profile.industry && " • "}
+                                {profile.industry && profile.industry}
+                              </p>
+                            )}
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="mt-4"
+                              onClick={() => setLocation(`/profile/${profile.id}`)}
+                            >
+                              View Profile
+                            </Button>
+                          </div>
                         </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-gray-700">{pulse.content}</p>
-                    </CardContent>
-                    <CardFooter>
-                      <Badge variant="outline" className="mr-2">{pulse.type}</Badge>
-                    </CardFooter>
-                  </Card>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12 border rounded-lg bg-gray-50">
-                <MessageSquare className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                <h3 className="text-lg font-medium">No pulses found</h3>
-                <p className="text-gray-500 mt-2">
-                  Try a different search term or check for typos
-                </p>
-              </div>
-            )}
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12 border rounded-lg bg-gray-50">
+                    <Users className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                    <h3 className="text-lg font-medium">No profiles found</h3>
+                    <p className="text-gray-500 mt-2">
+                      Try a different search term or check for typos
+                    </p>
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* Hashtags Results */}
+              <TabsContent value="hashtags">
+                {!submittedQuery ? (
+                  <div className="text-center py-12">
+                    <Hash className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                    <h3 className="text-lg font-medium">Search for hashtags</h3>
+                    <p className="text-gray-500 mt-2">
+                      Discover trending topics and hashtags across the platform
+                    </p>
+                  </div>
+                ) : isLoading ? (
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                      <Card key={i}>
+                        <CardContent className="p-4">
+                          <Skeleton className="h-6 w-24 mb-2" />
+                          <Skeleton className="h-4 w-16" />
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                ) : searchResults?.hashtags?.length > 0 ? (
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {searchResults.hashtags.map((tag: {
+                      id: number;
+                      name: string;
+                      count: number;
+                    }) => (
+                      <Card key={tag.id} className="hover:border-primary/50 transition-colors cursor-pointer">
+                        <CardContent className="p-4">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h3 className="text-lg font-medium">#{tag.name}</h3>
+                              <p className="text-gray-500 text-sm">{tag.count} {tag.count === 1 ? 'post' : 'posts'}</p>
+                            </div>
+                            <Hash className="h-8 w-8 text-primary/40" />
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12 border rounded-lg bg-gray-50">
+                    <Hash className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                    <h3 className="text-lg font-medium">No hashtags found</h3>
+                    <p className="text-gray-500 mt-2">
+                      Try a different search term or check for typos
+                    </p>
+                  </div>
+                )}
+              </TabsContent>
+            </Tabs>
           </TabsContent>
 
-          {/* Profiles Results */}
-          <TabsContent value="profiles">
-            {!submittedQuery ? (
-              <div className="text-center py-12">
-                <Users className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                <h3 className="text-lg font-medium">Search for profiles</h3>
-                <p className="text-gray-500 mt-2">
-                  Find professionals by name, title, location, or industry
-                </p>
-              </div>
-            ) : isLoading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {[1, 2, 3].map((i) => (
-                  <Card key={i} className="overflow-hidden">
-                    <div className="bg-gray-100 h-24"></div>
-                    <div className="px-6 pb-6">
-                      <div className="flex justify-center -mt-10 mb-4">
-                        <Skeleton className="h-20 w-20 rounded-full border-4 border-white" />
-                      </div>
-                      <div className="text-center space-y-2">
-                        <Skeleton className="h-4 w-[150px] mx-auto" />
-                        <Skeleton className="h-4 w-[100px] mx-auto" />
-                        <Skeleton className="h-4 w-[180px] mx-auto" />
-                      </div>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            ) : searchResults?.profiles?.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {searchResults.profiles.map((profile) => (
-                  <Card key={profile.id} className="overflow-hidden">
-                    <div className="bg-gradient-to-r from-primary/20 to-primary/10 h-24"></div>
-                    <div className="px-6 pb-6">
-                      <div className="flex justify-center -mt-10 mb-4">
-                        <Avatar className="h-20 w-20 border-4 border-white">
-                          <AvatarImage src={profile.photoURL || undefined} />
-                          <AvatarFallback className="text-lg">{getInitials(profile.name)}</AvatarFallback>
-                        </Avatar>
-                      </div>
-                      <div className="text-center">
-                        <h3 className="text-xl font-semibold">{profile.name}</h3>
-                        {profile.title && (
-                          <p className="text-gray-600 mt-1">{profile.title}</p>
-                        )}
-                        {(profile.location || profile.industry) && (
-                          <p className="text-gray-500 text-sm mt-2">
-                            {profile.location && profile.location}
-                            {profile.location && profile.industry && " • "}
-                            {profile.industry && profile.industry}
-                          </p>
-                        )}
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          className="mt-4"
-                          onClick={() => setLocation(`/profile/${profile.id}`)}
-                        >
-                          View Profile
-                        </Button>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12 border rounded-lg bg-gray-50">
-                <Users className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                <h3 className="text-lg font-medium">No profiles found</h3>
-                <p className="text-gray-500 mt-2">
-                  Try a different search term or check for typos
-                </p>
-              </div>
-            )}
-          </TabsContent>
-
-          {/* Hashtags Results */}
-          <TabsContent value="hashtags">
-            {!submittedQuery ? (
-              <div className="text-center py-12">
-                <Hash className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                <h3 className="text-lg font-medium">Search for hashtags</h3>
-                <p className="text-gray-500 mt-2">
-                  Discover trending topics and hashtags across the platform
-                </p>
-              </div>
-            ) : isLoading ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-                  <Card key={i}>
-                    <CardContent className="p-4">
-                      <Skeleton className="h-6 w-24 mb-2" />
-                      <Skeleton className="h-4 w-16" />
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            ) : searchResults?.hashtags?.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {searchResults.hashtags.map((tag) => (
-                  <Card key={tag.id} className="hover:border-primary/50 transition-colors cursor-pointer">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h3 className="text-lg font-medium">#{tag.name}</h3>
-                          <p className="text-gray-500 text-sm">{tag.count} {tag.count === 1 ? 'post' : 'posts'}</p>
-                        </div>
-                        <Hash className="h-8 w-8 text-primary/40" />
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12 border rounded-lg bg-gray-50">
-                <Hash className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                <h3 className="text-lg font-medium">No hashtags found</h3>
-                <p className="text-gray-500 mt-2">
-                  Try a different search term or check for typos
-                </p>
-              </div>
-            )}
-          </TabsContent>
-
-          {/* Smart Connect Content */}
-          <TabsContent value="smart-connect">
+          {/* Smart Connect Tab Content */}
+          <TabsContent value="smart-connect" className="mt-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Matchmaking Form */}
               <div className="lg:col-span-1">
@@ -982,72 +1024,89 @@ const SearchPage = () => {
                           </Card>
                         ))}
                       </div>
-                    ) : matchMutation.isSuccess ? (
+                    ) : matchMutation.isSuccess && matchMutation.data.length > 0 ? (
                       <div className="space-y-4">
                         {matchMutation.data.map((match) => (
-                          <Card key={match.id} className="border border-gray-200">
+                          <Card key={match.id} className="border border-gray-200 overflow-hidden">
                             <CardContent className="p-4">
-                              <div className="flex gap-4">
-                                <div className="flex items-center">
-                                  <div className="relative">
-                                    <Avatar className="h-16 w-16">
-                                      <AvatarImage src={match.photoURL || undefined} />
-                                      <AvatarFallback>{getInitials(match.name)}</AvatarFallback>
-                                    </Avatar>
-                                    <div className="absolute -top-1 -right-1 bg-primary text-white rounded-full px-1.5 py-0.5 text-xs font-semibold">
-                                      {match.matchPercentage}%
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="flex-grow space-y-2">
-                                  <div>
-                                    <h3 className="font-semibold text-lg">{match.name}</h3>
-                                    <p className="text-gray-600 text-sm">{match.title}</p>
-                                  </div>
-                                  <div className="flex items-center text-gray-500 text-sm">
-                                    <MapPin className="h-4 w-4 mr-1" />
-                                    <span>{match.location}</span>
-                                  </div>
+                              <div className="flex gap-4 items-center">
+                                <Avatar className="h-16 w-16">
+                                  <AvatarImage src={match.photoURL || undefined} />
+                                  <AvatarFallback className="text-lg">{getInitials(match.name)}</AvatarFallback>
+                                </Avatar>
+                                
+                                <div className="flex-grow">
+                                  <h4 className="font-medium">{match.name}</h4>
+                                  <p className="text-sm text-gray-600">{match.title}</p>
+                                  
                                   <div className="flex flex-wrap gap-1 mt-2">
                                     {match.skills.map((skill, i) => (
-                                      <Badge key={i} variant="outline" className="bg-blue-50 text-blue-700">
+                                      <Badge key={i} variant="outline" className="text-xs font-normal">
                                         {skill}
                                       </Badge>
                                     ))}
                                   </div>
-                                </div>
-                                <div className="flex flex-col justify-between gap-2 min-w-[120px]">
-                                  <div className="space-y-2">
-                                    {/* Show complementary match information if available */}
-                                    {match.lookingFor && (
-                                      <div>
-                                        <div className="text-xs font-medium mb-1">Looking For:</div>
-                                        <Badge variant={match.matchDetails.complementaryMatch && match.matchDetails.complementaryMatch > 0 ? "default" : "outline"} className="w-full justify-center mb-2">
-                                          {LOOKING_FOR_OPTIONS.find(opt => opt.value === match.lookingFor)?.label.replace(/^[^a-zA-Z]+/, '') || match.lookingFor}
-                                        </Badge>
-                                      </div>
-                                    )}
-                                    
-                                    {match.matchDetails.complementaryMatch !== undefined && (
-                                      <>
-                                        <div className="flex items-center justify-between text-xs">
-                                          <span>Complementary Match</span>
-                                          <span className={`font-medium ${match.matchDetails.complementaryMatch > 0 ? "text-green-600" : ""}`}>
-                                            {match.matchDetails.complementaryMatch}%
-                                            {match.matchDetails.complementaryMatch > 0 && ' ✓'}
-                                          </span>
-                                        </div>
-                                        <Progress value={match.matchDetails.complementaryMatch} className={`h-1 ${match.matchDetails.complementaryMatch > 0 ? "bg-green-100" : ""}`} />
-                                      </>
-                                    )}
-                                    
-                                    <div className="flex items-center justify-between text-xs">
-                                      <span>Industry</span>
-                                      <span className="font-medium">{match.matchDetails.industryMatch}%</span>
-                                    </div>
-                                    <Progress value={match.matchDetails.industryMatch} className="h-1" />
+                                  
+                                  <div className="flex items-center mt-3 text-xs text-gray-500">
+                                    <MapPin size={12} className="mr-1" />
+                                    {match.location}
                                   </div>
-                                  <Button className="mt-auto">Connect</Button>
+                                </div>
+                                
+                                <div className="text-center">
+                                  <div className="mb-1 relative w-16 h-16">
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                      <span className="text-lg font-bold">{match.matchPercentage}%</span>
+                                    </div>
+                                    <Progress 
+                                      value={match.matchPercentage} 
+                                      className="w-16 h-16 rounded-full [&>div]:bg-primary [&>div]:rounded-full" 
+                                    />
+                                  </div>
+                                  <Button 
+                                    size="sm" 
+                                    className="mt-2 w-full"
+                                    onClick={() => setLocation(`/profile/${match.id}`)}
+                                  >
+                                    Connect
+                                  </Button>
+                                </div>
+                              </div>
+                              
+                              {/* Match Details */}
+                              <div className="mt-3 pt-3 border-t border-gray-100">
+                                <h5 className="text-xs font-medium mb-2">Match Details</h5>
+                                <div className="grid grid-cols-4 gap-2">
+                                  {match.matchDetails.complementaryMatch && (
+                                    <div>
+                                      <p className="text-xs text-gray-500">Goals Match</p>
+                                      <div className="flex items-center mt-1">
+                                        <Progress value={match.matchDetails.complementaryMatch} className="h-1 mr-2" />
+                                        <span className="text-xs">{match.matchDetails.complementaryMatch}%</span>
+                                      </div>
+                                    </div>
+                                  )}
+                                  <div>
+                                    <p className="text-xs text-gray-500">Industry</p>
+                                    <div className="flex items-center mt-1">
+                                      <Progress value={match.matchDetails.industryMatch} className="h-1 mr-2" />
+                                      <span className="text-xs">{match.matchDetails.industryMatch}%</span>
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <p className="text-xs text-gray-500">Domain</p>
+                                    <div className="flex items-center mt-1">
+                                      <Progress value={match.matchDetails.domainMatch} className="h-1 mr-2" />
+                                      <span className="text-xs">{match.matchDetails.domainMatch}%</span>
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <p className="text-xs text-gray-500">Experience</p>
+                                    <div className="flex items-center mt-1">
+                                      <Progress value={match.matchDetails.experienceMatch} className="h-1 mr-2" />
+                                      <span className="text-xs">{match.matchDetails.experienceMatch}%</span>
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
                             </CardContent>
@@ -1064,7 +1123,7 @@ const SearchPage = () => {
                       </div>
                     )}
                   </CardContent>
-                  {showMatchResults && matchMutation.isSuccess && (
+                  {showMatchResults && matchMutation.isSuccess && matchMutation.data.length > 0 && (
                     <CardFooter className="flex justify-between">
                       <p className="text-sm text-gray-500">Showing top {matchMutation.data.length} matches</p>
                       <Button variant="outline">View More</Button>
