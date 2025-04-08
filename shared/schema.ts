@@ -407,3 +407,21 @@ export type InsertHashtag = z.infer<typeof insertHashtagSchema>;
 
 export type PulseHashtag = typeof pulseHashtags.$inferSelect;
 export type InsertPulseHashtag = z.infer<typeof insertPulseHashtagSchema>;
+
+// User-hashtag following relationship model - tracks which hashtags a user follows
+export const userHashtagFollows = pgTable("user_hashtag_follows", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  hashtagId: integer("hashtag_id").references(() => hashtags.id).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Insert schema for user-hashtag follows
+export const insertUserHashtagFollowSchema = createInsertSchema(userHashtagFollows).omit({
+  id: true,
+  createdAt: true
+});
+
+// Export types for user-hashtag follows
+export type UserHashtagFollow = typeof userHashtagFollows.$inferSelect;
+export type InsertUserHashtagFollow = z.infer<typeof insertUserHashtagFollowSchema>;

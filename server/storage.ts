@@ -16,11 +16,19 @@ import {
   pulseComments, PulseComment, InsertPulseComment,
   pollVotes, PollVote, InsertPollVote,
   hashtags, Hashtag, InsertHashtag,
-  pulseHashtags, PulseHashtag, InsertPulseHashtag
+  pulseHashtags, PulseHashtag, InsertPulseHashtag,
+  userHashtagFollows, UserHashtagFollow, InsertUserHashtagFollow
 } from "@shared/schema";
 
 // Interface for all storage operations
 export interface IStorage {
+  // User Hashtag Follow operations
+  followHashtag(userId: number, hashtagId: number): Promise<UserHashtagFollow>;
+  unfollowHashtag(userId: number, hashtagId: number): Promise<boolean>;
+  getFollowedHashtagsByUserId(userId: number): Promise<Hashtag[]>;
+  isHashtagFollowedByUser(userId: number, hashtagId: number): Promise<boolean>;
+  getPulsesByFollowedHashtags(userId: number): Promise<Pulse[]>;
+  
   // User operations
   getUser(id: number): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
@@ -139,6 +147,13 @@ export interface IStorage {
   extractAndSaveHashtags(text: string, pulseId: number): Promise<Hashtag[]>;
   searchHashtagsByPrefix(prefix: string): Promise<Hashtag[]>;
   
+  // User Hashtag Following operations
+  followHashtag(userId: number, hashtagId: number): Promise<UserHashtagFollow>;
+  unfollowHashtag(userId: number, hashtagId: number): Promise<boolean>;
+  getFollowedHashtagsByUserId(userId: number): Promise<Hashtag[]>;
+  isHashtagFollowedByUser(userId: number, hashtagId: number): Promise<boolean>;
+  getPulsesByFollowedHashtags(userId: number): Promise<Pulse[]>;
+  
   // Debug and maintenance operations
   reinitializeDemoData(): Promise<void>;
   clearAllUsers(): Promise<void>;
@@ -164,6 +179,7 @@ export class MemStorage implements IStorage {
   private pulses: Map<number, Pulse>;
   private pulseComments: Map<number, PulseComment>;
   private pollVotes: Map<number, PollVote>;
+  private userHashtagFollows: Map<number, UserHashtagFollow>;
   
   private currentUserId: number;
   private currentResumeId: number;
@@ -183,6 +199,7 @@ export class MemStorage implements IStorage {
   private currentPollVoteId: number;
   private currentHashtagId: number;
   private currentPulseHashtagId: number;
+  private currentUserHashtagFollowId: number;
 
   constructor() {
     this.users = new Map();
@@ -203,6 +220,7 @@ export class MemStorage implements IStorage {
     this.pollVotes = new Map();
     this.hashtags = new Map();
     this.pulseHashtags = new Map();
+    this.userHashtagFollows = new Map();
     
     this.currentUserId = 1;
     this.currentResumeId = 1;
@@ -222,6 +240,7 @@ export class MemStorage implements IStorage {
     this.currentPollVoteId = 1;
     this.currentHashtagId = 1;
     this.currentPulseHashtagId = 1;
+    this.currentUserHashtagFollowId = 1;
     
     // Initialize with a default user for development/demo
     this.initializeDemoData();
@@ -308,6 +327,7 @@ export class MemStorage implements IStorage {
     this.currentPollVoteId = 1;
     this.currentHashtagId = 1;
     this.currentPulseHashtagId = 1;
+    this.currentUserHashtagFollowId = 1;
     
     // No pre-created skills
     
@@ -431,6 +451,9 @@ export class MemStorage implements IStorage {
     
     // Clear all existing pulse hashtags
     this.pulseHashtags.clear();
+    
+    // Clear all user hashtag follows
+    this.userHashtagFollows.clear();
   }
   
   /**
@@ -1119,21 +1142,16 @@ export class MemStorage implements IStorage {
       userId: userId,
       title: "AI-Powered Career Platform",
       description: "A professional networking platform with intelligent career guidance and portfolio showcase",
-      status: "in-progress",
-      startDate: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000), // 60 days ago
-      endDate: null,
+      startDate: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 60 days ago as YYYY-MM-DD
+      projectUrl: "https://example.com/demo",
+      category: "Web Development",
       thumbnailUrl: "/images/demo/ui-design-1.svg",
+      thumbnailFile: null,
       mediaUrls: [
         "/images/demo/ui-design-1.svg",
         "/images/demo/ui-design-2.svg",
         "/images/demo/ui-design-3.svg"
       ],
-      skills: ["React", "TypeScript", "Node.js", "AI Integration", "UX/UI Design"],
-      links: [
-        { label: "GitHub", url: "https://github.com/example/career-platform" },
-        { label: "Live Demo", url: "https://example.com/demo" }
-      ],
-      isPublished: true,
       createdAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000), // 60 days ago
       updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)  // 2 days ago
     };
@@ -1744,6 +1762,119 @@ export class MemStorage implements IStorage {
     
     console.log(`[storage] searchHashtags: Found ${results.length} matching hashtags`);
     return results;
+  }
+  
+  // User Hashtag Follow operations
+  async followHashtag(userId: number, hashtagId: number): Promise<UserHashtagFollow> {
+    console.log(`[storage] followHashtag: User ${userId} following hashtag ${hashtagId}`);
+    
+    // Check if the user is already following this hashtag
+    const isFollowing = await this.isHashtagFollowedByUser(userId, hashtagId);
+    if (isFollowing) {
+      console.log(`[storage] followHashtag: User ${userId} is already following hashtag ${hashtagId}`);
+      
+      // Find the existing follow relationship
+      const existingFollow = Array.from(this.userHashtagFollows.values())
+        .find(follow => follow.userId === userId && follow.hashtagId === hashtagId);
+      
+      if (existingFollow) {
+        return existingFollow;
+      }
+    }
+    
+    // Create a new follow relationship
+    const id = this.currentUserHashtagFollowId++;
+    const createdAt = new Date();
+    
+    const follow: UserHashtagFollow = {
+      id,
+      userId,
+      hashtagId,
+      createdAt
+    };
+    
+    this.userHashtagFollows.set(id, follow);
+    console.log(`[storage] followHashtag: Created new follow relationship with ID ${id}`);
+    return follow;
+  }
+  
+  async unfollowHashtag(userId: number, hashtagId: number): Promise<boolean> {
+    console.log(`[storage] unfollowHashtag: User ${userId} unfollowing hashtag ${hashtagId}`);
+    
+    // Find the follow relationship
+    const follow = Array.from(this.userHashtagFollows.values())
+      .find(follow => follow.userId === userId && follow.hashtagId === hashtagId);
+    
+    if (!follow) {
+      console.log(`[storage] unfollowHashtag: No follow relationship found for user ${userId} and hashtag ${hashtagId}`);
+      return false;
+    }
+    
+    // Delete the follow relationship
+    const result = this.userHashtagFollows.delete(follow.id);
+    console.log(`[storage] unfollowHashtag: Deleted follow relationship with ID ${follow.id}: ${result}`);
+    return result;
+  }
+  
+  async getFollowedHashtagsByUserId(userId: number): Promise<Hashtag[]> {
+    console.log(`[storage] getFollowedHashtagsByUserId: Getting followed hashtags for user ${userId}`);
+    
+    // Get all hashtag IDs that the user is following
+    const hashtagIds = Array.from(this.userHashtagFollows.values())
+      .filter(follow => follow.userId === userId)
+      .map(follow => follow.hashtagId);
+    
+    // Get the hashtags with those IDs
+    const hashtags = hashtagIds.map(id => this.hashtags.get(id))
+      .filter((hashtag): hashtag is Hashtag => hashtag !== undefined);
+    
+    console.log(`[storage] getFollowedHashtagsByUserId: Found ${hashtags.length} followed hashtags for user ${userId}`);
+    return hashtags;
+  }
+  
+  async isHashtagFollowedByUser(userId: number, hashtagId: number): Promise<boolean> {
+    const isFollowed = Array.from(this.userHashtagFollows.values())
+      .some(follow => follow.userId === userId && follow.hashtagId === hashtagId);
+    
+    console.log(`[storage] isHashtagFollowedByUser: Hashtag ${hashtagId} is ${isFollowed ? '' : 'not '}followed by user ${userId}`);
+    return isFollowed;
+  }
+  
+  async getPulsesByFollowedHashtags(userId: number): Promise<Pulse[]> {
+    console.log(`[storage] getPulsesByFollowedHashtags: Getting pulses for hashtags followed by user ${userId}`);
+    
+    // Get all hashtags followed by the user
+    const followedHashtags = await this.getFollowedHashtagsByUserId(userId);
+    
+    if (followedHashtags.length === 0) {
+      console.log(`[storage] getPulsesByFollowedHashtags: User ${userId} is not following any hashtags`);
+      return [];
+    }
+    
+    // Get all pulse-hashtag relationships for these hashtags
+    const pulseIds = new Set<number>();
+    
+    for (const hashtag of followedHashtags) {
+      const pulseHashtags = Array.from(this.pulseHashtags.values())
+        .filter(ph => ph.hashtagId === hashtag.id)
+        .map(ph => ph.pulseId);
+      
+      pulseHashtags.forEach(id => pulseIds.add(id));
+    }
+    
+    // Get all pulses with these IDs
+    const pulses = Array.from(pulseIds)
+      .map(id => this.pulses.get(id))
+      .filter((pulse): pulse is Pulse => pulse !== undefined)
+      .sort((a, b) => {
+        // Sort by createdAt in descending order (newest first)
+        const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return timeB - timeA;
+      });
+    
+    console.log(`[storage] getPulsesByFollowedHashtags: Found ${pulses.length} pulses for hashtags followed by user ${userId}`);
+    return pulses;
   }
 }
 

@@ -3569,6 +3569,243 @@ ${extractedText.substring(0, 5000)}
     }
   });
 
+  // Hashtag operations
+  apiRouter.get("/hashtags", async (req: Request, res: Response) => {
+    try {
+      console.log(`[GET /hashtags] Fetching all hashtags`);
+      const hashtags = await storage.getHashtags();
+      console.log(`[GET /hashtags] Found ${hashtags.length} hashtags`);
+      return res.json(hashtags);
+    } catch (error) {
+      console.error("[GET /hashtags] Error:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  apiRouter.get("/hashtags/:hashtagId", async (req: Request, res: Response) => {
+    try {
+      const hashtagId = parseInt(req.params.hashtagId);
+      
+      if (isNaN(hashtagId)) {
+        return res.status(400).json({ message: "Invalid hashtag ID" });
+      }
+      
+      console.log(`[GET /hashtags/:hashtagId] Fetching hashtag with ID ${hashtagId}`);
+      const hashtag = await storage.getHashtagById(hashtagId);
+      
+      if (!hashtag) {
+        console.log(`[GET /hashtags/:hashtagId] Hashtag not found: ${hashtagId}`);
+        return res.status(404).json({ message: "Hashtag not found" });
+      }
+      
+      return res.json(hashtag);
+    } catch (error) {
+      console.error("[GET /hashtags/:hashtagId] Error:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  apiRouter.get("/pulses/:pulseId/hashtags", async (req: Request, res: Response) => {
+    try {
+      const pulseId = parseInt(req.params.pulseId);
+      
+      if (isNaN(pulseId)) {
+        return res.status(400).json({ message: "Invalid pulse ID" });
+      }
+      
+      console.log(`[GET /pulses/:pulseId/hashtags] Fetching hashtags for pulse ${pulseId}`);
+      const hashtags = await storage.getHashtagsByPulseId(pulseId);
+      console.log(`[GET /pulses/:pulseId/hashtags] Found ${hashtags.length} hashtags for pulse ${pulseId}`);
+      
+      return res.json(hashtags);
+    } catch (error) {
+      console.error("[GET /pulses/:pulseId/hashtags] Error:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  // Hashtag following operations
+  apiRouter.post("/hashtags/:hashtagId/follow", async (req: Request, res: Response) => {
+    try {
+      const hashtagId = parseInt(req.params.hashtagId);
+      const { userId } = req.body;
+      
+      console.log(`[POST /hashtags/:hashtagId/follow] Following hashtag ${hashtagId} for user ${userId}`);
+      
+      if (isNaN(hashtagId)) {
+        return res.status(400).json({ message: "Invalid hashtag ID" });
+      }
+      
+      if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
+      }
+      
+      // If userId is a Firebase UID, get the numeric user id
+      let numericUserId = userId;
+      if (typeof userId === 'string' && userId.length > 20) {
+        console.log(`[POST /hashtags/:hashtagId/follow] Received Firebase UID as userId: ${userId}`);
+        const user = await storage.getUserByUsername(userId);
+        
+        if (user) {
+          numericUserId = user.id;
+          console.log(`[POST /hashtags/:hashtagId/follow] Found matching user with ID: ${numericUserId}`);
+        } else {
+          console.log(`[POST /hashtags/:hashtagId/follow] No matching user found for Firebase UID: ${userId}`);
+          return res.status(404).json({ message: "User not found" });
+        }
+      }
+      
+      // Check if the hashtag exists
+      const hashtag = await storage.getHashtagById(hashtagId);
+      if (!hashtag) {
+        console.log(`[POST /hashtags/:hashtagId/follow] Hashtag not found: ${hashtagId}`);
+        return res.status(404).json({ message: "Hashtag not found" });
+      }
+      
+      // Follow the hashtag
+      const follow = await storage.followHashtag(numericUserId, hashtagId);
+      console.log(`[POST /hashtags/:hashtagId/follow] Created follow relationship: ${JSON.stringify(follow)}`);
+      
+      return res.status(201).json({ success: true, follow });
+    } catch (error) {
+      console.error("[POST /hashtags/:hashtagId/follow] Error:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  apiRouter.delete("/hashtags/:hashtagId/follow", async (req: Request, res: Response) => {
+    try {
+      const hashtagId = parseInt(req.params.hashtagId);
+      const userId = parseInt(req.query.userId as string);
+      
+      console.log(`[DELETE /hashtags/:hashtagId/follow] Unfollowing hashtag ${hashtagId} for user ${userId}`);
+      
+      if (isNaN(hashtagId) || isNaN(userId)) {
+        return res.status(400).json({ message: "Invalid ID format" });
+      }
+      
+      // Check if the hashtag exists
+      const hashtag = await storage.getHashtagById(hashtagId);
+      if (!hashtag) {
+        console.log(`[DELETE /hashtags/:hashtagId/follow] Hashtag not found: ${hashtagId}`);
+        return res.status(404).json({ message: "Hashtag not found" });
+      }
+      
+      // Unfollow the hashtag
+      const success = await storage.unfollowHashtag(userId, hashtagId);
+      
+      if (success) {
+        console.log(`[DELETE /hashtags/:hashtagId/follow] Successfully unfollowed hashtag ${hashtagId} for user ${userId}`);
+        return res.json({ success: true });
+      } else {
+        console.log(`[DELETE /hashtags/:hashtagId/follow] Follow relationship not found for user ${userId} and hashtag ${hashtagId}`);
+        return res.status(404).json({ message: "Follow relationship not found" });
+      }
+    } catch (error) {
+      console.error("[DELETE /hashtags/:hashtagId/follow] Error:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  apiRouter.get("/users/:userId/followed-hashtags", async (req: Request, res: Response) => {
+    try {
+      const userIdParam = req.params.userId;
+      let userId: number;
+      
+      console.log(`[GET /users/:userId/followed-hashtags] Getting followed hashtags for user ${userIdParam}`);
+      
+      // Check if we have a numeric ID or a Firebase UID
+      if (userIdParam.length > 20) {
+        console.log(`[GET /users/:userId/followed-hashtags] ID appears to be a Firebase UID: ${userIdParam}`);
+        const user = await storage.getUserByUsername(userIdParam);
+        
+        if (!user) {
+          console.log(`[GET /users/:userId/followed-hashtags] No user found with Firebase UID: ${userIdParam}`);
+          return res.status(404).json({ message: "User not found" });
+        }
+        
+        userId = user.id;
+        console.log(`[GET /users/:userId/followed-hashtags] Found user with numeric ID: ${userId}`);
+      } else {
+        userId = parseInt(userIdParam);
+        
+        if (isNaN(userId)) {
+          console.log(`[GET /users/:userId/followed-hashtags] ID is not a valid numeric ID: ${userIdParam}`);
+          return res.status(400).json({ message: "Invalid user ID format" });
+        }
+      }
+      
+      // Get followed hashtags
+      const hashtags = await storage.getFollowedHashtagsByUserId(userId);
+      console.log(`[GET /users/:userId/followed-hashtags] Found ${hashtags.length} followed hashtags for user ${userId}`);
+      
+      return res.json(hashtags);
+    } catch (error) {
+      console.error("[GET /users/:userId/followed-hashtags] Error:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  apiRouter.get("/hashtags/:hashtagId/followed-by/:userId", async (req: Request, res: Response) => {
+    try {
+      const hashtagId = parseInt(req.params.hashtagId);
+      const userId = parseInt(req.params.userId);
+      
+      console.log(`[GET /hashtags/:hashtagId/followed-by/:userId] Checking if user ${userId} follows hashtag ${hashtagId}`);
+      
+      if (isNaN(hashtagId) || isNaN(userId)) {
+        return res.status(400).json({ message: "Invalid ID format" });
+      }
+      
+      // Check if the user follows the hashtag
+      const isFollowed = await storage.isHashtagFollowedByUser(userId, hashtagId);
+      
+      return res.json({ isFollowed });
+    } catch (error) {
+      console.error("[GET /hashtags/:hashtagId/followed-by/:userId] Error:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  apiRouter.get("/users/:userId/hashtag-feed", async (req: Request, res: Response) => {
+    try {
+      const userIdParam = req.params.userId;
+      let userId: number;
+      
+      console.log(`[GET /users/:userId/hashtag-feed] Getting pulses for followed hashtags of user ${userIdParam}`);
+      
+      // Check if we have a numeric ID or a Firebase UID
+      if (userIdParam.length > 20) {
+        console.log(`[GET /users/:userId/hashtag-feed] ID appears to be a Firebase UID: ${userIdParam}`);
+        const user = await storage.getUserByUsername(userIdParam);
+        
+        if (!user) {
+          console.log(`[GET /users/:userId/hashtag-feed] No user found with Firebase UID: ${userIdParam}`);
+          return res.status(404).json({ message: "User not found" });
+        }
+        
+        userId = user.id;
+        console.log(`[GET /users/:userId/hashtag-feed] Found user with numeric ID: ${userId}`);
+      } else {
+        userId = parseInt(userIdParam);
+        
+        if (isNaN(userId)) {
+          console.log(`[GET /users/:userId/hashtag-feed] ID is not a valid numeric ID: ${userIdParam}`);
+          return res.status(400).json({ message: "Invalid user ID format" });
+        }
+      }
+      
+      // Get pulses for followed hashtags
+      const pulses = await storage.getPulsesByFollowedHashtags(userId);
+      console.log(`[GET /users/:userId/hashtag-feed] Found ${pulses.length} pulses for hashtags followed by user ${userId}`);
+      
+      return res.json(pulses);
+    } catch (error) {
+      console.error("[GET /users/:userId/hashtag-feed] Error:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
   // Search endpoint for pulses, profiles, and hashtags
   apiRouter.get("/search", async (req: Request, res: Response) => {
     try {
