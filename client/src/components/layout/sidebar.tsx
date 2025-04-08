@@ -12,7 +12,6 @@ export default function Sidebar({ activePage }: SidebarProps) {
     { id: "search", icon: "fas fa-search", label: "Discover & Connect", path: "/search" },
     { id: "ai-career", icon: "fas fa-robot", label: "AI Career Booster", path: "/ai-career" },
     { id: "services", icon: "fas fa-concierge-bell", label: "Services", path: "/services" },
-    { id: "settings", icon: "fas fa-cog", label: "Settings", path: "/settings" },
   ];
 
   return (
