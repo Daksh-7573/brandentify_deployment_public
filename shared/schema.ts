@@ -370,3 +370,40 @@ export type InsertPulseComment = z.infer<typeof insertPulseCommentSchema>;
 
 export type PollVote = typeof pollVotes.$inferSelect;
 export type InsertPollVote = z.infer<typeof insertPollVoteSchema>;
+
+// Hashtags model for tracking hashtags used in pulses
+export const hashtags = pgTable("hashtags", {
+  id: serial("id").primaryKey(),
+  tag: text("tag").notNull().unique(), // The hashtag text (without the # symbol)
+  count: integer("count").default(1), // How many times this hashtag has been used
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Pulse hashtags relationship model - links pulses with hashtags
+export const pulseHashtags = pgTable("pulse_hashtags", {
+  id: serial("id").primaryKey(),
+  pulseId: integer("pulse_id").references(() => pulses.id).notNull(),
+  hashtagId: integer("hashtag_id").references(() => hashtags.id).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Insert schemas for Hashtags
+export const insertHashtagSchema = createInsertSchema(hashtags).omit({
+  id: true,
+  count: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export const insertPulseHashtagSchema = createInsertSchema(pulseHashtags).omit({
+  id: true,
+  createdAt: true
+});
+
+// Export types for Hashtags
+export type Hashtag = typeof hashtags.$inferSelect;
+export type InsertHashtag = z.infer<typeof insertHashtagSchema>;
+
+export type PulseHashtag = typeof pulseHashtags.$inferSelect;
+export type InsertPulseHashtag = z.infer<typeof insertPulseHashtagSchema>;

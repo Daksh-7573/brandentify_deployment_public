@@ -14,7 +14,9 @@ import {
   services, Service, InsertService,
   pulses, Pulse, InsertPulse,
   pulseComments, PulseComment, InsertPulseComment,
-  pollVotes, PollVote, InsertPollVote
+  pollVotes, PollVote, InsertPollVote,
+  hashtags, Hashtag, InsertHashtag,
+  pulseHashtags, PulseHashtag, InsertPulseHashtag
 } from "@shared/schema";
 
 // Interface for all storage operations
@@ -122,6 +124,21 @@ export interface IStorage {
   createPulseComment(comment: InsertPulseComment): Promise<PulseComment>;
   deletePulseComment(id: number): Promise<boolean>;
   
+  // Hashtag operations
+  getHashtags(): Promise<Hashtag[]>;
+  getHashtagById(id: number): Promise<Hashtag | undefined>;
+  getHashtagByTag(tag: string): Promise<Hashtag | undefined>;
+  createHashtag(hashtag: InsertHashtag): Promise<Hashtag>;
+  updateHashtag(id: number, hashtag: Partial<Hashtag>): Promise<Hashtag | undefined>;
+  incrementHashtagCount(id: number): Promise<Hashtag | undefined>;
+  
+  // Pulse Hashtag operations
+  createPulseHashtag(pulseHashtag: InsertPulseHashtag): Promise<PulseHashtag>;
+  getPulseHashtagsByPulseId(pulseId: number): Promise<PulseHashtag[]>;
+  getHashtagsByPulseId(pulseId: number): Promise<Hashtag[]>;
+  extractAndSaveHashtags(text: string, pulseId: number): Promise<Hashtag[]>;
+  searchHashtagsByPrefix(prefix: string): Promise<Hashtag[]>;
+  
   // Debug and maintenance operations
   reinitializeDemoData(): Promise<void>;
   clearAllUsers(): Promise<void>;
@@ -141,6 +158,8 @@ export class MemStorage implements IStorage {
   private projectCollaborators: Map<number, ProjectCollaborator>;
   private projectEndorsements: Map<number, ProjectEndorsement>;
   private portfolios: Map<number, Portfolio>;
+  private hashtags: Map<number, Hashtag>;
+  private pulseHashtags: Map<number, PulseHashtag>;
   private services: Map<number, Service>;
   private pulses: Map<number, Pulse>;
   private pulseComments: Map<number, PulseComment>;
@@ -162,6 +181,8 @@ export class MemStorage implements IStorage {
   private currentPulseId: number;
   private currentPulseCommentId: number;
   private currentPollVoteId: number;
+  private currentHashtagId: number;
+  private currentPulseHashtagId: number;
 
   constructor() {
     this.users = new Map();
@@ -180,6 +201,8 @@ export class MemStorage implements IStorage {
     this.pulses = new Map();
     this.pulseComments = new Map();
     this.pollVotes = new Map();
+    this.hashtags = new Map();
+    this.pulseHashtags = new Map();
     
     this.currentUserId = 1;
     this.currentResumeId = 1;
@@ -197,6 +220,8 @@ export class MemStorage implements IStorage {
     this.currentPulseId = 1;
     this.currentPulseCommentId = 1;
     this.currentPollVoteId = 1;
+    this.currentHashtagId = 1;
+    this.currentPulseHashtagId = 1;
     
     // Initialize with a default user for development/demo
     this.initializeDemoData();
@@ -281,6 +306,8 @@ export class MemStorage implements IStorage {
     this.currentPulseId = 1;
     this.currentPulseCommentId = 1;
     this.currentPollVoteId = 1;
+    this.currentHashtagId = 1;
+    this.currentPulseHashtagId = 1;
     
     // No pre-created skills
     
@@ -398,6 +425,12 @@ export class MemStorage implements IStorage {
     
     // Clear all existing poll votes
     this.pollVotes.clear();
+    
+    // Clear all existing hashtags
+    this.hashtags.clear();
+    
+    // Clear all existing pulse hashtags
+    this.pulseHashtags.clear();
   }
   
   /**
@@ -1248,6 +1281,12 @@ export class MemStorage implements IStorage {
     };
     
     this.pulses.set(id, pulse);
+    
+    // Extract and save hashtags from the content/description
+    if (insertPulse.content) {
+      await this.extractAndSaveHashtags(insertPulse.content, id);
+    }
+    
     return pulse;
   }
   
@@ -1263,6 +1302,12 @@ export class MemStorage implements IStorage {
     };
     
     this.pulses.set(id, updatedPulse);
+    
+    // If the content was updated, extract and save new hashtags
+    if (pulseData.content && pulseData.content !== pulse.content) {
+      await this.extractAndSaveHashtags(pulseData.content, id);
+    }
+    
     return updatedPulse;
   }
   
@@ -1405,6 +1450,159 @@ export class MemStorage implements IStorage {
    * @param query Search query string
    * @returns Array of matching Pulse objects
    */
+   
+  // Hashtag operations
+  async getHashtags(): Promise<Hashtag[]> {
+    return Array.from(this.hashtags.values());
+  }
+  
+  async getHashtagById(id: number): Promise<Hashtag | undefined> {
+    return this.hashtags.get(id);
+  }
+  
+  async getHashtagByTag(tag: string): Promise<Hashtag | undefined> {
+    // Normalize the tag by removing the '#' if present and converting to lowercase
+    const normalizedTag = tag.startsWith('#') ? tag.substring(1).toLowerCase() : tag.toLowerCase();
+    return Array.from(this.hashtags.values())
+      .find(hashtag => hashtag.tag.toLowerCase() === normalizedTag);
+  }
+  
+  async createHashtag(insertHashtag: InsertHashtag): Promise<Hashtag> {
+    const id = this.currentHashtagId++;
+    const createdAt = new Date();
+    const updatedAt = new Date();
+    
+    const hashtag: Hashtag = {
+      ...insertHashtag,
+      id,
+      createdAt,
+      updatedAt,
+      count: 1
+    };
+    
+    this.hashtags.set(id, hashtag);
+    return hashtag;
+  }
+  
+  async updateHashtag(id: number, hashtagData: Partial<Hashtag>): Promise<Hashtag | undefined> {
+    const hashtag = this.hashtags.get(id);
+    if (!hashtag) return undefined;
+    
+    const updatedHashtag = { ...hashtag, ...hashtagData };
+    this.hashtags.set(id, updatedHashtag);
+    return updatedHashtag;
+  }
+  
+  async incrementHashtagCount(id: number): Promise<Hashtag | undefined> {
+    const hashtag = this.hashtags.get(id);
+    if (!hashtag) return undefined;
+    
+    const currentCount = hashtag.count || 0;
+    const updatedHashtag = { 
+      ...hashtag, 
+      count: currentCount + 1,
+      updatedAt: new Date()
+    };
+    
+    this.hashtags.set(id, updatedHashtag);
+    return updatedHashtag;
+  }
+  
+  // Pulse Hashtag operations
+  async createPulseHashtag(insertPulseHashtag: InsertPulseHashtag): Promise<PulseHashtag> {
+    const id = this.currentPulseHashtagId++;
+    const createdAt = new Date();
+    
+    const pulseHashtag: PulseHashtag = {
+      ...insertPulseHashtag,
+      id,
+      createdAt
+    };
+    
+    this.pulseHashtags.set(id, pulseHashtag);
+    return pulseHashtag;
+  }
+  
+  async getPulseHashtagsByPulseId(pulseId: number): Promise<PulseHashtag[]> {
+    return Array.from(this.pulseHashtags.values())
+      .filter(pulseHashtag => pulseHashtag.pulseId === pulseId);
+  }
+  
+  async getHashtagsByPulseId(pulseId: number): Promise<Hashtag[]> {
+    const pulseHashtags = await this.getPulseHashtagsByPulseId(pulseId);
+    const hashtags: Hashtag[] = [];
+    
+    for (const pulseHashtag of pulseHashtags) {
+      const hashtag = await this.getHashtagById(pulseHashtag.hashtagId);
+      if (hashtag) {
+        hashtags.push(hashtag);
+      }
+    }
+    
+    return hashtags;
+  }
+  
+  async extractAndSaveHashtags(text: string, pulseId: number): Promise<Hashtag[]> {
+    if (!text) return [];
+    
+    // Regular expression to match hashtags: #word
+    // Words can include letters, numbers, underscores
+    const hashtagRegex = /#(\w+)/g;
+    const matches = text.match(hashtagRegex);
+    
+    if (!matches) return [];
+    
+    const savedHashtags: Hashtag[] = [];
+    
+    // Process each hashtag
+    for (const match of matches) {
+      // Remove the '#' character and normalize to lowercase
+      const tagText = match.substring(1).toLowerCase();
+      
+      // Skip empty tags
+      if (!tagText) continue;
+      
+      // Check if this hashtag already exists
+      let hashtag = await this.getHashtagByTag(tagText);
+      
+      if (hashtag) {
+        // If it exists, increment its count
+        hashtag = await this.incrementHashtagCount(hashtag.id);
+      } else {
+        // If it doesn't exist, create a new one
+        hashtag = await this.createHashtag({
+          tag: tagText
+        });
+      }
+      
+      if (hashtag) {
+        // Create the association between the pulse and the hashtag
+        await this.createPulseHashtag({
+          pulseId,
+          hashtagId: hashtag.id
+        });
+        
+        savedHashtags.push(hashtag);
+      }
+    }
+    
+    return savedHashtags;
+  }
+  
+  async searchHashtagsByPrefix(prefix: string): Promise<Hashtag[]> {
+    // Remove '#' if present and convert to lowercase
+    const normalizedPrefix = prefix.startsWith('#') ? prefix.substring(1).toLowerCase() : prefix.toLowerCase();
+    
+    if (!normalizedPrefix) return [];
+    
+    return Array.from(this.hashtags.values())
+      .filter(hashtag => hashtag.tag.toLowerCase().startsWith(normalizedPrefix))
+      .sort((a, b) => {
+        const countA = a.count || 0;
+        const countB = b.count || 0;
+        return countB - countA; // Sort by count (popularity) in descending order
+      })
+  }
   async searchPulses(query: string): Promise<Pulse[]> {
     console.log(`[storage] searchPulses: Searching pulses with query: "${query}"`);
     const normalizedQuery = query.toLowerCase().trim();
@@ -1413,30 +1611,84 @@ export class MemStorage implements IStorage {
       return [];
     }
     
-    const results = Array.from(this.pulses.values()).filter(pulse => {
-      // Check various fields for matches
+    // First collect all pulses that match by title or content
+    const directMatches = Array.from(this.pulses.values()).filter(pulse => {
+      // Check title for matches
       const titleMatch = pulse.title?.toLowerCase().includes(normalizedQuery);
-      const descriptionMatch = pulse.description?.toLowerCase().includes(normalizedQuery);
       
-      // Check tags if they exist
-      const tagMatches = Array.isArray(pulse.tags) && 
-        pulse.tags.some(tag => tag.toLowerCase().includes(normalizedQuery));
+      // Check content for matches (different field name than "description")
+      const contentMatch = pulse.content?.toLowerCase().includes(normalizedQuery);
       
-      return titleMatch || descriptionMatch || tagMatches;
+      return titleMatch || contentMatch;
     });
     
+    // Now find pulses by hashtag
+    let hashtagMatches: Pulse[] = [];
+    
+    // Check if the query is actually searching for a hashtag
+    if (normalizedQuery.startsWith('#')) {
+      // Get the tag without the # symbol
+      const tagText = normalizedQuery.substring(1);
+      
+      // Find the hashtag in our hashtags collection
+      const hashtag = await this.getHashtagByTag(tagText);
+      
+      if (hashtag) {
+        // Get all pulse-hashtag relationships for this hashtag
+        const pulseHashtags = Array.from(this.pulseHashtags.values())
+          .filter(ph => ph.hashtagId === hashtag.id);
+          
+        // Get the corresponding pulses
+        for (const ph of pulseHashtags) {
+          const pulse = this.pulses.get(ph.pulseId);
+          if (pulse) {
+            hashtagMatches.push(pulse);
+          }
+        }
+      }
+    } else {
+      // If not explicitly searching for a hashtag, still try to find hashtags containing the query
+      const matchingHashtags = await this.searchHashtagsByPrefix(normalizedQuery);
+      
+      for (const hashtag of matchingHashtags) {
+        // Get all pulse-hashtag relationships for this hashtag
+        const pulseHashtags = Array.from(this.pulseHashtags.values())
+          .filter(ph => ph.hashtagId === hashtag.id);
+          
+        // Get the corresponding pulses
+        for (const ph of pulseHashtags) {
+          const pulse = this.pulses.get(ph.pulseId);
+          if (pulse) {
+            hashtagMatches.push(pulse);
+          }
+        }
+      }
+    }
+    
+    // Combine the results, removing duplicates
+    const allMatches = [...directMatches];
+    
+    // Add hashtag matches if they're not already in the results
+    for (const pulse of hashtagMatches) {
+      if (!allMatches.some(p => p.id === pulse.id)) {
+        allMatches.push(pulse);
+      }
+    }
+    
     // Sort by recency
-    results.sort((a, b) => {
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    allMatches.sort((a, b) => {
+      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return dateB - dateA;
     });
     
     // Get user info for each pulse
-    const resultsWithUsers = await Promise.all(results.map(async pulse => {
+    const resultsWithUsers = await Promise.all(allMatches.map(async pulse => {
       const user = await this.getUser(pulse.userId);
       return { ...pulse, user };
     }));
     
-    console.log(`[storage] searchPulses: Found ${results.length} matching pulses`);
+    console.log(`[storage] searchPulses: Found ${allMatches.length} matching pulses`);
     return resultsWithUsers;
   }
   
@@ -1480,30 +1732,15 @@ export class MemStorage implements IStorage {
       return [];
     }
     
-    // Extract all tags from pulses
-    const allTags: string[] = [];
-    for (const pulse of this.pulses.values()) {
-      if (Array.isArray(pulse.tags)) {
-        allTags.push(...pulse.tags);
-      }
-    }
+    // Search for hashtags with the searchHashtagsByPrefix method
+    const hashtags = await this.searchHashtagsByPrefix(normalizedQuery);
     
-    // Count occurrences of each tag
-    const tagCounts: Record<string, number> = {};
-    allTags.forEach(tag => {
-      const normalizedTag = tag.toLowerCase();
-      tagCounts[normalizedTag] = (tagCounts[normalizedTag] || 0) + 1;
-    });
-    
-    // Convert to array and filter by query
-    const results = Object.entries(tagCounts)
-      .filter(([tag]) => tag.includes(normalizedQuery))
-      .map(([name, count], index) => ({
-        id: index + 1, // Generate synthetic ID
-        name,
-        count
-      }))
-      .sort((a, b) => b.count - a.count); // Sort by popularity
+    // Transform to the expected format
+    const results = hashtags.map(hashtag => ({
+      id: hashtag.id,
+      name: hashtag.tag,
+      count: hashtag.count || 0  // Default to 0 if null
+    }));
     
     console.log(`[storage] searchHashtags: Found ${results.length} matching hashtags`);
     return results;
