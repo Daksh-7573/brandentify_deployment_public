@@ -674,8 +674,9 @@ function ProjectDetails({ pulse }: { pulse: PulseWithUser }) {
                 variant="outline" 
                 className="text-xs border-green-200 text-green-700 hover:bg-green-50"
                 onClick={() => {
-                  // Simple direct navigation - faster with no spinner
-                  window.location.href = `/dashboard?view=project&projectId=${pulse.projectId}`;
+                  // Use wouter for client-side navigation with no page refresh
+                  const [_, setLocation] = useLocation();
+                  setLocation(`/dashboard?view=project&projectId=${pulse.projectId}`);
                 }}
               >
                 <FileCode className="h-3 w-3 mr-1" /> View Full Project
@@ -762,7 +763,11 @@ export default function IndustryPulsePage() {
                   Discover insights, polls, and media from your professional network
                 </p>
               </div>
-              <Button onClick={() => window.location.href = "/create-pulse"}>
+              <Button onClick={() => {
+                // Use wouter for client-side navigation with no page refresh
+                const [_, setLocation] = useLocation();
+                setLocation("/create-pulse");
+              }}>
                 Create Pulse
               </Button>
             </div>
@@ -790,7 +795,10 @@ export default function IndustryPulsePage() {
                           ? "Be the first to create a pulse in your professional network!" 
                           : `No ${activeTab} pulses available yet. Create one to get started!`}
                       </p>
-                      <Button onClick={() => window.location.href = "/create-pulse"}>
+                      <Button onClick={() => {
+                        const [_, setLocation] = useLocation();
+                        setLocation("/create-pulse");
+                      }}>
                         Create Your First Pulse
                       </Button>
                     </CardContent>

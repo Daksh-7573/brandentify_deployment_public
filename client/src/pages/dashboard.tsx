@@ -173,7 +173,7 @@ function ProjectDetailView({ projectId, onBack }: { projectId: string, onBack: (
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fadeIn">
       <div className="flex items-center mb-4">
         <Button onClick={onBack} variant="ghost" size="sm" className="mr-2">
           <ArrowLeft className="h-4 w-4 mr-1" /> Back
@@ -376,11 +376,22 @@ export default function Dashboard() {
 
   // Function to clear view parameters and go back to dashboard
   const handleBackToDashboard = () => {
+    // Use wouter for client-side navigation
+    const [_, setLocation] = useLocation();
     // Update URL without parameters
-    window.history.pushState({}, '', '/dashboard');
+    setLocation('/dashboard');
     // Reset the local state
     setView(null);
     setProjectId(null);
+  };
+  
+  // Create a page transition component
+  const PageTransition = ({ children }: { children: React.ReactNode }) => {
+    return (
+      <div className="animate-fadeIn transition-all duration-300">
+        {children}
+      </div>
+    );
   };
 
   return (
