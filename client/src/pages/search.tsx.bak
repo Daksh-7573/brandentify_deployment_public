@@ -478,30 +478,32 @@ const SearchPage = () => {
               <div className="relative flex-1">
                 <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                 <Input
-                  type="search"
-                  placeholder="Search pulses, profiles, or hashtags..."
-                  className="pl-10"
+                  type="text"
+                  placeholder="Search by keywords..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
                 />
               </div>
-              <Button type="submit">Search</Button>
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? "Searching..." : "Search"}
+              </Button>
             </form>
 
             {/* Search Category Tabs */}
-            <Tabs defaultValue={activeCategory === "smart-connect" ? "pulses" : activeCategory} onValueChange={handleTabChange}>
+            <Tabs defaultValue={activeCategory} onValueChange={handleTabChange} value={activeCategory}>
               <TabsList className="mb-6">
-                <TabsTrigger value="pulses" className="flex items-center gap-1">
+                <TabsTrigger value="pulses" className="flex items-center gap-2">
                   <MessageSquare size={16} />
-                  <span>Pulses</span>
+                  Pulses
                 </TabsTrigger>
-                <TabsTrigger value="profiles" className="flex items-center gap-1">
+                <TabsTrigger value="profiles" className="flex items-center gap-2">
                   <Users size={16} />
-                  <span>Profiles</span>
+                  Profiles
                 </TabsTrigger>
-                <TabsTrigger value="hashtags" className="flex items-center gap-1">
+                <TabsTrigger value="hashtags" className="flex items-center gap-2">
                   <Hash size={16} />
-                  <span>Hashtags</span>
+                  Hashtags
                 </TabsTrigger>
               </TabsList>
 
@@ -509,33 +511,34 @@ const SearchPage = () => {
               <TabsContent value="pulses">
                 {!submittedQuery ? (
                   <div className="text-center py-12">
-                    <MessageSquare className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                    <SearchIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
                     <h3 className="text-lg font-medium">Search for pulses</h3>
                     <p className="text-gray-500 mt-2">
-                      Discover polls, media shares, and projects from professionals
+                      Enter keywords to find pulses related to specific topics or interests
                     </p>
                   </div>
                 ) : isLoading ? (
-                  <div className="space-y-4">
+                  <div className="grid grid-cols-1 gap-4">
                     {[1, 2, 3].map((i) => (
                       <Card key={i}>
-                        <CardContent className="py-4">
-                          <div className="flex items-center gap-3 mb-3">
-                            <Skeleton className="h-10 w-10 rounded-full" />
-                            <div className="space-y-1">
-                              <Skeleton className="h-4 w-32" />
-                              <Skeleton className="h-3 w-24" />
+                        <CardHeader>
+                          <div className="flex items-center gap-4">
+                            <Skeleton className="h-12 w-12 rounded-full" />
+                            <div className="space-y-2">
+                              <Skeleton className="h-4 w-[250px]" />
+                              <Skeleton className="h-4 w-[150px]" />
                             </div>
                           </div>
-                          <Skeleton className="h-4 w-full mb-3" />
-                          <Skeleton className="h-4 w-full mb-3" />
+                        </CardHeader>
+                        <CardContent>
+                          <Skeleton className="h-4 w-full mb-2" />
                           <Skeleton className="h-4 w-3/4" />
                         </CardContent>
                       </Card>
                     ))}
                   </div>
                 ) : searchResults?.pulses?.length > 0 ? (
-                  <div className="space-y-4">
+                  <div className="grid grid-cols-1 gap-4">
                     {searchResults.pulses.map((pulse: {
                       id: number;
                       title: string;
@@ -547,32 +550,27 @@ const SearchPage = () => {
                         photoURL: string | null;
                       };
                     }) => (
-                      <Card key={pulse.id} className="hover:border-primary/40 transition-colors cursor-pointer">
-                        <CardContent className="p-4">
-                          <div className="flex items-center gap-3 mb-3">
+                      <Card key={pulse.id}>
+                        <CardHeader>
+                          <div className="flex items-center gap-4">
                             <Avatar>
-                              <AvatarImage src={pulse.user.photoURL || undefined} />
-                              <AvatarFallback>{getInitials(pulse.user.name)}</AvatarFallback>
+                              <AvatarImage src={pulse.user?.photoURL || undefined} />
+                              <AvatarFallback>{getInitials(pulse.user?.name)}</AvatarFallback>
                             </Avatar>
                             <div>
-                              <h3 className="font-medium">{pulse.user.name}</h3>
-                              <p className="text-sm text-gray-500">
-                                {formatDistanceToNow(new Date(pulse.createdAt), { addSuffix: true })}
-                              </p>
+                              <CardTitle className="text-lg">{pulse.title}</CardTitle>
+                              <CardDescription>
+                                {pulse.user?.name} • {formatDistanceToNow(new Date(pulse.createdAt), { addSuffix: true })}
+                              </CardDescription>
                             </div>
                           </div>
-                          <h4 className="font-medium mb-2">{pulse.title}</h4>
-                          <p className="text-gray-600 mb-3 line-clamp-2">{pulse.content}</p>
-                          <div className="flex">
-                            <Badge variant={
-                              pulse.type === "poll" ? "secondary" : 
-                              pulse.type === "media-pulse" ? "outline" : "default"
-                            }>
-                              {pulse.type === "poll" ? "Poll" : 
-                               pulse.type === "media-pulse" ? "Media" : "Project"}
-                            </Badge>
-                          </div>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-gray-700">{pulse.content}</p>
                         </CardContent>
+                        <CardFooter>
+                          <Badge variant="outline" className="mr-2">{pulse.type}</Badge>
+                        </CardFooter>
                       </Card>
                     ))}
                   </div>
@@ -594,25 +592,22 @@ const SearchPage = () => {
                     <Users className="mx-auto h-12 w-12 text-gray-400 mb-4" />
                     <h3 className="text-lg font-medium">Search for profiles</h3>
                     <p className="text-gray-500 mt-2">
-                      Discover professionals across various industries
+                      Find professionals by name, title, location, or industry
                     </p>
                   </div>
                 ) : isLoading ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {[1, 2, 3, 4, 5, 6].map((i) => (
-                      <Card key={i}>
-                        <div className="bg-gradient-to-r from-gray-200 to-gray-100 h-24"></div>
+                    {[1, 2, 3].map((i) => (
+                      <Card key={i} className="overflow-hidden">
+                        <div className="bg-gray-100 h-24"></div>
                         <div className="px-6 pb-6">
                           <div className="flex justify-center -mt-10 mb-4">
-                            <Skeleton className="h-20 w-20 rounded-full" />
+                            <Skeleton className="h-20 w-20 rounded-full border-4 border-white" />
                           </div>
                           <div className="text-center space-y-2">
-                            <Skeleton className="h-4 w-32 mx-auto" />
-                            <Skeleton className="h-3 w-24 mx-auto" />
-                            <Skeleton className="h-3 w-40 mx-auto" />
-                            <div className="py-2">
-                              <Skeleton className="h-8 w-20 mx-auto rounded-md" />
-                            </div>
+                            <Skeleton className="h-4 w-[150px] mx-auto" />
+                            <Skeleton className="h-4 w-[100px] mx-auto" />
+                            <Skeleton className="h-4 w-[180px] mx-auto" />
                           </div>
                         </div>
                       </Card>
@@ -741,206 +736,209 @@ const SearchPage = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {!showMatchResults ? (
-                    <form onSubmit={handleSmartConnectSubmit} className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="lookingFor">I am looking for</Label>
-                        <Select 
-                          value={formData.lookingFor}
-                          onValueChange={(value) => setFormData({...formData, lookingFor: value})}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="What are you looking for?" />
-                          </SelectTrigger>
-                          <SelectContent className="max-h-80">
-                            <SelectGroup>
-                              <SelectLabel>Career & Job Seeking</SelectLabel>
-                              {LOOKING_FOR_OPTIONS.filter(opt => opt.category === "Career & Job Seeking").map(option => (
-                                <SelectItem key={option.value} value={option.value}>
-                                  {option.label}
-                                </SelectItem>
-                              ))}
-                            </SelectGroup>
-                            <SelectSeparator />
-                            <SelectGroup>
-                              <SelectLabel>Business & Investment</SelectLabel>
-                              {LOOKING_FOR_OPTIONS.filter(opt => opt.category === "Business & Investment").map(option => (
-                                <SelectItem key={option.value} value={option.value}>
-                                  {option.label}
-                                </SelectItem>
-                              ))}
-                            </SelectGroup>
-                            <SelectSeparator />
-                            <SelectGroup>
-                              <SelectLabel>Learning & Upskilling</SelectLabel>
-                              {LOOKING_FOR_OPTIONS.filter(opt => opt.category === "Learning & Upskilling").map(option => (
-                                <SelectItem key={option.value} value={option.value}>
-                                  {option.label}
-                                </SelectItem>
-                              ))}
-                            </SelectGroup>
-                            <SelectSeparator />
-                            <SelectGroup>
-                              <SelectLabel>Networking & Collaborations</SelectLabel>
-                              {LOOKING_FOR_OPTIONS.filter(opt => opt.category === "Networking & Collaborations").map(option => (
-                                <SelectItem key={option.value} value={option.value}>
-                                  {option.label}
-                                </SelectItem>
-                              ))}
-                            </SelectGroup>
-                            <SelectSeparator />
-                            <SelectGroup>
-                              <SelectLabel>Freelance & Side Hustle</SelectLabel>
-                              {LOOKING_FOR_OPTIONS.filter(opt => opt.category === "Freelance & Side Hustle").map(option => (
-                                <SelectItem key={option.value} value={option.value}>
-                                  {option.label}
-                                </SelectItem>
-                              ))}
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="jobTitle">Job Title</Label>
-                        <JobTitleCombobox
-                          value={formData.jobTitle}
-                          onChange={(value) => setFormData({...formData, jobTitle: value})}
-                          placeholder="Enter job title"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="experienceLevel">Experience Level</Label>
-                        <Select 
-                          value={formData.experienceLevel}
-                          onValueChange={(value) => setFormData({...formData, experienceLevel: value})}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select experience level" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {EXPERIENCE_LEVELS.map(level => (
-                              <SelectItem key={level} value={level}>
-                                {level}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="industry">Industry</Label>
-                        <Select 
-                          value={formData.industry}
-                          onValueChange={(value) => {
-                            setFormData({
-                              ...formData, 
-                              industry: value,
-                              domain: '' // Reset domain when industry changes
-                            });
-                          }}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select industry" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {INDUSTRIES.map(industry => (
-                              <SelectItem key={industry} value={industry}>
-                                {industry}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      {formData.industry && domains.length > 0 && (
+                    {!showMatchResults ? (
+                      <form onSubmit={handleSmartConnectSubmit} className="space-y-4">
                         <div className="space-y-2">
-                          <Label htmlFor="domain">Domain Expertise</Label>
+                          <Label htmlFor="lookingFor">I am looking for</Label>
                           <Select 
-                            value={formData.domain}
-                            onValueChange={(value) => setFormData({...formData, domain: value})}
+                            value={formData.lookingFor}
+                            onValueChange={(value) => setFormData({...formData, lookingFor: value})}
                           >
                             <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Select domain expertise" />
+                              <SelectValue placeholder="What are you looking for?" />
+                            </SelectTrigger>
+                            <SelectContent className="max-h-80">
+                              <SelectGroup>
+                                <SelectLabel>Career & Job Seeking</SelectLabel>
+                                {LOOKING_FOR_OPTIONS.filter(opt => opt.category === "Career & Job Seeking").map(option => (
+                                  <SelectItem key={option.value} value={option.value}>
+                                    {option.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectGroup>
+                              <SelectSeparator />
+                              <SelectGroup>
+                                <SelectLabel>Business & Investment</SelectLabel>
+                                {LOOKING_FOR_OPTIONS.filter(opt => opt.category === "Business & Investment").map(option => (
+                                  <SelectItem key={option.value} value={option.value}>
+                                    {option.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectGroup>
+                              <SelectSeparator />
+                              <SelectGroup>
+                                <SelectLabel>Learning & Upskilling</SelectLabel>
+                                {LOOKING_FOR_OPTIONS.filter(opt => opt.category === "Learning & Upskilling").map(option => (
+                                  <SelectItem key={option.value} value={option.value}>
+                                    {option.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectGroup>
+                              <SelectSeparator />
+                              <SelectGroup>
+                                <SelectLabel>Networking & Collaborations</SelectLabel>
+                                {LOOKING_FOR_OPTIONS.filter(opt => opt.category === "Networking & Collaborations").map(option => (
+                                  <SelectItem key={option.value} value={option.value}>
+                                    {option.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectGroup>
+                              <SelectSeparator />
+                              <SelectGroup>
+                                <SelectLabel>Freelance & Side Hustle</SelectLabel>
+                                {LOOKING_FOR_OPTIONS.filter(opt => opt.category === "Freelance & Side Hustle").map(option => (
+                                  <SelectItem key={option.value} value={option.value}>
+                                    {option.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="jobTitle">Job Title</Label>
+                          <JobTitleCombobox
+                            value={formData.jobTitle}
+                            onChange={(value) => setFormData({...formData, jobTitle: value})}
+                            placeholder="Enter job title"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="experienceLevel">Experience Level</Label>
+                          <Select 
+                            value={formData.experienceLevel}
+                            onValueChange={(value) => setFormData({...formData, experienceLevel: value})}
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select experience level" />
                             </SelectTrigger>
                             <SelectContent>
-                              {domains.map(domain => (
-                                <SelectItem key={domain} value={domain}>
-                                  {domain}
+                              {EXPERIENCE_LEVELS.map(level => (
+                                <SelectItem key={level} value={level}>
+                                  {level}
                                 </SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
                         </div>
-                      )}
 
-                      <div className="space-y-2">
-                        <Label htmlFor="location">Location</Label>
-                        <Input
-                          name="location"
-                          value={formData.location}
-                          onChange={handleInputChange}
-                          placeholder="City, Country"
-                          className="w-full"
-                        />
-                      </div>
-
-                      <Button type="submit" className="w-full mt-6" disabled={matchMutation.isPending}>
-                        {matchMutation.isPending ? "Finding matches..." : "Find Matches"}
-                      </Button>
-                    </form>
-                  ) : (
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <p className="text-xs text-gray-500">Looking For</p>
-                          <p className="font-medium">
-                            {LOOKING_FOR_OPTIONS.find(opt => opt.value === formData.lookingFor)?.label || "Professionals"}
-                          </p>
+                        <div className="space-y-2">
+                          <Label htmlFor="industry">Industry</Label>
+                          <Select 
+                            value={formData.industry}
+                            onValueChange={(value) => {
+                              setFormData({
+                                ...formData, 
+                                industry: value,
+                                domain: '' // Reset domain when industry changes
+                              });
+                            }}
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select industry" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {INDUSTRIES.map(industry => (
+                                <SelectItem key={industry} value={industry}>
+                                  {industry}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </div>
-                        {formData.jobTitle && (
-                          <div>
-                            <p className="text-xs text-gray-500">Job Title</p>
-                            <p className="font-medium">{formData.jobTitle}</p>
+
+                        {formData.industry && domains.length > 0 && (
+                          <div className="space-y-2">
+                            <Label htmlFor="domain">Domain Expertise</Label>
+                            <Select 
+                              value={formData.domain}
+                              onValueChange={(value) => setFormData({...formData, domain: value})}
+                            >
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select domain expertise" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {domains.map(domain => (
+                                  <SelectItem key={domain} value={domain}>
+                                    {domain}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                           </div>
                         )}
-                        {formData.experienceLevel && (
+
+                        <div className="space-y-2">
+                          <Label htmlFor="location">Location</Label>
+                          <Input
+                            name="location"
+                            value={formData.location}
+                            onChange={handleInputChange}
+                            placeholder="City, Country"
+                            className="w-full"
+                          />
+                        </div>
+
+                        <Button type="submit" className="w-full mt-6" disabled={matchMutation.isPending}>
+                          {matchMutation.isPending ? "Finding matches..." : "Find Matches"}
+                        </Button>
+                      </form>
+                    ) : (
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
                           <div>
-                            <p className="text-xs text-gray-500">Experience Level</p>
-                            <p className="font-medium">{formData.experienceLevel}</p>
+                            <p className="text-xs text-gray-500">Looking For</p>
+                            <p className="font-medium">
+                              {LOOKING_FOR_OPTIONS.find(opt => opt.value === formData.lookingFor)?.label || "Professionals"}
+                            </p>
                           </div>
-                        )}
-                        {formData.industry && (
-                          <div>
-                            <p className="text-xs text-gray-500">Industry</p>
-                            <p className="font-medium">{formData.industry}</p>
-                          </div>
-                        )}
-                        {formData.domain && (
-                          <div>
-                            <p className="text-xs text-gray-500">Domain</p>
-                            <p className="font-medium">{formData.domain}</p>
-                          </div>
-                        )}
-                        {formData.location && (
-                          <div>
-                            <p className="text-xs text-gray-500">Location</p>
-                            <p className="font-medium">{formData.location}</p>
-                          </div>
-                        )}
+                          {formData.jobTitle && (
+                            <div>
+                              <p className="text-xs text-gray-500">Job Title</p>
+                              <p className="font-medium">{formData.jobTitle}</p>
+                            </div>
+                          )}
+                          {formData.experienceLevel && (
+                            <div>
+                              <p className="text-xs text-gray-500">Experience Level</p>
+                              <p className="font-medium">{formData.experienceLevel}</p>
+                            </div>
+                          )}
+                          {formData.industry && (
+                            <div>
+                              <p className="text-xs text-gray-500">Industry</p>
+                              <p className="font-medium">{formData.industry}</p>
+                            </div>
+                          )}
+                          {formData.domain && (
+                            <div>
+                              <p className="text-xs text-gray-500">Domain</p>
+                              <p className="font-medium">{formData.domain}</p>
+                            </div>
+                          )}
+                          {formData.location && (
+                            <div>
+                              <p className="text-xs text-gray-500">Location</p>
+                              <p className="font-medium">{formData.location}</p>
+                            </div>
+                          )}
+                        </div>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full mt-4" 
+                          onClick={() => setShowMatchResults(false)}
+                        >
+                          Edit Criteria
+                        </Button>
                       </div>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="w-full mt-4" 
-                        onClick={() => setShowMatchResults(false)}
-                      >
-                        Edit Criteria
-                      </Button>
-                    </div>
-                  )}
-                </CardContent>
+                    )}
+                  </CardContent>
+                </Card>
+
+              </CardContent>
               </Card>
 
               {/* Network Recommendations */}
@@ -982,156 +980,158 @@ const SearchPage = () => {
               )}
 
               {/* Match Results */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Smart Connect Results</CardTitle>
-                  <CardDescription>
-                    {showMatchResults 
-                      ? matchMutation.isSuccess 
-                        ? "We found professionals that match your criteria"
-                        : "Finding the best professional matches for you..."
-                      : "Fill out the form to discover tailored professional connections"}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {!showMatchResults ? (
-                    <div className="text-center py-12">
-                      <UserPlus className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                      <h3 className="text-lg font-medium">Define your criteria</h3>
-                      <p className="text-gray-500 mt-2">
-                        Fill out the form to find professionals that match your needs
-                      </p>
-                    </div>
-                  ) : matchMutation.isPending ? (
-                    <div className="space-y-4">
-                      {[1, 2, 3].map((i) => (
-                        <Card key={i} className="border border-gray-200">
-                          <CardContent className="p-4">
-                            <div className="flex gap-4 items-center">
-                              <Skeleton className="h-16 w-16 rounded-full" />
-                              <div className="flex-grow space-y-2">
-                                <Skeleton className="h-4 w-32" />
-                                <Skeleton className="h-3 w-24" />
-                                <div className="flex gap-1 mt-2">
-                                  <Skeleton className="h-3 w-12 rounded-full" />
-                                  <Skeleton className="h-3 w-12 rounded-full" />
-                                  <Skeleton className="h-3 w-12 rounded-full" />
-                                </div>
-                              </div>
-                              <div className="w-20">
-                                <Skeleton className="h-8 w-full rounded-md" />
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  ) : matchMutation.isSuccess && matchMutation.data.length > 0 ? (
-                    <div className="space-y-4">
-                      {matchMutation.data.map((match) => (
-                        <Card key={match.id} className="border border-gray-200 overflow-hidden">
-                          <CardContent className="p-4">
-                            <div className="flex gap-4 items-center">
-                              <Avatar className="h-16 w-16">
-                                <AvatarImage src={match.photoURL || undefined} />
-                                <AvatarFallback className="text-lg">{getInitials(match.name)}</AvatarFallback>
-                              </Avatar>
-                              
-                              <div className="flex-grow">
-                                <h4 className="font-medium">{match.name}</h4>
-                                <p className="text-sm text-gray-600">{match.title}</p>
-                                
-                                <div className="flex flex-wrap gap-1 mt-2">
-                                  {match.skills.map((skill, i) => (
-                                    <Badge key={i} variant="outline" className="text-xs font-normal">
-                                      {skill}
-                                    </Badge>
-                                  ))}
-                                </div>
-                                
-                                <div className="flex items-center mt-3 text-xs text-gray-500">
-                                  <MapPin size={12} className="mr-1" />
-                                  {match.location}
-                                </div>
-                              </div>
-                              
-                              <div className="text-center">
-                                <div className="mb-1 relative w-16 h-16">
-                                  <div className="absolute inset-0 flex items-center justify-center">
-                                    <span className="text-lg font-bold">{match.matchPercentage}%</span>
+              <div>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Smart Connect Results</CardTitle>
+                    <CardDescription>
+                      {showMatchResults 
+                        ? matchMutation.isSuccess 
+                          ? "We found professionals that match your criteria"
+                          : "Finding the best professional matches for you..."
+                        : "Fill out the form to discover tailored professional connections"}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {!showMatchResults ? (
+                      <div className="text-center py-12">
+                        <UserPlus className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                        <h3 className="text-lg font-medium">Define your criteria</h3>
+                        <p className="text-gray-500 mt-2">
+                          Fill out the form to find professionals that match your needs
+                        </p>
+                      </div>
+                    ) : matchMutation.isPending ? (
+                      <div className="space-y-4">
+                        {[1, 2, 3].map((i) => (
+                          <Card key={i} className="border border-gray-200">
+                            <CardContent className="p-4">
+                              <div className="flex gap-4 items-center">
+                                <Skeleton className="h-16 w-16 rounded-full" />
+                                <div className="flex-grow space-y-2">
+                                  <Skeleton className="h-4 w-32" />
+                                  <Skeleton className="h-3 w-24" />
+                                  <div className="flex gap-1 mt-2">
+                                    <Skeleton className="h-3 w-12 rounded-full" />
+                                    <Skeleton className="h-3 w-12 rounded-full" />
+                                    <Skeleton className="h-3 w-12 rounded-full" />
                                   </div>
-                                  <Progress 
-                                    value={match.matchPercentage} 
-                                    className="w-16 h-16 rounded-full [&>div]:bg-primary [&>div]:rounded-full" 
-                                  />
                                 </div>
-                                <Button 
-                                  size="sm" 
-                                  className="mt-2 w-full"
-                                  onClick={() => setLocation(`/profile/${match.id}`)}
-                                >
-                                  Connect
-                                </Button>
+                                <div className="w-20">
+                                  <Skeleton className="h-8 w-full rounded-md" />
+                                </div>
                               </div>
-                            </div>
-                            
-                            {/* Match Details */}
-                            <div className="mt-3 pt-3 border-t border-gray-100">
-                              <h5 className="text-xs font-medium mb-2">Match Details</h5>
-                              <div className="grid grid-cols-4 gap-2">
-                                {match.matchDetails.complementaryMatch && (
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    ) : matchMutation.isSuccess && matchMutation.data.length > 0 ? (
+                      <div className="space-y-4">
+                        {matchMutation.data.map((match) => (
+                          <Card key={match.id} className="border border-gray-200 overflow-hidden">
+                            <CardContent className="p-4">
+                              <div className="flex gap-4 items-center">
+                                <Avatar className="h-16 w-16">
+                                  <AvatarImage src={match.photoURL || undefined} />
+                                  <AvatarFallback className="text-lg">{getInitials(match.name)}</AvatarFallback>
+                                </Avatar>
+                                
+                                <div className="flex-grow">
+                                  <h4 className="font-medium">{match.name}</h4>
+                                  <p className="text-sm text-gray-600">{match.title}</p>
+                                  
+                                  <div className="flex flex-wrap gap-1 mt-2">
+                                    {match.skills.map((skill, i) => (
+                                      <Badge key={i} variant="outline" className="text-xs font-normal">
+                                        {skill}
+                                      </Badge>
+                                    ))}
+                                  </div>
+                                  
+                                  <div className="flex items-center mt-3 text-xs text-gray-500">
+                                    <MapPin size={12} className="mr-1" />
+                                    {match.location}
+                                  </div>
+                                </div>
+                                
+                                <div className="text-center">
+                                  <div className="mb-1 relative w-16 h-16">
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                      <span className="text-lg font-bold">{match.matchPercentage}%</span>
+                                    </div>
+                                    <Progress 
+                                      value={match.matchPercentage} 
+                                      className="w-16 h-16 rounded-full [&>div]:bg-primary [&>div]:rounded-full" 
+                                    />
+                                  </div>
+                                  <Button 
+                                    size="sm" 
+                                    className="mt-2 w-full"
+                                    onClick={() => setLocation(`/profile/${match.id}`)}
+                                  >
+                                    Connect
+                                  </Button>
+                                </div>
+                              </div>
+                              
+                              {/* Match Details */}
+                              <div className="mt-3 pt-3 border-t border-gray-100">
+                                <h5 className="text-xs font-medium mb-2">Match Details</h5>
+                                <div className="grid grid-cols-4 gap-2">
+                                  {match.matchDetails.complementaryMatch && (
+                                    <div>
+                                      <p className="text-xs text-gray-500">Goals Match</p>
+                                      <div className="flex items-center mt-1">
+                                        <Progress value={match.matchDetails.complementaryMatch} className="h-1 mr-2" />
+                                        <span className="text-xs">{match.matchDetails.complementaryMatch}%</span>
+                                      </div>
+                                    </div>
+                                  )}
                                   <div>
-                                    <p className="text-xs text-gray-500">Goals Match</p>
+                                    <p className="text-xs text-gray-500">Industry</p>
                                     <div className="flex items-center mt-1">
-                                      <Progress value={match.matchDetails.complementaryMatch} className="h-1 mr-2" />
-                                      <span className="text-xs">{match.matchDetails.complementaryMatch}%</span>
+                                      <Progress value={match.matchDetails.industryMatch} className="h-1 mr-2" />
+                                      <span className="text-xs">{match.matchDetails.industryMatch}%</span>
                                     </div>
                                   </div>
-                                )}
-                                <div>
-                                  <p className="text-xs text-gray-500">Industry</p>
-                                  <div className="flex items-center mt-1">
-                                    <Progress value={match.matchDetails.industryMatch} className="h-1 mr-2" />
-                                    <span className="text-xs">{match.matchDetails.industryMatch}%</span>
+                                  <div>
+                                    <p className="text-xs text-gray-500">Domain</p>
+                                    <div className="flex items-center mt-1">
+                                      <Progress value={match.matchDetails.domainMatch} className="h-1 mr-2" />
+                                      <span className="text-xs">{match.matchDetails.domainMatch}%</span>
+                                    </div>
                                   </div>
-                                </div>
-                                <div>
-                                  <p className="text-xs text-gray-500">Domain</p>
-                                  <div className="flex items-center mt-1">
-                                    <Progress value={match.matchDetails.domainMatch} className="h-1 mr-2" />
-                                    <span className="text-xs">{match.matchDetails.domainMatch}%</span>
-                                  </div>
-                                </div>
-                                <div>
-                                  <p className="text-xs text-gray-500">Experience</p>
-                                  <div className="flex items-center mt-1">
-                                    <Progress value={match.matchDetails.experienceMatch} className="h-1 mr-2" />
-                                    <span className="text-xs">{match.matchDetails.experienceMatch}%</span>
+                                  <div>
+                                    <p className="text-xs text-gray-500">Experience</p>
+                                    <div className="flex items-center mt-1">
+                                      <Progress value={match.matchDetails.experienceMatch} className="h-1 mr-2" />
+                                      <span className="text-xs">{match.matchDetails.experienceMatch}%</span>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-12 border rounded-lg bg-gray-50">
-                      <UserPlus className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                      <h3 className="text-lg font-medium">No matches found</h3>
-                      <p className="text-gray-500 mt-2">
-                        Try adjusting your criteria to find more professionals
-                      </p>
-                    </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-12 border rounded-lg bg-gray-50">
+                        <UserPlus className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                        <h3 className="text-lg font-medium">No matches found</h3>
+                        <p className="text-gray-500 mt-2">
+                          Try adjusting your criteria to find more professionals
+                        </p>
+                      </div>
+                    )}
+                  </CardContent>
+                  {showMatchResults && matchMutation.isSuccess && matchMutation.data.length > 0 && (
+                    <CardFooter className="flex justify-between">
+                      <p className="text-sm text-gray-500">Showing top {matchMutation.data.length} matches</p>
+                      <Button variant="outline">View More</Button>
+                    </CardFooter>
                   )}
-                </CardContent>
-                {showMatchResults && matchMutation.isSuccess && matchMutation.data.length > 0 && (
-                  <CardFooter className="flex justify-between">
-                    <p className="text-sm text-gray-500">Showing top {matchMutation.data.length} matches</p>
-                    <Button variant="outline">View More</Button>
-                  </CardFooter>
-                )}
-              </Card>
+                </Card>
+              </div>
             </div>
           </TabsContent>
         </Tabs>
