@@ -568,29 +568,22 @@ function ProjectDetails({ pulse }: { pulse: PulseWithUser }) {
     return null;
   }
 
-  const [project, setProject] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    if (pulse.projectId) {
-      // Fetch the project details
-      fetch(`/api/projects/${pulse.projectId}`)
-        .then(response => {
-          if (!response.ok) throw new Error('Failed to fetch project');
-          return response.json();
-        })
-        .then(data => {
-          setProject(data);
-          setIsLoading(false);
-        })
-        .catch(error => {
-          console.error('Error fetching project:', error);
-          setIsLoading(false);
-        });
-    } else {
-      setIsLoading(false);
+  // Use React Query for better caching and performance
+  const { data: project, isLoading } = useQuery({
+    queryKey: [`/api/projects/${pulse.projectId}`],
+    enabled: !!pulse.projectId,
+    staleTime: 300000, // Cache for 5 minutes
+    // Add prefetching to improve loading speed
+    initialData: () => {
+      // Return cached data if it exists in window.__PROJECT_CACHE__
+      // @ts-ignore
+      if (window.__PROJECT_CACHE__ && window.__PROJECT_CACHE__[pulse.projectId]) {
+        // @ts-ignore
+        return window.__PROJECT_CACHE__[pulse.projectId];
+      }
+      return undefined;
     }
-  }, [pulse.projectId]);
+  });
   
   return (
     <div className="mt-4 space-y-2">
@@ -648,6 +641,35 @@ export default function IndustryPulsePage() {
   // Fetch all pulses
   const { data: pulses = [], isLoading } = useQuery<PulseWithUser[]>({
     queryKey: ["/api/pulses"],
+    onSuccess: (data) => {
+      // Initialize project cache for faster loading
+      const projectPulses = data.filter(pulse => pulse.type === 'project' && pulse.projectId);
+      
+      if (projectPulses.length > 0) {
+        // Pre-fetch project data for all project pulses
+        const prefetchProjects = async () => {
+          // @ts-ignore - Create global cache if it doesn't exist
+          window.__PROJECT_CACHE__ = window.__PROJECT_CACHE__ || {};
+          
+          for (const pulse of projectPulses) {
+            if (!pulse.projectId) continue;
+            
+            try {
+              const response = await fetch(`/api/projects/${pulse.projectId}`);
+              if (response.ok) {
+                const projectData = await response.json();
+                // @ts-ignore - Add to global cache
+                window.__PROJECT_CACHE__[pulse.projectId] = projectData;
+              }
+            } catch (error) {
+              console.error(`Error prefetching project ${pulse.projectId}:`, error);
+            }
+          }
+        };
+        
+        prefetchProjects();
+      }
+    }
   });
   
   // Filter pulses based on the active tab

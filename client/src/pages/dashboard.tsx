@@ -17,29 +17,22 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 // Project Detail Component
 function ProjectDetailView({ projectId, onBack }: { projectId: string, onBack: () => void }) {
-  const [project, setProject] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchProject = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(`/api/projects/${projectId}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch project');
-        }
-        const data = await response.json();
-        setProject(data);
-        setLoading(false);
-      } catch (err: any) {
-        setError(err.message || 'An error occurred while fetching the project');
-        setLoading(false);
+  // Use React Query for better caching and performance
+  const { data: project, isLoading: loading, error } = useQuery({
+    queryKey: [`/api/projects/${projectId}`],
+    staleTime: 300000, // Cache for 5 minutes
+    
+    // Add prefetching to improve loading speed  
+    initialData: () => {
+      // Return cached data if it exists in window.__PROJECT_CACHE__
+      // @ts-ignore
+      if (window.__PROJECT_CACHE__ && window.__PROJECT_CACHE__[projectId]) {
+        // @ts-ignore
+        return window.__PROJECT_CACHE__[projectId];
       }
-    };
-
-    fetchProject();
-  }, [projectId]);
+      return undefined;
+    }
+  });
 
   if (loading) {
     return (
