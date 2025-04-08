@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Pulse } from "@shared/schema";
+import { useLocation } from "wouter";
 import Header from "@/components/layout/header";
 import Sidebar from "@/components/layout/sidebar";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -568,11 +569,19 @@ function ProjectDetails({ pulse }: { pulse: PulseWithUser }) {
     return null;
   }
 
+  // Initial loading state reference for skeleton UI
+  const [initialLoad, setInitialLoad] = useState(true);
+  
+  // Add project data state to show UI while fetching in background
+  const [localProject, setLocalProject] = useState<any>(null);
+  
   // Use React Query for better caching and performance
-  const { data: project, isLoading } = useQuery({
+  const { data: project } = useQuery({
     queryKey: [`/api/projects/${pulse.projectId}`],
     enabled: !!pulse.projectId,
     staleTime: 300000, // Cache for 5 minutes
+    refetchOnWindowFocus: false,
+    
     // Add prefetching to improve loading speed
     initialData: () => {
       // Return cached data if it exists in window.__PROJECT_CACHE__
@@ -582,8 +591,51 @@ function ProjectDetails({ pulse }: { pulse: PulseWithUser }) {
         return window.__PROJECT_CACHE__[pulse.projectId];
       }
       return undefined;
+    },
+    
+    // Initialize the UI with partial data immediately
+    onSuccess: (data) => {
+      setLocalProject(data);
+      setInitialLoad(false);
     }
   });
+  
+  // Fast parallel fetch outside React Query for faster initial render
+  useEffect(() => {
+    if (!pulse.projectId) return;
+    
+    // This fetch happens in parallel with React Query but renders faster
+    const fetchProjectFast = async () => {
+      try {
+        // @ts-ignore - Check if we already have the data in cache first
+        if (window.__PROJECT_CACHE__ && window.__PROJECT_CACHE__[pulse.projectId]) {
+          // @ts-ignore
+          setLocalProject(window.__PROJECT_CACHE__[pulse.projectId]);
+          setInitialLoad(false);
+          return;
+        }
+        
+        // Only proceed if we don't have data yet
+        const response = await fetch(`/api/projects/${pulse.projectId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setLocalProject(data);
+          // Also update the cache
+          // @ts-ignore
+          window.__PROJECT_CACHE__ = window.__PROJECT_CACHE__ || {};
+          // @ts-ignore
+          window.__PROJECT_CACHE__[pulse.projectId] = data;
+        }
+      } catch (error) {
+        console.error('Fast fetch error:', error);
+      } finally {
+        // Always ensure we stop showing the loading state
+        setInitialLoad(false);
+      }
+    };
+    
+    fetchProjectFast();
+  }, [pulse.projectId]);
   
   return (
     <div className="mt-4 space-y-2">
@@ -592,20 +644,20 @@ function ProjectDetails({ pulse }: { pulse: PulseWithUser }) {
         <span>Project Details</span>
       </div>
       <div className="rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-4 bg-gradient-to-b from-green-50/30 to-green-50/10">
-        {isLoading ? (
+        {initialLoad ? (
           <div className="h-20 flex items-center justify-center">
             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-green-500"></div>
           </div>
-        ) : project ? (
+        ) : (localProject || project) ? (
           <>
             <div className="mb-3">
-              <h4 className="font-medium text-sm text-green-700">{project.title}</h4>
-              <p className="text-sm mt-1">{project.description}</p>
+              <h4 className="font-medium text-sm text-green-700">{(localProject || project)?.title}</h4>
+              <p className="text-sm mt-1">{(localProject || project)?.description}</p>
             </div>
             
-            {project.skills && project.skills.length > 0 && (
+            {(localProject || project)?.skills && (localProject || project)?.skills.length > 0 && (
               <div className="mt-3 flex flex-wrap gap-1">
-                {project.skills.map((skill: string, index: number) => (
+                {(localProject || project)?.skills.map((skill: string, index: number) => (
                   <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                     {skill}
                   </span>
@@ -615,13 +667,16 @@ function ProjectDetails({ pulse }: { pulse: PulseWithUser }) {
             
             <div className="mt-3 pt-3 border-t border-green-100 flex items-center justify-between">
               <div className="text-xs text-gray-500">
-                Status: <span className="font-medium text-green-600 capitalize">{project.status}</span>
+                Status: <span className="font-medium text-green-600 capitalize">{(localProject || project)?.status}</span>
               </div>
               <Button 
                 size="sm" 
                 variant="outline" 
                 className="text-xs border-green-200 text-green-700 hover:bg-green-50"
-                onClick={() => window.location.href = `/dashboard?view=project&projectId=${pulse.projectId}`}
+                onClick={() => {
+                  // Simple direct navigation - faster with no spinner
+                  window.location.href = `/dashboard?view=project&projectId=${pulse.projectId}`;
+                }}
               >
                 <FileCode className="h-3 w-3 mr-1" /> View Full Project
               </Button>

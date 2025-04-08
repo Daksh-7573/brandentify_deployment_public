@@ -17,10 +17,50 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 // Project Detail Component
 function ProjectDetailView({ projectId, onBack }: { projectId: string, onBack: () => void }) {
-  // Use React Query for better caching and performance
+  // Initialize local state for instant showing of project before React Query completes
+  const [initialLoad, setInitialLoad] = useState(true);
+  const [localProject, setLocalProject] = useState<any>(null);
+  
+  // Fast direct fetch on component mount for immediate rendering
+  useEffect(() => {
+    const fetchProjectFast = async () => {
+      try {
+        // First try to use cache if available
+        // @ts-ignore
+        if (window.__PROJECT_CACHE__ && window.__PROJECT_CACHE__[projectId]) {
+          // @ts-ignore
+          setLocalProject(window.__PROJECT_CACHE__[projectId]);
+          setInitialLoad(false);
+          return;
+        }
+        
+        // Otherwise fetch directly
+        const response = await fetch(`/api/projects/${projectId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setLocalProject(data);
+          // Update cache for future use
+          // @ts-ignore
+          window.__PROJECT_CACHE__ = window.__PROJECT_CACHE__ || {};
+          // @ts-ignore
+          window.__PROJECT_CACHE__[projectId] = data;
+        }
+      } catch (error) {
+        console.error('Fast fetch error:', error);
+      } finally {
+        // Always ensure we stop showing the loading state
+        setInitialLoad(false);
+      }
+    };
+    
+    fetchProjectFast();
+  }, [projectId]);
+  
+  // Use React Query for proper data management (runs in parallel with fast fetch)
   const { data: project, isLoading: loading, error } = useQuery({
     queryKey: [`/api/projects/${projectId}`],
     staleTime: 300000, // Cache for 5 minutes
+    refetchOnWindowFocus: false,
     
     // Add prefetching to improve loading speed  
     initialData: () => {
@@ -31,13 +71,71 @@ function ProjectDetailView({ projectId, onBack }: { projectId: string, onBack: (
         return window.__PROJECT_CACHE__[projectId];
       }
       return undefined;
+    },
+    
+    // Update local state when query succeeds
+    onSuccess: (data) => {
+      setLocalProject(data);
+      setInitialLoad(false);
     }
   });
 
+  // Show interactive skeleton UI instead of spinner during loading
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <div className="space-y-6">
+        <div className="flex items-center mb-4">
+          <Button variant="ghost" size="sm" className="mr-2 opacity-70">
+            <ArrowLeft className="h-4 w-4 mr-1" /> Back
+          </Button>
+          <div className="h-8 w-64 bg-gray-200 rounded animate-pulse"></div>
+        </div>
+        
+        <Card>
+          <CardHeader>
+            <div className="flex justify-between items-start">
+              <div className="space-y-2">
+                <div className="h-8 w-[200px] bg-gray-200 rounded animate-pulse"></div>
+                <div className="h-4 w-[150px] bg-gray-100 rounded animate-pulse"></div>
+              </div>
+              <div className="h-6 w-24 bg-gray-200 rounded-full animate-pulse"></div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div>
+              <div className="h-5 w-32 bg-gray-200 mb-3 rounded animate-pulse"></div>
+              <div className="space-y-2">
+                <div className="h-4 w-full bg-gray-100 rounded animate-pulse"></div>
+                <div className="h-4 w-full bg-gray-100 rounded animate-pulse"></div>
+                <div className="h-4 w-3/4 bg-gray-100 rounded animate-pulse"></div>
+              </div>
+            </div>
+            
+            <div>
+              <div className="h-5 w-40 bg-gray-200 mb-3 rounded animate-pulse"></div>
+              <div className="flex flex-wrap gap-2">
+                {[1, 2, 3, 4].map(i => (
+                  <div key={i} className="h-6 w-20 bg-gray-100 rounded-full animate-pulse"></div>
+                ))}
+              </div>
+            </div>
+            
+            <div>
+              <div className="h-5 w-32 bg-gray-200 mb-3 rounded animate-pulse"></div>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="aspect-video bg-gray-100 rounded-md animate-pulse"></div>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+          <CardFooter className="border-t pt-6">
+            <div className="flex justify-between items-center w-full">
+              <div className="h-5 w-40 bg-gray-100 rounded animate-pulse"></div>
+              <div className="h-10 w-32 bg-gray-200 rounded animate-pulse"></div>
+            </div>
+          </CardFooter>
+        </Card>
       </div>
     );
   }
