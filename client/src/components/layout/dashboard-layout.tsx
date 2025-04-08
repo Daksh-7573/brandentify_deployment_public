@@ -2,16 +2,14 @@ import { ReactNode } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import Header from "@/components/layout/header";
-import Sidebar from "@/components/layout/sidebar";
 import RightSidebar from "@/components/layout/right-sidebar";
 
 type DashboardLayoutProps = {
   children: ReactNode;
-  hideSidebar?: boolean;
   hideRightSidebar?: boolean;
 };
 
-const DashboardLayout = ({ children, hideSidebar = false, hideRightSidebar = false }: DashboardLayoutProps) => {
+const DashboardLayout = ({ children, hideRightSidebar = false }: DashboardLayoutProps) => {
   const { isAuthenticated, isLoading } = useAuth();
   const [location, setLocation] = useLocation();
 
@@ -37,11 +35,8 @@ const DashboardLayout = ({ children, hideSidebar = false, hideRightSidebar = fal
 
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden pt-16"> {/* Added padding-top (pt-16) to account for fixed header */}
-        {/* Sidebar */}
-        {!hideSidebar && <Sidebar activePage={location.startsWith('/search') ? 'search' : 'dashboard'} />}
-
         {/* Main Content */}
-        <main className={`flex-1 overflow-y-auto bg-gray-50 ${!hideSidebar ? 'pl-0 md:pl-0' : ''}`}>
+        <main className="flex-1 overflow-y-auto bg-gray-50">
           <div className="min-h-screen">
             {children}
           </div>
