@@ -51,11 +51,11 @@ export default function Header() {
   const photoURL = userData?.photoURL || user?.photoURL;
 
   return (
-    <nav className="bg-gradient-to-r from-white to-gray-50 border-b border-gray-100 shadow-sm fixed top-0 left-0 right-0 z-50">
+    <nav className="bg-white border-b border-gray-200 shadow-sm fixed top-0 left-0 right-0 z-50">
       <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <div className="flex-shrink-0 flex items-center">
+            <div className="flex-shrink-0 flex items-center mr-8">
               <div className="flex items-center">
                 <span 
                   className="text-primary text-2xl font-bold cursor-pointer bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/80"
@@ -72,11 +72,11 @@ export default function Header() {
             </div>
             
             {/* Main Navigation */}
-            <div className="ml-8 hidden md:flex space-x-1">
+            <div className="hidden md:flex space-x-4">
               <Button
                 variant="ghost"
                 size="sm"
-                className="flex items-center gap-1.5 text-gray-700 hover:text-primary hover:bg-gray-50"
+                className="flex items-center gap-1.5 text-gray-700 hover:text-primary font-medium"
                 onClick={() => setLocation('/industry-pulse')}
               >
                 <i className="fas fa-home text-sm"></i>
@@ -86,7 +86,7 @@ export default function Header() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="flex items-center gap-1.5 text-gray-700 hover:text-primary hover:bg-gray-50"
+                className="flex items-center gap-1.5 text-gray-700 hover:text-primary font-medium"
                 onClick={() => setLocation('/search')}
               >
                 <i className="fas fa-search text-sm"></i>
@@ -96,7 +96,7 @@ export default function Header() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="flex items-center gap-1.5 text-gray-700 hover:text-primary hover:bg-gray-50"
+                className="flex items-center gap-1.5 text-gray-700 hover:text-primary font-medium"
                 onClick={() => setLocation('/ai-career')}
               >
                 <i className="fas fa-robot text-sm"></i>
@@ -106,7 +106,7 @@ export default function Header() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="flex items-center gap-1.5 text-gray-700 hover:text-primary hover:bg-gray-50"
+                className="flex items-center gap-1.5 text-gray-700 hover:text-primary font-medium"
                 onClick={() => setLocation('/services')}
               >
                 <i className="fas fa-concierge-bell text-sm"></i>
@@ -114,12 +114,12 @@ export default function Header() {
               </Button>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             {/* Mobile menu button */}
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden rounded-full p-2 hover:bg-gray-100 transition-colors"
+              className="md:hidden rounded-md p-2 hover:bg-gray-100 transition-colors"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label="Mobile menu"
             >
@@ -134,7 +134,7 @@ export default function Header() {
             <Button 
               variant="default" 
               size="sm"
-              className="hidden sm:flex px-4 py-2 text-sm font-medium bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-700 text-white shadow-md items-center gap-1.5"
+              className="hidden sm:flex px-4 py-2 text-sm font-medium bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-700 text-white shadow-sm items-center gap-1.5"
               onClick={() => setLocation('/create-pulse')}
             >
               <Zap className="h-4 w-4" /> Create Pulse
@@ -144,7 +144,7 @@ export default function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className="hidden sm:flex rounded-full p-2 hover:bg-gray-100 transition-colors"
+              className="hidden sm:flex rounded-md p-2 hover:bg-gray-100 transition-colors"
               onClick={() => setLocation('/settings')}
               aria-label="Settings"
             >
@@ -153,21 +153,21 @@ export default function Header() {
             
             {/* User profile section - combined name and avatar */}
             <div 
-              className="flex items-center gap-2 cursor-pointer px-2 py-1 rounded-full hover:bg-gray-100 transition-colors duration-200"
+              className="flex items-center gap-2 cursor-pointer px-3 py-1.5 rounded-md border border-gray-100 hover:bg-gray-50 transition-all duration-200"
               onClick={() => setLocation('/profile')}
             >
               {/* User name */}
-              <span className="text-sm font-medium text-gray-700 hidden md:block">
-                {userData?.name || user?.displayName || "Profile"}
+              <span className="text-sm font-medium text-gray-800 hidden md:block">
+                {userData?.name || (user && 'displayName' in user ? user.displayName : null) || "Profile"}
               </span>
               
               {/* User avatar */}
               <div className="relative">
                 <div 
-                  className="max-w-xs flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary/70 transition-all hover:shadow-md"
+                  className="flex items-center rounded-full focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary/70 transition-all"
                 >
                   <span className="sr-only">Open user menu</span>
-                  <div className="h-9 w-9 rounded-full overflow-hidden bg-primary/5 flex items-center justify-center border border-primary/10 shadow-sm">
+                  <div className="h-8 w-8 rounded-full overflow-hidden bg-primary/5 flex items-center justify-center border border-primary/10 shadow-sm">
                     <img 
                       className="h-full w-full object-cover" 
                       src={photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
@@ -188,77 +188,90 @@ export default function Header() {
       {/* Mobile menu dropdown */}
       {isMobileMenuOpen && (
         <div className="md:hidden bg-white border-b border-gray-200 shadow-lg">
-          <div className="px-2 pt-2 pb-3 space-y-1">
+          <div className="px-4 pt-3 pb-4 space-y-2">
             <Button
               variant="ghost"
               size="sm"
-              className="w-full justify-start py-2.5 text-sm font-medium hover:bg-gray-50 hover:text-primary"
+              className="w-full justify-start py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-primary rounded-md"
               onClick={() => {
                 setLocation('/industry-pulse');
                 setIsMobileMenuOpen(false);
               }}
             >
-              <i className="fas fa-home text-sm mr-3"></i>
+              <i className="fas fa-home text-sm mr-3 w-5 text-center"></i>
               <span>Industry Pulse</span>
             </Button>
             
             <Button
               variant="ghost"
               size="sm"
-              className="w-full justify-start py-2.5 text-sm font-medium hover:bg-gray-50 hover:text-primary"
+              className="w-full justify-start py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-primary rounded-md"
               onClick={() => {
                 setLocation('/search');
                 setIsMobileMenuOpen(false);
               }}
             >
-              <i className="fas fa-search text-sm mr-3"></i>
+              <i className="fas fa-search text-sm mr-3 w-5 text-center"></i>
               <span>Discover & Connect</span>
             </Button>
             
             <Button
               variant="ghost"
               size="sm"
-              className="w-full justify-start py-2.5 text-sm font-medium hover:bg-gray-50 hover:text-primary"
+              className="w-full justify-start py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-primary rounded-md"
               onClick={() => {
                 setLocation('/ai-career');
                 setIsMobileMenuOpen(false);
               }}
             >
-              <i className="fas fa-robot text-sm mr-3"></i>
+              <i className="fas fa-robot text-sm mr-3 w-5 text-center"></i>
               <span>AI Career Booster</span>
             </Button>
             
             <Button
               variant="ghost"
               size="sm"
-              className="w-full justify-start py-2.5 text-sm font-medium hover:bg-gray-50 hover:text-primary"
+              className="w-full justify-start py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-primary rounded-md"
               onClick={() => {
                 setLocation('/services');
                 setIsMobileMenuOpen(false);
               }}
             >
-              <i className="fas fa-concierge-bell text-sm mr-3"></i>
+              <i className="fas fa-concierge-bell text-sm mr-3 w-5 text-center"></i>
               <span>Services</span>
             </Button>
 
-            <div className="pt-4 border-t border-gray-200">
+            <div className="pt-4 mt-2 border-t border-gray-200">
               <Button
                 variant="ghost"
                 size="sm"
-                className="w-full justify-start py-2.5 text-sm font-medium hover:bg-gray-50 hover:text-primary"
+                className="w-full justify-start py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-primary rounded-md"
+                onClick={() => {
+                  setLocation('/profile');
+                  setIsMobileMenuOpen(false);
+                }}
+              >
+                <i className="fas fa-user text-sm mr-3 w-5 text-center"></i>
+                <span>My Profile</span>
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-full justify-start py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-primary rounded-md"
                 onClick={() => {
                   setLocation('/settings');
                   setIsMobileMenuOpen(false);
                 }}
               >
-                <Settings className="h-4 w-4 mr-3" />
+                <Settings className="h-4 w-4 mr-3 ml-0.5 w-5" />
                 <span>Settings</span>
               </Button>
               
               <Button
                 variant="default"
                 size="sm"
-                className="w-full mt-2 justify-center py-2.5 text-sm font-medium bg-gradient-to-r from-primary to-indigo-600"
+                className="w-full mt-3 justify-center py-3 text-sm font-medium bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-700 shadow-sm rounded-md"
                 onClick={() => {
                   setLocation('/create-pulse');
                   setIsMobileMenuOpen(false);
