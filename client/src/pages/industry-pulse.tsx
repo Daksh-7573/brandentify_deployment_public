@@ -628,7 +628,7 @@ function ProjectDetails({ pulse }: { pulse: PulseWithUser }) {
                 size="sm" 
                 variant="outline" 
                 className="text-xs border-green-200 text-green-700 hover:bg-green-50"
-                onClick={() => window.location.href = `/portfolio-builder?projectId=${pulse.projectId}`}
+                onClick={() => window.location.href = `/dashboard?view=project&projectId=${pulse.projectId}`}
               >
                 <FileCode className="h-3 w-3 mr-1" /> View Full Project
               </Button>

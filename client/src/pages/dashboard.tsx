@@ -3,20 +3,205 @@ import { useLocation } from "wouter";
 import Sidebar from "@/components/layout/sidebar";
 import Header from "@/components/layout/header";
 import RightSidebar from "@/components/layout/right-sidebar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import ProfileCompletion from "@/components/common/profile-completion";
 import { calculateOverallProfileCompletion } from "@/lib/profile-utils";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { useState, useEffect } from "react";
+import { ArrowLeft, FileCode, Github, Globe, Calendar, User } from "lucide-react";
+import { format } from "date-fns";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+// Project Detail Component
+function ProjectDetailView({ projectId, onBack }: { projectId: string, onBack: () => void }) {
+  const [project, setProject] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProject = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`/api/projects/${projectId}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch project');
+        }
+        const data = await response.json();
+        setProject(data);
+        setLoading(false);
+      } catch (err: any) {
+        setError(err.message || 'An error occurred while fetching the project');
+        setLoading(false);
+      }
+    };
+
+    fetchProject();
+  }, [projectId]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center py-12">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card>
+        <CardContent className="pt-6">
+          <div className="text-center py-8">
+            <h3 className="text-xl font-semibold text-red-600 mb-2">Error Loading Project</h3>
+            <p className="text-gray-500">{error}</p>
+            <Button onClick={onBack} variant="outline" className="mt-4">
+              <ArrowLeft className="mr-2 h-4 w-4" /> Back to Dashboard
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!project) {
+    return (
+      <Card>
+        <CardContent className="pt-6">
+          <div className="text-center py-8">
+            <h3 className="text-xl font-semibold mb-2">Project Not Found</h3>
+            <p className="text-gray-500">The requested project could not be found.</p>
+            <Button onClick={onBack} variant="outline" className="mt-4">
+              <ArrowLeft className="mr-2 h-4 w-4" /> Back to Dashboard
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center mb-4">
+        <Button onClick={onBack} variant="ghost" size="sm" className="mr-2">
+          <ArrowLeft className="h-4 w-4 mr-1" /> Back
+        </Button>
+        <h1 className="text-2xl font-bold">Project Details</h1>
+      </div>
+      
+      <Card>
+        <CardHeader>
+          <div className="flex justify-between items-start">
+            <div>
+              <CardTitle className="text-2xl">{project.title}</CardTitle>
+              <CardDescription className="mt-2 text-gray-500 flex items-center">
+                <Calendar className="h-4 w-4 mr-1" />
+                {project.startDate && format(new Date(project.startDate), 'MMM yyyy')} - 
+                {project.endDate ? format(new Date(project.endDate), 'MMM yyyy') : 'Present'}
+              </CardDescription>
+            </div>
+            <Badge variant={project.status === 'completed' ? 'default' : 'outline'} className="capitalize">
+              {project.status}
+            </Badge>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <h3 className="font-medium mb-2">Description</h3>
+            <p className="text-gray-600">{project.description}</p>
+          </div>
+          
+          {project.skills && project.skills.length > 0 && (
+            <div>
+              <h3 className="font-medium mb-2">Skills & Technologies</h3>
+              <div className="flex flex-wrap gap-2">
+                {project.skills.map((skill: string, index: number) => (
+                  <Badge key={index} variant="outline" className="bg-blue-50">
+                    {skill}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {project.mediaUrls && project.mediaUrls.length > 0 && (
+            <div>
+              <h3 className="font-medium mb-2">Project Media</h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {project.mediaUrls.map((media: string, index: number) => (
+                  <div key={index} className="aspect-video bg-gray-100 rounded-md overflow-hidden">
+                    <img 
+                      src={media} 
+                      alt={`Project media ${index + 1}`} 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {project.links && project.links.length > 0 && (
+            <div>
+              <h3 className="font-medium mb-2">Project Links</h3>
+              <div className="space-y-2">
+                {project.links.map((link: { label: string, url: string }, index: number) => (
+                  <div key={index} className="flex items-center">
+                    {link.label.toLowerCase().includes('github') ? (
+                      <Github className="h-4 w-4 mr-2" />
+                    ) : (
+                      <Globe className="h-4 w-4 mr-2" />
+                    )}
+                    <a 
+                      href={link.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
+                    >
+                      {link.label}
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </CardContent>
+        <CardFooter className="border-t pt-6">
+          <div className="flex justify-between items-center w-full">
+            <div className="flex items-center">
+              <User className="h-4 w-4 mr-2 text-gray-500" />
+              <span className="text-sm text-gray-600">Created by User #{project.userId}</span>
+            </div>
+            <Button>
+              <FileCode className="h-4 w-4 mr-2" />
+              Edit Project
+            </Button>
+          </div>
+        </CardFooter>
+      </Card>
+    </div>
+  );
+}
 
 export default function Dashboard() {
   const { user, isAuthenticated, isLoading, isDemoMode } = useAuth();
   const [_, setLocation] = useLocation();
+  const [view, setView] = useState<string | null>(null);
+  const [projectId, setProjectId] = useState<string | null>(null);
   
   // Get the user ID for queries
   const userId = isDemoMode ? 1 : user?.uid;
+  
+  // Parse URL parameters
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const viewParam = params.get('view');
+    const projectIdParam = params.get('projectId');
+    
+    if (viewParam) setView(viewParam);
+    if (projectIdParam) setProjectId(projectIdParam);
+  }, []);
   
   // Use TanStack Query to fetch user data
   const { data: userData } = useQuery({
@@ -98,6 +283,15 @@ export default function Dashboard() {
     );
   }
 
+  // Function to clear view parameters and go back to dashboard
+  const handleBackToDashboard = () => {
+    // Update URL without parameters
+    window.history.pushState({}, '', '/dashboard');
+    // Reset the local state
+    setView(null);
+    setProjectId(null);
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Top Navigation */}
@@ -111,107 +305,116 @@ export default function Dashboard() {
         {/* Center content */}
         <div className="flex-1 overflow-auto p-6 bg-gray-50">
           <div className="mx-auto max-w-4xl">
-            <h1 className="text-2xl font-semibold text-gray-900 mb-6">Welcome back, {user?.name?.split(' ')[0] || 'User'}!</h1>
-            
-            {/* Completion Progress */}
-            <Card className="mb-6">
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-medium text-gray-900">Profile Completion</h2>
-                  <span className="text-sm font-medium text-primary">{profileCompletionPercentage}%</span>
-                </div>
-                <ProfileCompletion percentage={profileCompletionPercentage} />
-                <p className="mt-3 text-sm text-gray-500">Complete your profile to get more accurate job matches and career insights.</p>
-                <Button 
-                  variant="outline" 
-                  className="mt-4 text-primary bg-primary-50 hover:bg-primary-100"
-                  onClick={() => setLocation('/profile')}
-                >
-                  Complete Profile
-                </Button>
-              </CardContent>
-            </Card>
-            
-            {/* AI Insights */}
-            <Card className="mb-6">
-              <CardContent className="pt-6">
-                <h2 className="text-lg font-medium text-gray-900 mb-4">AI Career Insights</h2>
-                <div className="space-y-4">
-                  <div className="border-l-4 border-primary pl-4 py-2">
-                    <p className="text-sm text-gray-600">Based on your profile, you have a strong foundation in data analysis.</p>
-                    <p className="text-sm font-medium text-gray-900 mt-1">Consider developing skills in data visualization and advanced SQL to become more competitive.</p>
-                  </div>
-                  <div className="border-l-4 border-green-500 pl-4 py-2">
-                    <p className="text-sm text-gray-600">Industry trends show growing demand for your skills.</p>
-                    <p className="text-sm font-medium text-gray-900 mt-1">Financial analysis roles are projected to grow 10% in the next year.</p>
-                  </div>
-                </div>
-                <Button 
-                  variant="outline" 
-                  className="mt-4 text-primary bg-primary-50 hover:bg-primary-100"
-                  onClick={() => setLocation('/ai-career')}
-                >
-                  Get Personalized Advice
-                </Button>
-              </CardContent>
-            </Card>
-            
-            {/* Recent Job Matches */}
-            <Card className="mb-6">
-              <CardContent className="pt-6">
-                <h2 className="text-lg font-medium text-gray-900 mb-4">Job Matches</h2>
-                <div className="divide-y divide-gray-200">
-                  <div className="py-4">
-                    <div className="flex justify-between">
-                      <div>
-                        <h3 className="text-base font-medium text-gray-900">Senior Data Analyst</h3>
-                        <p className="text-sm text-gray-500">TechCorp Inc. • New York, NY</p>
+            {view === 'project' && projectId ? (
+              <ProjectDetailView 
+                projectId={projectId} 
+                onBack={handleBackToDashboard}
+              />
+            ) : (
+              <>
+                <h1 className="text-2xl font-semibold text-gray-900 mb-6">Welcome back, {user?.name?.split(' ')[0] || 'User'}!</h1>
+                
+                {/* Completion Progress */}
+                <Card className="mb-6">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-lg font-medium text-gray-900">Profile Completion</h2>
+                      <span className="text-sm font-medium text-primary">{profileCompletionPercentage}%</span>
+                    </div>
+                    <ProfileCompletion percentage={profileCompletionPercentage} />
+                    <p className="mt-3 text-sm text-gray-500">Complete your profile to get more accurate job matches and career insights.</p>
+                    <Button 
+                      variant="outline" 
+                      className="mt-4 text-primary bg-primary-50 hover:bg-primary-100"
+                      onClick={() => setLocation('/profile')}
+                    >
+                      Complete Profile
+                    </Button>
+                  </CardContent>
+                </Card>
+                
+                {/* AI Insights */}
+                <Card className="mb-6">
+                  <CardContent className="pt-6">
+                    <h2 className="text-lg font-medium text-gray-900 mb-4">AI Career Insights</h2>
+                    <div className="space-y-4">
+                      <div className="border-l-4 border-primary pl-4 py-2">
+                        <p className="text-sm text-gray-600">Based on your profile, you have a strong foundation in data analysis.</p>
+                        <p className="text-sm font-medium text-gray-900 mt-1">Consider developing skills in data visualization and advanced SQL to become more competitive.</p>
                       </div>
-                      <div className="flex items-center">
-                        <Badge variant="outline" className="bg-green-100 text-green-800 hover:bg-green-100">
-                          95% Match
-                        </Badge>
+                      <div className="border-l-4 border-green-500 pl-4 py-2">
+                        <p className="text-sm text-gray-600">Industry trends show growing demand for your skills.</p>
+                        <p className="text-sm font-medium text-gray-900 mt-1">Financial analysis roles are projected to grow 10% in the next year.</p>
                       </div>
                     </div>
-                    <p className="mt-2 text-sm text-gray-600 line-clamp-2">Seeking an experienced data analyst with strong SQL skills and experience with visualization tools like Tableau.</p>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      <Badge variant="outline" className="bg-blue-100 text-blue-800 hover:bg-blue-100">SQL</Badge>
-                      <Badge variant="outline" className="bg-blue-100 text-blue-800 hover:bg-blue-100">Tableau</Badge>
-                      <Badge variant="outline" className="bg-blue-100 text-blue-800 hover:bg-blue-100">Data Analysis</Badge>
-                    </div>
-                  </div>
-                  <div className="py-4">
-                    <div className="flex justify-between">
-                      <div>
-                        <h3 className="text-base font-medium text-gray-900">Business Intelligence Analyst</h3>
-                        <p className="text-sm text-gray-500">Global Finance • Remote</p>
+                    <Button 
+                      variant="outline" 
+                      className="mt-4 text-primary bg-primary-50 hover:bg-primary-100"
+                      onClick={() => setLocation('/ai-career')}
+                    >
+                      Get Personalized Advice
+                    </Button>
+                  </CardContent>
+                </Card>
+                
+                {/* Recent Job Matches */}
+                <Card className="mb-6">
+                  <CardContent className="pt-6">
+                    <h2 className="text-lg font-medium text-gray-900 mb-4">Job Matches</h2>
+                    <div className="divide-y divide-gray-200">
+                      <div className="py-4">
+                        <div className="flex justify-between">
+                          <div>
+                            <h3 className="text-base font-medium text-gray-900">Senior Data Analyst</h3>
+                            <p className="text-sm text-gray-500">TechCorp Inc. • New York, NY</p>
+                          </div>
+                          <div className="flex items-center">
+                            <Badge variant="outline" className="bg-green-100 text-green-800 hover:bg-green-100">
+                              95% Match
+                            </Badge>
+                          </div>
+                        </div>
+                        <p className="mt-2 text-sm text-gray-600 line-clamp-2">Seeking an experienced data analyst with strong SQL skills and experience with visualization tools like Tableau.</p>
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          <Badge variant="outline" className="bg-blue-100 text-blue-800 hover:bg-blue-100">SQL</Badge>
+                          <Badge variant="outline" className="bg-blue-100 text-blue-800 hover:bg-blue-100">Tableau</Badge>
+                          <Badge variant="outline" className="bg-blue-100 text-blue-800 hover:bg-blue-100">Data Analysis</Badge>
+                        </div>
                       </div>
-                      <div className="flex items-center">
-                        <Badge variant="outline" className="bg-green-100 text-green-800 hover:bg-green-100">
-                          88% Match
-                        </Badge>
+                      <div className="py-4">
+                        <div className="flex justify-between">
+                          <div>
+                            <h3 className="text-base font-medium text-gray-900">Business Intelligence Analyst</h3>
+                            <p className="text-sm text-gray-500">Global Finance • Remote</p>
+                          </div>
+                          <div className="flex items-center">
+                            <Badge variant="outline" className="bg-green-100 text-green-800 hover:bg-green-100">
+                              88% Match
+                            </Badge>
+                          </div>
+                        </div>
+                        <p className="mt-2 text-sm text-gray-600 line-clamp-2">Looking for a BI professional to help build dashboards and generate actionable insights from financial data.</p>
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          <Badge variant="outline" className="bg-blue-100 text-blue-800 hover:bg-blue-100">Power BI</Badge>
+                          <Badge variant="outline" className="bg-blue-100 text-blue-800 hover:bg-blue-100">Financial Analysis</Badge>
+                        </div>
                       </div>
                     </div>
-                    <p className="mt-2 text-sm text-gray-600 line-clamp-2">Looking for a BI professional to help build dashboards and generate actionable insights from financial data.</p>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      <Badge variant="outline" className="bg-blue-100 text-blue-800 hover:bg-blue-100">Power BI</Badge>
-                      <Badge variant="outline" className="bg-blue-100 text-blue-800 hover:bg-blue-100">Financial Analysis</Badge>
-                    </div>
-                  </div>
-                </div>
-                <Button 
-                  variant="outline" 
-                  className="mt-4 text-primary bg-primary-50 hover:bg-primary-100"
-                >
-                  View All Job Matches
-                </Button>
-              </CardContent>
-            </Card>
+                    <Button 
+                      variant="outline" 
+                      className="mt-4 text-primary bg-primary-50 hover:bg-primary-100"
+                    >
+                      View All Job Matches
+                    </Button>
+                  </CardContent>
+                </Card>
+              </>
+            )}
           </div>
         </div>
 
-        {/* Right sidebar */}
-        <RightSidebar />
+        {/* Show right sidebar only on the main dashboard view */}
+        {view !== 'project' && <RightSidebar />}
       </div>
     </div>
   );
