@@ -1,0 +1,170 @@
+Product Idea (Core Concept)
+✅ Used For:
+
+Understanding the essence and goal of the product
+
+Setting the tone for the entire system
+
+Generating module ideas that support the core mission
+
+🎯 Outcome:
+
+Product summary
+
+Elevator pitch
+
+Initial vision clarity
+
+2. Target Audience / Users
+✅ Used For:
+
+Identifying user personas
+
+Designing user journeys and use cases
+
+Mapping permissions, features, and interfaces for each user
+
+🎯 Outcome:
+
+Role-based access
+
+UI/UX planning per user type
+
+Persona-focused features
+
+3. Problem It Solves
+✅ Used For:
+
+Validating why the product should exist
+
+Aligning features with pain points
+
+Designing value-driven functionalities
+
+🎯 Outcome:
+
+Core modules prioritized
+
+Justified scope (no bloat)
+
+Problem-solution mapping chart
+
+4. Key User Journeys / Actions
+✅ Used For:
+
+Building exact user flows and interaction maps
+
+Defining features like authentication, dashboards, alerts, etc.
+
+Creating wireframe flow
+
+🎯 Outcome:
+
+Clear UI/UX flow
+
+Task-specific modules
+
+Interaction checklist
+
+5. Product Type (SaaS, Marketplace, etc.)
+✅ Used For:
+
+Structuring the system architecture
+
+Applying typical modules for that product type (e.g., onboarding in SaaS, cart in ecommerce)
+
+Referencing similar case studies or competitors
+
+🎯 Outcome:
+
+Base feature templates
+
+Monetization logic
+
+Suggested best practices
+
+6. Platforms (Web, Android, iOS)
+✅ Used For:
+
+Planning tech stack
+
+Deciding how modules split across devices (e.g., push notifications for mobile)
+
+UI responsiveness, PWA considerations, etc.
+
+🎯 Outcome:
+
+Platform-specific features
+
+Native vs web logic
+
+Deployment planning
+
+7. Industry
+✅ Used For:
+
+Referencing industry standards
+
+Adding compliance modules (e.g., HIPAA in health)
+
+Benchmarking features from domain leaders
+
+🎯 Outcome:
+
+Industry-aligned feature set
+
+Trends matching
+
+Keyword-based module suggestions
+
+8. Competitors / Inspirations
+✅ Used For:
+
+Reverse-engineering popular features
+
+SWOT comparison
+
+Creating USPs (Unique Selling Points)
+
+🎯 Outcome:
+
+Competitor Matrix
+
+Feature gaps you can fill
+
+Feature/UX enhancement ideas
+
+9. Monetization Plan
+✅ Used For:
+
+Suggesting billing systems (Stripe, Razorpay, custom wallet, etc.)
+
+Adding pricing, invoice, or subscription modules
+
+Referral/affiliate system if needed
+
+🎯 Outcome:
+
+Revenue feature list
+
+Plan/tier structure
+
+Checkout flow
+
+10. Scale and Vision
+✅ Used For:
+
+Prioritizing MVP vs full product
+
+Structuring backend for scalability
+
+Planning for API usage, load management, caching
+
+🎯 Outcome:
+
+Tech stack suggestions
+
+Roadmap planning (3 months, 6 months, 1 year)
+
+Deployment strategy
+
