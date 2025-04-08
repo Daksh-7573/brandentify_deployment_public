@@ -65,7 +65,7 @@ import Header from "@/components/layout/header";
 
 // Define the schema for portfolio form
 const portfolioFormSchema = z.object({
-  layout: z.enum(["minimalist-pro", "timeline-storyteller", "visual-expert", "corporate-executive", "dynamic-innovator", "freelancer-hub"]),
+  layout: z.enum(["professional", "creative", "minimal", "technical", "executive", "minimalist_pro"]),
   isPublished: z.boolean().default(false),
   publicUrl: z.string().nullable().optional(),
 });
@@ -294,7 +294,7 @@ export default function PortfolioBuilder() {
   const form = useForm<PortfolioFormValues>({
     resolver: zodResolver(portfolioFormSchema),
     defaultValues: {
-      layout: "minimalist-pro",
+      layout: "professional", // Updated to match the backend schema enum values
       isPublished: false,
       publicUrl: "",
     }

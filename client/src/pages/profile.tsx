@@ -1603,7 +1603,7 @@ export default function Profile() {
                       },
                       body: JSON.stringify({
                         userId: userData?.id,
-                        layout: 'minimalist-pro',
+                        layout: 'professional', // Changed to match the backend schema
                         isPublished: false,
                         publicUrl: null
                       })
