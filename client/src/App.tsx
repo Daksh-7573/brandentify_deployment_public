@@ -57,7 +57,14 @@ function Router() {
         <ProtectedRoute path="/ai-career" component={AICareer} />
       </Route>
       <Route path="/smart-connect">
-        <ProtectedRoute path="/smart-connect" component={SmartConnect} />
+        {/* Redirect SmartConnect to the integrated Search page with smart-connect tab active */}
+        {() => {
+          const [_, navigate] = useLocation();
+          useEffect(() => {
+            navigate("/search?category=smart-connect");
+          }, [navigate]);
+          return null;
+        }}
       </Route>
       <Route path="/portfolio-builder">
         <ProtectedRoute path="/portfolio-builder" component={PortfolioBuilder} />
