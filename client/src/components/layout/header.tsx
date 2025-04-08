@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Zap } from "lucide-react";
+import { Zap, Settings } from "lucide-react";
 
 export default function Header() {
   const { user, isDemoMode, signOut, refreshUserData } = useAuth();
@@ -79,6 +79,17 @@ export default function Header() {
               onClick={() => setLocation('/create-pulse')}
             >
               <Zap className="h-4 w-4" /> Create Pulse
+            </Button>
+            
+            {/* Settings Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-full p-2 hover:bg-gray-100 transition-colors"
+              onClick={() => setLocation('/settings')}
+              aria-label="Settings"
+            >
+              <Settings className="h-5 w-5 text-gray-600" />
             </Button>
             
             {/* User profile section - combined name and avatar */}
