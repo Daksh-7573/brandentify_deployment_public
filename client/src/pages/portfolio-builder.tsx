@@ -117,10 +117,16 @@ export default function PortfolioBuilder() {
   const userNumericId = userData?.id;
   
   // Fetch existing portfolio if it exists
-  const { data: portfolio, isLoading: isLoadingPortfolio } = useQuery({
+  const { data: portfolio, isLoading: isLoadingPortfolio, isError: isPortfolioError } = useQuery({
     queryKey: [`/api/users/${userNumericId}/portfolio`],
     enabled: !!user && !!userNumericId, // Only fetch when we have the numeric ID
-    staleTime: 30000 // 30 seconds
+    staleTime: 30000, // 30 seconds
+    retry: 3,
+    retryDelay: 1000,
+    // If portfolio not found, we'll create one in the portfolioMutation
+    onError: (error) => {
+      console.log("Portfolio not found, will create one when user selects a template");
+    }
   });
   
   // Define types for experiences, skills, and projects
@@ -1006,13 +1012,13 @@ export default function PortfolioBuilder() {
       <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top (pt-16) to account for fixed header */}
         <Sidebar activePage="portfolio-builder" />
         <div className="flex-1 overflow-auto">
-          <div className="container px-6 py-8">
-            <div className="flex items-center justify-between mb-8">
-              <div>
-                <h1 className="text-3xl font-bold">Portfolio Builder</h1>
-                <p className="text-muted-foreground">Create a personalized portfolio with Musk AI</p>
-              </div>
-              {/* Progress indicator */}
+            <div className="container px-6 py-8">
+              <div className="flex items-center justify-between mb-8">
+                <div>
+                  <h1 className="text-3xl font-bold">Portfolio Builder</h1>
+                  <p className="text-muted-foreground">Create a personalized portfolio with Musk AI</p>
+                </div>
+                {/* Progress indicator */}
               <div className="hidden sm:flex items-center space-x-2">
                 {Object.values(STEPS).filter(step => typeof step === 'number').map((step) => (
                   <div 

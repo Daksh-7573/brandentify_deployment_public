@@ -1587,7 +1587,32 @@ export default function Profile() {
               <h1 className="text-2xl font-semibold text-gray-900">Profile</h1>
               <div className="flex items-center gap-4">
                 <Button 
-                  onClick={() => setLocation('/portfolio-builder')}
+                  onClick={() => {
+                    // Create a loading state in the button
+                    const btn = document.getElementById('portfolio-btn');
+                    if (btn) {
+                      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+                      btn.classList.add('opacity-80');
+                    }
+                    
+                    // Pre-create empty portfolio in the background
+                    fetch('/api/portfolios', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({
+                        userId: userData?.id,
+                        layout: 'minimalist-pro',
+                        isPublished: false,
+                        publicUrl: null
+                      })
+                    }).catch(err => console.log("Portfolio creation attempted - ignoring error if already exists"));
+                    
+                    // Navigate to the portfolio builder page
+                    setTimeout(() => setLocation('/portfolio-builder'), 200);
+                  }}
+                  id="portfolio-btn"
                   className="flex items-center gap-2"
                 >
                   <i className="fas fa-id-card"></i>
