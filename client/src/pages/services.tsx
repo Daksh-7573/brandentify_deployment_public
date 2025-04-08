@@ -22,6 +22,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Service } from "@shared/schema";
+import { ReactNode } from "react";
 // Removed Sidebar import, using top navigation only
 import Header from "@/components/layout/header";
 import {
@@ -94,6 +95,29 @@ export default function ServicesPage() {
     }).format(numericAmount);
   };
   
+  // Safely handle service features with proper type checking
+  const renderFeatures = (service: Service): ReactNode => {
+    if (!service.features || !Array.isArray(service.features) || service.features.length === 0) {
+      return null;
+    }
+    
+    // Create a local copy of the features array that we can safely use
+    const safeFeatures = service.features.map(feature => 
+      feature ? String(feature) : ''
+    );
+    
+    return (
+      <div className="mt-4">
+        <h4 className="text-sm font-semibold mb-2">Features:</h4>
+        <ul className="list-disc pl-5 text-sm space-y-1">
+          {safeFeatures.map((feature, index) => (
+            <li key={index}>{feature}</li>
+          ))}
+        </ul>
+      </div>
+    );
+  };
+  
   return (
     <div className="flex h-screen flex-col">
       <Header />
@@ -110,7 +134,10 @@ export default function ServicesPage() {
               </div>
               <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button size="sm" className="gap-1">
+                  <Button 
+                    size="sm" 
+                    className="gap-1.5 bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-700 text-white shadow-sm"
+                  >
                     <PlusCircle size={16} />
                     <span>Add Service</span>
                   </Button>
@@ -141,9 +168,8 @@ export default function ServicesPage() {
                   Showcase your professional services to potential clients.
                 </p>
                 <Button 
-                  variant="outline" 
                   onClick={() => setIsCreateDialogOpen(true)}
-                  className="gap-1"
+                  className="gap-1.5 bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-700 text-white shadow-sm"
                 >
                   <PlusCircle size={16} />
                   <span>Create Your First Service</span>
@@ -152,16 +178,20 @@ export default function ServicesPage() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {services.map((service) => (
-                  <Card key={service.id} className="overflow-hidden flex flex-col">
+                  <Card 
+                    key={service.id} 
+                    className="overflow-hidden flex flex-col transition-all duration-200 hover:shadow-md border-opacity-70 hover:border-primary/50"
+                  >
                     <CardHeader className="pb-3">
                       <div className="flex justify-between items-start">
-                        <Badge className="mb-2">
-                          {service.category.charAt(0).toUpperCase() + service.category.slice(1)}
+                        <Badge variant="outline" className="mb-2 bg-gradient-to-r from-primary/10 to-indigo-500/10 text-primary">
+                          {service.category ? service.category.charAt(0).toUpperCase() + service.category.slice(1) : 'Service'}
                         </Badge>
                         <div className="flex gap-1">
                           <Button 
                             variant="ghost" 
                             size="icon" 
+                            className="hover:text-primary"
                             onClick={() => {
                               setSelectedService(service);
                               setIsEditDialogOpen(true);
@@ -172,6 +202,7 @@ export default function ServicesPage() {
                           <Button 
                             variant="ghost" 
                             size="icon" 
+                            className="hover:text-destructive"
                             onClick={() => {
                               setSelectedService(service);
                               setIsDeleteDialogOpen(true);
@@ -181,10 +212,10 @@ export default function ServicesPage() {
                           </Button>
                         </div>
                       </div>
-                      <CardTitle>{service.title}</CardTitle>
+                      <CardTitle>{service.title || ''}</CardTitle>
                       {service.priceInr !== null && (
                         <div className="flex items-center mt-2">
-                          <span className="text-2xl font-bold">
+                          <span className="text-2xl font-bold text-primary">
                             {formatCurrency(service.priceInr, 'INR')}
                           </span>
                           {service.isHourly && <span className="ml-1 text-muted-foreground">/hr</span>}
@@ -199,21 +230,14 @@ export default function ServicesPage() {
                     </CardHeader>
                     <CardContent className="flex-grow">
                       <CardDescription className="mb-4">
-                        {service.description}
+                        {service.description || ''}
                       </CardDescription>
-                      {service.features && Array.isArray(service.features) && service.features.length > 0 && (
-                        <div className="mt-4">
-                          <h4 className="text-sm font-semibold mb-2">Features:</h4>
-                          <ul className="list-disc pl-5 text-sm space-y-1">
-                            {service.features.map((feature: string, index: number) => (
-                              <li key={index}>{feature}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
+                      {renderFeatures(service)}
                     </CardContent>
                     <CardFooter className="pt-4 border-t bg-muted/40">
-                      <Button className="w-full gap-2">
+                      <Button 
+                        className="w-full gap-2 bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-700 text-white shadow-sm"
+                      >
                         <ShoppingCart size={16} />
                         <span>Request Service</span>
                       </Button>

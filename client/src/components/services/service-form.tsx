@@ -124,7 +124,11 @@ export default function ServiceForm({ service, onSubmit, isPending, existingServ
           )}
         />
         
-        <Button type="submit" className="w-full" disabled={isPending}>
+        <Button 
+          type="submit" 
+          className="w-full bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-700 text-white shadow-sm" 
+          disabled={isPending}
+        >
           {isPending ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
