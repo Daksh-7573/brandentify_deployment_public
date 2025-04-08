@@ -1350,6 +1350,115 @@ export class MemStorage implements IStorage {
     
     console.log(`[storage] clearAllUsers: Removed ${idsToRemove.length} users and cleared all verifications`);
   }
+
+  /**
+   * Search for pulses by title, description, or tags
+   * @param query Search query string
+   * @returns Array of matching Pulse objects
+   */
+  async searchPulses(query: string): Promise<Pulse[]> {
+    console.log(`[storage] searchPulses: Searching pulses with query: "${query}"`);
+    const normalizedQuery = query.toLowerCase().trim();
+    
+    if (!normalizedQuery) {
+      return [];
+    }
+    
+    const results = Array.from(this.pulses.values()).filter(pulse => {
+      // Check various fields for matches
+      const titleMatch = pulse.title?.toLowerCase().includes(normalizedQuery);
+      const descriptionMatch = pulse.description?.toLowerCase().includes(normalizedQuery);
+      
+      // Check tags if they exist
+      const tagMatches = Array.isArray(pulse.tags) && 
+        pulse.tags.some(tag => tag.toLowerCase().includes(normalizedQuery));
+      
+      return titleMatch || descriptionMatch || tagMatches;
+    });
+    
+    // Sort by recency
+    results.sort((a, b) => {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
+    
+    // Get user info for each pulse
+    const resultsWithUsers = await Promise.all(results.map(async pulse => {
+      const user = await this.getUser(pulse.userId);
+      return { ...pulse, user };
+    }));
+    
+    console.log(`[storage] searchPulses: Found ${results.length} matching pulses`);
+    return resultsWithUsers;
+  }
+  
+  /**
+   * Search for user profiles by name, title, location, or industry
+   * @param query Search query string
+   * @returns Array of matching User objects
+   */
+  async searchProfiles(query: string): Promise<User[]> {
+    console.log(`[storage] searchProfiles: Searching profiles with query: "${query}"`);
+    const normalizedQuery = query.toLowerCase().trim();
+    
+    if (!normalizedQuery) {
+      return [];
+    }
+    
+    const results = Array.from(this.users.values()).filter(user => {
+      // Check various fields for matches
+      const nameMatch = user.name?.toLowerCase().includes(normalizedQuery);
+      const titleMatch = user.title?.toLowerCase().includes(normalizedQuery);
+      const locationMatch = user.location?.toLowerCase().includes(normalizedQuery);
+      const industryMatch = user.industry?.toLowerCase().includes(normalizedQuery);
+      
+      return nameMatch || titleMatch || locationMatch || industryMatch;
+    });
+    
+    console.log(`[storage] searchProfiles: Found ${results.length} matching profiles`);
+    return results;
+  }
+  
+  /**
+   * Search for hashtags
+   * @param query Search query string
+   * @returns Array of matching hashtags with usage counts
+   */
+  async searchHashtags(query: string): Promise<{id: number, name: string, count: number}[]> {
+    console.log(`[storage] searchHashtags: Searching hashtags with query: "${query}"`);
+    const normalizedQuery = query.toLowerCase().trim();
+    
+    if (!normalizedQuery) {
+      return [];
+    }
+    
+    // Extract all tags from pulses
+    const allTags: string[] = [];
+    for (const pulse of this.pulses.values()) {
+      if (Array.isArray(pulse.tags)) {
+        allTags.push(...pulse.tags);
+      }
+    }
+    
+    // Count occurrences of each tag
+    const tagCounts: Record<string, number> = {};
+    allTags.forEach(tag => {
+      const normalizedTag = tag.toLowerCase();
+      tagCounts[normalizedTag] = (tagCounts[normalizedTag] || 0) + 1;
+    });
+    
+    // Convert to array and filter by query
+    const results = Object.entries(tagCounts)
+      .filter(([tag]) => tag.includes(normalizedQuery))
+      .map(([name, count], index) => ({
+        id: index + 1, // Generate synthetic ID
+        name,
+        count
+      }))
+      .sort((a, b) => b.count - a.count); // Sort by popularity
+    
+    console.log(`[storage] searchHashtags: Found ${results.length} matching hashtags`);
+    return results;
+  }
 }
 
 export const storage = new MemStorage();

@@ -3569,6 +3569,54 @@ ${extractedText.substring(0, 5000)}
     }
   });
 
+  // Search endpoint for pulses, profiles, and hashtags
+  apiRouter.get("/search", async (req: Request, res: Response) => {
+    try {
+      const query = (req.query.q as string) || "";
+      const category = (req.query.category as string) || "all";
+      
+      if (!query.trim()) {
+        return res.status(400).json({ error: "Search query is required" });
+      }
+      
+      console.log(`[SEARCH] Query: "${query}", Category: ${category}`);
+      
+      const results: { pulses: any[], profiles: any[], hashtags: any[] } = {
+        pulses: [],
+        profiles: [],
+        hashtags: []
+      };
+      
+      // Only fetch data for requested categories or all
+      const fetchPulses = category === "all" || category === "pulses";
+      const fetchProfiles = category === "all" || category === "profiles";
+      const fetchHashtags = category === "all" || category === "hashtags";
+      
+      if (fetchPulses) {
+        // Search pulses by title, description, or tags
+        const pulses = await storage.searchPulses(query);
+        results.pulses = pulses;
+      }
+      
+      if (fetchProfiles) {
+        // Search profiles by name, title, location, or industry
+        const profiles = await storage.searchProfiles(query);
+        results.profiles = profiles;
+      }
+      
+      if (fetchHashtags) {
+        // Search hashtags
+        const hashtags = await storage.searchHashtags(query);
+        results.hashtags = hashtags;
+      }
+      
+      return res.json(results);
+    } catch (error) {
+      console.error("[SEARCH] Error:", error);
+      return res.status(500).json({ error: "Failed to perform search" });
+    }
+  });
+
   app.use("/api", apiRouter);
 
   const httpServer = createServer(app);

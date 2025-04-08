@@ -15,6 +15,7 @@ import PortfolioBuilder from "@/pages/portfolio-builder";
 import ServicesPage from "@/pages/services";
 import CreatePulsePage from "@/pages/create-pulse";
 import IndustryPulsePage from "@/pages/industry-pulse";
+import SearchPage from "@/pages/search";
 import AuthPage from "@/pages/auth-page";
 import EmailVerification from "@/pages/email-verification";
 
@@ -69,6 +70,9 @@ function Router() {
       </Route>
       <Route path="/industry-pulse">
         <ProtectedRoute path="/industry-pulse" component={IndustryPulsePage} />
+      </Route>
+      <Route path="/search">
+        <ProtectedRoute path="/search" component={SearchPage} />
       </Route>
       <Route component={NotFound} />
     </Switch>
