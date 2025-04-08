@@ -129,66 +129,68 @@ function PollVoting({ pulse }: PollVotingProps) {
   const isLoading = voteMutation.isPending;
   
   return (
-    <div className="mt-4 space-y-3 border rounded-md p-4 bg-purple-50/30">
+    <div className="mt-4 space-y-3">
       <div className="text-sm font-medium flex items-center gap-2">
         <BarChart className="h-4 w-4 text-purple-500" />
         <span>Poll Options</span>
       </div>
       
-      {pulse.pollOptions.map((option, index) => (
-        <div key={index} className="space-y-1">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className={`h-8 ${userVote === index ? 'bg-purple-100 border-purple-300' : ''}`}
-                onClick={() => handleVote(index)}
-                disabled={isLoading}
-              >
-                {userVote === index && <Check className="h-3 w-3 mr-1 text-purple-600" />}
-                {option}
-              </Button>
+      <div className="rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-4 bg-gradient-to-b from-purple-50/30 to-purple-50/10">
+        {pulse.pollOptions.map((option, index) => (
+          <div key={index} className="space-y-1 mb-3 last:mb-0">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className={`h-8 ${userVote === index ? 'bg-purple-100 border-purple-300 text-purple-700' : ''} transition-all duration-300`}
+                  onClick={() => handleVote(index)}
+                  disabled={isLoading}
+                >
+                  {userVote === index && <Check className="h-3 w-3 mr-1 text-purple-600" />}
+                  {option}
+                </Button>
+                
+                {userVote !== null && (
+                  <span className="text-xs text-muted-foreground">
+                    {voteCounts[index] || 0} vote{voteCounts[index] !== 1 ? 's' : ''}
+                  </span>
+                )}
+              </div>
               
               {userVote !== null && (
-                <span className="text-xs text-muted-foreground">
-                  {voteCounts[index] || 0} vote{voteCounts[index] !== 1 ? 's' : ''}
+                <span className="text-xs font-medium">
+                  {totalVotes > 0 ? Math.round((voteCounts[index] || 0) / totalVotes * 100) : 0}%
                 </span>
               )}
             </div>
             
             {userVote !== null && (
-              <span className="text-xs font-medium">
-                {totalVotes > 0 ? Math.round((voteCounts[index] || 0) / totalVotes * 100) : 0}%
-              </span>
+              <div className="h-2 bg-purple-100 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-purple-500 transition-all duration-500 ease-in-out"
+                  style={{ 
+                    width: `${totalVotes > 0 ? (voteCounts[index] || 0) / totalVotes * 100 : 0}%` 
+                  }} 
+                />
+              </div>
             )}
           </div>
-          
-          {userVote !== null && (
-            <div className="h-2 bg-purple-100 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-purple-500 transition-all duration-500 ease-in-out"
-                style={{ 
-                  width: `${totalVotes > 0 ? (voteCounts[index] || 0) / totalVotes * 100 : 0}%` 
-                }} 
-              />
-            </div>
-          )}
-        </div>
-      ))}
-      
-      {isLoading && (
-        <div className="flex justify-center py-2">
-          <Loader2 className="h-4 w-4 animate-spin text-purple-500" />
-        </div>
-      )}
-      
-      {userVote !== null && (
-        <div className="text-xs text-right text-muted-foreground pt-2">
-          Total votes: {totalVotes}
-        </div>
-      )}
+        ))}
+        
+        {isLoading && (
+          <div className="flex justify-center py-2">
+            <Loader2 className="h-4 w-4 animate-spin text-purple-500" />
+          </div>
+        )}
+        
+        {userVote !== null && (
+          <div className="text-xs text-right text-muted-foreground pt-2 border-t border-purple-100 mt-2">
+            Total votes: {totalVotes}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -309,44 +311,69 @@ function ImageCarousel({ pulse }: { pulse: PulseWithUser }) {
           <Image className="h-4 w-4 text-blue-500" />
           <span>Image Gallery ({images.length})</span>
         </div>
-        <div className="mt-2 bg-blue-50/20 rounded-md p-2">
+        <div className="mt-2">
           {isLoading ? (
-            <div className="h-64 flex items-center justify-center">
+            <div className="h-72 flex items-center justify-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
             </div>
           ) : (
-            <Carousel className="w-full">
+            <Carousel className="w-full" 
+              setApi={(api) => {
+                // Update currentImageIndex when carousel changes
+                api?.on("select", () => {
+                  const selectedIndex = api.selectedScrollSnap();
+                  setCurrentImageIndex(selectedIndex);
+                });
+              }}>
               <CarouselContent>
                 {images.map((url, index) => (
-                  <CarouselItem key={index}>
-                    <div className="p-1">
+                  <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+                    <div className="p-1 group">
                       <div 
-                        className="overflow-hidden rounded-md border border-blue-100 relative cursor-pointer"
+                        className="overflow-hidden rounded-lg relative cursor-pointer shadow-sm hover:shadow-md transition-all duration-300"
                         onClick={() => openLightbox(index)}
                       >
-                        <div className="w-full h-64 bg-gray-100 flex items-center justify-center">
+                        <div className="w-full h-72 md:h-60 flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100">
                           <img 
                             src={url} 
                             alt={`Media ${index + 1}`} 
-                            className="w-full h-64 object-cover"
+                            className="w-full h-full object-cover"
                             onError={(e) => {
                               console.error(`Failed to load image: ${url}`);
                               e.currentTarget.src = 'https://via.placeholder.com/600x400?text=Image+Not+Available';
                             }}
                           />
-                          <div className="absolute inset-0 bg-black opacity-0 hover:opacity-10 transition-opacity flex items-center justify-center">
-                            <Maximize2 className="w-8 h-8 text-white" />
+                          <div className="absolute inset-0 bg-black opacity-0 hover:opacity-20 transition-opacity duration-300 flex items-center justify-center">
+                            <Maximize2 className="w-10 h-10 text-white opacity-0 group-hover:opacity-100 transition-all duration-300" />
                           </div>
                         </div>
+                        {/* Image counter indicator */}
+                        {images.length > 1 && (
+                          <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs py-1 px-2 rounded-full">
+                            {index + 1}/{images.length}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </CarouselItem>
                 ))}
               </CarouselContent>
               {images.length > 1 && (
-                <div className="flex items-center justify-center mt-2">
-                  <CarouselPrevious className="relative -translate-y-0 -left-0 mr-2" />
-                  <CarouselNext className="relative -translate-y-0 -right-0 ml-2" />
+                <div className="flex flex-col items-center justify-center mt-4 gap-2">
+                  <div className="flex items-center gap-2">
+                    <CarouselPrevious className="relative -translate-y-0 -left-0 mr-2 bg-white/90 hover:bg-white shadow-md" />
+                    <CarouselNext className="relative -translate-y-0 -right-0 ml-2 bg-white/90 hover:bg-white shadow-md" />
+                  </div>
+                  <div className="flex gap-1 mt-1">
+                    {images.map((_, idx) => (
+                      <div 
+                        key={idx} 
+                        className={`h-1.5 rounded-full transition-all duration-300 ${
+                          idx === currentImageIndex ? 'w-4 bg-primary' : 'w-1.5 bg-gray-300'
+                        }`}
+                      />
+                    ))}
+                  </div>
                 </div>
               )}
             </Carousel>
@@ -478,44 +505,51 @@ function VideoPlayer({ pulse }: { pulse: PulseWithUser }) {
         <Video className="h-4 w-4 text-blue-500" />
         <span>Video</span>
       </div>
-      <div className="bg-blue-50/30 border border-blue-100 rounded-md p-2">
+      <div className="mt-2">
         {isLoading ? (
-          <div className="h-64 flex items-center justify-center">
+          <div className="h-72 flex items-center justify-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           </div>
         ) : (
-          <div className="relative">
+          <div className="relative group">
             {videoSrc ? (
-              <video 
-                src={videoSrc} 
-                controls 
-                className="w-full rounded-md"
-                style={{ maxHeight: "400px" }}
-                onError={(e) => {
-                  console.error(`Failed to load video: ${videoSrc}`);
-                  // If video fails to load, show message
-                  const parent = e.currentTarget.parentElement;
-                  if (parent) {
-                    parent.innerHTML = `
-                      <div class="h-64 flex items-center justify-center bg-blue-50 rounded-md">
-                        <div class="text-center">
-                          <div class="mb-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-300 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
+              <div className="rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
+                <div className="relative">
+                  <video 
+                    src={videoSrc} 
+                    controls 
+                    className="w-full h-full object-cover rounded-lg"
+                    style={{ maxHeight: "400px" }}
+                    onError={(e) => {
+                      console.error(`Failed to load video: ${videoSrc}`);
+                      // If video fails to load, show message
+                      const parent = e.currentTarget.parentElement;
+                      if (parent) {
+                        parent.innerHTML = `
+                          <div class="h-72 flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100 rounded-lg">
+                            <div class="text-center">
+                              <div class="mb-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-300 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                              </div>
+                              <p class="text-blue-500">Video could not be loaded</p>
+                            </div>
                           </div>
-                          <p class="text-blue-500">Video could not be loaded</p>
-                        </div>
-                      </div>
-                    `;
-                  }
-                }}
-              />
+                        `;
+                      }
+                    }}
+                  />
+                  {/* Video play overlay (can be customized) */}
+                  <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity flex items-center justify-center pointer-events-none">
+                  </div>
+                </div>
+              </div>
             ) : (
-              <div className="h-64 flex items-center justify-center bg-blue-50 rounded-md">
+              <div className="h-72 flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100 rounded-lg shadow-sm">
                 <div className="text-center">
                   <div className="mb-2">
-                    <Video className="h-10 w-10 text-blue-300 mx-auto" />
+                    <Video className="h-12 w-12 text-blue-300 mx-auto" />
                   </div>
                   <p className="text-blue-500">No video available for this pulse</p>
                 </div>
@@ -535,12 +569,26 @@ function ProjectDetails({ pulse }: { pulse: PulseWithUser }) {
   }
   
   return (
-    <div className="mt-4 space-y-2 border rounded-md p-4 bg-green-50/30">
+    <div className="mt-4 space-y-2">
       <div className="text-sm font-medium flex items-center gap-2">
         <FileCode className="h-4 w-4 text-green-500" />
         <span>Project Details</span>
       </div>
-      <p className="text-sm pl-2">{pulse.projectDetails || "No details available"}</p>
+      <div className="rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-4 bg-gradient-to-b from-green-50/30 to-green-50/10">
+        <p className="text-sm">{pulse.projectDetails || "No details available"}</p>
+        {pulse.projectId && (
+          <div className="mt-3 pt-3 border-t border-green-100">
+            <Button 
+              size="sm" 
+              variant="outline" 
+              className="text-xs border-green-200 text-green-700 hover:bg-green-50"
+              onClick={() => window.location.href = `/portfolio-builder?projectId=${pulse.projectId}`}
+            >
+              <FileCode className="h-3 w-3 mr-1" /> View Full Project
+            </Button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
