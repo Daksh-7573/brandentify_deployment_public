@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "./context/auth-context";
 import { useAuth } from "./hooks/use-auth";
 import { useEffect } from "react";
+
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import Dashboard from "@/pages/dashboard";
@@ -16,6 +17,17 @@ import IndustryPulsePage from "@/pages/industry-pulse";
 import SearchPage from "@/pages/search";
 import AuthPage from "@/pages/auth-page";
 import EmailVerification from "@/pages/email-verification";
+
+// Redirect component to handle page redirects
+const Redirect = ({ to }: { to: string }) => {
+  const [_, navigate] = useLocation();
+  
+  useEffect(() => {
+    navigate(to);
+  }, [navigate, to]);
+  
+  return null;
+};
 
 // Protected route component that checks if the user is authenticated
 function ProtectedRoute({ component: Component, ...rest }: { component: React.ComponentType, path: string }) {
@@ -46,17 +58,7 @@ function Router() {
       <Route path="/auth" component={AuthPage} />
       <Route path="/verify-email" component={EmailVerification} />
       <Route path="/dashboard">
-        <ProtectedRoute path="/dashboard" component={() => {
-          const [_, navigate] = useLocation();
-          useEffect(() => {
-            navigate("/industry-pulse");
-          }, [navigate]);
-          return (
-            <div className="flex items-center justify-center min-h-screen">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-            </div>
-          );
-        }} />
+        <ProtectedRoute path="/dashboard" component={() => <Redirect to="/industry-pulse" />} />
       </Route>
       <Route path="/profile">
         <ProtectedRoute path="/profile" component={Profile} />
@@ -66,26 +68,14 @@ function Router() {
       </Route>
       <Route path="/smart-connect">
         {/* Redirect SmartConnect to the integrated Search page with smart-connect tab active */}
-        {() => {
-          const [_, navigate] = useLocation();
-          useEffect(() => {
-            navigate("/search?category=smart-connect");
-          }, [navigate]);
-          return null;
-        }}
+        <Redirect to="/search?category=smart-connect" />
       </Route>
       <Route path="/portfolio-builder">
         <ProtectedRoute path="/portfolio-builder" component={PortfolioBuilder} />
       </Route>
       <Route path="/services">
         {/* Redirect services to industry-pulse for now */}
-        {() => {
-          const [_, navigate] = useLocation();
-          useEffect(() => {
-            navigate("/industry-pulse");
-          }, [navigate]);
-          return null;
-        }}
+        <Redirect to="/industry-pulse" />
       </Route>
       <Route path="/create-pulse">
         <ProtectedRoute path="/create-pulse" component={CreatePulsePage} />
