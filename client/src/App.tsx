@@ -10,7 +10,6 @@ import Landing from "@/pages/landing";
 import Dashboard from "@/pages/dashboard";
 import Profile from "@/pages/profile";
 import AICareer from "@/pages/ai-career";
-import SmartConnect from "@/pages/smart-connect";
 import PortfolioBuilder from "@/pages/portfolio-builder";
 import ServicesPage from "@/pages/services";
 import CreatePulsePage from "@/pages/create-pulse";
