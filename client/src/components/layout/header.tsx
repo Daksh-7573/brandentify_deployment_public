@@ -111,16 +111,6 @@ export default function Header() {
                 </div>
               </div>
             </div>
-            
-            {/* Sign out button */}
-            <Button 
-              variant="ghost" 
-              size="sm"
-              className="ml-1 px-3 py-1.5 text-sm font-medium hover:bg-gray-100"
-              onClick={signOut}
-            >
-              Sign out
-            </Button>
           </div>
         </div>
       </div>

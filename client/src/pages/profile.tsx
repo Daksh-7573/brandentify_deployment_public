@@ -395,7 +395,7 @@ export const INDUSTRIES = [
 ];
 
 export default function Profile() {
-  const { user, isAuthenticated, isLoading, isDemoMode } = useAuth();
+  const { user, isAuthenticated, isLoading, isDemoMode, signOut } = useAuth();
   const [_, setLocation] = useLocation();
   const { toast } = useToast();
   
@@ -1836,7 +1836,7 @@ export default function Profile() {
             </Card>
             
             {/* Action Buttons */}
-            <div className="flex justify-between mb-6">
+            <div className="flex flex-wrap gap-4 mb-6">
               <Button 
                 variant="outline" 
                 className="px-6"
@@ -1861,6 +1861,15 @@ export default function Profile() {
               
               <Button className="px-6">
                 Save Profile
+              </Button>
+              
+              <Button 
+                variant="outline"
+                className="ml-auto px-6 bg-red-50 text-red-600 hover:bg-red-100 border-red-200"
+                onClick={() => signOut()}
+              >
+                <i className="fas fa-sign-out-alt mr-2"></i>
+                Sign Out
               </Button>
             </div>
           </div>
