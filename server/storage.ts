@@ -1688,9 +1688,11 @@ export class MemStorage implements IStorage {
     
     // Update the appropriate counter
     if (reactionType === "insightful") {
-      quota.insightfulQuotaUsed = (quota.insightfulQuotaUsed || 0) + 1;
+      const currentUsed = quota.insightfulQuotaUsed || 0;
+      quota.insightfulQuotaUsed = currentUsed + 1;
     } else if (reactionType === "misinformed") {
-      quota.misinformedQuotaUsed = (quota.misinformedQuotaUsed || 0) + 1;
+      const currentUsed = quota.misinformedQuotaUsed || 0;
+      quota.misinformedQuotaUsed = currentUsed + 1;
     }
     
     quota.updatedAt = new Date();
@@ -1703,10 +1705,16 @@ export class MemStorage implements IStorage {
     const quota = await this.getOrCreateUserReactionQuota(userId);
     
     // Update the appropriate counter (decrement only if greater than 0)
-    if (reactionType === "insightful" && quota.insightfulQuotaUsed && quota.insightfulQuotaUsed > 0) {
-      quota.insightfulQuotaUsed -= 1;
-    } else if (reactionType === "misinformed" && quota.misinformedQuotaUsed && quota.misinformedQuotaUsed > 0) {
-      quota.misinformedQuotaUsed -= 1;
+    if (reactionType === "insightful") {
+      const currentUsed = quota.insightfulQuotaUsed || 0;
+      if (currentUsed > 0) {
+        quota.insightfulQuotaUsed = currentUsed - 1;
+      }
+    } else if (reactionType === "misinformed") {
+      const currentUsed = quota.misinformedQuotaUsed || 0;
+      if (currentUsed > 0) {
+        quota.misinformedQuotaUsed = currentUsed - 1;
+      }
     }
     
     quota.updatedAt = new Date();
@@ -1724,20 +1732,24 @@ export class MemStorage implements IStorage {
     const quota = await this.getOrCreateUserReactionQuota(userId);
     
     if (reactionType === "insightful") {
-      const remaining = quota.insightfulQuotaMax - quota.insightfulQuotaUsed;
+      const used = quota.insightfulQuotaUsed || 0;
+      const max = quota.insightfulQuotaMax || 10;
+      const remaining = max - used;
       return {
         hasQuotaRemaining: remaining > 0,
         remaining,
-        used: quota.insightfulQuotaUsed,
-        max: quota.insightfulQuotaMax
+        used,
+        max
       };
     } else {
-      const remaining = quota.misinformedQuotaMax - quota.misinformedQuotaUsed;
+      const used = quota.misinformedQuotaUsed || 0;
+      const max = quota.misinformedQuotaMax || 10;
+      const remaining = max - used;
       return {
         hasQuotaRemaining: remaining > 0,
         remaining,
-        used: quota.misinformedQuotaUsed,
-        max: quota.misinformedQuotaMax
+        used,
+        max
       };
     }
   }
