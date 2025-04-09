@@ -1548,10 +1548,56 @@ export default function IndustryPulsePage() {
                     </CardContent>
                   </Card>
                 ) : (
-                  {/* Responsive Grid Layout */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="space-y-6">
                     {filteredPulses.map((pulse: PulseWithUser) => (
-                      <PulseCard key={pulse.id} pulse={pulse} />
+                      <Card key={pulse.id} className="overflow-hidden">
+                        <CardHeader className="pb-3">
+                          <div className="flex justify-between">
+                            <div className="flex gap-3 items-center">
+                              <Avatar>
+                                <AvatarImage src={pulse.user?.photoURL || ""} alt={pulse.user?.name || ""} />
+                                <AvatarFallback>{pulse.user?.name?.charAt(0) || "U"}</AvatarFallback>
+                              </Avatar>
+                              <div>
+                                <div className="font-semibold">{pulse.user?.name || "User"}</div>
+                                <div className="text-xs text-muted-foreground flex items-center gap-1">
+                                  <Calendar className="h-3 w-3" />
+                                  {pulse.createdAt 
+                                    ? formatDistanceToNow(new Date(pulse.createdAt), { addSuffix: true }) 
+                                    : "Recently"}
+                                </div>
+                              </div>
+                            </div>
+                            <div>
+                              {getPulseIcon(pulse)}
+                            </div>
+                          </div>
+                        </CardHeader>
+                        <CardContent>
+                          <CardTitle className="mb-3">{pulse.title}</CardTitle>
+                          <p className="text-muted-foreground">{pulse.content}</p>
+                          
+                          {/* Render pulse content based on type */}
+                          {pulse.type === 'poll' && (
+                            <PollVoting pulse={pulse} />
+                          )}
+                          
+                          {pulse.type === 'media-pulse' && pulse.mediaType === 'image' && (
+                            <ImageCarousel pulse={pulse} />
+                          )}
+                          
+                          {pulse.type === 'media-pulse' && pulse.mediaType === 'video' && (
+                            <VideoPlayer pulse={pulse} />
+                          )}
+                          
+                          {pulse.type === 'project' && (
+                            <ProjectDetails pulse={pulse} />
+                          )}
+                        </CardContent>
+                        <CardFooter className="flex justify-between pt-0">
+                          <PulseReactions pulse={pulse} />
+                        </CardFooter>
+                      </Card>
                     ))}
                   </div>
                 )}
