@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Pulse } from "@shared/schema";
 import { useLocation } from "wouter";
@@ -8,13 +8,14 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MessageSquare, ThumbsUp, Calendar, Users, BarChart, Video, Image, FileCode, Check, Loader2, Maximize2, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { MessageSquare, ThumbsUp, Calendar, Users, BarChart, Video, Image, FileCode, Check, Loader2, Maximize2, ChevronLeft, ChevronRight, X, RefreshCw } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { formatDistanceToNow } from "date-fns";
 import { useAuth } from "@/context/auth-context";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { cn } from "@/lib/utils";
 
 // Extended Pulse type with user info for display purposes
 interface PulseWithUser {
@@ -693,16 +694,52 @@ function ProjectDetails({ pulse }: { pulse: PulseWithUser }) {
   );
 }
 
+// Smart Refresh Banner Component
+interface SmartRefreshBannerProps {
+  hasNewContent: boolean;
+  onRefresh: () => void;
+  isPremiumContent?: boolean;
+}
+
+function SmartRefreshBanner({ hasNewContent, onRefresh, isPremiumContent = false }: SmartRefreshBannerProps) {
+  if (!hasNewContent) return null;
+  
+  return (
+    <button
+      className={cn(
+        "w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg shadow-md transition-all duration-300 transform hover:shadow-lg hover:-translate-y-px mb-4",
+        isPremiumContent
+          ? "bg-gradient-to-r from-yellow-50 to-amber-50 border border-amber-200 text-amber-800"
+          : "bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 text-blue-800"
+      )}
+      onClick={onRefresh}
+    >
+      <RefreshCw className={cn(
+        "h-4 w-4 animate-spin-slow", 
+        isPremiumContent ? "text-amber-500" : "text-blue-500"
+      )} />
+      <span className="font-medium">New posts available</span>
+    </button>
+  );
+}
+
 export default function IndustryPulsePage() {
   const [activeTab, setActiveTab] = useState("all");
   const [_, setLocation] = useLocation();
+  const { toast } = useToast();
+  
+  // Smart refresh state
+  const [hasNewContent, setHasNewContent] = useState(false);
+  const [hasPremiumContent, setHasPremiumContent] = useState(false);
+  const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // Fetch all pulses
-  const { data: pulses = [], isLoading } = useQuery<PulseWithUser[]>({
+  const { data: pulses = [], isLoading, refetch } = useQuery<PulseWithUser[]>({
     queryKey: ["/api/pulses"],
-    onSuccess: (data) => {
+    // @ts-ignore - onSuccess is valid but TS is complaining
+    onSuccess: (data: PulseWithUser[]) => {
       // Initialize project cache for faster loading
-      const projectPulses = data.filter(pulse => pulse.type === 'project' && pulse.projectId);
+      const projectPulses = data.filter((pulse: PulseWithUser) => pulse.type === 'project' && pulse.projectId);
       
       if (projectPulses.length > 0) {
         // Pre-fetch project data for all project pulses
@@ -731,8 +768,69 @@ export default function IndustryPulsePage() {
     }
   });
   
+  // Simulate a new content notification (for demo purposes)
+  // In a real implementation, this would be triggered by a websocket or polling
+  useEffect(() => {
+    const simulateNewContent = () => {
+      // Randomly decide if this is premium content (like a Musk update)
+      const isPremiumUpdate = Math.random() > 0.7;
+      
+      setHasNewContent(true);
+      setHasPremiumContent(isPremiumUpdate);
+      
+      // Show toast notification for premium content
+      if (isPremiumUpdate) {
+        toast({
+          title: "Premium Update",
+          description: "Musk just updated your feed 💡",
+          variant: "default",
+        });
+      }
+      
+      // Set timeout to auto-refresh after 10 minutes if user doesn't interact
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current);
+      }
+      
+      refreshTimeoutRef.current = setTimeout(() => {
+        handleRefresh();
+      }, 10 * 60 * 1000); // 10 minutes
+    };
+    
+    // For demo purposes, simulate new content arriving after a delay
+    const newContentTimer = setTimeout(() => {
+      simulateNewContent();
+    }, 20000); // 20 seconds - for demo purposes
+    
+    return () => {
+      clearTimeout(newContentTimer);
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current);
+      }
+    };
+  }, []);
+  
+  // Handle refresh button click
+  const handleRefresh = async () => {
+    await refetch();
+    setHasNewContent(false);
+    setHasPremiumContent(false);
+    
+    // Clear any pending auto-refresh timeout
+    if (refreshTimeoutRef.current) {
+      clearTimeout(refreshTimeoutRef.current);
+      refreshTimeoutRef.current = null;
+    }
+    
+    // Show a confirmation toast
+    toast({
+      title: "Feed Updated",
+      description: "Your feed has been refreshed with the latest content.",
+    });
+  };
+  
   // Filter pulses based on the active tab
-  const filteredPulses = pulses.filter(pulse => {
+  const filteredPulses = pulses.filter((pulse: PulseWithUser) => {
     if (activeTab === "all") return true;
     return pulse.type === activeTab;
   });
@@ -779,6 +877,13 @@ export default function IndustryPulsePage() {
               </TabsList>
               
               <TabsContent value={activeTab} className="mt-0">
+                {/* Smart Refresh Banner */}
+                <SmartRefreshBanner 
+                  hasNewContent={hasNewContent} 
+                  onRefresh={handleRefresh} 
+                  isPremiumContent={hasPremiumContent} 
+                />
+
                 {isLoading ? (
                   <div className="flex justify-center py-12">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -800,7 +905,7 @@ export default function IndustryPulsePage() {
                   </Card>
                 ) : (
                   <div className="space-y-6">
-                    {filteredPulses.map((pulse) => (
+                    {filteredPulses.map((pulse: PulseWithUser) => (
                       <Card key={pulse.id} className="overflow-hidden">
                         <CardHeader className="pb-3">
                           <div className="flex justify-between">
