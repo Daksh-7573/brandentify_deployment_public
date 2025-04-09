@@ -18,6 +18,10 @@ import {
   hashtags, Hashtag, InsertHashtag,
   pulseHashtags, PulseHashtag, InsertPulseHashtag,
   userHashtagFollows, UserHashtagFollow, InsertUserHashtagFollow,
+  // Pulse Interaction System models
+  pulseReactions, PulseReaction, InsertPulseReaction,
+  userReactionQuotas, UserReactionQuota, InsertUserReactionQuota,
+  pulseShares, PulseShare, InsertPulseShare,
   // New models for News Pulse feature
   newsSources, NewsSource, InsertNewsSource,
   newsArticles, NewsArticle, InsertNewsArticle,
@@ -47,6 +51,29 @@ export interface IStorage {
   createPollVote(vote: InsertPollVote): Promise<PollVote>;
   updatePollVote(id: number, vote: Partial<PollVote>): Promise<PollVote | undefined>;
   deletePollVote(id: number): Promise<boolean>;
+  
+  // Pulse Reaction operations
+  getPulseReactionsByPulseId(pulseId: number): Promise<PulseReaction[]>;
+  getPulseReactionByUserAndPulse(userId: number, pulseId: number, reactionType: "insightful" | "misinformed"): Promise<PulseReaction | undefined>;
+  createPulseReaction(reaction: InsertPulseReaction): Promise<PulseReaction>;
+  deletePulseReaction(id: number): Promise<boolean>;
+  
+  // User Reaction Quota operations
+  getUserReactionQuota(userId: number): Promise<UserReactionQuota | undefined>;
+  getOrCreateUserReactionQuota(userId: number): Promise<UserReactionQuota>;
+  incrementReactionQuota(userId: number, reactionType: "insightful" | "misinformed"): Promise<UserReactionQuota>;
+  checkReactionQuota(userId: number, reactionType: "insightful" | "misinformed"): Promise<{ 
+    hasQuotaRemaining: boolean; 
+    remaining: number; 
+    used: number;
+    max: number;
+  }>;
+  
+  // Pulse Share operations
+  getPulseSharesByRecipientId(recipientId: number): Promise<PulseShare[]>;
+  createPulseShare(share: InsertPulseShare): Promise<PulseShare>;
+  markPulseShareRead(id: number): Promise<PulseShare | undefined>;
+  deletePulseShare(id: number): Promise<boolean>;
   
   // Resume operations
   getResumeByUserId(userId: number): Promise<Resume | undefined>;
@@ -214,6 +241,10 @@ export class MemStorage implements IStorage {
   private pulseComments: Map<number, PulseComment>;
   private pollVotes: Map<number, PollVote>;
   private userHashtagFollows: Map<number, UserHashtagFollow>;
+  // New models for Industry Pulse Interaction System
+  private pulseReactions: Map<number, PulseReaction>;
+  private userReactionQuotas: Map<number, UserReactionQuota>;
+  private pulseShares: Map<number, PulseShare>;
   // New models for News Pulse feature
   private newsSources: Map<number, NewsSource>;
   private newsArticles: Map<number, NewsArticle>;
@@ -238,6 +269,10 @@ export class MemStorage implements IStorage {
   private currentHashtagId: number;
   private currentPulseHashtagId: number;
   private currentUserHashtagFollowId: number;
+  // Pulse interaction system IDs
+  private currentPulseReactionId: number;
+  private currentUserReactionQuotaId: number;
+  private currentPulseShareId: number;
   // New IDs for News Pulse feature
   private currentNewsSourceId: number;
   private currentNewsArticleId: number;
@@ -263,6 +298,10 @@ export class MemStorage implements IStorage {
     this.hashtags = new Map();
     this.pulseHashtags = new Map();
     this.userHashtagFollows = new Map();
+    // Initialize pulse interaction system maps
+    this.pulseReactions = new Map();
+    this.userReactionQuotas = new Map();
+    this.pulseShares = new Map();
     // Initialize news maps
     this.newsSources = new Map();
     this.newsArticles = new Map();
@@ -287,6 +326,10 @@ export class MemStorage implements IStorage {
     this.currentHashtagId = 1;
     this.currentPulseHashtagId = 1;
     this.currentUserHashtagFollowId = 1;
+    // Initialize pulse interaction system IDs
+    this.currentPulseReactionId = 1;
+    this.currentUserReactionQuotaId = 1; 
+    this.currentPulseShareId = 1;
     // Initialize news IDs
     this.currentNewsSourceId = 1;
     this.currentNewsArticleId = 1;
@@ -378,6 +421,11 @@ export class MemStorage implements IStorage {
     this.currentHashtagId = 1;
     this.currentPulseHashtagId = 1;
     this.currentUserHashtagFollowId = 1;
+    // Reset pulse interaction system IDs
+    this.currentPulseReactionId = 1;
+    this.currentUserReactionQuotaId = 1;
+    this.currentPulseShareId = 1;
+    // Reset News IDs
     this.currentNewsSourceId = 1;
     this.currentNewsArticleId = 1;
     this.currentNewsUserPreferenceId = 1;
@@ -507,6 +555,15 @@ export class MemStorage implements IStorage {
     
     // Clear all user hashtag follows
     this.userHashtagFollows.clear();
+    
+    // Clear all pulse reactions
+    this.pulseReactions.clear();
+    
+    // Clear all user reaction quotas
+    this.userReactionQuotas.clear();
+    
+    // Clear all pulse shares
+    this.pulseShares.clear();
     
     // Clear all news sources
     this.newsSources.clear();
@@ -1241,6 +1298,9 @@ export class MemStorage implements IStorage {
       pollOptions: [],
       projectId: null,
       likes: 24,
+      insightfulCount: 18,
+      misinformedCount: 2,
+      shareCount: 5,
       comments: 7,
       isPublished: true,
       createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
@@ -1260,6 +1320,9 @@ export class MemStorage implements IStorage {
       pollOptions: ["MERN (MongoDB, Express, React, Node)", "LAMP (Linux, Apache, MySQL, PHP)", "JAMstack", "Python + Django/Flask", ".NET Core + Angular/React"],
       projectId: null,
       likes: 42,
+      insightfulCount: 30,
+      misinformedCount: 3,
+      shareCount: 10,
       comments: 18,
       isPublished: true,
       createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
@@ -1279,6 +1342,9 @@ export class MemStorage implements IStorage {
       pollOptions: [],
       projectId: null,
       likes: 17,
+      insightfulCount: 12,
+      misinformedCount: 0,
+      shareCount: 3,
       comments: 5,
       isPublished: true,
       createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 days ago
@@ -1298,6 +1364,9 @@ export class MemStorage implements IStorage {
       pollOptions: [],
       projectId: demoProject.id,
       likes: 31,
+      insightfulCount: 25,
+      misinformedCount: 1,
+      shareCount: 7,
       comments: 12,
       isPublished: true,
       createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
@@ -1354,6 +1423,9 @@ export class MemStorage implements IStorage {
       pollOptions: insertPulse.pollOptions ?? [],
       projectId: insertPulse.projectId ?? null,
       likes: 0,
+      insightfulCount: 0,
+      misinformedCount: 0,
+      shareCount: 0,
       comments: 0,
       isPublished: insertPulse.isPublished ?? true,
       createdAt,
@@ -1494,6 +1566,217 @@ export class MemStorage implements IStorage {
   async deletePollVote(id: number): Promise<boolean> {
     return this.pollVotes.delete(id);
   }
+  
+  // Pulse Reaction operations
+  async getPulseReactionsByPulseId(pulseId: number): Promise<PulseReaction[]> {
+    return Array.from(this.pulseReactions.values())
+      .filter(reaction => reaction.pulseId === pulseId);
+  }
+  
+  async getPulseReactionByUserAndPulse(userId: number, pulseId: number, reactionType: "insightful" | "misinformed"): Promise<PulseReaction | undefined> {
+    return Array.from(this.pulseReactions.values())
+      .find(reaction => reaction.userId === userId && reaction.pulseId === pulseId && reaction.reactionType === reactionType);
+  }
+  
+  // Pulse Reaction operations implementation
+  async createPulseReaction(insertReaction: InsertPulseReaction): Promise<PulseReaction> {
+    const id = this.currentPulseReactionId++;
+    const createdAt = new Date();
+    
+    const reaction: PulseReaction = {
+      ...insertReaction,
+      id,
+      createdAt
+    };
+    
+    this.pulseReactions.set(id, reaction);
+    
+    // Update the pulse reaction count
+    const pulse = this.pulses.get(insertReaction.pulseId);
+    if (pulse) {
+      if (insertReaction.reactionType === "insightful") {
+        this.pulses.set(pulse.id, {
+          ...pulse,
+          insightfulCount: (pulse.insightfulCount || 0) + 1
+        });
+      } else if (insertReaction.reactionType === "misinformed") {
+        this.pulses.set(pulse.id, {
+          ...pulse,
+          misinformedCount: (pulse.misinformedCount || 0) + 1
+        });
+      }
+    }
+    
+    return reaction;
+  }
+  
+  async deletePulseReaction(id: number): Promise<boolean> {
+    const reaction = this.pulseReactions.get(id);
+    if (!reaction) return false;
+    
+    // Decrease the reaction count on the pulse
+    const pulse = this.pulses.get(reaction.pulseId);
+    if (pulse) {
+      if (reaction.reactionType === "insightful" && pulse.insightfulCount && pulse.insightfulCount > 0) {
+        this.pulses.set(pulse.id, {
+          ...pulse,
+          insightfulCount: pulse.insightfulCount - 1
+        });
+      } else if (reaction.reactionType === "misinformed" && pulse.misinformedCount && pulse.misinformedCount > 0) {
+        this.pulses.set(pulse.id, {
+          ...pulse,
+          misinformedCount: pulse.misinformedCount - 1
+        });
+      }
+    }
+    
+    return this.pulseReactions.delete(id);
+  }
+  
+  // User Reaction Quota operations
+  async getUserReactionQuota(userId: number): Promise<UserReactionQuota | undefined> {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set to beginning of day
+    
+    return Array.from(this.userReactionQuotas.values())
+      .find(quota => {
+        const quotaDate = new Date(quota.date);
+        quotaDate.setHours(0, 0, 0, 0);
+        return quota.userId === userId && quotaDate.getTime() === today.getTime();
+      });
+  }
+  
+  async getOrCreateUserReactionQuota(userId: number): Promise<UserReactionQuota> {
+    const existingQuota = await this.getUserReactionQuota(userId);
+    if (existingQuota) {
+      return existingQuota;
+    }
+    
+    // Create a new quota for today
+    const id = this.currentUserReactionQuotaId++;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const quota: UserReactionQuota = {
+      id,
+      userId,
+      date: today,
+      insightfulQuotaUsed: 0,
+      misinformedQuotaUsed: 0,
+      insightfulQuotaMax: 10,
+      misinformedQuotaMax: 10,
+      updatedAt: new Date()
+    };
+    
+    this.userReactionQuotas.set(id, quota);
+    return quota;
+  }
+  
+  async incrementReactionQuota(userId: number, reactionType: "insightful" | "misinformed"): Promise<UserReactionQuota> {
+    const quota = await this.getOrCreateUserReactionQuota(userId);
+    
+    // Update the appropriate counter
+    if (reactionType === "insightful") {
+      quota.insightfulQuotaUsed += 1;
+    } else if (reactionType === "misinformed") {
+      quota.misinformedQuotaUsed += 1;
+    }
+    
+    quota.updatedAt = new Date();
+    this.userReactionQuotas.set(quota.id, quota);
+    
+    return quota;
+  }
+  
+  async checkReactionQuota(userId: number, reactionType: "insightful" | "misinformed"): Promise<{ 
+    hasQuotaRemaining: boolean; 
+    remaining: number; 
+    used: number;
+    max: number;
+  }> {
+    const quota = await this.getOrCreateUserReactionQuota(userId);
+    
+    if (reactionType === "insightful") {
+      const remaining = quota.insightfulQuotaMax - quota.insightfulQuotaUsed;
+      return {
+        hasQuotaRemaining: remaining > 0,
+        remaining,
+        used: quota.insightfulQuotaUsed,
+        max: quota.insightfulQuotaMax
+      };
+    } else {
+      const remaining = quota.misinformedQuotaMax - quota.misinformedQuotaUsed;
+      return {
+        hasQuotaRemaining: remaining > 0,
+        remaining,
+        used: quota.misinformedQuotaUsed,
+        max: quota.misinformedQuotaMax
+      };
+    }
+  }
+  
+  // Pulse Share operations
+  async getPulseSharesByRecipientId(recipientId: number): Promise<PulseShare[]> {
+    return Array.from(this.pulseShares.values())
+      .filter(share => share.recipientId === recipientId)
+      .sort((a, b) => {
+        const timeA = a.createdAt ? a.createdAt.getTime() : 0;
+        const timeB = b.createdAt ? b.createdAt.getTime() : 0;
+        return timeB - timeA; // Sort newest first
+      });
+  }
+  
+  async createPulseShare(insertShare: InsertPulseShare): Promise<PulseShare> {
+    const id = this.currentPulseShareId++;
+    const createdAt = new Date();
+    
+    const share: PulseShare = {
+      ...insertShare,
+      id,
+      isRead: false,
+      createdAt
+    };
+    
+    this.pulseShares.set(id, share);
+    
+    // Update the share count on the pulse
+    const pulse = this.pulses.get(insertShare.pulseId);
+    if (pulse) {
+      this.pulses.set(pulse.id, {
+        ...pulse,
+        shareCount: (pulse.shareCount || 0) + 1
+      });
+    }
+    
+    return share;
+  }
+  
+  async markPulseShareRead(id: number): Promise<PulseShare | undefined> {
+    const share = this.pulseShares.get(id);
+    if (!share) return undefined;
+    
+    const updatedShare = { ...share, isRead: true };
+    this.pulseShares.set(id, updatedShare);
+    return updatedShare;
+  }
+  
+  async deletePulseShare(id: number): Promise<boolean> {
+    const share = this.pulseShares.get(id);
+    if (!share) return false;
+    
+    // Decrease the share count on the pulse
+    const pulse = this.pulses.get(share.pulseId);
+    if (pulse && pulse.shareCount && pulse.shareCount > 0) {
+      this.pulses.set(pulse.id, {
+        ...pulse,
+        shareCount: pulse.shareCount - 1
+      });
+    }
+    
+    return this.pulseShares.delete(id);
+  }
+  
+
 
   /**
    * Clears all users except the demo user (id: 1)

@@ -25,6 +25,9 @@ import {
   insertPulseSchema,
   insertPulseCommentSchema,
   insertPollVoteSchema,
+  insertPulseReactionSchema,
+  insertUserReactionQuotaSchema,
+  insertPulseShareSchema,
   insertNewsSourceSchema,
   insertNewsArticleSchema,
   insertNewsUserPreferenceSchema,
@@ -37,6 +40,8 @@ import {
   InsertPortfolio,
   InsertService,
   InsertPollVote,
+  InsertPulseReaction,
+  InsertPulseShare,
   InsertNewsSource,
   InsertNewsArticle,
   InsertNewsUserPreference
@@ -4321,6 +4326,282 @@ ${extractedText.substring(0, 5000)}
         error: "Failed to fetch news", 
         details: error.message || "Unknown error" 
       });
+    }
+  });
+
+  // Pulse Reaction endpoints
+  apiRouter.post("/pulse-reactions", async (req: Request, res: Response) => {
+    try {
+      console.log(`[POST /pulse-reactions] Creating reaction with data:`, req.body);
+      
+      // Validate the request body
+      const reactionData = insertPulseReactionSchema.parse(req.body);
+      
+      // Check if user has remaining quota
+      const quotaCheck = await storage.checkReactionQuota(
+        reactionData.userId, 
+        reactionData.reactionType as "insightful" | "misinformed"
+      );
+      
+      if (!quotaCheck.hasQuotaRemaining) {
+        return res.status(429).json({ 
+          message: `You've reached your daily limit of ${quotaCheck.max} ${reactionData.reactionType} reactions`,
+          quota: quotaCheck
+        });
+      }
+      
+      // Check if the user has already reacted to this pulse with this reaction type
+      const existingReaction = await storage.getPulseReactionByUserAndPulse(
+        reactionData.userId,
+        reactionData.pulseId,
+        reactionData.reactionType as "insightful" | "misinformed"
+      );
+      
+      if (existingReaction) {
+        return res.status(409).json({ 
+          message: "You've already reacted to this pulse with this reaction type", 
+          existingReaction 
+        });
+      }
+      
+      // Create the reaction
+      const reaction = await storage.createPulseReaction(reactionData as InsertPulseReaction);
+      
+      // Increment the user's quota usage
+      await storage.incrementReactionQuota(
+        reactionData.userId,
+        reactionData.reactionType as "insightful" | "misinformed"
+      );
+      
+      // Get updated quota status
+      const updatedQuota = await storage.getUserReactionQuota(reactionData.userId);
+      
+      console.log(`[POST /pulse-reactions] Created reaction with ID: ${reaction.id}`);
+      res.status(201).json({ 
+        reaction,
+        quota: {
+          used: reactionData.reactionType === "insightful" 
+            ? updatedQuota?.insightfulQuotaUsed || 0 
+            : updatedQuota?.misinformedQuotaUsed || 0,
+          remaining: reactionData.reactionType === "insightful"
+            ? (updatedQuota?.insightfulQuotaMax || 10) - (updatedQuota?.insightfulQuotaUsed || 0)
+            : (updatedQuota?.misinformedQuotaMax || 10) - (updatedQuota?.misinformedQuotaUsed || 0),
+          max: reactionData.reactionType === "insightful"
+            ? updatedQuota?.insightfulQuotaMax || 10
+            : updatedQuota?.misinformedQuotaMax || 10
+        }
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        console.error(`[POST /pulse-reactions] Validation error:`, error.errors);
+        res.status(400).json({ message: error.errors });
+      } else {
+        console.error(`[POST /pulse-reactions] Server error:`, error);
+        res.status(500).json({ message: "Internal server error" });
+      }
+    }
+  });
+  
+  apiRouter.delete("/pulse-reactions/:id", async (req: Request, res: Response) => {
+    try {
+      const reactionId = parseInt(req.params.id);
+      
+      if (isNaN(reactionId)) {
+        return res.status(400).json({ message: "Invalid reaction ID format" });
+      }
+      
+      const result = await storage.deletePulseReaction(reactionId);
+      
+      if (!result) {
+        return res.status(404).json({ message: "Reaction not found" });
+      }
+      
+      res.status(200).json({ message: "Reaction deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting reaction:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  apiRouter.get("/pulses/:pulseId/reactions", async (req: Request, res: Response) => {
+    try {
+      const pulseId = parseInt(req.params.pulseId);
+      
+      if (isNaN(pulseId)) {
+        return res.status(400).json({ message: "Invalid pulse ID format" });
+      }
+      
+      const reactions = await storage.getPulseReactionsByPulseId(pulseId);
+      
+      res.json(reactions);
+    } catch (error) {
+      console.error("Error fetching pulse reactions:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  apiRouter.get("/users/:userId/reaction-quota", async (req: Request, res: Response) => {
+    try {
+      let userId: number;
+      const userIdParam = req.params.userId;
+      
+      // Improved detection of Firebase UIDs - they're long and contain non-numeric characters
+      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
+      
+      if (isFirebaseUid) {
+        // Try to find user with this username (Firebase UID)
+        const user = await storage.getUserByUsername(userIdParam);
+        
+        if (!user) {
+          return res.status(404).json({ message: "User not found" });
+        }
+        
+        userId = user.id;
+      } else {
+        // Try to parse as numeric ID
+        userId = parseInt(userIdParam);
+        
+        if (isNaN(userId)) {
+          return res.status(400).json({ message: "Invalid user ID format" });
+        }
+      }
+      
+      // Get the user's reaction quota
+      const quota = await storage.getOrCreateUserReactionQuota(userId);
+      
+      // Format the response
+      const response = {
+        insightful: {
+          used: quota.insightfulQuotaUsed || 0,
+          remaining: (quota.insightfulQuotaMax || 10) - (quota.insightfulQuotaUsed || 0),
+          max: quota.insightfulQuotaMax || 10
+        },
+        misinformed: {
+          used: quota.misinformedQuotaUsed || 0,
+          remaining: (quota.misinformedQuotaMax || 10) - (quota.misinformedQuotaUsed || 0),
+          max: quota.misinformedQuotaMax || 10
+        },
+        date: quota.date
+      };
+      
+      res.json(response);
+    } catch (error) {
+      console.error("Error fetching reaction quota:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  // Pulse Share endpoints
+  apiRouter.post("/pulse-shares", async (req: Request, res: Response) => {
+    try {
+      console.log(`[POST /pulse-shares] Creating pulse share with data:`, req.body);
+      
+      // Validate the request body
+      const shareData = insertPulseShareSchema.parse(req.body);
+      
+      // Create the share
+      const share = await storage.createPulseShare(shareData as InsertPulseShare);
+      
+      console.log(`[POST /pulse-shares] Created share with ID: ${share.id}`);
+      res.status(201).json(share);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        console.error(`[POST /pulse-shares] Validation error:`, error.errors);
+        res.status(400).json({ message: error.errors });
+      } else {
+        console.error(`[POST /pulse-shares] Server error:`, error);
+        res.status(500).json({ message: "Internal server error" });
+      }
+    }
+  });
+  
+  apiRouter.get("/users/:userId/pulse-shares", async (req: Request, res: Response) => {
+    try {
+      let userId: number;
+      const userIdParam = req.params.userId;
+      
+      // Improved detection of Firebase UIDs - they're long and contain non-numeric characters
+      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
+      
+      if (isFirebaseUid) {
+        // Try to find user with this username (Firebase UID)
+        const user = await storage.getUserByUsername(userIdParam);
+        
+        if (!user) {
+          return res.status(404).json({ message: "User not found" });
+        }
+        
+        userId = user.id;
+      } else {
+        // Try to parse as numeric ID
+        userId = parseInt(userIdParam);
+        
+        if (isNaN(userId)) {
+          return res.status(400).json({ message: "Invalid user ID format" });
+        }
+      }
+      
+      // Get the shares for this user as recipient
+      const shares = await storage.getPulseSharesByRecipientId(userId);
+      
+      // Enrich with pulse and sender data
+      const enrichedShares = await Promise.all(shares.map(async (share) => {
+        const pulse = await storage.getPulseById(share.pulseId);
+        const sender = await storage.getUser(share.senderId);
+        
+        return {
+          ...share,
+          pulse,
+          sender
+        };
+      }));
+      
+      res.json(enrichedShares);
+    } catch (error) {
+      console.error("Error fetching pulse shares:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  apiRouter.patch("/pulse-shares/:id/read", async (req: Request, res: Response) => {
+    try {
+      const shareId = parseInt(req.params.id);
+      
+      if (isNaN(shareId)) {
+        return res.status(400).json({ message: "Invalid share ID format" });
+      }
+      
+      const updatedShare = await storage.markPulseShareRead(shareId);
+      
+      if (!updatedShare) {
+        return res.status(404).json({ message: "Share not found" });
+      }
+      
+      res.json(updatedShare);
+    } catch (error) {
+      console.error("Error marking share as read:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  apiRouter.delete("/pulse-shares/:id", async (req: Request, res: Response) => {
+    try {
+      const shareId = parseInt(req.params.id);
+      
+      if (isNaN(shareId)) {
+        return res.status(400).json({ message: "Invalid share ID format" });
+      }
+      
+      const result = await storage.deletePulseShare(shareId);
+      
+      if (!result) {
+        return res.status(404).json({ message: "Share not found" });
+      }
+      
+      res.status(200).json({ message: "Share deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting share:", error);
+      res.status(500).json({ message: "Internal server error" });
     }
   });
 

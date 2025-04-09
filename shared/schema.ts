@@ -304,6 +304,12 @@ export const mediaTypeEnum = pgEnum("media_type", [
   "video"
 ]);
 
+// Reaction type enum for pulse reactions
+export const reactionTypeEnum = pgEnum("reaction_type", [
+  "insightful",
+  "misinformed",
+]);
+
 // Pulses model for user-created content
 export const pulses = pgTable("pulses", {
   id: serial("id").primaryKey(),
@@ -316,7 +322,10 @@ export const pulses = pgTable("pulses", {
   mediaLocalStorageKeys: jsonb("media_local_storage_keys").default('[]'), // Keys to access images/videos in localStorage
   pollOptions: jsonb("poll_options").default('[]'), // For poll type pulses
   projectId: integer("project_id").references(() => projects.id), // For project type pulses
-  likes: integer("likes").default(0),
+  likes: integer("likes").default(0), // Legacy field - will be replaced by insightful_count
+  insightfulCount: integer("insightful_count").default(0), // Count of insightful reactions
+  misinformedCount: integer("misinformed_count").default(0), // Count of misinformed reactions
+  shareCount: integer("share_count").default(0), // Count of shares
   comments: integer("comments").default(0),
   isPublished: boolean("is_published").default(true),
   createdAt: timestamp("created_at").defaultNow(),
@@ -512,3 +521,62 @@ export type InsertNewsArticle = z.infer<typeof insertNewsArticleSchema>;
 
 export type NewsUserPreference = typeof newsUserPreferences.$inferSelect;
 export type InsertNewsUserPreference = z.infer<typeof insertNewsUserPreferenceSchema>;
+
+// Pulse reactions model - tracks user reactions (insightful, misinformed) to pulses
+export const pulseReactions = pgTable("pulse_reactions", {
+  id: serial("id").primaryKey(),
+  pulseId: integer("pulse_id").references(() => pulses.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  reactionType: reactionTypeEnum("reaction_type").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// User reaction quotas model - tracks daily quotas for user reactions
+export const userReactionQuotas = pgTable("user_reaction_quotas", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  date: timestamp("date").notNull(),
+  insightfulQuotaUsed: integer("insightful_quota_used").default(0),
+  misinformedQuotaUsed: integer("misinformed_quota_used").default(0),
+  insightfulQuotaMax: integer("insightful_quota_max").default(10),
+  misinformedQuotaMax: integer("misinformed_quota_max").default(10),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Pulse shares model - tracks when users share pulses with other users
+export const pulseShares = pgTable("pulse_shares", {
+  id: serial("id").primaryKey(),
+  pulseId: integer("pulse_id").references(() => pulses.id).notNull(),
+  senderId: integer("sender_id").references(() => users.id).notNull(),
+  recipientId: integer("recipient_id").references(() => users.id).notNull(),
+  message: text("message"),
+  isRead: boolean("is_read").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Insert schemas for the new models
+export const insertPulseReactionSchema = createInsertSchema(pulseReactions).omit({
+  id: true,
+  createdAt: true
+});
+
+export const insertUserReactionQuotaSchema = createInsertSchema(userReactionQuotas).omit({
+  id: true,
+  updatedAt: true
+});
+
+export const insertPulseShareSchema = createInsertSchema(pulseShares).omit({
+  id: true,
+  isRead: true,
+  createdAt: true
+});
+
+// Export types for the new models
+export type PulseReaction = typeof pulseReactions.$inferSelect;
+export type InsertPulseReaction = z.infer<typeof insertPulseReactionSchema>;
+
+export type UserReactionQuota = typeof userReactionQuotas.$inferSelect;
+export type InsertUserReactionQuota = z.infer<typeof insertUserReactionQuotaSchema>;
+
+export type PulseShare = typeof pulseShares.$inferSelect;
+export type InsertPulseShare = z.infer<typeof insertPulseShareSchema>;
