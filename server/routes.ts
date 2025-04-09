@@ -4297,6 +4297,32 @@ ${extractedText.substring(0, 5000)}
       return res.status(500).json({ error: "Failed to fetch news pulses" });
     }
   });
+  
+  // News fetch trigger endpoint (for manual testing)
+  apiRouter.post("/news/fetch", async (req: Request, res: Response) => {
+    try {
+      // Import the fetch news script
+      const fetchNewsScript = await import('./scripts/fetch-news');
+      
+      console.log("Triggering manual news fetch operation");
+      
+      // Execute the news fetch operation
+      const result = await fetchNewsScript.default();
+      
+      return res.json({ 
+        success: true, 
+        message: "News fetch operation completed successfully",
+        result 
+      });
+    } catch (err) {
+      const error = err as Error;
+      console.error("Error triggering news fetch:", error);
+      return res.status(500).json({ 
+        error: "Failed to fetch news", 
+        details: error.message || "Unknown error" 
+      });
+    }
+  });
 
   app.use("/api", apiRouter);
 

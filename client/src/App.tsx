@@ -17,6 +17,7 @@ import IndustryPulsePage from "@/pages/industry-pulse";
 import SearchPage from "@/pages/search";
 import AuthPage from "@/pages/auth-page";
 import EmailVerification from "@/pages/email-verification";
+import NewsSourcesPage from "@/pages/news-sources";
 
 // Redirect component to handle page redirects
 const Redirect = ({ to }: { to: string }) => {
@@ -85,6 +86,9 @@ function Router() {
       </Route>
       <Route path="/search">
         <ProtectedRoute path="/search" component={SearchPage} />
+      </Route>
+      <Route path="/news-sources">
+        <ProtectedRoute path="/news-sources" component={NewsSourcesPage} />
       </Route>
       <Route component={NotFound} />
     </Switch>
