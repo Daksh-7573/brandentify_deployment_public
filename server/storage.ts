@@ -54,6 +54,7 @@ export interface IStorage {
   
   // Pulse Reaction operations
   getPulseReactionsByPulseId(pulseId: number): Promise<PulseReaction[]>;
+  getPulseReactionById(id: number): Promise<PulseReaction | undefined>;
   getPulseReactionByUserAndPulse(userId: number, pulseId: number, reactionType: "insightful" | "misinformed"): Promise<PulseReaction | undefined>;
   createPulseReaction(reaction: InsertPulseReaction): Promise<PulseReaction>;
   deletePulseReaction(id: number): Promise<boolean>;
@@ -62,6 +63,7 @@ export interface IStorage {
   getUserReactionQuota(userId: number): Promise<UserReactionQuota | undefined>;
   getOrCreateUserReactionQuota(userId: number): Promise<UserReactionQuota>;
   incrementReactionQuota(userId: number, reactionType: "insightful" | "misinformed"): Promise<UserReactionQuota>;
+  decrementReactionQuota(userId: number, reactionType: "insightful" | "misinformed"): Promise<UserReactionQuota>;
   checkReactionQuota(userId: number, reactionType: "insightful" | "misinformed"): Promise<{ 
     hasQuotaRemaining: boolean; 
     remaining: number; 
@@ -1573,6 +1575,10 @@ export class MemStorage implements IStorage {
       .filter(reaction => reaction.pulseId === pulseId);
   }
   
+  async getPulseReactionById(id: number): Promise<PulseReaction | undefined> {
+    return this.pulseReactions.get(id);
+  }
+  
   async getPulseReactionByUserAndPulse(userId: number, pulseId: number, reactionType: "insightful" | "misinformed"): Promise<PulseReaction | undefined> {
     return Array.from(this.pulseReactions.values())
       .find(reaction => reaction.userId === userId && reaction.pulseId === pulseId && reaction.reactionType === reactionType);
@@ -1630,6 +1636,11 @@ export class MemStorage implements IStorage {
       }
     }
     
+    // Restore the user's reaction quota when they remove a reaction
+    if (reaction.userId && reaction.reactionType) {
+      await this.decrementReactionQuota(reaction.userId, reaction.reactionType);
+    }
+    
     return this.pulseReactions.delete(id);
   }
   
@@ -1677,9 +1688,25 @@ export class MemStorage implements IStorage {
     
     // Update the appropriate counter
     if (reactionType === "insightful") {
-      quota.insightfulQuotaUsed += 1;
+      quota.insightfulQuotaUsed = (quota.insightfulQuotaUsed || 0) + 1;
     } else if (reactionType === "misinformed") {
-      quota.misinformedQuotaUsed += 1;
+      quota.misinformedQuotaUsed = (quota.misinformedQuotaUsed || 0) + 1;
+    }
+    
+    quota.updatedAt = new Date();
+    this.userReactionQuotas.set(quota.id, quota);
+    
+    return quota;
+  }
+  
+  async decrementReactionQuota(userId: number, reactionType: "insightful" | "misinformed"): Promise<UserReactionQuota> {
+    const quota = await this.getOrCreateUserReactionQuota(userId);
+    
+    // Update the appropriate counter (decrement only if greater than 0)
+    if (reactionType === "insightful" && quota.insightfulQuotaUsed && quota.insightfulQuotaUsed > 0) {
+      quota.insightfulQuotaUsed -= 1;
+    } else if (reactionType === "misinformed" && quota.misinformedQuotaUsed && quota.misinformedQuotaUsed > 0) {
+      quota.misinformedQuotaUsed -= 1;
     }
     
     quota.updatedAt = new Date();

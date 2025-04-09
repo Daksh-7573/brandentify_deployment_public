@@ -4410,13 +4410,29 @@ ${extractedText.substring(0, 5000)}
         return res.status(400).json({ message: "Invalid reaction ID format" });
       }
       
+      // Get reaction before deleting to know the user and reaction type
+      const reaction = await storage.getPulseReactionById(reactionId);
+      if (!reaction) {
+        return res.status(404).json({ message: "Reaction not found" });
+      }
+      
       const result = await storage.deletePulseReaction(reactionId);
       
       if (!result) {
         return res.status(404).json({ message: "Reaction not found" });
       }
       
-      res.status(200).json({ message: "Reaction deleted successfully" });
+      // Get updated quota data to return to client
+      const quotaData = await storage.checkReactionQuota(reaction.userId, reaction.reactionType);
+      
+      res.status(200).json({ 
+        message: "Reaction deleted successfully",
+        quota: {
+          used: quotaData.used,
+          remaining: quotaData.remaining,
+          max: quotaData.max
+        }
+      });
     } catch (error) {
       console.error("Error deleting reaction:", error);
       res.status(500).json({ message: "Internal server error" });
