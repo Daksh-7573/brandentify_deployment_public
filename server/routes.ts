@@ -25,6 +25,9 @@ import {
   insertPulseSchema,
   insertPulseCommentSchema,
   insertPollVoteSchema,
+  insertNewsSourceSchema,
+  insertNewsArticleSchema,
+  insertNewsUserPreferenceSchema,
   InsertWorkExperience,
   InsertEducation,
   InsertSkill,
@@ -33,7 +36,10 @@ import {
   InsertProjectEndorsement,
   InsertPortfolio,
   InsertService,
-  InsertPollVote
+  InsertPollVote,
+  InsertNewsSource,
+  InsertNewsArticle,
+  InsertNewsUserPreference
 } from "@shared/schema";
 import { generateCareerAdvice } from "./services/ai-service";
 import { getJobTitleSuggestions } from "./services/title-suggestions";
@@ -3851,6 +3857,444 @@ ${extractedText.substring(0, 5000)}
     } catch (error) {
       console.error("[SEARCH] Error:", error);
       return res.status(500).json({ error: "Failed to perform search" });
+    }
+  });
+  
+  // News Source routes
+  apiRouter.get("/news-sources", async (req: Request, res: Response) => {
+    try {
+      const category = req.query.category as string;
+      
+      if (category) {
+        const sources = await storage.getNewsSourcesByCategory(category);
+        return res.json(sources);
+      } else {
+        const sources = await storage.getNewsSources();
+        return res.json(sources);
+      }
+    } catch (error) {
+      console.error("Error fetching news sources:", error);
+      return res.status(500).json({ error: "Failed to fetch news sources" });
+    }
+  });
+  
+  apiRouter.get("/news-sources/:id", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ error: "Invalid news source ID" });
+      }
+      
+      const source = await storage.getNewsSourceById(id);
+      if (!source) {
+        return res.status(404).json({ error: "News source not found" });
+      }
+      
+      return res.json(source);
+    } catch (error) {
+      console.error("Error fetching news source:", error);
+      return res.status(500).json({ error: "Failed to fetch news source" });
+    }
+  });
+  
+  apiRouter.post("/news-sources", async (req: Request, res: Response) => {
+    try {
+      const sourceData = insertNewsSourceSchema.parse(req.body);
+      const source = await storage.createNewsSource(sourceData);
+      return res.status(201).json(source);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors });
+      }
+      console.error("Error creating news source:", error);
+      return res.status(500).json({ error: "Failed to create news source" });
+    }
+  });
+  
+  apiRouter.put("/news-sources/:id", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ error: "Invalid news source ID" });
+      }
+      
+      const source = await storage.getNewsSourceById(id);
+      if (!source) {
+        return res.status(404).json({ error: "News source not found" });
+      }
+      
+      const sourceData = req.body;
+      const updatedSource = await storage.updateNewsSource(id, sourceData);
+      return res.json(updatedSource);
+    } catch (error) {
+      console.error("Error updating news source:", error);
+      return res.status(500).json({ error: "Failed to update news source" });
+    }
+  });
+  
+  apiRouter.delete("/news-sources/:id", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ error: "Invalid news source ID" });
+      }
+      
+      const source = await storage.getNewsSourceById(id);
+      if (!source) {
+        return res.status(404).json({ error: "News source not found" });
+      }
+      
+      const deleted = await storage.deleteNewsSource(id);
+      if (deleted) {
+        return res.status(204).end();
+      } else {
+        return res.status(500).json({ error: "Failed to delete news source" });
+      }
+    } catch (error) {
+      console.error("Error deleting news source:", error);
+      return res.status(500).json({ error: "Failed to delete news source" });
+    }
+  });
+  
+  // News Article routes
+  apiRouter.get("/news-articles", async (req: Request, res: Response) => {
+    try {
+      const sourceId = req.query.sourceId ? parseInt(req.query.sourceId as string) : undefined;
+      const category = req.query.category as string;
+      const industry = req.query.industry as string;
+      const unprocessed = req.query.unprocessed === 'true';
+      
+      if (sourceId && !isNaN(sourceId)) {
+        const articles = await storage.getNewsArticlesBySourceId(sourceId);
+        return res.json(articles);
+      } else if (category) {
+        const articles = await storage.getNewsArticlesByCategory(category);
+        return res.json(articles);
+      } else if (industry) {
+        const articles = await storage.getNewsArticlesByIndustry(industry);
+        return res.json(articles);
+      } else if (unprocessed) {
+        const articles = await storage.getUnprocessedNewsArticles();
+        return res.json(articles);
+      } else {
+        const articles = await storage.getNewsArticles();
+        return res.json(articles);
+      }
+    } catch (error) {
+      console.error("Error fetching news articles:", error);
+      return res.status(500).json({ error: "Failed to fetch news articles" });
+    }
+  });
+  
+  apiRouter.get("/news-articles/:id", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ error: "Invalid news article ID" });
+      }
+      
+      const article = await storage.getNewsArticleById(id);
+      if (!article) {
+        return res.status(404).json({ error: "News article not found" });
+      }
+      
+      return res.json(article);
+    } catch (error) {
+      console.error("Error fetching news article:", error);
+      return res.status(500).json({ error: "Failed to fetch news article" });
+    }
+  });
+  
+  apiRouter.post("/news-articles", async (req: Request, res: Response) => {
+    try {
+      const articleData = insertNewsArticleSchema.parse(req.body);
+      const article = await storage.createNewsArticle(articleData);
+      return res.status(201).json(article);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors });
+      }
+      console.error("Error creating news article:", error);
+      return res.status(500).json({ error: "Failed to create news article" });
+    }
+  });
+  
+  apiRouter.put("/news-articles/:id", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ error: "Invalid news article ID" });
+      }
+      
+      const article = await storage.getNewsArticleById(id);
+      if (!article) {
+        return res.status(404).json({ error: "News article not found" });
+      }
+      
+      const articleData = req.body;
+      const updatedArticle = await storage.updateNewsArticle(id, articleData);
+      return res.json(updatedArticle);
+    } catch (error) {
+      console.error("Error updating news article:", error);
+      return res.status(500).json({ error: "Failed to update news article" });
+    }
+  });
+  
+  apiRouter.delete("/news-articles/:id", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ error: "Invalid news article ID" });
+      }
+      
+      const article = await storage.getNewsArticleById(id);
+      if (!article) {
+        return res.status(404).json({ error: "News article not found" });
+      }
+      
+      const deleted = await storage.deleteNewsArticle(id);
+      if (deleted) {
+        return res.status(204).end();
+      } else {
+        return res.status(500).json({ error: "Failed to delete news article" });
+      }
+    } catch (error) {
+      console.error("Error deleting news article:", error);
+      return res.status(500).json({ error: "Failed to delete news article" });
+    }
+  });
+  
+  // News User Preference routes
+  apiRouter.get("/users/:userId/news-preferences", async (req: Request, res: Response) => {
+    try {
+      const userIdParam = req.params.userId;
+      let userId: number;
+      
+      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
+      
+      if (isFirebaseUid) {
+        const user = await storage.getUserByUsername(userIdParam);
+        if (!user) {
+          return res.status(404).json({ error: "User not found" });
+        }
+        userId = user.id;
+      } else {
+        userId = parseInt(userIdParam);
+        if (isNaN(userId)) {
+          return res.status(400).json({ error: "Invalid user ID format" });
+        }
+      }
+      
+      const preferences = await storage.getNewsUserPreferenceByUserId(userId);
+      if (!preferences) {
+        return res.status(404).json({ error: "News preferences not found" });
+      }
+      
+      return res.json(preferences);
+    } catch (error) {
+      console.error("Error fetching news preferences:", error);
+      return res.status(500).json({ error: "Failed to fetch news preferences" });
+    }
+  });
+  
+  apiRouter.post("/users/:userId/news-preferences", async (req: Request, res: Response) => {
+    try {
+      const userIdParam = req.params.userId;
+      let userId: number;
+      
+      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
+      
+      if (isFirebaseUid) {
+        const user = await storage.getUserByUsername(userIdParam);
+        if (!user) {
+          return res.status(404).json({ error: "User not found" });
+        }
+        userId = user.id;
+      } else {
+        userId = parseInt(userIdParam);
+        if (isNaN(userId)) {
+          return res.status(400).json({ error: "Invalid user ID format" });
+        }
+      }
+      
+      // Check if preferences already exist
+      const existingPreferences = await storage.getNewsUserPreferenceByUserId(userId);
+      if (existingPreferences) {
+        return res.status(400).json({ error: "News preferences already exist for this user" });
+      }
+      
+      const preferenceData: InsertNewsUserPreference = {
+        ...req.body,
+        userId
+      };
+      
+      const preferences = await storage.createNewsUserPreference(preferenceData);
+      return res.status(201).json(preferences);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors });
+      }
+      console.error("Error creating news preferences:", error);
+      return res.status(500).json({ error: "Failed to create news preferences" });
+    }
+  });
+  
+  apiRouter.put("/users/:userId/news-preferences", async (req: Request, res: Response) => {
+    try {
+      const userIdParam = req.params.userId;
+      let userId: number;
+      
+      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
+      
+      if (isFirebaseUid) {
+        const user = await storage.getUserByUsername(userIdParam);
+        if (!user) {
+          return res.status(404).json({ error: "User not found" });
+        }
+        userId = user.id;
+      } else {
+        userId = parseInt(userIdParam);
+        if (isNaN(userId)) {
+          return res.status(400).json({ error: "Invalid user ID format" });
+        }
+      }
+      
+      // Find existing preferences
+      const existingPreferences = await storage.getNewsUserPreferenceByUserId(userId);
+      if (!existingPreferences) {
+        // If no preferences exist, create them
+        const preferenceData: InsertNewsUserPreference = {
+          ...req.body,
+          userId
+        };
+        
+        const preferences = await storage.createNewsUserPreference(preferenceData);
+        return res.status(201).json(preferences);
+      }
+      
+      // Update existing preferences
+      const updatedPreferences = await storage.updateNewsUserPreference(existingPreferences.id, req.body);
+      return res.json(updatedPreferences);
+    } catch (error) {
+      console.error("Error updating news preferences:", error);
+      return res.status(500).json({ error: "Failed to update news preferences" });
+    }
+  });
+  
+  apiRouter.delete("/users/:userId/news-preferences", async (req: Request, res: Response) => {
+    try {
+      const userIdParam = req.params.userId;
+      let userId: number;
+      
+      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
+      
+      if (isFirebaseUid) {
+        const user = await storage.getUserByUsername(userIdParam);
+        if (!user) {
+          return res.status(404).json({ error: "User not found" });
+        }
+        userId = user.id;
+      } else {
+        userId = parseInt(userIdParam);
+        if (isNaN(userId)) {
+          return res.status(400).json({ error: "Invalid user ID format" });
+        }
+      }
+      
+      // Find existing preferences
+      const existingPreferences = await storage.getNewsUserPreferenceByUserId(userId);
+      if (!existingPreferences) {
+        return res.status(404).json({ error: "News preferences not found" });
+      }
+      
+      // Delete preferences
+      const deleted = await storage.deleteNewsUserPreference(existingPreferences.id);
+      if (deleted) {
+        return res.status(204).end();
+      } else {
+        return res.status(500).json({ error: "Failed to delete news preferences" });
+      }
+    } catch (error) {
+      console.error("Error deleting news preferences:", error);
+      return res.status(500).json({ error: "Failed to delete news preferences" });
+    }
+  });
+  
+  // News Pulse routes
+  apiRouter.post("/news-pulses", async (req: Request, res: Response) => {
+    try {
+      const { articleId, userId } = req.body;
+      
+      if (!articleId || !userId) {
+        return res.status(400).json({ error: "Missing required fields: articleId, userId" });
+      }
+      
+      // Get the article
+      const article = await storage.getNewsArticleById(parseInt(articleId));
+      if (!article) {
+        return res.status(404).json({ error: "News article not found" });
+      }
+      
+      // Get or validate user ID
+      let resolvedUserId: number;
+      
+      if (typeof userId === 'string' && userId.length > 20 && /[^0-9]/.test(userId)) {
+        // Firebase UID
+        const user = await storage.getUserByUsername(userId);
+        if (!user) {
+          return res.status(404).json({ error: "User not found" });
+        }
+        resolvedUserId = user.id;
+      } else {
+        resolvedUserId = parseInt(userId as string);
+        if (isNaN(resolvedUserId)) {
+          return res.status(400).json({ error: "Invalid user ID format" });
+        }
+      }
+      
+      // Create the news pulse
+      const pulse = await storage.createNewsPulse(article, resolvedUserId);
+      return res.status(201).json(pulse);
+    } catch (error) {
+      console.error("Error creating news pulse:", error);
+      return res.status(500).json({ error: "Failed to create news pulse" });
+    }
+  });
+  
+  apiRouter.get("/news-pulses", async (req: Request, res: Response) => {
+    try {
+      const userIdParam = req.query.userId as string;
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+      
+      let userId: number;
+      
+      // Only process if userId is provided
+      if (userIdParam) {
+        const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
+        
+        if (isFirebaseUid) {
+          const user = await storage.getUserByUsername(userIdParam);
+          if (!user) {
+            return res.status(404).json({ error: "User not found" });
+          }
+          userId = user.id;
+        } else {
+          userId = parseInt(userIdParam);
+          if (isNaN(userId)) {
+            return res.status(400).json({ error: "Invalid user ID format" });
+          }
+        }
+        
+        const pulses = await storage.getLatestNewsPulses(userId, limit);
+        return res.json(pulses);
+      } else {
+        // Default to system user (1) if no userId provided
+        const pulses = await storage.getLatestNewsPulses(1, limit);
+        return res.json(pulses);
+      }
+    } catch (error) {
+      console.error("Error fetching news pulses:", error);
+      return res.status(500).json({ error: "Failed to fetch news pulses" });
     }
   });
 

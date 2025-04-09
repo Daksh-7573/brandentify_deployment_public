@@ -294,7 +294,8 @@ export type InsertService = z.infer<typeof insertServiceSchema>;
 export const pulseTypeEnum = pgEnum("pulse_type", [
   "poll", 
   "media-pulse", 
-  "project"
+  "project",
+  "news-pulse" // Added News Pulse type for AI-generated industry news
 ]);
 
 // Media type enum for Media Pulses
@@ -425,3 +426,89 @@ export const insertUserHashtagFollowSchema = createInsertSchema(userHashtagFollo
 // Export types for user-hashtag follows
 export type UserHashtagFollow = typeof userHashtagFollows.$inferSelect;
 export type InsertUserHashtagFollow = z.infer<typeof insertUserHashtagFollowSchema>;
+
+// News source categories enum
+export const newsSourceCategoryEnum = pgEnum("news_source_category", [
+  "technology",
+  "business",
+  "finance",
+  "marketing",
+  "design",
+  "healthcare",
+  "education",
+  "engineering",
+  "general"
+]);
+
+// News sources model - for tracking different news sources
+export const newsSources = pgTable("news_sources", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  url: text("url").notNull(),
+  category: newsSourceCategoryEnum("category").notNull(),
+  apiEndpoint: text("api_endpoint"),
+  apiKey: text("api_key"),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// News articles model - for storing fetched news articles
+export const newsArticles = pgTable("news_articles", {
+  id: serial("id").primaryKey(),
+  sourceId: integer("source_id").references(() => newsSources.id),
+  title: text("title").notNull(),
+  description: text("description"),
+  content: text("content"),
+  url: text("url"),
+  imageUrl: text("image_url"),
+  author: text("author"),
+  publishedAt: timestamp("published_at"),
+  category: newsSourceCategoryEnum("category"),
+  industries: jsonb("industries").default('[]'), // Array of industries this article is relevant for
+  processed: boolean("processed").default(false), // Whether this article has been processed and posted
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// News user preferences model - for tracking user preferences for news
+export const newsUserPreferences = pgTable("news_user_preferences", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  preferredIndustries: jsonb("preferred_industries").default('[]'), // Array of preferred industries
+  preferredSources: jsonb("preferred_sources").default('[]'), // Array of preferred source IDs
+  excludedSources: jsonb("excluded_sources").default('[]'), // Array of excluded source IDs
+  deliveryTime: text("delivery_time").default('17:00'), // 24-hour format for when to deliver news (default 5pm)
+  enabled: boolean("enabled").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// Insert schemas for News models
+export const insertNewsSourceSchema = createInsertSchema(newsSources).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export const insertNewsArticleSchema = createInsertSchema(newsArticles).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export const insertNewsUserPreferenceSchema = createInsertSchema(newsUserPreferences).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+// Export types for News models
+export type NewsSource = typeof newsSources.$inferSelect;
+export type InsertNewsSource = z.infer<typeof insertNewsSourceSchema>;
+
+export type NewsArticle = typeof newsArticles.$inferSelect;
+export type InsertNewsArticle = z.infer<typeof insertNewsArticleSchema>;
+
+export type NewsUserPreference = typeof newsUserPreferences.$inferSelect;
+export type InsertNewsUserPreference = z.infer<typeof insertNewsUserPreferenceSchema>;

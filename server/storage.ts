@@ -17,7 +17,11 @@ import {
   pollVotes, PollVote, InsertPollVote,
   hashtags, Hashtag, InsertHashtag,
   pulseHashtags, PulseHashtag, InsertPulseHashtag,
-  userHashtagFollows, UserHashtagFollow, InsertUserHashtagFollow
+  userHashtagFollows, UserHashtagFollow, InsertUserHashtagFollow,
+  // New models for News Pulse feature
+  newsSources, NewsSource, InsertNewsSource,
+  newsArticles, NewsArticle, InsertNewsArticle,
+  newsUserPreferences, NewsUserPreference, InsertNewsUserPreference
 } from "@shared/schema";
 
 // Interface for all storage operations
@@ -157,6 +161,36 @@ export interface IStorage {
   // Debug and maintenance operations
   reinitializeDemoData(): Promise<void>;
   clearAllUsers(): Promise<void>;
+  
+  // News Source operations
+  getNewsSources(): Promise<NewsSource[]>;
+  getNewsSourceById(id: number): Promise<NewsSource | undefined>;
+  getNewsSourcesByCategory(category: string): Promise<NewsSource[]>;
+  createNewsSource(source: InsertNewsSource): Promise<NewsSource>;
+  updateNewsSource(id: number, source: Partial<NewsSource>): Promise<NewsSource | undefined>;
+  deleteNewsSource(id: number): Promise<boolean>;
+  
+  // News Article operations
+  getNewsArticles(): Promise<NewsArticle[]>;
+  getNewsArticleById(id: number): Promise<NewsArticle | undefined>;
+  getNewsArticlesBySourceId(sourceId: number): Promise<NewsArticle[]>;
+  getNewsArticlesByCategory(category: string): Promise<NewsArticle[]>;
+  getUnprocessedNewsArticles(): Promise<NewsArticle[]>;
+  getNewsArticlesByIndustry(industry: string): Promise<NewsArticle[]>;
+  createNewsArticle(article: InsertNewsArticle): Promise<NewsArticle>;
+  updateNewsArticle(id: number, article: Partial<NewsArticle>): Promise<NewsArticle | undefined>;
+  deleteNewsArticle(id: number): Promise<boolean>;
+  
+  // News User Preference operations
+  getNewsUserPreferenceByUserId(userId: number): Promise<NewsUserPreference | undefined>;
+  createNewsUserPreference(preference: InsertNewsUserPreference): Promise<NewsUserPreference>;
+  updateNewsUserPreference(id: number, preference: Partial<NewsUserPreference>): Promise<NewsUserPreference | undefined>;
+  deleteNewsUserPreference(id: number): Promise<boolean>;
+  
+  // News Pulse operations
+  createNewsPulse(article: NewsArticle, userId: number): Promise<Pulse>;
+  getLatestNewsPulses(userId: number, limit?: number): Promise<Pulse[]>;
+  generateNewsContent(article: NewsArticle): Promise<{ title: string, content: string, hashtags: string[] }>;
 }
 
 // In-memory implementation of the storage
@@ -180,6 +214,10 @@ export class MemStorage implements IStorage {
   private pulseComments: Map<number, PulseComment>;
   private pollVotes: Map<number, PollVote>;
   private userHashtagFollows: Map<number, UserHashtagFollow>;
+  // New models for News Pulse feature
+  private newsSources: Map<number, NewsSource>;
+  private newsArticles: Map<number, NewsArticle>;
+  private newsUserPreferences: Map<number, NewsUserPreference>;
   
   private currentUserId: number;
   private currentResumeId: number;
@@ -200,6 +238,10 @@ export class MemStorage implements IStorage {
   private currentHashtagId: number;
   private currentPulseHashtagId: number;
   private currentUserHashtagFollowId: number;
+  // New IDs for News Pulse feature
+  private currentNewsSourceId: number;
+  private currentNewsArticleId: number;
+  private currentNewsUserPreferenceId: number;
 
   constructor() {
     this.users = new Map();
@@ -221,6 +263,10 @@ export class MemStorage implements IStorage {
     this.hashtags = new Map();
     this.pulseHashtags = new Map();
     this.userHashtagFollows = new Map();
+    // Initialize news maps
+    this.newsSources = new Map();
+    this.newsArticles = new Map();
+    this.newsUserPreferences = new Map();
     
     this.currentUserId = 1;
     this.currentResumeId = 1;
@@ -241,6 +287,10 @@ export class MemStorage implements IStorage {
     this.currentHashtagId = 1;
     this.currentPulseHashtagId = 1;
     this.currentUserHashtagFollowId = 1;
+    // Initialize news IDs
+    this.currentNewsSourceId = 1;
+    this.currentNewsArticleId = 1;
+    this.currentNewsUserPreferenceId = 1;
     
     // Initialize with a default user for development/demo
     this.initializeDemoData();
@@ -328,6 +378,9 @@ export class MemStorage implements IStorage {
     this.currentHashtagId = 1;
     this.currentPulseHashtagId = 1;
     this.currentUserHashtagFollowId = 1;
+    this.currentNewsSourceId = 1;
+    this.currentNewsArticleId = 1;
+    this.currentNewsUserPreferenceId = 1;
     
     // No pre-created skills
     
@@ -454,6 +507,15 @@ export class MemStorage implements IStorage {
     
     // Clear all user hashtag follows
     this.userHashtagFollows.clear();
+    
+    // Clear all news sources
+    this.newsSources.clear();
+    
+    // Clear all news articles
+    this.newsArticles.clear();
+    
+    // Clear all news user preferences
+    this.newsUserPreferences.clear();
   }
   
   /**
@@ -1875,6 +1937,312 @@ export class MemStorage implements IStorage {
     
     console.log(`[storage] getPulsesByFollowedHashtags: Found ${pulses.length} pulses for hashtags followed by user ${userId}`);
     return pulses;
+  }
+  
+  // News Source operations
+  async getNewsSources(): Promise<NewsSource[]> {
+    return Array.from(this.newsSources.values())
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  async getNewsSourceById(id: number): Promise<NewsSource | undefined> {
+    return this.newsSources.get(id);
+  }
+
+  async getNewsSourcesByCategory(category: string): Promise<NewsSource[]> {
+    return Array.from(this.newsSources.values())
+      .filter(source => source.category === category)
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  async createNewsSource(source: InsertNewsSource): Promise<NewsSource> {
+    const id = this.currentNewsSourceId++;
+    const createdAt = new Date();
+    const updatedAt = new Date();
+    
+    const newsSource: NewsSource = {
+      ...source,
+      id,
+      createdAt,
+      updatedAt,
+      apiEndpoint: source.apiEndpoint ?? null,
+      apiKey: source.apiKey ?? null,
+      isActive: source.isActive ?? true
+    };
+    
+    this.newsSources.set(id, newsSource);
+    return newsSource;
+  }
+
+  async updateNewsSource(id: number, sourceData: Partial<NewsSource>): Promise<NewsSource | undefined> {
+    const source = this.newsSources.get(id);
+    if (!source) return undefined;
+    
+    const updatedSource = { 
+      ...source, 
+      ...sourceData,
+      updatedAt: new Date() 
+    };
+    
+    this.newsSources.set(id, updatedSource);
+    return updatedSource;
+  }
+
+  async deleteNewsSource(id: number): Promise<boolean> {
+    return this.newsSources.delete(id);
+  }
+
+  // News Article operations
+  async getNewsArticles(): Promise<NewsArticle[]> {
+    return Array.from(this.newsArticles.values())
+      .sort((a, b) => {
+        const timeA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
+        const timeB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
+        return timeB - timeA; // Sort by publishedAt in descending order (newest first)
+      });
+  }
+
+  async getNewsArticleById(id: number): Promise<NewsArticle | undefined> {
+    return this.newsArticles.get(id);
+  }
+
+  async getNewsArticlesBySourceId(sourceId: number): Promise<NewsArticle[]> {
+    return Array.from(this.newsArticles.values())
+      .filter(article => article.sourceId === sourceId)
+      .sort((a, b) => {
+        const timeA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
+        const timeB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
+        return timeB - timeA; // Sort by publishedAt in descending order (newest first)
+      });
+  }
+
+  async getNewsArticlesByCategory(category: string): Promise<NewsArticle[]> {
+    return Array.from(this.newsArticles.values())
+      .filter(article => article.category === category)
+      .sort((a, b) => {
+        const timeA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
+        const timeB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
+        return timeB - timeA; // Sort by publishedAt in descending order (newest first)
+      });
+  }
+
+  async getUnprocessedNewsArticles(): Promise<NewsArticle[]> {
+    return Array.from(this.newsArticles.values())
+      .filter(article => !article.processed)
+      .sort((a, b) => {
+        const timeA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
+        const timeB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
+        return timeB - timeA; // Sort by publishedAt in descending order (newest first)
+      });
+  }
+
+  async getNewsArticlesByIndustry(industry: string): Promise<NewsArticle[]> {
+    return Array.from(this.newsArticles.values())
+      .filter(article => {
+        if (!article.industries) return false;
+        const industries = JSON.parse(article.industries as string);
+        return Array.isArray(industries) && industries.includes(industry);
+      })
+      .sort((a, b) => {
+        const timeA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
+        const timeB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
+        return timeB - timeA; // Sort by publishedAt in descending order (newest first)
+      });
+  }
+
+  async createNewsArticle(article: InsertNewsArticle): Promise<NewsArticle> {
+    const id = this.currentNewsArticleId++;
+    const createdAt = new Date();
+    const updatedAt = new Date();
+    
+    const newsArticle: NewsArticle = {
+      ...article,
+      id,
+      createdAt,
+      updatedAt,
+      sourceId: article.sourceId ?? null,
+      description: article.description ?? null,
+      content: article.content ?? null,
+      url: article.url ?? null,
+      imageUrl: article.imageUrl ?? null,
+      author: article.author ?? null,
+      publishedAt: article.publishedAt ?? new Date(),
+      category: article.category ?? null,
+      industries: article.industries ?? '[]',
+      processed: article.processed ?? false
+    };
+    
+    this.newsArticles.set(id, newsArticle);
+    return newsArticle;
+  }
+
+  async updateNewsArticle(id: number, articleData: Partial<NewsArticle>): Promise<NewsArticle | undefined> {
+    const article = this.newsArticles.get(id);
+    if (!article) return undefined;
+    
+    const updatedArticle = { 
+      ...article, 
+      ...articleData,
+      updatedAt: new Date() 
+    };
+    
+    this.newsArticles.set(id, updatedArticle);
+    return updatedArticle;
+  }
+
+  async deleteNewsArticle(id: number): Promise<boolean> {
+    return this.newsArticles.delete(id);
+  }
+
+  // News User Preference operations
+  async getNewsUserPreferenceByUserId(userId: number): Promise<NewsUserPreference | undefined> {
+    return Array.from(this.newsUserPreferences.values())
+      .find(preference => preference.userId === userId);
+  }
+
+  async createNewsUserPreference(preference: InsertNewsUserPreference): Promise<NewsUserPreference> {
+    const id = this.currentNewsUserPreferenceId++;
+    const createdAt = new Date();
+    const updatedAt = new Date();
+    
+    const newsUserPreference: NewsUserPreference = {
+      ...preference,
+      id,
+      createdAt,
+      updatedAt,
+      preferredIndustries: preference.preferredIndustries ?? '[]',
+      preferredSources: preference.preferredSources ?? '[]',
+      excludedSources: preference.excludedSources ?? '[]',
+      deliveryTime: preference.deliveryTime ?? '17:00',
+      enabled: preference.enabled ?? true
+    };
+    
+    this.newsUserPreferences.set(id, newsUserPreference);
+    return newsUserPreference;
+  }
+
+  async updateNewsUserPreference(id: number, preferenceData: Partial<NewsUserPreference>): Promise<NewsUserPreference | undefined> {
+    const preference = this.newsUserPreferences.get(id);
+    if (!preference) return undefined;
+    
+    const updatedPreference = { 
+      ...preference, 
+      ...preferenceData,
+      updatedAt: new Date() 
+    };
+    
+    this.newsUserPreferences.set(id, updatedPreference);
+    return updatedPreference;
+  }
+
+  async deleteNewsUserPreference(id: number): Promise<boolean> {
+    return this.newsUserPreferences.delete(id);
+  }
+
+  // News Pulse operations
+  async createNewsPulse(article: NewsArticle, userId: number): Promise<Pulse> {
+    // First, generate content based on the article
+    const newsContent = await this.generateNewsContent(article);
+    
+    // Create a pulse with the type "news-pulse"
+    const pulseData: InsertPulse = {
+      userId,
+      type: "news-pulse",
+      title: newsContent.title,
+      content: newsContent.content,
+      isPublished: true
+    };
+    
+    // Create the pulse
+    const pulse = await this.createPulse(pulseData);
+    
+    // Extract and save hashtags from the content
+    if (newsContent.hashtags && newsContent.hashtags.length > 0) {
+      // Convert hashtags array to string with # prefix
+      const hashtagsText = newsContent.hashtags.map(tag => `#${tag}`).join(' ');
+      await this.extractAndSaveHashtags(hashtagsText, pulse.id);
+    }
+    
+    // Mark the article as processed
+    await this.updateNewsArticle(article.id, { processed: true });
+    
+    return pulse;
+  }
+
+  async getLatestNewsPulses(userId: number, limit: number = 10): Promise<Pulse[]> {
+    return Array.from(this.pulses.values())
+      .filter(pulse => pulse.type === "news-pulse")
+      .sort((a, b) => {
+        const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return timeB - timeA; // Sort by createdAt in descending order (newest first)
+      })
+      .slice(0, limit);
+  }
+
+  async generateNewsContent(article: NewsArticle): Promise<{ title: string, content: string, hashtags: string[] }> {
+    // In a real implementation, this would use an AI service to generate the content
+    // For now, we'll create a simple implementation that formats the article data
+    
+    // Create a title with industry focus
+    let title = article.title || 'Industry News Update';
+    
+    // Create content that summarizes the article
+    let content = '';
+    if (article.description) {
+      content += article.description;
+    } else if (article.content) {
+      // Use just the first paragraph or first 200 characters
+      const contentText = article.content;
+      content += contentText.split('\n')[0] || contentText.substring(0, 200);
+    } else {
+      content = 'Check out this industry news article that might be relevant to your professional interests.';
+    }
+    
+    // Add source attribution if available
+    if (article.url) {
+      content += `\n\nRead more: ${article.url}`;
+    }
+    
+    // Generate relevant hashtags
+    let hashtags: string[] = [];
+    
+    // Add category as hashtag if available
+    if (article.category) {
+      hashtags.push(article.category.replace(/[^a-zA-Z0-9]/g, ''));
+    }
+    
+    // Add some basic industry hashtags
+    if (article.industries) {
+      try {
+        const industriesArray = JSON.parse(article.industries as string);
+        if (Array.isArray(industriesArray)) {
+          industriesArray.forEach(industry => {
+            // Clean up industry name for hashtag (remove spaces and special chars)
+            const hashtagIndustry = industry.replace(/[^a-zA-Z0-9]/g, '');
+            if (hashtagIndustry) {
+              hashtags.push(hashtagIndustry);
+            }
+          });
+        }
+      } catch (error) {
+        console.error('Error parsing industries JSON:', error);
+      }
+    }
+    
+    // Add some generic hashtags
+    hashtags.push('industrynews');
+    hashtags.push('careerdevelopment');
+    
+    // Remove duplicates and limit to 5 hashtags
+    const uniqueHashtags: string[] = [];
+    hashtags.forEach(tag => {
+      if (!uniqueHashtags.includes(tag)) {
+        uniqueHashtags.push(tag);
+      }
+    });
+    
+    return { title, content, hashtags: uniqueHashtags.slice(0, 5) };
   }
 }
 
