@@ -632,7 +632,7 @@ function PulseReactions({ pulse }: { pulse: PulseWithUser }) {
       const res = await apiRequest("DELETE", `/api/pulse-reactions/${reactionId}`);
       return res;
     },
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
       console.log("Reaction deleted successfully:", data);
       
       // Update the UI by invalidating relevant queries
@@ -641,7 +641,7 @@ function PulseReactions({ pulse }: { pulse: PulseWithUser }) {
       queryClient.invalidateQueries({ queryKey: ['/api/pulses'] });
       
       // Show toast with quota information if available
-      if (data.quota) {
+      if (data && data.quota) {
         toast({
           title: "Reaction removed",
           description: `You have ${data.quota.remaining} reactions left today.`,
@@ -706,7 +706,7 @@ function PulseReactions({ pulse }: { pulse: PulseWithUser }) {
         toast({
           title: "Daily limit reached",
           description: "You've used all your insightful reactions for today.",
-          variant: "warning",
+          variant: "destructive",
         });
       }
     }
@@ -729,7 +729,7 @@ function PulseReactions({ pulse }: { pulse: PulseWithUser }) {
         toast({
           title: "Daily limit reached",
           description: "You've used all your misinformed reactions for today.",
-          variant: "warning",
+          variant: "destructive",
         });
       }
     }
@@ -984,13 +984,15 @@ function PollVoting({ pulse }: { pulse: PulseWithUser }) {
   const { data: userVote, isError } = useQuery<any>({
     queryKey: ['/api/poll-votes/user', userId, 'pulse', pulse.id],
     enabled: !!userId && !!pulse.id,
-    onSuccess: (data) => {
-      if (data) {
-        setShowResults(true);
-      }
-    },
     retry: false,
   });
+  
+  // Use effect to set results when data is loaded
+  useEffect(() => {
+    if (userVote) {
+      setShowResults(true);
+    }
+  }, [userVote]);
   
   // Show results immediately if user has already voted
   useEffect(() => {
@@ -1420,11 +1422,15 @@ export default function IndustryPulseNew() {
   // Query for getting pulses
   const { data } = useQuery<PulseWithUser[]>({
     queryKey: ['/api/pulses'],
-    onSuccess: (data) => {
+  });
+  
+  // Effect to handle pulse data loading
+  useEffect(() => {
+    if (data) {
       setPulses(data);
       setIsLoading(false);
-    },
-  });
+    }
+  }, [data]);
   
   // Effect for simulating new content
   useEffect(() => {
