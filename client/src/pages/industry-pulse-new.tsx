@@ -273,7 +273,7 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
               className="text-muted-foreground hover:bg-amber-50 hover:text-amber-700 transition-all duration-200"
               onClick={() => handleReaction("insightful")}
             >
-              <Flame className={`h-4 w-4 mr-2 transition-all duration-200 ${hasInsightfulReaction ? "text-amber-600 fill-amber-500 scale-110" : "text-amber-500"}`} />
+              <Flame className={`h-4 w-4 mr-2 transition-all duration-200 ${hasInsightfulReaction ? "text-amber-600 fill-amber-500 scale-110" : "text-muted-foreground"}`} />
               {formatCount(pulse.insightfulCount || 0)}
             </Button>
           </TooltipTrigger>
@@ -297,7 +297,7 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
               className="text-muted-foreground hover:bg-red-50 hover:text-red-700 transition-all duration-200"
               onClick={() => handleReaction("misinformed")}
             >
-              <AlertTriangle className={`h-4 w-4 mr-2 transition-all duration-200 ${hasMisinformedReaction ? "text-red-600 fill-red-300 scale-110" : "text-red-500"}`} />
+              <AlertTriangle className={`h-4 w-4 mr-2 transition-all duration-200 ${hasMisinformedReaction ? "text-red-600 fill-red-300 scale-110" : "text-muted-foreground"}`} />
               {formatCount(pulse.misinformedCount || 0)}
             </Button>
           </TooltipTrigger>
@@ -366,7 +366,7 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
         size="sm" 
         className="text-muted-foreground hover:bg-purple-50 hover:text-purple-700 transition-all duration-200"
       >
-        <MessageSquare className="h-4 w-4 mr-2 text-purple-500" />
+        <MessageSquare className="h-4 w-4 mr-2 text-muted-foreground" />
         {formatCount(pulse.comments || 0)}
       </Button>
     </div>
@@ -464,7 +464,7 @@ function PollVoting({ pulse }: PollVotingProps) {
   return (
     <div className="mt-4 space-y-3">
       <div className="text-sm font-medium flex items-center gap-2">
-        <BarChart className="h-4 w-4 text-purple-500" />
+        <BarChart className="h-4 w-4 text-muted-foreground" />
         <span>Poll Options</span>
       </div>
       
@@ -641,7 +641,7 @@ function ImageCarousel({ pulse }: { pulse: PulseWithUser }) {
     <>
       <div className="mt-4 space-y-2">
         <div className="text-sm font-medium flex items-center gap-2">
-          <Image className="h-4 w-4 text-blue-500" />
+          <Image className="h-4 w-4 text-muted-foreground" />
           <span>Image Gallery ({images.length})</span>
         </div>
         <div className="mt-2">
@@ -827,7 +827,7 @@ function VideoPlayer({ pulse }: { pulse: PulseWithUser }) {
   return (
     <div className="mt-4 space-y-2">
       <div className="text-sm font-medium flex items-center gap-2">
-        <Video className="h-4 w-4 text-blue-500" />
+        <Video className="h-4 w-4 text-muted-foreground" />
         <span>Video</span>
       </div>
       <div className="rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
@@ -905,7 +905,7 @@ function ProjectDetails({ pulse }: { pulse: PulseWithUser }) {
   return (
     <div className="mt-4 space-y-2">
       <div className="text-sm font-medium flex items-center gap-2">
-        <FileCode className="h-4 w-4 text-green-500" />
+        <FileCode className="h-4 w-4 text-muted-foreground" />
         <span>Project Update</span>
       </div>
       
@@ -954,11 +954,11 @@ function SmartRefreshBanner({ hasNewContent, onRefresh, isPremiumContent = false
   
   const bannerClasses = isPremiumContent
     ? "bg-amber-50 border-amber-200 text-amber-900" // Premium content (Musk)
-    : "bg-blue-50 border-blue-200 text-blue-900"; // Regular content
+    : "bg-gray-50 border-gray-200 text-gray-900"; // Regular content
     
   const iconClasses = isPremiumContent
     ? "text-amber-500" // Premium content (Musk)
-    : "text-blue-500"; // Regular content
+    : "text-muted-foreground"; // Regular content
   
   return (
     <button 
@@ -1022,13 +1022,13 @@ export default function IndustryPulsePage() {
   const getPulseIcon = (pulse: PulseWithUser) => {
     switch (pulse.type) {
       case "poll":
-        return <BarChart className="h-5 w-5 text-purple-500" />;
+        return <BarChart className="h-5 w-5 text-muted-foreground" />;
       case "media-pulse":
         return pulse.mediaType === "video" ? 
-          <Video className="h-5 w-5 text-blue-500" /> : 
-          <Image className="h-5 w-5 text-blue-500" />;
+          <Video className="h-5 w-5 text-muted-foreground" /> : 
+          <Image className="h-5 w-5 text-muted-foreground" />;
       case "project":
-        return <FileCode className="h-5 w-5 text-green-500" />;
+        return <FileCode className="h-5 w-5 text-muted-foreground" />;
       case "news-pulse":
         // Special icon for news pulses, amber/yellow color to match Musk branding
         return <Newspaper className="h-5 w-5 text-amber-500" />;
