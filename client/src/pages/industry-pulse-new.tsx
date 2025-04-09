@@ -267,13 +267,13 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
         <Tooltip>
           <TooltipTrigger asChild>
             <Button 
-              variant={hasInsightfulReaction ? "default" : "ghost"} 
+              variant="ghost" 
               size="sm" 
               disabled={isLoading}
-              className={`${hasInsightfulReaction ? "bg-amber-600 hover:bg-amber-700" : "text-muted-foreground hover:bg-amber-50 hover:text-amber-700"}`}
+              className="text-muted-foreground hover:bg-amber-50 hover:text-amber-700 transition-all duration-200"
               onClick={() => handleReaction("insightful")}
             >
-              <Flame className={`h-4 w-4 mr-2 ${hasInsightfulReaction ? "text-white" : "text-amber-500"}`} />
+              <Flame className={`h-4 w-4 mr-2 transition-all duration-200 ${hasInsightfulReaction ? "text-amber-600 fill-amber-500 scale-110" : "text-amber-500"}`} />
               {formatCount(pulse.insightfulCount || 0)}
             </Button>
           </TooltipTrigger>
@@ -291,13 +291,13 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
         <Tooltip>
           <TooltipTrigger asChild>
             <Button 
-              variant={hasMisinformedReaction ? "default" : "ghost"} 
+              variant="ghost" 
               size="sm" 
               disabled={isLoading}
-              className={`${hasMisinformedReaction ? "bg-red-600 hover:bg-red-700" : "text-muted-foreground hover:bg-red-50 hover:text-red-700"}`}
+              className="text-muted-foreground hover:bg-red-50 hover:text-red-700 transition-all duration-200"
               onClick={() => handleReaction("misinformed")}
             >
-              <AlertTriangle className={`h-4 w-4 mr-2 ${hasMisinformedReaction ? "text-white" : "text-red-500"}`} />
+              <AlertTriangle className={`h-4 w-4 mr-2 transition-all duration-200 ${hasMisinformedReaction ? "text-red-600 fill-red-300 scale-110" : "text-red-500"}`} />
               {formatCount(pulse.misinformedCount || 0)}
             </Button>
           </TooltipTrigger>
@@ -313,8 +313,8 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
       {/* Share Button */}
       <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
         <DialogTrigger asChild>
-          <Button variant="ghost" size="sm" className="text-muted-foreground">
-            <Share className="h-4 w-4 mr-2" />
+          <Button variant="ghost" size="sm" className="text-muted-foreground hover:bg-blue-50 hover:text-blue-700 transition-all duration-200">
+            <Share className={`h-4 w-4 mr-2 transition-all duration-200 ${isShareDialogOpen ? "text-blue-600 scale-110" : "text-muted-foreground"}`} />
             {formatCount(pulse.shareCount || 0)}
           </Button>
         </DialogTrigger>
@@ -361,8 +361,12 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
       </Dialog>
       
       {/* Comments Button */}
-      <Button variant="ghost" size="sm" className="text-muted-foreground">
-        <MessageSquare className="h-4 w-4 mr-2" />
+      <Button 
+        variant="ghost" 
+        size="sm" 
+        className="text-muted-foreground hover:bg-purple-50 hover:text-purple-700 transition-all duration-200"
+      >
+        <MessageSquare className="h-4 w-4 mr-2 text-purple-500" />
         {formatCount(pulse.comments || 0)}
       </Button>
     </div>
