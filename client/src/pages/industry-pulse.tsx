@@ -8,7 +8,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MessageSquare, ThumbsUp, Calendar, Users, BarChart, Video, Image, FileCode, Check, Loader2, Maximize2, ChevronLeft, ChevronRight, X, RefreshCw } from "lucide-react";
+import { MessageSquare, ThumbsUp, Calendar, Users, BarChart, Video, Image, FileCode, Check, Loader2, Maximize2, ChevronLeft, ChevronRight, X, RefreshCw, Newspaper } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -21,7 +21,7 @@ import { cn } from "@/lib/utils";
 interface PulseWithUser {
   id: number;
   userId: number;
-  type: "poll" | "media-pulse" | "project";
+  type: "poll" | "media-pulse" | "project" | "news-pulse";
   title: string;
   content: string | null;
   mediaType: "image" | "video" | null;
@@ -832,6 +832,13 @@ export default function IndustryPulsePage() {
   // Filter pulses based on the active tab
   const filteredPulses = pulses.filter((pulse: PulseWithUser) => {
     if (activeTab === "all") return true;
+    
+    if (activeTab === "musk-news") {
+      // Filter for news pulses specifically from Musk (userId 3 is Musk in our system)
+      // Need to use type assertion for TypeScript since "news-pulse" isn't in the basic types
+      return (pulse.type as string) === "news-pulse" && pulse.userId === 3;
+    }
+    
     return pulse.type === activeTab;
   });
 
@@ -845,6 +852,9 @@ export default function IndustryPulsePage() {
           <Image className="h-5 w-5 text-blue-500" />;
       case "project":
         return <FileCode className="h-5 w-5 text-green-500" />;
+      case "news-pulse":
+        // Special icon for news pulses, amber/yellow color to match Musk branding
+        return <Newspaper className="h-5 w-5 text-amber-500" />;
       default:
         return null;
     }
@@ -874,6 +884,9 @@ export default function IndustryPulsePage() {
                 <TabsTrigger value="poll">Polls</TabsTrigger>
                 <TabsTrigger value="media-pulse">Media</TabsTrigger>
                 <TabsTrigger value="project">Projects</TabsTrigger>
+                <TabsTrigger value="musk-news" className="flex items-center gap-1">
+                  <span className="text-amber-500">⚡</span> Musk News
+                </TabsTrigger>
               </TabsList>
               
               <TabsContent value={activeTab} className="mt-0">
@@ -896,11 +909,19 @@ export default function IndustryPulsePage() {
                       <p className="text-center text-muted-foreground max-w-md mb-6">
                         {activeTab === "all" 
                           ? "Be the first to create a pulse in your professional network!" 
-                          : `No ${activeTab} pulses available yet. Create one to get started!`}
+                          : activeTab === "musk-news" 
+                            ? "No Musk news updates available yet. Check back later for the latest insights!" 
+                            : `No ${activeTab} pulses available yet. Create one to get started!`}
                       </p>
-                      <Button onClick={() => setLocation("/create-pulse")}>
-                        Create Your First Pulse
-                      </Button>
+                      {activeTab === "musk-news" ? (
+                        <Button variant="outline" onClick={() => setActiveTab("all")}>
+                          View All Pulses
+                        </Button>
+                      ) : (
+                        <Button onClick={() => setLocation("/create-pulse")}>
+                          Create Your First Pulse
+                        </Button>
+                      )}
                     </CardContent>
                   </Card>
                 ) : (
