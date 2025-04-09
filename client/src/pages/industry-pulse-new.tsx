@@ -507,53 +507,55 @@ function PulseQuickReactions({ pulse }: { pulse: PulseWithUser }) {
   
   return (
     <div className="flex items-center space-x-2">
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div className="flex items-center">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className={hasInsightful ? "text-rose-500" : "text-muted-foreground"}
-              onClick={(e) => {
-                e.stopPropagation();
-                // This is just a preview, full logic is in PulseReactions component
-              }}
-            >
-              <Flame className="h-4 w-4" />
-            </Button>
-            {pulse.insightfulCount ? (
-              <span className="text-xs">{pulse.insightfulCount}</span>
-            ) : null}
-          </div>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>Insightful {quotaData?.insightful ? `(${quotaData.insightful.remaining} left today)` : ""}</p>
-        </TooltipContent>
-      </Tooltip>
-      
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div className="flex items-center">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className={hasMisinformed ? "text-amber-500" : "text-muted-foreground"}
-              onClick={(e) => {
-                e.stopPropagation();
-                // This is just a preview, full logic is in PulseReactions component
-              }}
-            >
-              <AlertTriangle className="h-4 w-4" />
-            </Button>
-            {pulse.misinformedCount ? (
-              <span className="text-xs">{pulse.misinformedCount}</span>
-            ) : null}
-          </div>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>Misinformed {quotaData?.misinformed ? `(${quotaData.misinformed.remaining} left today)` : ""}</p>
-        </TooltipContent>
-      </Tooltip>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="flex items-center">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className={hasInsightful ? "text-rose-500" : "text-muted-foreground"}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // This is just a preview, full logic is in PulseReactions component
+                }}
+              >
+                <Flame className="h-4 w-4" />
+              </Button>
+              {pulse.insightfulCount ? (
+                <span className="text-xs">{pulse.insightfulCount}</span>
+              ) : null}
+            </div>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Insightful {quotaData?.insightful ? `(${quotaData.insightful.remaining} left today)` : ""}</p>
+          </TooltipContent>
+        </Tooltip>
+        
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="flex items-center">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className={hasMisinformed ? "text-amber-500" : "text-muted-foreground"}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // This is just a preview, full logic is in PulseReactions component
+                }}
+              >
+                <AlertTriangle className="h-4 w-4" />
+              </Button>
+              {pulse.misinformedCount ? (
+                <span className="text-xs">{pulse.misinformedCount}</span>
+              ) : null}
+            </div>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Misinformed {quotaData?.misinformed ? `(${quotaData.misinformed.remaining} left today)` : ""}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
       
       <Button 
         variant="ghost" 
