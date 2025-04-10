@@ -72,6 +72,12 @@ function Router() {
       <Route path="/@musk">
         <PublicProfile />
       </Route>
+      <Route path="/@0yvB0mlyKfQXGo3j4ueLtAeBREE3">
+        <PublicProfile />
+      </Route>
+      <Route path="/@SeniorProfessional">
+        <PublicProfile />
+      </Route>
       <Route path="/ai-career">
         <ProtectedRoute path="/ai-career" component={AICareer} />
       </Route>
