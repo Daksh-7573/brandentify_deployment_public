@@ -5,6 +5,7 @@ import ThreeDAnimatedCard from "./cards/3d-animated-card";
 import HolographicCard from "./cards/holographic-card";
 import FlipCard from "./cards/flip-card";
 import CreativeCard from "./cards/creative-card";
+import ArtisticCard from "./cards/artistic-card";
 
 interface VisitingCardPreviewProps {
   userData: UserData;

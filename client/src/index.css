@@ -4,6 +4,151 @@
 
 /* Custom animations */
 
+/* Artistic Card animations */
+/* Watercolor animation */
+.watercolor-animate {
+  animation: colorShift 20s infinite alternate;
+  mix-blend-mode: multiply;
+  opacity: 0.6;
+}
+
+@keyframes colorShift {
+  0% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.05) rotate(1deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+/* Brushstroke animations */
+.ink-splash {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: drawInk 2s ease-out forwards;
+}
+
+.brush-stroke {
+  stroke-dasharray: 500;
+  stroke-dashoffset: 500;
+  animation: drawInk 1.5s ease-out forwards;
+}
+
+.brush-underline {
+  stroke-dasharray: 200;
+  stroke-dashoffset: 200;
+  animation: drawInk 1.2s ease-out forwards;
+  animation-delay: 0.5s;
+}
+
+.brush-stroke-top {
+  stroke-dasharray: 800;
+  stroke-dashoffset: 800;
+  animation: drawInk 1.5s ease-out forwards;
+  animation-delay: 0.8s;
+}
+
+.brush-stroke-bottom {
+  stroke-dasharray: 800;
+  stroke-dashoffset: 800;
+  animation: drawInk 1.5s ease-out forwards;
+  animation-delay: 1s;
+}
+
+@keyframes drawInk {
+  to { stroke-dashoffset: 0; }
+}
+
+/* Reveal animations */
+.brush-reveal {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: brushReveal 0.8s forwards;
+}
+
+.brush-reveal-fast {
+  animation: brushSplash 0.3s ease-out forwards;
+}
+
+.brush-reveal-icon {
+  opacity: 0;
+  transform: scale(0.8);
+  animation: iconReveal 0.8s forwards;
+}
+
+@keyframes brushReveal {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes brushSplash {
+  0% { opacity: 0; transform: scaleX(0); }
+  100% { opacity: 1; transform: scaleX(1); }
+}
+
+@keyframes iconReveal {
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Paint stroke animations */
+.paint-stroke {
+  animation: flowPaint 15s infinite alternate;
+}
+
+.stroke-1 {
+  animation-delay: 0s;
+}
+
+.stroke-2 {
+  animation-delay: 5s;
+}
+
+@keyframes flowPaint {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(5px); }
+}
+
+/* Wash animation */
+.wash-animate {
+  animation: washMove 20s infinite alternate;
+}
+
+@keyframes washMove {
+  0% { transform: translateX(0); }
+  50% { transform: translateX(10px); }
+  100% { transform: translateX(-10px); }
+}
+
+/* Ink effects for contact items */
+.ink-item {
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.ink-item:hover {
+  transform: translateX(5px);
+}
+
+.ink-icon {
+  transition: all 0.3s;
+}
+
+.ink-item:hover .ink-icon {
+  transform: scale(1.2);
+  background-color: rgba(131, 197, 190, 0.5);
+}
+
+/* Contact container shape animation */
+.contact-container {
+  animation: morphShape 20s infinite alternate;
+}
+
+@keyframes morphShape {
+  0% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
+  25% { border-radius: 50% 50% 70% 30% / 40% 40% 60% 60%; }
+  50% { border-radius: 30% 70% 50% 50% / 30% 60% 40% 70%; }
+  75% { border-radius: 40% 60% 30% 70% / 60% 30% 70% 40%; }
+  100% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
+}
+
 /* Fade In animation for page transitions */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(5px); }
