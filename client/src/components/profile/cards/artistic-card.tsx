@@ -1,5 +1,5 @@
 import React from "react";
-import { Mail, Phone, Globe, Briefcase, MapPin, Code, Building2 } from "lucide-react";
+import { Mail, Phone, Globe, Briefcase } from "lucide-react";
 import { UserData } from "@/types/user";
 
 interface ArtisticCardProps {
@@ -7,168 +7,157 @@ interface ArtisticCardProps {
 }
 
 const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
+  // Format profile link
   const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;
   
-  // Hand-drawn SVG paths for decorative elements
-  const decorativePaths = [
-    "M0,10 C40,0 60,30 100,20",
-    "M0,20 C30,40 70,10 100,30",
-    "M0,30 C40,60 60,20 100,40",
-    "M0,40 C30,20 70,50 100,30"
-  ];
-  
   return (
-    <div className="w-full aspect-[2/3.5] relative overflow-hidden rounded-lg">
-      {/* Paper texture background */}
-      <div className="absolute inset-0 bg-amber-50 opacity-80"></div>
-      
-      {/* Hand-drawn border */}
-      <div className="absolute inset-0 border-[5px] border-amber-800/20 rounded-lg" style={{ borderStyle: 'dashed' }}></div>
-      
-      {/* Decorative corner elements */}
-      <div className="absolute top-0 left-0 w-16 h-16 pointer-events-none opacity-30">
-        <svg viewBox="0 0 100 100" className="w-full h-full">
-          <path d="M0,0 C30,10 10,30 0,100" fill="none" stroke="#7c2d12" strokeWidth="2" strokeDasharray="5,5" />
+    <div className="w-full aspect-[2/3.5] rounded-xl overflow-hidden shadow-xl">
+      {/* Watercolor background effect */}
+      <div className="absolute inset-0 bg-white">
+        {/* SVG watercolor pattern */}
+        <svg className="w-full h-full" preserveAspectRatio="none">
+          <defs>
+            <filter id="watercolor" x="0%" y="0%" width="100%" height="100%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="3" result="noise" />
+              <feDisplacementMap in="SourceGraphic" in2="noise" scale="50" xChannelSelector="R" yChannelSelector="G" result="displacement" />
+              <feGaussianBlur in="displacement" stdDeviation="5" result="blur" />
+              <feBlend in="blur" in2="SourceGraphic" mode="multiply" />
+            </filter>
+          </defs>
+          <rect width="100%" height="100%" fill="#f8f5f2" filter="url(#watercolor)" />
+          <rect width="100%" height="100%" fill="url(#watercolor-gradient)" opacity="0.7" />
+          
+          <linearGradient id="watercolor-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#ffddd2" />
+            <stop offset="40%" stopColor="#e29578" />
+            <stop offset="60%" stopColor="#83c5be" />
+            <stop offset="100%" stopColor="#006d77" />
+          </linearGradient>
+          
+          {/* Paint stroke elements */}
+          <path d="M0,50 Q50,30 100,50 T200,50 T300,50 T400,50" stroke="#83c5be" strokeWidth="60" fill="none" opacity="0.3" />
+          <path d="M0,150 Q50,130 100,150 T200,150 T300,150 T400,150" stroke="#e29578" strokeWidth="40" fill="none" opacity="0.3" />
         </svg>
-      </div>
-      <div className="absolute top-0 right-0 w-16 h-16 pointer-events-none opacity-30">
-        <svg viewBox="0 0 100 100" className="w-full h-full">
-          <path d="M100,0 C70,10 90,30 100,100" fill="none" stroke="#7c2d12" strokeWidth="2" strokeDasharray="5,5" />
-        </svg>
-      </div>
-      <div className="absolute bottom-0 left-0 w-16 h-16 pointer-events-none opacity-30">
-        <svg viewBox="0 0 100 100" className="w-full h-full">
-          <path d="M0,100 C30,90 10,70 0,0" fill="none" stroke="#7c2d12" strokeWidth="2" strokeDasharray="5,5" />
-        </svg>
-      </div>
-      <div className="absolute bottom-0 right-0 w-16 h-16 pointer-events-none opacity-30">
-        <svg viewBox="0 0 100 100" className="w-full h-full">
-          <path d="M100,100 C70,90 90,70 100,0" fill="none" stroke="#7c2d12" strokeWidth="2" strokeDasharray="5,5" />
-        </svg>
-      </div>
-
-      {/* Brush stroke decoration */}
-      <div className="absolute inset-0 pointer-events-none">
-        {decorativePaths.map((path, index) => (
-          <div key={index} className="absolute opacity-10" style={{ top: `${(index + 1) * 20}%` }}>
-            <svg width="100%" height="30" viewBox="0 0 100 50" preserveAspectRatio="none">
-              <path d={path} stroke="#7c2d12" strokeWidth="15" strokeLinecap="round" fill="none" opacity="0.3" />
-            </svg>
-          </div>
-        ))}
       </div>
       
       {/* Content container */}
       <div className="relative z-10 w-full h-full p-6 flex flex-col">
-        {/* Profile photo with hand-drawn frame */}
-        <div className="relative mx-auto mb-6">
-          <div className="absolute -inset-1 rounded-full border-[3px] border-amber-800/30 -rotate-3"></div>
-          <div className="h-28 w-28 rounded-full overflow-hidden border-2 border-amber-800/40 bg-white">
-            {userData.photoURL ? (
-              <img 
-                src={userData.photoURL} 
-                alt={userData.name || "Profile"} 
-                className="h-full w-full object-cover"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = "https://ui-avatars.com/api/?name=" + (userData.name || "User");
-                }}
-              />
-            ) : (
-              <img 
-                src={`https://ui-avatars.com/api/?name=${userData.name || "User"}`}
-                alt={userData.name || "Profile"}
-                className="h-full w-full object-cover"
-              />
-            )}
-          </div>
-          
-          {/* Hand-drawn circle around photo */}
-          <svg className="absolute -inset-4 w-[calc(100%+32px)] h-[calc(100%+32px)] -z-10 opacity-30">
-            <circle cx="50%" cy="50%" r="36%" fill="none" stroke="#7c2d12" strokeWidth="1" strokeDasharray="6,3" />
-          </svg>
-        </div>
-        
-        {/* Name and title */}
-        <div className="text-center mb-5">
-          <h2 className="text-2xl font-serif font-bold text-amber-900 mb-1">
-            {userData.name || "Your Name"}
-          </h2>
-          <p className="text-sm font-serif italic text-amber-700">
-            {userData.title || "Add your designation"}
-          </p>
-          
-          {/* Hand-drawn divider */}
-          <div className="w-32 h-3 mx-auto my-3 relative">
-            <svg width="100%" height="100%" viewBox="0 0 100 10">
-              <path d="M0,5 C20,2 40,8 60,5 S80,2 100,5" stroke="#7c2d12" strokeWidth="1.5" fill="none" />
+        {/* Artistic header with hand-drawn line */}
+        <div className="mb-6 text-center">
+          <div className="relative mx-auto mb-4">
+            <div className="h-28 w-28 rounded-full overflow-hidden border-4 border-[#006d77]/70 mx-auto">
+              {userData.photoURL ? (
+                <img 
+                  src={userData.photoURL} 
+                  alt={userData.name || "Profile"} 
+                  className="h-full w-full object-cover"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = "https://ui-avatars.com/api/?name=" + (userData.name || "User");
+                  }}
+                />
+              ) : (
+                <img 
+                  src={`https://ui-avatars.com/api/?name=${userData.name || "User"}`}
+                  alt={userData.name || "Profile"}
+                  className="h-full w-full object-cover"
+                />
+              )}
+            </div>
+            <svg className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-40 h-8">
+              <path d="M0,4 Q20,8 40,4 T80,4 T120,4 T160,4" stroke="#006d77" strokeWidth="2" fill="none" />
             </svg>
           </div>
-        </div>
-        
-        {/* Contact details with hand-drawn icon style */}
-        <div className="space-y-3 flex-1">
-          {userData.company && (
-            <div className="flex gap-3 items-center">
-              <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center">
-                <Briefcase className="h-4 w-4 text-amber-800" />
-              </div>
-              <span className="text-sm text-amber-900">{userData.company}</span>
-            </div>
-          )}
           
-          {userData.location && (
-            <div className="flex gap-3 items-center">
-              <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center">
-                <MapPin className="h-4 w-4 text-amber-800" />
-              </div>
-              <span className="text-sm text-amber-900">{userData.location}</span>
-            </div>
-          )}
+          {/* Name with artistic font */}
+          <h2 className="text-2xl font-bold text-[#006d77]" style={{ fontFamily: "'Georgia', serif" }}>
+            {userData.name || "Your Name"}
+          </h2>
+          <p className="text-md text-[#e29578] italic mt-1" style={{ fontFamily: "'Georgia', serif" }}>
+            {userData.title || "Professional"}
+          </p>
           
+          {/* Industry and Domain with hand-drawn underline */}
           {userData.industry && (
-            <div className="flex gap-3 items-center">
-              <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center">
-                <Building2 className="h-4 w-4 text-amber-800" />
+            <div className="relative mt-2 inline-block">
+              <div className="text-sm text-[#006d77]/80">
+                {userData.industry.includes(': ') ? (
+                  <>
+                    <span>{userData.industry.split(': ')[0]}</span>
+                    <span className="mx-1">•</span>
+                    <span>{userData.industry.split(': ')[1]}</span>
+                  </>
+                ) : (
+                  <span>{userData.industry}</span>
+                )}
               </div>
-              <span className="text-sm text-amber-900">{userData.industry}</span>
+              <svg className="absolute -bottom-2 left-0 w-full h-4">
+                <path d="M0,2 Q10,4 20,2 T40,2 T60,2 T80,2 T100,2" stroke="#e29578" strokeWidth="1" fill="none" />
+              </svg>
             </div>
           )}
-          
-          {userData.domain && (
-            <div className="flex gap-3 items-center">
-              <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center">
-                <Code className="h-4 w-4 text-amber-800" />
+        </div>
+        
+        {/* Contact details with painterly style */}
+        <div className="flex-1 space-y-4">
+          {/* Organic shape container */}
+          <div className="bg-white/80 rounded-3xl p-5 space-y-4 relative overflow-hidden" 
+               style={{ borderRadius: "30% 70% 70% 30% / 30% 30% 70% 70%" }}>
+            <svg className="absolute inset-0 w-full h-full opacity-10">
+              <path d="M0,50 Q50,30 100,50 T200,50 T300,50 T400,50" stroke="#83c5be" strokeWidth="60" fill="none" />
+            </svg>
+            
+            {/* Company with painted icon */}
+            {userData.company && (
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-[#83c5be]/30 flex items-center justify-center">
+                  <Briefcase className="h-5 w-5 text-[#006d77]" />
+                </div>
+                <span className="text-sm text-[#006d77]" style={{ fontFamily: "'Georgia', serif" }}>{userData.company}</span>
               </div>
-              <span className="text-sm text-amber-900">{userData.domain}</span>
+            )}
+            
+            {/* Email with painted icon */}
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-full bg-[#83c5be]/30 flex items-center justify-center">
+                <Mail className="h-5 w-5 text-[#006d77]" />
+              </div>
+              <span className="text-sm text-[#006d77]" style={{ fontFamily: "'Georgia', serif" }}>{userData.email}</span>
             </div>
-          )}
-          
-          <div className="flex gap-3 items-center">
-            <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center">
-              <Mail className="h-4 w-4 text-amber-800" />
+            
+            {/* Phone with painted icon */}
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-full bg-[#83c5be]/30 flex items-center justify-center">
+                <Phone className="h-5 w-5 text-[#006d77]" />
+              </div>
+              <span className="text-sm text-[#006d77]" style={{ fontFamily: "'Georgia', serif" }}>
+                {userData.phoneNumber || "Add phone number"}
+              </span>
             </div>
-            <span className="text-sm text-amber-900">{userData.email}</span>
-          </div>
-          
-          <div className="flex gap-3 items-center">
-            <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center">
-              <Phone className="h-4 w-4 text-amber-800" />
+            
+            {/* Profile link with painted icon */}
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-full bg-[#83c5be]/30 flex items-center justify-center">
+                <Globe className="h-5 w-5 text-[#006d77]" />
+              </div>
+              <span className="text-sm text-[#006d77]" style={{ fontFamily: "'Georgia', serif" }}>{profileLink}</span>
             </div>
-            <span className="text-sm text-amber-900">{userData.phoneNumber || "Add phone number"}</span>
-          </div>
-          
-          <div className="flex gap-3 items-center">
-            <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center">
-              <Globe className="h-4 w-4 text-amber-800" />
-            </div>
-            <span className="text-sm text-amber-900">{profileLink}</span>
           </div>
         </div>
         
-        {/* Hand-drawn footer */}
-        <div className="mt-auto pt-4 text-center">
-          <p className="text-xs font-serif italic text-amber-700/70">Digital Visiting Card</p>
+        {/* Artistic footer with flowing design */}
+        <div className="mt-6 text-center relative">
+          <svg className="absolute -top-6 left-0 w-full h-6 opacity-70">
+            <path d="M0,4 Q40,0 80,4 T160,4 T240,4 T320,4" stroke="#e29578" strokeWidth="2" fill="none" />
+          </svg>
+          <div className="relative inline-block px-6 py-1 bg-[#006d77]/10">
+            <p className="text-xs text-[#006d77] italic" style={{ fontFamily: "'Georgia', serif" }}>
+              Artistic Digital Card
+            </p>
+          </div>
+          <svg className="absolute -bottom-6 left-0 w-full h-6 opacity-70">
+            <path d="M0,2 Q40,6 80,2 T160,2 T240,2 T320,2" stroke="#e29578" strokeWidth="2" fill="none" />
+          </svg>
         </div>
       </div>
     </div>
