@@ -1,5 +1,5 @@
 import React from "react";
-import { Mail, Phone, Globe } from "lucide-react";
+import { Mail, Phone, Globe, Briefcase, Code } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { UserData } from "@/types/user";
 
@@ -29,6 +29,32 @@ const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ userData }) =
             <div className="flex items-center gap-2 text-muted-foreground">
               <Phone className="h-4 w-4" />
               <span className="text-sm">No phone number added</span>
+            </div>
+          )}
+          
+          {/* Company */}
+          {userData.company ? (
+            <div className="flex items-center gap-2">
+              <Briefcase className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm">{userData.company}</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Briefcase className="h-4 w-4" />
+              <span className="text-sm">No company added</span>
+            </div>
+          )}
+          
+          {/* Domain */}
+          {userData.domain ? (
+            <div className="flex items-center gap-2">
+              <Code className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm">{userData.domain}</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Code className="h-4 w-4" />
+              <span className="text-sm">No domain/expertise added</span>
             </div>
           )}
           
