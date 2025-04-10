@@ -488,7 +488,10 @@ export default function Profile() {
     queryKey: [`/api/users/${userNumericId}/educations`],
     queryFn: async () => {
       if (!userNumericId) return [];
-      const response = await apiRequest('GET', `/api/users/${userNumericId}/educations`);
+      const response = await apiRequest({
+        method: 'GET',
+        url: `/api/users/${userNumericId}/educations`
+      });
       return await response.json();
     },
     enabled: !!userNumericId && isAuthenticated,
@@ -502,7 +505,10 @@ export default function Profile() {
     queryKey: [`/api/users/${userNumericId}/projects`],
     queryFn: async () => {
       if (!userNumericId) return [];
-      const response = await apiRequest('GET', `/api/users/${userNumericId}/projects`);
+      const response = await apiRequest({
+        method: 'GET',
+        url: `/api/users/${userNumericId}/projects`
+      });
       return await response.json();
     },
     enabled: !!userNumericId && isAuthenticated,
@@ -516,7 +522,10 @@ export default function Profile() {
     queryKey: ['/api/users', userNumericId, 'services'],
     queryFn: async () => {
       if (!userNumericId) return [];
-      const response = await apiRequest('GET', `/api/users/${userNumericId}/services`);
+      const response = await apiRequest({
+        method: 'GET',
+        url: `/api/users/${userNumericId}/services`
+      });
       return await response.json();
     },
     enabled: !!userNumericId && isAuthenticated,
@@ -528,7 +537,11 @@ export default function Profile() {
   // Mutation for updating user basic info
   const updateUserMutation = useMutation({
     mutationFn: async (data: any) => {
-      const res = await apiRequest('PUT', `/api/users/${userId}`, data);
+      const res = await apiRequest({
+        method: 'PUT',
+        url: `/api/users/${userId}`,
+        data: data
+      });
       return await res.json();
     },
     onSuccess: () => {
