@@ -1,6 +1,7 @@
 import React from "react";
-import { Mail, Phone, Globe, Briefcase } from "lucide-react";
 import { UserData } from "@/types/user";
+
+// Import card components
 import ThreeDAnimatedCard from "./cards/3d-animated-card";
 import HolographicCard from "./cards/holographic-card";
 import FlipCard from "./cards/flip-card";
@@ -13,29 +14,34 @@ interface VisitingCardPreviewProps {
   cardType: string;
 }
 
-const VisitingCardPreview: React.FC<VisitingCardPreviewProps> = ({ userData, cardType }) => {
-  // Determine which card component to render based on the selected type
+const VisitingCardPreview: React.FC<VisitingCardPreviewProps> = ({
+  userData,
+  cardType,
+}) => {
+  // Render the appropriate card based on type
   const renderCard = () => {
     switch (cardType) {
       case "3d-animated":
         return <ThreeDAnimatedCard userData={userData} />;
       case "holographic":
         return <HolographicCard userData={userData} />;
-      case "flip-card":
+      case "flip":
         return <FlipCard userData={userData} />;
-      case "minimalist":
-        return <MinimalistCard userData={userData} />;
       case "creative":
         return <CreativeCard userData={userData} />;
       case "artistic":
         return <ArtisticCard userData={userData} />;
+      case "minimalist":
       default:
-        // Fallback to minimalist card if no valid type is provided
         return <MinimalistCard userData={userData} />;
     }
   };
 
-  return <div className="w-full">{renderCard()}</div>;
+  return (
+    <div className="visiting-card-preview">
+      {renderCard()}
+    </div>
+  );
 };
 
 export default VisitingCardPreview;

@@ -1,4 +1,4 @@
-// Common user data interface used across components
+// UserData interface for consistent use across components
 export interface UserData {
   id: number;
   username: string;
@@ -10,5 +10,9 @@ export interface UserData {
   industry: string | null;
   lookingFor: string | null;
   phoneNumber: string | null;
-  company?: string | null; // Optional company name
+  company?: string | null;
+  emailVerified?: boolean;
+  profileCompleted?: boolean;
+  visitingCardType?: string | null;
+  createdAt?: Date | string | null;
 }

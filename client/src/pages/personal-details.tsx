@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import Header from "@/components/layout/header";
 import { Button } from "@/components/ui/button";
@@ -8,8 +8,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Separator } from "@/components/ui/separator";
 import PersonalInfoSection from "@/components/profile/personal-info-section";
 import EditPersonalInfo from "@/components/profile/edit-personal-info";
+import VisitingCardBuilder from "@/components/profile/visiting-card-builder";
 import { ArrowLeft, Edit } from "lucide-react";
 import { useLocation } from "wouter";
+import { UserData } from "@/types/user";
+import { apiRequest } from "@/lib/queryClient";
 
 const PersonalDetailsPage: React.FC = () => {
   const [, navigate] = useLocation();
@@ -17,26 +20,33 @@ const PersonalDetailsPage: React.FC = () => {
   const { user } = useAuth();
   const userId = user?.uid;
   const [showEditPersonalInfo, setShowEditPersonalInfo] = useState(false);
-
-  // Define UserData interface
-  interface UserData {
-    id: number;
-    username: string;
-    name: string | null;
-    email: string;
-    photoURL: string | null;
-    title: string | null;
-    location: string | null;
-    industry: string | null;
-    lookingFor: string | null;
-    phoneNumber: string | null;
-  }
+  const [selectedCardType, setSelectedCardType] = useState<string>("");
 
   // Fetch user data
   const { data: userData, isLoading } = useQuery<UserData>({
     queryKey: [`/api/users/${userId}`],
     enabled: !!userId,
   });
+
+  // Define mutation to save card preference
+  const saveCardPreference = useMutation({
+    mutationFn: async (cardType: string) => {
+      return await apiRequest({
+        url: `/api/users/${userId}`,
+        method: 'PUT',
+        data: { visitingCardType: cardType },
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
+    },
+  });
+
+  // Handle card type selection
+  const handleCardTypeSelect = (cardType: string) => {
+    setSelectedCardType(cardType);
+    saveCardPreference.mutate(cardType);
+  };
 
   if (isLoading) {
     return (
@@ -104,7 +114,18 @@ const PersonalDetailsPage: React.FC = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {userData && <PersonalInfoSection userData={userData} />}
+            {userData && (
+              <>
+                <PersonalInfoSection userData={userData} />
+                
+                {/* Visiting Card Builder Component */}
+                <VisitingCardBuilder 
+                  userData={userData}
+                  selectedCardType={userData.visitingCardType || selectedCardType}
+                  onCardTypeSelect={handleCardTypeSelect}
+                />
+              </>
+            )}
           </CardContent>
         </Card>
         
