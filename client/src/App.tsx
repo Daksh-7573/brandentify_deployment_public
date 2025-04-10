@@ -11,6 +11,7 @@ import Landing from "@/pages/landing";
 import Dashboard from "@/pages/dashboard";
 import Profile from "@/pages/profile";
 import PublicProfile from "@/pages/public-profile";
+import PersonalDetailsPage from "@/pages/personal-details";
 import AICareer from "@/pages/ai-career";
 import PortfolioBuilder from "@/pages/portfolio-builder";
 import CreatePulsePage from "@/pages/create-pulse";
@@ -64,6 +65,9 @@ function Router() {
       </Route>
       <Route path="/profile">
         <ProtectedRoute path="/profile" component={Profile} />
+      </Route>
+      <Route path="/personal-details">
+        <ProtectedRoute path="/personal-details" component={PersonalDetailsPage} />
       </Route>
       {/* Public profile using username route (/@username) - dynamic path parameter */}
       <Route path="/@:username">
