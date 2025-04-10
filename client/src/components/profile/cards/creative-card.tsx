@@ -1,214 +1,193 @@
-import React, { useState } from "react";
-import { UserData } from "@/types/user";
-import { 
-  Mail, 
-  Phone, 
-  Globe, 
-  Briefcase, 
-  MapPin, 
-  Code, 
-  Building2, 
-  Plus, 
-  X, 
-  ChevronLeft, 
-  ChevronRight,
-  Linkedin,
-  MessageSquare,
-  Copy,
-  Share2,
-  QrCode
-} from "lucide-react";
+import React, { useState } from 'react';
+import { Mail, Phone, Share2, Plus, X, MapPin, ChevronLeft, ChevronRight, Briefcase, MessageSquare, QrCode, Copy, Linkedin } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+
+import type { UserData } from '@/types/user';
 
 interface CreativeCardProps {
   userData: UserData;
 }
 
 const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
-  // State for FAB menu and swipe
+  const { toast } = useToast();
   const [isFabOpen, setIsFabOpen] = useState(false);
-  const [swipePosition, setSwipePosition] = useState<'main' | 'left' | 'right'>('main');
-  const [startX, setStartX] = useState<number | null>(null);
-  const [currentX, setCurrentX] = useState<number | null>(null);
+  const [currentView, setCurrentView] = useState<'contact' | 'main' | 'about'>('main');
   
-  // Format profile link
-  const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;
+  const profileLink = `https://brandentifier.com/@${userData.username}`;
   
-  // Toggle FAB menu
-  const toggleFab = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  // Toggle FAB open/close
+  const toggleFab = () => {
     setIsFabOpen(!isFabOpen);
   };
   
-  // Handle swipe start
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setStartX(e.touches[0].clientX);
-  };
-  
-  // Handle mouse down for desktop
-  const handleMouseDown = (e: React.MouseEvent) => {
-    setStartX(e.clientX);
-  };
-  
-  // Handle swipe move
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (startX === null) return;
-    setCurrentX(e.touches[0].clientX);
-  };
-  
-  // Handle mouse move for desktop
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (startX === null) return;
-    setCurrentX(e.clientX);
-  };
-  
-  // Handle swipe end
-  const handleTouchEnd = () => {
-    if (startX === null || currentX === null) {
-      setStartX(null);
-      setCurrentX(null);
-      return;
-    }
-    
-    const diff = startX - currentX;
-    // Swipe right to left (show contact details)
-    if (diff > 50 && swipePosition === 'main') {
-      setSwipePosition('left');
-    } 
-    // Swipe left to right (show extra details/QR)
-    else if (diff < -50 && swipePosition === 'main') {
-      setSwipePosition('right');
-    }
-    // Return to main from either side
-    else if ((diff < -50 && swipePosition === 'left') || (diff > 50 && swipePosition === 'right')) {
-      setSwipePosition('main');
-    }
-    
-    setStartX(null);
-    setCurrentX(null);
-  };
-  
-  // Handle mouse up for desktop
-  const handleMouseUp = () => {
-    handleTouchEnd();
-  };
-  
-  // Navigate back to main view
-  const navigateToMain = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setSwipePosition('main');
-  };
-  
-  // Navigate to contact details
-  const navigateToContacts = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setSwipePosition('left');
-  };
-  
-  // Navigate to extra details
-  const navigateToExtras = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setSwipePosition('right');
-  };
-  
-  // FAB actions
+  // Handle FAB actions
   const handleAction = (action: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    setIsFabOpen(false);
     
     switch (action) {
       case 'email':
-        window.location.href = `mailto:${userData.email}`;
+        if (userData.email) {
+          window.location.href = `mailto:${userData.email}`;
+        } else {
+          toast({
+            title: "No Email Available",
+            description: "This profile doesn't have an email address.",
+            variant: "destructive"
+          });
+        }
         break;
+      
       case 'phone':
         if (userData.phoneNumber) {
           window.location.href = `tel:${userData.phoneNumber}`;
+        } else {
+          toast({
+            title: "No Phone Number",
+            description: "This profile doesn't have a phone number.",
+            variant: "destructive"
+          });
         }
         break;
+      
       case 'copy':
-        navigator.clipboard.writeText(profileLink);
-        // Show toast notification
-        alert("Profile link copied to clipboard!");
+        navigator.clipboard.writeText(profileLink).then(() => {
+          toast({
+            title: "Link Copied",
+            description: "Profile link copied to clipboard.",
+          });
+        });
         break;
+      
       case 'share':
         if (navigator.share) {
           navigator.share({
-            title: userData.name || "Profile",
-            text: `Check out ${userData.name}'s profile`,
-            url: `https://${profileLink}`
+            title: userData.name || "Brandentifier Profile",
+            text: `Check out ${userData.name || "this"} profile on Brandentifier`,
+            url: profileLink,
+          }).catch(() => {
+            toast({
+              title: "Share Cancelled",
+              description: "Profile sharing was cancelled.",
+            });
           });
         } else {
-          navigator.clipboard.writeText(profileLink);
-          alert("Profile link copied to clipboard!");
+          navigator.clipboard.writeText(profileLink).then(() => {
+            toast({
+              title: "Link Copied",
+              description: "Profile link copied to clipboard for sharing.",
+            });
+          });
         }
         break;
     }
   };
   
-  // This function is no longer used since we're now handling all transforms
-  // directly in the style prop of the container
-  const getCardTransform = () => {
-    if (swipePosition === 'left') {
-      return 'translateX(-100%)';
-    } else if (swipePosition === 'right') {
-      return 'translateX(100%)';
-    }
-    return 'translateX(0)';
-  };
-  
-  // Calculate any ongoing swipe transform
-  const getOngoingSwipeTransform = () => {
-    if (startX === null || currentX === null) return 0;
-    return currentX - startX;
-  };
-  
   return (
-    <div 
-      className="creative-card-container w-full aspect-[2/3.5] relative overflow-hidden rounded-xl shadow-xl"
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
-    >
-      {/* Swipe indicators */}
-      <div className="swipe-indicator-container absolute top-1/2 -translate-y-1/2 w-full z-10 flex justify-between px-4 pointer-events-none">
-        {swipePosition !== 'right' && (
-          <div className={`left-indicator ${swipePosition === 'main' ? 'opacity-50' : 'opacity-0'} bg-white/80 rounded-full h-8 w-8 flex items-center justify-center shadow-md transition-opacity duration-300`}>
-            <ChevronLeft className="h-5 w-5 text-gray-800" />
+    <div className="creative-card w-full aspect-[2/3.5] rounded-xl shadow-xl overflow-hidden relative">
+      {/* Card Content - Dynamically show different views */}
+      {currentView === 'main' && (
+        <div className="main-view h-full flex flex-col bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 text-white">
+          {/* Top section with photo */}
+          <div className="relative h-48 bg-gradient-to-b from-black/30 to-transparent">
+            <div className="absolute left-1/2 top-24 transform -translate-x-1/2 -translate-y-1/2">
+              <div className="h-28 w-28 rounded-full border-4 border-white overflow-hidden bg-white shadow-lg">
+                {userData.photoURL ? (
+                  <img 
+                    src={userData.photoURL} 
+                    alt={userData.name || "Profile"} 
+                    className="h-full w-full object-cover"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = "https://ui-avatars.com/api/?name=" + (userData.name || "User");
+                    }}
+                  />
+                ) : (
+                  <img 
+                    src={`https://ui-avatars.com/api/?name=${userData.name || "User"}`}
+                    alt={userData.name || "Profile"}
+                    className="h-full w-full object-cover"
+                  />
+                )}
+              </div>
+            </div>
           </div>
-        )}
-        {swipePosition !== 'left' && (
-          <div className={`right-indicator ${swipePosition === 'main' ? 'opacity-50' : 'opacity-0'} bg-white/80 rounded-full h-8 w-8 flex items-center justify-center shadow-md ml-auto transition-opacity duration-300`}>
-            <ChevronRight className="h-5 w-5 text-gray-800" />
+          
+          {/* Main content */}
+          <div className="flex-1 px-6 pt-14 pb-5 flex flex-col items-center text-center">
+            <h2 className="text-2xl font-bold mb-1">
+              {userData.name || "Your Name"}
+            </h2>
+            <p className="text-white/80 text-sm mb-5">
+              {userData.title || "Add your designation"}
+            </p>
+            
+            {/* Additional info */}
+            <div className="w-full space-y-3">
+              {userData.company && (
+                <div className="flex items-center justify-center gap-2">
+                  <Briefcase className="h-4 w-4 text-white/70" />
+                  <span className="text-sm">{userData.company}</span>
+                </div>
+              )}
+              
+              {userData.location && (
+                <div className="flex items-center justify-center gap-2">
+                  <MapPin className="h-4 w-4 text-white/70" />
+                  <span className="text-sm">{userData.location}</span>
+                </div>
+              )}
+            </div>
+            
+            {/* Swipe indicator */}
+            <div className="mt-auto pt-5">
+              <div className="flex items-center justify-center gap-2 mb-1">
+                <button 
+                  className="h-2 w-2 rounded-full bg-white/30"
+                  onClick={() => setCurrentView('contact')}
+                ></button>
+                <button 
+                  className="h-2 w-6 rounded-full bg-white/80"
+                ></button>
+                <button 
+                  className="h-2 w-2 rounded-full bg-white/30"
+                  onClick={() => setCurrentView('about')}
+                ></button>
+              </div>
+              <p className="text-xs text-white/60">
+                Tap arrows to see more details
+              </p>
+            </div>
           </div>
-        )}
-      </div>
-      
-      {/* Swipe container */}
-      <div 
-        className="swipe-container flex h-full transition-transform duration-300 ease-out"
-        style={{ 
-          transform: swipePosition === 'left' 
-            ? 'translateX(-100%)' 
-            : swipePosition === 'right'
-              ? 'translateX(100%)'
-              : startX !== null && currentX !== null
-                ? `translateX(${getOngoingSwipeTransform()}px)`
-                : 'translateX(0)'
-        }}
-      >
-        {/* Left view - Contact details */}
-        <div className="card-view min-w-full h-full shrink-0 bg-gradient-to-br from-purple-600 via-pink-600 to-orange-500 text-white flex flex-col">
-          <div className="px-4 py-3 flex items-center">
+          
+          {/* Navigation buttons */}
+          <div className="absolute top-1/2 -translate-y-1/2 w-full flex justify-between px-3 pointer-events-none">
             <button 
-              className="mr-2 h-8 w-8 rounded-full bg-white/20 flex items-center justify-center"
-              onClick={navigateToMain}
+              className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center pointer-events-auto"
+              onClick={() => setCurrentView('contact')}
+            >
+              <ChevronLeft className="h-5 w-5 text-white" />
+            </button>
+            <button 
+              className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center pointer-events-auto"
+              onClick={() => setCurrentView('about')}
             >
               <ChevronRight className="h-5 w-5 text-white" />
             </button>
+          </div>
+        </div>
+      )}
+      
+      {/* Contact View */}
+      {currentView === 'contact' && (
+        <div className="contact-view h-full flex flex-col bg-gradient-to-br from-purple-600 via-pink-600 to-orange-500 text-white">
+          <div className="px-4 py-3 flex items-center">
             <h3 className="text-lg font-semibold">Contact Details</h3>
+            <button 
+              className="ml-auto h-8 w-8 rounded-full bg-white/20 flex items-center justify-center"
+              onClick={() => setCurrentView('main')}
+            >
+              <ChevronRight className="h-5 w-5 text-white" />
+            </button>
           </div>
           
           <div className="flex-1 p-5 space-y-6">
@@ -257,88 +236,15 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
             </div>
           </div>
         </div>
-        
-        {/* Main view - Basic info */}
-        <div className="card-view min-w-full h-full shrink-0 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 text-white flex flex-col">
-          <div className="absolute left-1/2 top-28 transform -translate-x-1/2 -translate-y-1/2 z-10">
-            <div className="h-28 w-28 rounded-full border-4 border-white overflow-hidden bg-white flex items-center justify-center shadow-lg">
-              {userData.photoURL ? (
-                <img 
-                  src={userData.photoURL} 
-                  alt={userData.name || "Profile"} 
-                  className="h-full w-full object-cover"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = "https://ui-avatars.com/api/?name=" + (userData.name || "User");
-                  }}
-                />
-              ) : (
-                <img 
-                  src={`https://ui-avatars.com/api/?name=${userData.name || "User"}`}
-                  alt={userData.name || "Profile"}
-                  className="h-full w-full object-cover"
-                />
-              )}
-            </div>
-          </div>
-          
-          <div className="h-40 w-full bg-gradient-to-b from-black/20 to-transparent"></div>
-          
-          <div className="flex-1 px-5 pt-20 pb-5 flex flex-col items-center text-center">
-            <h2 className="text-2xl font-bold mb-1">
-              {userData.name || "Your Name"}
-            </h2>
-            <p className="text-white/80 text-sm mb-4">
-              {userData.title || "Add your designation"}
-            </p>
-            
-            {userData.company && (
-              <div className="mb-2 inline-flex items-center gap-1.5">
-                <Briefcase className="h-4 w-4 text-white/70" />
-                <span className="text-sm">{userData.company}</span>
-              </div>
-            )}
-            
-            {userData.location && (
-              <div className="mb-2 inline-flex items-center gap-1.5">
-                <MapPin className="h-4 w-4 text-white/70" />
-                <span className="text-sm">{userData.location}</span>
-              </div>
-            )}
-            
-            <div className="mt-6 flex items-center gap-2">
-              <div className="h-1 w-1 rounded-full bg-white/30"></div>
-              <div className="h-1 w-8 rounded-full bg-white/70"></div>
-              <div className="h-1 w-1 rounded-full bg-white/30"></div>
-            </div>
-            
-            <p className="text-xs text-white/60 mt-3">
-              Swipe to see more details
-            </p>
-          </div>
-          
-          {/* Navigation dots */}
-          <div className="flex justify-center gap-2 mb-3">
-            <button 
-              className="h-2 w-2 rounded-full bg-white/30"
-              onClick={navigateToContacts}
-            ></button>
-            <button 
-              className="h-2 w-6 rounded-full bg-white/80"
-            ></button>
-            <button 
-              className="h-2 w-2 rounded-full bg-white/30"
-              onClick={navigateToExtras}
-            ></button>
-          </div>
-        </div>
-        
-        {/* Right view - Bio/QR */}
-        <div className="card-view min-w-full h-full shrink-0 bg-gradient-to-br from-purple-600 via-pink-600 to-orange-500 text-white flex flex-col">
+      )}
+      
+      {/* About View */}
+      {currentView === 'about' && (
+        <div className="about-view h-full flex flex-col bg-gradient-to-br from-purple-600 via-pink-600 to-orange-500 text-white">
           <div className="px-4 py-3 flex items-center">
             <button 
               className="mr-2 h-8 w-8 rounded-full bg-white/20 flex items-center justify-center"
-              onClick={navigateToMain}
+              onClick={() => setCurrentView('main')}
             >
               <ChevronLeft className="h-5 w-5 text-white" />
             </button>
@@ -362,7 +268,7 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
             </div>
           </div>
         </div>
-      </div>
+      )}
       
       {/* Floating Action Button (FAB) */}
       <div className="fab-container absolute bottom-6 right-6 z-20">
