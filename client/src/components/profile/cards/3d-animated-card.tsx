@@ -11,9 +11,10 @@ import {
   ChevronDown,
   Linkedin,
   ExternalLink,
-  QrCode,
   Copy,
-  Download
+  Download,
+  Moon,
+  Sun
 } from 'lucide-react';
 
 interface ThreeDAnimatedCardProps {
@@ -24,9 +25,6 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
   const [isFlipped, setIsFlipped] = useState(false);
   const [rotateX, setRotateX] = useState(0);
   const [rotateY, setRotateY] = useState(0);
-  const [glowX, setGlowX] = useState(50);
-  const [glowY, setGlowY] = useState(50);
-  const [perspective, setPerspective] = useState(1000);
   const [isDarkMode, setIsDarkMode] = useState(true);
   const cardRef = useRef<HTMLDivElement>(null);
   
@@ -35,7 +33,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
   
   // Handle mouse movement for 3D effect
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
+    if (!cardRef.current || isFlipped) return;
     
     const rect = cardRef.current.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
@@ -49,26 +47,20 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
     const rotX = (mouseY / (rect.height / 2)) * -10; // Invert Y rotation for natural tilt
     const rotY = (mouseX / (rect.width / 2)) * 10;
     
-    // Calculate glow position (0-100%)
-    const glowPosX = ((e.clientX - rect.left) / rect.width) * 100;
-    const glowPosY = ((e.clientY - rect.top) / rect.height) * 100;
-    
     // Update state
     setRotateX(rotX);
     setRotateY(rotY);
-    setGlowX(glowPosX);
-    setGlowY(glowPosY);
   };
   
   // Reset on mouse leave
   const handleMouseLeave = () => {
+    if (isFlipped) return;
     setRotateX(0);
     setRotateY(0);
   };
   
   // Toggle card flip
-  const toggleFlip = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const toggleFlip = () => {
     setIsFlipped(!isFlipped);
     
     // Reset transforms when flipping
@@ -84,15 +76,15 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
     setIsDarkMode(!isDarkMode);
   };
   
-  // Simulate device tilt on mobile
+  // Device orientation for mobile
   useEffect(() => {
     const handleDeviceOrientation = (e: DeviceOrientationEvent) => {
       if (!e.beta || !e.gamma || isFlipped) return;
       
-      // Use beta (front-to-back tilt) for X rotation (max ±10 degrees)
-      // Use gamma (left-to-right tilt) for Y rotation (max ±10 degrees)
-      const tiltX = (e.beta - 45) * -0.2; // Normalize from ~0-90 to ±10 degrees
-      const tiltY = e.gamma * 0.2; // Normalize from ~±45 to ±10 degrees
+      // Use beta (front-to-back tilt) for X rotation
+      // Use gamma (left-to-right tilt) for Y rotation
+      const tiltX = (e.beta - 45) * -0.2; 
+      const tiltY = e.gamma * 0.2;
       
       // Apply constraints
       const constrainedX = Math.max(-10, Math.min(10, tiltX));
@@ -102,7 +94,6 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
       setRotateY(constrainedY);
     };
     
-    // Add device orientation event listener if supported
     if (window.DeviceOrientationEvent) {
       window.addEventListener('deviceorientation', handleDeviceOrientation);
     }
@@ -118,11 +109,22 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
   useEffect(() => {
     const style = document.createElement('style');
     style.textContent = `
-      .perspective-card { perspective: 1000px; }
-      .preserve-3d { transform-style: preserve-3d; }
-      .backface-hidden { backface-visibility: hidden; }
+      @keyframes holographicShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
       
-      /* Holographic Text Effect */
+      @keyframes pulseGlow {
+        0%, 100% { opacity: 0.6; }
+        50% { opacity: 1; }
+      }
+      
+      @keyframes bounceIn {
+        0% { transform: translateY(10px); opacity: 0; }
+        100% { transform: translateY(0); opacity: 1; }
+      }
+      
       .holographic-text {
         background-image: linear-gradient(
           -45deg,
@@ -137,40 +139,6 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
         color: transparent;
         animation: holographicShift 5s ease infinite;
       }
-      
-      @keyframes holographicShift {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-      }
-      
-      /* Glow Animation */
-      @keyframes pulseGlow {
-        0%, 100% { opacity: 0.6; }
-        50% { opacity: 1; }
-      }
-      
-      /* Bounce In Animation */
-      @keyframes bounceIn {
-        0% { transform: translateY(10px); opacity: 0; }
-        100% { transform: translateY(0); opacity: 1; }
-      }
-      
-      /* Card flip animation */
-      .card-flip-enter {
-        transform: rotateY(0deg);
-      }
-      .card-flip-enter-active {
-        transform: rotateY(180deg);
-        transition: transform 500ms;
-      }
-      .card-flip-exit {
-        transform: rotateY(180deg);
-      }
-      .card-flip-exit-active {
-        transform: rotateY(0deg);
-        transition: transform 500ms;
-      }
     `;
     document.head.appendChild(style);
     
@@ -179,93 +147,73 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
     };
   }, []);
   
-  // Base color scheme based on dark/light mode
-  const colors = isDarkMode
-    ? {
-        bg: 'from-gray-900 to-slate-800',
-        accentBg: 'from-indigo-900/40 to-purple-900/40',
-        glow: 'from-indigo-500 via-purple-500 to-pink-500',
-        text: 'text-white',
-        subtext: 'text-gray-300',
-        border: 'border-gray-700',
-        icon: 'text-indigo-400',
-        glassBg: 'bg-black/10',
-      }
-    : {
-        bg: 'from-white to-gray-100',
-        accentBg: 'from-indigo-100/40 to-purple-100/40',
-        glow: 'from-indigo-400 via-purple-400 to-pink-400',
-        text: 'text-gray-900',
-        subtext: 'text-gray-600',
-        border: 'border-gray-200',
-        icon: 'text-indigo-600',
-        glassBg: 'bg-white/30',
-      };
-  
   return (
-    <div className="w-full perspective-card">
+    <div className="w-full" style={{ perspective: '1000px' }}>
       <div 
         ref={cardRef}
-        className="w-full aspect-[2/3.5] rounded-xl overflow-hidden shadow-xl relative preserve-3d cursor-pointer transition-all duration-300"
+        className="w-full aspect-[2/3.5] rounded-xl overflow-hidden shadow-xl relative transition-transform duration-300 cursor-pointer"
         style={{
-          transform: isFlipped 
-            ? `rotateY(180deg)` 
-            : `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
           transformStyle: 'preserve-3d',
+          transform: isFlipped 
+            ? 'rotateY(180deg)' 
+            : `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
           boxShadow: isDarkMode
-            ? `0 10px 30px -5px rgba(0, 0, 0, 0.5), 0 0 30px -5px rgba(79, 70, 229, 0.4)`
-            : `0 10px 30px -5px rgba(0, 0, 0, 0.1), 0 0 20px -5px rgba(79, 70, 229, 0.2)`,
+            ? '0 10px 30px -5px rgba(0, 0, 0, 0.5), 0 0 30px -5px rgba(79, 70, 229, 0.4)'
+            : '0 10px 30px -5px rgba(0, 0, 0, 0.1), 0 0 20px -5px rgba(79, 70, 229, 0.2)',
         }}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         onClick={toggleFlip}
       >
-        {/* Interactive glow effect that follows cursor */}
-        <div 
-          className="absolute inset-0 pointer-events-none z-10"
-          style={{
-            background: `radial-gradient(circle at ${glowX}% ${glowY}%, ${
-              isDarkMode ? 'rgba(99, 102, 241, 0.3)' : 'rgba(99, 102, 241, 0.15)'
-            } 0%, transparent 50%)`,
-            opacity: isFlipped ? 0 : 1,
-            transition: 'opacity 0.5s ease',
-          }}
-        />
-        
         {/* Front of card */}
         <div 
-          className={`absolute inset-0 bg-gradient-to-br ${colors.bg} ${colors.text} backface-hidden flex flex-col border overflow-hidden`}
+          className="absolute inset-0 flex flex-col border"
           style={{
+            backfaceVisibility: 'hidden',
+            background: isDarkMode 
+              ? 'linear-gradient(135deg, #1f2937, #111827)' 
+              : 'linear-gradient(135deg, #ffffff, #f3f4f6)',
+            color: isDarkMode ? 'white' : '#1f2937',
+            borderColor: isDarkMode ? 'rgba(75, 85, 99, 0.5)' : 'rgba(229, 231, 235, 0.5)',
             transformStyle: 'preserve-3d',
-            transform: 'translateZ(0.1px)', // Slight depth for better 3D effect
-            borderColor: isDarkMode ? 'rgba(75, 85, 99, 0.5)' : 'rgba(229, 231, 235, 0.5)'
+            transform: 'translateZ(0.1px)',
           }}
         >
-          {/* Mode switcher and hint */}
-          <div className="absolute top-3 right-3 z-30 flex gap-2">
+          {/* Mode switcher */}
+          <div className="absolute top-3 right-3 z-30">
             <button 
               onClick={toggleTheme}
-              className={`h-6 w-6 rounded-full flex items-center justify-center text-xs border backdrop-blur-sm ${colors.text}`}
-              style={{ borderColor: isDarkMode ? 'rgba(75, 85, 99, 0.5)' : 'rgba(229, 231, 235, 0.5)', 
-                       background: isDarkMode ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.2)' }}
+              className="h-7 w-7 rounded-full flex items-center justify-center text-xs border backdrop-blur-sm"
+              style={{ 
+                borderColor: isDarkMode ? 'rgba(79, 70, 229, 0.3)' : 'rgba(79, 70, 229, 0.2)',
+                background: isDarkMode ? 'rgba(0, 0, 0, 0.3)' : 'rgba(255, 255, 255, 0.3)'
+              }}
             >
-              {isDarkMode ? '☀️' : '🌙'}
+              {isDarkMode ? <Sun size={14} /> : <Moon size={14} />}
             </button>
           </div>
           
-          {/* Background accents - metallic/neon elements */}
-          <div className={`absolute inset-x-0 top-0 h-40 bg-gradient-to-b opacity-70 ${colors.accentBg}`} />
+          {/* Background accents */}
+          <div className="absolute inset-x-0 top-0 h-40 opacity-70" 
+               style={{ 
+                 background: isDarkMode 
+                   ? 'linear-gradient(to bottom, rgba(79, 70, 229, 0.2), rgba(124, 58, 237, 0.1))' 
+                   : 'linear-gradient(to bottom, rgba(79, 70, 229, 0.1), rgba(124, 58, 237, 0.05))'
+               }} />
           
-          {/* Decorative shapes for metallic accents */}
-          <div className="absolute -left-12 -top-12 w-44 h-44 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-full blur-xl" />
-          <div className="absolute -right-12 top-40 w-44 h-44 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full blur-xl" />
+          {/* Decorative shapes */}
+          <div className="absolute -left-12 -top-12 w-44 h-44 rounded-full blur-xl"
+               style={{ background: 'linear-gradient(to bottom right, rgba(99, 102, 241, 0.2), rgba(147, 51, 234, 0.2))' }} />
+          <div className="absolute -right-12 top-40 w-44 h-44 rounded-full blur-xl"
+               style={{ background: 'linear-gradient(to bottom right, rgba(147, 51, 234, 0.2), rgba(79, 70, 229, 0.2))' }} />
           
           {/* Profile picture in glass sphere */}
           <div className="pt-12 flex justify-center" style={{ transform: 'translateZ(20px)' }}>
             <div className="relative">
-              <div className="w-24 h-24 rounded-full flex items-center justify-center overflow-hidden backdrop-blur-sm border-2 border-white/20 shadow-lg"
+              <div className="w-24 h-24 rounded-full flex items-center justify-center overflow-hidden backdrop-blur-sm border-2 shadow-lg"
                 style={{
-                  background: 'rgba(255, 255, 255, 0.1)',
+                  borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(79, 70, 229, 0.2)',
+                  background: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.5)',
                   boxShadow: '0 8px 32px rgba(31, 38, 135, 0.2)',
                 }}
               >
@@ -292,49 +240,100 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
               <div 
                 className="absolute inset-0 rounded-full"
                 style={{
-                  background: `radial-gradient(circle, ${isDarkMode ? 'rgba(99, 102, 241, 0.5)' : 'rgba(99, 102, 241, 0.3)'} 0%, transparent 70%)`,
+                  background: `radial-gradient(circle, ${
+                    isDarkMode ? 'rgba(79, 70, 229, 0.5)' : 'rgba(79, 70, 229, 0.3)'
+                  } 0%, transparent 70%)`,
                   animation: 'pulseGlow 3s infinite',
                 }}
               />
             </div>
           </div>
           
-          {/* Main content with name and details */}
+          {/* Main content */}
           <div className="mt-4 px-6 flex-1 flex flex-col items-center" style={{ transform: 'translateZ(15px)' }}>
             {/* Name and designation with holographic effect */}
             <div className="text-center space-y-1 mb-4">
-              <h2 className="text-xl font-bold holographic-text" style={{ animationDelay: '0.1s' }}>
+              <h2 className="text-xl font-bold holographic-text">
                 {userData.name || "Your Name"}
               </h2>
-              <p className={`${colors.subtext} opacity-90 text-sm`} style={{ animationDelay: '0.2s' }}>
+              <p style={{ 
+                color: isDarkMode ? 'rgba(229, 231, 235, 0.9)' : 'rgba(55, 65, 81, 0.9)',
+                fontSize: '0.875rem'
+              }}>
                 {userData.title || "Add your designation"}
               </p>
             </div>
             
-            {/* Industry & Domain with depth shadow */}
-            <div className={`${isDarkMode ? 'bg-gradient-to-r from-gray-800/50 to-gray-900/50' : 'bg-gradient-to-r from-gray-50/70 to-white/70'} backdrop-blur-sm rounded-lg py-3 px-4 w-full mb-4 border`} 
-                 style={{ borderColor: isDarkMode ? 'rgba(75, 85, 99, 0.2)' : 'rgba(229, 231, 235, 0.5)' }}>
+            {/* Industry & Domain */}
+            <div className="backdrop-blur-sm rounded-lg py-3 px-4 w-full mb-4 border" 
+                 style={{ 
+                   background: isDarkMode 
+                     ? 'rgba(17, 24, 39, 0.4)' 
+                     : 'rgba(243, 244, 246, 0.6)',
+                   borderColor: isDarkMode 
+                     ? 'rgba(75, 85, 99, 0.2)' 
+                     : 'rgba(229, 231, 235, 0.5)'
+                 }}>
               {userData.industry && (
-                <div className="flex items-center gap-2 mb-2 animate-[bounceIn_0.5s_ease_forwards]" style={{animationDelay: '0.3s', opacity: 0}}>
-                  <Building2 className={`h-4 w-4 ${colors.icon}`} />
-                  <span className={`${colors.text} text-sm`}>{userData.industry}</span>
+                <div className="flex items-center gap-2 mb-2"
+                     style={{ 
+                       animation: 'bounceIn 0.5s ease forwards',
+                       animationDelay: '0.3s', 
+                       opacity: 0 
+                     }}>
+                  <Building2 style={{ 
+                    height: '1rem', 
+                    width: '1rem',
+                    color: isDarkMode ? '#a5b4fc' : '#4f46e5' 
+                  }} />
+                  <span style={{ 
+                    color: isDarkMode ? 'white' : '#1f2937',
+                    fontSize: '0.875rem'
+                  }}>
+                    {userData.industry}
+                  </span>
                 </div>
               )}
               
               {userData.domain && (
-                <div className="flex items-center gap-2 animate-[bounceIn_0.5s_ease_forwards]" style={{animationDelay: '0.4s', opacity: 0}}>
-                  <Code className={`h-4 w-4 ${colors.icon}`} />
-                  <span className={`${colors.text} text-sm`}>{userData.domain}</span>
+                <div className="flex items-center gap-2"
+                     style={{ 
+                       animation: 'bounceIn 0.5s ease forwards',
+                       animationDelay: '0.4s', 
+                       opacity: 0 
+                     }}>
+                  <Code style={{ 
+                    height: '1rem', 
+                    width: '1rem',
+                    color: isDarkMode ? '#a5b4fc' : '#4f46e5' 
+                  }} />
+                  <span style={{ 
+                    color: isDarkMode ? 'white' : '#1f2937',
+                    fontSize: '0.875rem'
+                  }}>
+                    {userData.domain}
+                  </span>
                 </div>
               )}
             </div>
             
-            {/* Company name with metallic/neon effect */}
+            {/* Company name */}
             {userData.company && (
-              <div className="w-full mb-4 animate-[bounceIn_0.5s_ease_forwards]" style={{animationDelay: '0.5s', opacity: 0}}>
-                <div className="text-center py-2 px-3 rounded-lg bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-indigo-500/20 backdrop-blur-sm border" 
-                     style={{ borderColor: isDarkMode ? 'rgba(79, 70, 229, 0.3)' : 'rgba(79, 70, 229, 0.2)' }}>
-                  <p className={`font-medium ${colors.text}`}>
+              <div className="w-full mb-4" 
+                   style={{ 
+                     animation: 'bounceIn 0.5s ease forwards',
+                     animationDelay: '0.5s', 
+                     opacity: 0 
+                   }}>
+                <div className="text-center py-2 px-3 rounded-lg backdrop-blur-sm border" 
+                     style={{ 
+                       background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(124, 58, 237, 0.1))',
+                       borderColor: isDarkMode ? 'rgba(79, 70, 229, 0.3)' : 'rgba(79, 70, 229, 0.2)'
+                     }}>
+                  <p style={{ 
+                    fontWeight: 500,
+                    color: isDarkMode ? 'white' : '#1f2937' 
+                  }}>
                     {userData.company}
                   </p>
                 </div>
@@ -343,63 +342,107 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
             
             {/* Location */}
             {userData.location && (
-              <div className="flex items-center gap-2 mb-3 animate-[bounceIn_0.5s_ease_forwards]" style={{animationDelay: '0.6s', opacity: 0}}>
-                <MapPin className={`h-4 w-4 ${colors.icon}`} />
-                <span className={`${colors.text} text-sm`}>{userData.location}</span>
+              <div className="flex items-center gap-2 mb-3" 
+                   style={{ 
+                     animation: 'bounceIn 0.5s ease forwards',
+                     animationDelay: '0.6s', 
+                     opacity: 0 
+                   }}>
+                <MapPin style={{ 
+                  height: '1rem', 
+                  width: '1rem',
+                  color: isDarkMode ? '#a5b4fc' : '#4f46e5' 
+                }} />
+                <span style={{ 
+                  color: isDarkMode ? 'white' : '#1f2937',
+                  fontSize: '0.875rem'
+                }}>
+                  {userData.location}
+                </span>
               </div>
             )}
             
-            {/* Social links with glow effect */}
-            <div className="mt-auto flex gap-4 mb-3 animate-[bounceIn_0.5s_ease_forwards]" style={{animationDelay: '0.7s', opacity: 0}}>
-              {/* LinkedIn */}
+            {/* Social links */}
+            <div className="mt-auto flex gap-4 mb-3" 
+                 style={{ 
+                   animation: 'bounceIn 0.5s ease forwards',
+                   animationDelay: '0.7s', 
+                   opacity: 0 
+                 }}>
               <div className="h-8 w-8 rounded-full flex items-center justify-center backdrop-blur-sm border hover:scale-110 transition-transform"
                    style={{ 
-                     background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.2), rgba(147, 51, 234, 0.2))',
+                     background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.2), rgba(124, 58, 237, 0.2))',
                      borderColor: isDarkMode ? 'rgba(79, 70, 229, 0.3)' : 'rgba(79, 70, 229, 0.2)'
                    }}>
-                <Linkedin className={`h-4 w-4 ${colors.icon}`} />
+                <Linkedin style={{ 
+                  height: '1rem', 
+                  width: '1rem',
+                  color: isDarkMode ? '#a5b4fc' : '#4f46e5' 
+                }} />
               </div>
               
-              {/* Website */}
               <div className="h-8 w-8 rounded-full flex items-center justify-center backdrop-blur-sm border hover:scale-110 transition-transform"
                    style={{ 
-                     background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.2), rgba(147, 51, 234, 0.2))',
+                     background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.2), rgba(124, 58, 237, 0.2))',
                      borderColor: isDarkMode ? 'rgba(79, 70, 229, 0.3)' : 'rgba(79, 70, 229, 0.2)'
                    }}>
-                <Globe className={`h-4 w-4 ${colors.icon}`} />
+                <Globe style={{ 
+                  height: '1rem', 
+                  width: '1rem',
+                  color: isDarkMode ? '#a5b4fc' : '#4f46e5' 
+                }} />
               </div>
             </div>
             
             {/* Tap to flip hint */}
-            <div className={`text-center text-xs ${isDarkMode ? 'text-white/60' : 'text-gray-500'} mt-2 flex items-center justify-center animate-[bounceIn_0.5s_ease_forwards]`} style={{animationDelay: '0.8s', opacity: 0}}>
+            <div className="text-center text-xs mt-2 flex items-center justify-center" 
+                 style={{ 
+                   animation: 'bounceIn 0.5s ease forwards',
+                   animationDelay: '0.8s', 
+                   opacity: 0,
+                   color: isDarkMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(107, 114, 128, 0.8)'
+                 }}>
               <ChevronDown className="h-3 w-3 mr-1 animate-bounce" />
               <span>Tap to flip for contact info</span>
             </div>
           </div>
           
           {/* Card footer */}
-          <div className="h-8 mt-auto flex items-center justify-center bg-gradient-to-r from-indigo-500/40 to-purple-500/40 backdrop-blur-sm">
-            <span className="text-xs font-light tracking-wider">QUANTUM CARD</span>
+          <div className="h-8 mt-auto flex items-center justify-center backdrop-blur-sm"
+               style={{ 
+                 background: 'linear-gradient(to right, rgba(79, 70, 229, 0.4), rgba(124, 58, 237, 0.4))'
+               }}>
+            <span className="text-xs font-light tracking-wider text-white">QUANTUM CARD</span>
           </div>
         </div>
         
-        {/* Back of card with contact details */}
+        {/* Back of card */}
         <div 
-          className={`absolute inset-0 bg-gradient-to-br ${colors.bg} ${colors.text} backface-hidden flex flex-col border overflow-hidden`}
+          className="absolute inset-0 flex flex-col border"
           style={{
-            transform: 'rotateY(180deg) translateZ(0.1px)', // Slight depth for better 3D effect
+            backfaceVisibility: 'hidden',
+            background: isDarkMode 
+              ? 'linear-gradient(135deg, #1f2937, #111827)' 
+              : 'linear-gradient(135deg, #ffffff, #f3f4f6)',
+            color: isDarkMode ? 'white' : '#1f2937',
+            borderColor: isDarkMode ? 'rgba(75, 85, 99, 0.5)' : 'rgba(229, 231, 235, 0.5)',
             transformStyle: 'preserve-3d',
-            borderColor: isDarkMode ? 'rgba(75, 85, 99, 0.5)' : 'rgba(229, 231, 235, 0.5)'
+            transform: 'rotateY(180deg) translateZ(0.1px)',
           }}
         >
           {/* Background accents */}
           <div className="absolute inset-0">
-            <div className="absolute -left-16 -top-16 w-44 h-44 bg-gradient-to-br from-pink-500/20 to-indigo-500/20 rounded-full blur-xl" />
-            <div className="absolute -right-16 bottom-20 w-44 h-44 bg-gradient-to-br from-indigo-500/20 to-pink-500/20 rounded-full blur-xl" />
+            <div className="absolute -left-16 -top-16 w-44 h-44 rounded-full blur-xl"
+                 style={{ background: 'linear-gradient(to bottom right, rgba(168, 85, 247, 0.2), rgba(79, 70, 229, 0.2))' }} />
+            <div className="absolute -right-16 bottom-20 w-44 h-44 rounded-full blur-xl"
+                 style={{ background: 'linear-gradient(to bottom right, rgba(79, 70, 229, 0.2), rgba(168, 85, 247, 0.2))' }} />
           </div>
           
           {/* Card header */}
-          <div className="h-16 bg-gradient-to-r from-indigo-600/40 to-purple-600/40 backdrop-blur-sm flex items-center justify-center">
+          <div className="h-16 flex items-center justify-center backdrop-blur-sm"
+               style={{ 
+                 background: 'linear-gradient(to right, rgba(79, 70, 229, 0.4), rgba(124, 58, 237, 0.4))'
+               }}>
             <h2 className="text-lg font-bold holographic-text">Contact Details</h2>
           </div>
           
@@ -407,23 +450,31 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
           <div className="px-5 py-6 flex-1 flex flex-col" style={{ transform: 'translateZ(15px)' }}>
             {/* QR Code section */}
             <div className="flex justify-center mb-6">
-              <div className="w-28 h-28 bg-white rounded-lg p-1 flex items-center justify-center drop-shadow-lg animate-[bounceIn_0.5s_ease_forwards]" style={{animationDelay: '0.1s', opacity: 0}}>
+              <div className="w-28 h-28 bg-white rounded-lg p-1 flex items-center justify-center shadow-lg" 
+                   style={{ 
+                     animation: 'bounceIn 0.5s ease forwards',
+                     animationDelay: '0.1s', 
+                     opacity: 0 
+                   }}>
                 <div className="relative w-full h-full bg-gray-100 rounded">
-                  {/* We're simulating a QR code here since we don't have a QR code generator */}
+                  {/* Simulated QR code */}
                   <div className="absolute inset-0 grid grid-cols-5 grid-rows-5 gap-0.5 p-1.5">
                     {Array.from({ length: 25 }).map((_, i) => (
                       <div 
                         key={i} 
-                        className={`rounded-sm ${Math.random() > 0.3 ? 'bg-gray-900' : 'bg-gray-100'}`}
+                        className="rounded-sm"
+                        style={{ 
+                          background: Math.random() > 0.3 ? '#111827' : '#f9fafb'
+                        }}
                       />
                     ))}
                   </div>
                   
-                  {/* Glow effect on QR code */}
+                  {/* Glow effect */}
                   <div 
                     className="absolute inset-0 rounded opacity-70"
                     style={{
-                      background: `radial-gradient(circle, rgba(99, 102, 241, 0.3) 0%, transparent 70%)`,
+                      background: 'radial-gradient(circle, rgba(79, 70, 229, 0.3) 0%, transparent 70%)',
                       animation: 'pulseGlow 3s infinite',
                     }}
                   />
@@ -431,94 +482,179 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
               </div>
             </div>
             
-            {/* Contact details with glow-in animation */}
+            {/* Contact details */}
             <div className="space-y-4">
               {/* Email */}
-              <div className={`flex items-center gap-2 backdrop-blur-sm p-2 rounded-lg border animate-[bounceIn_0.5s_ease_forwards]`} 
-                   style={{
+              <div className="flex items-center gap-2 backdrop-blur-sm p-2 rounded-lg border" 
+                   style={{ 
+                     animation: 'bounceIn 0.5s ease forwards',
                      animationDelay: '0.2s', 
                      opacity: 0,
-                     background: isDarkMode ? 'rgba(17, 24, 39, 0.3)' : 'rgba(243, 244, 246, 0.5)',
+                     background: isDarkMode ? 'rgba(17, 24, 39, 0.4)' : 'rgba(243, 244, 246, 0.6)',
                      borderColor: isDarkMode ? 'rgba(75, 85, 99, 0.2)' : 'rgba(229, 231, 235, 0.5)'
                    }}>
-                <Mail className={`h-4 w-4 ${colors.icon}`} />
-                <span className={`${colors.text} text-sm flex-1`}>{userData.email}</span>
-                <Copy className={`h-3.5 w-3.5 ${colors.icon} cursor-pointer hover:text-indigo-300`} />
+                <Mail style={{ 
+                  height: '1rem', 
+                  width: '1rem',
+                  color: isDarkMode ? '#a5b4fc' : '#4f46e5' 
+                }} />
+                <span style={{ 
+                  color: isDarkMode ? 'white' : '#1f2937',
+                  fontSize: '0.875rem',
+                  flex: 1
+                }}>
+                  {userData.email}
+                </span>
+                <Copy style={{ 
+                  height: '0.875rem', 
+                  width: '0.875rem',
+                  color: isDarkMode ? '#a5b4fc' : '#4f46e5',
+                  cursor: 'pointer'
+                }} />
               </div>
               
               {/* Phone */}
-              <div className={`flex items-center gap-2 backdrop-blur-sm p-2 rounded-lg border animate-[bounceIn_0.5s_ease_forwards]`} 
-                   style={{
+              <div className="flex items-center gap-2 backdrop-blur-sm p-2 rounded-lg border" 
+                   style={{ 
+                     animation: 'bounceIn 0.5s ease forwards',
                      animationDelay: '0.3s', 
                      opacity: 0,
-                     background: isDarkMode ? 'rgba(17, 24, 39, 0.3)' : 'rgba(243, 244, 246, 0.5)',
+                     background: isDarkMode ? 'rgba(17, 24, 39, 0.4)' : 'rgba(243, 244, 246, 0.6)',
                      borderColor: isDarkMode ? 'rgba(75, 85, 99, 0.2)' : 'rgba(229, 231, 235, 0.5)'
                    }}>
-                <Phone className={`h-4 w-4 ${colors.icon}`} />
-                <span className={`${colors.text} text-sm flex-1`}>{userData.phoneNumber || "Add phone number"}</span>
-                <Copy className={`h-3.5 w-3.5 ${colors.icon} cursor-pointer hover:text-indigo-300`} />
+                <Phone style={{ 
+                  height: '1rem', 
+                  width: '1rem',
+                  color: isDarkMode ? '#a5b4fc' : '#4f46e5' 
+                }} />
+                <span style={{ 
+                  color: isDarkMode ? 'white' : '#1f2937',
+                  fontSize: '0.875rem',
+                  flex: 1
+                }}>
+                  {userData.phoneNumber || "Add phone number"}
+                </span>
+                <Copy style={{ 
+                  height: '0.875rem', 
+                  width: '0.875rem',
+                  color: isDarkMode ? '#a5b4fc' : '#4f46e5',
+                  cursor: 'pointer'
+                }} />
               </div>
               
               {/* Profile Link */}
-              <div className={`flex items-center gap-2 backdrop-blur-sm p-2 rounded-lg border animate-[bounceIn_0.5s_ease_forwards]`} 
-                   style={{
+              <div className="flex items-center gap-2 backdrop-blur-sm p-2 rounded-lg border" 
+                   style={{ 
+                     animation: 'bounceIn 0.5s ease forwards',
                      animationDelay: '0.4s', 
                      opacity: 0,
-                     background: isDarkMode ? 'rgba(17, 24, 39, 0.3)' : 'rgba(243, 244, 246, 0.5)',
+                     background: isDarkMode ? 'rgba(17, 24, 39, 0.4)' : 'rgba(243, 244, 246, 0.6)',
                      borderColor: isDarkMode ? 'rgba(75, 85, 99, 0.2)' : 'rgba(229, 231, 235, 0.5)'
                    }}>
-                <Globe className={`h-4 w-4 ${colors.icon}`} />
-                <span className={`${colors.text} text-sm flex-1`}>{profileLink}</span>
-                <ExternalLink className={`h-3.5 w-3.5 ${colors.icon} cursor-pointer hover:text-indigo-300`} />
+                <Globe style={{ 
+                  height: '1rem', 
+                  width: '1rem',
+                  color: isDarkMode ? '#a5b4fc' : '#4f46e5' 
+                }} />
+                <span style={{ 
+                  color: isDarkMode ? 'white' : '#1f2937',
+                  fontSize: '0.875rem',
+                  flex: 1
+                }}>
+                  {profileLink}
+                </span>
+                <ExternalLink style={{ 
+                  height: '0.875rem', 
+                  width: '0.875rem',
+                  color: isDarkMode ? '#a5b4fc' : '#4f46e5',
+                  cursor: 'pointer'
+                }} />
               </div>
               
               {/* Location if available */}
               {userData.location && (
-                <div className={`flex items-center gap-2 backdrop-blur-sm p-2 rounded-lg border animate-[bounceIn_0.5s_ease_forwards]`} 
-                     style={{
+                <div className="flex items-center gap-2 backdrop-blur-sm p-2 rounded-lg border" 
+                     style={{ 
+                       animation: 'bounceIn 0.5s ease forwards',
                        animationDelay: '0.5s', 
                        opacity: 0,
-                       background: isDarkMode ? 'rgba(17, 24, 39, 0.3)' : 'rgba(243, 244, 246, 0.5)',
+                       background: isDarkMode ? 'rgba(17, 24, 39, 0.4)' : 'rgba(243, 244, 246, 0.6)',
                        borderColor: isDarkMode ? 'rgba(75, 85, 99, 0.2)' : 'rgba(229, 231, 235, 0.5)'
                      }}>
-                  <MapPin className={`h-4 w-4 ${colors.icon}`} />
-                  <span className={`${colors.text} text-sm flex-1`}>{userData.location}</span>
-                  <ExternalLink className={`h-3.5 w-3.5 ${colors.icon} cursor-pointer hover:text-indigo-300`} />
+                  <MapPin style={{ 
+                    height: '1rem', 
+                    width: '1rem',
+                    color: isDarkMode ? '#a5b4fc' : '#4f46e5' 
+                  }} />
+                  <span style={{ 
+                    color: isDarkMode ? 'white' : '#1f2937',
+                    fontSize: '0.875rem',
+                    flex: 1
+                  }}>
+                    {userData.location}
+                  </span>
+                  <ExternalLink style={{ 
+                    height: '0.875rem', 
+                    width: '0.875rem',
+                    color: isDarkMode ? '#a5b4fc' : '#4f46e5',
+                    cursor: 'pointer'
+                  }} />
                 </div>
               )}
             </div>
             
-            {/* Personal tagline or quote with floating animation */}
-            <div className={`mt-4 backdrop-blur-sm p-3 rounded-lg border text-center animate-[bounceIn_0.5s_ease_forwards]`} 
-                 style={{
+            {/* Personal tagline or quote */}
+            <div className="mt-4 backdrop-blur-sm p-3 rounded-lg border text-center" 
+                 style={{ 
+                   animation: 'bounceIn 0.5s ease forwards',
                    animationDelay: '0.6s', 
                    opacity: 0,
-                   background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.15), rgba(147, 51, 234, 0.15))',
+                   background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.15), rgba(124, 58, 237, 0.15))',
                    borderColor: isDarkMode ? 'rgba(79, 70, 229, 0.3)' : 'rgba(79, 70, 229, 0.2)'
                  }}>
-              <p className={`text-sm italic ${colors.text}`}>
+              <p style={{ 
+                fontSize: '0.875rem',
+                fontStyle: 'italic',
+                color: isDarkMode ? 'white' : '#1f2937'
+              }}>
                 {userData.lookingFor || "Passionate about innovation and technology"}
               </p>
             </div>
             
             {/* Save contact button */}
-            <div className="mt-auto mb-2 animate-[bounceIn_0.5s_ease_forwards]" style={{animationDelay: '0.7s', opacity: 0}}>
-              <button className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 py-2 rounded-lg text-white font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
-                <Download className="h-4 w-4" />
+            <div className="mt-auto mb-2" style={{ 
+              animation: 'bounceIn 0.5s ease forwards',
+              animationDelay: '0.7s', 
+              opacity: 0
+            }}>
+              <button className="w-full py-2 rounded-lg text-white font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
+                     style={{ 
+                       background: 'linear-gradient(to right, #4f46e5, #7c3aed)'
+                     }}>
+                <Download style={{ height: '1rem', width: '1rem' }} />
                 <span>Save Contact</span>
               </button>
             </div>
             
             {/* Tap to flip hint */}
-            <div className={`text-center text-xs ${isDarkMode ? 'text-white/60' : 'text-gray-500'} mt-2 flex items-center justify-center animate-[bounceIn_0.5s_ease_forwards]`} style={{animationDelay: '0.8s', opacity: 0}}>
+            <div className="text-center text-xs mt-2 flex items-center justify-center" 
+                 style={{ 
+                   animation: 'bounceIn 0.5s ease forwards',
+                   animationDelay: '0.8s', 
+                   opacity: 0,
+                   color: isDarkMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(107, 114, 128, 0.8)'
+                 }}>
               <ChevronDown className="h-3 w-3 mr-1 animate-bounce" />
               <span>Tap to flip card</span>
             </div>
           </div>
           
           {/* Card footer */}
-          <div className="h-8 mt-auto flex items-center justify-center bg-gradient-to-r from-indigo-500/40 to-purple-500/40 backdrop-blur-sm">
-            <span className="text-xs font-light tracking-wider">QUANTUM CARD</span>
+          <div className="h-8 mt-auto flex items-center justify-center backdrop-blur-sm"
+               style={{ 
+                 background: 'linear-gradient(to right, rgba(79, 70, 229, 0.4), rgba(124, 58, 237, 0.4))'
+               }}>
+            <span className="text-xs font-light tracking-wider text-white">QUANTUM CARD</span>
           </div>
         </div>
       </div>
