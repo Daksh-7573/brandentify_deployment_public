@@ -1383,7 +1383,7 @@ export default function Profile() {
       
       {/* Edit Basic Info Dialog */}
       <Dialog open={showEditBasicInfo} onOpenChange={setShowEditBasicInfo}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Profile Info</DialogTitle>
           </DialogHeader>
