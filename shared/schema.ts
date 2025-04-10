@@ -16,6 +16,7 @@ export const users = pgTable("users", {
   location: text("location"), // User location
   industry: text("industry"), // User's industry
   lookingFor: text("looking_for"), // What the user is looking for (networking type)
+  visitingCardType: text("visiting_card_type"), // Type of digital visiting card
   profileCompleted: integer("profile_completed").default(0), // Percentage
   emailVerified: boolean("email_verified").default(false), // Whether email is verified
   emailVerificationToken: text("email_verification_token"), // Token for email verification

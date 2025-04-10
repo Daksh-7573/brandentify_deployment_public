@@ -30,8 +30,8 @@ const PersonalDetailsPage: React.FC = () => {
 
   // Define mutation to save card preference
   const saveCardPreference = useMutation({
-    mutationFn: async (cardType: string) => {
-      return await apiRequest({
+    mutationFn: (cardType: string) => {
+      return apiRequest({
         url: `/api/users/${userId}`,
         method: 'PUT',
         data: { visitingCardType: cardType },
@@ -40,6 +40,9 @@ const PersonalDetailsPage: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
     },
+    onError: (error) => {
+      console.error("Error saving card preference:", error);
+    }
   });
 
   // Handle card type selection
