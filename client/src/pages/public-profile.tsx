@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { apiRequest } from "@/lib/queryClient";
-import { ExternalLink, Github, Linkedin, Mail, MapPin, Twitter } from "lucide-react";
+import { ExternalLink, Github, Globe, Linkedin, Mail, MapPin, Phone, Twitter } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 // Import portfolio templates
@@ -31,6 +31,7 @@ interface UserData {
   location: string | null;
   industry: string | null;
   lookingFor: string | null;
+  phoneNumber: string | null;
 }
 
 // Type for portfolio data
@@ -243,6 +244,42 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
                     {userData?.industry && (
                       <Badge variant="outline">{userData.industry}</Badge>
                     )}
+                  </div>
+                  
+                  {/* Personal Information Section */}
+                  <div className="pt-4 pb-2">
+                    <h3 className="text-md font-semibold mb-2">Personal Information</h3>
+                    <div className="space-y-2">
+                      {/* Email */}
+                      <div className="flex items-center gap-2 text-sm">
+                        <Mail className="h-4 w-4 text-muted-foreground" />
+                        <span>{userData?.email}</span>
+                      </div>
+                      
+                      {/* Phone Number */}
+                      {userData?.phoneNumber ? (
+                        <div className="flex items-center gap-2 text-sm">
+                          <Phone className="h-4 w-4 text-muted-foreground" />
+                          <span>{userData.phoneNumber}</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Phone className="h-4 w-4" />
+                          <span>No phone number added</span>
+                        </div>
+                      )}
+                      
+                      {/* Profile URL */}
+                      <div className="flex items-center gap-2 text-sm">
+                        <Globe className="h-4 w-4 text-muted-foreground" />
+                        <a 
+                          href={`/@${userData?.username}`} 
+                          className="text-primary hover:underline"
+                        >
+                          brandentifier.com/@{userData?.username}
+                        </a>
+                      </div>
+                    </div>
                   </div>
                   
                   <div className="pt-4">
