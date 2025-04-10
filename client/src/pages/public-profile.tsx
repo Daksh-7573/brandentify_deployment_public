@@ -246,38 +246,40 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
                     )}
                   </div>
                   
-                  {/* Personal Information Section */}
+                  {/* Include the personal information section */}
                   <div className="pt-4 pb-2">
-                    <h3 className="text-md font-semibold mb-2">Personal Information</h3>
-                    <div className="space-y-2">
-                      {/* Email */}
-                      <div className="flex items-center gap-2 text-sm">
-                        <Mail className="h-4 w-4 text-muted-foreground" />
-                        <span>{userData?.email}</span>
-                      </div>
-                      
-                      {/* Phone Number */}
-                      {userData?.phoneNumber ? (
+                    <div className="bg-background border rounded-lg p-4">
+                      <h3 className="text-md font-semibold mb-2">Personal Information</h3>
+                      <div className="space-y-2">
+                        {/* Email */}
                         <div className="flex items-center gap-2 text-sm">
-                          <Phone className="h-4 w-4 text-muted-foreground" />
-                          <span>{userData.phoneNumber}</span>
+                          <Mail className="h-4 w-4 text-muted-foreground" />
+                          <span>{userData?.email}</span>
                         </div>
-                      ) : (
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Phone className="h-4 w-4" />
-                          <span>No phone number added</span>
+                        
+                        {/* Phone Number */}
+                        {userData?.phoneNumber ? (
+                          <div className="flex items-center gap-2 text-sm">
+                            <Phone className="h-4 w-4 text-muted-foreground" />
+                            <span>{userData.phoneNumber}</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Phone className="h-4 w-4" />
+                            <span>No phone number added</span>
+                          </div>
+                        )}
+                        
+                        {/* Profile URL */}
+                        <div className="flex items-center gap-2 text-sm">
+                          <Globe className="h-4 w-4 text-muted-foreground" />
+                          <a 
+                            href={`/@${userData?.username}`} 
+                            className="text-primary hover:underline"
+                          >
+                            brandentifier.com/@{userData?.username}
+                          </a>
                         </div>
-                      )}
-                      
-                      {/* Profile URL */}
-                      <div className="flex items-center gap-2 text-sm">
-                        <Globe className="h-4 w-4 text-muted-foreground" />
-                        <a 
-                          href={`/@${userData?.username}`} 
-                          className="text-primary hover:underline"
-                        >
-                          brandentifier.com/@{userData?.username}
-                        </a>
                       </div>
                     </div>
                   </div>

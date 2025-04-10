@@ -10,6 +10,8 @@ import Education from "@/components/profile/education";
 import Skills from "@/components/profile/skills";
 import Projects from "@/components/profile/projects";
 import Services from "@/components/profile/services";
+import PersonalInfoSection from "@/components/profile/personal-info-section";
+import EditPersonalInfo from "@/components/profile/edit-personal-info";
 // Removed Resume and LinkedIn import components
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
