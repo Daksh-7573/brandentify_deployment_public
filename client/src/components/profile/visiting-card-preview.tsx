@@ -3,7 +3,7 @@ import { UserData } from "@/types/user";
 import { Mail, Phone, Globe, Briefcase, MapPin, Code, Building2 } from "lucide-react";
 import ThreeDAnimatedCard from "./cards/3d-animated-card";
 import HolographicCard from "./cards/holographic-card";
-import FlipCard from "./cards/flip-card";
+import ClayPaperCard from "./cards/clay-paper-card";
 import CreativeCard from "./cards/creative-card";
 import ArtisticCard from "./cards/artistic-card";
 
@@ -37,11 +37,11 @@ const VisitingCardPreview: React.FC<VisitingCardPreviewProps> = ({
     );
   }
   
-  // For flip card style, use the specialized component
-  if (cardType === "flip") {
+  // For clay paper card style, use the specialized component
+  if (cardType === "clay-paper") {
     return (
       <div className="visiting-card-preview">
-        <FlipCard userData={userData} />
+        <ClayPaperCard userData={userData} />
       </div>
     );
   }

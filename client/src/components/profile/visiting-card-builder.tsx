@@ -11,7 +11,7 @@ const CARD_TYPES = [
   { id: "minimalist", name: "Minimalist Pro", description: "Clean and professional design" },
   { id: "3d-animated", name: "3D Animated", description: "Interactive 3D hover effects" },
   { id: "holographic", name: "Holographic Glass", description: "Modern transparent design" },
-  { id: "flip", name: "Flip Card", description: "Interactive front and back sides" },
+  { id: "clay-paper", name: "Clay & Paper", description: "Playful 3D claymation & paper-cut style" },
   { id: "creative", name: "Creative", description: "Colorful artistic layout" },
   { id: "artistic", name: "Artistic", description: "Hand-drawn watercolor style" },
 ];
@@ -109,7 +109,7 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
                 <TabsTrigger value="holographic">Holographic</TabsTrigger>
               </TabsList>
               <TabsList className="grid grid-cols-3">
-                <TabsTrigger value="flip">Flip</TabsTrigger>
+                <TabsTrigger value="clay-paper">Clay & Paper</TabsTrigger>
                 <TabsTrigger value="creative">Creative</TabsTrigger>
                 <TabsTrigger value="artistic">Artistic</TabsTrigger>
               </TabsList>
