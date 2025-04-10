@@ -48,10 +48,10 @@ const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ userData }) =
           <div className="flex items-center gap-2">
             <Globe className="h-4 w-4 text-muted-foreground" />
             <a 
-              href={`/@${userData.username}`} 
+              href={`/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`} 
               className="text-sm text-primary hover:underline"
             >
-              brandentifier.com/@{userData.username}
+              brandentifier.com/@{userData.name ? userData.name.replace(/\s+/g, '') : userData.username}
             </a>
           </div>
         </div>

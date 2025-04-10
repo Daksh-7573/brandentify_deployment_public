@@ -65,18 +65,9 @@ function Router() {
       <Route path="/profile">
         <ProtectedRoute path="/profile" component={Profile} />
       </Route>
-      {/* Public profile using username route (/@username) - implemented with simple path */}
-      <Route path="/@nishant">
-        <PublicProfile />
-      </Route>
-      <Route path="/@musk">
-        <PublicProfile />
-      </Route>
-      <Route path="/@0yvB0mlyKfQXGo3j4ueLtAeBREE3">
-        <PublicProfile />
-      </Route>
-      <Route path="/@SeniorProfessional">
-        <PublicProfile />
+      {/* Public profile using username route (/@username) - dynamic path parameter */}
+      <Route path="/@:username">
+        {(params) => <PublicProfile username={params.username} />}
       </Route>
       <Route path="/ai-career">
         <ProtectedRoute path="/ai-career" component={AICareer} />
