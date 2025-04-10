@@ -1,6 +1,7 @@
 import React from "react";
 import { UserData } from "@/types/user";
 import { Mail, Phone, Globe, Briefcase, MapPin, Code, Building2 } from "lucide-react";
+import ThreeDAnimatedCard from "./cards/3d-animated-card";
 
 interface VisitingCardPreviewProps {
   userData: UserData;
@@ -14,12 +15,20 @@ const VisitingCardPreview: React.FC<VisitingCardPreviewProps> = ({
   // Format profile link
   const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;
   
+  // For 3D animated card style, use the specialized component
+  if (cardType === "3d-animated") {
+    return (
+      <div className="visiting-card-preview">
+        <ThreeDAnimatedCard userData={userData} />
+      </div>
+    );
+  }
+  
   // Simple card preview that simulates different styles
   return (
     <div className="visiting-card-preview">
       <div className={`w-full aspect-[2/3.5] rounded-lg overflow-hidden shadow-lg flex flex-col 
         ${cardType === "holographic" ? "bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white" :
-          cardType === "3d-animated" ? "bg-gradient-to-br from-blue-900 to-blue-700 text-white" :
           cardType === "flip" ? "bg-slate-800 text-white" :
           cardType === "creative" ? "bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 text-white" :
           cardType === "artistic" ? "bg-gradient-to-br from-teal-400 to-indigo-500 text-white" :
