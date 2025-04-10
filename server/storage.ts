@@ -1769,11 +1769,15 @@ export class MemStorage implements IStorage {
     const id = this.currentPulseShareId++;
     const createdAt = new Date();
     
+    // Ensure message is properly handled (null rather than undefined)
+    const message = insertShare.message === undefined ? null : insertShare.message;
+    
     const share: PulseShare = {
       ...insertShare,
       id,
       isRead: false,
-      createdAt
+      createdAt,
+      message
     };
     
     this.pulseShares.set(id, share);
