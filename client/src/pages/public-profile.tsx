@@ -56,14 +56,25 @@ interface PortfolioData {
 }
 
 // Public Profile Component
-const PublicProfile = () => {
+interface PublicProfileProps {
+  username?: string;
+}
+
+const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
   const [, navigate] = useLocation();
   const { toast } = useToast();
   
-  // Get username from URL parameters
-  // For now, let's extract it from the pathname as wouter doesn't have useParams
-  const pathname = window.location.pathname;
-  const username = pathname.startsWith('/@') ? pathname.substring(2) : null;
+  // Get username from props or fallback to URL path
+  // This handles both wouter params and direct URL access
+  let username = propUsername;
+  
+  // If username wasn't passed as a prop, try to extract it from the URL
+  if (!username) {
+    const pathname = window.location.pathname;
+    username = pathname.startsWith('/@') ? pathname.substring(2) : undefined;
+  }
+  
+  console.log("Public profile page for username:", username);
   
   // Fetch user data by username
   const { data: userData, isLoading: isUserLoading, error: userError } = useQuery<UserData | null>({
@@ -72,7 +83,7 @@ const PublicProfile = () => {
       if (!username) return null;
       try {
         const response = await apiRequest('GET', `/api/users/by-username/${username}`);
-        return response as UserData;
+        return response as unknown as UserData;
       } catch (error) {
         console.error('Error fetching user:', error);
         throw error;
@@ -88,7 +99,7 @@ const PublicProfile = () => {
       if (!userData?.id) return null;
       try {
         const response = await apiRequest('GET', `/api/portfolio/${userData.id}`);
-        return response as PortfolioData;
+        return response as unknown as PortfolioData;
       } catch (error) {
         console.error('Error fetching portfolio:', error);
         // Return a default portfolio structure with user data

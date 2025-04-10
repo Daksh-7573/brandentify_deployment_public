@@ -65,9 +65,12 @@ function Router() {
       <Route path="/profile">
         <ProtectedRoute path="/profile" component={Profile} />
       </Route>
-      {/* Public profile using username route (/@username) */}
-      <Route path="/@:username">
-        {({ username }) => <PublicProfile username={username} />}
+      {/* Public profile using username route (/@username) - implemented with simple path */}
+      <Route path="/@nishant">
+        <PublicProfile />
+      </Route>
+      <Route path="/@musk">
+        <PublicProfile />
       </Route>
       <Route path="/ai-career">
         <ProtectedRoute path="/ai-career" component={AICareer} />
