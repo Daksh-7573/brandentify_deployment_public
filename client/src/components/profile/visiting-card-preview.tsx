@@ -2,6 +2,7 @@ import React from "react";
 import { UserData } from "@/types/user";
 import { Mail, Phone, Globe, Briefcase, MapPin, Code, Building2 } from "lucide-react";
 import ThreeDAnimatedCard from "./cards/3d-animated-card";
+import HolographicCard from "./cards/holographic-card";
 
 interface VisitingCardPreviewProps {
   userData: UserData;
@@ -24,12 +25,20 @@ const VisitingCardPreview: React.FC<VisitingCardPreviewProps> = ({
     );
   }
   
+  // For holographic card style, use the specialized component
+  if (cardType === "holographic") {
+    return (
+      <div className="visiting-card-preview">
+        <HolographicCard userData={userData} />
+      </div>
+    );
+  }
+  
   // Simple card preview that simulates different styles
   return (
     <div className="visiting-card-preview">
       <div className={`w-full aspect-[2/3.5] rounded-lg overflow-hidden shadow-lg flex flex-col 
-        ${cardType === "holographic" ? "bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white" :
-          cardType === "flip" ? "bg-slate-800 text-white" :
+        ${cardType === "flip" ? "bg-slate-800 text-white" :
           cardType === "creative" ? "bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 text-white" :
           cardType === "artistic" ? "bg-gradient-to-br from-teal-400 to-indigo-500 text-white" :
           "bg-white dark:bg-slate-900 border border-gray-200 dark:border-gray-800"}

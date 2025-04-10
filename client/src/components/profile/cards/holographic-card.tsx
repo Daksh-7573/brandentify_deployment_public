@@ -1,61 +1,115 @@
-import React, { useState } from "react";
-import { Mail, Phone, Globe, Briefcase } from "lucide-react";
+import React, { useState, useEffect } from "react";
 import { UserData } from "@/types/user";
+import { Mail, Phone, Globe, Briefcase, MapPin, Code, Building2 } from "lucide-react";
 
 interface HolographicCardProps {
   userData: UserData;
 }
 
 const HolographicCard: React.FC<HolographicCardProps> = ({ userData }) => {
-  // Track mouse position for holographic effect
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  // State for sequential animation
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [showProfilePic, setShowProfilePic] = useState(false);
+  const [showName, setShowName] = useState(false);
+  const [showDesignation, setShowDesignation] = useState(false);
+  const [showIcons, setShowIcons] = useState(false);
+  const [showContent, setShowContent] = useState(false);
+  const [hoveredElement, setHoveredElement] = useState<string | null>(null);
   
-  // Handle mouse movement for the holographic effect
-  const handleMouseMove = (e: React.MouseEvent) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    setMousePosition({ x, y });
-  };
-
   // Format profile link
   const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;
-
-  // Calculate gradient and transform styles based on mouse position
-  const gradientStyle = {
-    background: `radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, rgba(168, 85, 247, 0.4), rgba(80, 70, 230, 0.2), transparent)`,
-  };
-
-  const transformStyle = {
-    transform: `perspective(1000px) rotateX(${(mousePosition.y - 50) / 20}deg) rotateY(${(mousePosition.x - 50) / 20}deg)`,
-    transition: 'transform 0.1s ease-out',
-  };
-
+  
+  // Element-by-element reveal animation on load
+  useEffect(() => {
+    const loadSequence = async () => {
+      setIsLoaded(true);
+      
+      // Profile picture appears first
+      setTimeout(() => {
+        setShowProfilePic(true);
+      }, 400);
+      
+      // Then name appears
+      setTimeout(() => {
+        setShowName(true);
+      }, 800);
+      
+      // Then designation
+      setTimeout(() => {
+        setShowDesignation(true);
+      }, 1200);
+      
+      // Icons start to glow
+      setTimeout(() => {
+        setShowIcons(true);
+      }, 1600);
+      
+      // All content is fully visible
+      setTimeout(() => {
+        setShowContent(true);
+      }, 2000);
+    };
+    
+    loadSequence();
+    
+    return () => {
+      // Clean up any timeouts if component unmounts
+    };
+  }, []);
+  
   return (
     <div 
-      className="w-full aspect-[2/3.5] rounded-xl overflow-hidden shadow-xl transition-all duration-300"
-      onMouseMove={handleMouseMove}
-      style={transformStyle}
+      className={`w-full aspect-[2/3.5] rounded-lg overflow-hidden shadow-xl transition-all duration-500 
+        ${isLoaded ? 'opacity-100' : 'opacity-0 blur-sm'}`}
+      style={{
+        background: "linear-gradient(135deg, rgba(147, 51, 234, 0.6) 0%, rgba(192, 38, 211, 0.6) 50%, rgba(236, 72, 153, 0.6) 100%)",
+        backdropFilter: "blur(10px)",
+        boxShadow: "0 10px 30px rgba(147, 51, 234, 0.3), 0 0 15px rgba(192, 38, 211, 0.5) inset",
+      }}
     >
+      {/* Background animated pattern */}
       <div 
-        className="w-full h-full relative backdrop-blur-sm bg-white/10 dark:bg-black/30 border border-white/20 flex flex-col"
-        style={{ boxShadow: 'inset 0 0 40px rgba(192, 132, 252, 0.15)' }}
-      >
-        {/* Holographic overlay */}
-        <div 
-          className="absolute inset-0 pointer-events-none opacity-60" 
-          style={gradientStyle}
-        ></div>
-        
-        {/* Glowing border */}
-        <div className="absolute inset-0 border border-purple-500/20 rounded-xl"></div>
-        
-        {/* Main content container */}
-        <div className="relative z-10 flex-1 flex flex-col p-6">
-          {/* Profile picture with glow */}
-          <div className="relative mx-auto mb-6">
-            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 opacity-70 blur-md"></div>
-            <div className="h-24 w-24 rounded-full border-2 border-white/30 overflow-hidden bg-gray-800 relative z-10">
+        className="absolute inset-0 opacity-20"
+        style={{
+          backgroundImage: `
+            repeating-linear-gradient(
+              45deg, 
+              rgba(255, 255, 255, 0.1), 
+              rgba(255, 255, 255, 0.1) 10px, 
+              transparent 10px, 
+              transparent 20px
+            )
+          `,
+          backgroundSize: "cover",
+          animation: "holo-pattern 8s linear infinite",
+        }}
+      />
+      
+      {/* Holographic overlay */}
+      <div 
+        className="absolute inset-0 opacity-30"
+        style={{
+          background: "linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.5), transparent)",
+          backgroundSize: "200% 200%",
+          animation: "holo-shine 3s ease-in-out infinite",
+        }}
+      />
+      
+      {/* Card content */}
+      <div className="relative h-full w-full flex flex-col text-white z-10">
+        {/* Card header */}
+        <div className="h-24 relative">
+          {/* Profile picture with fade-in animation */}
+          <div 
+            className={`absolute left-1/2 transform -translate-x-1/2 top-12 transition-all duration-700 ease-in-out
+              ${showProfilePic ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}`}
+          >
+            <div 
+              className="h-20 w-20 rounded-full border-4 border-white/80 overflow-hidden bg-white flex items-center justify-center shadow-lg"
+              style={{
+                boxShadow: "0 0 20px rgba(255, 255, 255, 0.6)",
+              }}
+            >
               {userData.photoURL ? (
                 <img 
                   src={userData.photoURL} 
@@ -75,95 +129,235 @@ const HolographicCard: React.FC<HolographicCardProps> = ({ userData }) => {
               )}
             </div>
           </div>
-          
-          {/* Name and title */}
-          <div className="text-center mb-6">
-            <h2 className="text-xl font-bold text-white mb-1 drop-shadow-glow">
+        </div>
+        
+        {/* Main content */}
+        <div className="flex-1 px-4 pt-14 pb-4 flex flex-col">
+          {/* Name and title with fade-in animation */}
+          <div className="text-center mb-3">
+            <h2 
+              className={`text-xl font-bold text-white transition-all duration-700 ease-in-out 
+                ${showName ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-2'}`}
+            >
               {userData.name || "Your Name"}
             </h2>
-            <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 h-0.5 w-16 mx-auto mb-2 opacity-70"></div>
-            <p className="text-sm text-white/80 font-light">
-              {userData.title || "Professional"}
+            <p 
+              className={`text-sm text-white/80 transition-all duration-700 ease-in-out
+                ${showDesignation ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-2'}`}
+            >
+              {userData.title || "Add your designation"}
             </p>
-            
-            {/* Industry and Domain */}
-            {userData.industry && (
-              <div className="mt-1 text-xs text-white/60">
-                {userData.industry.includes(': ') ? (
-                  <>
-                    <span>{userData.industry.split(': ')[0]}</span>
-                    <span className="mx-1">•</span>
-                    <span>{userData.industry.split(': ')[1]}</span>
-                  </>
-                ) : (
-                  <span>{userData.industry}</span>
-                )}
-              </div>
-            )}
           </div>
           
-          {/* Contact details with hover effects */}
-          <div className="space-y-4 flex-1">
+          {/* Details with staggered reveal animation */}
+          <div className={`flex-1 space-y-4 text-xs transition-all duration-1000 ease-in-out
+            ${showContent ? 'opacity-100' : 'opacity-0'}`}
+          >
+            {/* Domain */}
+            {userData.domain && (
+              <div 
+                className={`flex items-center gap-2 transition-all duration-300
+                  ${showIcons ? 'opacity-100' : 'opacity-0'}
+                  ${hoveredElement === 'domain' ? 'scale-105' : 'scale-100'}`}
+                onMouseEnter={() => setHoveredElement('domain')}
+                onMouseLeave={() => setHoveredElement(null)}
+              >
+                <div className={`flex items-center justify-center w-8 h-8 rounded-full bg-white/10
+                  ${hoveredElement === 'domain' ? 'bg-white/30' : 'bg-white/10'}
+                  transition-all duration-300 ease-in-out`}
+                >
+                  <Code 
+                    className={`h-4 w-4 transition-all duration-500
+                      ${hoveredElement === 'domain' ? 'text-white' : 'text-white/70'}`} 
+                  />
+                </div>
+                <span className="text-white">
+                  {userData.domain}
+                </span>
+              </div>
+            )}
+            
+            {/* Industry */}
+            {userData.industry && (
+              <div 
+                className={`flex items-center gap-2 transition-all duration-300 delay-100
+                  ${showIcons ? 'opacity-100' : 'opacity-0'}
+                  ${hoveredElement === 'industry' ? 'scale-105' : 'scale-100'}`}
+                onMouseEnter={() => setHoveredElement('industry')}
+                onMouseLeave={() => setHoveredElement(null)}
+              >
+                <div className={`flex items-center justify-center w-8 h-8 rounded-full 
+                  ${hoveredElement === 'industry' ? 'bg-white/30' : 'bg-white/10'}
+                  transition-all duration-300 ease-in-out`}
+                >
+                  <Building2 
+                    className={`h-4 w-4 transition-all duration-500
+                      ${hoveredElement === 'industry' ? 'text-white' : 'text-white/70'}`} 
+                  />
+                </div>
+                <span className="text-white">
+                  {userData.industry}
+                </span>
+              </div>
+            )}
+            
             {/* Company */}
             {userData.company && (
-              <div className="flex items-center gap-3 group">
-                <div className="h-8 w-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-purple-500/30 transition-colors">
-                  <Briefcase className="h-4 w-4 text-white/70 group-hover:text-white" />
+              <div 
+                className={`flex items-center gap-2 transition-all duration-300 delay-200
+                  ${showIcons ? 'opacity-100' : 'opacity-0'}
+                  ${hoveredElement === 'company' ? 'scale-105' : 'scale-100'}`}
+                onMouseEnter={() => setHoveredElement('company')}
+                onMouseLeave={() => setHoveredElement(null)}
+              >
+                <div className={`flex items-center justify-center w-8 h-8 rounded-full 
+                  ${hoveredElement === 'company' ? 'bg-white/30' : 'bg-white/10'}
+                  transition-all duration-300 ease-in-out`}
+                >
+                  <Briefcase 
+                    className={`h-4 w-4 transition-all duration-500
+                      ${hoveredElement === 'company' ? 'text-white' : 'text-white/70'}`} 
+                  />
                 </div>
-                <span className="text-sm text-white/80 group-hover:text-white transition-colors">
+                <span className="text-white">
                   {userData.company}
                 </span>
               </div>
             )}
             
-            {/* Email */}
-            <div className="flex items-center gap-3 group">
-              <div className="h-8 w-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-purple-500/30 transition-colors">
-                <Mail className="h-4 w-4 text-white/70 group-hover:text-white" />
+            {/* Location */}
+            {userData.location && (
+              <div 
+                className={`flex items-center gap-2 transition-all duration-300 delay-300
+                  ${showIcons ? 'opacity-100' : 'opacity-0'}
+                  ${hoveredElement === 'location' ? 'scale-105' : 'scale-100'}`}
+                onMouseEnter={() => setHoveredElement('location')}
+                onMouseLeave={() => setHoveredElement(null)}
+              >
+                <div className={`flex items-center justify-center w-8 h-8 rounded-full 
+                  ${hoveredElement === 'location' ? 'bg-white/30' : 'bg-white/10'}
+                  transition-all duration-300 ease-in-out`}
+                >
+                  <MapPin 
+                    className={`h-4 w-4 transition-all duration-500
+                      ${hoveredElement === 'location' ? 'text-white' : 'text-white/70'}`} 
+                  />
+                </div>
+                <span className="text-white">
+                  {userData.location}
+                </span>
               </div>
-              <span className="text-sm text-white/80 group-hover:text-white transition-colors">
+            )}
+            
+            {/* Email */}
+            <div 
+              className={`flex items-center gap-2 transition-all duration-300 delay-400
+                ${showIcons ? 'opacity-100' : 'opacity-0'}
+                ${hoveredElement === 'email' ? 'scale-105' : 'scale-100'}`}
+              onMouseEnter={() => setHoveredElement('email')}
+              onMouseLeave={() => setHoveredElement(null)}
+            >
+              <div className={`flex items-center justify-center w-8 h-8 rounded-full 
+                ${hoveredElement === 'email' ? 'bg-white/30' : 'bg-white/10'}
+                transition-all duration-300 ease-in-out`}
+              >
+                <Mail 
+                  className={`h-4 w-4 transition-all duration-500
+                    ${hoveredElement === 'email' ? 'text-white' : 'text-white/70'}`} 
+                />
+              </div>
+              <span className="text-white">
                 {userData.email}
               </span>
             </div>
             
             {/* Phone */}
-            <div className="flex items-center gap-3 group">
-              <div className="h-8 w-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-purple-500/30 transition-colors">
-                <Phone className="h-4 w-4 text-white/70 group-hover:text-white" />
+            <div 
+              className={`flex items-center gap-2 transition-all duration-300 delay-500
+                ${showIcons ? 'opacity-100' : 'opacity-0'}
+                ${hoveredElement === 'phone' ? 'scale-105' : 'scale-100'}`}
+              onMouseEnter={() => setHoveredElement('phone')}
+              onMouseLeave={() => setHoveredElement(null)}
+            >
+              <div className={`flex items-center justify-center w-8 h-8 rounded-full 
+                ${hoveredElement === 'phone' ? 'bg-white/30' : 'bg-white/10'}
+                transition-all duration-300 ease-in-out`}
+              >
+                <Phone 
+                  className={`h-4 w-4 transition-all duration-500
+                    ${hoveredElement === 'phone' ? 'text-white' : 'text-white/70'}`} 
+                />
               </div>
-              <span className="text-sm text-white/80 group-hover:text-white transition-colors">
+              <span className="text-white">
                 {userData.phoneNumber || "Add phone number"}
               </span>
             </div>
             
-            {/* Profile Link */}
-            <div className="flex items-center gap-3 group">
-              <div className="h-8 w-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-purple-500/30 transition-colors">
-                <Globe className="h-4 w-4 text-white/70 group-hover:text-white" />
+            {/* Profile Link - special glowing effect */}
+            <div 
+              className={`flex items-center gap-2 transition-all duration-300 delay-600
+                ${showIcons ? 'opacity-100' : 'opacity-0'}
+                ${hoveredElement === 'profile' ? 'scale-105' : 'scale-100'}`}
+              onMouseEnter={() => setHoveredElement('profile')}
+              onMouseLeave={() => setHoveredElement(null)}
+            >
+              <div className={`flex items-center justify-center w-8 h-8 rounded-full 
+                ${hoveredElement === 'profile' ? 'bg-white/30' : 'bg-white/10'}
+                transition-all duration-300 ease-in-out`}
+              >
+                <Globe 
+                  className={`h-4 w-4 transition-all duration-500
+                    ${hoveredElement === 'profile' ? 'text-white' : 'text-white/70'}`} 
+                />
               </div>
-              <span className="text-sm text-white/80 group-hover:text-white transition-colors">
+              <span 
+                className={`text-white
+                  ${hoveredElement === 'profile' ? 'text-white' : 'text-white/80'}`}
+                style={{
+                  textShadow: hoveredElement === 'profile' 
+                    ? '0 0 10px rgba(255,255,255,0.8), 0 0 20px rgba(255,255,255,0.4)' 
+                    : 'none'
+                }}
+              >
                 {profileLink}
               </span>
             </div>
           </div>
-          
-          {/* Footer with gradient */}
-          <div className="pt-4 text-center">
-            <div className="inline-block px-4 py-1 rounded-full bg-gradient-to-r from-indigo-600/40 to-purple-600/40 backdrop-blur-md">
-              <span className="text-xs text-white/80 font-light tracking-wider">HOLOGRAPHIC ID</span>
-            </div>
-          </div>
+        </div>
+        
+        {/* Footer */}
+        <div 
+          className={`h-6 bg-white/10 flex items-center justify-center transition-all duration-1000
+            ${showContent ? 'opacity-100' : 'opacity-0'}`}
+        >
+          <span className="text-xs text-white font-light">Digital Visiting Card</span>
         </div>
       </div>
+
+      {/* Add CSS animations - inline style for animations */}
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          @keyframes holo-shine {
+            0%, 100% {
+              background-position: 0% 0%;
+            }
+            50% {
+              background-position: 100% 100%;
+            }
+          }
+          
+          @keyframes holo-pattern {
+            0% {
+              background-position: 0% 0%;
+            }
+            100% {
+              background-position: 100% 100%;
+            }
+          }
+        `
+      }} />
     </div>
   );
 };
 
 export default HolographicCard;
-
-// Add this style to your global CSS
-const globalStyles = `
-.drop-shadow-glow {
-  filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.4));
-}
-`;
