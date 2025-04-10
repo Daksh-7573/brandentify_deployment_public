@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Mail, Phone, Globe, Briefcase, Code, Building2, FileText } from "lucide-react";
+import { Mail, Phone, Globe, FileText } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -44,8 +44,6 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
   
   const [phoneCountryCode, setPhoneCountryCode] = useState(countryCode);
   const [phoneNumber, setPhoneNumber] = useState(number);
-  const [company, setCompany] = useState(userData.company || "");
-  const [domain, setDomain] = useState(userData.domain || "");
   const [aboutMe, setAboutMe] = useState(userData.aboutMe || "");
   const [wordCount, setWordCount] = useState(aboutMe ? calculateWordCount(aboutMe) : 0);
   const [isLoading, setIsLoading] = useState(false);
@@ -81,8 +79,6 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
         method: 'PUT',
         data: {
           phoneNumber: formattedPhoneNumber,
-          company: company.trim() || null,
-          domain: domain.trim() || null,
           aboutMe: aboutMe.trim() || null
         }
       });
@@ -144,34 +140,6 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
             placeholder="Your phone number"
           />
         </div>
-      </div>
-
-      {/* Company */}
-      <div className="space-y-2">
-        <label htmlFor="company" className="text-sm font-medium flex items-center gap-2">
-          <Briefcase className="h-4 w-4" />
-          Company
-        </label>
-        <Input
-          id="company"
-          value={company}
-          onChange={(e) => setCompany(e.target.value)}
-          placeholder="Your company name"
-        />
-      </div>
-
-      {/* Domain */}
-      <div className="space-y-2">
-        <label htmlFor="domain" className="text-sm font-medium flex items-center gap-2">
-          <Code className="h-4 w-4" />
-          Domain / Expertise
-        </label>
-        <Input
-          id="domain"
-          value={domain}
-          onChange={(e) => setDomain(e.target.value)}
-          placeholder="Your professional domain (e.g., Web Development, Marketing)"
-        />
       </div>
       
       {/* About Me */}
