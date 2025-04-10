@@ -2,6 +2,53 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom animations for artistic card */
+@keyframes draw {
+  from {
+    stroke-dashoffset: 1000;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-draw {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: draw 2s ease-in-out forwards;
+}
+
+.animate-fade-in {
+  animation: fade-in 1s ease-in-out forwards;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 20s linear infinite;
+}
+
+/* Hand-written font fallback */
+.font-handwritten {
+  font-family: 'Caveat', 'Comic Sans MS', cursive, system-ui;
+}
+
 /* Custom animations */
 
 /* Fade In animation for page transitions */
