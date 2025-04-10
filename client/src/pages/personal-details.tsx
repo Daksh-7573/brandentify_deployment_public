@@ -87,26 +87,16 @@ const PersonalDetailsPage: React.FC = () => {
       <Header />
       
       <div className="flex-1 p-6 container max-w-4xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-2">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-10 w-10 rounded-full"
-              onClick={() => navigate('/profile')}
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <h1 className="text-2xl font-semibold">Personal Details</h1>
-          </div>
+        <div className="flex items-center mb-6">
           <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => setShowEditPersonalInfo(true)}
+            variant="ghost" 
+            size="icon" 
+            className="h-10 w-10 rounded-full mr-2"
+            onClick={() => navigate('/profile')}
           >
-            <Edit className="h-4 w-4 mr-2" />
-            Edit
+            <ArrowLeft className="h-5 w-5" />
           </Button>
+          <h1 className="text-2xl font-semibold">Personal Details</h1>
         </div>
         
         <Card className="mb-6">
@@ -119,7 +109,10 @@ const PersonalDetailsPage: React.FC = () => {
           <CardContent>
             {userData && (
               <>
-                <PersonalInfoSection userData={userData} />
+                <PersonalInfoSection 
+                  userData={userData} 
+                  onEdit={() => setShowEditPersonalInfo(true)}
+                />
                 
                 {/* Visiting Card Builder Component */}
                 <VisitingCardBuilder 
