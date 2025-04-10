@@ -25,25 +25,27 @@ async function throwIfResNotOk(res: Response) {
 /**
  * Enhanced API request function with better error handling and retries
  */
-export async function apiRequest(
-  method: string,
-  url: string,
-  data?: unknown | undefined,
-  retries = 2
-): Promise<Response> {
+export async function apiRequest(options: {
+  url: string;
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+  data?: unknown;
+  retries?: number;
+}): Promise<Response> {
+  const { url, method, data, retries = 2 } = options;
+  
   try {
     // Support for passing FormData objects
     const isFormData = data instanceof FormData;
     
     // Setup headers and body based on content type
-    const options: RequestInit = {
-      method,
+    const requestOptions: RequestInit = {
+      method: method,
       headers: !isFormData && data ? { "Content-Type": "application/json" } : {},
       body: isFormData ? data : data ? JSON.stringify(data) : undefined,
       credentials: "include",
     };
     
-    const res = await fetch(url, options);
+    const res = await fetch(url, requestOptions);
     
     // Try to handle recoverable errors
     if (!res.ok) {
@@ -69,7 +71,7 @@ export async function apiRequest(
       // For network errors or server errors (5xx), retry a few times
       if ((res.status >= 500 || res.status === 0) && retries > 0) {
         console.log(`Retrying request (${retries} attempts left)...`);
-        return apiRequest(method, url, data, retries - 1);
+        return apiRequest({ url, method, data, retries: retries - 1 });
       }
     }
     
