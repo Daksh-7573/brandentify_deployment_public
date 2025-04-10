@@ -423,7 +423,8 @@ export default function Profile() {
     location: '',
     industry: '',
     domain: '',
-    lookingFor: ''
+    lookingFor: '',
+    aboutMe: ''
   });
   
   // Also fetch current user data for the profile
@@ -1228,7 +1229,8 @@ export default function Profile() {
         location: userData.location || '',
         industry: mainIndustry || '',
         domain: domain || '',
-        lookingFor: userData.lookingFor || ''
+        lookingFor: userData.lookingFor || '',
+        aboutMe: userData.aboutMe || ''
       });
     }
   }, [userData]);
@@ -1575,6 +1577,26 @@ export default function Profile() {
                     </SelectGroup>
                   </SelectContent>
                 </Select>
+              </div>
+              
+              {/* About Me section */}
+              <div className="grid gap-2">
+                <Label htmlFor="aboutMe">About Me</Label>
+                <Textarea
+                  id="aboutMe"
+                  name="aboutMe"
+                  value={formData.aboutMe}
+                  onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    aboutMe: e.target.value
+                  }))}
+                  placeholder="Tell us about yourself (max 350 words)"
+                  className="min-h-[150px]"
+                  maxLength={2000}
+                />
+                <div className="text-xs text-gray-500 text-right">
+                  {formData.aboutMe?.split(/\s+/).filter(Boolean).length || 0}/350 words
+                </div>
               </div>
             </div>
             <DialogFooter>
