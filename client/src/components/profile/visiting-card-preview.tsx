@@ -2,7 +2,6 @@ import React from "react";
 import { UserData } from "@/types/user";
 import { Mail, Phone, Globe, Briefcase, MapPin, Code, Building2 } from "lucide-react";
 import ThreeDAnimatedCard from "./cards/3d-animated-card";
-import ThreeDCard from "./cards/3d-card";
 import HolographicCard from "./cards/holographic-card";
 import ClayPaperCard from "./cards/clay-paper-card";
 import CreativeCard from "./cards/creative-card";
@@ -26,15 +25,6 @@ const VisitingCardPreview: React.FC<VisitingCardPreviewProps> = ({
     return (
       <div className="visiting-card-preview">
         <ThreeDAnimatedCard userData={userData} />
-      </div>
-    );
-  }
-  
-  // For new futuristic 3D card style
-  if (cardType === "3d-card") {
-    return (
-      <div className="visiting-card-preview">
-        <ThreeDCard userData={userData} />
       </div>
     );
   }

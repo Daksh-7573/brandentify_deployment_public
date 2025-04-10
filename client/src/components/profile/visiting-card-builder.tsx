@@ -11,7 +11,6 @@ import { apiRequest } from "@/lib/queryClient";
 // Card type options
 const CARD_TYPES = [
   { id: "professional", name: "Professional", description: "Sleek digital business card with modern UI" },
-  { id: "3d-card", name: "Quantum 3D", description: "Premium futuristic 3D card with holographic effects" },
   { id: "3d-animated", name: "3D Animated", description: "Interactive 3D hover effects" },
   { id: "holographic", name: "Holographic Glass", description: "Modern transparent design" },
   { id: "clay-paper", name: "Clay & Paper", description: "Playful 3D claymation & paper-cut style" },
@@ -139,20 +138,15 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
               onValueChange={handleTabChange}
               className="w-full"
             >
-              <TabsList className="grid grid-cols-3 mb-4">
+              <TabsList className="grid grid-cols-3 mb-6">
                 <TabsTrigger value="professional">Professional</TabsTrigger>
-                <TabsTrigger value="3d-card">Quantum 3D</TabsTrigger>
-                <TabsTrigger value="3d-animated">3D Animated</TabsTrigger>
-              </TabsList>
-              <TabsList className="grid grid-cols-3 mb-4">
+                <TabsTrigger value="3d-animated">3D</TabsTrigger>
                 <TabsTrigger value="holographic">Holographic</TabsTrigger>
-                <TabsTrigger value="clay-paper">Clay & Paper</TabsTrigger>
-                <TabsTrigger value="creative">Creative</TabsTrigger>
               </TabsList>
               <TabsList className="grid grid-cols-3">
+                <TabsTrigger value="clay-paper">Clay & Paper</TabsTrigger>
+                <TabsTrigger value="creative">Creative</TabsTrigger>
                 <TabsTrigger value="artistic">Artistic</TabsTrigger>
-                <TabsTrigger value="" disabled className="opacity-0"></TabsTrigger>
-                <TabsTrigger value="" disabled className="opacity-0"></TabsTrigger>
               </TabsList>
               
               {/* Individual tab contents for more details on each style */}
