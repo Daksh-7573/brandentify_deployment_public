@@ -4644,6 +4644,11 @@ ${extractedText.substring(0, 5000)}
     }
   });
 
+  // Smart Radar feature endpoints
+  apiRouter.post("/users/:id/geolocation", updateUserGeolocation);
+  apiRouter.post("/users/:id/radar-visibility", updateUserRadarVisibility);
+  apiRouter.get("/nearby-users", getNearbyUsers);
+
   app.use("/api", apiRouter);
 
   const httpServer = createServer(app);

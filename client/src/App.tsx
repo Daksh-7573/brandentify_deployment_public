@@ -20,6 +20,7 @@ import SearchPage from "@/pages/search";
 import AuthPage from "@/pages/auth-page";
 import EmailVerification from "@/pages/email-verification";
 import NewsSourcesPage from "@/pages/news-sources";
+import Radar from "@/pages/radar";
 
 // Redirect component to handle page redirects
 const Redirect = ({ to }: { to: string }) => {
@@ -98,6 +99,9 @@ function Router() {
       </Route>
       <Route path="/news-sources">
         <ProtectedRoute path="/news-sources" component={NewsSourcesPage} />
+      </Route>
+      <Route path="/radar">
+        <ProtectedRoute path="/radar" component={Radar} />
       </Route>
       <Route component={NotFound} />
     </Switch>
