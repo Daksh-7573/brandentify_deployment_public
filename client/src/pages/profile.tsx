@@ -1325,10 +1325,20 @@ export default function Profile() {
       updatedFormData.title = `${formData.jobLevel} ${formData.title}`;
     }
     
-    // Log what we're sending to the server
-    console.log("Submitting profile data:", updatedFormData);
+    // Prepare data for the API
+    const apiData = {
+      name: updatedFormData.name,
+      title: updatedFormData.title,
+      location: updatedFormData.location,
+      industry: updatedFormData.industry,
+      lookingFor: updatedFormData.lookingFor,
+      aboutMe: updatedFormData.aboutMe
+    };
     
-    updateUserMutation.mutate(updatedFormData);
+    // Log what we're sending to the server
+    console.log("Submitting profile data:", apiData);
+    
+    updateUserMutation.mutate(apiData);
   };
 
   // Redirect to landing if not authenticated
