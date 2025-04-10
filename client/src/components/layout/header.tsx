@@ -123,7 +123,19 @@ export default function Header() {
                 <span>AI Career Booster</span>
               </Button>
               
-
+              <Button
+                variant="ghost"
+                size="sm" 
+                className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
+                  isActive('/radar') 
+                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
+                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
+                }`}
+                onClick={() => setLocation('/radar')}
+              >
+                <MapPin className="h-4 w-4" />
+                <span>Smart Radar</span>
+              </Button>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -256,7 +268,23 @@ export default function Header() {
               <span>AI Career Booster</span>
             </Button>
             
-
+            <Button
+              variant="ghost"
+              size="sm"
+              className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
+                isActive('/radar') 
+                  ? 'text-primary bg-primary/5' 
+                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+              }`}
+              onClick={() => {
+                setLocation('/radar');
+                setIsMobileMenuOpen(false);
+              }}
+            >
+              <MapPin className="h-4 w-4 mr-3 ml-0.5" />
+              <span>Smart Radar</span>
+            </Button>
+            
 
             <div className="pt-4 mt-2 border-t border-gray-200">
               <Button
