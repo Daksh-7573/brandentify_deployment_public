@@ -1,124 +1,400 @@
-import React from "react";
-import { Mail, Phone, Globe, Briefcase } from "lucide-react";
+import React, { useState } from "react";
 import { UserData } from "@/types/user";
+import { 
+  Mail, 
+  Phone, 
+  Globe, 
+  Briefcase, 
+  MapPin, 
+  Code, 
+  Building2, 
+  Plus, 
+  X, 
+  ChevronLeft, 
+  ChevronRight,
+  Linkedin,
+  MessageSquare,
+  Copy,
+  Share2,
+  QrCode
+} from "lucide-react";
 
 interface CreativeCardProps {
   userData: UserData;
 }
 
 const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
+  // State for FAB menu and swipe
+  const [isFabOpen, setIsFabOpen] = useState(false);
+  const [swipePosition, setSwipePosition] = useState<'main' | 'left' | 'right'>('main');
+  const [startX, setStartX] = useState<number | null>(null);
+  const [currentX, setCurrentX] = useState<number | null>(null);
+  
   // Format profile link
   const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;
   
+  // Toggle FAB menu
+  const toggleFab = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsFabOpen(!isFabOpen);
+  };
+  
+  // Handle swipe start
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setStartX(e.touches[0].clientX);
+  };
+  
+  // Handle mouse down for desktop
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setStartX(e.clientX);
+  };
+  
+  // Handle swipe move
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (startX === null) return;
+    setCurrentX(e.touches[0].clientX);
+  };
+  
+  // Handle mouse move for desktop
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (startX === null) return;
+    setCurrentX(e.clientX);
+  };
+  
+  // Handle swipe end
+  const handleTouchEnd = () => {
+    if (startX === null || currentX === null) {
+      setStartX(null);
+      setCurrentX(null);
+      return;
+    }
+    
+    const diff = startX - currentX;
+    // Swipe right to left (show contact details)
+    if (diff > 50 && swipePosition === 'main') {
+      setSwipePosition('left');
+    } 
+    // Swipe left to right (show extra details/QR)
+    else if (diff < -50 && swipePosition === 'main') {
+      setSwipePosition('right');
+    }
+    // Return to main from either side
+    else if ((diff < -50 && swipePosition === 'left') || (diff > 50 && swipePosition === 'right')) {
+      setSwipePosition('main');
+    }
+    
+    setStartX(null);
+    setCurrentX(null);
+  };
+  
+  // Handle mouse up for desktop
+  const handleMouseUp = () => {
+    handleTouchEnd();
+  };
+  
+  // Navigate back to main view
+  const navigateToMain = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSwipePosition('main');
+  };
+  
+  // Navigate to contact details
+  const navigateToContacts = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSwipePosition('left');
+  };
+  
+  // Navigate to extra details
+  const navigateToExtras = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSwipePosition('right');
+  };
+  
+  // FAB actions
+  const handleAction = (action: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsFabOpen(false);
+    
+    switch (action) {
+      case 'email':
+        window.location.href = `mailto:${userData.email}`;
+        break;
+      case 'phone':
+        if (userData.phoneNumber) {
+          window.location.href = `tel:${userData.phoneNumber}`;
+        }
+        break;
+      case 'copy':
+        navigator.clipboard.writeText(profileLink);
+        // Show toast notification
+        alert("Profile link copied to clipboard!");
+        break;
+      case 'share':
+        if (navigator.share) {
+          navigator.share({
+            title: userData.name || "Profile",
+            text: `Check out ${userData.name}'s profile`,
+            url: `https://${profileLink}`
+          });
+        } else {
+          navigator.clipboard.writeText(profileLink);
+          alert("Profile link copied to clipboard!");
+        }
+        break;
+    }
+  };
+  
+  // Determine card transform based on swipe position
+  const getCardTransform = () => {
+    if (swipePosition === 'left') {
+      return 'translateX(-100%)';
+    } else if (swipePosition === 'right') {
+      return 'translateX(100%)';
+    }
+    return 'translateX(0)';
+  };
+  
+  // Calculate any ongoing swipe transform
+  const getOngoingSwipeTransform = () => {
+    if (startX === null || currentX === null) return '0px';
+    return `${currentX - startX}px`;
+  };
+  
   return (
-    <div className="w-full aspect-[2/3.5] rounded-xl overflow-hidden relative shadow-xl">
-      {/* Gradient background with fancy patterns */}
-      <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 z-0">
-        {/* Decorative geometric elements */}
-        <div className="absolute top-12 right-12 w-16 h-16 rounded-full bg-white/10"></div>
-        <div className="absolute bottom-32 left-4 w-12 h-24 rounded-full bg-white/10 rotate-45"></div>
-        <div className="absolute top-40 right-0 w-32 h-32 rounded-full bg-white/10 -rotate-12"></div>
-        <div className="absolute bottom-4 left-8 w-40 h-8 rounded-full bg-white/10"></div>
+    <div 
+      className="creative-card-container w-full aspect-[2/3.5] relative overflow-hidden rounded-lg shadow-lg"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+    >
+      <div className="swipe-indicator-container absolute top-1/2 -translate-y-1/2 w-full z-10 flex justify-between px-2 pointer-events-none">
+        {swipePosition !== 'right' && (
+          <div className={`left-indicator ${swipePosition === 'main' ? 'opacity-50' : 'opacity-0'} bg-white/80 rounded-full h-8 w-8 flex items-center justify-center shadow-md transition-opacity duration-300`}>
+            <ChevronLeft className="h-5 w-5 text-gray-800" />
+          </div>
+        )}
+        {swipePosition !== 'left' && (
+          <div className={`right-indicator ${swipePosition === 'main' ? 'opacity-50' : 'opacity-0'} bg-white/80 rounded-full h-8 w-8 flex items-center justify-center shadow-md ml-auto transition-opacity duration-300`}>
+            <ChevronRight className="h-5 w-5 text-gray-800" />
+          </div>
+        )}
       </div>
       
-      {/* Main content layer */}
-      <div className="relative z-10 w-full h-full p-6 flex flex-col">
-        {/* Profile picture with fancy border */}
-        <div className="relative mx-auto mb-6">
-          <div className="h-28 w-28 rounded-xl overflow-hidden border-4 border-white/30 rotate-12 bg-white/20 backdrop-blur-sm">
-            {userData.photoURL ? (
-              <img 
-                src={userData.photoURL} 
-                alt={userData.name || "Profile"} 
-                className="h-full w-full object-cover rotate-[-12deg] scale-[1.1]"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = "https://ui-avatars.com/api/?name=" + (userData.name || "User");
-                }}
-              />
-            ) : (
-              <img 
-                src={`https://ui-avatars.com/api/?name=${userData.name || "User"}`}
-                alt={userData.name || "Profile"}
-                className="h-full w-full object-cover rotate-[-12deg] scale-[1.1]"
-              />
-            )}
+      <div 
+        className="swipe-container flex transition-transform duration-300 ease-out h-full"
+        style={{ 
+          transform: `${getCardTransform()} translateX(${getOngoingSwipeTransform()})`
+        }}
+      >
+        {/* Left view - Contact details */}
+        <div className="card-view min-w-full h-full shrink-0 bg-gradient-to-br from-purple-600 via-pink-600 to-orange-500 text-white flex flex-col">
+          <div className="px-4 py-3 flex items-center">
+            <button 
+              className="mr-2 h-8 w-8 rounded-full bg-white/20 flex items-center justify-center"
+              onClick={navigateToMain}
+            >
+              <ChevronRight className="h-5 w-5 text-white" />
+            </button>
+            <h3 className="text-lg font-semibold">Contact Details</h3>
+          </div>
+          
+          <div className="flex-1 p-5 space-y-6">
+            {/* Email */}
+            <div className="flex items-center gap-3">
+              <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center">
+                <Mail className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <p className="text-xs text-white/70">Email</p>
+                <p className="text-sm font-medium">{userData.email}</p>
+              </div>
+            </div>
+            
+            {/* Phone */}
+            <div className="flex items-center gap-3">
+              <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center">
+                <Phone className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <p className="text-xs text-white/70">Phone</p>
+                <p className="text-sm font-medium">{userData.phoneNumber || "Add phone number"}</p>
+              </div>
+            </div>
+            
+            {/* LinkedIn */}
+            <div className="flex items-center gap-3">
+              <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center">
+                <Linkedin className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <p className="text-xs text-white/70">LinkedIn</p>
+                <p className="text-sm font-medium">LinkedIn Profile</p>
+              </div>
+            </div>
+            
+            {/* Message */}
+            <div className="flex items-center gap-3">
+              <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center">
+                <MessageSquare className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <p className="text-xs text-white/70">Message</p>
+                <p className="text-sm font-medium">Send a message</p>
+              </div>
+            </div>
           </div>
         </div>
         
-        {/* Name and title with stylized typography */}
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-white" style={{ fontFamily: "'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif" }}>
-            {userData.name || "Your Name"}
-          </h2>
-          <p className="text-md text-white/80 mt-1 italic" style={{ fontFamily: "'Georgia', serif" }}>
-            {userData.title || "Professional"}
-          </p>
-          
-          {/* Industry and Domain */}
-          {userData.industry && (
-            <div className="mt-1 text-sm text-white/70 font-light">
-              {userData.industry.includes(': ') ? (
-                <>
-                  <span>{userData.industry.split(': ')[0]}</span>
-                  <span className="mx-1">•</span>
-                  <span>{userData.industry.split(': ')[1]}</span>
-                </>
+        {/* Main view - Basic info */}
+        <div className="card-view min-w-full h-full shrink-0 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 text-white flex flex-col">
+          <div className="absolute left-1/2 top-28 transform -translate-x-1/2 -translate-y-1/2 z-10">
+            <div className="h-28 w-28 rounded-full border-4 border-white overflow-hidden bg-white flex items-center justify-center shadow-lg">
+              {userData.photoURL ? (
+                <img 
+                  src={userData.photoURL} 
+                  alt={userData.name || "Profile"} 
+                  className="h-full w-full object-cover"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = "https://ui-avatars.com/api/?name=" + (userData.name || "User");
+                  }}
+                />
               ) : (
-                <span>{userData.industry}</span>
+                <img 
+                  src={`https://ui-avatars.com/api/?name=${userData.name || "User"}`}
+                  alt={userData.name || "Profile"}
+                  className="h-full w-full object-cover"
+                />
               )}
             </div>
-          )}
-        </div>
-        
-        {/* Contact details with creative styling */}
-        <div className="flex-1 space-y-4">
-          {/* Container with glass effect */}
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-5 space-y-4">
-            {/* Company with icon */}
+          </div>
+          
+          <div className="h-40 w-full bg-gradient-to-b from-black/20 to-transparent"></div>
+          
+          <div className="flex-1 px-5 pt-20 pb-5 flex flex-col items-center text-center">
+            <h2 className="text-2xl font-bold mb-1">
+              {userData.name || "Your Name"}
+            </h2>
+            <p className="text-white/80 text-sm mb-4">
+              {userData.title || "Add your designation"}
+            </p>
+            
             {userData.company && (
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-lg bg-white/20 flex items-center justify-center transform rotate-6">
-                  <Briefcase className="h-5 w-5 text-white transform -rotate-6" />
-                </div>
-                <span className="text-sm text-white">{userData.company}</span>
+              <div className="mb-2 inline-flex items-center gap-1.5">
+                <Briefcase className="h-4 w-4 text-white/70" />
+                <span className="text-sm">{userData.company}</span>
               </div>
             )}
             
-            {/* Email with icon */}
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-white/20 flex items-center justify-center transform rotate-6">
-                <Mail className="h-5 w-5 text-white transform -rotate-6" />
+            {userData.location && (
+              <div className="mb-2 inline-flex items-center gap-1.5">
+                <MapPin className="h-4 w-4 text-white/70" />
+                <span className="text-sm">{userData.location}</span>
               </div>
-              <span className="text-sm text-white">{userData.email}</span>
+            )}
+            
+            <div className="mt-6 flex items-center gap-2">
+              <div className="h-1 w-1 rounded-full bg-white/30"></div>
+              <div className="h-1 w-8 rounded-full bg-white/70"></div>
+              <div className="h-1 w-1 rounded-full bg-white/30"></div>
             </div>
             
-            {/* Phone with icon */}
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-white/20 flex items-center justify-center transform rotate-6">
-                <Phone className="h-5 w-5 text-white transform -rotate-6" />
-              </div>
-              <span className="text-sm text-white">{userData.phoneNumber || "Add phone number"}</span>
-            </div>
-            
-            {/* Profile link with icon */}
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-white/20 flex items-center justify-center transform rotate-6">
-                <Globe className="h-5 w-5 text-white transform -rotate-6" />
-              </div>
-              <span className="text-sm text-white">{profileLink}</span>
-            </div>
+            <p className="text-xs text-white/60 mt-3">
+              Swipe to see more details
+            </p>
+          </div>
+          
+          {/* Navigation dots */}
+          <div className="flex justify-center gap-2 mb-3">
+            <button 
+              className="h-2 w-2 rounded-full bg-white/30"
+              onClick={navigateToContacts}
+            ></button>
+            <button 
+              className="h-2 w-6 rounded-full bg-white/80"
+            ></button>
+            <button 
+              className="h-2 w-2 rounded-full bg-white/30"
+              onClick={navigateToExtras}
+            ></button>
           </div>
         </div>
         
-        {/* Floating action button */}
-        <div className="absolute bottom-6 right-6">
-          <div className="h-12 w-12 rounded-full bg-white flex items-center justify-center shadow-lg">
-            <svg className="h-6 w-6 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
+        {/* Right view - Bio/QR */}
+        <div className="card-view min-w-full h-full shrink-0 bg-gradient-to-br from-purple-600 via-pink-600 to-orange-500 text-white flex flex-col">
+          <div className="px-4 py-3 flex items-center">
+            <button 
+              className="mr-2 h-8 w-8 rounded-full bg-white/20 flex items-center justify-center"
+              onClick={navigateToMain}
+            >
+              <ChevronLeft className="h-5 w-5 text-white" />
+            </button>
+            <h3 className="text-lg font-semibold">About Me</h3>
+          </div>
+          
+          <div className="flex-1 p-5 flex flex-col items-center">
+            <div className="mb-5 bg-white p-4 rounded-lg shadow-md w-40 h-40 flex items-center justify-center">
+              <QrCode className="h-full w-full text-gray-800 p-2" />
+            </div>
+            
+            <h4 className="text-sm font-medium mb-3">Scan to Connect</h4>
+            
+            <div className="bg-white/10 backdrop-blur-sm p-4 rounded-lg w-full mt-3">
+              <h4 className="text-sm font-semibold mb-2">Bio</h4>
+              <p className="text-xs text-white/90 leading-relaxed">
+                {userData.lookingFor || `Professional with ${userData.industry ? `experience in ${userData.industry}` : 'industry experience'}. 
+                ${userData.domain ? `Specialized in ${userData.domain}.` : 'Open to new opportunities and connections.'}
+                Let's connect and explore potential collaborations.`}
+              </p>
+            </div>
           </div>
         </div>
+      </div>
+      
+      {/* Floating Action Button (FAB) */}
+      <div className="fab-container absolute bottom-6 right-6 z-20">
+        <div 
+          className={`fab-buttons flex flex-col-reverse gap-3 mb-3 transition-all duration-300 ${isFabOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}
+        >
+          <button 
+            className="h-12 w-12 rounded-full bg-indigo-600 text-white shadow-lg flex items-center justify-center transform transition-transform hover:scale-110"
+            onClick={(e) => handleAction('email', e)}
+          >
+            <Mail className="h-5 w-5" />
+          </button>
+          
+          <button 
+            className="h-12 w-12 rounded-full bg-green-600 text-white shadow-lg flex items-center justify-center transform transition-transform hover:scale-110"
+            onClick={(e) => handleAction('phone', e)}
+          >
+            <Phone className="h-5 w-5" />
+          </button>
+          
+          <button 
+            className="h-12 w-12 rounded-full bg-blue-600 text-white shadow-lg flex items-center justify-center transform transition-transform hover:scale-110"
+            onClick={(e) => handleAction('copy', e)}
+          >
+            <Copy className="h-5 w-5" />
+          </button>
+          
+          <button 
+            className="h-12 w-12 rounded-full bg-purple-600 text-white shadow-lg flex items-center justify-center transform transition-transform hover:scale-110"
+            onClick={(e) => handleAction('share', e)}
+          >
+            <Share2 className="h-5 w-5" />
+          </button>
+        </div>
+        
+        <button 
+          className={`h-14 w-14 rounded-full bg-gradient-to-r from-pink-600 to-orange-500 text-white shadow-lg flex items-center justify-center transform transition-all duration-300 ${isFabOpen ? 'rotate-45' : 'animate-pulse'}`}
+          onClick={toggleFab}
+        >
+          {isFabOpen ? <X className="h-6 w-6" /> : <Plus className="h-6 w-6" />}
+        </button>
       </div>
     </div>
   );

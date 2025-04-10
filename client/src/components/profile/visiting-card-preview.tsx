@@ -4,6 +4,7 @@ import { Mail, Phone, Globe, Briefcase, MapPin, Code, Building2 } from "lucide-r
 import ThreeDAnimatedCard from "./cards/3d-animated-card";
 import HolographicCard from "./cards/holographic-card";
 import FlipCard from "./cards/flip-card";
+import CreativeCard from "./cards/creative-card";
 
 interface VisitingCardPreviewProps {
   userData: UserData;
@@ -40,6 +41,15 @@ const VisitingCardPreview: React.FC<VisitingCardPreviewProps> = ({
     return (
       <div className="visiting-card-preview">
         <FlipCard userData={userData} />
+      </div>
+    );
+  }
+  
+  // For creative card style, use the specialized component
+  if (cardType === "creative") {
+    return (
+      <div className="visiting-card-preview">
+        <CreativeCard userData={userData} />
       </div>
     );
   }
