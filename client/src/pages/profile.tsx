@@ -454,7 +454,10 @@ export default function Profile() {
     queryKey: [`/api/users/${userNumericId}/skills`],
     queryFn: async () => {
       if (!userNumericId) return [];
-      const response = await apiRequest('GET', `/api/users/${userNumericId}/skills`);
+      const response = await apiRequest({
+        method: 'GET',
+        url: `/api/users/${userNumericId}/skills`
+      });
       return await response.json();
     },
     enabled: !!userNumericId && isAuthenticated,
@@ -468,7 +471,10 @@ export default function Profile() {
     queryKey: [`/api/users/${userNumericId}/experiences`],
     queryFn: async () => {
       if (!userNumericId) return [];
-      const response = await apiRequest('GET', `/api/users/${userNumericId}/experiences`);
+      const response = await apiRequest({
+        method: 'GET',
+        url: `/api/users/${userNumericId}/experiences`
+      });
       return await response.json();
     },
     enabled: !!userNumericId && isAuthenticated,
