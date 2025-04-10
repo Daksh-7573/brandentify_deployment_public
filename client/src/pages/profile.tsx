@@ -407,6 +407,7 @@ export default function Profile() {
   
   // State for edit dialogs
   const [showEditBasicInfo, setShowEditBasicInfo] = useState(false);
+  const [showEditPersonalInfo, setShowEditPersonalInfo] = useState(false);
   const [showProfilePictureDialog, setShowProfilePictureDialog] = useState(false);
   const [selectedIndustry, setSelectedIndustry] = useState<string>('');
   const [selectedDomain, setSelectedDomain] = useState<string>('');
@@ -1356,6 +1357,26 @@ export default function Profile() {
         onSave={handleProfilePictureUpdate}
       />
       
+      {/* Personal Information Edit Dialog */}
+      {userData && (
+        <Dialog open={showEditPersonalInfo} onOpenChange={setShowEditPersonalInfo}>
+          <DialogContent className="sm:max-w-[550px]">
+            <DialogHeader>
+              <DialogTitle>Edit Personal Information</DialogTitle>
+            </DialogHeader>
+            <EditPersonalInfo 
+              userData={userData}
+              onCancel={() => setShowEditPersonalInfo(false)}
+              onSave={() => {
+                setShowEditPersonalInfo(false);
+                // Refetch user data
+                queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
+              }}
+            />
+          </DialogContent>
+        </Dialog>
+      )}
+      
       {/* Edit Basic Info Dialog */}
       <Dialog open={showEditBasicInfo} onOpenChange={setShowEditBasicInfo}>
         <DialogContent className="sm:max-w-[425px]">
@@ -1741,6 +1762,24 @@ export default function Profile() {
                   )}
                 </div>
                 {/* Skills section removed */}
+              </CardContent>
+            </Card>
+            
+            {/* Personal Information Section */}
+            <Card className="mb-6">
+              <CardContent className="pt-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-lg font-medium text-gray-900">Personal Information</h2>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => setShowEditPersonalInfo(true)}
+                    className="text-primary"
+                  >
+                    Edit
+                  </Button>
+                </div>
+                <PersonalInfoSection userData={userData} />
               </CardContent>
             </Card>
             
