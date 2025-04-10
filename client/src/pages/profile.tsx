@@ -1716,21 +1716,24 @@ export default function Profile() {
                       <Camera size={16} />
                     </button>
                     
-                    {/* Personal info button */}
-                    <button 
-                      onClick={() => setLocation('/personal-details')}
-                      className="absolute bottom-0 left-0 bg-primary hover:bg-primary/90 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                      aria-label="View personal information"
-                    >
-                      <PersonalInfoIcon className="w-4 h-4" />
-                    </button>
+
                   </div>
                 </div>
                 <div className="pl-0 sm:pl-32 mt-12 sm:mt-2">
                   <div className="flex justify-between items-center group">
-                    <h2 className="text-xl text-gray-900">
-                      Hey there! <span className="font-bold text-2xl text-primary">{userData?.name || user?.name || 'User'}</span> here,
-                    </h2>
+                    <div className="flex items-center gap-3">
+                      {/* Personal info icon - big and visible */}
+                      <button 
+                        onClick={() => setLocation('/personal-details')}
+                        className="flex-shrink-0 bg-primary hover:bg-primary/90 text-white p-2.5 rounded-full"
+                        aria-label="View personal information"
+                      >
+                        <PersonalInfoIcon className="w-6 h-6" />
+                      </button>
+                      <h2 className="text-xl text-gray-900">
+                        Hey there! <span className="font-bold text-2xl text-primary">{userData?.name || user?.name || 'User'}</span> here,
+                      </h2>
+                    </div>
                     <button 
                       onClick={() => setShowEditBasicInfo(true)}
                       className="text-sm text-primary opacity-0 group-hover:opacity-100 transition-opacity"
