@@ -11,6 +11,7 @@ export interface UserData {
   lookingFor: string | null;
   phoneNumber: string | null;
   company?: string | null;
+  domain?: string | null;
   emailVerified?: boolean;
   profileCompleted?: boolean;
   visitingCardType?: string | null;

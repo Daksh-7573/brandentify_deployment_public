@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Mail, Phone, Globe, Save } from "lucide-react";
+import { Mail, Phone, Globe, Briefcase, Code, Building2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -7,19 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useQueryClient } from "@tanstack/react-query";
 import CountryCodeSelect from "./country-code-select";
-
-interface UserData {
-  id: number;
-  username: string;
-  name: string | null;
-  email: string;
-  photoURL: string | null;
-  title: string | null;
-  location: string | null;
-  industry: string | null;
-  lookingFor: string | null;
-  phoneNumber: string | null;
-}
+import { UserData } from "@/types/user";
 
 interface EditPersonalInfoProps {
   userData: UserData;
@@ -56,6 +44,8 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
   
   const [phoneCountryCode, setPhoneCountryCode] = useState(countryCode);
   const [phoneNumber, setPhoneNumber] = useState(number);
+  const [company, setCompany] = useState(userData.company || "");
+  const [domain, setDomain] = useState(userData.domain || "");
   const [isLoading, setIsLoading] = useState(false);
   
   const handleSave = async () => {
@@ -68,12 +58,18 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
         : null;
       
       // Update user data via API
-      await apiRequest('PUT', `/api/users/${userData.id}`, {
-        phoneNumber: formattedPhoneNumber
+      await apiRequest({
+        url: `/api/users/${userData.id}`,
+        method: 'PUT',
+        data: {
+          phoneNumber: formattedPhoneNumber,
+          company: company.trim() || null,
+          domain: domain.trim() || null
+        }
       });
       
       // Invalidate related queries to refetch the updated data
-      queryClient.invalidateQueries({ queryKey: ['/api/users', userData.id] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userData.id}`] });
       queryClient.invalidateQueries({ queryKey: ['/api/users/by-username', userData.username] });
       
       toast({
@@ -132,6 +128,34 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
                 placeholder="Your phone number"
               />
             </div>
+          </div>
+
+          {/* Company */}
+          <div className="space-y-2">
+            <label htmlFor="company" className="text-sm font-medium flex items-center gap-2">
+              <Briefcase className="h-4 w-4" />
+              Company
+            </label>
+            <Input
+              id="company"
+              value={company}
+              onChange={(e) => setCompany(e.target.value)}
+              placeholder="Your company name"
+            />
+          </div>
+
+          {/* Domain */}
+          <div className="space-y-2">
+            <label htmlFor="domain" className="text-sm font-medium flex items-center gap-2">
+              <Code className="h-4 w-4" />
+              Domain / Expertise
+            </label>
+            <Input
+              id="domain"
+              value={domain}
+              onChange={(e) => setDomain(e.target.value)}
+              placeholder="Your professional domain (e.g., Web Development, Marketing)"
+            />
           </div>
           
           {/* Profile URL (read-only) */}

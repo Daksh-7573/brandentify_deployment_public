@@ -1,6 +1,6 @@
 import React from "react";
 import { UserData } from "@/types/user";
-import { Mail, Phone, Globe, Briefcase } from "lucide-react";
+import { Mail, Phone, Globe, Briefcase, MapPin, Code, Building2 } from "lucide-react";
 
 interface VisitingCardPreviewProps {
   userData: UserData;
@@ -52,59 +52,80 @@ const VisitingCardPreview: React.FC<VisitingCardPreviewProps> = ({
         </div>
         
         {/* Main content */}
-        <div className="flex-1 px-6 pt-14 pb-6 flex flex-col">
+        <div className="flex-1 px-4 pt-14 pb-4 flex flex-col">
           {/* Name and title */}
-          <div className="text-center mb-4">
+          <div className="text-center mb-3">
             <h2 className={`text-xl font-bold ${cardType === "minimalist" ? "text-gray-900 dark:text-white" : "text-white"}`}>
               {userData.name || "Your Name"}
             </h2>
             <p className={`text-sm ${cardType === "minimalist" ? "text-gray-600 dark:text-gray-400" : "text-white/80"}`}>
-              {userData.title || "Professional"}
+              {userData.title || "Add your designation"}
             </p>
-            
-            {/* Industry and Domain */}
-            {userData.industry && (
-              <div className={`mt-1 text-xs ${cardType === "minimalist" ? "text-gray-500 dark:text-gray-500" : "text-white/60"}`}>
-                {userData.industry.includes(': ') ? (
-                  <>
-                    <span>{userData.industry.split(': ')[0]}</span>
-                    <span className="mx-1">•</span>
-                    <span>{userData.industry.split(': ')[1]}</span>
-                  </>
-                ) : (
-                  <span>{userData.industry}</span>
-                )}
-              </div>
-            )}
           </div>
           
-          <div className="flex-1 space-y-3">
+          <div className="flex-1 space-y-2 text-xs">
+            {/* Domain */}
+            {userData.domain && (
+              <div className="flex items-center gap-2">
+                <Code className={`h-3.5 w-3.5 ${cardType === "minimalist" ? "text-blue-600 dark:text-blue-400" : "text-white/70"}`} />
+                <span className={cardType === "minimalist" ? "text-gray-800 dark:text-gray-300" : "text-white"}>
+                  {userData.domain}
+                </span>
+              </div>
+            )}
+            
+            {/* Industry */}
+            {userData.industry && (
+              <div className="flex items-center gap-2">
+                <Building2 className={`h-3.5 w-3.5 ${cardType === "minimalist" ? "text-blue-600 dark:text-blue-400" : "text-white/70"}`} />
+                <span className={cardType === "minimalist" ? "text-gray-800 dark:text-gray-300" : "text-white"}>
+                  {userData.industry}
+                </span>
+              </div>
+            )}
+            
             {/* Company */}
             {userData.company && (
-              <div className="flex items-center gap-3 text-sm">
-                <Briefcase className={`h-4 w-4 ${cardType === "minimalist" ? "text-blue-600 dark:text-blue-400" : "text-white/70"}`} />
-                <span className={cardType === "minimalist" ? "text-gray-800 dark:text-gray-300" : "text-white"}>{userData.company}</span>
+              <div className="flex items-center gap-2">
+                <Briefcase className={`h-3.5 w-3.5 ${cardType === "minimalist" ? "text-blue-600 dark:text-blue-400" : "text-white/70"}`} />
+                <span className={cardType === "minimalist" ? "text-gray-800 dark:text-gray-300" : "text-white"}>
+                  {userData.company}
+                </span>
+              </div>
+            )}
+            
+            {/* Location */}
+            {userData.location && (
+              <div className="flex items-center gap-2">
+                <MapPin className={`h-3.5 w-3.5 ${cardType === "minimalist" ? "text-blue-600 dark:text-blue-400" : "text-white/70"}`} />
+                <span className={cardType === "minimalist" ? "text-gray-800 dark:text-gray-300" : "text-white"}>
+                  {userData.location}
+                </span>
               </div>
             )}
             
             {/* Email */}
-            <div className="flex items-center gap-3 text-sm">
-              <Mail className={`h-4 w-4 ${cardType === "minimalist" ? "text-blue-600 dark:text-blue-400" : "text-white/70"}`} />
-              <span className={cardType === "minimalist" ? "text-gray-800 dark:text-gray-300" : "text-white"}>{userData.email}</span>
+            <div className="flex items-center gap-2">
+              <Mail className={`h-3.5 w-3.5 ${cardType === "minimalist" ? "text-blue-600 dark:text-blue-400" : "text-white/70"}`} />
+              <span className={cardType === "minimalist" ? "text-gray-800 dark:text-gray-300" : "text-white"}>
+                {userData.email}
+              </span>
             </div>
             
             {/* Phone */}
-            <div className="flex items-center gap-3 text-sm">
-              <Phone className={`h-4 w-4 ${cardType === "minimalist" ? "text-blue-600 dark:text-blue-400" : "text-white/70"}`} />
+            <div className="flex items-center gap-2">
+              <Phone className={`h-3.5 w-3.5 ${cardType === "minimalist" ? "text-blue-600 dark:text-blue-400" : "text-white/70"}`} />
               <span className={cardType === "minimalist" ? "text-gray-800 dark:text-gray-300" : "text-white"}>
                 {userData.phoneNumber || "Add phone number"}
               </span>
             </div>
             
             {/* Profile Link */}
-            <div className="flex items-center gap-3 text-sm">
-              <Globe className={`h-4 w-4 ${cardType === "minimalist" ? "text-blue-600 dark:text-blue-400" : "text-white/70"}`} />
-              <span className={cardType === "minimalist" ? "text-blue-600 dark:text-blue-400" : "text-white"}>{profileLink}</span>
+            <div className="flex items-center gap-2">
+              <Globe className={`h-3.5 w-3.5 ${cardType === "minimalist" ? "text-blue-600 dark:text-blue-400" : "text-white/70"}`} />
+              <span className={cardType === "minimalist" ? "text-blue-600 dark:text-blue-400" : "text-white"}>
+                {profileLink}
+              </span>
             </div>
           </div>
         </div>
