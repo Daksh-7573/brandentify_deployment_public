@@ -54,6 +54,15 @@ const VisitingCardPreview: React.FC<VisitingCardPreviewProps> = ({
     );
   }
   
+  // For artistic card style, use the specialized component
+  if (cardType === "artistic") {
+    return (
+      <div className="visiting-card-preview">
+        <ArtisticCard userData={userData} />
+      </div>
+    );
+  }
+  
   // Simple card preview that simulates different styles
   return (
     <div className="visiting-card-preview">
