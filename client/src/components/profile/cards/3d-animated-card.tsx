@@ -1,6 +1,19 @@
 import React, { useState, useRef, useEffect } from "react";
 import { UserData } from "@/types/user";
-import { Mail, Phone, Globe, Briefcase, MapPin, Code, Building2 } from "lucide-react";
+import { 
+  Mail, 
+  Phone, 
+  Globe, 
+  Briefcase, 
+  MapPin, 
+  Code, 
+  Building2, 
+  ExternalLink, 
+  Linkedin, 
+  Github, 
+  Twitter,
+  Instagram
+} from "lucide-react";
 
 interface ThreeDAnimatedCardProps {
   userData: UserData;
@@ -10,44 +23,50 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
   const [isFlipped, setIsFlipped] = useState(false);
   const [rotateX, setRotateX] = useState(0);
   const [rotateY, setRotateY] = useState(0);
-  const [blurAmount, setBlurAmount] = useState(0);
+  const [glowIntensity, setGlowIntensity] = useState(0);
+  const [showQR, setShowQR] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   
   // Format profile link
   const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;
   
-  // Handle mouse movement for 3D effect
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  // Handle mouse/touch movement for 3D effect
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
     if (!cardRef.current || isFlipped) return;
     
     const rect = cardRef.current.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
     
+    // Get coordinates from either mouse or touch event
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    
     // Calculate distance from center
-    const mouseX = e.clientX - centerX;
-    const mouseY = e.clientY - centerY;
+    const mouseX = clientX - centerX;
+    const mouseY = clientY - centerY;
     
-    // Calculate rotation (max 10 degrees)
-    const rotX = (mouseY / (rect.height / 2)) * -5; // Invert Y rotation for natural tilt
-    const rotY = (mouseX / (rect.width / 2)) * 5;
+    // Calculate rotation (max 15 degrees)
+    const rotX = (mouseY / (rect.height / 2)) * -8; // Invert Y rotation for natural tilt
+    const rotY = (mouseX / (rect.width / 2)) * 8;
     
-    // Calculate blur based on movement (max 2px)
-    const movement = Math.abs(mouseX) + Math.abs(mouseY);
-    const blur = Math.min(movement / 120, 2);
+    // Calculate glow based on movement (max 8px)
+    const movement = Math.sqrt(Math.pow(mouseX, 2) + Math.pow(mouseY, 2));
+    const normalizedMovement = Math.min(movement / (rect.width / 2), 1);
+    const glow = normalizedMovement * 15;
     
     // Update state
     setRotateX(rotX);
     setRotateY(rotY);
-    setBlurAmount(blur);
+    setGlowIntensity(glow);
   };
   
-  // Reset on mouse leave
-  const handleMouseLeave = () => {
+  // Reset on mouse/touch leave
+  const handleMovementEnd = () => {
     if (isFlipped) return;
     setRotateX(0);
     setRotateY(0);
-    setBlurAmount(0);
+    setGlowIntensity(0);
   };
   
   // Toggle card flip
@@ -58,17 +77,86 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
     if (!isFlipped) {
       setRotateX(0);
       setRotateY(0);
-      setBlurAmount(0);
+      setGlowIntensity(0);
     }
   };
   
-  // Add styles for 3D perspective
+  // Handle QR code display
+  const toggleQR = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card flip
+    setShowQR(!showQR);
+  };
+  
+  // Add styles for 3D perspective, animations and glows
   useEffect(() => {
     const style = document.createElement('style');
     style.textContent = `
-      .perspective-1000 { perspective: 1000px; }
+      .perspective-1200 { perspective: 1200px; }
       .preserve-3d { transform-style: preserve-3d; }
       .backface-hidden { backface-visibility: hidden; }
+      
+      /* Holographic text effect */
+      .holographic-text {
+        background-image: linear-gradient(
+          90deg, 
+          rgba(99,102,241,1) 0%, 
+          rgba(168,85,247,1) 35%, 
+          rgba(59,130,246,1) 70%, 
+          rgba(99,102,241,1) 100%
+        );
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: shine 4s linear infinite;
+      }
+      
+      @keyframes shine {
+        to { background-position: 200% center; }
+      }
+      
+      /* Floating animation */
+      .floating {
+        animation: floating 3s ease-in-out infinite;
+      }
+      
+      @keyframes floating {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-8px); }
+        100% { transform: translateY(0px); }
+      }
+      
+      /* Glow pulse animation */
+      .glow-pulse {
+        animation: glowPulse 2s ease-in-out infinite;
+      }
+      
+      @keyframes glowPulse {
+        0% { filter: drop-shadow(0 0 2px rgba(99,102,241,0.6)); }
+        50% { filter: drop-shadow(0 0 8px rgba(168,85,247,0.8)); }
+        100% { filter: drop-shadow(0 0 2px rgba(99,102,241,0.6)); }
+      }
+      
+      /* Bounce in animation */
+      .bounce-in {
+        animation: bounceIn 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+      }
+      
+      @keyframes bounceIn {
+        0% { transform: scale(0.7); opacity: 0; }
+        70% { transform: scale(1.05); opacity: 1; }
+        100% { transform: scale(1); }
+      }
+      
+      /* QR code reveal animation */
+      .qr-reveal {
+        animation: qrReveal 0.3s ease-out;
+      }
+      
+      @keyframes qrReveal {
+        0% { transform: scale(0.8); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+      }
     `;
     document.head.appendChild(style);
     
@@ -77,172 +165,298 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
     };
   }, []);
   
+  // Mock data for QR code
+  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(profileLink)}`;
+  
   return (
-    <div className="w-full perspective-1000" onClick={toggleFlip}>
+    <div className="w-full perspective-1200">
       <div 
         ref={cardRef}
-        className="w-full aspect-[2/3.5] rounded-lg overflow-hidden shadow-xl relative preserve-3d cursor-pointer transition-transform duration-500 ease-in-out"
+        className="w-full aspect-[2/3.5] rounded-xl overflow-hidden shadow-xl relative preserve-3d cursor-pointer transition-all duration-300 ease-out"
         style={{
           transform: isFlipped 
             ? `rotateY(180deg)` 
             : `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
-          filter: isFlipped ? "none" : `blur(${blurAmount}px)`,
+          boxShadow: `0 10px 30px -5px rgba(0, 0, 0, 0.5), 
+                     0 0 ${glowIntensity}px ${Math.max(1, glowIntensity / 2)}px rgba(139, 92, 246, ${0.3 + glowIntensity / 30})`,
         }}
+        onClick={toggleFlip}
         onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
+        onTouchMove={handleMouseMove}
+        onMouseLeave={handleMovementEnd}
+        onTouchEnd={handleMovementEnd}
       >
         {/* Front of card */}
         <div 
-          className="absolute inset-0 bg-gradient-to-br from-blue-900 to-blue-700 text-white backface-hidden flex flex-col"
+          className="absolute inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900 text-white backface-hidden flex flex-col overflow-hidden"
         >
-          {/* Card header */}
-          <div className="h-24 relative bg-blue-800/50">
-            {/* Light reflections for 3D effect */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/30 to-transparent opacity-70"></div>
+          {/* Glass sphere effect for profile picture */}
+          <div className="mt-10 relative flex items-center justify-center">
+            {/* Circular background glow */}
+            <div className="absolute w-36 h-36 rounded-full bg-gradient-to-tr from-fuchsia-600/20 via-transparent to-blue-500/20 opacity-70 blur-sm"></div>
             
-            {/* Profile picture */}
-            <div className="absolute left-1/2 transform -translate-x-1/2 top-12 z-10">
-              <div className="h-20 w-20 rounded-full border-4 border-white overflow-hidden bg-white flex items-center justify-center shadow-lg">
-                {userData.photoURL ? (
-                  <img 
-                    src={userData.photoURL} 
-                    alt={userData.name || "Profile"} 
-                    className="h-full w-full object-cover"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = "https://ui-avatars.com/api/?name=" + (userData.name || "User");
-                    }}
-                  />
-                ) : (
-                  <img 
-                    src={`https://ui-avatars.com/api/?name=${userData.name || "User"}`}
-                    alt={userData.name || "Profile"}
-                    className="h-full w-full object-cover"
-                  />
-                )}
-              </div>
+            {/* Glass sphere */}
+            <div className="relative w-32 h-32 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 shadow-xl overflow-hidden flex items-center justify-center z-10">
+              {/* Inner reflective highlight */}
+              <div className="absolute top-0 left-1/4 w-1/2 h-1/4 bg-white/20 rounded-full blur-sm transform rotate-45"></div>
+              
+              {/* Profile picture with fallback */}
+              {userData.photoURL ? (
+                <img 
+                  src={userData.photoURL} 
+                  alt={userData.name || "Profile"} 
+                  className="h-28 w-28 rounded-full object-cover"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = "https://ui-avatars.com/api/?name=" + (userData.name || "User") + "&background=6366f1&color=fff";
+                  }}
+                />
+              ) : (
+                <img 
+                  src={`https://ui-avatars.com/api/?name=${userData.name || "User"}&background=6366f1&color=fff`}
+                  alt={userData.name || "Profile"}
+                  className="h-28 w-28 rounded-full object-cover"
+                />
+              )}
+              
+              {/* Curved glass reflection */}
+              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/10 to-transparent"></div>
             </div>
+            
+            {/* Floating orb decorations */}
+            <div className="absolute top-5 right-1/4 w-5 h-5 rounded-full bg-indigo-500/40 blur-sm floating" style={{animationDelay: "0.5s"}}></div>
+            <div className="absolute bottom-5 left-1/4 w-3 h-3 rounded-full bg-fuchsia-500/40 blur-sm floating" style={{animationDelay: "1s"}}></div>
           </div>
           
           {/* Main content */}
-          <div className="flex-1 px-4 pt-14 pb-4 flex flex-col relative">
-            {/* Glow effect */}
-            <div className="absolute inset-0 bg-gradient-to-b from-blue-500/20 to-transparent opacity-50 pointer-events-none"></div>
+          <div className="flex-1 px-6 pt-8 pb-6 flex flex-col relative mt-2">
+            {/* Glowing background effect */}
+            <div className="absolute inset-0 bg-gradient-to-b from-indigo-900/0 via-fuchsia-900/20 to-transparent blur-md"></div>
             
-            {/* Name and title */}
-            <div className="text-center mb-3 relative z-10">
-              <h2 className="text-xl font-bold text-white">
+            {/* Name and title with holographic effect */}
+            <div className="text-center mb-6 relative z-10 bounce-in">
+              <h2 className="text-2xl font-semibold holographic-text mb-1">
                 {userData.name || "Your Name"}
               </h2>
-              <p className="text-sm text-white/80">
+              <p className="text-base text-indigo-200 font-light tracking-wide">
                 {userData.title || "Add your designation"}
               </p>
             </div>
             
-            <div className="flex-1 space-y-2 text-xs relative z-10">
-              {/* Domain */}
+            {/* Information with glow hover effects */}
+            <div className="flex-1 space-y-4 text-sm relative z-10">
+              {/* Domain with metallic effect */}
               {userData.domain && (
-                <div className="flex items-center gap-2">
-                  <Code className="h-3.5 w-3.5 text-white/70" />
-                  <span className="text-white">{userData.domain}</span>
+                <div className="flex items-center gap-3 bounce-in" style={{animationDelay: "0.1s"}}>
+                  <div className="h-8 w-8 rounded-full bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center glow-pulse">
+                    <Code className="h-4 w-4 text-indigo-300" />
+                  </div>
+                  <span className="text-indigo-100 font-light">
+                    {userData.domain}
+                  </span>
                 </div>
               )}
               
               {/* Industry */}
               {userData.industry && (
-                <div className="flex items-center gap-2">
-                  <Building2 className="h-3.5 w-3.5 text-white/70" />
-                  <span className="text-white">{userData.industry}</span>
+                <div className="flex items-center gap-3 bounce-in" style={{animationDelay: "0.2s"}}>
+                  <div className="h-8 w-8 rounded-full bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center">
+                    <Building2 className="h-4 w-4 text-indigo-300" />
+                  </div>
+                  <span className="text-indigo-100 font-light">
+                    {userData.industry}
+                  </span>
                 </div>
               )}
               
-              {/* Company */}
+              {/* Company - clickable with glow effect */}
               {userData.company && (
-                <div className="flex items-center gap-2">
-                  <Briefcase className="h-3.5 w-3.5 text-white/70" />
-                  <span className="text-white">{userData.company}</span>
+                <div className="flex items-center gap-3 bounce-in" style={{animationDelay: "0.3s"}}>
+                  <div className="h-8 w-8 rounded-full bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center">
+                    <Briefcase className="h-4 w-4 text-indigo-300" />
+                  </div>
+                  <a 
+                    href="#" 
+                    className="text-indigo-100 font-light flex items-center gap-1 hover:text-fuchsia-300 transition-colors group" 
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <span>{userData.company}</span>
+                    <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </a>
                 </div>
               )}
               
               {/* Location */}
               {userData.location && (
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-3.5 w-3.5 text-white/70" />
-                  <span className="text-white">{userData.location}</span>
+                <div className="flex items-center gap-3 bounce-in" style={{animationDelay: "0.4s"}}>
+                  <div className="h-8 w-8 rounded-full bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center">
+                    <MapPin className="h-4 w-4 text-indigo-300" />
+                  </div>
+                  <span className="text-indigo-100 font-light">
+                    {userData.location}
+                  </span>
                 </div>
               )}
             </div>
             
+            {/* Social links */}
+            <div className="flex justify-center gap-4 mt-4 relative z-10 bounce-in" style={{animationDelay: "0.5s"}}>
+              <div className="h-9 w-9 rounded-full bg-indigo-600/30 border border-indigo-400/20 flex items-center justify-center hover:bg-indigo-500/40 transition-colors cursor-pointer">
+                <Linkedin className="h-4 w-4 text-indigo-200" />
+              </div>
+              <div className="h-9 w-9 rounded-full bg-indigo-600/30 border border-indigo-400/20 flex items-center justify-center hover:bg-indigo-500/40 transition-colors cursor-pointer">
+                <Twitter className="h-4 w-4 text-indigo-200" />
+              </div>
+              <div className="h-9 w-9 rounded-full bg-indigo-600/30 border border-indigo-400/20 flex items-center justify-center hover:bg-indigo-500/40 transition-colors cursor-pointer">
+                <Github className="h-4 w-4 text-indigo-200" />
+              </div>
+              <div className="h-9 w-9 rounded-full bg-indigo-600/30 border border-indigo-400/20 flex items-center justify-center hover:bg-indigo-500/40 transition-colors cursor-pointer">
+                <Instagram className="h-4 w-4 text-indigo-200" />
+              </div>
+            </div>
+            
             {/* Hint text */}
-            <div className="text-center mt-2 text-xs text-white/60 z-10">
-              <p>Tap to see contact details</p>
+            <div className="text-center mt-4 text-xs text-indigo-200/60 z-10 bounce-in" style={{animationDelay: "0.6s"}}>
+              <p>Tap to flip for contact info</p>
             </div>
           </div>
           
-          {/* Footer */}
-          <div className="h-6 bg-white/10 flex items-center justify-center relative">
-            {/* 3D effect shadow */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-            <span className="text-xs text-white font-light relative z-10">Digital Visiting Card</span>
+          {/* Futuristic footer */}
+          <div className="h-8 bg-indigo-900/30 backdrop-blur-sm border-t border-indigo-400/10 flex items-center justify-center relative">
+            <div className="absolute inset-0 bg-gradient-to-t from-fuchsia-600/10 to-transparent"></div>
+            <span className="text-xs text-indigo-200/70 font-light relative z-10 tracking-widest">QUANTUM CARD</span>
           </div>
         </div>
         
         {/* Back of card with contact details */}
         <div 
-          className="absolute inset-0 bg-gradient-to-br from-blue-800 to-blue-600 text-white backface-hidden flex flex-col"
+          className="absolute inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900 text-white backface-hidden flex flex-col overflow-hidden"
           style={{ transform: "rotateY(180deg)" }}
         >
-          <div className="h-16 bg-blue-900/50 flex items-center justify-center relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/30 to-transparent opacity-70"></div>
-            <h2 className="text-lg font-bold text-white relative z-10">Contact Information</h2>
+          {/* Header with glass effect */}
+          <div className="h-16 bg-indigo-900/30 backdrop-blur-sm border-b border-indigo-400/10 flex items-center justify-center relative">
+            <div className="absolute inset-0 bg-gradient-to-b from-fuchsia-600/10 to-transparent"></div>
+            <h2 className="text-lg font-semibold holographic-text relative z-10">Contact Information</h2>
           </div>
           
-          <div className="flex-1 p-6 space-y-4 flex flex-col justify-center relative">
-            <div className="absolute inset-0 bg-gradient-to-b from-blue-500/10 to-transparent opacity-50 pointer-events-none"></div>
+          {/* Main content */}
+          <div className="flex-1 p-6 flex flex-col relative">
+            {/* Radial gradient background */}
+            <div className="absolute inset-0 bg-gradient-radial from-indigo-700/10 to-transparent opacity-50"></div>
             
-            {/* Email */}
-            <div className="flex items-center gap-3 relative z-10">
-              <div className="h-10 w-10 rounded-full bg-blue-500/20 flex items-center justify-center">
-                <Mail className="h-5 w-5 text-white" />
+            {/* QR code section - visible only when button is clicked */}
+            {showQR && (
+              <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-sm z-30 flex flex-col items-center justify-center qr-reveal p-6">
+                <div className="w-48 h-48 bg-white p-3 rounded-lg glow-pulse">
+                  <img src={qrCodeUrl} alt="QR Code" className="w-full h-full" />
+                </div>
+                <p className="text-sm text-indigo-200 mt-4">{profileLink}</p>
+                <button 
+                  className="mt-6 px-4 py-2 bg-indigo-600/30 border border-indigo-400/20 rounded-md text-sm text-indigo-200 hover:bg-indigo-500/40 transition-colors"
+                  onClick={toggleQR}
+                >
+                  Close
+                </button>
               </div>
-              <div>
-                <p className="text-xs text-white/70">Email</p>
-                <p className="text-sm text-white">{userData.email}</p>
+            )}
+            
+            {/* Email with glow animation */}
+            <div className="flex items-center gap-4 mb-5 bounce-in">
+              <div className="h-12 w-12 rounded-full bg-indigo-600/20 border border-indigo-400/30 flex items-center justify-center glow-pulse shadow-lg">
+                <Mail className="h-5 w-5 text-indigo-300" />
+              </div>
+              <div className="flex-1">
+                <p className="text-xs text-indigo-300/70 font-light">Email</p>
+                <a 
+                  href={`mailto:${userData.email}`} 
+                  className="text-indigo-100 text-sm font-light hover:text-fuchsia-300 transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {userData.email}
+                </a>
               </div>
             </div>
             
             {/* Phone */}
-            <div className="flex items-center gap-3 relative z-10">
-              <div className="h-10 w-10 rounded-full bg-blue-500/20 flex items-center justify-center">
-                <Phone className="h-5 w-5 text-white" />
+            <div className="flex items-center gap-4 mb-5 bounce-in" style={{animationDelay: "0.1s"}}>
+              <div className="h-12 w-12 rounded-full bg-indigo-600/20 border border-indigo-400/30 flex items-center justify-center glow-pulse shadow-lg">
+                <Phone className="h-5 w-5 text-indigo-300" />
               </div>
-              <div>
-                <p className="text-xs text-white/70">Phone</p>
-                <p className="text-sm text-white">{userData.phoneNumber || "Add phone number"}</p>
+              <div className="flex-1">
+                <p className="text-xs text-indigo-300/70 font-light">Phone</p>
+                <a 
+                  href={userData.phoneNumber ? `tel:${userData.phoneNumber}` : "#"} 
+                  className="text-indigo-100 text-sm font-light hover:text-fuchsia-300 transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {userData.phoneNumber || "Add phone number"}
+                </a>
               </div>
             </div>
             
             {/* Profile Link */}
-            <div className="flex items-center gap-3 relative z-10">
-              <div className="h-10 w-10 rounded-full bg-blue-500/20 flex items-center justify-center">
-                <Globe className="h-5 w-5 text-white" />
+            <div className="flex items-center gap-4 mb-5 bounce-in" style={{animationDelay: "0.2s"}}>
+              <div className="h-12 w-12 rounded-full bg-indigo-600/20 border border-indigo-400/30 flex items-center justify-center glow-pulse shadow-lg">
+                <Globe className="h-5 w-5 text-indigo-300" />
               </div>
-              <div>
-                <p className="text-xs text-white/70">Profile</p>
-                <p className="text-sm text-white">{profileLink}</p>
+              <div className="flex-1">
+                <p className="text-xs text-indigo-300/70 font-light">Profile</p>
+                <a 
+                  href={`https://${profileLink}`} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-indigo-100 text-sm font-light hover:text-fuchsia-300 transition-colors flex items-center gap-1"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <span>{profileLink}</span>
+                  <ExternalLink className="h-3 w-3" />
+                </a>
               </div>
             </div>
             
+            {/* Location with map link */}
+            {userData.location && (
+              <div className="flex items-center gap-4 mb-5 bounce-in" style={{animationDelay: "0.3s"}}>
+                <div className="h-12 w-12 rounded-full bg-indigo-600/20 border border-indigo-400/30 flex items-center justify-center glow-pulse shadow-lg">
+                  <MapPin className="h-5 w-5 text-indigo-300" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs text-indigo-300/70 font-light">Location</p>
+                  <a 
+                    href={`https://maps.google.com/?q=${encodeURIComponent(userData.location)}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-indigo-100 text-sm font-light hover:text-fuchsia-300 transition-colors flex items-center gap-1"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <span>{userData.location}</span>
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
+              </div>
+            )}
+            
+            {/* QR Code Button */}
+            <div className="flex justify-center mt-2">
+              <button 
+                className="px-4 py-2 bg-indigo-600/30 border border-indigo-400/20 rounded-md text-sm text-indigo-200 hover:bg-indigo-500/40 transition-colors bounce-in"
+                style={{animationDelay: "0.4s"}}
+                onClick={toggleQR}
+              >
+                View QR Code
+              </button>
+            </div>
+            
             {/* Hint text */}
-            <div className="text-center mt-2 text-xs text-white/60 z-10">
+            <div className="text-center mt-auto text-xs text-indigo-200/60 bounce-in" style={{animationDelay: "0.5s"}}>
               <p>Tap to flip card</p>
             </div>
           </div>
           
-          {/* Footer */}
-          <div className="h-6 bg-white/10 flex items-center justify-center relative">
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-            <span className="text-xs text-white font-light relative z-10">Digital Visiting Card</span>
+          {/* Futuristic footer */}
+          <div className="h-8 bg-indigo-900/30 backdrop-blur-sm border-t border-indigo-400/10 flex items-center justify-center relative">
+            <div className="absolute inset-0 bg-gradient-to-t from-fuchsia-600/10 to-transparent"></div>
+            <span className="text-xs text-indigo-200/70 font-light relative z-10 tracking-widest">QUANTUM CARD</span>
           </div>
         </div>
       </div>
