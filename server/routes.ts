@@ -194,6 +194,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get user by username route - specifically for public profiles
+  apiRouter.get("/users/by-username/:username", async (req: Request, res: Response) => {
+    try {
+      const { username } = req.params;
+      console.log(`[GET /users/by-username/:username] Looking up user with username: ${username}`);
+      
+      // Look up user by username
+      const user = await storage.getUserByUsername(username);
+      
+      if (!user) {
+        console.log(`[GET /users/by-username/:username] No user found with username: ${username}`);
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      console.log(`[GET /users/by-username/:username] Found user with username: ${username}`);
+      return res.json(user);
+    } catch (error) {
+      console.error("Error fetching user by username:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
   apiRouter.get("/users/:id", async (req: Request, res: Response) => {
     try {
       const idParam = req.params.id;

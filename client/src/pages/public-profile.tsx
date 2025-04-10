@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { apiRequest } from "@/lib/queryClient";
-import { ExternalLink, GitHub, Linkedin, Mail, MapPin, Twitter } from "lucide-react";
+import { ExternalLink, Github, Linkedin, Mail, MapPin, Twitter } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 // Import portfolio templates
@@ -65,13 +65,13 @@ const PublicProfile = () => {
   const username = path.startsWith('/@') ? path.substring(2) : null;
   
   // Fetch user data by username
-  const { data: userData, isLoading: isUserLoading, error: userError } = useQuery({
+  const { data: userData, isLoading: isUserLoading, error: userError } = useQuery<UserData | null>({
     queryKey: ['/api/users/by-username', username],
     queryFn: async () => {
       if (!username) return null;
       try {
         const response = await apiRequest('GET', `/api/users/by-username/${username}`);
-        return response;
+        return response as UserData;
       } catch (error) {
         console.error('Error fetching user:', error);
         throw error;
@@ -81,18 +81,19 @@ const PublicProfile = () => {
   });
   
   // Fetch portfolio data if we have a user
-  const { data: portfolioData, isLoading: isPortfolioLoading } = useQuery({
+  const { data: portfolioData, isLoading: isPortfolioLoading } = useQuery<PortfolioData | null>({
     queryKey: ['/api/portfolio', userData?.id],
     queryFn: async () => {
       if (!userData?.id) return null;
       try {
         const response = await apiRequest('GET', `/api/portfolio/${userData.id}`);
-        return response;
+        return response as PortfolioData;
       } catch (error) {
         console.error('Error fetching portfolio:', error);
         // Return a default portfolio structure with user data
         return {
           layout: 'visual-expert',
+          publicUrl: null,
           isPublished: true,
           customTitle: userData.name || userData.username,
           customBio: '',
@@ -109,7 +110,7 @@ const PublicProfile = () => {
           educations: [],
           services: [],
           userData: userData
-        };
+        } as PortfolioData;
       }
     },
     enabled: !!userData?.id
@@ -160,21 +161,41 @@ const PublicProfile = () => {
   
   // Render the appropriate portfolio template based on user's selected layout
   const renderPortfolio = (portfolioData: PortfolioData) => {
+    // Map our portfolio data to the format each template expects
+    const templateProps = {
+      userInfo: {
+        name: portfolioData.userData.name || portfolioData.userData.username,
+        title: portfolioData.userData.title,
+        industry: portfolioData.userData.industry,
+        domain: null,
+        location: portfolioData.userData.location,
+        email: portfolioData.userData.email,
+        photoURL: portfolioData.userData.photoURL,
+        lookingFor: portfolioData.userData.lookingFor,
+        jobLevel: null
+      },
+      userSkills: portfolioData.skills || [],
+      userExperiences: portfolioData.experiences || [],
+      userProjects: portfolioData.projects || [],
+      userEducations: portfolioData.educations || [],
+      userServices: portfolioData.services || []
+    };
+    
     switch (portfolioData.layout) {
       case 'minimalist-pro':
-        return <MinimalistPro data={portfolioData} />;
+        return <MinimalistPro {...templateProps} />;
       case 'freelancer-hub':
-        return <FreelancerHub data={portfolioData} />;
+        return <FreelancerHub {...templateProps} />;
       case 'timeline-storyteller':
-        return <TimelineStoryteller data={portfolioData} />;
+        return <TimelineStoryteller {...templateProps} />;
       case 'visual-expert':
-        return <VisualExpert data={portfolioData} />;
+        return <VisualExpert {...templateProps} />;
       case 'corporate-executive':
-        return <CorporateExecutive data={portfolioData} />;
+        return <CorporateExecutive {...templateProps} />;
       case 'dynamic-innovator':
-        return <DynamicInnovator data={portfolioData} />;
+        return <DynamicInnovator {...templateProps} />;
       default:
-        return <VisualExpert data={portfolioData} />;
+        return <VisualExpert {...templateProps} />;
     }
   };
   
