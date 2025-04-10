@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Mail, Phone, Globe, Briefcase, Code, Building2, FileText } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -111,128 +110,123 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
   };
   
   return (
-    <Card className="shadow-sm">
-      <CardContent className="p-6">
-        <h3 className="text-lg font-semibold mb-4">Edit Personal Information</h3>
-        <div className="space-y-4">
-          {/* Email (read-only) */}
-          <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium flex items-center gap-2">
-              <Mail className="h-4 w-4" />
-              Email
-            </label>
-            <Input
-              id="email"
-              value={userData.email}
-              disabled
-              readOnly
-            />
-            <p className="text-xs text-muted-foreground">Email cannot be changed</p>
-          </div>
-          
-          {/* Phone Number */}
-          <div className="space-y-2">
-            <label htmlFor="phoneNumber" className="text-sm font-medium flex items-center gap-2">
-              <Phone className="h-4 w-4" />
-              Phone Number
-            </label>
-            <div className="flex gap-2">
-              <CountryCodeSelect 
-                value={phoneCountryCode} 
-                onChange={setPhoneCountryCode} 
-              />
-              <Input
-                id="phoneNumber"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                placeholder="Your phone number"
-              />
-            </div>
-          </div>
-
-          {/* Company */}
-          <div className="space-y-2">
-            <label htmlFor="company" className="text-sm font-medium flex items-center gap-2">
-              <Briefcase className="h-4 w-4" />
-              Company
-            </label>
-            <Input
-              id="company"
-              value={company}
-              onChange={(e) => setCompany(e.target.value)}
-              placeholder="Your company name"
-            />
-          </div>
-
-          {/* Domain */}
-          <div className="space-y-2">
-            <label htmlFor="domain" className="text-sm font-medium flex items-center gap-2">
-              <Code className="h-4 w-4" />
-              Domain / Expertise
-            </label>
-            <Input
-              id="domain"
-              value={domain}
-              onChange={(e) => setDomain(e.target.value)}
-              placeholder="Your professional domain (e.g., Web Development, Marketing)"
-            />
-          </div>
-          
-          {/* About Me */}
-          <div className="space-y-2">
-            <label htmlFor="aboutMe" className="text-sm font-medium flex items-center gap-2">
-              <FileText className="h-4 w-4" />
-              About Me
-            </label>
-            <Textarea
-              id="aboutMe"
-              value={aboutMe}
-              onChange={(e) => {
-                const newText = e.target.value;
-                setAboutMe(newText);
-                setWordCount(calculateWordCount(newText));
-              }}
-              placeholder="Tell us about yourself, your professional journey, interests, and goals (max 350 words)"
-              className="min-h-[150px] resize-y"
-            />
-            <p className={`text-xs ${wordCount > 350 ? 'text-red-500 font-medium' : 'text-muted-foreground'}`}>
-              {wordCount}/350 words {wordCount > 350 && '(exceeded maximum word count)'}
-            </p>
-          </div>
-          
-          {/* Profile URL (read-only) */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium flex items-center gap-2">
-              <Globe className="h-4 w-4" />
-              Profile URL
-            </label>
-            <div className="text-sm border rounded-md p-2 bg-muted/20">
-              brandentifier.com/@{userData.name ? userData.name.replace(/\s+/g, '') : userData.username}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Your profile URL is based on your username and cannot be changed
-            </p>
-          </div>
-          
-          {/* Action Buttons */}
-          <div className="flex justify-end gap-2 pt-2">
-            <Button
-              variant="outline"
-              onClick={onCancel}
-              disabled={isLoading}
-            >
-              Cancel
-            </Button>
-            <Button 
-              onClick={handleSave}
-              disabled={isLoading}
-            >
-              {isLoading ? "Saving..." : "Save Changes"}
-            </Button>
-          </div>
+    <div className="w-full space-y-4">
+      {/* Email (read-only) */}
+      <div className="space-y-2">
+        <label htmlFor="email" className="text-sm font-medium flex items-center gap-2">
+          <Mail className="h-4 w-4" />
+          Email
+        </label>
+        <Input
+          id="email"
+          value={userData.email}
+          disabled
+          readOnly
+        />
+        <p className="text-xs text-muted-foreground">Email cannot be changed</p>
+      </div>
+      
+      {/* Phone Number */}
+      <div className="space-y-2">
+        <label htmlFor="phoneNumber" className="text-sm font-medium flex items-center gap-2">
+          <Phone className="h-4 w-4" />
+          Phone Number
+        </label>
+        <div className="flex gap-2">
+          <CountryCodeSelect 
+            value={phoneCountryCode} 
+            onChange={setPhoneCountryCode} 
+          />
+          <Input
+            id="phoneNumber"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
+            placeholder="Your phone number"
+          />
         </div>
-      </CardContent>
-    </Card>
+      </div>
+
+      {/* Company */}
+      <div className="space-y-2">
+        <label htmlFor="company" className="text-sm font-medium flex items-center gap-2">
+          <Briefcase className="h-4 w-4" />
+          Company
+        </label>
+        <Input
+          id="company"
+          value={company}
+          onChange={(e) => setCompany(e.target.value)}
+          placeholder="Your company name"
+        />
+      </div>
+
+      {/* Domain */}
+      <div className="space-y-2">
+        <label htmlFor="domain" className="text-sm font-medium flex items-center gap-2">
+          <Code className="h-4 w-4" />
+          Domain / Expertise
+        </label>
+        <Input
+          id="domain"
+          value={domain}
+          onChange={(e) => setDomain(e.target.value)}
+          placeholder="Your professional domain (e.g., Web Development, Marketing)"
+        />
+      </div>
+      
+      {/* About Me */}
+      <div className="space-y-2">
+        <label htmlFor="aboutMe" className="text-sm font-medium flex items-center gap-2">
+          <FileText className="h-4 w-4" />
+          About Me
+        </label>
+        <Textarea
+          id="aboutMe"
+          value={aboutMe}
+          onChange={(e) => {
+            const newText = e.target.value;
+            setAboutMe(newText);
+            setWordCount(calculateWordCount(newText));
+          }}
+          placeholder="Tell us about yourself, your professional journey, interests, and goals (max 350 words)"
+          className="min-h-[150px] resize-y"
+        />
+        <p className={`text-xs ${wordCount > 350 ? 'text-red-500 font-medium' : 'text-muted-foreground'}`}>
+          {wordCount}/350 words {wordCount > 350 && '(exceeded maximum word count)'}
+        </p>
+      </div>
+      
+      {/* Profile URL (read-only) */}
+      <div className="space-y-2">
+        <label className="text-sm font-medium flex items-center gap-2">
+          <Globe className="h-4 w-4" />
+          Profile URL
+        </label>
+        <div className="text-sm border rounded-md p-2 bg-muted/20">
+          brandentifier.com/@{userData.name ? userData.name.replace(/\s+/g, '') : userData.username}
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Your profile URL is based on your username and cannot be changed
+        </p>
+      </div>
+      
+      {/* Action Buttons */}
+      <div className="flex justify-end gap-2 pt-2">
+        <Button
+          variant="outline"
+          onClick={onCancel}
+          disabled={isLoading}
+        >
+          Cancel
+        </Button>
+        <Button 
+          onClick={handleSave}
+          disabled={isLoading}
+        >
+          {isLoading ? "Saving..." : "Save Changes"}
+        </Button>
+      </div>
+    </div>
   );
 };
 

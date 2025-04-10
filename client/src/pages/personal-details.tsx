@@ -67,9 +67,12 @@ const PersonalDetailsPage: React.FC = () => {
       {/* Edit personal info dialog */}
       {userData && (
         <Dialog open={showEditPersonalInfo} onOpenChange={setShowEditPersonalInfo}>
-          <DialogContent className="sm:max-w-[550px]">
+          <DialogContent className="sm:max-w-[650px] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Edit Personal Information</DialogTitle>
+              <DialogDescription>
+                Update your contact details and profile information
+              </DialogDescription>
             </DialogHeader>
             <EditPersonalInfo 
               userData={userData}
