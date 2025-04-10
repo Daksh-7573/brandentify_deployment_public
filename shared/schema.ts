@@ -13,6 +13,7 @@ export const users = pgTable("users", {
   name: text("name"),
   photoURL: text("photo_url"),
   title: text("title"), // Job title
+  aboutMe: text("about_me"), // About Me section - max 350 words
   location: text("location"), // User location (city/state name)
   industry: text("industry"), // User's industry
   domain: text("domain"), // User's professional domain/expertise

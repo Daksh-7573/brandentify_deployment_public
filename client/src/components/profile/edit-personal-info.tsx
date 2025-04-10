@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Mail, Phone, Globe, Briefcase, Code, Building2 } from "lucide-react";
+import { Mail, Phone, Globe, Briefcase, Code, Building2, FileText } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useQueryClient } from "@tanstack/react-query";
 import CountryCodeSelect from "./country-code-select";
 import { UserData } from "@/types/user";
+import { Textarea } from "@/components/ui/textarea";
 
 interface EditPersonalInfoProps {
   userData: UserData;
@@ -46,7 +47,14 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
   const [phoneNumber, setPhoneNumber] = useState(number);
   const [company, setCompany] = useState(userData.company || "");
   const [domain, setDomain] = useState(userData.domain || "");
+  const [aboutMe, setAboutMe] = useState(userData.aboutMe || "");
+  const [wordCount, setWordCount] = useState(aboutMe ? calculateWordCount(aboutMe) : 0);
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Function to calculate word count
+  function calculateWordCount(text: string): number {
+    return text.trim().split(/\s+/).filter(Boolean).length;
+  }
   
   const handleSave = async () => {
     try {
@@ -156,6 +164,28 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
               onChange={(e) => setDomain(e.target.value)}
               placeholder="Your professional domain (e.g., Web Development, Marketing)"
             />
+          </div>
+          
+          {/* About Me */}
+          <div className="space-y-2">
+            <label htmlFor="aboutMe" className="text-sm font-medium flex items-center gap-2">
+              <FileText className="h-4 w-4" />
+              About Me
+            </label>
+            <Textarea
+              id="aboutMe"
+              value={aboutMe}
+              onChange={(e) => {
+                const newText = e.target.value;
+                setAboutMe(newText);
+                setWordCount(calculateWordCount(newText));
+              }}
+              placeholder="Tell us about yourself, your professional journey, interests, and goals (max 350 words)"
+              className="min-h-[150px] resize-y"
+            />
+            <p className={`text-xs ${wordCount > 350 ? 'text-red-500 font-medium' : 'text-muted-foreground'}`}>
+              {wordCount}/350 words {wordCount > 350 && '(exceeded maximum word count)'}
+            </p>
           </div>
           
           {/* Profile URL (read-only) */}
