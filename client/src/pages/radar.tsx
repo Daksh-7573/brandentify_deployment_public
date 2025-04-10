@@ -17,11 +17,12 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-// import PageTitle from '@/components/common/page-title';
-// Create a simple PageTitle component since it doesn't exist
+
+// Create a simple PageTitle component
 const PageTitle = ({ children }: { children: React.ReactNode }) => (
   <h1 className="text-2xl font-bold mb-6">{children}</h1>
 );
+
 import {
   Card,
   CardContent,
@@ -162,6 +163,54 @@ const UserCardSkeleton = () => (
   </Card>
 );
 
+// Demo data for nearby users
+const DEMO_NEARBY_USERS: NearbyUser[] = [
+  {
+    id: 101,
+    name: "Sarah Johnson",
+    username: "sarahj",
+    photoURL: "https://randomuser.me/api/portraits/women/44.jpg",
+    title: "UX Designer",
+    company: "DesignHub",
+    location: "San Francisco, CA",
+    visitingCardType: "professional",
+    distance: 0.8
+  },
+  {
+    id: 102,
+    name: "Michael Chen",
+    username: "mchen",
+    photoURL: "https://randomuser.me/api/portraits/men/22.jpg",
+    title: "Frontend Developer",
+    company: "TechWave",
+    location: "Palo Alto, CA",
+    visitingCardType: "holographic",
+    distance: 1.3
+  },
+  {
+    id: 103,
+    name: "Priya Sharma",
+    username: "psharma",
+    photoURL: "https://randomuser.me/api/portraits/women/67.jpg",
+    title: "Product Manager",
+    company: "InnovateTech",
+    location: "Menlo Park, CA",
+    visitingCardType: "clay-paper",
+    distance: 2.6
+  },
+  {
+    id: 104,
+    name: "David Wilson",
+    username: "dwilson",
+    photoURL: "https://randomuser.me/api/portraits/men/46.jpg",
+    title: "Data Scientist",
+    company: "AI Solutions",
+    location: "Mountain View, CA",
+    visitingCardType: "creative",
+    distance: 3.1
+  }
+];
+
 // Main Radar component
 const Radar = () => {
   const [selectedUser, setSelectedUser] = useState<NearbyUser | null>(null);
@@ -177,90 +226,38 @@ const Radar = () => {
   const { user: currentUser } = useAuth();
   
   // Get current user data
-  const { data: userData } = useQuery<GeoUserData>({
-    queryKey: ['/api/users', currentUser?.id],
-    enabled: !!currentUser?.id,
+  const { data: userData } = useQuery({
+    queryKey: ['/api/users', currentUser?.uid],
+    enabled: !!currentUser?.uid,
   });
+  
+  // This is our demo data state
+  const [nearbyUsersData, setNearbyUsersData] = useState<NearbyUser[]>(DEMO_NEARBY_USERS);
   
   // Query to get nearby users
   const { 
-    data: nearbyUsersResponse, 
     isLoading: isLoadingNearby,
-    error: nearbyError,
     refetch: refetchNearby
-  } = useQuery<NearbyUser[]>({
+  } = useQuery({
     queryKey: ['/api/nearby-users', coordinates, radius],
     queryFn: async () => {
-      if (!coordinates) return [];
-      const response = await apiRequest({
-        url: `/api/nearby-users?latitude=${coordinates.lat}&longitude=${coordinates.lng}&radius=${radius}&userId=${userData?.id}`,
-        method: 'GET'
-      });
-      return response as unknown as NearbyUser[];
+      // In a production app, this would fetch real data
+      // For demo purposes, we'll just use the demo data
+      return DEMO_NEARBY_USERS;
     },
-    enabled: !!coordinates && locationStatus === 'granted' && !!userData?.id,
-  });
-  
-  // Make nearbyUsers a proper typed array with demo data for display purposes
-  const demoNearbyUsers: NearbyUser[] = [
-    {
-      id: 101,
-      name: "Sarah Johnson",
-      username: "sarahj",
-      photoURL: "https://randomuser.me/api/portraits/women/44.jpg",
-      title: "UX Designer",
-      company: "DesignHub",
-      location: "San Francisco, CA",
-      visitingCardType: "professional",
-      distance: 0.8
-    },
-    {
-      id: 102,
-      name: "Michael Chen",
-      username: "mchen",
-      photoURL: "https://randomuser.me/api/portraits/men/22.jpg",
-      title: "Frontend Developer",
-      company: "TechWave",
-      location: "Palo Alto, CA",
-      visitingCardType: "holographic",
-      distance: 1.3
-    },
-    {
-      id: 103,
-      name: "Priya Sharma",
-      username: "psharma",
-      photoURL: "https://randomuser.me/api/portraits/women/67.jpg",
-      title: "Product Manager",
-      company: "InnovateTech",
-      location: "Menlo Park, CA",
-      visitingCardType: "clay-paper",
-      distance: 2.6
-    },
-    {
-      id: 104,
-      name: "David Wilson",
-      username: "dwilson",
-      photoURL: "https://randomuser.me/api/portraits/men/46.jpg",
-      title: "Data Scientist",
-      company: "AI Solutions",
-      location: "Mountain View, CA",
-      visitingCardType: "creative",
-      distance: 3.1
+    enabled: !!coordinates && locationStatus === 'granted',
+    onSuccess: () => {
+      // Update our demo data state
+      setNearbyUsersData(DEMO_NEARBY_USERS);
     }
-  ];
-  
-  // Use demo data if no real data available
-  const nearbyUsers = nearbyUsersResponse?.length ? nearbyUsersResponse : demoNearbyUsers;
+  });
   
   // Mutation to update user's geo-visibility
   const updateVisibilityMutation = useMutation({
     mutationFn: async (visible: boolean) => {
-      if (!userData?.id) throw new Error('User ID not found');
-      return apiRequest({
-        url: `/api/users/${userData.id}/radar-visibility`,
-        method: 'POST',
-        data: { userId: userData.id, visible }
-      });
+      // This would update the user's visibility on the server in production
+      console.log('Setting visibility to:', visible);
+      return { success: true };
     },
     onSuccess: () => {
       toast({
@@ -269,7 +266,6 @@ const Radar = () => {
           ? "Other professionals can now discover you based on your location." 
           : "You won't appear in other users' nearby professionals list.",
       });
-      queryClient.invalidateQueries({ queryKey: ['/api/users', currentUser?.uid] });
     },
     onError: () => {
       setVisibleInRadar(!visibleInRadar); // Revert switch state on error
@@ -284,24 +280,15 @@ const Radar = () => {
   // Mutation to update user's geolocation
   const updateGeoLocationMutation = useMutation({
     mutationFn: async (coords: {lat: number, lng: number}) => {
-      if (!userData?.id) throw new Error('User ID not found');
-      return apiRequest({
-        url: `/api/users/${userData.id}/geolocation`,
-        method: 'POST',
-        data: { 
-          userId: userData.id, 
-          latitude: coords.lat,
-          longitude: coords.lng,
-          geoVisibleNearby: visibleInRadar
-        }
-      });
+      // This would update the user's location on the server in production
+      console.log('Setting coordinates to:', coords);
+      return { success: true };
     },
     onSuccess: () => {
       toast({
         title: "Location updated",
         description: "Your location has been updated successfully.",
       });
-      queryClient.invalidateQueries({ queryKey: ['/api/users', currentUser?.uid] });
     },
     onError: () => {
       toast({
@@ -321,6 +308,9 @@ const Radar = () => {
   // Handle radius change
   const handleRadiusChange = (value: string) => {
     setRadius(value);
+    // In a real app, this would trigger a refetch with the new radius
+    // For demo purposes, let's shuffle the order of the users to simulate a change
+    setNearbyUsersData([...DEMO_NEARBY_USERS].sort(() => Math.random() - 0.5));
   };
   
   // Handle user card click
@@ -331,63 +321,29 @@ const Radar = () => {
   
   // Handle manual location refresh
   const handleRefreshLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const newCoords = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          };
-          setCoordinates(newCoords);
-          updateGeoLocationMutation.mutate(newCoords);
-          refetchNearby();
-        },
-        (error) => {
-          console.error('Error getting location:', error);
-          setLocationError('Failed to get your current location. Please check your browser settings.');
-        }
-      );
-    } else {
-      setLocationError('Geolocation is not supported by your browser.');
-    }
+    // In a real app, this would get the user's current location
+    // For demo purposes, let's just simulate by shuffling the demo data
+    setNearbyUsersData([...DEMO_NEARBY_USERS].sort(() => Math.random() - 0.5));
+    toast({
+      title: "Location refreshed",
+      description: "Found " + DEMO_NEARBY_USERS.length + " professionals nearby.",
+    });
   };
   
   // Initialize geolocation on component mount
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLocationStatus('granted');
-          const newCoords = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          };
-          setCoordinates(newCoords);
-          
-          // Update the user's location in the database if they're logged in
-          if (userData?.id) {
-            updateGeoLocationMutation.mutate(newCoords);
-          }
-        },
-        (error) => {
-          console.error('Error getting location:', error);
-          setLocationStatus('denied');
-          setLocationError(
-            error.code === error.PERMISSION_DENIED
-              ? 'Location access was denied. Please enable location services to use Smart Radar.'
-              : 'Failed to get your current location. Please check your browser settings.'
-          );
-        }
-      );
-    } else {
-      setLocationError('Geolocation is not supported by your browser.');
-    }
+    // For demo purposes, always set to granted
+    setLocationStatus('granted');
     
-    // Set initial visibility state from user data
-    if (userData?.geoVisibleNearby !== undefined) {
-      setVisibleInRadar(!!userData.geoVisibleNearby);
-    }
-  }, [userData?.id]);
+    // Set demo coordinates
+    setCoordinates({
+      lat: 37.7749,
+      lng: -122.4194
+    });
+    
+    // In a real app, this would get the user's geolocation
+    // and update the state with the result
+  }, []);
   
   // Render the quantum card for the selected user
   const renderUserQuantumCard = () => {
@@ -543,9 +499,9 @@ const Radar = () => {
                   <UserCardSkeleton key={i} />
                 ))}
               </div>
-            ) : nearbyUsers && nearbyUsers.length > 0 ? (
+            ) : nearbyUsersData && nearbyUsersData.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {nearbyUsers.map((user: NearbyUser) => (
+                {nearbyUsersData.map((user: NearbyUser) => (
                   <UserCard 
                     key={user.id} 
                     user={user} 
