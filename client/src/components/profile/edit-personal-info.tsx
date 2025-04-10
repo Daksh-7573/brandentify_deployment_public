@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Mail, Phone, Globe, FileText } from "lucide-react";
+import { Mail, Phone, Globe } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -7,7 +7,6 @@ import { apiRequest } from "@/lib/queryClient";
 import { useQueryClient } from "@tanstack/react-query";
 import CountryCodeSelect from "./country-code-select";
 import { UserData } from "@/types/user";
-import { Textarea } from "@/components/ui/textarea";
 
 interface EditPersonalInfoProps {
   userData: UserData;
@@ -44,14 +43,7 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
   
   const [phoneCountryCode, setPhoneCountryCode] = useState(countryCode);
   const [phoneNumber, setPhoneNumber] = useState(number);
-  const [aboutMe, setAboutMe] = useState(userData.aboutMe || "");
-  const [wordCount, setWordCount] = useState(aboutMe ? calculateWordCount(aboutMe) : 0);
   const [isLoading, setIsLoading] = useState(false);
-  
-  // Function to calculate word count
-  function calculateWordCount(text: string): number {
-    return text.trim().split(/\s+/).filter(Boolean).length;
-  }
   
   const handleSave = async () => {
     try {
@@ -62,24 +54,12 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
         ? `${phoneCountryCode} ${phoneNumber.trim()}`
         : null;
       
-      // Check if word count is within limits
-      if (wordCount > 350) {
-        toast({
-          title: "About Me too long",
-          description: "Your About Me section exceeds the 350 word limit. Please shorten it before saving.",
-          variant: "destructive"
-        });
-        setIsLoading(false);
-        return;
-      }
-      
       // Update user data via API
       await apiRequest({
         url: `/api/users/${userData.id}`,
         method: 'PUT',
         data: {
-          phoneNumber: formattedPhoneNumber,
-          aboutMe: aboutMe.trim() || null
+          phoneNumber: formattedPhoneNumber
         }
       });
       
@@ -142,27 +122,7 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
         </div>
       </div>
       
-      {/* About Me */}
-      <div className="space-y-2">
-        <label htmlFor="aboutMe" className="text-sm font-medium flex items-center gap-2">
-          <FileText className="h-4 w-4" />
-          About Me
-        </label>
-        <Textarea
-          id="aboutMe"
-          value={aboutMe}
-          onChange={(e) => {
-            const newText = e.target.value;
-            setAboutMe(newText);
-            setWordCount(calculateWordCount(newText));
-          }}
-          placeholder="Tell us about yourself, your professional journey, interests, and goals (max 350 words)"
-          className="min-h-[150px] resize-y"
-        />
-        <p className={`text-xs ${wordCount > 350 ? 'text-red-500 font-medium' : 'text-muted-foreground'}`}>
-          {wordCount}/350 words {wordCount > 350 && '(exceeded maximum word count)'}
-        </p>
-      </div>
+
       
       {/* Profile URL (read-only) */}
       <div className="space-y-2">
