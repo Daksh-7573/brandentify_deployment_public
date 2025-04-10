@@ -1,0 +1,126 @@
+1. Core Functionality
+ Discover users based on real-time geographic proximity
+
+ Uses geolocation (browser/mobile) to detect user’s current location
+
+ Displays a list of nearby users within a fixed or dynamic radius (e.g., 5–10 km)
+
+ Tapping on a user opens their Quantum Card
+
+🗺️ 2. Location Access & Handling
+ Use browser’s Geolocation API (for web)
+
+ Use device’s GPS permissions (for mobile app)
+
+ Store user's:
+
+ latitude
+
+ longitude
+
+ city/state (optional)
+
+ Auto-update location on:
+
+App launch
+
+User action (refresh)
+
+Optional: background update every X minutes
+
+🧪 3. Location Query & Filtering Logic
+ Query users within X km radius of current user
+
+ Use:
+
+ Geohashing (Firebase via GeoFireX)
+
+OR
+
+ PostGIS for Supabase/PostgreSQL
+
+ Query filters:
+
+distance < 10km
+
+isVisibleNearby = true
+
+🧍‍♂️ 4. Nearby List View Design
+Each list item includes:
+
+ Profile Picture (small, rounded)
+
+ Full Name
+
+ Job Title
+
+ Distance (optional, e.g., “2.3 km away”)
+
+ Tappable → Opens Quantum Card
+
+💳 5. Quantum Card Content
+ Headline (Designation + Company)
+
+ Profile Picture
+
+ Short Bio or Tagline
+
+ Location
+
+ Actions:
+
+ View Full Profile
+
+ Message
+
+ Request Connect
+
+🔒 6. Privacy & Settings
+ Toggle in Profile Settings:
+
+ “Show me in Nearby” (Yes/No)
+
+ Radius Control (optional):
+
+ Select 1 km, 5 km, 10 km
+
+ Option to block specific users from seeing them
+
+ Auto-hide users inactive for 30+ days (optional)
+
+🔔 7. Optional Enhancements
+ "People nearby at this event" (future: based on venue/event tag)
+
+ “New nearby professionals” notification
+
+ Filter by “Looking for” (e.g., mentor, collaborator, investor)
+
+ Map view toggle to see users on map
+
+ Smart sorting: Show those with common goals or similar industry first
+
+🗃️ 8. Backend Data Model Update
+ Add to user profile schema:
+
+json
+Copy
+Edit
+{
+  location: {
+    latitude: 23.033,
+    longitude: 72.572,
+    city: "Ahmedabad",
+    visibleNearby: true,
+    lastUpdated: "2025-04-09T14:00:00Z"
+  }
+}
+⏳ 9. Update Frequency
+ Update location on:
+
+App open
+
+Manual refresh
+
+Background task every 30–60 mins (optional)
+
+ Expire outdated locations after 24 hrs (auto-hide)

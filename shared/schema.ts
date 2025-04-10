@@ -13,13 +13,18 @@ export const users = pgTable("users", {
   name: text("name"),
   photoURL: text("photo_url"),
   title: text("title"), // Job title
-  location: text("location"), // User location
+  location: text("location"), // User location (city/state name)
   industry: text("industry"), // User's industry
   domain: text("domain"), // User's professional domain/expertise
   company: text("company"), // User's company name
   lookingFor: text("looking_for"), // What the user is looking for (networking type)
   visitingCardType: text("visiting_card_type"), // Type of digital visiting card
   profileCompleted: integer("profile_completed").default(0), // Percentage
+  // Smart Radar geolocation data
+  geoLatitude: decimal("geo_latitude", { precision: 10, scale: 7 }), // Latitude for geo search
+  geoLongitude: decimal("geo_longitude", { precision: 10, scale: 7 }), // Longitude for geo search
+  geoVisibleNearby: boolean("geo_visible_nearby").default(true), // Whether user is visible in nearby searches
+  geoLastUpdated: timestamp("geo_last_updated"), // When location was last updated
   emailVerified: boolean("email_verified").default(false), // Whether email is verified
   emailVerificationToken: text("email_verification_token"), // Token for email verification
   emailVerificationExpires: timestamp("email_verification_expires"), // When token expires
