@@ -1,6 +1,7 @@
 import React from "react";
 import { UserData } from "@/types/user";
 import { Mail, Phone, Globe, Briefcase } from "lucide-react";
+import ShareVisitingCard from "./share-visiting-card";
 
 interface VisitingCardPreviewProps {
   userData: UserData;
@@ -114,6 +115,12 @@ const VisitingCardPreview: React.FC<VisitingCardPreviewProps> = ({
           <span className="text-xs text-white font-light">Digital Visiting Card</span>
         </div>
       </div>
+      
+      {/* Share options */}
+      <ShareVisitingCard 
+        userData={userData}
+        cardType={cardType}
+      />
     </div>
   );
 };
