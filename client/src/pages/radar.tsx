@@ -64,6 +64,14 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 
+// Define interfaces for geo data
+interface GeoUserData extends UserData {
+  geoLatitude?: number | null;
+  geoLongitude?: number | null;
+  geoVisibleNearby?: boolean | null;
+  geoLastUpdated?: string | Date | null;
+}
+
 // Define interface for nearby users
 interface NearbyUser {
   id: number;
@@ -169,33 +177,39 @@ const Radar = () => {
   const { user: currentUser } = useAuth();
   
   // Get current user data
-  const { data: userData } = useQuery<UserData>({
+  const { data: userData } = useQuery<GeoUserData>({
     queryKey: ['/api/users', currentUser?.id],
     enabled: !!currentUser?.id,
   });
   
   // Query to get nearby users
   const { 
-    data: nearbyUsers, 
+    data: nearbyUsersResponse, 
     isLoading: isLoadingNearby,
     error: nearbyError,
     refetch: refetchNearby
-  } = useQuery({
+  } = useQuery<NearbyUser[]>({
     queryKey: ['/api/nearby-users', coordinates, radius],
     queryFn: async () => {
       if (!coordinates) return [];
-      return apiRequest(`/api/nearby-users?latitude=${coordinates.lat}&longitude=${coordinates.lng}&radius=${radius}&userId=${userData?.id}`, {
+      const response = await apiRequest({
+        url: `/api/nearby-users?latitude=${coordinates.lat}&longitude=${coordinates.lng}&radius=${radius}&userId=${userData?.id}`,
         method: 'GET'
       });
+      return response as unknown as NearbyUser[];
     },
     enabled: !!coordinates && locationStatus === 'granted' && !!userData?.id,
   });
+  
+  // Make nearbyUsers a proper typed array
+  const nearbyUsers = nearbyUsersResponse || [];
   
   // Mutation to update user's geo-visibility
   const updateVisibilityMutation = useMutation({
     mutationFn: async (visible: boolean) => {
       if (!userData?.id) throw new Error('User ID not found');
-      return apiRequest(`/api/users/${userData.id}/radar-visibility`, {
+      return apiRequest({
+        url: `/api/users/${userData.id}/radar-visibility`,
         method: 'POST',
         data: { userId: userData.id, visible }
       });
@@ -223,7 +237,8 @@ const Radar = () => {
   const updateGeoLocationMutation = useMutation({
     mutationFn: async (coords: {lat: number, lng: number}) => {
       if (!userData?.id) throw new Error('User ID not found');
-      return apiRequest(`/api/users/${userData.id}/geolocation`, {
+      return apiRequest({
+        url: `/api/users/${userData.id}/geolocation`,
         method: 'POST',
         data: { 
           userId: userData.id, 
@@ -331,7 +346,7 @@ const Radar = () => {
     if (!selectedUser) return null;
     
     // Create a user object compatible with VisitingCardPreview
-    const userDataForCard: User = {
+    const userDataForCard: UserData = {
       id: selectedUser.id,
       username: selectedUser.username,
       name: selectedUser.name || 'Anonymous User',
@@ -340,6 +355,9 @@ const Radar = () => {
       title: selectedUser.title,
       company: selectedUser.company,
       location: selectedUser.location,
+      industry: null,
+      lookingFor: null,
+      phoneNumber: null
     };
     
     return (
