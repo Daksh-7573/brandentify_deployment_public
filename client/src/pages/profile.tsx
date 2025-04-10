@@ -1825,6 +1825,16 @@ export default function Profile() {
                       }
                     </p>
                   )}
+                  
+                  {/* About Me section */}
+                  {userData?.aboutMe && (
+                    <div className="mt-4">
+                      <h3 className="text-sm font-medium text-gray-900">About Me</h3>
+                      <p className="mt-2 text-sm text-gray-500 whitespace-pre-line">
+                        {userData.aboutMe}
+                      </p>
+                    </div>
+                  )}
                 </div>
                 {/* Skills section removed */}
               </CardContent>
