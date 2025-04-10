@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { BadgeCheck, Info, Download, Share2 } from "lucide-react";
+import { BadgeCheck, Info, Download, Share2, Check, Loader2 } from "lucide-react";
 import { UserData } from "@/types/user";
 import VisitingCardPreview from "./visiting-card-preview";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 // Card type options
 const CARD_TYPES = [
@@ -29,11 +31,44 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
 }) => {
   // Set default card type if none selected
   const [activeTab, setActiveTab] = useState(selectedCardType || "professional");
+  const [isSaving, setIsSaving] = useState(false);
+  const [isFinalized, setIsFinalized] = useState(selectedCardType === userData.visitingCardType);
+  const { toast } = useToast();
   
   // Handle tab change
   const handleTabChange = (value: string) => {
     setActiveTab(value);
+    setIsFinalized(value === userData.visitingCardType);
     onCardTypeSelect(value);
+  };
+
+  // Handle finalizing the selected card
+  const handleFinalizeCard = async () => {
+    setIsSaving(true);
+    try {
+      // Save the selected card type to the user profile
+      await apiRequest({
+        url: `/users/${userData.id}`,
+        method: 'PUT',
+        data: { visitingCardType: activeTab }
+      });
+      
+      setIsFinalized(true);
+      toast({
+        title: "Card style saved!",
+        description: "Your visiting card style has been set and will be visible to your connections.",
+        variant: "default",
+      });
+    } catch (error) {
+      console.error("Error saving card type:", error);
+      toast({
+        title: "Error saving card style",
+        description: "Unable to save your card style. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // Handle card download (placeholder functionality)
@@ -136,6 +171,40 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
                           Auto-updates with your profile
                         </li>
                       </ul>
+                      
+                      {/* Finalize card button */}
+                      {type.id === activeTab && (
+                        <div className="mt-6">
+                          {isFinalized ? (
+                            <div className="flex flex-col items-center justify-center p-3 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 rounded-lg">
+                              <div className="flex items-center mb-1 text-green-600 dark:text-green-400">
+                                <Check className="h-4 w-4 mr-1" />
+                                <span className="text-sm font-medium">Card Style Finalized</span>
+                              </div>
+                              <p className="text-xs text-green-600/80 dark:text-green-400/80 text-center">
+                                This card style is set as your public visiting card
+                              </p>
+                            </div>
+                          ) : (
+                            <Button 
+                              className="w-full bg-blue-600 hover:bg-blue-700"
+                              onClick={handleFinalizeCard}
+                              disabled={isSaving}
+                            >
+                              {isSaving ? (
+                                <>
+                                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                  Saving...
+                                </>
+                              ) : (
+                                <>
+                                  Make This My Visiting Card
+                                </>
+                              )}
+                            </Button>
+                          )}
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                 </TabsContent>
