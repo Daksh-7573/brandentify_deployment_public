@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Zap, Settings, Menu, X, Home, Search, Bot, User } from "lucide-react";
+import { Zap, Settings, Menu, X, Home, Search, Bot, User, MapPin } from "lucide-react";
 
 export default function Header() {
   const { user, isDemoMode, signOut, refreshUserData } = useAuth();
