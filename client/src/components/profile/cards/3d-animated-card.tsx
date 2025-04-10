@@ -189,6 +189,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
         subtext: 'text-gray-300',
         border: 'border-gray-700',
         icon: 'text-indigo-400',
+        glassBg: 'bg-black/10',
       }
     : {
         bg: 'from-white to-gray-100',
@@ -198,6 +199,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
         subtext: 'text-gray-600',
         border: 'border-gray-200',
         icon: 'text-indigo-600',
+        glassBg: 'bg-white/30',
       };
   
   return (
@@ -232,24 +234,27 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
         
         {/* Front of card */}
         <div 
-          className={`absolute inset-0 bg-gradient-to-br ${colors.bg} ${colors.text} backface-hidden flex flex-col border border-${colors.border} overflow-hidden`}
+          className={`absolute inset-0 bg-gradient-to-br ${colors.bg} ${colors.text} backface-hidden flex flex-col border overflow-hidden`}
           style={{
             transformStyle: 'preserve-3d',
             transform: 'translateZ(0.1px)', // Slight depth for better 3D effect
+            borderColor: isDarkMode ? 'rgba(75, 85, 99, 0.5)' : 'rgba(229, 231, 235, 0.5)'
           }}
         >
           {/* Mode switcher and hint */}
           <div className="absolute top-3 right-3 z-30 flex gap-2">
             <button 
               onClick={toggleTheme}
-              className={`h-6 w-6 rounded-full flex items-center justify-center text-xs ${colors.border} border bg-black/10 backdrop-blur-sm ${colors.text}`}
+              className={`h-6 w-6 rounded-full flex items-center justify-center text-xs border backdrop-blur-sm ${colors.text}`}
+              style={{ borderColor: isDarkMode ? 'rgba(75, 85, 99, 0.5)' : 'rgba(229, 231, 235, 0.5)', 
+                       background: isDarkMode ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.2)' }}
             >
               {isDarkMode ? '☀️' : '🌙'}
             </button>
           </div>
           
           {/* Background accents - metallic/neon elements */}
-          <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b opacity-70 ${colors.accentBg}" />
+          <div className={`absolute inset-x-0 top-0 h-40 bg-gradient-to-b opacity-70 ${colors.accentBg}`} />
           
           {/* Decorative shapes for metallic accents */}
           <div className="absolute -left-12 -top-12 w-44 h-44 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-full blur-xl" />
@@ -307,7 +312,8 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
             </div>
             
             {/* Industry & Domain with depth shadow */}
-            <div className="bg-gradient-to-r from-black/5 to-black/10 backdrop-blur-sm rounded-lg py-3 px-4 w-full mb-4 border border-white/10">
+            <div className={`${isDarkMode ? 'bg-gradient-to-r from-gray-800/50 to-gray-900/50' : 'bg-gradient-to-r from-gray-50/70 to-white/70'} backdrop-blur-sm rounded-lg py-3 px-4 w-full mb-4 border`} 
+                 style={{ borderColor: isDarkMode ? 'rgba(75, 85, 99, 0.2)' : 'rgba(229, 231, 235, 0.5)' }}>
               {userData.industry && (
                 <div className="flex items-center gap-2 mb-2 animate-[bounceIn_0.5s_ease_forwards]" style={{animationDelay: '0.3s', opacity: 0}}>
                   <Building2 className={`h-4 w-4 ${colors.icon}`} />
@@ -326,7 +332,8 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
             {/* Company name with metallic/neon effect */}
             {userData.company && (
               <div className="w-full mb-4 animate-[bounceIn_0.5s_ease_forwards]" style={{animationDelay: '0.5s', opacity: 0}}>
-                <div className="text-center py-2 px-3 rounded-lg bg-gradient-to-r from-purple-500/20 via-indigo-500/20 to-purple-500/20 backdrop-blur-sm border border-white/10">
+                <div className="text-center py-2 px-3 rounded-lg bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-indigo-500/20 backdrop-blur-sm border" 
+                     style={{ borderColor: isDarkMode ? 'rgba(79, 70, 229, 0.3)' : 'rgba(79, 70, 229, 0.2)' }}>
                   <p className={`font-medium ${colors.text}`}>
                     {userData.company}
                   </p>
@@ -345,18 +352,26 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
             {/* Social links with glow effect */}
             <div className="mt-auto flex gap-4 mb-3 animate-[bounceIn_0.5s_ease_forwards]" style={{animationDelay: '0.7s', opacity: 0}}>
               {/* LinkedIn */}
-              <div className="h-8 w-8 rounded-full flex items-center justify-center bg-gradient-to-br from-purple-500/30 to-indigo-500/30 backdrop-blur-sm border border-white/10 hover:scale-110 transition-transform">
+              <div className="h-8 w-8 rounded-full flex items-center justify-center backdrop-blur-sm border hover:scale-110 transition-transform"
+                   style={{ 
+                     background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.2), rgba(147, 51, 234, 0.2))',
+                     borderColor: isDarkMode ? 'rgba(79, 70, 229, 0.3)' : 'rgba(79, 70, 229, 0.2)'
+                   }}>
                 <Linkedin className={`h-4 w-4 ${colors.icon}`} />
               </div>
               
               {/* Website */}
-              <div className="h-8 w-8 rounded-full flex items-center justify-center bg-gradient-to-br from-purple-500/30 to-indigo-500/30 backdrop-blur-sm border border-white/10 hover:scale-110 transition-transform">
+              <div className="h-8 w-8 rounded-full flex items-center justify-center backdrop-blur-sm border hover:scale-110 transition-transform"
+                   style={{ 
+                     background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.2), rgba(147, 51, 234, 0.2))',
+                     borderColor: isDarkMode ? 'rgba(79, 70, 229, 0.3)' : 'rgba(79, 70, 229, 0.2)'
+                   }}>
                 <Globe className={`h-4 w-4 ${colors.icon}`} />
               </div>
             </div>
             
             {/* Tap to flip hint */}
-            <div className="text-center text-xs text-white/60 mt-2 flex items-center animate-[bounceIn_0.5s_ease_forwards]" style={{animationDelay: '0.8s', opacity: 0}}>
+            <div className={`text-center text-xs ${isDarkMode ? 'text-white/60' : 'text-gray-500'} mt-2 flex items-center justify-center animate-[bounceIn_0.5s_ease_forwards]`} style={{animationDelay: '0.8s', opacity: 0}}>
               <ChevronDown className="h-3 w-3 mr-1 animate-bounce" />
               <span>Tap to flip for contact info</span>
             </div>
@@ -370,10 +385,11 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
         
         {/* Back of card with contact details */}
         <div 
-          className={`absolute inset-0 bg-gradient-to-br ${colors.bg} ${colors.text} backface-hidden flex flex-col border border-${colors.border} overflow-hidden`}
+          className={`absolute inset-0 bg-gradient-to-br ${colors.bg} ${colors.text} backface-hidden flex flex-col border overflow-hidden`}
           style={{
             transform: 'rotateY(180deg) translateZ(0.1px)', // Slight depth for better 3D effect
             transformStyle: 'preserve-3d',
+            borderColor: isDarkMode ? 'rgba(75, 85, 99, 0.5)' : 'rgba(229, 231, 235, 0.5)'
           }}
         >
           {/* Background accents */}
@@ -418,21 +434,39 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
             {/* Contact details with glow-in animation */}
             <div className="space-y-4">
               {/* Email */}
-              <div className="flex items-center gap-2 bg-gray-900/30 backdrop-blur-sm p-2 rounded-lg border border-white/10 animate-[bounceIn_0.5s_ease_forwards]" style={{animationDelay: '0.2s', opacity: 0}}>
+              <div className={`flex items-center gap-2 backdrop-blur-sm p-2 rounded-lg border animate-[bounceIn_0.5s_ease_forwards]`} 
+                   style={{
+                     animationDelay: '0.2s', 
+                     opacity: 0,
+                     background: isDarkMode ? 'rgba(17, 24, 39, 0.3)' : 'rgba(243, 244, 246, 0.5)',
+                     borderColor: isDarkMode ? 'rgba(75, 85, 99, 0.2)' : 'rgba(229, 231, 235, 0.5)'
+                   }}>
                 <Mail className={`h-4 w-4 ${colors.icon}`} />
                 <span className={`${colors.text} text-sm flex-1`}>{userData.email}</span>
                 <Copy className={`h-3.5 w-3.5 ${colors.icon} cursor-pointer hover:text-indigo-300`} />
               </div>
               
               {/* Phone */}
-              <div className="flex items-center gap-2 bg-gray-900/30 backdrop-blur-sm p-2 rounded-lg border border-white/10 animate-[bounceIn_0.5s_ease_forwards]" style={{animationDelay: '0.3s', opacity: 0}}>
+              <div className={`flex items-center gap-2 backdrop-blur-sm p-2 rounded-lg border animate-[bounceIn_0.5s_ease_forwards]`} 
+                   style={{
+                     animationDelay: '0.3s', 
+                     opacity: 0,
+                     background: isDarkMode ? 'rgba(17, 24, 39, 0.3)' : 'rgba(243, 244, 246, 0.5)',
+                     borderColor: isDarkMode ? 'rgba(75, 85, 99, 0.2)' : 'rgba(229, 231, 235, 0.5)'
+                   }}>
                 <Phone className={`h-4 w-4 ${colors.icon}`} />
                 <span className={`${colors.text} text-sm flex-1`}>{userData.phoneNumber || "Add phone number"}</span>
                 <Copy className={`h-3.5 w-3.5 ${colors.icon} cursor-pointer hover:text-indigo-300`} />
               </div>
               
               {/* Profile Link */}
-              <div className="flex items-center gap-2 bg-gray-900/30 backdrop-blur-sm p-2 rounded-lg border border-white/10 animate-[bounceIn_0.5s_ease_forwards]" style={{animationDelay: '0.4s', opacity: 0}}>
+              <div className={`flex items-center gap-2 backdrop-blur-sm p-2 rounded-lg border animate-[bounceIn_0.5s_ease_forwards]`} 
+                   style={{
+                     animationDelay: '0.4s', 
+                     opacity: 0,
+                     background: isDarkMode ? 'rgba(17, 24, 39, 0.3)' : 'rgba(243, 244, 246, 0.5)',
+                     borderColor: isDarkMode ? 'rgba(75, 85, 99, 0.2)' : 'rgba(229, 231, 235, 0.5)'
+                   }}>
                 <Globe className={`h-4 w-4 ${colors.icon}`} />
                 <span className={`${colors.text} text-sm flex-1`}>{profileLink}</span>
                 <ExternalLink className={`h-3.5 w-3.5 ${colors.icon} cursor-pointer hover:text-indigo-300`} />
@@ -440,7 +474,13 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
               
               {/* Location if available */}
               {userData.location && (
-                <div className="flex items-center gap-2 bg-gray-900/30 backdrop-blur-sm p-2 rounded-lg border border-white/10 animate-[bounceIn_0.5s_ease_forwards]" style={{animationDelay: '0.5s', opacity: 0}}>
+                <div className={`flex items-center gap-2 backdrop-blur-sm p-2 rounded-lg border animate-[bounceIn_0.5s_ease_forwards]`} 
+                     style={{
+                       animationDelay: '0.5s', 
+                       opacity: 0,
+                       background: isDarkMode ? 'rgba(17, 24, 39, 0.3)' : 'rgba(243, 244, 246, 0.5)',
+                       borderColor: isDarkMode ? 'rgba(75, 85, 99, 0.2)' : 'rgba(229, 231, 235, 0.5)'
+                     }}>
                   <MapPin className={`h-4 w-4 ${colors.icon}`} />
                   <span className={`${colors.text} text-sm flex-1`}>{userData.location}</span>
                   <ExternalLink className={`h-3.5 w-3.5 ${colors.icon} cursor-pointer hover:text-indigo-300`} />
@@ -449,8 +489,14 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
             </div>
             
             {/* Personal tagline or quote with floating animation */}
-            <div className="mt-4 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 backdrop-blur-sm p-3 rounded-lg border border-white/10 text-center animate-[bounceIn_0.5s_ease_forwards]" style={{animationDelay: '0.6s', opacity: 0}}>
-              <p className="text-sm italic">
+            <div className={`mt-4 backdrop-blur-sm p-3 rounded-lg border text-center animate-[bounceIn_0.5s_ease_forwards]`} 
+                 style={{
+                   animationDelay: '0.6s', 
+                   opacity: 0,
+                   background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.15), rgba(147, 51, 234, 0.15))',
+                   borderColor: isDarkMode ? 'rgba(79, 70, 229, 0.3)' : 'rgba(79, 70, 229, 0.2)'
+                 }}>
+              <p className={`text-sm italic ${colors.text}`}>
                 {userData.lookingFor || "Passionate about innovation and technology"}
               </p>
             </div>
@@ -464,7 +510,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
             </div>
             
             {/* Tap to flip hint */}
-            <div className="text-center text-xs text-white/60 mt-2 flex items-center justify-center animate-[bounceIn_0.5s_ease_forwards]" style={{animationDelay: '0.8s', opacity: 0}}>
+            <div className={`text-center text-xs ${isDarkMode ? 'text-white/60' : 'text-gray-500'} mt-2 flex items-center justify-center animate-[bounceIn_0.5s_ease_forwards]`} style={{animationDelay: '0.8s', opacity: 0}}>
               <ChevronDown className="h-3 w-3 mr-1 animate-bounce" />
               <span>Tap to flip card</span>
             </div>
