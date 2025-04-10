@@ -6,6 +6,7 @@ import HolographicCard from "./cards/holographic-card";
 import ClayPaperCard from "./cards/clay-paper-card";
 import CreativeCard from "./cards/creative-card";
 import ArtisticCard from "./cards/artistic-card";
+import ProfessionalCard from "./cards/professional-card";
 
 interface VisitingCardPreviewProps {
   userData: UserData;
@@ -60,6 +61,15 @@ const VisitingCardPreview: React.FC<VisitingCardPreviewProps> = ({
     return (
       <div className="visiting-card-preview">
         <ArtisticCard userData={userData} />
+      </div>
+    );
+  }
+  
+  // For professional card style, use the specialized component
+  if (cardType === "professional") {
+    return (
+      <div className="visiting-card-preview">
+        <ProfessionalCard userData={userData} />
       </div>
     );
   }

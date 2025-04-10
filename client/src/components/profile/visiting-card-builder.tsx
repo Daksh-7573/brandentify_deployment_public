@@ -8,7 +8,7 @@ import VisitingCardPreview from "./visiting-card-preview";
 
 // Card type options
 const CARD_TYPES = [
-  { id: "minimalist", name: "Minimalist Pro", description: "Clean and professional design" },
+  { id: "professional", name: "Professional", description: "Sleek digital business card with modern UI" },
   { id: "3d-animated", name: "3D Animated", description: "Interactive 3D hover effects" },
   { id: "holographic", name: "Holographic Glass", description: "Modern transparent design" },
   { id: "clay-paper", name: "Clay & Paper", description: "Playful 3D claymation & paper-cut style" },
@@ -28,7 +28,7 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
   onCardTypeSelect,
 }) => {
   // Set default card type if none selected
-  const [activeTab, setActiveTab] = useState(selectedCardType || "minimalist");
+  const [activeTab, setActiveTab] = useState(selectedCardType || "professional");
   
   // Handle tab change
   const handleTabChange = (value: string) => {
@@ -104,7 +104,7 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
               className="w-full"
             >
               <TabsList className="grid grid-cols-3 mb-6">
-                <TabsTrigger value="minimalist">Minimalist</TabsTrigger>
+                <TabsTrigger value="professional">Professional</TabsTrigger>
                 <TabsTrigger value="3d-animated">3D</TabsTrigger>
                 <TabsTrigger value="holographic">Holographic</TabsTrigger>
               </TabsList>
