@@ -95,19 +95,19 @@ const ProfessionalCard: React.FC<ProfessionalCardProps> = ({ userData }) => {
           isRevealed ? 'transform -translate-y-full opacity-0' : 'transform translate-y-0 opacity-100'
         } ${isDarkMode ? 'text-slate-200' : 'text-slate-800'}`}
       >
-        {/* Glass card background effect */}
+        {/* Card background */}
         <div 
           className={`absolute inset-0 ${
-            isDarkMode ? 'bg-gradient-to-br from-slate-800 to-slate-900' : 'bg-gradient-to-br from-slate-50 to-white'
+            isDarkMode ? 'bg-slate-800' : 'bg-white'
           }`}
         >
           {/* Decorative elements */}
-          <div className={`absolute top-0 right-0 w-40 h-40 rounded-full opacity-10 ${
+          <div className={`absolute top-0 right-0 w-40 h-40 rounded-full opacity-5 ${
             isDarkMode ? 'bg-blue-500' : 'bg-blue-300'
-          } blur-3xl transform translate-x-20 -translate-y-20`}></div>
-          <div className={`absolute bottom-0 left-0 w-40 h-40 rounded-full opacity-10 ${
+          } blur-xl transform translate-x-20 -translate-y-20`}></div>
+          <div className={`absolute bottom-0 left-0 w-40 h-40 rounded-full opacity-5 ${
             isDarkMode ? 'bg-indigo-500' : 'bg-indigo-300'
-          } blur-3xl transform -translate-x-20 translate-y-20`}></div>
+          } blur-xl transform -translate-x-20 translate-y-20`}></div>
         </div>
         
         {/* Profile photo */}
@@ -208,19 +208,19 @@ const ProfessionalCard: React.FC<ProfessionalCardProps> = ({ userData }) => {
           isRevealed ? 'transform translate-y-0 opacity-100' : 'transform translate-y-full opacity-0'
         } ${isDarkMode ? 'text-slate-200' : 'text-slate-800'}`}
       >
-        {/* Glass card background effect */}
+        {/* Card background */}
         <div 
           className={`absolute inset-0 ${
-            isDarkMode ? 'bg-gradient-to-br from-slate-800 to-slate-900' : 'bg-gradient-to-br from-slate-50 to-white'
+            isDarkMode ? 'bg-slate-800' : 'bg-white'
           }`}
         >
           {/* Decorative elements */}
-          <div className={`absolute bottom-0 right-0 w-40 h-40 rounded-full opacity-10 ${
+          <div className={`absolute bottom-0 right-0 w-40 h-40 rounded-full opacity-5 ${
             isDarkMode ? 'bg-indigo-500' : 'bg-indigo-300'
-          } blur-3xl transform translate-x-20 translate-y-20`}></div>
-          <div className={`absolute top-0 left-0 w-40 h-40 rounded-full opacity-10 ${
+          } blur-xl transform translate-x-20 translate-y-20`}></div>
+          <div className={`absolute top-0 left-0 w-40 h-40 rounded-full opacity-5 ${
             isDarkMode ? 'bg-blue-500' : 'bg-blue-300'
-          } blur-3xl transform -translate-x-20 -translate-y-20`}></div>
+          } blur-xl transform -translate-x-20 -translate-y-20`}></div>
         </div>
         
         {/* Contact info section */}
@@ -233,68 +233,89 @@ const ProfessionalCard: React.FC<ProfessionalCardProps> = ({ userData }) => {
           
           {/* Email */}
           <div
-            className={`contact-item flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
-              isDarkMode ? 'bg-slate-800 hover:bg-slate-700' : 'bg-white hover:bg-slate-100'
+            className={`contact-item flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all ${
+              isDarkMode ? 'bg-slate-700/50 hover:bg-slate-700' : 'bg-slate-50 hover:bg-blue-50/30'
             } shadow-sm`}
             onClick={(e) => handleContact("email", e)}
           >
             <div className={`icon-container h-10 w-10 rounded-full flex items-center justify-center ${
-              isDarkMode ? 'bg-slate-700' : 'bg-blue-50'
+              isDarkMode ? 'bg-blue-900/50' : 'bg-blue-100'
             }`}>
               <Mail className={`h-5 w-5 ${
                 isDarkMode ? 'text-blue-300' : 'text-blue-600'
               }`} />
             </div>
-            <div>
-              <p className="text-sm font-medium">Email</p>
-              <p className={`text-sm ${
-                isDarkMode ? 'text-slate-400' : 'text-slate-600'
+            <div className="flex-1">
+              <p className={`text-sm font-medium ${isDarkMode ? 'text-blue-200' : 'text-blue-600'}`}>Email</p>
+              <p className={`text-sm truncate max-w-[180px] ${
+                isDarkMode ? 'text-slate-300' : 'text-slate-600'
               }`}>{userData.email}</p>
+            </div>
+            <div className={`h-6 w-6 rounded-full flex items-center justify-center ${
+              isDarkMode ? 'bg-slate-600/50' : 'bg-slate-100'
+            }`}>
+              <ChevronUp className={`h-4 w-4 rotate-90 ${
+                isDarkMode ? 'text-slate-300' : 'text-slate-500'
+              }`} />
             </div>
           </div>
           
           {/* Phone */}
           <div
-            className={`contact-item flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
-              isDarkMode ? 'bg-slate-800 hover:bg-slate-700' : 'bg-white hover:bg-slate-100'
+            className={`contact-item flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all ${
+              isDarkMode ? 'bg-slate-700/50 hover:bg-slate-700' : 'bg-slate-50 hover:bg-green-50/30'
             } shadow-sm`}
             onClick={(e) => handleContact("phone", e)}
           >
             <div className={`icon-container h-10 w-10 rounded-full flex items-center justify-center ${
-              isDarkMode ? 'bg-slate-700' : 'bg-blue-50'
+              isDarkMode ? 'bg-green-900/50' : 'bg-green-100'
             }`}>
               <Phone className={`h-5 w-5 ${
-                isDarkMode ? 'text-blue-300' : 'text-blue-600'
+                isDarkMode ? 'text-green-300' : 'text-green-600'
               }`} />
             </div>
-            <div>
-              <p className="text-sm font-medium">Phone</p>
-              <p className={`text-sm ${
-                isDarkMode ? 'text-slate-400' : 'text-slate-600'
+            <div className="flex-1">
+              <p className={`text-sm font-medium ${isDarkMode ? 'text-green-200' : 'text-green-600'}`}>Phone</p>
+              <p className={`text-sm truncate max-w-[180px] ${
+                isDarkMode ? 'text-slate-300' : 'text-slate-600'
               }`}>{userData.phoneNumber || "Add phone number"}</p>
+            </div>
+            <div className={`h-6 w-6 rounded-full flex items-center justify-center ${
+              isDarkMode ? 'bg-slate-600/50' : 'bg-slate-100'
+            }`}>
+              <ChevronUp className={`h-4 w-4 rotate-90 ${
+                isDarkMode ? 'text-slate-300' : 'text-slate-500'
+              }`} />
             </div>
           </div>
           
           {/* Location */}
           {userData.location && (
             <div
-              className={`contact-item flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
-                isDarkMode ? 'bg-slate-800 hover:bg-slate-700' : 'bg-white hover:bg-slate-100'
+              className={`contact-item flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all ${
+                isDarkMode ? 'bg-slate-700/50 hover:bg-slate-700' : 'bg-slate-50 hover:bg-indigo-50/30'
               } shadow-sm`}
               onClick={(e) => handleContact("location", e)}
             >
               <div className={`icon-container h-10 w-10 rounded-full flex items-center justify-center ${
-                isDarkMode ? 'bg-slate-700' : 'bg-blue-50'
+                isDarkMode ? 'bg-indigo-900/50' : 'bg-indigo-100'
               }`}>
                 <MapPin className={`h-5 w-5 ${
-                  isDarkMode ? 'text-blue-300' : 'text-blue-600'
+                  isDarkMode ? 'text-indigo-300' : 'text-indigo-600'
                 }`} />
               </div>
-              <div>
-                <p className="text-sm font-medium">Location</p>
-                <p className={`text-sm ${
-                  isDarkMode ? 'text-slate-400' : 'text-slate-600'
+              <div className="flex-1">
+                <p className={`text-sm font-medium ${isDarkMode ? 'text-indigo-200' : 'text-indigo-600'}`}>Location</p>
+                <p className={`text-sm truncate max-w-[180px] ${
+                  isDarkMode ? 'text-slate-300' : 'text-slate-600'
                 }`}>{userData.location}</p>
+              </div>
+              <div className={`h-6 w-6 rounded-full flex items-center justify-center ${
+                isDarkMode ? 'bg-slate-600/50' : 'bg-slate-100'
+              }`}>
+                <ChevronUp className={`h-4 w-4 rotate-90 ${
+                  isDarkMode ? 'text-slate-300' : 'text-slate-500'
+                }`} />
               </div>
             </div>
           )}
@@ -345,11 +366,6 @@ const ProfessionalCard: React.FC<ProfessionalCardProps> = ({ userData }) => {
         </div>
       </div>
       
-      {/* Glassmorphism overlay */}
-      <div className={`absolute inset-0 pointer-events-none ${
-        isDarkMode ? 'glass-overlay-dark' : 'glass-overlay-light'
-      }`}></div>
-      
       {/* Styles for glassmorphism and animations */}
       <style dangerouslySetInnerHTML={{ __html: `
         .professional-card {
@@ -362,24 +378,17 @@ const ProfessionalCard: React.FC<ProfessionalCardProps> = ({ userData }) => {
           transform: translateY(-5px);
         }
         
-        .glass-overlay-light {
-          background: linear-gradient(
-            135deg,
-            rgba(255, 255, 255, 0.2) 0%,
-            rgba(255, 255, 255, 0.1) 100%
-          );
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          backdrop-filter: blur(5px);
+        .front-side, .back-side {
+          border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        .glass-overlay-dark {
-          background: linear-gradient(
-            135deg,
-            rgba(30, 41, 59, 0.2) 0%,
-            rgba(30, 41, 59, 0.1) 100%
-          );
-          border: 1px solid rgba(30, 41, 59, 0.2);
-          backdrop-filter: blur(5px);
+        .contact-item {
+          border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Dark mode specific styles */
+        .professional-card.bg-slate-900 .contact-item {
+          border: 1px solid rgba(255, 255, 255, 0.05);
         }
         
         .contact-item {
