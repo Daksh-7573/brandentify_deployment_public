@@ -144,7 +144,8 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
     }
   };
   
-  // Determine card transform based on swipe position
+  // This function is no longer used since we're now handling all transforms
+  // directly in the style prop of the container
   const getCardTransform = () => {
     if (swipePosition === 'left') {
       return 'translateX(-100%)';
@@ -156,13 +157,13 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
   
   // Calculate any ongoing swipe transform
   const getOngoingSwipeTransform = () => {
-    if (startX === null || currentX === null) return '0px';
-    return `${currentX - startX}px`;
+    if (startX === null || currentX === null) return 0;
+    return currentX - startX;
   };
   
   return (
     <div 
-      className="creative-card-container w-full aspect-[2/3.5] relative overflow-hidden rounded-lg shadow-lg"
+      className="creative-card-container w-full aspect-[2/3.5] relative overflow-hidden rounded-xl shadow-xl"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -171,7 +172,8 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
     >
-      <div className="swipe-indicator-container absolute top-1/2 -translate-y-1/2 w-full z-10 flex justify-between px-2 pointer-events-none">
+      {/* Swipe indicators */}
+      <div className="swipe-indicator-container absolute top-1/2 -translate-y-1/2 w-full z-10 flex justify-between px-4 pointer-events-none">
         {swipePosition !== 'right' && (
           <div className={`left-indicator ${swipePosition === 'main' ? 'opacity-50' : 'opacity-0'} bg-white/80 rounded-full h-8 w-8 flex items-center justify-center shadow-md transition-opacity duration-300`}>
             <ChevronLeft className="h-5 w-5 text-gray-800" />
@@ -184,10 +186,17 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
         )}
       </div>
       
+      {/* Swipe container */}
       <div 
-        className="swipe-container flex transition-transform duration-300 ease-out h-full"
+        className="swipe-container flex h-full transition-transform duration-300 ease-out"
         style={{ 
-          transform: `${getCardTransform()} translateX(${getOngoingSwipeTransform()})`
+          transform: swipePosition === 'left' 
+            ? 'translateX(-100%)' 
+            : swipePosition === 'right'
+              ? 'translateX(100%)'
+              : startX !== null && currentX !== null
+                ? `translateX(${getOngoingSwipeTransform()}px)`
+                : 'translateX(0)'
         }}
       >
         {/* Left view - Contact details */}
@@ -357,41 +366,64 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
       
       {/* Floating Action Button (FAB) */}
       <div className="fab-container absolute bottom-6 right-6 z-20">
+        {/* Buttons that appear when FAB is expanded */}
         <div 
           className={`fab-buttons flex flex-col-reverse gap-3 mb-3 transition-all duration-300 ${isFabOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}
         >
+          {/* Email button */}
           <button 
-            className="h-12 w-12 rounded-full bg-indigo-600 text-white shadow-lg flex items-center justify-center transform transition-transform hover:scale-110"
+            className="group h-12 w-12 rounded-full bg-indigo-600 text-white shadow-lg flex items-center justify-center transform transition-transform hover:scale-110 relative"
             onClick={(e) => handleAction('email', e)}
+            aria-label="Send Email"
           >
             <Mail className="h-5 w-5" />
+            <span className="absolute right-14 bg-indigo-600 text-white px-2 py-1 rounded whitespace-nowrap text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+              Send Email
+            </span>
           </button>
           
+          {/* Phone button */}
           <button 
-            className="h-12 w-12 rounded-full bg-green-600 text-white shadow-lg flex items-center justify-center transform transition-transform hover:scale-110"
+            className="group h-12 w-12 rounded-full bg-green-600 text-white shadow-lg flex items-center justify-center transform transition-transform hover:scale-110 relative"
             onClick={(e) => handleAction('phone', e)}
+            aria-label="Call"
           >
             <Phone className="h-5 w-5" />
+            <span className="absolute right-14 bg-green-600 text-white px-2 py-1 rounded whitespace-nowrap text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+              Call
+            </span>
           </button>
           
+          {/* Copy profile link button */}
           <button 
-            className="h-12 w-12 rounded-full bg-blue-600 text-white shadow-lg flex items-center justify-center transform transition-transform hover:scale-110"
+            className="group h-12 w-12 rounded-full bg-blue-600 text-white shadow-lg flex items-center justify-center transform transition-transform hover:scale-110 relative"
             onClick={(e) => handleAction('copy', e)}
+            aria-label="Copy Profile Link"
           >
             <Copy className="h-5 w-5" />
+            <span className="absolute right-14 bg-blue-600 text-white px-2 py-1 rounded whitespace-nowrap text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+              Copy Link
+            </span>
           </button>
           
+          {/* Share button */}
           <button 
-            className="h-12 w-12 rounded-full bg-purple-600 text-white shadow-lg flex items-center justify-center transform transition-transform hover:scale-110"
+            className="group h-12 w-12 rounded-full bg-purple-600 text-white shadow-lg flex items-center justify-center transform transition-transform hover:scale-110 relative"
             onClick={(e) => handleAction('share', e)}
+            aria-label="Share Profile"
           >
             <Share2 className="h-5 w-5" />
+            <span className="absolute right-14 bg-purple-600 text-white px-2 py-1 rounded whitespace-nowrap text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+              Share
+            </span>
           </button>
         </div>
         
+        {/* Main FAB button that expands/collapses */}
         <button 
-          className={`h-14 w-14 rounded-full bg-gradient-to-r from-pink-600 to-orange-500 text-white shadow-lg flex items-center justify-center transform transition-all duration-300 ${isFabOpen ? 'rotate-45' : 'animate-pulse'}`}
+          className={`h-14 w-14 rounded-full bg-gradient-to-r from-pink-600 to-orange-500 text-white shadow-xl flex items-center justify-center transform transition-all duration-300 ${isFabOpen ? 'rotate-45' : 'animate-pulse'}`}
           onClick={toggleFab}
+          aria-label={isFabOpen ? "Close menu" : "Open contact menu"}
         >
           {isFabOpen ? <X className="h-6 w-6" /> : <Plus className="h-6 w-6" />}
         </button>
