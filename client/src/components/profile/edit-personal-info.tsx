@@ -65,6 +65,17 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
         ? `${phoneCountryCode} ${phoneNumber.trim()}`
         : null;
       
+      // Check if word count is within limits
+      if (wordCount > 350) {
+        toast({
+          title: "About Me too long",
+          description: "Your About Me section exceeds the 350 word limit. Please shorten it before saving.",
+          variant: "destructive"
+        });
+        setIsLoading(false);
+        return;
+      }
+      
       // Update user data via API
       await apiRequest({
         url: `/api/users/${userData.id}`,
@@ -72,7 +83,8 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
         data: {
           phoneNumber: formattedPhoneNumber,
           company: company.trim() || null,
-          domain: domain.trim() || null
+          domain: domain.trim() || null,
+          aboutMe: aboutMe.trim() || null
         }
       });
       
