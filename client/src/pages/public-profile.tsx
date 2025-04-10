@@ -60,9 +60,10 @@ const PublicProfile = () => {
   const [, navigate] = useLocation();
   const { toast } = useToast();
   
-  // Get username from URL
-  const path = window.location.pathname;
-  const username = path.startsWith('/@') ? path.substring(2) : null;
+  // Get username from URL parameters
+  // For now, let's extract it from the pathname as wouter doesn't have useParams
+  const pathname = window.location.pathname;
+  const username = pathname.startsWith('/@') ? pathname.substring(2) : null;
   
   // Fetch user data by username
   const { data: userData, isLoading: isUserLoading, error: userError } = useQuery<UserData | null>({

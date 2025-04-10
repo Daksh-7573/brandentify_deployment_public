@@ -10,6 +10,7 @@ import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import Dashboard from "@/pages/dashboard";
 import Profile from "@/pages/profile";
+import PublicProfile from "@/pages/public-profile";
 import AICareer from "@/pages/ai-career";
 import PortfolioBuilder from "@/pages/portfolio-builder";
 import CreatePulsePage from "@/pages/create-pulse";
@@ -63,6 +64,10 @@ function Router() {
       </Route>
       <Route path="/profile">
         <ProtectedRoute path="/profile" component={Profile} />
+      </Route>
+      {/* Public profile using username route (/@username) */}
+      <Route path="/@:username">
+        {({ username }) => <PublicProfile username={username} />}
       </Route>
       <Route path="/ai-career">
         <ProtectedRoute path="/ai-career" component={AICareer} />
