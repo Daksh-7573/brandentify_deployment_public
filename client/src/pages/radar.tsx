@@ -201,8 +201,56 @@ const Radar = () => {
     enabled: !!coordinates && locationStatus === 'granted' && !!userData?.id,
   });
   
-  // Make nearbyUsers a proper typed array
-  const nearbyUsers = nearbyUsersResponse || [];
+  // Make nearbyUsers a proper typed array with demo data for display purposes
+  const demoNearbyUsers: NearbyUser[] = [
+    {
+      id: 101,
+      name: "Sarah Johnson",
+      username: "sarahj",
+      photoURL: "https://randomuser.me/api/portraits/women/44.jpg",
+      title: "UX Designer",
+      company: "DesignHub",
+      location: "San Francisco, CA",
+      visitingCardType: "professional",
+      distance: 0.8
+    },
+    {
+      id: 102,
+      name: "Michael Chen",
+      username: "mchen",
+      photoURL: "https://randomuser.me/api/portraits/men/22.jpg",
+      title: "Frontend Developer",
+      company: "TechWave",
+      location: "Palo Alto, CA",
+      visitingCardType: "holographic",
+      distance: 1.3
+    },
+    {
+      id: 103,
+      name: "Priya Sharma",
+      username: "psharma",
+      photoURL: "https://randomuser.me/api/portraits/women/67.jpg",
+      title: "Product Manager",
+      company: "InnovateTech",
+      location: "Menlo Park, CA",
+      visitingCardType: "clay-paper",
+      distance: 2.6
+    },
+    {
+      id: 104,
+      name: "David Wilson",
+      username: "dwilson",
+      photoURL: "https://randomuser.me/api/portraits/men/46.jpg",
+      title: "Data Scientist",
+      company: "AI Solutions",
+      location: "Mountain View, CA",
+      visitingCardType: "creative",
+      distance: 3.1
+    }
+  ];
+  
+  // Use demo data if no real data available
+  const nearbyUsers = nearbyUsersResponse?.length ? nearbyUsersResponse : demoNearbyUsers;
   
   // Mutation to update user's geo-visibility
   const updateVisibilityMutation = useMutation({
