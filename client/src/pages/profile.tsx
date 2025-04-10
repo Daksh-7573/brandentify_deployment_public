@@ -18,6 +18,7 @@ import { queryClient, apiRequest } from "@/lib/queryClient";
 import { calculateOverallProfileCompletion } from "@/lib/profile-utils";
 import { useState, useEffect } from "react";
 import { Camera } from "lucide-react";
+import PersonalInfoIcon from "@/components/icons/personal-info-icon";
 import { useProfilePicture } from "@/hooks/use-profile-picture";
 import { ProfilePictureDialog } from "@/components/profile/profile-picture-dialog";
 import { 
@@ -1706,12 +1707,22 @@ export default function Profile() {
                         }}
                       />
                     </div>
+                    {/* Camera button for profile picture update */}
                     <button 
                       onClick={() => setShowProfilePictureDialog(true)}
                       className="absolute bottom-0 right-0 bg-primary hover:bg-primary/90 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                       aria-label="Change profile picture"
                     >
                       <Camera size={16} />
+                    </button>
+                    
+                    {/* Personal info button */}
+                    <button 
+                      onClick={() => setLocation('/personal-details')}
+                      className="absolute bottom-0 left-0 bg-primary hover:bg-primary/90 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      aria-label="View personal information"
+                    >
+                      <PersonalInfoIcon className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
@@ -1765,23 +1776,7 @@ export default function Profile() {
               </CardContent>
             </Card>
             
-            {/* Personal Information Section */}
-            <Card className="mb-6">
-              <CardContent className="pt-6">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-lg font-medium text-gray-900">Personal Information</h2>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={() => setShowEditPersonalInfo(true)}
-                    className="text-primary"
-                  >
-                    Edit
-                  </Button>
-                </div>
-                <PersonalInfoSection userData={userData} />
-              </CardContent>
-            </Card>
+            {/* Personal Information Section moved to dedicated page */}
             
             {/* Profile Import Options section removed */}
             
