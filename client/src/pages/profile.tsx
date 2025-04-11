@@ -1935,33 +1935,11 @@ export default function Profile() {
               </CardContent>
             </Card>
             
-            {/* Action Buttons */}
-            <div className="flex flex-wrap gap-4 mb-6">
-              <Button 
-                variant="outline" 
-                className="px-6"
-                onClick={() => {
-                  // Invalidate all queries to force fresh refetches
-                  console.log("Manual refresh triggered");
-                  
-                  // Refresh all profile data queries
-                  queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/experiences`] });
-                  queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/educations`] });
-                  queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/skills`] });
-                  queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'services'] });
-                  queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
-                  
-                  // Show toast notification
-                  window.alert("Profile data refreshed. If you still don't see your updated profile data, please try uploading your resume or LinkedIn profile again.");
-                }}
-              >
-                <i className="fas fa-sync-alt mr-2"></i>
-                Refresh Data
-              </Button>
-              
+            {/* Sign Out Button */}
+            <div className="flex justify-end mb-6">
               <Button 
                 variant="outline"
-                className="ml-auto px-6 bg-red-50 text-red-600 hover:bg-red-100 border-red-200"
+                className="px-6 bg-red-50 text-red-600 hover:bg-red-100 border-red-200"
                 onClick={() => signOut()}
               >
                 <i className="fas fa-sign-out-alt mr-2"></i>
