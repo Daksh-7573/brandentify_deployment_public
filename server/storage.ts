@@ -375,6 +375,7 @@ export class MemStorage implements IStorage {
       name: "Senior Professional",
       photoURL: null,
       title: "Senior Software Engineer",
+      isIndustryLeader: false,
       location: "San Francisco, CA, USA",
       industry: "Technology",
       lookingFor: "A Career Mentor",

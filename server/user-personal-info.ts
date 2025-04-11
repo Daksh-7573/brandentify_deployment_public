@@ -1,50 +1,55 @@
-import { IStorage } from './storage';
-import { InsertUserPersonalInfo, UserPersonalInfo } from '../shared/schema';
+import { MemStorage } from './storage';
+import { UserPersonalInfo, InsertUserPersonalInfo } from "@shared/schema";
 
-/**
- * Add the UserPersonalInfo methods to the MemStorage class by
- * directly modifying the prototype
- */
-export function addUserPersonalInfoMethods(MemStoragePrototype: any) {
-  // User Personal Info operations
-  MemStoragePrototype.getUserPersonalInfoByUserId = async function(userId: number): Promise<UserPersonalInfo | undefined> {
-    const allInfo = Array.from(this.userPersonalInfo.values());
-    // Use type assertion to help TypeScript understand the object structure
-    return allInfo.find((info: any) => info.userId === userId) as UserPersonalInfo | undefined;
+// Add the UserPersonalInfo methods to the MemStorage prototype
+export function addUserPersonalInfoMethods(memStoragePrototype: any) {
+  // Get personal info by user ID
+  memStoragePrototype.getUserPersonalInfoByUserId = async function(userId: number): Promise<UserPersonalInfo | undefined> {
+    const personalInfos = Array.from(this.userPersonalInfo.values());
+    return personalInfos.find(info => info.userId === userId);
   };
-
-  MemStoragePrototype.createUserPersonalInfo = async function(personalInfo: InsertUserPersonalInfo): Promise<UserPersonalInfo> {
+  
+  // Create personal info
+  memStoragePrototype.createUserPersonalInfo = async function(insertPersonalInfo: InsertUserPersonalInfo): Promise<UserPersonalInfo> {
     const id = this.currentUserPersonalInfoId++;
-    const createdAt = new Date();
-    const userPersonalInfo: UserPersonalInfo = { 
+    const personalInfo: UserPersonalInfo = { 
+      ...insertPersonalInfo, 
       id,
-      userId: personalInfo.userId,
-      createdAt,
-      updatedAt: createdAt,
-      contactEmail: personalInfo.contactEmail ?? null,
-      contactPhone: personalInfo.contactPhone ?? null,
-      website: personalInfo.website ?? null,
-      githubProfile: personalInfo.githubProfile ?? null,
-      linkedinProfile: personalInfo.linkedinProfile ?? null,
-      twitterProfile: personalInfo.twitterProfile ?? null,
-      instagramProfile: personalInfo.instagramProfile ?? null,
-      calendlyLink: personalInfo.calendlyLink ?? null,
-      preferredContactMethod: personalInfo.preferredContactMethod ?? null
+      // Handle nullable fields with explicit nulls instead of undefined
+      contactEmail: insertPersonalInfo.contactEmail ?? null,
+      contactPhone: insertPersonalInfo.contactPhone ?? null,
+      website: insertPersonalInfo.website ?? null,
+      githubProfile: insertPersonalInfo.githubProfile ?? null,
+      linkedinProfile: insertPersonalInfo.linkedinProfile ?? null,
+      twitterProfile: insertPersonalInfo.twitterProfile ?? null,
+      instagramProfile: insertPersonalInfo.instagramProfile ?? null,
+      calendlyLink: insertPersonalInfo.calendlyLink ?? null,
+      preferredContactMethod: insertPersonalInfo.preferredContactMethod ?? null,
+      createdAt: new Date(),
+      updatedAt: new Date()
     };
-    this.userPersonalInfo.set(id, userPersonalInfo);
-    return userPersonalInfo;
+    
+    this.userPersonalInfo.set(id, personalInfo);
+    return personalInfo;
   };
-
-  MemStoragePrototype.updateUserPersonalInfo = async function(id: number, personalInfoData: Partial<UserPersonalInfo>): Promise<UserPersonalInfo | undefined> {
+  
+  // Update personal info
+  memStoragePrototype.updateUserPersonalInfo = async function(id: number, personalInfoData: Partial<UserPersonalInfo>): Promise<UserPersonalInfo | undefined> {
     const personalInfo = this.userPersonalInfo.get(id);
     if (!personalInfo) return undefined;
     
-    const updatedPersonalInfo = { ...personalInfo, ...personalInfoData };
-    this.userPersonalInfo.set(id, updatedPersonalInfo);
-    return updatedPersonalInfo;
+    const updatedInfo = { 
+      ...personalInfo, 
+      ...personalInfoData,
+      updatedAt: new Date() 
+    };
+    
+    this.userPersonalInfo.set(id, updatedInfo);
+    return updatedInfo;
   };
-
-  MemStoragePrototype.deleteUserPersonalInfo = async function(id: number): Promise<boolean> {
+  
+  // Delete personal info
+  memStoragePrototype.deleteUserPersonalInfo = async function(id: number): Promise<boolean> {
     return this.userPersonalInfo.delete(id);
   };
 }
