@@ -65,6 +65,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     await handleCreateDemoProfiles(req, res, storage);
   });
   
+  // Add a special endpoint to create comprehensive demo data with all components
+  apiRouter.post("/debug/create-comprehensive-demo", async (req: Request, res: Response) => {
+    try {
+      console.log("Creating comprehensive demo data with all profile components");
+      
+      // Import the function to initialize all comprehensive demo data
+      const { initializeComprehensiveDemoData } = await import('./initialize-demo-data');
+      
+      // Initialize all comprehensive demo data
+      await initializeComprehensiveDemoData(storage);
+      
+      res.status(200).json({
+        success: true,
+        message: "Successfully created comprehensive demo data including users, work experiences, education, skills, projects, services, and personal info"
+      });
+    } catch (error) {
+      console.error("Error creating comprehensive demo data:", error);
+      res.status(500).json({
+        success: false,
+        message: "Error creating comprehensive demo data",
+        error: String(error)
+      });
+    }
+  });
+  
   // Add a special endpoint to clear all demo user profile data (for development purposes)
   apiRouter.get("/debug/reset-demo-profile", async (req: Request, res: Response) => {
     try {
