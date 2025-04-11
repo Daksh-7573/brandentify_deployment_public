@@ -1,9 +1,8 @@
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import { 
   Mail, 
   Phone, 
   Globe, 
-  Briefcase, 
   MapPin, 
   Building2, 
   Hash,
@@ -41,10 +40,10 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
   const [copySuccess, setCopySuccess] = useState<string | null>(null);
   
   // Format profile link
-  const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;
+  const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\\s+/g, '') : userData.username}`;
   
   // Define industry tags
-  const industryTags = userData.industry ? userData.industry.split(/,\s*/) : [];
+  const industryTags = userData.industry ? userData.industry.split(/,\\s*/) : [];
   if (!industryTags.length && userData.industry) {
     industryTags.push(userData.industry);
   }
@@ -156,16 +155,34 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
         <div className="h-full w-full p-6 flex flex-col">
           {/* Profile Identity Section */}
           <div className="flex flex-col items-center mb-6">
-            {/* Profile picture with elevation */}
+            {/* Profile picture with paperclip effect */}
             <div 
               className="relative mb-4"
               onMouseEnter={() => setHoveredSection('profile')}
               onMouseLeave={() => setHoveredSection(null)}
               style={{
                 transition: "transform 0.3s ease",
-                transform: hoveredSection === 'profile' ? 'translateY(-3px)' : 'translateY(0)'
+                transform: hoveredSection === 'profile' ? 'translateY(-3px) rotate(1deg)' : 'translateY(0) rotate(0deg)'
               }}
             >
+              {/* Paperclip effect */}
+              <div 
+                className="absolute -top-3 left-1/2 transform -translate-x-1/2 w-6 h-10 z-20"
+                style={{
+                  background: "linear-gradient(to bottom, #b8b8b8, #d8d8d8)",
+                  borderRadius: "3px 3px 0 0",
+                  boxShadow: "inset 1px 1px 0 rgba(255,255,255,0.4), inset -1px 0 0 rgba(0,0,0,0.1)"
+                }}
+              >
+                <div 
+                  className="absolute bottom-0 left-0 right-0 h-2"
+                  style={{
+                    background: "#a0a0a0",
+                    borderRadius: "0 0 3px 3px"
+                  }}
+                />
+              </div>
+              
               {/* Shadow layer for depth effect */}
               <div 
                 className="absolute rounded-full bg-slate-200" 
@@ -207,7 +224,7 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
               </div>
             </div>
             
-            {/* Name and Job Title */}
+            {/* Name and Job Title with letterpress effect */}
             <div 
               className="text-center mb-4 relative"
               style={{
@@ -219,7 +236,11 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
                 style={{
                   fontFamily: "'Poppins', sans-serif", 
                   letterSpacing: "0.01em",
-                  textShadow: "1px 1px 0 white"
+                  textShadow: "0px 1px 0 white",
+                  color: "#404040",
+                  transform: "translateZ(0)",
+                  WebkitFontSmoothing: "subpixel-antialiased",
+                  textRendering: "optimizeLegibility"
                 }}
               >
                 {userData.name || "Your Name"}
@@ -228,7 +249,8 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
                 className="text-sm text-slate-600"
                 style={{
                   fontFamily: "'Nunito', sans-serif",
-                  letterSpacing: "0.03em"
+                  letterSpacing: "0.03em",
+                  color: "#595959"
                 }}
               >
                 {userData.title || "Add your designation"}
@@ -247,7 +269,7 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
           
           {/* Professional Details Section */}
           <div className="mb-6">
-            {/* Industry tags displayed as paper chips */}
+            {/* Industry tags displayed as textured label strips */}
             {industryTags.length > 0 && (
               <div className="flex flex-wrap justify-center gap-2 mb-4">
                 {industryTags.map((tag, index) => (
@@ -260,6 +282,8 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
                                 clayColors.taupe,
                       fontFamily: "'Nunito', sans-serif",
                       letterSpacing: "0.03em",
+                      // Torn edge effect
+                      clipPath: "polygon(2% 0%, 98% 3%, 100% 98%, 1% 95%, 0% 10%)",
                       ...getElementStyle(
                         `tag-${index}`, 
                         "0 1px 2px rgba(0, 0, 0, 0.05), inset 0 0 0 1px rgba(0, 0, 0, 0.05)",
@@ -269,21 +293,22 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
                     onMouseEnter={() => setHoveredSection(`tag-${index}`)}
                     onMouseLeave={() => setHoveredSection(null)}
                   >
-                    <Hash className="h-3 w-3 mr-1 text-blue-500" />
+                    <Hash className="h-3 w-3 mr-1 text-slate-700" />
                     {tag.trim()}
                   </div>
                 ))}
               </div>
             )}
             
-            {/* Company in a clay-toned box */}
+            {/* Company on folded paper corner */}
             {userData.company && (
               <div 
-                className="flex items-center justify-center gap-2 mb-3 mx-auto px-4 py-2 rounded-lg max-w-[85%]"
+                className="relative flex items-center justify-center gap-2 mb-3 mx-auto px-4 py-2 max-w-[85%]"
                 style={{
-                  background: `linear-gradient(to bottom, ${clayColors.offWhite}, ${clayColors.taupe})`,
+                  background: `linear-gradient(to bottom, ${clayColors.offWhite}, ${clayColors.coolIvory})`,
                   fontFamily: "'Nunito', sans-serif",
                   letterSpacing: "0.02em",
+                  borderRadius: "6px",
                   ...getElementStyle(
                     'company',
                     "0 1px 3px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9)",
@@ -293,8 +318,19 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
                 onMouseEnter={() => setHoveredSection('company')}
                 onMouseLeave={() => setHoveredSection(null)}
               >
+                {/* Folded corner */}
+                <div 
+                  className="absolute top-0 right-0 w-8 h-8"
+                  style={{
+                    background: clayColors.taupe,
+                    transformOrigin: "top right",
+                    transform: "rotate(-90deg)",
+                    clipPath: "polygon(0 0, 100% 0, 100% 100%)",
+                    opacity: 0.6
+                  }}
+                />
                 <div className="flex items-center justify-center w-6 h-6 rounded-full bg-white shadow-sm">
-                  <Building2 className="h-3.5 w-3.5 text-blue-500" />
+                  <Building2 className="h-3.5 w-3.5 text-slate-700" />
                 </div>
                 <span className="text-sm text-slate-700">{userData.company}</span>
               </div>
@@ -315,7 +351,7 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
                   onMouseLeave={() => setHoveredSection(null)}
                 >
                   <div className="flex items-center justify-center w-6 h-6 rounded-full bg-slate-50 shadow-sm">
-                    <MapPin className="h-3.5 w-3.5 text-blue-500" />
+                    <MapPin className="h-3.5 w-3.5 text-slate-700" />
                   </div>
                   <span className="text-sm text-slate-700">{userData.location}</span>
                 </div>
@@ -334,8 +370,16 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
             )}
           </div>
           
-          {/* Contact Section */}
-          <div className="mt-auto space-y-3">
+          {/* Contact Section - Slide-in Paper Drawer */}
+          <div 
+            className="mt-auto space-y-3 relative"
+            style={{
+              transform: hoveredSection && hoveredSection.startsWith('contact') ? 'translateY(-5px)' : 'translateY(0)',
+              transition: "transform 0.3s ease"
+            }}
+            onMouseEnter={() => setHoveredSection('contact-section')}
+            onMouseLeave={() => setHoveredSection(null)}
+          >
             {/* Email Address */}
             <div 
               className="flex items-center justify-between px-3 py-2 rounded-md border border-slate-100"
@@ -353,7 +397,7 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
               onMouseLeave={() => setHoveredSection(null)}
             >
               <div className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-blue-500" />
+                <Mail className="h-4 w-4 text-slate-700" />
                 <span className="text-sm text-slate-700 truncate max-w-[150px]">
                   {userData.email}
                 </span>
@@ -387,7 +431,7 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
                 onMouseLeave={() => setHoveredSection(null)}
               >
                 <div className="flex items-center gap-2">
-                  <Phone className="h-4 w-4 text-blue-500" />
+                  <Phone className="h-4 w-4 text-slate-700" />
                   <span className="text-sm text-slate-700 truncate max-w-[150px]">
                     {userData.phoneNumber}
                   </span>
@@ -421,7 +465,7 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
               onMouseLeave={() => setHoveredSection(null)}
             >
               <div className="flex items-center gap-2">
-                <Globe className="h-4 w-4 text-blue-500" />
+                <Globe className="h-4 w-4 text-slate-700" />
                 <span className="text-sm text-slate-700 truncate max-w-[150px]">
                   {profileLink}
                 </span>
@@ -523,30 +567,32 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
       </div>
       
       {/* CSS Animations */}
-      <style>{`
-        @keyframes fadeInOut {
-          0% { opacity: 0; transform: translate(-50%, 10px); }
-          10% { opacity: 1; transform: translate(-50%, 0); }
-          90% { opacity: 1; transform: translate(-50%, 0); }
-          100% { opacity: 0; transform: translate(-50%, -10px); }
-        }
-        
-        @media print {
-          body * {
-            visibility: hidden;
+      <style>
+        {`
+          @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(-50%, 10px); }
+            10% { opacity: 1; transform: translate(-50%, 0); }
+            90% { opacity: 1; transform: translate(-50%, 0); }
+            100% { opacity: 0; transform: translate(-50%, -10px); }
           }
-          .clay-paper-card, .clay-paper-card * {
-            visibility: visible;
+          
+          @media print {
+            body * {
+              visibility: hidden;
+            }
+            .clay-paper-card, .clay-paper-card * {
+              visibility: visible;
+            }
+            .clay-paper-card {
+              position: absolute;
+              left: 0;
+              top: 0;
+              width: 100%;
+              height: 100%;
+            }
           }
-          .clay-paper-card {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-          }
-        }
-      `}</style>
+        `}
+      </style>
     </div>
   );
 };
