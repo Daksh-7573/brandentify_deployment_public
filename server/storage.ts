@@ -1,4 +1,4 @@
-import { addUserPersonalInfoMethods } from './user-personal-info';
+// Implementation of UserPersonalInfo is now included directly in this file
 
 import { 
   users, User, InsertUser, 

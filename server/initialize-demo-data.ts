@@ -4,6 +4,8 @@
  */
 
 import { IStorage } from "./storage";
+
+// Methods are imported from demo files
 import { createDemoProfiles } from "./demo-profiles";
 import { addDemoServices } from "./demo-services";
 import { addDemoPersonalInfo } from "./demo-personal-info";
