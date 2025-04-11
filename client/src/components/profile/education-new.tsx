@@ -160,19 +160,11 @@ export default function Education() {
       // Check if we're editing an existing education (has an id) or creating a new one
       if (newEducation.id) {
         // Update existing education
-        response = await apiRequest(`/api/educations/${newEducation.id}`, {
-          method: 'PUT',
-          body: JSON.stringify(educationToSave),
-          headers: { 'Content-Type': 'application/json' }
-        });
+        response = await apiRequest('PUT', `/api/educations/${newEducation.id}`, educationToSave);
         successMessage = "Your education has been updated successfully";
       } else {
         // Create new education
-        response = await apiRequest('/api/educations', {
-          method: 'POST',
-          body: JSON.stringify(educationToSave),
-          headers: { 'Content-Type': 'application/json' }
-        });
+        response = await apiRequest('POST', '/api/educations', educationToSave);
         successMessage = "Your education has been added successfully";
       }
       
@@ -237,8 +229,11 @@ export default function Education() {
 
   const handleDelete = async (id: number) => {
     try {
+      console.log("Deleting education with ID:", id);
       const response = await apiRequest('DELETE', `/api/educations/${id}`);
+      
       if (response.ok) {
+        console.log("Education deleted successfully");
         // Update local state immediately for responsiveness
         setEducations(educations.filter(edu => edu.id !== id));
         
@@ -251,7 +246,9 @@ export default function Education() {
         // Refresh data
         refetch();
       } else {
-        throw new Error("Failed to delete education");
+        const errorData = await response.json();
+        console.error("Server error response:", errorData);
+        throw new Error(`Failed to delete education: ${JSON.stringify(errorData)}`);
       }
     } catch (error) {
       console.error("Error deleting education:", error);
