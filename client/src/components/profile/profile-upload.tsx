@@ -152,14 +152,15 @@ export function ProfileUpload({
       // Center point of transformation
       ctx.translate(canvas.width / 2, canvas.height / 2);
       
-      // Rotation
-      ctx.rotate((rotation * Math.PI) / 180);
+      // CRITICAL: Match the exact transform order in the CSS
+      // First position offset
+      ctx.translate(offsetX, offsetY);
       
-      // Zoom
+      // Then zoom
       ctx.scale(zoomLevel, zoomLevel);
       
-      // Position offset
-      ctx.translate(offsetX, offsetY);
+      // Then rotation
+      ctx.rotate((rotation * Math.PI) / 180);
       
       // Draw image
       ctx.drawImage(
@@ -262,7 +263,9 @@ export function ProfileUpload({
                 alt="Profile Preview"
                 className="max-w-none"
                 style={{ 
-                  transform: `rotate(${rotation}deg) scale(${zoomLevel}) translate(${offsetX}px, ${offsetY}px)`,
+                  /* Transformation order is critically important: 
+                     Must match exactly with the canvas transformation order in handleSave */
+                  transform: `translate(${offsetX}px, ${offsetY}px) scale(${zoomLevel}) rotate(${rotation}deg)`,
                   transformOrigin: 'center',
                   transition: isDragging ? 'none' : 'transform 0.2s ease-out',
                 }}
