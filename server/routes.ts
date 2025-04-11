@@ -153,6 +153,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // UserPersonalInfo routes
+  apiRouter.get('/personal-info/:userId', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+      }
+      
+      const personalInfo = await storage.getUserPersonalInfoByUserId(userId);
+      if (!personalInfo) {
+        return res.status(404).json({ message: "Personal info not found" });
+      }
+      
+      return res.json(personalInfo);
+    } catch (error) {
+      console.error("[GET /personal-info/:userId] Error:", error);
+      return res.status(500).json({ message: "Server error" });
+    }
+  });
+  
+  apiRouter.post('/personal-info', async (req: Request, res: Response) => {
+    try {
+      const personalInfo = await storage.createUserPersonalInfo(req.body);
+      return res.status(201).json(personalInfo);
+    } catch (error) {
+      console.error("[POST /personal-info] Error:", error);
+      return res.status(500).json({ message: "Server error" });
+    }
+  });
+  
+  apiRouter.patch('/personal-info/:id', async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid ID" });
+      }
+      
+      const updatedInfo = await storage.updateUserPersonalInfo(id, req.body);
+      if (!updatedInfo) {
+        return res.status(404).json({ message: "Personal info not found" });
+      }
+      
+      return res.json(updatedInfo);
+    } catch (error) {
+      console.error("[PATCH /personal-info/:id] Error:", error);
+      return res.status(500).json({ message: "Server error" });
+    }
+  });
+  
+  apiRouter.delete('/personal-info/:id', async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid ID" });
+      }
+      
+      const deleted = await storage.deleteUserPersonalInfo(id);
+      if (!deleted) {
+        return res.status(404).json({ message: "Personal info not found" });
+      }
+      
+      return res.status(204).end();
+    } catch (error) {
+      console.error("[DELETE /personal-info/:id] Error:", error);
+      return res.status(500).json({ message: "Server error" });
+    }
+  });
+
   // User routes
   apiRouter.post("/users", async (req: Request, res: Response) => {
     try {
