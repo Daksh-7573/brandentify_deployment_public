@@ -39,6 +39,12 @@ export interface IStorage {
   isHashtagFollowedByUser(userId: number, hashtagId: number): Promise<boolean>;
   getPulsesByFollowedHashtags(userId: number): Promise<Pulse[]>;
   
+  // User Personal Info operations
+  getUserPersonalInfoByUserId(userId: number): Promise<UserPersonalInfo | undefined>;
+  createUserPersonalInfo(personalInfo: InsertUserPersonalInfo): Promise<UserPersonalInfo>;
+  updateUserPersonalInfo(id: number, personalInfoData: Partial<UserPersonalInfo>): Promise<UserPersonalInfo | undefined>;
+  deleteUserPersonalInfo(id: number): Promise<boolean>;
+  
   // User operations
   getUser(id: number): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;

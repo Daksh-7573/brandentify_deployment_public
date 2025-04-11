@@ -8,16 +8,16 @@ import { InsertUserPersonalInfo, UserPersonalInfo } from '../shared/schema';
 export function addUserPersonalInfoMethods(MemStoragePrototype: any) {
   // User Personal Info operations
   MemStoragePrototype.getUserPersonalInfoByUserId = async function(userId: number): Promise<UserPersonalInfo | undefined> {
-    return Array.from(this.userPersonalInfo.values())
-      .find(info => info.userId === userId);
+    const allInfo = Array.from(this.userPersonalInfo.values());
+    return allInfo.find(info => info.userId === userId);
   };
 
   MemStoragePrototype.createUserPersonalInfo = async function(personalInfo: InsertUserPersonalInfo): Promise<UserPersonalInfo> {
     const id = this.currentUserPersonalInfoId++;
     const createdAt = new Date();
     const userPersonalInfo: UserPersonalInfo = { 
-      ...personalInfo, 
       id,
+      userId: personalInfo.userId,
       createdAt,
       updatedAt: createdAt,
       contactEmail: personalInfo.contactEmail ?? null,
@@ -27,6 +27,7 @@ export function addUserPersonalInfoMethods(MemStoragePrototype: any) {
       linkedinProfile: personalInfo.linkedinProfile ?? null,
       twitterProfile: personalInfo.twitterProfile ?? null,
       instagramProfile: personalInfo.instagramProfile ?? null,
+      calendlyLink: personalInfo.calendlyLink ?? null,
       preferredContactMethod: personalInfo.preferredContactMethod ?? null
     };
     this.userPersonalInfo.set(id, userPersonalInfo);
