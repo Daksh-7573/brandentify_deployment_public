@@ -13,7 +13,9 @@ import {
   Github, 
   Twitter,
   Instagram,
-  QrCode
+  MessageCircle,
+  Copy,
+  Hash
 } from "lucide-react";
 
 interface ThreeDAnimatedCardProps {
@@ -21,19 +23,41 @@ interface ThreeDAnimatedCardProps {
 }
 
 const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => {
-  const [isFlipped, setIsFlipped] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const [rotateX, setRotateX] = useState(0);
   const [rotateY, setRotateY] = useState(0);
   const [glowIntensity, setGlowIntensity] = useState(0);
-  const [showQR, setShowQR] = useState(false);
+  const [showContactInfo, setShowContactInfo] = useState(false);
+  const [copySuccess, setCopySuccess] = useState("");
   const cardRef = useRef<HTMLDivElement>(null);
+  const cardContentRef = useRef<HTMLDivElement>(null);
   
   // Format profile link
   const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;
   
+  // Define industry tags
+  const industryTags = userData.industry ? userData.industry.split(/,\s*/) : [];
+  if (!industryTags.length && userData.industry) {
+    industryTags.push(userData.industry);
+  }
+  
+  // Handle entrance animation
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (cardContentRef.current) {
+        cardContentRef.current.style.opacity = "1";
+        cardContentRef.current.style.transform = "translateY(0)";
+      }
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, []);
+  
   // Handle mouse/touch movement for 3D effect
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
-    if (!cardRef.current || isFlipped) return;
+    if (!cardRef.current) return;
+    
+    setIsHovered(true);
     
     const rect = cardRef.current.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
@@ -48,10 +72,10 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
     const mouseY = clientY - centerY;
     
     // Calculate rotation (max 15 degrees)
-    const rotX = (mouseY / (rect.height / 2)) * -8; // Invert Y rotation for natural tilt
-    const rotY = (mouseX / (rect.width / 2)) * 8;
+    const rotX = (mouseY / (rect.height / 2)) * -10; // Invert Y rotation for natural tilt
+    const rotY = (mouseX / (rect.width / 2)) * 10;
     
-    // Calculate glow based on movement (max 8px)
+    // Calculate glow based on movement
     const movement = Math.sqrt(Math.pow(mouseX, 2) + Math.pow(mouseY, 2));
     const normalizedMovement = Math.min(movement / (rect.width / 2), 1);
     const glow = normalizedMovement * 15;
@@ -64,417 +88,326 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
   
   // Reset on mouse/touch leave
   const handleMovementEnd = () => {
-    if (isFlipped) return;
+    setIsHovered(false);
     setRotateX(0);
     setRotateY(0);
     setGlowIntensity(0);
   };
   
-  // Toggle card flip
-  const toggleFlip = () => {
-    setIsFlipped(!isFlipped);
-    
-    // Reset transforms when flipping
-    if (!isFlipped) {
-      setRotateX(0);
-      setRotateY(0);
-      setGlowIntensity(0);
-    }
+  // Toggle contact info slide-in
+  const toggleContactInfo = () => {
+    setShowContactInfo(!showContactInfo);
   };
   
-  // Handle QR code display
-  const toggleQR = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent card flip
-    setShowQR(!showQR);
+  // Copy to clipboard function
+  const copyToClipboard = (text: string, type: string) => {
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        setCopySuccess(`${type} copied!`);
+        setTimeout(() => setCopySuccess(""), 2000);
+      })
+      .catch(err => {
+        console.error('Error copying text: ', err);
+      });
   };
-  
-  // Mock data for QR code
-  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(profileLink)}`;
   
   return (
     <div className="w-full" style={{ perspective: "1200px" }}>
       <div 
         ref={cardRef}
-        className="w-full aspect-[2/3.5] rounded-xl overflow-hidden shadow-xl relative cursor-pointer"
+        className="w-full aspect-[2/3.5] rounded-[20px] overflow-hidden relative cursor-pointer"
         style={{
           transformStyle: "preserve-3d",
-          transform: isFlipped 
-            ? `rotateY(180deg)` 
-            : `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
-          boxShadow: `0 10px 30px -5px rgba(0, 0, 0, 0.5), 
-                     0 0 ${glowIntensity}px ${Math.max(1, glowIntensity / 2)}px rgba(139, 92, 246, ${0.3 + glowIntensity / 30})`,
-          transition: "transform 0.6s cubic-bezier(0.15, 1.15, 0.6, 1)"
+          transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
+          boxShadow: isHovered 
+            ? `0 25px 50px -12px rgba(0, 0, 0, 0.4),
+               0 0 ${glowIntensity}px ${Math.max(2, glowIntensity / 2)}px rgba(56, 189, 248, ${0.4 + glowIntensity / 25})`
+            : `0 10px 30px -5px rgba(0, 0, 0, 0.3),
+               0 0 5px 1px rgba(56, 189, 248, 0.3)`,
+          transition: "box-shadow 0.3s ease-out",
         }}
-        onClick={toggleFlip}
         onMouseMove={handleMouseMove}
         onTouchMove={handleMouseMove}
         onMouseLeave={handleMovementEnd}
         onTouchEnd={handleMovementEnd}
+        onClick={toggleContactInfo}
       >
-        {/* Front of card */}
+        {/* Glassmorphism background */}
         <div 
-          className="absolute inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900 text-white flex flex-col overflow-hidden"
-          style={{ 
-            backfaceVisibility: "hidden",
-            WebkitBackfaceVisibility: "hidden"
+          className="absolute inset-0 z-0"
+          style={{
+            background: `
+              linear-gradient(135deg, 
+              rgba(30, 41, 59, 0.8) 0%, 
+              rgba(17, 24, 39, 0.9) 100%)
+            `,
+            backdropFilter: "blur(10px)",
+            WebkitBackdropFilter: "blur(10px)",
+            borderRadius: "20px",
+            border: "1px solid rgba(255, 255, 255, 0.1)",
+            overflow: "hidden"
           }}
         >
-          {/* Glass sphere effect for profile picture */}
-          <div className="mt-10 relative flex items-center justify-center">
-            {/* Circular background glow */}
-            <div className="absolute w-36 h-36 rounded-full bg-gradient-to-tr from-fuchsia-600/20 via-transparent to-blue-500/20 opacity-70 blur-sm"></div>
-            
-            {/* Glass sphere */}
-            <div className="relative w-32 h-32 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 shadow-xl overflow-hidden flex items-center justify-center z-10">
-              {/* Inner reflective highlight */}
-              <div className="absolute top-0 left-1/4 w-1/2 h-1/4 bg-white/20 rounded-full blur-sm transform rotate-45"></div>
-              
-              {/* Profile picture with fallback */}
-              {userData.photoURL ? (
-                <img 
-                  src={userData.photoURL} 
-                  alt={userData.name || "Profile"} 
-                  className="h-28 w-28 rounded-full object-cover"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = "https://ui-avatars.com/api/?name=" + (userData.name || "User") + "&background=6366f1&color=fff";
-                  }}
-                />
-              ) : (
-                <img 
-                  src={`https://ui-avatars.com/api/?name=${userData.name || "User"}&background=6366f1&color=fff`}
-                  alt={userData.name || "Profile"}
-                  className="h-28 w-28 rounded-full object-cover"
-                />
-              )}
-              
-              {/* Curved glass reflection */}
-              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/10 to-transparent"></div>
-            </div>
-            
-            {/* Floating orb decorations */}
-            <div 
-              className="absolute top-5 right-1/4 w-5 h-5 rounded-full bg-indigo-500/40 blur-sm" 
-              style={{ 
-                animation: "floating 3s ease-in-out infinite",
-                animationDelay: "0.5s"
-              }}
-            ></div>
-            <div 
-              className="absolute bottom-5 left-1/4 w-3 h-3 rounded-full bg-fuchsia-500/40 blur-sm" 
-              style={{ 
-                animation: "floating 3s ease-in-out infinite",
-                animationDelay: "1s"
-              }}
-            ></div>
-          </div>
+          {/* Animated gradient overlay */}
+          <div 
+            className="absolute inset-0 opacity-30"
+            style={{
+              background: "linear-gradient(45deg, transparent 65%, rgba(56, 189, 248, 0.4) 100%)",
+              filter: "blur(5px)",
+              animation: isHovered ? "gradientShift 3s ease infinite" : "none"
+            }}
+          ></div>
           
-          {/* Main content */}
-          <div className="flex-1 px-6 pt-8 pb-6 flex flex-col relative mt-2">
-            {/* Glowing background effect */}
-            <div className="absolute inset-0 bg-gradient-to-b from-indigo-900/0 via-fuchsia-900/20 to-transparent blur-md"></div>
-            
-            {/* Name and title with holographic effect */}
-            <div className="text-center mb-6 relative z-10">
-              <h2 
-                className="text-2xl font-semibold mb-1"
-                style={{ 
-                  backgroundImage: "linear-gradient(90deg, rgba(99,102,241,1) 0%, rgba(168,85,247,1) 35%, rgba(59,130,246,1) 70%, rgba(99,102,241,1) 100%)",
-                  backgroundSize: "200% auto",
-                  WebkitBackgroundClip: "text",
-                  backgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  animation: "shine 4s linear infinite"
+          {/* Subtle particles */}
+          <div className="particles-container absolute inset-0 overflow-hidden">
+            {[...Array(12)].map((_, i) => (
+              <div 
+                key={i}
+                className="particle absolute rounded-full bg-white/10"
+                style={{
+                  width: `${Math.random() * 4 + 1}px`,
+                  height: `${Math.random() * 4 + 1}px`,
+                  top: `${Math.random() * 100}%`,
+                  left: `${Math.random() * 100}%`,
+                  opacity: Math.random() * 0.5 + 0.1,
+                  animation: `float ${Math.random() * 10 + 10}s linear infinite`
                 }}
-              >
-                {userData.name || "Your Name"}
-              </h2>
-              <p className="text-base text-indigo-200 font-light tracking-wide">
-                {userData.title || "Add your designation"}
-              </p>
-            </div>
-            
-            {/* Information with glow hover effects */}
-            <div className="flex-1 space-y-4 text-sm relative z-10">
-              {/* Domain with metallic effect */}
-              {userData.domain && (
-                <div className="flex items-center gap-3">
-                  <div 
-                    className="h-8 w-8 rounded-full bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center"
-                    style={{ 
-                      animation: "glowPulse 2s ease-in-out infinite"
-                    }}
-                  >
-                    <Code className="h-4 w-4 text-indigo-300" />
-                  </div>
-                  <span className="text-indigo-100 font-light">
-                    {userData.domain}
-                  </span>
-                </div>
-              )}
-              
-              {/* Industry */}
-              {userData.industry && (
-                <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-full bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center">
-                    <Building2 className="h-4 w-4 text-indigo-300" />
-                  </div>
-                  <span className="text-indigo-100 font-light">
-                    {userData.industry}
-                  </span>
-                </div>
-              )}
-              
-              {/* Company - clickable with glow effect */}
-              {userData.company && (
-                <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-full bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center">
-                    <Briefcase className="h-4 w-4 text-indigo-300" />
-                  </div>
-                  <a 
-                    href="#" 
-                    className="text-indigo-100 font-light flex items-center gap-1 hover:text-fuchsia-300 transition-colors group" 
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <span>{userData.company}</span>
-                    <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </a>
-                </div>
-              )}
-              
-              {/* Location */}
-              {userData.location && (
-                <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-full bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center">
-                    <MapPin className="h-4 w-4 text-indigo-300" />
-                  </div>
-                  <span className="text-indigo-100 font-light">
-                    {userData.location}
-                  </span>
-                </div>
-              )}
-            </div>
-            
-            {/* Social links */}
-            <div className="flex justify-center gap-4 mt-4 relative z-10">
-              <div className="h-9 w-9 rounded-full bg-indigo-600/30 border border-indigo-400/20 flex items-center justify-center hover:bg-indigo-500/40 transition-colors cursor-pointer">
-                <Linkedin className="h-4 w-4 text-indigo-200" />
-              </div>
-              <div className="h-9 w-9 rounded-full bg-indigo-600/30 border border-indigo-400/20 flex items-center justify-center hover:bg-indigo-500/40 transition-colors cursor-pointer">
-                <Twitter className="h-4 w-4 text-indigo-200" />
-              </div>
-              <div className="h-9 w-9 rounded-full bg-indigo-600/30 border border-indigo-400/20 flex items-center justify-center hover:bg-indigo-500/40 transition-colors cursor-pointer">
-                <Github className="h-4 w-4 text-indigo-200" />
-              </div>
-              <div className="h-9 w-9 rounded-full bg-indigo-600/30 border border-indigo-400/20 flex items-center justify-center hover:bg-indigo-500/40 transition-colors cursor-pointer">
-                <Instagram className="h-4 w-4 text-indigo-200" />
-              </div>
-            </div>
-            
-            {/* Hint text */}
-            <div className="text-center mt-4 text-xs text-indigo-200/60 z-10">
-              <p>Tap to flip for contact info</p>
-            </div>
-          </div>
-          
-          {/* Futuristic footer */}
-          <div className="h-8 bg-indigo-900/30 backdrop-blur-sm border-t border-indigo-400/10 flex items-center justify-center relative">
-            <div className="absolute inset-0 bg-gradient-to-t from-fuchsia-600/10 to-transparent"></div>
-            <span className="text-xs text-indigo-200/70 font-light relative z-10 tracking-widest">QUANTUM CARD</span>
+              ></div>
+            ))}
           </div>
         </div>
         
-        {/* Back of card with contact details */}
+        {/* Card content with entrance animation */}
         <div 
-          className="absolute inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900 text-white flex flex-col"
-          style={{ 
-            backfaceVisibility: "hidden", 
-            WebkitBackfaceVisibility: "hidden",
-            transform: "rotateY(180deg)"
+          ref={cardContentRef}
+          className="absolute inset-0 z-10 flex flex-col p-6"
+          style={{
+            opacity: 0,
+            transform: "translateY(10px)",
+            transition: "opacity 0.6s ease-out, transform 0.6s ease-out"
           }}
         >
-          {/* Header with glass effect */}
-          <div className="h-16 bg-indigo-900/30 backdrop-blur-sm border-b border-indigo-400/10 flex items-center justify-center relative">
-            <div className="absolute inset-0 bg-gradient-to-b from-fuchsia-600/10 to-transparent"></div>
-            <h2 
-              className="text-lg font-semibold relative z-10"
-              style={{ 
-                backgroundImage: "linear-gradient(90deg, rgba(99,102,241,1) 0%, rgba(168,85,247,1) 35%, rgba(59,130,246,1) 70%, rgba(99,102,241,1) 100%)",
-                backgroundSize: "200% auto",
-                WebkitBackgroundClip: "text",
-                backgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                animation: "shine 4s linear infinite"
-              }}
-            >
-              Contact Information
-            </h2>
+          {/* Top section - Profile identity */}
+          <div className="flex flex-col items-center mb-6">
+            {/* Profile picture with animated glow */}
+            <div className="relative mb-4">
+              {/* Animated glow ring */}
+              <div 
+                className="absolute inset-0 rounded-full"
+                style={{
+                  background: "conic-gradient(from 0deg, #38bdf8, #818cf8, #c084fc, #38bdf8)",
+                  filter: "blur(8px)",
+                  opacity: isHovered ? 0.8 : 0.4,
+                  transform: "scale(1.2)",
+                  animation: "spin 5s linear infinite",
+                  transition: "opacity 0.3s ease"
+                }}
+              ></div>
+              
+              {/* Profile image container */}
+              <div className="w-24 h-24 rounded-full overflow-hidden border border-slate-700 relative z-10 transform-gpu" style={{
+                boxShadow: "0 0 20px rgba(56, 189, 248, 0.3)"
+              }}>
+                {userData.photoURL ? (
+                  <img 
+                    src={userData.photoURL} 
+                    alt={userData.name || "Profile"} 
+                    className="h-full w-full object-cover"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = "https://ui-avatars.com/api/?name=" + (userData.name || "User") + "&background=1e3a8a&color=fff";
+                    }}
+                  />
+                ) : (
+                  <img 
+                    src={`https://ui-avatars.com/api/?name=${userData.name || "User"}&background=1e3a8a&color=fff`}
+                    alt={userData.name || "Profile"}
+                    className="h-full w-full object-cover"
+                  />
+                )}
+              </div>
+            </div>
+            
+            {/* Name and title */}
+            <div className="text-center" style={{ transform: `translateZ(30px)` }}>
+              <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-white to-slate-300 mb-1">
+                {userData.name || "Your Name"}
+              </h2>
+              <p className="text-sm text-sky-200/90 font-light">
+                {userData.title || "Add your designation"}
+              </p>
+            </div>
           </div>
           
-          {/* Main content */}
-          <div className="flex-1 p-6 flex flex-col relative">
-            {/* Radial gradient background */}
-            <div className="absolute inset-0 opacity-50" style={{ backgroundImage: "radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 70%)" }}></div>
-            
-            {/* QR code section - visible only when button is clicked */}
-            {showQR && (
-              <div 
-                className="absolute inset-0 bg-slate-900/90 backdrop-blur-sm z-30 flex flex-col items-center justify-center p-6"
-                style={{ animation: "qrReveal 0.3s ease-out" }}
-              >
-                <div 
-                  className="w-48 h-48 bg-white p-3 rounded-lg"
-                  style={{ animation: "glowPulse 2s ease-in-out infinite" }}
-                >
-                  <img src={qrCodeUrl} alt="QR Code" className="w-full h-full" />
-                </div>
-                <p className="text-sm text-indigo-200 mt-4">{profileLink}</p>
-                <button 
-                  className="mt-6 px-4 py-2 bg-indigo-600/30 border border-indigo-400/20 rounded-md text-sm text-indigo-200 hover:bg-indigo-500/40 transition-colors"
-                  onClick={toggleQR}
-                >
-                  Close
-                </button>
+          {/* Professional details section */}
+          <div className="space-y-4 mb-6">
+            {/* Industry/domain tags */}
+            {industryTags.length > 0 && (
+              <div className="flex flex-wrap justify-center gap-2 mb-5">
+                {industryTags.map((tag, index) => (
+                  <div 
+                    key={index}
+                    className="flex items-center px-3 py-1 rounded-full bg-slate-800/60 border border-sky-900/30 text-xs text-sky-300"
+                  >
+                    <Hash className="h-3 w-3 mr-1 text-sky-400" />
+                    {tag.trim()}
+                  </div>
+                ))}
               </div>
             )}
             
-            {/* Contact items */}
-            <div className="space-y-5">
-              {/* Email with glow animation */}
-              <div className="flex items-center gap-4">
-                <div 
-                  className="h-12 w-12 rounded-full bg-indigo-600/20 border border-indigo-400/30 flex items-center justify-center shadow-lg"
-                  style={{ animation: "glowPulse 2s ease-in-out infinite" }}
+            {/* Company */}
+            {userData.company && (
+              <div className="flex items-center gap-3 text-white/90">
+                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-slate-800/60 text-sky-400">
+                  <Building2 className="h-4 w-4" />
+                </div>
+                <span className="text-sm">{userData.company}</span>
+              </div>
+            )}
+            
+            {/* Location */}
+            {userData.location && (
+              <div className="flex items-center gap-3 text-white/90">
+                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-slate-800/60 text-sky-400">
+                  <MapPin className="h-4 w-4" />
+                </div>
+                <span className="text-sm">{userData.location}</span>
+              </div>
+            )}
+          </div>
+          
+          {/* Footer section with profile link */}
+          <div className="mt-auto">
+            <div className="flex items-center justify-center gap-3 text-white/80">
+              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-slate-800/60 text-sky-400">
+                <Globe className="h-4 w-4" />
+              </div>
+              <span className="text-sm">{profileLink}</span>
+            </div>
+            
+            {/* Tap to view contact info */}
+            <div className="text-center mt-4">
+              <p className="text-xs text-sky-200/60">Tap to view contact info</p>
+            </div>
+          </div>
+        </div>
+        
+        {/* Contact information slide-in panel */}
+        <div 
+          className="absolute inset-x-0 bottom-0 bg-slate-900/90 backdrop-blur-lg border-t border-sky-900/30 p-5 rounded-t-3xl transition-transform duration-300 ease-in-out z-20"
+          style={{
+            transform: showContactInfo ? "translateY(0)" : "translateY(100%)",
+            height: "40%",
+            boxShadow: "0 -10px 30px -5px rgba(0, 0, 0, 0.3)"
+          }}
+        >
+          <div className="flex flex-col h-full">
+            <h3 className="text-lg font-semibold text-center text-white mb-4">Contact Information</h3>
+            
+            <div className="space-y-4">
+              {/* Email */}
+              <div className="flex items-center gap-3 text-white group">
+                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-slate-800/70 text-sky-400">
+                  <Mail className="h-5 w-5" />
+                </div>
+                <div className="flex-1 overflow-hidden">
+                  <p className="text-xs text-slate-400">Email</p>
+                  <p className="text-sm truncate">{userData.email}</p>
+                </div>
+                <button 
+                  className="p-2 rounded-full hover:bg-slate-700/50 transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    copyToClipboard(userData.email, "Email");
+                  }}
                 >
-                  <Mail className="h-5 w-5 text-indigo-300" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-xs text-indigo-300/70 font-light">Email</p>
-                  <a 
-                    href={`mailto:${userData.email}`} 
-                    className="text-indigo-100 text-sm font-light hover:text-fuchsia-300 transition-colors"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {userData.email}
-                  </a>
-                </div>
+                  <Copy className="h-4 w-4 text-slate-400" />
+                </button>
               </div>
               
               {/* Phone */}
-              <div className="flex items-center gap-4">
-                <div 
-                  className="h-12 w-12 rounded-full bg-indigo-600/20 border border-indigo-400/30 flex items-center justify-center shadow-lg"
-                  style={{ animation: "glowPulse 2s ease-in-out infinite" }}
-                >
-                  <Phone className="h-5 w-5 text-indigo-300" />
+              <div className="flex items-center gap-3 text-white group">
+                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-slate-800/70 text-sky-400">
+                  <Phone className="h-5 w-5" />
                 </div>
-                <div className="flex-1">
-                  <p className="text-xs text-indigo-300/70 font-light">Phone</p>
-                  <a 
-                    href={userData.phoneNumber ? `tel:${userData.phoneNumber}` : "#"} 
-                    className="text-indigo-100 text-sm font-light hover:text-fuchsia-300 transition-colors"
-                    onClick={(e) => e.stopPropagation()}
+                <div className="flex-1 overflow-hidden">
+                  <p className="text-xs text-slate-400">Phone</p>
+                  <p className="text-sm truncate">{userData.phoneNumber || "Add phone number"}</p>
+                </div>
+                {userData.phoneNumber && (
+                  <button 
+                    className="p-2 rounded-full hover:bg-slate-700/50 transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      copyToClipboard(userData.phoneNumber || "", "Phone");
+                    }}
                   >
-                    {userData.phoneNumber || "Add phone number"}
-                  </a>
-                </div>
+                    <Copy className="h-4 w-4 text-slate-400" />
+                  </button>
+                )}
               </div>
-              
-              {/* Profile Link */}
-              <div className="flex items-center gap-4">
-                <div 
-                  className="h-12 w-12 rounded-full bg-indigo-600/20 border border-indigo-400/30 flex items-center justify-center shadow-lg"
-                  style={{ animation: "glowPulse 2s ease-in-out infinite" }}
-                >
-                  <Globe className="h-5 w-5 text-indigo-300" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-xs text-indigo-300/70 font-light">Profile</p>
-                  <a 
-                    href={`https://${profileLink}`} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="text-indigo-100 text-sm font-light hover:text-fuchsia-300 transition-colors flex items-center gap-1"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <span>{profileLink}</span>
-                    <ExternalLink className="h-3 w-3" />
-                  </a>
-                </div>
-              </div>
-              
-              {/* Location with map link */}
-              {userData.location && (
-                <div className="flex items-center gap-4">
-                  <div 
-                    className="h-12 w-12 rounded-full bg-indigo-600/20 border border-indigo-400/30 flex items-center justify-center shadow-lg"
-                    style={{ animation: "glowPulse 2s ease-in-out infinite" }}
-                  >
-                    <MapPin className="h-5 w-5 text-indigo-300" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-xs text-indigo-300/70 font-light">Location</p>
-                    <a 
-                      href={`https://maps.google.com/?q=${encodeURIComponent(userData.location)}`} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-indigo-100 text-sm font-light hover:text-fuchsia-300 transition-colors flex items-center gap-1"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <span>{userData.location}</span>
-                      <ExternalLink className="h-3 w-3" />
-                    </a>
-                  </div>
-                </div>
-              )}
             </div>
             
-            {/* QR Code Button */}
-            <div className="flex justify-center mt-6">
-              <button 
-                className="px-4 py-2 bg-indigo-600/30 border border-indigo-400/20 rounded-md text-sm text-indigo-200 hover:bg-indigo-500/40 transition-colors flex items-center gap-2"
-                onClick={toggleQR}
-              >
-                <QrCode className="h-4 w-4" />
-                <span>View QR Code</span>
-              </button>
-            </div>
+            {/* Copy success message */}
+            {copySuccess && (
+              <div className="absolute top-2 right-2 bg-sky-500 text-white px-3 py-1 rounded-full text-xs animate-fade-in-out">
+                {copySuccess}
+              </div>
+            )}
             
-            {/* Hint text */}
-            <div className="text-center mt-auto text-xs text-indigo-200/60 pt-4">
-              <p>Tap to flip card</p>
+            <div className="text-center mt-auto">
+              <p className="text-xs text-slate-400">Tap card to close</p>
             </div>
-          </div>
-          
-          {/* Futuristic footer */}
-          <div className="h-8 bg-indigo-900/30 backdrop-blur-sm border-t border-indigo-400/10 flex items-center justify-center relative">
-            <div className="absolute inset-0 bg-gradient-to-t from-fuchsia-600/10 to-transparent"></div>
-            <span className="text-xs text-indigo-200/70 font-light relative z-10 tracking-widest">QUANTUM CARD</span>
           </div>
         </div>
+        
+        {/* Neon edge glow effect */}
+        <div 
+          className="absolute inset-0 rounded-[20px] pointer-events-none"
+          style={{
+            boxShadow: isHovered 
+              ? "inset 0 0 0 1px rgba(56, 189, 248, 0.5), 0 0 15px 2px rgba(56, 189, 248, 0.3)" 
+              : "inset 0 0 0 1px rgba(56, 189, 248, 0.2), 0 0 5px 1px rgba(56, 189, 248, 0.2)",
+            transition: "box-shadow 0.3s ease"
+          }}
+        ></div>
       </div>
       
       {/* CSS keyframes and animations */}
       <style jsx>{`
-        @keyframes shine {
-          to { background-position: 200% center; }
+        @keyframes spin {
+          from { transform: rotate(0deg) scale(1.2); }
+          to { transform: rotate(360deg) scale(1.2); }
         }
         
-        @keyframes floating {
-          0% { transform: translateY(0px); }
-          50% { transform: translateY(-8px); }
-          100% { transform: translateY(0px); }
+        @keyframes gradientShift {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
         }
         
-        @keyframes glowPulse {
-          0% { filter: drop-shadow(0 0 2px rgba(99,102,241,0.6)); }
-          50% { filter: drop-shadow(0 0 8px rgba(168,85,247,0.8)); }
-          100% { filter: drop-shadow(0 0 2px rgba(99,102,241,0.6)); }
+        @keyframes float {
+          0% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
+          100% { transform: translateY(0); }
         }
         
-        @keyframes qrReveal {
-          0% { transform: scale(0.8); opacity: 0; }
-          100% { transform: scale(1); opacity: 1; }
+        @keyframes pulse {
+          0% { opacity: 0.4; }
+          50% { opacity: 0.7; }
+          100% { opacity: 0.4; }
+        }
+        
+        @keyframes animate-fade-in-out {
+          0% { opacity: 0; }
+          10% { opacity: 1; }
+          90% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        
+        .animate-fade-in-out {
+          animation: animate-fade-in-out 2s ease-in-out;
         }
       `}</style>
     </div>
