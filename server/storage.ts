@@ -25,7 +25,9 @@ import {
   // New models for News Pulse feature
   newsSources, NewsSource, InsertNewsSource,
   newsArticles, NewsArticle, InsertNewsArticle,
-  newsUserPreferences, NewsUserPreference, InsertNewsUserPreference
+  newsUserPreferences, NewsUserPreference, InsertNewsUserPreference,
+  // User Personal Info
+  userPersonalInfo, UserPersonalInfo, InsertUserPersonalInfo
 } from "@shared/schema";
 
 // Interface for all storage operations
@@ -145,6 +147,12 @@ export interface IStorage {
   updatePortfolio(id: number, portfolio: Partial<Portfolio>): Promise<Portfolio | undefined>;
   deletePortfolio(id: number): Promise<boolean>;
   
+  // User Personal Info operations
+  getUserPersonalInfoByUserId(userId: number): Promise<UserPersonalInfo | undefined>;
+  createUserPersonalInfo(personalInfo: InsertUserPersonalInfo): Promise<UserPersonalInfo>;
+  updateUserPersonalInfo(userId: number, personalInfo: Partial<UserPersonalInfo>): Promise<UserPersonalInfo | undefined>;
+  deleteUserPersonalInfo(userId: number): Promise<boolean>;
+  
   // Service operations
   getServicesByUserId(userId: number): Promise<Service[]>;
   getServiceById(id: number): Promise<Service | undefined>;
@@ -236,6 +244,7 @@ export class MemStorage implements IStorage {
   private projectCollaborators: Map<number, ProjectCollaborator>;
   private projectEndorsements: Map<number, ProjectEndorsement>;
   private portfolios: Map<number, Portfolio>;
+  private userPersonalInfo: Map<number, UserPersonalInfo>;
   private hashtags: Map<number, Hashtag>;
   private pulseHashtags: Map<number, PulseHashtag>;
   private services: Map<number, Service>;
@@ -279,6 +288,7 @@ export class MemStorage implements IStorage {
   private currentNewsSourceId: number;
   private currentNewsArticleId: number;
   private currentNewsUserPreferenceId: number;
+  private currentUserPersonalInfoId: number;
 
   constructor() {
     this.users = new Map();
@@ -293,6 +303,7 @@ export class MemStorage implements IStorage {
     this.projectCollaborators = new Map();
     this.projectEndorsements = new Map();
     this.portfolios = new Map();
+    this.userPersonalInfo = new Map();
     this.services = new Map();
     this.pulses = new Map();
     this.pulseComments = new Map();

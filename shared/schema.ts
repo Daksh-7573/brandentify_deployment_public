@@ -589,3 +589,29 @@ export type InsertUserReactionQuota = z.infer<typeof insertUserReactionQuotaSche
 
 export type PulseShare = typeof pulseShares.$inferSelect;
 export type InsertPulseShare = z.infer<typeof insertPulseShareSchema>;
+
+// User Personal Information model
+export const userPersonalInfo = pgTable("user_personal_info", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id).unique(),
+  contactEmail: text("contact_email"),
+  contactPhone: text("contact_phone"),
+  website: text("website"),
+  githubProfile: text("github_profile"),
+  linkedinProfile: text("linkedin_profile"),
+  twitterProfile: text("twitter_profile"),
+  instagramProfile: text("instagram_profile"),
+  calendlyLink: text("calendly_link"),
+  preferredContactMethod: text("preferred_contact_method"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertUserPersonalInfoSchema = createInsertSchema(userPersonalInfo).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type UserPersonalInfo = typeof userPersonalInfo.$inferSelect;
+export type InsertUserPersonalInfo = z.infer<typeof insertUserPersonalInfoSchema>;
