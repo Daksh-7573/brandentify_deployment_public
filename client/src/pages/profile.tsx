@@ -1959,10 +1959,6 @@ export default function Profile() {
                 Refresh Data
               </Button>
               
-              <Button className="px-6">
-                Save Profile
-              </Button>
-              
               <Button 
                 variant="outline"
                 className="ml-auto px-6 bg-red-50 text-red-600 hover:bg-red-100 border-red-200"
