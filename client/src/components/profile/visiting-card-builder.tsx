@@ -10,7 +10,8 @@ import { apiRequest } from "@/lib/queryClient";
 
 // Card type options
 const CARD_TYPES = [
-  { id: "professional", name: "Professional", description: "Sleek digital business card with modern UI" },
+  { id: "professional-renewed", name: "Quantum Pro", description: "Modern quantum-inspired design with sleek UI elements" },
+  { id: "professional", name: "Professional Classic", description: "Sleek digital business card with modern UI" },
   { id: "3d-animated", name: "3D Animated", description: "Interactive 3D hover effects" },
   { id: "holographic", name: "Holographic Glass", description: "Modern transparent design" },
   { id: "clay-paper", name: "Clay & Paper", description: "Playful 3D claymation & paper-cut style" },
@@ -30,7 +31,7 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
   onCardTypeSelect,
 }) => {
   // Set default card type if none selected
-  const [activeTab, setActiveTab] = useState(selectedCardType || "professional");
+  const [activeTab, setActiveTab] = useState(selectedCardType || "professional-renewed");
   const [isSaving, setIsSaving] = useState(false);
   const [isFinalized, setIsFinalized] = useState(selectedCardType === userData.visitingCardType);
   const { toast } = useToast();
@@ -139,13 +140,16 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
               className="w-full"
             >
               <TabsList className="grid grid-cols-3 mb-6">
+                <TabsTrigger value="professional-renewed">Quantum Pro</TabsTrigger>
                 <TabsTrigger value="professional">Professional</TabsTrigger>
                 <TabsTrigger value="3d-animated">3D</TabsTrigger>
-                <TabsTrigger value="holographic">Holographic</TabsTrigger>
               </TabsList>
-              <TabsList className="grid grid-cols-3">
+              <TabsList className="grid grid-cols-3 mb-6">
+                <TabsTrigger value="holographic">Holographic</TabsTrigger>
                 <TabsTrigger value="clay-paper">Clay & Paper</TabsTrigger>
                 <TabsTrigger value="creative">Creative</TabsTrigger>
+              </TabsList>
+              <TabsList className="grid grid-cols-3">
                 <TabsTrigger value="artistic">Artistic</TabsTrigger>
               </TabsList>
               

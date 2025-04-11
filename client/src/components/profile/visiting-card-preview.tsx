@@ -75,6 +75,18 @@ const VisitingCardPreview: React.FC<VisitingCardPreviewProps> = ({
     );
   }
   
+  // For renewed professional card style, use the redesigned component
+  if (cardType === "professional-renewed") {
+    return (
+      <div className="visiting-card-preview">
+        <ProfessionalCardRenewed 
+          userData={userData} 
+          isIndustryLeader={userData.username === "elonmusk"} 
+        />
+      </div>
+    );
+  }
+  
   // Simple card preview that simulates different styles
   return (
     <div className="visiting-card-preview">
