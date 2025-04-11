@@ -408,6 +408,25 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
                 </div>
               </div>
               
+              {/* Professional Summary */}
+              {(userData.aboutMe || userData.lookingFor) && (
+                <div className="flex items-start gap-4 mt-4">
+                  <div 
+                    className="h-12 w-12 rounded-full bg-indigo-600/20 border border-indigo-400/30 flex items-center justify-center shadow-lg"
+                    style={{ animation: "glowPulse 2s ease-in-out infinite" }}
+                  >
+                    <User className="h-5 w-5 text-indigo-300" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-xs text-indigo-300/70 font-light">About Me</p>
+                    <p className="text-indigo-100 text-sm font-light leading-tight mt-1">
+                      {userData.aboutMe || userData.lookingFor || 
+                        `Professional with experience in ${userData.industry || 'various industries'}. Let's connect!`}
+                    </p>
+                  </div>
+                </div>
+              )}
+              
               {/* Location with map link */}
               {userData.location && (
                 <div className="flex items-center gap-4">
