@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { 
   Mail, 
   Phone, 
@@ -15,21 +15,20 @@ import { UserData } from "@/types/user";
 
 // Clay & Paper Colors - refined artisanal palette
 const clayColors = {
-  // Base colors
-  canvas: "#fdfcfa",       // Main card background
-  warmCream: "#f5f2ed",    // Secondary paper color
+  // Paper shades
+  paperWhite: "#faf8f3",    // Pure paper background
+  paperCream: "#f7f4ec",    // Cream paper
   
-  // Clay tones
-  taupe: "#e6e2dd",        // Neutral clay
-  sage: "#e1e4df",         // Soft green-gray clay
-  nude: "#ecdfd4",         // Warm skin tone clay
-  mist: "#e6ecf0",         // Soft blue-gray clay
-  blush: "#f0e6e9",        // Soft pink clay
+  // Clay tones  
+  softGreen: "#e1e4df",     // Soft mossy clay
+  softBrown: "#e7dfd4",     // Warm earthy clay
+  softBlue: "#e6ecf0",      // Light blue clay
+  softPink: "#f0e6e9",      // Rose clay
   
-  // Accent colors 
-  paperYellow: "#f5df98",  // Warm paper yellow
-  coral: "#e89b8e",        // Warm reddish clay
-  ink: "#3a3a3a",          // Dark text color
+  // Accent colors
+  sticky: "#f5df98",        // Post-it yellow
+  coral: "#e89b8e",         // Terra cotta
+  slate: "#3a3a3a",         // Dark text/ink
 };
 
 interface ClayPaperCardProps {
@@ -40,7 +39,6 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
   // Interaction states
   const [hoveredSection, setHoveredSection] = useState<string | null>(null);
   const [copySuccess, setCopySuccess] = useState<string | null>(null);
-  const cardRef = useRef<HTMLDivElement>(null);
   
   // Format profile link
   const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\\s+/g, '') : userData.username}`;
@@ -69,84 +67,75 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
   };
   
   return (
-    <div 
-      ref={cardRef}
-      className="clay-paper-card w-full aspect-[2/3.5] relative select-none"
-    >
-      {/* Main background with shadow */}
+    <div className="clay-paper-card w-full aspect-[2/3.5] relative select-none overflow-hidden">
+      {/* Main background with subtle shadow and texture */}
       <div 
         className="absolute inset-0 rounded-2xl"
         style={{
-          background: clayColors.canvas,
-          boxShadow: "0 10px 30px -10px rgba(0, 0, 0, 0.15)",
+          background: clayColors.paperWhite,
+          boxShadow: "0 10px 25px -10px rgba(0, 0, 0, 0.15)",
         }}
       >
-        {/* Canvas texture */}
+        {/* Subtle paper texture overlay */}
         <div 
-          className="absolute inset-0 opacity-40"
+          className="absolute inset-0 opacity-30"
           style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.1'/%3E%3C/svg%3E")`,
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.1'/%3E%3C/svg%3E")`,
           }}
         />
       </div>
       
-      {/* Horizontal paper layer - top section */}
+      {/* Background paper layer - top */}
       <div 
-        className="absolute top-[10%] left-0 right-0 h-[30%] rounded-r-lg"
+        className="absolute left-0 right-0 top-[12%] h-[35%]"
         style={{
-          background: clayColors.sage, 
-          boxShadow: "0 2px 6px -2px rgba(0, 0, 0, 0.1)",
-          transformOrigin: "left center",
-          transform: "translateX(5%) rotate(-1deg)",
+          background: clayColors.softGreen, 
+          transform: "translateX(4%) rotate(-1deg)",
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
           zIndex: 1
         }}
       />
       
-      {/* Horizontal paper layer - bottom section */}
+      {/* Background paper layer - bottom */}
       <div 
-        className="absolute bottom-[15%] left-0 right-0 h-[30%] rounded-r-lg"
+        className="absolute left-0 right-0 bottom-[12%] h-[35%]"
         style={{
-          background: clayColors.nude, 
-          boxShadow: "0 2px 6px -2px rgba(0, 0, 0, 0.1)",
-          transformOrigin: "left center",
-          transform: "translateX(3%) rotate(1deg)",
+          background: clayColors.softBrown, 
+          transform: "translateX(2%) rotate(0.5deg)",
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
           zIndex: 1
         }}
       />
       
-      {/* Content container */}
-      <div className="absolute inset-0 z-10 p-6 flex flex-col items-center">
-        {/* Profile Picture with Polaroid & Paperclip */}
+      {/* Main content area with padding */}
+      <div className="absolute inset-0 p-5 flex flex-col items-center z-10">
+        {/* PROFILE PHOTO - Polaroid style with paperclip */}
         <div 
-          className="relative mb-6"
+          className="relative mb-4 pt-3"
           style={{
-            transform: hoveredSection === 'profile' ? 'translateY(-5px) rotate(1deg)' : 'translateY(0) rotate(0deg)',
+            transform: hoveredSection === 'profile' ? 'translateY(-3px) rotate(1deg)' : 'translateY(0)',
             transition: 'transform 0.3s ease',
           }}
           onMouseEnter={() => setHoveredSection('profile')}
           onMouseLeave={() => setHoveredSection(null)}
         >
-          {/* Paperclip */}
-          <div className="absolute -top-3 -right-1 transform rotate-12 z-20">
+          {/* Paperclip effect */}
+          <div className="absolute -top-1 right-0 transform rotate-12">
             <Paperclip className="w-6 h-6 text-gray-400" />
           </div>
           
           {/* Polaroid frame */}
           <div 
-            className="relative bg-white p-2 rounded-sm shadow-md"
+            className="bg-white p-2 rounded-sm transform rotate(-1deg)"
             style={{
-              boxShadow: "0 3px 10px -2px rgba(0, 0, 0, 0.15)",
-              transform: "rotate(-2deg)"
+              boxShadow: "0 4px 10px -3px rgba(0, 0, 0, 0.15)",
             }}
           >
-            {/* Image container */}
+            {/* Photo */}
             <div 
               className="w-24 h-24 overflow-hidden"
               style={{
-                borderTop: "1px solid #f0f0f0",
-                borderLeft: "1px solid #f0f0f0",
-                borderRight: "1px solid #e0e0e0",
-                borderBottom: "1px solid #e0e0e0"
+                border: "1px solid #f0f0f0",
               }}
             >
               {userData.photoURL ? (
@@ -168,14 +157,14 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
               )}
             </div>
             
-            {/* Polaroid bottom */}
-            <div className="h-6 bg-white mt-1" />
+            {/* Polaroid bottom frame */}
+            <div className="h-5 bg-white mt-1" />
           </div>
         </div>
         
-        {/* Name & Title - Stamp Style */}
+        {/* NAME & TITLE - Letterpress style */}
         <div 
-          className="relative mb-5 text-center w-full"
+          className="mb-4 text-center"
           style={{
             transform: hoveredSection === 'name' ? 'translateY(-2px)' : 'translateY(0)',
             transition: 'transform 0.3s ease',
@@ -183,53 +172,51 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
           onMouseEnter={() => setHoveredSection('name')}
           onMouseLeave={() => setHoveredSection(null)}
         >
-          {/* Name stamp background */}
-          <div 
-            className="absolute -inset-2 rounded-md opacity-10"
-            style={{ 
-              background: clayColors.paperYellow,
-              transform: 'rotate(-0.5deg)'
-            }}
-          />
-          
           <h2 
-            className="text-2xl font-bold mb-1"
+            className="text-xl font-bold mb-1 px-2"
             style={{
-              color: clayColors.ink,
-              letterSpacing: "0.01em",
-              textShadow: "1px 1px 0 rgba(255, 255, 255, 0.8)"
+              color: clayColors.slate,
+              textShadow: "0px 1px 0 white",
+              letterSpacing: "0.01em"
             }}
           >
             {userData.name || "Your Name"}
           </h2>
           
           <p 
-            className="text-sm"
+            className="text-sm text-gray-700 px-2"
             style={{
-              color: "rgba(58, 58, 58, 0.8)",
-              letterSpacing: "0.03em"
+              letterSpacing: "0.02em"
             }}
           >
             {userData.title || "Add your designation"}
           </p>
+          
+          {/* Embossed underline */}
+          <div 
+            className="h-px w-32 mx-auto mt-2 bg-gray-300"
+            style={{
+              boxShadow: "0 1px 0 rgba(255, 255, 255, 0.8)"
+            }}
+          />
         </div>
         
-        {/* Industry Tags - Clay Ribbon Style */}
+        {/* TAGS - Clay ribbon style */}
         {industryTags.length > 0 && (
-          <div className="flex flex-wrap justify-center gap-2 mb-5 max-w-[90%]">
+          <div className="flex flex-wrap justify-center gap-2 mb-4 max-w-[90%]">
             {industryTags.map((tag, index) => (
               <div 
                 key={index}
                 className="flex items-center px-3 py-1 text-xs font-medium"
                 style={{
                   background: 
-                    index % 4 === 0 ? clayColors.sage : 
-                    index % 4 === 1 ? clayColors.nude : 
-                    index % 4 === 2 ? clayColors.mist : 
-                    clayColors.blush,
-                  color: clayColors.ink,
+                    index % 4 === 0 ? clayColors.softGreen : 
+                    index % 4 === 1 ? clayColors.softBrown : 
+                    index % 4 === 2 ? clayColors.softBlue : 
+                    clayColors.softPink,
+                  color: clayColors.slate,
                   borderRadius: "2px",
-                  boxShadow: "0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+                  boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
                   transform: hoveredSection === `tag-${index}` ? 'scale(1.05)' : 'scale(1)',
                   transition: 'all 0.2s ease',
                   clipPath: "polygon(4% 0%, 96% 0%, 100% 50%, 96% 100%, 4% 100%, 0% 50%)"
@@ -244,34 +231,35 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
           </div>
         )}
         
-        {/* Company - Sticky Note Style */}
+        {/* COMPANY - Sticky note style */}
         {userData.company && (
           <div 
             className="relative mb-3 max-w-[80%]"
             style={{
               transform: hoveredSection === 'company' ? 'translateY(-2px)' : 'translateY(0)',
-              transition: 'transform 0.3s ease-out',
+              transition: 'transform 0.3s ease',
             }}
             onMouseEnter={() => setHoveredSection('company')}
             onMouseLeave={() => setHoveredSection(null)}
           >
-            {/* Sticky note corner fold */}
+            {/* Folded corner effect */}
             <div 
               className="absolute -top-2 -right-2 w-5 h-5"
               style={{
                 background: "#e8d28d",
                 transformOrigin: "bottom left",
                 transform: "rotate(45deg)",
-                boxShadow: "1px -1px 1px rgba(0,0,0,0.05)"
+                boxShadow: "1px -1px 1px rgba(0,0,0,0.05)",
+                zIndex: 1
               }}
             />
             
-            {/* Main sticky note */}
+            {/* Note content */}
             <div 
               className="flex items-center gap-2 px-3 py-2 rounded-sm"
               style={{
-                background: clayColors.paperYellow,
-                boxShadow: "0 3px 6px -2px rgba(0, 0, 0, 0.1)"
+                background: clayColors.sticky,
+                boxShadow: "0 2px 5px -1px rgba(0, 0, 0, 0.1)"
               }}
             >
               <Building2 className="h-4 w-4 text-gray-700" />
@@ -282,10 +270,10 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
           </div>
         )}
         
-        {/* Location - Map Style */}
+        {/* LOCATION - Map badge style */}
         {userData.location && (
           <div 
-            className="mb-5"
+            className="mb-3"
             style={{
               transform: hoveredSection === 'location' ? 'translateY(-2px)' : 'translateY(0)',
               transition: 'transform 0.3s ease',
@@ -296,41 +284,45 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
             <div 
               className="flex items-center gap-2 px-3 py-1.5 rounded-full"
               style={{
-                background: clayColors.mist,
-                boxShadow: "0 2px 4px -1px rgba(0, 0, 0, 0.06)"
+                background: clayColors.softBlue,
+                boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)"
               }}
             >
-              <div 
-                className="h-5 w-5 rounded-full flex items-center justify-center bg-white"
-              >
+              <div className="h-5 w-5 rounded-full flex items-center justify-center bg-white">
                 <MapPin className="h-3 w-3 text-gray-700" />
               </div>
-              <span className="text-xs text-gray-800">
+              <span className="text-xs text-gray-800 font-medium">
                 {userData.location}
               </span>
             </div>
           </div>
         )}
         
-        {/* Contact Section - Tear-off Style */}
-        <div className="mt-auto w-full space-y-2">
-          <div className="relative pb-4">
-            {/* Perforated line */}
+        {/* Separator before contact section */}
+        <div className="w-full h-px bg-gray-200 my-2" />
+        
+        {/* CONTACT DETAILS - Tear-off coupon style */}
+        <div className="w-full space-y-2 mt-auto">
+          {/* Perforated edge */}
+          <div className="w-full relative mb-3">
             <div 
-              className="absolute top-0 left-0 right-0 h-[2px]"
+              className="absolute top-0 left-0 right-0 h-[1px]"
               style={{
                 backgroundImage: "linear-gradient(90deg, transparent, #00000022 50%, transparent 50%)",
-                backgroundSize: "8px 1px",
+                backgroundSize: "6px 1px",
                 backgroundRepeat: "repeat-x"
               }}
             />
-            
+          </div>
+          
+          {/* Contact elements */}
+          <div className="space-y-2">
             {/* Email */}
             <div 
-              className="flex items-center justify-between px-3 py-2 mt-2 bg-white rounded-md"
+              className="flex items-center justify-between px-3 py-2 rounded-md bg-white"
               style={{
                 border: "1px dashed rgba(0,0,0,0.08)",
-                boxShadow: hoveredSection === 'email' ? '0 4px 8px -2px rgba(0, 0, 0, 0.1)' : 'none',
+                boxShadow: hoveredSection === 'email' ? '0 3px 6px -1px rgba(0, 0, 0, 0.1)' : 'none',
                 transform: hoveredSection === 'email' ? 'translateX(-2px)' : 'translateX(0)',
                 transition: 'all 0.2s ease'
               }}
@@ -350,17 +342,17 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
                   copyToClipboard(userData.email, "Email");
                 }}
               >
-                <Copy className="h-3.5 w-3.5 text-gray-600" />
+                <Copy className="h-3.5 w-3.5 text-gray-500" />
               </button>
             </div>
             
             {/* Phone Number */}
             {userData.phoneNumber && (
               <div 
-                className="flex items-center justify-between px-3 py-2 mt-2 bg-white rounded-md"
+                className="flex items-center justify-between px-3 py-2 rounded-md bg-white"
                 style={{
                   border: "1px dashed rgba(0,0,0,0.08)",
-                  boxShadow: hoveredSection === 'phone' ? '0 4px 8px -2px rgba(0, 0, 0, 0.1)' : 'none',
+                  boxShadow: hoveredSection === 'phone' ? '0 3px 6px -1px rgba(0, 0, 0, 0.1)' : 'none',
                   transform: hoveredSection === 'phone' ? 'translateX(-2px)' : 'translateX(0)',
                   transition: 'all 0.2s ease'
                 }}
@@ -380,17 +372,17 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
                     copyToClipboard(userData.phoneNumber || "", "Phone");
                   }}
                 >
-                  <Copy className="h-3.5 w-3.5 text-gray-600" />
+                  <Copy className="h-3.5 w-3.5 text-gray-500" />
                 </button>
               </div>
             )}
             
             {/* Profile Link */}
             <div 
-              className="flex items-center justify-between px-3 py-2 mt-2 bg-white rounded-md"
+              className="flex items-center justify-between px-3 py-2 rounded-md bg-white"
               style={{
                 border: "1px dashed rgba(0,0,0,0.08)",
-                boxShadow: hoveredSection === 'profile-link' ? '0 4px 8px -2px rgba(0, 0, 0, 0.1)' : 'none',
+                boxShadow: hoveredSection === 'profile-link' ? '0 3px 6px -1px rgba(0, 0, 0, 0.1)' : 'none',
                 transform: hoveredSection === 'profile-link' ? 'translateX(-2px)' : 'translateX(0)',
                 transition: 'all 0.2s ease'
               }}
@@ -410,21 +402,21 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
                   copyToClipboard(`https://${profileLink}`, "Link");
                 }}
               >
-                <Copy className="h-3.5 w-3.5 text-gray-600" />
+                <Copy className="h-3.5 w-3.5 text-gray-500" />
               </button>
             </div>
           </div>
           
-          {/* Action Buttons */}
-          <div className="flex justify-center gap-3 mt-2">
+          {/* ACTION BUTTONS */}
+          <div className="flex justify-center gap-3 mt-4">
             <button 
               className="flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium"
               style={{
-                background: clayColors.mist,
-                color: clayColors.ink,
-                boxShadow: hoveredSection === 'print' 
-                  ? '0 4px 6px -1px rgba(0, 0, 0, 0.1)' 
-                  : '0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                background: clayColors.softBlue,
+                color: clayColors.slate,
+                boxShadow: hoveredSection === 'print' ? 
+                  '0 3px 5px -1px rgba(0, 0, 0, 0.1)' : 
+                  '0 1px 3px -1px rgba(0, 0, 0, 0.05)',
                 transform: hoveredSection === 'print' ? 'translateY(-2px)' : 'translateY(0)',
                 transition: 'all 0.2s ease'
               }}
@@ -441,9 +433,9 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
               style={{
                 background: clayColors.coral,
                 color: "white",
-                boxShadow: hoveredSection === 'share' 
-                  ? '0 4px 6px -1px rgba(0, 0, 0, 0.1)' 
-                  : '0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                boxShadow: hoveredSection === 'share' ? 
+                  '0 3px 5px -1px rgba(0, 0, 0, 0.1)' : 
+                  '0 1px 3px -1px rgba(0, 0, 0, 0.05)',
                 transform: hoveredSection === 'share' ? 'translateY(-2px)' : 'translateY(0)',
                 transition: 'all 0.2s ease'
               }}
@@ -458,7 +450,7 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
         </div>
       </div>
       
-      {/* Copy success message */}
+      {/* Copy success notification */}
       {copySuccess && (
         <div 
           className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-slate-800 text-white px-3 py-1 rounded-full text-xs z-50"
