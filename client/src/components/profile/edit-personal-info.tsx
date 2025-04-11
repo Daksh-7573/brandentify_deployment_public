@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Mail, Phone, Globe } from "lucide-react";
+import { Mail, Phone, Globe, Briefcase } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -43,6 +43,7 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
   
   const [phoneCountryCode, setPhoneCountryCode] = useState(countryCode);
   const [phoneNumber, setPhoneNumber] = useState(number);
+  const [company, setCompany] = useState(userData.company || "");
   const [isLoading, setIsLoading] = useState(false);
   
   const handleSave = async () => {
@@ -59,7 +60,8 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
         url: `/api/users/${userData.id}`,
         method: 'PUT',
         data: {
-          phoneNumber: formattedPhoneNumber
+          phoneNumber: formattedPhoneNumber,
+          company: company.trim() || null
         }
       });
       
@@ -122,7 +124,19 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
         </div>
       </div>
       
-
+      {/* Company */}
+      <div className="space-y-2">
+        <label htmlFor="company" className="text-sm font-medium flex items-center gap-2">
+          <Briefcase className="h-4 w-4" />
+          Company / Organization
+        </label>
+        <Input
+          id="company"
+          value={company}
+          onChange={(e) => setCompany(e.target.value)}
+          placeholder="Your current company or organization"
+        />
+      </div>
       
       {/* Profile URL (read-only) */}
       <div className="space-y-2">
