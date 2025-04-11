@@ -15,6 +15,7 @@ import {
   Moon
 } from "lucide-react";
 import { UserData } from "@/types/user";
+import { useCurrentCompany } from "@/hooks/use-current-company";
 
 interface ProfessionalCardProps {
   userData: UserData;
@@ -24,6 +25,9 @@ const ProfessionalCard: React.FC<ProfessionalCardProps> = ({ userData }) => {
   // State for card interaction
   const [isRevealed, setIsRevealed] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  
+  // Get current company from latest work experience
+  const { company } = useCurrentCompany(userData.id);
   
   // Format profile link
   const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;
@@ -56,8 +60,8 @@ const ProfessionalCard: React.FC<ProfessionalCardProps> = ({ userData }) => {
         window.open("https://linkedin.com", "_blank");
         break;
       case "company":
-        if (userData.company) {
-          window.open(`https://www.google.com/search?q=${encodeURIComponent(userData.company)}`, "_blank");
+        if (company) {
+          window.open(`https://www.google.com/search?q=${encodeURIComponent(company)}`, "_blank");
         }
         break;
       case "location":
@@ -161,7 +165,7 @@ const ProfessionalCard: React.FC<ProfessionalCardProps> = ({ userData }) => {
         </div>
         
         {/* Company (clickable) */}
-        {userData.company && (
+        {company && (
           <div 
             className={`company-badge relative z-10 mt-4 px-4 py-2 rounded-full bg-opacity-10 cursor-pointer transition-all ${
               isDarkMode ? 'bg-blue-900 text-blue-300 hover:bg-blue-800' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
@@ -169,7 +173,7 @@ const ProfessionalCard: React.FC<ProfessionalCardProps> = ({ userData }) => {
             onClick={(e) => handleContact("company", e)}
           >
             <Building2 className="h-4 w-4" />
-            <span className="font-medium">{userData.company}</span>
+            <span className="font-medium">{company}</span>
           </div>
         )}
         
@@ -334,7 +338,7 @@ const ProfessionalCard: React.FC<ProfessionalCardProps> = ({ userData }) => {
           </div>
           <p className={`mt-2 text-sm ${
             isDarkMode ? 'text-slate-400' : 'text-slate-500'
-          }`}>Scan to save contact</p>
+          }`}>Quantum Card</p>
         </div>
         
         {/* Custom message and back button */}
