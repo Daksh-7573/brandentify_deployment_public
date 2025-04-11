@@ -362,7 +362,12 @@ const ProfessionalCard: React.FC<ProfessionalCardProps> = ({ userData }) => {
                 }`}>{educations[0].degree}</p>
                 <p className={`text-xs truncate max-w-[180px] ${
                   isDarkMode ? 'text-slate-400' : 'text-slate-500'
-                }`}>{educations[0].institution}, {new Date(educations[0].endDate).getFullYear()}</p>
+                }`}>
+                  {educations[0].institution}
+                  {educations[0].endDate && educations[0].endDate !== 'Present' 
+                    ? `, ${new Date(educations[0].endDate).getFullYear()}`
+                    : educations[0].endDate === 'Present' ? ', Present' : ''}
+                </p>
               </div>
             </div>
           )}

@@ -274,7 +274,9 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
                     <span>{educations[0].degree}</span>
                     <div className="text-xs text-indigo-300/70">
                       {educations[0].institution}
-                      {educations[0].endDate && `, ${new Date(educations[0].endDate).getFullYear()}`}
+                      {educations[0].endDate && educations[0].endDate !== 'Present' 
+                        ? `, ${new Date(educations[0].endDate).getFullYear()}`
+                        : educations[0].endDate === 'Present' ? ', Present' : ''}
                     </div>
                   </div>
                 </div>
@@ -488,7 +490,9 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
                       <span>{educations[0].degree}</span>
                       <div className="text-xs text-indigo-300/70">
                         {educations[0].institution}
-                        {educations[0].endDate && `, ${new Date(educations[0].endDate).getFullYear()}`}
+                        {educations[0].endDate && educations[0].endDate !== 'Present' 
+                          ? `, ${new Date(educations[0].endDate).getFullYear()}`
+                          : educations[0].endDate === 'Present' ? ', Present' : ''}
                       </div>
                       {educations[0].field && <div className="text-xs text-indigo-300/70">{educations[0].field}</div>}
                     </div>
