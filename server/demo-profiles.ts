@@ -260,10 +260,17 @@ async function createTechExecutiveProfile(storage: IStorage) {
     phoneNumber: "+1 (415) 555-1234",
     photoURL: "/images/demo/alex-profile.png",
     title: "VP of Engineering",
+    aboutMe: "Tech executive with over 15 years of experience building and scaling engineering teams. Passionate about cloud architecture, distributed systems, and fostering engineering excellence.",
     location: "San Francisco, CA",
     industry: "Technology",
+    domain: "Software Engineering, Cloud Infrastructure",
+    company: "TechNova",
     lookingFor: "Strategic partnerships and mentoring opportunities",
     profileCompleted: 100, // Integer for profile completion percentage
+    visitingCardType: "professional",
+    geoLatitude: "37.7749",
+    geoLongitude: "-122.4194",
+    geoVisibleNearby: true
     // Note: emailVerified field is managed by the storage layer
   };
   
@@ -395,10 +402,17 @@ async function createUXDesignerProfile(storage: IStorage) {
     phoneNumber: "+1 (628) 555-9876",
     photoURL: "/images/demo/maya-profile.png",
     title: "Senior UX Designer",
+    aboutMe: "Passionate UX designer with a background in visual design. I create intuitive, accessible, and delightful digital experiences that solve real user problems. My approach combines user research, iterative design, and a deep understanding of human behavior.",
     location: "New York, NY",
     industry: "Design",
+    domain: "User Experience, Digital Product Design",
+    company: "DesignLab",
     lookingFor: "Creative collaboration and new design challenges",
     profileCompleted: 100,
+    visitingCardType: "artistic",
+    geoLatitude: "40.7128",
+    geoLongitude: "-74.0060",
+    geoVisibleNearby: true
     // Note: emailVerified field is managed by the storage layer
   };
   
@@ -530,10 +544,17 @@ async function createDataScientistProfile(storage: IStorage) {
     phoneNumber: "+1 (312) 555-5678",
     photoURL: "/images/demo/david-profile.png",
     title: "Lead Data Scientist",
+    aboutMe: "Data scientist with PhD in machine learning from MIT. Focused on developing interpretable ML models for healthcare applications. Published researcher with experience leading cross-functional teams at the intersection of ML and domain-specific challenges.",
     location: "Chicago, IL",
     industry: "Data Science",
+    domain: "Machine Learning, Healthcare Analytics",
+    company: "DataInsight",
     lookingFor: "Research collaborations and speaking opportunities",
     profileCompleted: 100,
+    visitingCardType: "holographic",
+    geoLatitude: "41.8781",
+    geoLongitude: "-87.6298",
+    geoVisibleNearby: true
     // Note: emailVerified field is managed by the storage layer
   };
   
