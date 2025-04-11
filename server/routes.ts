@@ -11,6 +11,7 @@ import { projectThumbnailUpload, getFileUrl } from "./utils/upload";
 import { handleParseResume } from "./routes-parse-resume";
 import { handleCreateDemoProfiles } from "./routes-demo-profiles";
 import { updateUserGeolocation, updateUserRadarVisibility, getNearbyUsers } from "./routes-radar";
+import { createDemoNewsPulses } from "./demo-news-pulses";
 import { 
   insertUserSchema, 
   insertResumeSchema, 
@@ -124,6 +125,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error clearing all users:", error);
       res.status(500).json({ message: "Failed to clear all users" });
+    }
+  });
+  
+  // Create demo news pulses including industry leader (Elon Musk) news
+  apiRouter.post("/debug/create-demo-news", async (req: Request, res: Response) => {
+    try {
+      console.log("Creating demo news pulses including Musk industry leader news");
+      
+      const newsPulses = await createDemoNewsPulses(storage);
+      
+      if (!newsPulses || (!newsPulses.muskNewsPulse && !newsPulses.techNewsPulse)) {
+        return res.status(404).json({ 
+          message: "Could not create demo news pulses. Make sure Elon Musk profile exists by running /debug/create-demo-profiles first."
+        });
+      }
+      
+      console.log("Successfully created demo news pulses");
+      
+      res.status(200).json({ 
+        message: "Demo news pulses created successfully",
+        newsPulses
+      });
+    } catch (error) {
+      console.error("Error creating demo news pulses:", error);
+      res.status(500).json({ message: "Failed to create demo news pulses" });
     }
   });
   

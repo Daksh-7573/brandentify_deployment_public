@@ -102,8 +102,8 @@ async function createElonMuskProfile(storage: IStorage) {
     lookingFor: "Innovative engineering talent and visionary collaborators",
     visitingCardType: "minimal",
     profileCompleted: 100,
-    geoLatitude: 30.2672,
-    geoLongitude: -97.7431,
+    geoLatitude: "30.2672",
+    geoLongitude: "-97.7431",
     geoVisibleNearby: true
   };
 
