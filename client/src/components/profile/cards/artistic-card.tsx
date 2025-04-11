@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Mail, Phone, Globe, Briefcase, Palette, Instagram, Twitter, Linkedin } from "lucide-react";
+import { Mail, Phone, Globe, Briefcase, Palette, Instagram, Twitter, Linkedin, MapPin } from "lucide-react";
 import { UserData } from "@/types/user";
 import { useCurrentCompany } from "@/hooks/use-current-company";
 
