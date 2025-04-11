@@ -95,15 +95,19 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
     <div className="w-full" style={{ perspective: "1200px" }}>
       <div 
         ref={cardRef}
-        className="w-full aspect-[2/3.5] rounded-xl overflow-hidden shadow-xl relative cursor-pointer"
+        className="w-full aspect-[7/10] rounded-[20px] overflow-hidden shadow-xl relative cursor-pointer"
         style={{
+          width: "350px",
+          maxWidth: "100%",
+          margin: "0 auto",
           transformStyle: "preserve-3d",
           transform: isFlipped 
             ? `rotateY(180deg)` 
             : `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
           boxShadow: `0 10px 30px -5px rgba(0, 0, 0, 0.5), 
-                     0 0 ${glowIntensity}px ${Math.max(1, glowIntensity / 2)}px rgba(139, 92, 246, ${0.3 + glowIntensity / 30})`,
-          transition: "transform 0.6s cubic-bezier(0.15, 1.15, 0.6, 1)"
+                     0 0 ${glowIntensity}px ${Math.max(1, glowIntensity / 2)}px rgba(59, 130, 246, ${0.3 + glowIntensity / 30})`,
+          transition: "transform 0.6s cubic-bezier(0.15, 1.15, 0.6, 1)",
+          animation: "cardEntrance 1s cubic-bezier(0.15, 1.15, 0.6, 1) forwards"
         }}
         onClick={toggleFlip}
         onMouseMove={handleMouseMove}
@@ -113,19 +117,47 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
       >
         {/* Front of card */}
         <div 
-          className="absolute inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900 text-white flex flex-col overflow-hidden"
+          className="absolute inset-0 bg-gradient-to-br from-slate-800/80 via-purple-900/80 to-indigo-900/80 text-white flex flex-col overflow-hidden"
           style={{ 
             backfaceVisibility: "hidden",
-            WebkitBackfaceVisibility: "hidden"
+            WebkitBackfaceVisibility: "hidden",
+            backdropFilter: "blur(10px)",
+            WebkitBackdropFilter: "blur(10px)"
           }}
         >
-          {/* Glass sphere effect for profile picture */}
-          <div className="mt-10 relative flex items-center justify-center">
+          {/* Background particles */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute top-5 left-5 w-20 h-20 rounded-full bg-blue-500/10 blur-xl"></div>
+            <div className="absolute bottom-20 right-5 w-32 h-32 rounded-full bg-purple-500/10 blur-xl"></div>
+            <div className="absolute top-1/3 right-1/3 w-24 h-24 rounded-full bg-cyan-500/10 blur-xl"></div>
+          </div>
+          
+          {/* Card border glow */}
+          <div className="absolute inset-0 rounded-[20px] border border-indigo-400/20 shadow-[0_0_15px_rgba(79,70,229,0.4)]"></div>
+        
+          {/* Enhanced 3D profile picture with animated glow ring */}
+          <div className="mt-10 relative flex items-center justify-center" style={{ transform: "translateZ(20px)" }}>
             {/* Circular background glow */}
-            <div className="absolute w-36 h-36 rounded-full bg-gradient-to-tr from-fuchsia-600/20 via-transparent to-blue-500/20 opacity-70 blur-sm"></div>
+            <div className="absolute w-36 h-36 rounded-full bg-gradient-to-tr from-cyan-500/30 via-transparent to-blue-500/30 opacity-70 blur-md"></div>
+            
+            {/* Animated glow ring */}
+            <div 
+              className="absolute w-[140px] h-[140px] rounded-full" 
+              style={{ 
+                background: "conic-gradient(from 0deg, rgba(56, 189, 248, 0), rgba(56, 189, 248, 0.8), rgba(139, 92, 246, 0.8), rgba(56, 189, 248, 0))",
+                animation: "rotateGlow 4s linear infinite",
+                filter: "blur(4px)"
+              }}
+            ></div>
             
             {/* Glass sphere */}
-            <div className="relative w-32 h-32 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 shadow-xl overflow-hidden flex items-center justify-center z-10">
+            <div 
+              className="relative w-32 h-32 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 shadow-xl overflow-hidden flex items-center justify-center z-10"
+              style={{ 
+                transform: `perspective(800px) translateZ(30px)`,
+                boxShadow: "0 0 20px rgba(79, 70, 229, 0.4)"
+              }}
+            >
               {/* Inner reflective highlight */}
               <div className="absolute top-0 left-1/4 w-1/2 h-1/4 bg-white/20 rounded-full blur-sm transform rotate-45"></div>
               
@@ -135,6 +167,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
                   src={userData.photoURL} 
                   alt={userData.name || "Profile"} 
                   className="h-28 w-28 rounded-full object-cover"
+                  style={{ transform: "scale(1.05)" }}
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.src = "https://ui-avatars.com/api/?name=" + (userData.name || "User") + "&background=6366f1&color=fff";
@@ -145,6 +178,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
                   src={`https://ui-avatars.com/api/?name=${userData.name || "User"}&background=6366f1&color=fff`}
                   alt={userData.name || "Profile"}
                   className="h-28 w-28 rounded-full object-cover"
+                  style={{ transform: "scale(1.05)" }}
                 />
               )}
               
@@ -152,19 +186,29 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
               <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/10 to-transparent"></div>
             </div>
             
-            {/* Floating orb decorations */}
+            {/* Parallax floating orb decorations */}
             <div 
               className="absolute top-5 right-1/4 w-5 h-5 rounded-full bg-indigo-500/40 blur-sm" 
               style={{ 
                 animation: "floating 3s ease-in-out infinite",
-                animationDelay: "0.5s"
+                animationDelay: "0.5s",
+                transform: "translateZ(15px)"
               }}
             ></div>
             <div 
               className="absolute bottom-5 left-1/4 w-3 h-3 rounded-full bg-fuchsia-500/40 blur-sm" 
               style={{ 
                 animation: "floating 3s ease-in-out infinite",
-                animationDelay: "1s"
+                animationDelay: "1s",
+                transform: "translateZ(10px)"
+              }}
+            ></div>
+            <div 
+              className="absolute bottom-10 right-1/4 w-4 h-4 rounded-full bg-blue-500/40 blur-sm" 
+              style={{ 
+                animation: "floating 4s ease-in-out infinite",
+                animationDelay: "1.5s",
+                transform: "translateZ(5px)"
               }}
             ></div>
           </div>
@@ -194,63 +238,76 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
               </p>
             </div>
             
-            {/* Information with glow hover effects */}
-            <div className="flex-1 space-y-4 text-sm relative z-10">
-              {/* Domain with metallic effect */}
-              {userData.domain && (
-                <div className="flex items-center gap-3">
-                  <div 
-                    className="h-8 w-8 rounded-full bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center"
-                    style={{ 
-                      animation: "glowPulse 2s ease-in-out infinite"
-                    }}
-                  >
-                    <Code className="h-4 w-4 text-indigo-300" />
-                  </div>
-                  <span className="text-indigo-100 font-light">
-                    {userData.domain}
-                  </span>
-                </div>
-              )}
-              
-              {/* Industry */}
+            {/* Industry tags - pill-style */}
+            <div className="flex flex-wrap justify-center gap-2 relative z-10 mb-4" style={{ transform: "translateZ(5px)" }}>
               {userData.industry && (
-                <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-full bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center">
-                    <Building2 className="h-4 w-4 text-indigo-300" />
-                  </div>
-                  <span className="text-indigo-100 font-light">
-                    {userData.industry}
-                  </span>
-                </div>
+                <span 
+                  className="px-3 py-1 rounded-full text-xs font-medium bg-indigo-500/20 text-indigo-200 border border-indigo-400/20 backdrop-blur-sm"
+                  style={{ boxShadow: "0 0 10px rgba(99, 102, 241, 0.2)" }}
+                >
+                  #{userData.industry.replace(/\s+/g, '')}
+                </span>
               )}
               
-              {/* Company - clickable with glow effect */}
+              {userData.domain && (
+                <span 
+                  className="px-3 py-1 rounded-full text-xs font-medium bg-cyan-500/20 text-cyan-200 border border-cyan-400/20 backdrop-blur-sm"
+                  style={{ boxShadow: "0 0 10px rgba(6, 182, 212, 0.2)" }}
+                >
+                  #{userData.domain.replace(/\s+/g, '')}
+                </span>
+              )}
+              
+              {/* Add a generic tag if no industry or domain */}
+              {!userData.industry && !userData.domain && (
+                <span 
+                  className="px-3 py-1 rounded-full text-xs font-medium bg-indigo-500/20 text-indigo-200 border border-indigo-400/20 backdrop-blur-sm"
+                >
+                  #Professional
+                </span>
+              )}
+            </div>
+            
+            {/* Information with depth effects */}
+            <div className="flex-1 space-y-4 text-sm relative z-10" style={{ transform: "translateZ(10px)" }}>
+              {/* Company with glow effect */}
               {userData.company && (
-                <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-full bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center">
-                    <Briefcase className="h-4 w-4 text-indigo-300" />
-                  </div>
-                  <a 
-                    href="#" 
-                    className="text-indigo-100 font-light flex items-center gap-1 hover:text-fuchsia-300 transition-colors group" 
-                    onClick={(e) => e.stopPropagation()}
+                <div className="flex items-center gap-3 group">
+                  <div 
+                    className="h-10 w-10 rounded-full bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center shadow-md group-hover:shadow-indigo-500/20 transition-all"
+                    style={{ transform: "translateZ(5px)" }}
                   >
-                    <span>{userData.company}</span>
-                    <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </a>
+                    <Building2 className="h-5 w-5 text-indigo-300" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-xs text-indigo-300/70 font-light">Company</p>
+                    <a 
+                      href="#" 
+                      className="text-indigo-100 font-light flex items-center gap-1 hover:text-fuchsia-300 transition-colors" 
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <span>{userData.company}</span>
+                      <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </a>
+                  </div>
                 </div>
               )}
               
-              {/* Location */}
+              {/* Location with hover effect */}
               {userData.location && (
-                <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-full bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center">
-                    <MapPin className="h-4 w-4 text-indigo-300" />
+                <div className="flex items-center gap-3 group">
+                  <div 
+                    className="h-10 w-10 rounded-full bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center shadow-md group-hover:shadow-indigo-500/20 transition-all"
+                    style={{ transform: "translateZ(5px)" }}
+                  >
+                    <MapPin className="h-5 w-5 text-indigo-300" />
                   </div>
-                  <span className="text-indigo-100 font-light">
-                    {userData.location}
-                  </span>
+                  <div className="flex-1">
+                    <p className="text-xs text-indigo-300/70 font-light">Location</p>
+                    <span className="text-indigo-100 font-light">
+                      {userData.location}
+                    </span>
+                  </div>
                 </div>
               )}
             </div>
