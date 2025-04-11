@@ -29,6 +29,10 @@ export function useProfilePicture(userId: number | string | null = null) {
       }
       
       try {
+        // Log information for debugging
+        console.log("Starting profile picture upload...");
+        console.log("Image size (bytes):", imageSizeInBytes);
+        
         // Send only the photoURL update to the API using the new API request format
         const res = await apiRequest({
           method: 'PUT',
@@ -38,6 +42,7 @@ export function useProfilePicture(userId: number | string | null = null) {
           }
         });
         
+        console.log("Profile picture update successful");
         return await res.json() as User;
       } catch (error) {
         console.error("API request failed:", error);

@@ -126,6 +126,7 @@ export function ProfileUpload({
     dx: number,
     dy: number
   ): string => {
+    // Create a new canvas for our processing
     const canvas = document.createElement('canvas');
     canvas.width = TARGET_SIZE;
     canvas.height = TARGET_SIZE;
@@ -135,37 +136,52 @@ export function ProfileUpload({
       throw new Error("Could not create image processing context");
     }
     
-    // Fill background
-    ctx.fillStyle = "#FFFFFF";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // Get the original image dimensions
+    const origWidth = img.width;
+    const origHeight = img.height;
     
-    // Set center point
-    ctx.translate(canvas.width / 2, canvas.height / 2);
+    // Calculate the square crop size (minimum of width and height)
+    const cropSize = Math.min(origWidth, origHeight);
     
-    // Apply transformations exactly as shown in the preview
-    if (rot !== 0) {
+    // Calculate crop positions to center the image
+    const cropX = (origWidth - cropSize) / 2;
+    const cropY = (origHeight - cropSize) / 2;
+    
+    try {
+      // Step 1: Start with a clean slate and fill with white background
+      ctx.fillStyle = "#FFFFFF";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Step 2: Move to center of canvas for transformations
+      ctx.save();
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      
+      // Step 3: Apply rotation
       ctx.rotate((rot * Math.PI) / 180);
-    }
-    
-    if (zoom !== 1) {
+      
+      // Step 4: Apply scaling
       ctx.scale(zoom, zoom);
+      
+      // Step 5: Translate based on user's dragging
+      ctx.translate(dx / zoom, dy / zoom);
+      
+      // Step 6: Draw the image centered 
+      ctx.drawImage(
+        img,
+        cropX, cropY, cropSize, cropSize, // Source: Crop a square from the original image
+        -TARGET_SIZE / 2 / zoom, -TARGET_SIZE / 2 / zoom, // Destination: Center at origin
+        TARGET_SIZE / zoom, TARGET_SIZE / zoom // Destination: Scale properly
+      );
+      
+      // Restore the context
+      ctx.restore();
+      
+      // Convert to high-quality JPEG
+      return canvas.toDataURL('image/jpeg', 0.95);
+    } catch (error) {
+      console.error("Error processing image:", error);
+      throw new Error(`Failed to process image: ${error}`);
     }
-    
-    // Calculate the size for square crop
-    const size = Math.min(img.width, img.height);
-    const cropX = (img.width - size) / 2;
-    const cropY = (img.height - size) / 2;
-    
-    // Draw the image centered with transformations
-    ctx.drawImage(
-      img,
-      cropX, cropY, size, size,
-      -TARGET_SIZE / 2 + dx, -TARGET_SIZE / 2 + dy, 
-      TARGET_SIZE, TARGET_SIZE
-    );
-    
-    // Convert to JPEG
-    return canvas.toDataURL('image/jpeg', 0.95);
   };
 
   // Save the selected image with transformations
