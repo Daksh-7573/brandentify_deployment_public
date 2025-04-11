@@ -1,0 +1,491 @@
+import React, { useState, useRef } from "react";
+import { UserData } from "@/types/user";
+import { 
+  Mail, 
+  Phone, 
+  Globe, 
+  Briefcase, 
+  MapPin, 
+  Building2, 
+  ExternalLink, 
+  Linkedin, 
+  Github, 
+  Twitter,
+  Instagram,
+  QrCode
+} from "lucide-react";
+
+interface ThreeDAnimatedCardProps {
+  userData: UserData;
+}
+
+const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => {
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [rotateX, setRotateX] = useState(0);
+  const [rotateY, setRotateY] = useState(0);
+  const [glowIntensity, setGlowIntensity] = useState(0);
+  const [showQR, setShowQR] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+  
+  // Format profile link
+  const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;
+  
+  // Handle mouse/touch movement for 3D effect
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
+    if (!cardRef.current || isFlipped) return;
+    
+    const rect = cardRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    // Get coordinates from either mouse or touch event
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    
+    // Calculate distance from center
+    const mouseX = clientX - centerX;
+    const mouseY = clientY - centerY;
+    
+    // Calculate rotation (max 15 degrees)
+    const rotX = (mouseY / (rect.height / 2)) * -8; // Invert Y rotation for natural tilt
+    const rotY = (mouseX / (rect.width / 2)) * 8;
+    
+    // Calculate glow based on movement (max 8px)
+    const movement = Math.sqrt(Math.pow(mouseX, 2) + Math.pow(mouseY, 2));
+    const normalizedMovement = Math.min(movement / (rect.width / 2), 1);
+    const glow = normalizedMovement * 15;
+    
+    // Update state
+    setRotateX(rotX);
+    setRotateY(rotY);
+    setGlowIntensity(glow);
+  };
+  
+  // Reset on mouse/touch leave
+  const handleMovementEnd = () => {
+    if (isFlipped) return;
+    setRotateX(0);
+    setRotateY(0);
+    setGlowIntensity(0);
+  };
+  
+  // Toggle card flip
+  const toggleFlip = () => {
+    setIsFlipped(!isFlipped);
+    
+    // Reset transforms when flipping
+    if (!isFlipped) {
+      setRotateX(0);
+      setRotateY(0);
+      setGlowIntensity(0);
+    }
+  };
+  
+  // Handle QR code display
+  const toggleQR = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card flip
+    setShowQR(!showQR);
+  };
+  
+  // Mock data for QR code
+  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(profileLink)}`;
+  
+  return (
+    <div className="w-full" style={{ perspective: "1200px" }}>
+      <div 
+        ref={cardRef}
+        className="w-full aspect-[7/10] rounded-[20px] overflow-hidden shadow-xl relative cursor-pointer"
+        style={{
+          width: "350px",
+          maxWidth: "100%",
+          margin: "0 auto",
+          transformStyle: "preserve-3d",
+          transform: isFlipped 
+            ? `rotateY(180deg)` 
+            : `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
+          boxShadow: `0 10px 30px -5px rgba(0, 0, 0, 0.5), 
+                     0 0 ${glowIntensity}px ${Math.max(1, glowIntensity / 2)}px rgba(59, 130, 246, ${0.3 + glowIntensity / 30})`,
+          transition: "transform 0.6s cubic-bezier(0.15, 1.15, 0.6, 1)",
+          animation: "cardEntrance 1s cubic-bezier(0.15, 1.15, 0.6, 1) forwards"
+        }}
+        onClick={toggleFlip}
+        onMouseMove={handleMouseMove}
+        onTouchMove={handleMouseMove}
+        onMouseLeave={handleMovementEnd}
+        onTouchEnd={handleMovementEnd}
+      >
+        {/* Front of card */}
+        <div 
+          className="absolute inset-0 bg-gradient-to-br from-slate-800/80 via-purple-900/80 to-indigo-900/80 text-white flex flex-col overflow-hidden"
+          style={{ 
+            backfaceVisibility: "hidden",
+            WebkitBackfaceVisibility: "hidden",
+            backdropFilter: "blur(10px)",
+            WebkitBackdropFilter: "blur(10px)"
+          }}
+        >
+          {/* Background particles */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute top-5 left-5 w-20 h-20 rounded-full bg-blue-500/10 blur-xl"></div>
+            <div className="absolute bottom-20 right-5 w-32 h-32 rounded-full bg-purple-500/10 blur-xl"></div>
+            <div className="absolute top-1/3 right-1/3 w-24 h-24 rounded-full bg-cyan-500/10 blur-xl"></div>
+          </div>
+          
+          {/* Card border glow */}
+          <div className="absolute inset-0 rounded-[20px] border border-indigo-400/20 shadow-[0_0_15px_rgba(79,70,229,0.4)]"></div>
+        
+          {/* Enhanced 3D profile picture with animated glow ring */}
+          <div className="mt-10 relative flex items-center justify-center" style={{ transform: "translateZ(20px)" }}>
+            {/* Circular background glow */}
+            <div className="absolute w-36 h-36 rounded-full bg-gradient-to-tr from-cyan-500/30 via-transparent to-blue-500/30 opacity-70 blur-md"></div>
+            
+            {/* Animated glow ring */}
+            <div 
+              className="absolute w-[140px] h-[140px] rounded-full" 
+              style={{ 
+                background: "conic-gradient(from 0deg, rgba(56, 189, 248, 0), rgba(56, 189, 248, 0.8), rgba(139, 92, 246, 0.8), rgba(56, 189, 248, 0))",
+                animation: "rotateGlow 4s linear infinite",
+                filter: "blur(4px)"
+              }}
+            ></div>
+            
+            {/* Glass sphere */}
+            <div 
+              className="relative w-32 h-32 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 shadow-xl overflow-hidden flex items-center justify-center z-10"
+              style={{ 
+                transform: `perspective(800px) translateZ(30px)`,
+                boxShadow: "0 0 20px rgba(79, 70, 229, 0.4)"
+              }}
+            >
+              {/* Inner reflective highlight */}
+              <div className="absolute top-0 left-1/4 w-1/2 h-1/4 bg-white/20 rounded-full blur-sm transform rotate-45"></div>
+              
+              {/* Profile picture with fallback */}
+              {userData.photoURL ? (
+                <img 
+                  src={userData.photoURL} 
+                  alt={userData.name || "Profile"} 
+                  className="h-28 w-28 rounded-full object-cover"
+                  style={{ transform: "scale(1.05)" }}
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = "https://ui-avatars.com/api/?name=" + (userData.name || "User") + "&background=6366f1&color=fff";
+                  }}
+                />
+              ) : (
+                <img 
+                  src={`https://ui-avatars.com/api/?name=${userData.name || "User"}&background=6366f1&color=fff`}
+                  alt={userData.name || "Profile"}
+                  className="h-28 w-28 rounded-full object-cover"
+                  style={{ transform: "scale(1.05)" }}
+                />
+              )}
+              
+              {/* Curved glass reflection */}
+              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/10 to-transparent"></div>
+            </div>
+            
+            {/* Parallax floating orb decorations */}
+            <div 
+              className="absolute top-5 right-1/4 w-5 h-5 rounded-full bg-indigo-500/40 blur-sm" 
+              style={{ 
+                animation: "floating 3s ease-in-out infinite",
+                animationDelay: "0.5s",
+                transform: "translateZ(15px)"
+              }}
+            ></div>
+            <div 
+              className="absolute bottom-5 left-1/4 w-3 h-3 rounded-full bg-fuchsia-500/40 blur-sm" 
+              style={{ 
+                animation: "floating 3s ease-in-out infinite",
+                animationDelay: "1s",
+                transform: "translateZ(10px)"
+              }}
+            ></div>
+            <div 
+              className="absolute bottom-10 right-1/4 w-4 h-4 rounded-full bg-blue-500/40 blur-sm" 
+              style={{ 
+                animation: "floating 4s ease-in-out infinite",
+                animationDelay: "1.5s",
+                transform: "translateZ(5px)"
+              }}
+            ></div>
+          </div>
+          
+          {/* Main content */}
+          <div className="flex-1 px-6 pt-8 pb-6 flex flex-col relative mt-2">
+            {/* Glowing background effect */}
+            <div className="absolute inset-0 bg-gradient-to-b from-indigo-900/0 via-fuchsia-900/20 to-transparent blur-md"></div>
+            
+            {/* Name and title with holographic effect */}
+            <div className="text-center mb-6 relative z-10">
+              <h2 
+                className="text-2xl font-semibold mb-1"
+                style={{ 
+                  backgroundImage: "linear-gradient(90deg, rgba(99,102,241,1) 0%, rgba(168,85,247,1) 35%, rgba(59,130,246,1) 70%, rgba(99,102,241,1) 100%)",
+                  backgroundSize: "200% auto",
+                  WebkitBackgroundClip: "text",
+                  backgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  animation: "shine 4s linear infinite"
+                }}
+              >
+                {userData.name || "Your Name"}
+              </h2>
+              <p className="text-base text-indigo-200 font-light tracking-wide">
+                {userData.title || "Add your designation"}
+              </p>
+            </div>
+            
+            {/* Industry tags - pill-style */}
+            <div className="flex flex-wrap justify-center gap-2 relative z-10 mb-4" style={{ transform: "translateZ(5px)" }}>
+              {userData.industry && (
+                <span 
+                  className="px-3 py-1 rounded-full text-xs font-medium bg-indigo-500/20 text-indigo-200 border border-indigo-400/20 backdrop-blur-sm"
+                  style={{ boxShadow: "0 0 10px rgba(99, 102, 241, 0.2)" }}
+                >
+                  #{userData.industry.replace(/\s+/g, '')}
+                </span>
+              )}
+              
+              {userData.domain && (
+                <span 
+                  className="px-3 py-1 rounded-full text-xs font-medium bg-cyan-500/20 text-cyan-200 border border-cyan-400/20 backdrop-blur-sm"
+                  style={{ boxShadow: "0 0 10px rgba(6, 182, 212, 0.2)" }}
+                >
+                  #{userData.domain.replace(/\s+/g, '')}
+                </span>
+              )}
+              
+              {/* Add a generic tag if no industry or domain */}
+              {!userData.industry && !userData.domain && (
+                <span 
+                  className="px-3 py-1 rounded-full text-xs font-medium bg-indigo-500/20 text-indigo-200 border border-indigo-400/20 backdrop-blur-sm"
+                >
+                  #Professional
+                </span>
+              )}
+            </div>
+            
+            {/* Information with depth effects */}
+            <div className="flex-1 space-y-4 text-sm relative z-10" style={{ transform: "translateZ(10px)" }}>
+              {/* Company with glow effect */}
+              {userData.company && (
+                <div className="flex items-center gap-3 group">
+                  <div 
+                    className="h-10 w-10 rounded-full bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center shadow-md group-hover:shadow-indigo-500/20 transition-all"
+                    style={{ transform: "translateZ(5px)" }}
+                  >
+                    <Building2 className="h-5 w-5 text-indigo-300" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-xs text-indigo-300/70 font-light">Company</p>
+                    <a 
+                      href="#" 
+                      className="text-indigo-100 font-light flex items-center gap-1 hover:text-fuchsia-300 transition-colors" 
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <span>{userData.company}</span>
+                      <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </a>
+                  </div>
+                </div>
+              )}
+              
+              {/* Location with hover effect */}
+              {userData.location && (
+                <div className="flex items-center gap-3 group">
+                  <div 
+                    className="h-10 w-10 rounded-full bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center shadow-md group-hover:shadow-indigo-500/20 transition-all"
+                    style={{ transform: "translateZ(5px)" }}
+                  >
+                    <MapPin className="h-5 w-5 text-indigo-300" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-xs text-indigo-300/70 font-light">Location</p>
+                    <span className="text-indigo-100 font-light">
+                      {userData.location}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            {/* Social links */}
+            <div className="flex justify-center gap-4 mt-4 relative z-10">
+              <div className="h-9 w-9 rounded-full bg-indigo-600/30 border border-indigo-400/20 flex items-center justify-center hover:bg-indigo-500/40 transition-colors cursor-pointer">
+                <Linkedin className="h-4 w-4 text-indigo-200" />
+              </div>
+              <div className="h-9 w-9 rounded-full bg-indigo-600/30 border border-indigo-400/20 flex items-center justify-center hover:bg-indigo-500/40 transition-colors cursor-pointer">
+                <Twitter className="h-4 w-4 text-indigo-200" />
+              </div>
+              <div className="h-9 w-9 rounded-full bg-indigo-600/30 border border-indigo-400/20 flex items-center justify-center hover:bg-indigo-500/40 transition-colors cursor-pointer">
+                <Github className="h-4 w-4 text-indigo-200" />
+              </div>
+              <div className="h-9 w-9 rounded-full bg-indigo-600/30 border border-indigo-400/20 flex items-center justify-center hover:bg-indigo-500/40 transition-colors cursor-pointer">
+                <Instagram className="h-4 w-4 text-indigo-200" />
+              </div>
+            </div>
+            
+            {/* Hint text */}
+            <div className="text-center mt-4 text-xs text-indigo-200/60 z-10">
+              <p>Tap to flip for contact info</p>
+            </div>
+          </div>
+          
+          {/* Futuristic footer */}
+          <div className="h-8 bg-indigo-900/30 backdrop-blur-sm border-t border-indigo-400/10 flex items-center justify-center relative">
+            <div className="absolute inset-0 bg-gradient-to-t from-fuchsia-600/10 to-transparent"></div>
+            <span className="text-xs text-indigo-200/70 font-light relative z-10 tracking-widest">PROFESSIONAL CARD</span>
+          </div>
+        </div>
+        
+        {/* Back of card with contact details */}
+        <div 
+          className="absolute inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900 text-white flex flex-col"
+          style={{ 
+            backfaceVisibility: "hidden", 
+            WebkitBackfaceVisibility: "hidden",
+            transform: "rotateY(180deg)"
+          }}
+        >
+          {/* Header with glass effect */}
+          <div className="h-16 bg-indigo-900/30 backdrop-blur-sm border-b border-indigo-400/10 flex items-center justify-center relative">
+            <div className="absolute inset-0 bg-gradient-to-b from-fuchsia-600/10 to-transparent"></div>
+            <h2 
+              className="text-lg font-medium"
+              style={{ 
+                backgroundImage: "linear-gradient(90deg, rgba(99,102,241,1) 0%, rgba(168,85,247,1) 50%, rgba(99,102,241,1) 100%)",
+                backgroundSize: "200% auto",
+                WebkitBackgroundClip: "text",
+                backgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                animation: "shine 4s linear infinite"
+              }}
+            >
+              Contact Information
+            </h2>
+          </div>
+          
+          {/* Contact details area */}
+          <div className="flex-1 p-6 space-y-5 overflow-y-auto">
+            {/* Email */}
+            <div className="flex items-center gap-4 group">
+              <div 
+                className="h-12 w-12 rounded-full bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center shadow-md group-hover:shadow-indigo-500/20 transition-all"
+                style={{ 
+                  transform: "translateZ(5px)",
+                  animation: "glowPulse 3s infinite alternate"
+                }}
+              >
+                <Mail className="h-6 w-6 text-indigo-300" />
+              </div>
+              <div className="flex-1">
+                <p className="text-xs text-indigo-300/70 font-light mb-1">Email</p>
+                <a 
+                  href={`mailto:${userData.email}`} 
+                  className="text-indigo-100 font-light truncate block hover:text-fuchsia-300 transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {userData.email}
+                </a>
+              </div>
+            </div>
+            
+            {/* Phone - if available */}
+            {userData.phoneNumber && (
+              <div className="flex items-center gap-4 group">
+                <div 
+                  className="h-12 w-12 rounded-full bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center shadow-md group-hover:shadow-indigo-500/20 transition-all"
+                  style={{ 
+                    transform: "translateZ(5px)",
+                    animation: "glowPulse 3s infinite alternate",
+                    animationDelay: "0.5s"
+                  }}
+                >
+                  <Phone className="h-6 w-6 text-indigo-300" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs text-indigo-300/70 font-light mb-1">Phone</p>
+                  <a 
+                    href={`tel:${userData.phoneNumber}`} 
+                    className="text-indigo-100 font-light truncate block hover:text-fuchsia-300 transition-colors"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {userData.phoneNumber}
+                  </a>
+                </div>
+              </div>
+            )}
+            
+            {/* Website - if available */}
+            <div className="flex items-center gap-4 group">
+              <div 
+                className="h-12 w-12 rounded-full bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center shadow-md group-hover:shadow-indigo-500/20 transition-all"
+                style={{ 
+                  transform: "translateZ(5px)",
+                  animation: "glowPulse 3s infinite alternate",
+                  animationDelay: "1s"
+                }}
+              >
+                <Globe className="h-6 w-6 text-indigo-300" />
+              </div>
+              <div className="flex-1">
+                <p className="text-xs text-indigo-300/70 font-light mb-1">Profile URL</p>
+                <a 
+                  href={`https://${profileLink}`} 
+                  className="text-indigo-100 font-light truncate block hover:text-fuchsia-300 transition-colors flex items-center gap-1"
+                  onClick={(e) => e.stopPropagation()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span>{profileLink}</span>
+                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </a>
+              </div>
+            </div>
+            
+            {/* QR Code for sharing */}
+            <div className="flex flex-col items-center justify-center mt-6 pt-4 border-t border-indigo-400/10">
+              <button 
+                onClick={toggleQR}
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-600/30 border border-indigo-400/20 text-indigo-200 text-sm font-light hover:bg-indigo-500/40 transition-colors"
+              >
+                <QrCode className="h-4 w-4" />
+                <span>Show Profile QR Code</span>
+              </button>
+              
+              {/* QR Code display */}
+              {showQR && (
+                <div 
+                  className="mt-4 p-3 bg-white/90 rounded-xl shadow-lg"
+                  style={{ 
+                    animation: "qrReveal 0.3s ease-out forwards",
+                    transformOrigin: "center" 
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <img 
+                    src={qrCodeUrl} 
+                    alt="Profile QR Code" 
+                    className="h-40 w-40 rounded-lg"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+          
+          {/* Futuristic footer */}
+          <div className="h-8 bg-indigo-900/30 backdrop-blur-sm border-t border-indigo-400/10 flex items-center justify-center relative">
+            <div className="absolute inset-0 bg-gradient-to-t from-fuchsia-600/10 to-transparent"></div>
+            <span className="text-xs text-indigo-200/70 font-light relative z-10 tracking-widest">PROFESSIONAL CARD</span>
+          </div>
+        </div>
+      </div>
+      
+      {/* CSS keyframes handled in index.css */}
+    </div>
+  );
+};
+
+export default ThreeDAnimatedCard;
