@@ -150,14 +150,14 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
           />
           
           {/* Content Container */}
-          <div className="absolute inset-0 z-10 p-6 flex flex-col">
+          <div className="absolute inset-0 z-10 p-4 flex flex-col overflow-auto">
             {/* TOP SECTION - Visual Identity */}
-            <div className="relative mb-6">
+            <div className="relative mb-4">
               {/* Profile Image with Paint Splash */}
-              <div className="relative mb-3">
+              <div className="relative mb-2">
                 {/* Paint splash background */}
                 <div 
-                  className="absolute -top-1 -left-3 w-28 h-28 rounded-full"
+                  className="absolute -top-1 -left-3 w-24 h-24 rounded-full"
                   style={{
                     background: `linear-gradient(45deg, ${creativeColors.indigo}, ${creativeColors.violet})`,
                     filter: "blur(10px)",
@@ -169,9 +169,9 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
                 
                 {/* Profile image with polaroid frame */}
                 <div 
-                  className="relative w-24 h-24 rounded-lg overflow-hidden"
+                  className="relative w-20 h-20 rounded-lg overflow-hidden"
                   style={{
-                    padding: "4px",
+                    padding: "3px",
                     background: "white",
                     boxShadow: "0 4px 12px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05)",
                     transform: "rotate(-3deg)",
@@ -205,7 +205,7 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
               <div className="relative">
                 {/* Colored Tape for Name */}
                 <div 
-                  className="absolute top-[12px] left-[-5px] right-[40%] h-[22px] rounded-sm z-0"
+                  className="absolute top-[10px] left-[-4px] right-[40%] h-[18px] rounded-sm z-0"
                   style={{
                     background: creativeColors.amber,
                     transform: "rotate(-1deg) skewX(-5deg)",
@@ -213,7 +213,7 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
                 />
                 
                 <h2 
-                  className="text-2xl font-bold z-10 relative mb-1 px-1"
+                  className="text-xl font-bold z-10 relative mb-1 px-1"
                   style={{
                     fontFamily: "DM Serif Display, serif",
                     color: creativeColors.darkText,
@@ -240,7 +240,7 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
                     }}
                   />
                   <p 
-                    className="text-sm relative z-10 font-medium px-1"
+                    className="text-xs relative z-10 font-medium px-1"
                     style={{
                       color: creativeColors.darkText,
                     }}
@@ -253,17 +253,17 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
             
             {/* INDUSTRY & DOMAIN TAGS - Paint Stroke Badges */}
             {industryTags.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-5">
+              <div className="flex flex-wrap gap-1.5 mb-3">
                 {industryTags.map((tag, index) => (
                   <div 
                     key={index}
-                    className="flex items-center gap-1 px-3 py-1 text-xs font-medium"
+                    className="flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium"
                     style={{
                       backgroundColor: getRandomColor(index),
                       borderRadius: "3px",
-                      transform: `rotate(${Math.random() * 3 - 1.5}deg)`,
+                      transform: `rotate(${Math.random() * 2 - 1}deg)`,
                       color: "white",
-                      boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                      boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
                       opacity: hoveredSection === `tag-${index}` ? 1 : 0.85,
                       transition: "all 0.2s ease",
                     }}
@@ -282,10 +282,10 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
             {/* COMPANY - Sticky Note Style */}
             {userData.company && (
               <div 
-                className="relative mb-5 max-w-[75%]"
+                className="relative mb-2 max-w-[75%]"
                 style={{
                   transform: hoveredSection === 'company' 
-                    ? 'translateY(-3px)' 
+                    ? 'translateY(-2px)' 
                     : 'translateY(0)',
                   transition: "transform 0.3s ease",
                   animation: hoveredSection === 'company' 
@@ -297,23 +297,23 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
               >
                 {/* Tape at top of sticky */}
                 <div 
-                  className="absolute top-[-5px] left-[20%] right-[20%] h-[6px] rounded opacity-50"
+                  className="absolute top-[-4px] left-[20%] right-[20%] h-[5px] rounded opacity-50"
                   style={{
                     backgroundColor: creativeColors.peach,
                   }}
                 />
                 
                 <div 
-                  className="flex items-center gap-2 px-4 py-3 rounded"
+                  className="flex items-center gap-2 px-3 py-2 rounded"
                   style={{
                     backgroundColor: creativeColors.peach,
-                    boxShadow: "2px 2px 3px rgba(0,0,0,0.1)",
+                    boxShadow: "1px 1px 3px rgba(0,0,0,0.1)",
                     border: "1px solid rgba(0,0,0,0.05)",
                   }}
                 >
-                  <Building2 className="h-4 w-4 text-gray-700" />
+                  <Building2 className="h-3 w-3 text-gray-700" />
                   <span 
-                    className="text-sm font-medium"
+                    className="text-xs font-medium"
                     style={{
                       color: creativeColors.darkText,
                     }}
@@ -327,10 +327,10 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
             {/* LOCATION - Stamp Style */}
             {userData.location && (
               <div 
-                className="relative mb-5"
+                className="relative mb-2"
                 style={{
                   transform: hoveredSection === 'location' 
-                    ? 'translateY(-3px) rotate(-1deg)' 
+                    ? 'translateY(-2px) rotate(-1deg)' 
                     : 'translateY(0) rotate(-1deg)',
                   transition: "transform 0.3s ease",
                 }}
@@ -338,7 +338,7 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
                 onMouseLeave={() => setHoveredSection(null)}
               >
                 <div 
-                  className="inline-flex items-center gap-2 px-3 py-2 rounded-full"
+                  className="inline-flex items-center gap-2 px-2 py-1 rounded-full"
                   style={{
                     backgroundColor: "#ffffff",
                     border: "1px dashed rgba(0,0,0,0.2)",
@@ -346,12 +346,12 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
                   }}
                 >
                   <div 
-                    className="h-6 w-6 rounded-full flex items-center justify-center"
+                    className="h-5 w-5 rounded-full flex items-center justify-center"
                     style={{
                       backgroundColor: creativeColors.skyBlue,
                     }}
                   >
-                    <MapPin className="h-3.5 w-3.5 text-white" />
+                    <MapPin className="h-3 w-3 text-white" />
                   </div>
                   <span 
                     className="text-xs font-medium"
@@ -377,9 +377,9 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
             </div>
             
             {/* CONTACT SECTION - With animated icons */}
-            <div className="space-y-3 mt-auto">
+            <div className="space-y-2 mt-auto">
               <h3 
-                className="text-sm font-bold tracking-wide mb-1 relative z-10 inline-block"
+                className="text-xs font-bold tracking-wide mb-1 relative z-10 inline-block"
                 style={{
                   color: creativeColors.darkText,
                   fontFamily: "DM Serif Display, serif",
@@ -388,7 +388,7 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
                 <span className="relative">
                   GET IN TOUCH
                   <div 
-                    className="absolute bottom-0 left-0 right-0 h-[3px] rounded"
+                    className="absolute bottom-0 left-0 right-0 h-[2px] rounded"
                     style={{
                       backgroundColor: creativeColors.coral,
                     }}
@@ -398,28 +398,28 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
               
               {/* Email with envelope animation */}
               <div 
-                className="flex items-center justify-between px-3 py-2 rounded-lg"
+                className="flex items-center justify-between px-2 py-1.5 rounded-lg"
                 style={{
                   backgroundColor: "white",
                   border: "1px solid rgba(0,0,0,0.05)",
                   boxShadow: "0 2px 5px rgba(0,0,0,0.05)",
-                  transform: hoveredSection === 'email' ? 'translateX(5px)' : 'translateX(0)',
+                  transform: hoveredSection === 'email' ? 'translateX(3px)' : 'translateX(0)',
                   transition: "transform 0.3s ease",
                 }}
                 onMouseEnter={() => setHoveredSection('email')}
                 onMouseLeave={() => setHoveredSection(null)}
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
                   <div 
-                    className="w-8 h-8 rounded-full flex items-center justify-center"
+                    className="w-6 h-6 rounded-full flex items-center justify-center"
                     style={{
                       backgroundColor: creativeColors.coral,
                       animation: hoveredSection === 'email' ? 'pulse 1.5s infinite' : 'none'
                     }}
                   >
-                    <Mail className="h-4 w-4 text-white" />
+                    <Mail className="h-3 w-3 text-white" />
                   </div>
-                  <span className="text-sm truncate max-w-[150px] font-medium">
+                  <span className="text-xs truncate max-w-[140px] font-medium">
                     {userData.email}
                   </span>
                 </div>
@@ -430,35 +430,35 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
                     copyToClipboard(userData.email, "Email");
                   }}
                 >
-                  <Copy className="h-3.5 w-3.5 text-gray-600" />
+                  <Copy className="h-3 w-3 text-gray-600" />
                 </button>
               </div>
               
               {/* Phone with pulse animation */}
               {userData.phoneNumber && (
                 <div 
-                  className="flex items-center justify-between px-3 py-2 rounded-lg"
+                  className="flex items-center justify-between px-2 py-1.5 rounded-lg"
                   style={{
                     backgroundColor: "white",
                     border: "1px solid rgba(0,0,0,0.05)",
                     boxShadow: "0 2px 5px rgba(0,0,0,0.05)",
-                    transform: hoveredSection === 'phone' ? 'translateX(5px)' : 'translateX(0)',
+                    transform: hoveredSection === 'phone' ? 'translateX(3px)' : 'translateX(0)',
                     transition: "transform 0.3s ease",
                   }}
                   onMouseEnter={() => setHoveredSection('phone')}
                   onMouseLeave={() => setHoveredSection(null)}
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
                     <div 
-                      className="w-8 h-8 rounded-full flex items-center justify-center"
+                      className="w-6 h-6 rounded-full flex items-center justify-center"
                       style={{
                         backgroundColor: creativeColors.indigo,
                         animation: hoveredSection === 'phone' ? 'buzz 0.3s infinite' : 'none'
                       }}
                     >
-                      <Phone className="h-4 w-4 text-white" />
+                      <Phone className="h-3 w-3 text-white" />
                     </div>
-                    <span className="text-sm truncate max-w-[150px] font-medium">
+                    <span className="text-xs truncate max-w-[140px] font-medium">
                       {userData.phoneNumber}
                     </span>
                   </div>
@@ -469,35 +469,35 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
                       copyToClipboard(userData.phoneNumber || "", "Phone");
                     }}
                   >
-                    <Copy className="h-3.5 w-3.5 text-gray-600" />
+                    <Copy className="h-3 w-3 text-gray-600" />
                   </button>
                 </div>
               )}
               
               {/* Website/Profile Link */}
               <div 
-                className="flex items-center justify-between px-3 py-2 rounded-lg"
+                className="flex items-center justify-between px-2 py-1.5 rounded-lg"
                 style={{
                   backgroundColor: "white",
                   border: "1px solid rgba(0,0,0,0.05)",
                   boxShadow: "0 2px 5px rgba(0,0,0,0.05)",
-                  transform: hoveredSection === 'website' ? 'translateX(5px)' : 'translateX(0)',
+                  transform: hoveredSection === 'website' ? 'translateX(3px)' : 'translateX(0)',
                   transition: "transform 0.3s ease",
                 }}
                 onMouseEnter={() => setHoveredSection('website')}
                 onMouseLeave={() => setHoveredSection(null)}
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
                   <div 
-                    className="w-8 h-8 rounded-full flex items-center justify-center"
+                    className="w-6 h-6 rounded-full flex items-center justify-center"
                     style={{
                       backgroundColor: creativeColors.skyBlue,
                     }}
                   >
                     <svg 
                       xmlns="http://www.w3.org/2000/svg" 
-                      width="16" 
-                      height="16" 
+                      width="12" 
+                      height="12" 
                       viewBox="0 0 24 24" 
                       fill="none" 
                       stroke="currentColor" 
@@ -514,7 +514,7 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
                       <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
                     </svg>
                   </div>
-                  <span className="text-sm truncate max-w-[150px] font-medium">
+                  <span className="text-xs truncate max-w-[140px] font-medium">
                     {profileLink}
                   </span>
                 </div>
@@ -525,7 +525,7 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
                     copyToClipboard(`https://${profileLink}`, "Link");
                   }}
                 >
-                  <Copy className="h-3.5 w-3.5 text-gray-600" />
+                  <Copy className="h-3 w-3 text-gray-600" />
                 </button>
               </div>
             </div>
