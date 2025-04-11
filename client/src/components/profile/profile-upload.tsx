@@ -5,7 +5,6 @@ import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
 import { 
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -32,6 +31,7 @@ export function ProfileUpload({
   onCancel,
   isUploading = false
 }: ProfileUploadProps) {
+  // Internal state
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [zoomLevel, setZoomLevel] = useState<number>(1);
   const [rotation, setRotation] = useState<number>(0);
@@ -42,12 +42,13 @@ export function ProfileUpload({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showAlert, setShowAlert] = useState<boolean>(false);
   
+  // Refs
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
 
-  // Default placeholder image when no image is selected
-  const placeholderImage = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
+  // Default placeholder image 
+  const placeholderImage = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'%3E%3C/path%3E%3Ccircle cx='12' cy='7' r='4'%3E%3C/circle%3E%3C/svg%3E";
   
   // Reset the editing state when a new image is selected
   useEffect(() => {
@@ -59,7 +60,7 @@ export function ProfileUpload({
     }
   }, [selectedImage]);
 
-  // Function to convert File to base64 string
+  // Function to convert File to base64
   const convertToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const fileReader = new FileReader();
@@ -73,7 +74,7 @@ export function ProfileUpload({
     });
   };
 
-  // Function to validate image file
+  // Validate the image file
   const validateImage = (file: File): string | null => {
     if (!ACCEPTED_TYPES.includes(file.type)) {
       return `Unsupported file type. Please upload a JPG, PNG, or WebP image.`;
@@ -110,110 +111,83 @@ export function ProfileUpload({
     }
   };
 
-  // Trigger file input click
+  // Open file picker
   const handleButtonClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
   };
 
-  // Save the selected image with applied transformations using the exact same parameters as displayed in the preview
+  // Save the selected image with transformations
   const handleSave = () => {
-    if (selectedImage && !isUploading) {
-      setIsUploading(true);
-      
-      try {
-        // Using the exact transformations that are applied in the UI
-        // This ensures the image looks identical to what the user sees
-        const captureExactPreview = () => {
-          // Create a higher quality canvas for the final output
-          const canvas = document.createElement('canvas');
-          canvas.width = TARGET_SIZE;
-          canvas.height = TARGET_SIZE;
-          const ctx = canvas.getContext('2d');
-          
-          if (!ctx) {
-            console.error("Could not create canvas context");
-            setIsUploading(false);
-            return;
-          }
-          
-          // Load the image with a clean approach
-          const img = new Image();
-          img.crossOrigin = "anonymous";
-          
-          img.onload = () => {
-            try {
-              // Prepare canvas with white background
-              ctx.fillStyle = "#FFFFFF";
-              ctx.fillRect(0, 0, canvas.width, canvas.height);
-              
-              // Calculate the source dimensions
-              const size = Math.min(img.width, img.height);
-              const offsetSrcX = (img.width - size) / 2;
-              const offsetSrcY = (img.height - size) / 2;
-              
-              // Apply the exact same transformations as seen in the UI preview
-              // This is the most important part - use the same math as the CSS transform
-              ctx.save();
-              
-              // Center point of canvas
-              ctx.translate(canvas.width / 2, canvas.height / 2);
-              
-              // CRITICAL: Apply rotation first, then zoom, then translation
-              // This must match the order of transforms in the CSS
-              ctx.rotate((rotation * Math.PI) / 180);
-              ctx.scale(zoomLevel, zoomLevel);
-              ctx.translate(offsetX, offsetY);
-              
-              // Draw from the center, using the full square crop
-              ctx.drawImage(
-                img, 
-                offsetSrcX, offsetSrcY, size, size, 
-                -TARGET_SIZE / 2, -TARGET_SIZE / 2, TARGET_SIZE, TARGET_SIZE
-              );
-              
-              ctx.restore();
-              
-              // Convert to high-quality JPEG
-              const processedImage = canvas.toDataURL('image/jpeg', 0.95);
-              
-              console.log("Successfully processed profile image");
-              
-              // Send the final result back
-              onImageSelected(processedImage);
-              setIsUploading(false);
-            } catch (error) {
-              console.error("Error processing image:", error);
-              setErrorMessage("There was an error processing your image. Please try again.");
-              setShowAlert(true);
-              setIsUploading(false);
-            }
-          };
-          
-          img.onerror = () => {
-            console.error("Failed to load image for processing");
-            setErrorMessage("Failed to load the image. Please try another image.");
-            setShowAlert(true);
-            setIsUploading(false);
-          };
-          
-          // Start loading the image
-          img.src = selectedImage;
-        };
-        
-        // Use a short timeout to ensure the loading state is shown
-        setTimeout(captureExactPreview, 100);
-      } catch (error) {
-        console.error("Exception during profile image processing:", error);
-        setErrorMessage("There was an unexpected error. Please try again.");
-        setShowAlert(true);
-        setIsUploading(false);
-      }
+    if (!selectedImage || isUploading) return;
+    
+    // Create a canvas to apply transformations
+    const canvas = document.createElement('canvas');
+    canvas.width = TARGET_SIZE;
+    canvas.height = TARGET_SIZE;
+    const ctx = canvas.getContext('2d');
+    
+    if (!ctx) {
+      setErrorMessage("Could not create image processing context. Please try again.");
+      setShowAlert(true);
+      return;
     }
+    
+    // Process the image
+    const img = new Image();
+    img.onload = () => {
+      // Fill background
+      ctx.fillStyle = "#FFFFFF";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Calculate square crop
+      const size = Math.min(img.width, img.height);
+      const offsetSrcX = (img.width - size) / 2;
+      const offsetSrcY = (img.height - size) / 2;
+      
+      // Apply transformations in EXACT same order as in the CSS transform
+      ctx.save();
+      
+      // Center point of transformation
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      
+      // Rotation
+      ctx.rotate((rotation * Math.PI) / 180);
+      
+      // Zoom
+      ctx.scale(zoomLevel, zoomLevel);
+      
+      // Position offset
+      ctx.translate(offsetX, offsetY);
+      
+      // Draw image
+      ctx.drawImage(
+        img,
+        offsetSrcX, offsetSrcY, size, size,
+        -TARGET_SIZE / 2, -TARGET_SIZE / 2, TARGET_SIZE, TARGET_SIZE
+      );
+      
+      ctx.restore();
+      
+      // Convert to high-quality JPEG
+      const processedImage = canvas.toDataURL('image/jpeg', 0.95);
+      
+      // Send to parent for saving
+      onImageSelected(processedImage);
+    };
+    
+    // Handle loading error
+    img.onerror = () => {
+      setErrorMessage("Error loading image. Please try a different image.");
+      setShowAlert(true);
+    };
+    
+    // Start loading
+    img.src = selectedImage;
   };
-
-  // Remove the selected image
+  
+  // Remove selected image
   const handleRemove = () => {
     setSelectedImage(null);
     if (fileInputRef.current) {
@@ -288,7 +262,7 @@ export function ProfileUpload({
                 alt="Profile Preview"
                 className="max-w-none"
                 style={{ 
-                  transform: `scale(${zoomLevel}) rotate(${rotation}deg) translate(${offsetX}px, ${offsetY}px)`,
+                  transform: `rotate(${rotation}deg) scale(${zoomLevel}) translate(${offsetX}px, ${offsetY}px)`,
                   transformOrigin: 'center',
                   transition: isDragging ? 'none' : 'transform 0.2s ease-out',
                 }}
@@ -314,6 +288,7 @@ export function ProfileUpload({
                 onClick={handleRemove}
                 className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1.5 shadow-md hover:bg-red-600 transition-colors"
                 aria-label="Remove image"
+                type="button"
               >
                 <X size={18} />
               </button>
