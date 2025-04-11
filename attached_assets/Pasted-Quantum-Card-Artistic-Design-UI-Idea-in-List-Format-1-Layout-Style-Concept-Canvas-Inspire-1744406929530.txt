@@ -1,0 +1,94 @@
+Quantum Card – Artistic Design (UI Idea in List Format)
+🧱 1. Layout & Style Concept
+ Canvas-Inspired Layout:
+
+Abstract frame layout — like a digital scrapbook or artist’s board
+
+Layered, hand-drawn elements blended with subtle animations
+
+Irregular edge shapes, soft gradients, and paper-textured backgrounds
+
+ Card Shape:
+
+Organic silhouette (not rectangular), feels handmade
+
+Slight color splashes or brush strokes as part of the border design
+
+👤 2. Profile Picture
+ Displayed as a circular or artistic cut-out shape (e.g., blob, brush-circle)
+
+ Frame with pencil sketch or paint stroke border
+
+ Optional animated glow or tilt when hovered
+
+✍️ 3. Name & Job Title
+ Name
+
+Stylized with a script or serif font (e.g., DM Serif, Playfair)
+
+May sit on a paint label or abstract sticker background
+
+ Job Title
+
+Offset placement (diagonally across or under name)
+
+Slight animation or fade-in from behind brush stroke on hover
+
+🧩 4. Professional Details
+ Industry / Domain
+
+Displayed as handwritten-style tags or paint chip labels
+
+Example: #Photography, #Illustration, #Storytelling
+
+ Company / Organization
+
+Placed inside a badge-style “exhibition label”
+
+Optional paper-textured container with company logo or initials
+
+ Location
+
+Marker icon + handwritten city/state
+
+Placed on a mini location pin graphic or subtle map sketch background
+
+✉️ 5. Contact Information
+ Email Address
+
+📧 Icon on a floating “post-it note” or folded paper tab
+
+Hover → note flips to reveal full email + copy option
+
+ Phone Number
+
+📞 Appears as a stamped label or clay-style button
+
+Vibrates or glows lightly when hovered
+
+Contact info is only shown if visibility is enabled by the user
+
+🌈 6. Artistic Theme & Visuals
+ Textures: Watercolor stains, light canvas fabric, handmade paper
+
+ Colors: Earth tones, rich pastels, creative gradients (mint, rust, lilac, ink blue)
+
+ Typography: Pairing script or serif fonts for names with clean sans-serif body
+
+🧠 7. Motion & Interactions
+ Subtle parallax when moving the card
+
+ Hover glow on image and name
+
+ Ink ripple animation on action buttons (like “Connect” or “View Full Profile”)
+
+ Elements fade in like layers of an art piece (top-down)
+
+🎯 Bonus Creative Touches
+ Brush stroke line separators between sections
+
+ Floating color palette dots behind the card
+
+ Hand-drawn signature-style name option
+
+ “Portfolio” or “Gallery” button shown as paintbrush icon or folded canvas
