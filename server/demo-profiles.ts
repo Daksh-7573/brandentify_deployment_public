@@ -406,7 +406,7 @@ async function createDataScientistProfile(storage: IStorage) {
   }
   
   // Add education
-  const education: InsertEducation[] = [
+  const education = [
     {
       userId: user.id,
       institution: "Massachusetts Institute of Technology",
@@ -428,7 +428,8 @@ async function createDataScientistProfile(storage: IStorage) {
   ];
   
   for (const edu of education) {
-    await storage.createEducation(edu);
+    const fixedEdu = fixEducation(edu);
+    await storage.createEducation(fixedEdu);
   }
   
   // Add skills
@@ -448,7 +449,7 @@ async function createDataScientistProfile(storage: IStorage) {
   }
   
   // Add a project
-  const project: InsertProject = {
+  const project = {
     userId: user.id,
     title: "Predictive Healthcare Analytics Platform",
     description: "Developed an advanced machine learning platform that predicts patient readmission risks by analyzing electronic health records. The system incorporates natural language processing to extract insights from clinical notes and uses ensemble learning techniques to achieve 87% prediction accuracy. Deployed in 3 major hospitals, the platform has helped reduce readmission rates by 23%.",
@@ -462,19 +463,21 @@ async function createDataScientistProfile(storage: IStorage) {
     url: "https://example.com/healthcare-analytics"
   };
   
-  const createdProject = await storage.createProject(project);
+  const fixedProject = fixProject(project);
+  const createdProject = await storage.createProject(fixedProject);
   
   // Add collaborators to the project
-  const collaborator: InsertProjectCollaborator = {
+  const collaborator = {
     projectId: createdProject.id,
     userId: user.id,  // This would normally be another user, but for demo we'll use the same user
     name: "Dr. Emily Zhang",
     role: "Medical Advisor",
     contribution: "Provided domain expertise and validated clinical models",
-    isVerified: true
+    isVerified: 1
   };
   
-  await storage.createProjectCollaborator(collaborator);
+  const fixedCollaborator = fixCollaborator(collaborator);
+  await storage.createProjectCollaborator(fixedCollaborator);
   
   return user;
 }
