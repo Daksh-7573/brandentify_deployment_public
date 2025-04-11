@@ -40,6 +40,19 @@ function fixProject(proj: any): InsertProject {
   };
 }
 
+// Fix collaborator for the ProfileLink field 
+function fixCollaborator(collab: any): InsertProjectCollaborator {
+  // Create a fixed object with the fields that are in the schema
+  return {
+    projectId: collab.projectId,
+    userId: collab.userId,
+    name: collab.name,
+    email: null,
+    profileLink: collab.contribution || "", // Use contribution text as profileLink
+    role: collab.role,
+  };
+}
+
 /**
  * Creates three complete demo profiles with all details
  */
@@ -123,7 +136,7 @@ async function createTechExecutiveProfile(storage: IStorage) {
   }
   
   // Add education
-  const education: InsertEducation[] = [
+  const education = [
     {
       userId: user.id,
       institution: "Stanford University",
@@ -145,7 +158,8 @@ async function createTechExecutiveProfile(storage: IStorage) {
   ];
   
   for (const edu of education) {
-    await storage.createEducation(edu);
+    const fixedEdu = fixEducation(edu);
+    await storage.createEducation(fixedEdu);
   }
   
   // Add skills
@@ -165,7 +179,7 @@ async function createTechExecutiveProfile(storage: IStorage) {
   }
   
   // Add a project
-  const project: InsertProject = {
+  const project = {
     userId: user.id,
     title: "Distributed DevOps Platform",
     description: "Led the development of an internal DevOps platform that streamlined deployment processes across the organization. The platform integrates with multiple cloud providers, provides automated testing, and includes comprehensive analytics dashboards for monitoring system performance.",
@@ -179,19 +193,21 @@ async function createTechExecutiveProfile(storage: IStorage) {
     url: "https://example.com/devops-platform"
   };
   
-  const createdProject = await storage.createProject(project);
+  const fixedProject = fixProject(project);
+  const createdProject = await storage.createProject(fixedProject);
   
   // Add collaborators to the project
-  const collaborator: InsertProjectCollaborator = {
+  const collaborator = {
     projectId: createdProject.id,
     userId: user.id,  // This would normally be another user, but for demo we'll use the same user
     name: "Sarah Chen",
     role: "Product Manager",
     contribution: "Led product requirements and coordinated with stakeholders",
-    isVerified: true
+    isVerified: 1
   };
   
-  await storage.createProjectCollaborator(collaborator);
+  const fixedCollaborator = fixCollaborator(collaborator);
+  await storage.createProjectCollaborator(fixedCollaborator);
   
   return user;
 }
@@ -209,16 +225,14 @@ async function createUXDesignerProfile(storage: IStorage) {
     location: "New York, NY",
     industry: "Design",
     lookingFor: "Creative collaboration and new design challenges",
-    profileCompleted: true,
-    emailVerified: true,
-    emailVerificationToken: null,
-    emailVerificationExpires: null,
+    profileCompleted: 100,
+    // Note: emailVerified field is managed by the storage layer
   };
   
   const user = await storage.createUser(designerUser);
   
   // Add work experiences
-  const experiences: InsertWorkExperience[] = [
+  const experiences = [
     {
       userId: user.id,
       company: "DesignLab",
@@ -252,11 +266,12 @@ async function createUXDesignerProfile(storage: IStorage) {
   ];
   
   for (const exp of experiences) {
-    await storage.createWorkExperience(exp);
+    const fixedExp = fixWorkExperience(exp);
+    await storage.createWorkExperience(fixedExp);
   }
   
   // Add education
-  const education: InsertEducation[] = [
+  const education = [
     {
       userId: user.id,
       institution: "Rhode Island School of Design",
@@ -278,7 +293,8 @@ async function createUXDesignerProfile(storage: IStorage) {
   ];
   
   for (const edu of education) {
-    await storage.createEducation(edu);
+    const fixedEdu = fixEducation(edu);
+    await storage.createEducation(fixedEdu);
   }
   
   // Add skills
@@ -298,7 +314,7 @@ async function createUXDesignerProfile(storage: IStorage) {
   }
   
   // Add a project
-  const project: InsertProject = {
+  const project = {
     userId: user.id,
     title: "Financial Wellness App Redesign",
     description: "Led a complete redesign of a financial wellness mobile application focused on making personal finance more accessible and less intimidating for young adults. The project included extensive user research, competitive analysis, and iterative prototyping. The redesign resulted in a 35% increase in daily active users and a 60% increase in session duration.",
@@ -312,19 +328,21 @@ async function createUXDesignerProfile(storage: IStorage) {
     url: "https://example.com/finance-app-redesign"
   };
   
-  const createdProject = await storage.createProject(project);
+  const fixedProject = fixProject(project);
+  const createdProject = await storage.createProject(fixedProject);
   
   // Add collaborators to the project
-  const collaborator: InsertProjectCollaborator = {
+  const collaborator = {
     projectId: createdProject.id,
     userId: user.id,  // This would normally be another user, but for demo we'll use the same user
     name: "Jason Kim",
     role: "UI Developer",
     contribution: "Implemented the responsive UI components and animations",
-    isVerified: true
+    isVerified: 1
   };
   
-  await storage.createProjectCollaborator(collaborator);
+  const fixedCollaborator = fixCollaborator(collaborator);
+  await storage.createProjectCollaborator(fixedCollaborator);
   
   return user;
 }
@@ -342,16 +360,14 @@ async function createDataScientistProfile(storage: IStorage) {
     location: "Chicago, IL",
     industry: "Data Science",
     lookingFor: "Research collaborations and speaking opportunities",
-    profileCompleted: true,
-    emailVerified: true,
-    emailVerificationToken: null,
-    emailVerificationExpires: null,
+    profileCompleted: 100,
+    // Note: emailVerified field is managed by the storage layer
   };
   
   const user = await storage.createUser(dataScientistUser);
   
   // Add work experiences
-  const experiences: InsertWorkExperience[] = [
+  const experiences = [
     {
       userId: user.id,
       company: "DataInsight",
@@ -385,7 +401,8 @@ async function createDataScientistProfile(storage: IStorage) {
   ];
   
   for (const exp of experiences) {
-    await storage.createWorkExperience(exp);
+    const fixedExp = fixWorkExperience(exp);
+    await storage.createWorkExperience(fixedExp);
   }
   
   // Add education
