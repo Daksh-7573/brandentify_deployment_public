@@ -9,12 +9,16 @@ import {
   Code
 } from "lucide-react";
 import { UserData } from "@/types/user";
+import { useCurrentCompany } from "@/hooks/use-current-company";
 
 interface ClayPaperCardProps {
   userData: UserData;
 }
 
 const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
+  // Get the latest company from work experience
+  const { company } = useCurrentCompany(userData.id);
+  
   // Format profile link
   const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;
   
