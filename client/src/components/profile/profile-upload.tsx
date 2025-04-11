@@ -117,50 +117,56 @@ export function ProfileUpload({
     }
   };
 
-  // Save the selected image with applied transformations
+  // Save the selected image with applied transformations using the exact same parameters as displayed in the preview
   const handleSave = () => {
-    if (selectedImage) {
-      // Create a canvas to apply transformations and crop
-      const canvas = document.createElement('canvas');
-      canvas.width = TARGET_SIZE;
-      canvas.height = TARGET_SIZE;
-      const ctx = canvas.getContext('2d');
+    if (selectedImage && !isUploading) {
+      setIsUploading(true);
       
-      if (ctx) {
-        const img = new Image();
-        
-        // Use a promise to ensure image is loaded before drawing
-        const processImage = new Promise<string>((resolve) => {
+      try {
+        // Using the exact transformations that are applied in the UI
+        // This ensures the image looks identical to what the user sees
+        const captureExactPreview = () => {
+          // Create a higher quality canvas for the final output
+          const canvas = document.createElement('canvas');
+          canvas.width = TARGET_SIZE;
+          canvas.height = TARGET_SIZE;
+          const ctx = canvas.getContext('2d');
+          
+          if (!ctx) {
+            console.error("Could not create canvas context");
+            setIsUploading(false);
+            return;
+          }
+          
+          // Load the image with a clean approach
+          const img = new Image();
+          img.crossOrigin = "anonymous";
+          
           img.onload = () => {
             try {
-              // Clear the canvas
-              ctx.clearRect(0, 0, canvas.width, canvas.height);
-              
-              // Fill with a background color (optional)
+              // Prepare canvas with white background
               ctx.fillStyle = "#FFFFFF";
               ctx.fillRect(0, 0, canvas.width, canvas.height);
               
-              // Calculate the scale to fit the image properly
+              // Calculate the source dimensions
               const size = Math.min(img.width, img.height);
               const offsetSrcX = (img.width - size) / 2;
               const offsetSrcY = (img.height - size) / 2;
               
-              // Set up the transformations properly by considering the image dimensions
+              // Apply the exact same transformations as seen in the UI preview
+              // This is the most important part - use the same math as the CSS transform
               ctx.save();
               
-              // Move to center of the canvas
+              // Center point of canvas
               ctx.translate(canvas.width / 2, canvas.height / 2);
               
-              // Apply rotation
+              // CRITICAL: Apply rotation first, then zoom, then translation
+              // This must match the order of transforms in the CSS
               ctx.rotate((rotation * Math.PI) / 180);
-              
-              // Apply zoom
               ctx.scale(zoomLevel, zoomLevel);
-              
-              // Apply offset relative to the center
               ctx.translate(offsetX, offsetY);
               
-              // Draw from the center of the image
+              // Draw from the center, using the full square crop
               ctx.drawImage(
                 img, 
                 offsetSrcX, offsetSrcY, size, size, 
@@ -169,33 +175,40 @@ export function ProfileUpload({
               
               ctx.restore();
               
-              // Get the final image as base64 with proper quality
+              // Convert to high-quality JPEG
               const processedImage = canvas.toDataURL('image/jpeg', 0.95);
               
-              // Return the processed image
-              resolve(processedImage);
+              console.log("Successfully processed profile image");
+              
+              // Send the final result back
+              onImageSelected(processedImage);
+              setIsUploading(false);
             } catch (error) {
               console.error("Error processing image:", error);
-              resolve(selectedImage); // Fallback to original if processing fails
+              setErrorMessage("There was an error processing your image. Please try again.");
+              setShowAlert(true);
+              setIsUploading(false);
             }
           };
           
           img.onerror = () => {
-            console.error("Error loading image");
-            resolve(selectedImage); // Fallback to original if loading fails
+            console.error("Failed to load image for processing");
+            setErrorMessage("Failed to load the image. Please try another image.");
+            setShowAlert(true);
+            setIsUploading(false);
           };
           
-          // Set the source to start loading
+          // Start loading the image
           img.src = selectedImage;
-        });
+        };
         
-        // Wait for image processing to complete then pass to callback
-        processImage.then(processedImage => {
-          onImageSelected(processedImage);
-        });
-      } else {
-        // Fallback if canvas context is not available
-        onImageSelected(selectedImage);
+        // Use a short timeout to ensure the loading state is shown
+        setTimeout(captureExactPreview, 100);
+      } catch (error) {
+        console.error("Exception during profile image processing:", error);
+        setErrorMessage("There was an unexpected error. Please try again.");
+        setShowAlert(true);
+        setIsUploading(false);
       }
     }
   };
