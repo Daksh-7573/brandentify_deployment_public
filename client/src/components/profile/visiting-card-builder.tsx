@@ -10,8 +10,7 @@ import { apiRequest } from "@/lib/queryClient";
 
 // Card type options
 const CARD_TYPES = [
-  { id: "professional-renewed", name: "Quantum Pro", description: "Modern quantum-inspired design with sleek UI elements" },
-  { id: "professional", name: "Professional Classic", description: "Sleek digital business card with modern UI" },
+  { id: "professional-renewed", name: "Professional", description: "Modern professional design with sleek UI elements" },
   { id: "3d-animated", name: "3D Animated", description: "Interactive 3D hover effects" },
   { id: "holographic", name: "Holographic Glass", description: "Modern transparent design" },
   { id: "clay-paper", name: "Clay & Paper", description: "Playful 3D claymation & paper-cut style" },
@@ -56,15 +55,15 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
       
       setIsFinalized(true);
       toast({
-        title: "Quantum Card style saved!",
-        description: "Your Quantum Card style has been set and will be visible to your connections.",
+        title: "Digital Visiting Card style saved!",
+        description: "Your Digital Visiting Card style has been set and will be visible to your connections.",
         variant: "default",
       });
     } catch (error) {
       console.error("Error saving card type:", error);
       toast({
-        title: "Error saving Quantum Card style",
-        description: "Unable to save your Quantum Card style. Please try again.",
+        title: "Error saving Digital Visiting Card style",
+        description: "Unable to save your Digital Visiting Card style. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -85,7 +84,7 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
   return (
     <div className="mt-8">
       <div className="flex items-center mb-6">
-        <h3 className="text-lg font-semibold">Quantum Card</h3>
+        <h3 className="text-lg font-semibold">Digital Visiting Card</h3>
         <div className="ml-2 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300 text-xs px-2 py-0.5 rounded-full flex items-center">
           <BadgeCheck className="h-3 w-3 mr-1" />
           <span>Premium</span>
@@ -116,7 +115,7 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
         <div className="text-sm mb-4 flex items-start">
           <Info className="h-4 w-4 text-gray-500 mr-2 mt-0.5" />
           <span className="text-gray-600 dark:text-gray-400">
-            Your Quantum Card is automatically created based on your profile information. Select a style that best represents you.
+            Your Digital Visiting Card is automatically created based on your profile information. Select a style that best represents you.
           </span>
         </div>
         
@@ -140,16 +139,13 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
               className="w-full"
             >
               <TabsList className="grid grid-cols-3 mb-6">
-                <TabsTrigger value="professional-renewed">Quantum Pro</TabsTrigger>
-                <TabsTrigger value="professional">Professional</TabsTrigger>
+                <TabsTrigger value="professional-renewed">Professional</TabsTrigger>
                 <TabsTrigger value="3d-animated">3D</TabsTrigger>
+                <TabsTrigger value="holographic">Holographic</TabsTrigger>
               </TabsList>
               <TabsList className="grid grid-cols-3 mb-6">
-                <TabsTrigger value="holographic">Holographic</TabsTrigger>
                 <TabsTrigger value="clay-paper">Clay & Paper</TabsTrigger>
                 <TabsTrigger value="creative">Creative</TabsTrigger>
-              </TabsList>
-              <TabsList className="grid grid-cols-3">
                 <TabsTrigger value="artistic">Artistic</TabsTrigger>
               </TabsList>
               
@@ -183,10 +179,10 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
                             <div className="flex flex-col items-center justify-center p-3 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 rounded-lg">
                               <div className="flex items-center mb-1 text-green-600 dark:text-green-400">
                                 <Check className="h-4 w-4 mr-1" />
-                                <span className="text-sm font-medium">Quantum Card Finalized</span>
+                                <span className="text-sm font-medium">Digital Visiting Card Finalized</span>
                               </div>
                               <p className="text-xs text-green-600/80 dark:text-green-400/80 text-center">
-                                This card style is set as your public Quantum Card
+                                This card style is set as your public Digital Visiting Card
                               </p>
                             </div>
                           ) : (
@@ -202,7 +198,7 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
                                 </>
                               ) : (
                                 <>
-                                  Make This My Quantum Card
+                                  Make This My Digital Visiting Card
                                 </>
                               )}
                             </Button>

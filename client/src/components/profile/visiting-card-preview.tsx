@@ -66,16 +66,7 @@ const VisitingCardPreview: React.FC<VisitingCardPreviewProps> = ({
     );
   }
   
-  // For professional card style, use the specialized component
-  if (cardType === "professional") {
-    return (
-      <div className="visiting-card-preview">
-        <ProfessionalCard userData={userData} />
-      </div>
-    );
-  }
-  
-  // For renewed professional card style, use the redesigned component
+  // For professional card style, use the redesigned component
   if (cardType === "professional-renewed") {
     return (
       <div className="visiting-card-preview">
