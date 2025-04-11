@@ -790,7 +790,7 @@ export default function Projects() {
                     name="category"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Category</FormLabel>
+                        <FormLabel>Category*</FormLabel>
                         <FormControl>
                           <Input placeholder="Web Development, Design, etc." {...field} value={field.value || ''} />
                         </FormControl>
@@ -804,7 +804,7 @@ export default function Projects() {
                     name="description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Description</FormLabel>
+                        <FormLabel>Description*</FormLabel>
                         <FormControl>
                           <Textarea 
                             placeholder="Describe your project, its goals, and your contributions" 
