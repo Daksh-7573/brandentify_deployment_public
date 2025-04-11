@@ -28,7 +28,7 @@ type SkillItem = {
 
 export default function Skills() {
   const { user, isDemoMode } = useAuth();
-  const userId = isDemoMode ? 2 : (user?.uid ? parseInt(user.uid) : 1);
+  const userId = isDemoMode ? 1 : (user?.uid ? parseInt(user.uid) : 1);
   
   // Fetch skills from the API with advanced options
   const { data: serverSkills, isLoading, refetch } = useQuery({

@@ -294,9 +294,8 @@ export default function Education() {
   const [selectedDomain, setSelectedDomain] = useState<string>("");
   const [domainOptions, setDomainOptions] = useState<string[]>([]);
   
-  // Use the actual user ID from auth context if available, or 2 for demo mode
-  const { isDemoMode } = useAuth();
-  const effectiveUserId = isDemoMode ? 2 : (user?.id || 1);
+  // Use the actual user ID from auth context if available, or 1 for demo mode
+  const effectiveUserId = user?.id || 1;
   
   // Fetch education data for user
   const { data: educations = [], isLoading } = useQuery<Education[]>({

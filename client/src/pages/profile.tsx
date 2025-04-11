@@ -405,8 +405,7 @@ export default function Profile() {
   
   // Get user ID from authenticated user object
   // Use the Firebase UID directly, the backend will handle the conversion
-  // For demo mode, use the tech executive demo profile (ID: 2)
-  const userId = user?.uid || (isDemoMode ? 2 : null);
+  const userId = user?.uid || (isDemoMode ? 1 : null);
   
   // State for edit dialogs
   const [showEditBasicInfo, setShowEditBasicInfo] = useState(false);
@@ -440,8 +439,7 @@ export default function Profile() {
   
   // Define userNumericId based on the userData response
   // Critical: Don't use a fallback value like 0 as it might fetch wrong user's data
-  // For demo mode, use the tech executive demo profile (ID: 2)
-  const userNumericId = isDemoMode ? 2 : (userData?.id || null);
+  const userNumericId = isDemoMode ? 1 : (userData?.id || null);
   
   // Add debug logging to troubleshoot profile completion issues
   useEffect(() => {

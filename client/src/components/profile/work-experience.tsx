@@ -395,7 +395,7 @@ export default function WorkExperience() {
   
   // Get user ID (use demo ID if in demo mode)
   // We need the Firebase UID as is - it's a string and will be converted to numeric ID on the server
-  const userId = isDemoMode ? 2 : (user?.uid || null);
+  const userId = isDemoMode ? 1 : (user?.uid || null);
   
   // Get user data from profile page
   const { data: userData } = useQuery<any>({
@@ -431,7 +431,7 @@ export default function WorkExperience() {
       console.log(`Work Experience - Directly fetching latest experiences data`, timestamp);
       try {
         // Use the numeric user ID for API requests
-        const endpointUserId = userNumericId || (isDemoMode ? 2 : 0);
+        const endpointUserId = userNumericId || (isDemoMode ? 1 : 0);
         console.log(`Work Experience - Fetching experiences with numeric userId: ${endpointUserId}`);
         
         const response = await fetch(`/api/users/${endpointUserId}/experiences?_=${timestamp}`, {
@@ -527,7 +527,7 @@ export default function WorkExperience() {
   };
   
   // Fetch user experiences - use numeric ID when available
-  const endpointUserId = userNumericId || (isDemoMode ? 2 : 0);
+  const endpointUserId = userNumericId || (isDemoMode ? 1 : 0);
   const { data: experiences = [], isLoading } = useQuery<any[]>({
     queryKey: [`/api/users/${endpointUserId}/experiences`],
     enabled: !!endpointUserId,
