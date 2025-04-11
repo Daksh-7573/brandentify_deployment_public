@@ -33,7 +33,7 @@ const projectSchema = z.object({
   description: z.string().min(1, { message: "Description is required" }),
   category: z.string().min(1, { message: "Category is required" }),
   startDate: z.string().min(1, { message: "Start date is required" }),
-  projectUrl: z.string().url().nullable().optional().or(z.literal('')),
+  projectUrl: z.string().url({ message: "Valid URL is required" }).min(1, { message: "Project URL is required" }),
   mediaUrls: z.array(z.string()).nullable().optional(),
 });
 
@@ -188,11 +188,11 @@ export default function Projects() {
     resolver: zodResolver(projectSchema),
     defaultValues: {
       title: '',
-      description: null,  // Changed from '' to null to match schema
-      category: null,     // Changed from '' to null to match schema
+      description: '',  // Empty string for required field
+      category: '',     // Empty string for required field
       startDate: format(new Date(), 'yyyy-MM-dd'),
-      projectUrl: null,   // Changed from '' to null to match schema
-      mediaUrls: null,    // Changed from [] to null to match schema
+      projectUrl: '',   // Empty string for required field
+      mediaUrls: [],    // Empty array for project images/media
     },
   });
 
@@ -243,11 +243,11 @@ export default function Projects() {
     setCurrentProject(null);
     projectForm.reset({
       title: '',
-      description: null,
-      category: null,
+      description: '',
+      category: '',
       startDate: format(new Date(), 'yyyy-MM-dd'),
-      projectUrl: null,
-      mediaUrls: null,
+      projectUrl: '',
+      mediaUrls: [],
     });
     setThumbnailFile(null);
     setThumbnailError(null);
@@ -274,11 +274,11 @@ export default function Projects() {
     setCurrentProject(project);
     projectForm.reset({
       title: project.title,
-      description: project.description,
-      category: project.category,
+      description: project.description || '',
+      category: project.category || '',
       startDate: project.startDate || format(new Date(), 'yyyy-MM-dd'),
-      projectUrl: project.projectUrl,
-      mediaUrls: project.mediaUrls,
+      projectUrl: project.projectUrl || '',
+      mediaUrls: project.mediaUrls || [],
     });
     // Reset all file inputs when editing
     setThumbnailFile(null);
@@ -863,7 +863,7 @@ export default function Projects() {
                     name="projectUrl"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Project URL</FormLabel>
+                        <FormLabel>Project URL*</FormLabel>
                         <FormControl>
                           <Input type="url" placeholder="https://example.com" {...field} value={field.value || ''} />
                         </FormControl>
@@ -1200,7 +1200,7 @@ export default function Projects() {
                       name="projectUrl"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Project URL</FormLabel>
+                          <FormLabel>Project URL*</FormLabel>
                           <FormControl>
                             <Input type="url" placeholder="https://example.com" {...field} value={field.value || ''} />
                           </FormControl>
