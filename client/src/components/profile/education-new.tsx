@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { apiRequest } from "@/lib/queryClient";
 import { Loader2, CalendarIcon, Plus, Pencil, Trash } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -160,11 +160,19 @@ export default function Education() {
       // Check if we're editing an existing education (has an id) or creating a new one
       if (newEducation.id) {
         // Update existing education
-        response = await apiRequest('PUT', `/api/educations/${newEducation.id}`, educationToSave);
+        response = await apiRequest({
+          method: 'PUT', 
+          url: `/api/educations/${newEducation.id}`, 
+          data: educationToSave
+        });
         successMessage = "Your education has been updated successfully";
       } else {
         // Create new education
-        response = await apiRequest('POST', '/api/educations', educationToSave);
+        response = await apiRequest({
+          method: 'POST', 
+          url: '/api/educations', 
+          data: educationToSave
+        });
         successMessage = "Your education has been added successfully";
       }
       
@@ -230,7 +238,10 @@ export default function Education() {
   const handleDelete = async (id: number) => {
     try {
       console.log("Deleting education with ID:", id);
-      const response = await apiRequest('DELETE', `/api/educations/${id}`);
+      const response = await apiRequest({
+        method: 'DELETE', 
+        url: `/api/educations/${id}`
+      });
       
       if (response.ok) {
         console.log("Education deleted successfully");
