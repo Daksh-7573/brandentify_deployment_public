@@ -1,0 +1,104 @@
+Quantum Card – Clay & Paper Design (UI Idea in List)
+🧱 1. Card Layout & Structure
+ Card Style:
+
+Soft shadowed card (paper feel) layered on a clay-style surface
+
+Elevation via multiple card layers (Z-depth)
+
+Rounded corners (16–20px), paper-like edges
+
+ Card Dimensions:
+
+~360x500 px, vertical layout
+
+Responsive for web & mobile (scales down to 100%)
+
+👤 2. Profile Identity Section
+ Profile Picture
+
+Slightly elevated circle avatar
+
+Paper-cut-style shadow
+
+Subtle inner border or embossed effect
+
+ Name
+
+Large serif or rounded sans-serif font (e.g., Satoshi, Poppins)
+
+Text style: paper emboss or “cutout look”
+
+ Job Title
+
+Under name, in lighter font weight
+
+Soft clay-toned text on white background
+
+🧩 3. Professional Details Section
+ Industry / Domain
+
+Shown as flat tags or paper-label-style chips
+
+Example: #Product, #Marketing, #Design
+
+ Company / Organization
+
+🏢 Icon + name in a light shaded box (paper block style)
+
+Optional: company logo inside embossed mini circle
+
+ Location
+
+📍 Icon with city/state
+
+Horizontal separator line (faint dashed line like paper fold)
+
+📬 4. Contact Information
+ Email Address
+
+📧 Left-aligned with soft icon
+
+Background: pale paper tile or clay chip
+
+ Phone Number
+
+📞 Similar style, click-to-call (if on mobile)
+
+Optional copy icon next to contact
+
+🔐 Visibility of this section controlled via user’s privacy settings.
+
+🎨 5. Visual Style & Aesthetics
+ Material Style:
+
+Combines soft clay colors (pastel blue, blush, taupe) with clean white or off-white paper cards
+
+Background blur or soft texture (like Japanese Washi paper)
+
+ Shadow Effects:
+
+Inner shadows for card layers (like stacked paper)
+
+Outer soft clay drop shadows
+
+ Font Suggestion:
+
+Poppins, Nunito, or Sora for modern clay/paper vibe
+
+Slight letter-spacing for clean readability
+
+🧠 6. Interactivity & Animation
+ Subtle float on hover
+
+ Button ripple or ink-style click feedback (like Google Material Design)
+
+ Tap/click reveals full profile or connects to chat
+
+🔧 7. Optional Features
+ Download or Print button (for printable version of card)
+
+ “Send My Card” feature with a soft fly-out animation
+
+ Minimal icons to share or bookmark profile
+

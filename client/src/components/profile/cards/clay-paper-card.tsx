@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 import { 
   Mail, 
   Phone, 
@@ -6,7 +6,10 @@ import {
   Briefcase, 
   MapPin, 
   Building2, 
-  Code
+  Hash,
+  Copy,
+  Printer,
+  Share2
 } from "lucide-react";
 import { UserData } from "@/types/user";
 
@@ -15,203 +18,402 @@ interface ClayPaperCardProps {
 }
 
 const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
+  // State for hover and copy feedback
+  const [hoveredSection, setHoveredSection] = useState<string | null>(null);
+  const [copySuccess, setCopySuccess] = useState<string | null>(null);
+  
   // Format profile link
   const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;
   
+  // Define industry tags
+  const industryTags = userData.industry ? userData.industry.split(/,\s*/) : [];
+  if (!industryTags.length && userData.industry) {
+    industryTags.push(userData.industry);
+  }
+  
+  // Copy to clipboard function
+  const copyToClipboard = (text: string, type: string) => {
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        setCopySuccess(`${type} copied!`);
+        setTimeout(() => setCopySuccess(null), 2000);
+      })
+      .catch(err => {
+        console.error('Error copying text: ', err);
+      });
+  };
+  
+  // Print card function
+  const printCard = () => {
+    window.print();
+  };
+
+  // Get element style based on whether it's hovered
+  const getElementStyle = (sectionId: string, defaultShadow: string, hoverShadow: string) => {
+    const isHovered = hoveredSection === sectionId;
+    return {
+      transition: "transform 0.2s ease, box-shadow 0.2s ease",
+      transform: isHovered ? 'translateY(-2px)' : 'translateY(0)',
+      boxShadow: isHovered ? hoverShadow : defaultShadow
+    };
+  };
+  
   return (
-    <div className="clay-paper-card w-full aspect-[2/3.5] p-4 relative">
-      {/* Main card div with paper cutout effect */}
-      <div className="clay-card-main h-full w-full rounded-2xl bg-amber-50 shadow-[10px_10px_0px_rgba(0,0,0,0.1)] border-4 border-amber-100 overflow-hidden flex flex-col relative">
-        {/* Wavy top edge paper cut effect */}
-        <div className="absolute top-0 left-0 right-0 h-6 overflow-hidden">
-          <div className="paper-wave h-12 w-full bg-amber-100"></div>
-        </div>
+    <div className="clay-paper-card w-full aspect-[2/3.5] relative">
+      {/* Background layer with clay effect */}
+      <div 
+        className="absolute inset-0 rounded-3xl bg-slate-100"
+        style={{
+          transform: "translate(10px, 10px)",
+          boxShadow: "-2px -2px 5px rgba(255, 255, 255, 0.7), 2px 2px 5px rgba(0, 0, 0, 0.1)"
+        }}
+      />
+      
+      {/* Main card with paper effect */}
+      <div 
+        className="absolute inset-0 rounded-2xl bg-white overflow-hidden flex flex-col"
+        style={{
+          boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05)",
+          borderTop: "1px solid rgba(255, 255, 255, 0.8)",
+          borderLeft: "1px solid rgba(255, 255, 255, 0.8)",
+          borderRight: "1px solid rgba(200, 200, 200, 0.5)",
+          borderBottom: "1px solid rgba(200, 200, 200, 0.5)"
+        }}
+      >
+        {/* Paper texture overlay */}
+        <div 
+          className="absolute inset-0 opacity-10 pointer-events-none"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23000000' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E")`,
+            backgroundRepeat: "repeat"
+          }}
+        />
         
-        {/* Card header with clay photo effect */}
-        <div className="relative pt-12 pb-4 px-4 flex justify-center z-10">
-          {/* Clay molded photo frame */}
-          <div className="clay-photo-frame h-28 w-28 rounded-full bg-amber-200 p-2 shadow-clay transform hover:rotate-2 transition-transform duration-300">
-            <div className="h-full w-full rounded-full bg-white p-1 overflow-hidden shadow-inner">
-              {userData.photoURL ? (
-                <img 
-                  src={userData.photoURL} 
-                  alt={userData.name || "Profile"} 
-                  className="h-full w-full object-cover rounded-full"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = "https://ui-avatars.com/api/?name=" + (userData.name || "User");
+        {/* Content container */}
+        <div className="h-full w-full p-6 flex flex-col">
+          {/* Profile Identity Section */}
+          <div className="flex flex-col items-center mb-6">
+            {/* Profile picture with elevation */}
+            <div 
+              className="relative mb-4"
+              onMouseEnter={() => setHoveredSection('profile')}
+              onMouseLeave={() => setHoveredSection(null)}
+              style={{
+                transition: "transform 0.3s ease",
+                transform: hoveredSection === 'profile' ? 'translateY(-3px)' : 'translateY(0)'
+              }}
+            >
+              {/* Shadow layer for depth effect */}
+              <div 
+                className="absolute rounded-full bg-slate-200" 
+                style={{
+                  height: "104px",
+                  width: "104px",
+                  top: "4px",
+                  left: "4px",
+                  zIndex: 0
+                }}
+              />
+              
+              {/* Profile image container */}
+              <div 
+                className="w-26 h-26 rounded-full relative z-10 bg-white p-1"
+                style={{
+                  boxShadow: "0 2px 10px -2px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(0, 0, 0, 0.05)"
+                }}
+              >
+                <div className="h-24 w-24 rounded-full overflow-hidden border border-slate-100">
+                  {userData.photoURL ? (
+                    <img 
+                      src={userData.photoURL} 
+                      alt={userData.name || "Profile"} 
+                      className="h-full w-full object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "https://ui-avatars.com/api/?name=" + (userData.name || "User") + "&background=f1f5f9&color=334155";
+                      }}
+                    />
+                  ) : (
+                    <img 
+                      src={`https://ui-avatars.com/api/?name=${userData.name || "User"}&background=f1f5f9&color=334155`}
+                      alt={userData.name || "Profile"}
+                      className="h-full w-full object-cover"
+                    />
+                  )}
+                </div>
+              </div>
+            </div>
+            
+            {/* Name and Job Title */}
+            <div 
+              className="text-center mb-4 relative"
+              style={{
+                textShadow: "1px 1px 0 rgba(255, 255, 255, 0.8)"
+              }}
+            >
+              <h2 
+                className="text-2xl font-bold text-slate-800 mb-1 font-serif"
+                style={{
+                  textShadow: "1px 1px 0 white"
+                }}
+              >
+                {userData.name || "Your Name"}
+              </h2>
+              <p className="text-sm text-slate-600">
+                {userData.title || "Add your designation"}
+              </p>
+              
+              {/* Embossed underline */}
+              <div 
+                className="h-px w-40 mx-auto mt-3"
+                style={{
+                  background: "linear-gradient(to right, transparent, rgba(203, 213, 225, 0.8), transparent)",
+                  boxShadow: "0 1px 0 rgba(255, 255, 255, 0.8)"
+                }}
+              />
+            </div>
+          </div>
+          
+          {/* Professional Details Section */}
+          <div className="mb-6">
+            {/* Industry tags displayed as paper chips */}
+            {industryTags.length > 0 && (
+              <div className="flex flex-wrap justify-center gap-2 mb-4">
+                {industryTags.map((tag, index) => (
+                  <div 
+                    key={index}
+                    className="flex items-center px-3 py-1 rounded-full text-xs bg-slate-50"
+                    style={getElementStyle(
+                      `tag-${index}`, 
+                      "0 1px 2px rgba(0, 0, 0, 0.05), inset 0 0 0 1px rgba(0, 0, 0, 0.05)",
+                      "0 4px 6px -1px rgba(0, 0, 0, 0.08), inset 0 0 0 1px rgba(0, 0, 0, 0.05)"
+                    )}
+                    onMouseEnter={() => setHoveredSection(`tag-${index}`)}
+                    onMouseLeave={() => setHoveredSection(null)}
+                  >
+                    <Hash className="h-3 w-3 mr-1 text-blue-500" />
+                    {tag.trim()}
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            {/* Company in a clay-toned box */}
+            {userData.company && (
+              <div 
+                className="flex items-center justify-center gap-2 mb-3 mx-auto px-4 py-2 rounded-lg max-w-[85%]"
+                style={{
+                  background: "linear-gradient(to bottom, #f8fafc, #f1f5f9)",
+                  ...getElementStyle(
+                    'company',
+                    "0 1px 3px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9)",
+                    "0 4px 6px -1px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9)"
+                  )
+                }}
+                onMouseEnter={() => setHoveredSection('company')}
+                onMouseLeave={() => setHoveredSection(null)}
+              >
+                <div className="flex items-center justify-center w-6 h-6 rounded-full bg-white shadow-sm">
+                  <Building2 className="h-3.5 w-3.5 text-blue-500" />
+                </div>
+                <span className="text-sm text-slate-700">{userData.company}</span>
+              </div>
+            )}
+            
+            {/* Location with paper fold line */}
+            {userData.location && (
+              <div className="flex flex-col items-center">
+                <div 
+                  className="flex items-center justify-center gap-2 mb-2"
+                  style={{
+                    transition: "transform 0.2s ease",
+                    transform: hoveredSection === 'location' ? 'translateY(-2px)' : 'translateY(0)'
+                  }}
+                  onMouseEnter={() => setHoveredSection('location')}
+                  onMouseLeave={() => setHoveredSection(null)}
+                >
+                  <div className="flex items-center justify-center w-6 h-6 rounded-full bg-slate-50 shadow-sm">
+                    <MapPin className="h-3.5 w-3.5 text-blue-500" />
+                  </div>
+                  <span className="text-sm text-slate-700">{userData.location}</span>
+                </div>
+                
+                {/* Dashed fold line */}
+                <div 
+                  className="w-40 h-px mb-4 mt-2"
+                  style={{
+                    backgroundImage: "linear-gradient(to right, #cbd5e1 50%, transparent 50%)",
+                    backgroundSize: "8px 1px",
+                    backgroundRepeat: "repeat-x",
+                    boxShadow: "0 1px 0 rgba(255, 255, 255, 0.8)"
                   }}
                 />
-              ) : (
-                <img 
-                  src={`https://ui-avatars.com/api/?name=${userData.name || "User"}`}
-                  alt={userData.name || "Profile"}
-                  className="h-full w-full object-cover rounded-full"
-                />
+              </div>
+            )}
+          </div>
+          
+          {/* Contact Section */}
+          <div className="mt-auto space-y-3">
+            {/* Email Address */}
+            <div 
+              className="flex items-center justify-between px-3 py-2 rounded-md bg-slate-50 border border-slate-100"
+              style={getElementStyle(
+                'email',
+                "inset 0 1px 0 white, 0 1px 3px rgba(0, 0, 0, 0.05)",
+                "inset 0 1px 0 white, 0 4px 6px -1px rgba(0, 0, 0, 0.08)"
               )}
+              onMouseEnter={() => setHoveredSection('email')}
+              onMouseLeave={() => setHoveredSection(null)}
+            >
+              <div className="flex items-center gap-2">
+                <Mail className="h-4 w-4 text-blue-500" />
+                <span className="text-sm text-slate-700 truncate max-w-[150px]">
+                  {userData.email}
+                </span>
+              </div>
+              <button
+                className="p-1 rounded hover:bg-slate-200 transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  copyToClipboard(userData.email, "Email");
+                }}
+              >
+                <Copy className="h-3.5 w-3.5 text-slate-500" />
+              </button>
             </div>
             
-            {/* Clay dots decoration */}
-            <div className="absolute -right-2 -top-2 h-6 w-6 rounded-full bg-amber-300 shadow-clay"></div>
-            <div className="absolute -left-2 bottom-5 h-4 w-4 rounded-full bg-amber-300 shadow-clay"></div>
-          </div>
-        </div>
-        
-        {/* Name and title area */}
-        <div className="text-center px-4 paper-label relative z-10">
-          <div className="relative py-3 px-4 bg-amber-100 rounded-lg shadow-clay mb-4 transform hover:-rotate-1 transition-transform duration-300">
-            <h2 className="text-xl font-bold text-amber-800">
-              {userData.name || "Your Name"}
-            </h2>
-            <p className="text-sm text-amber-700">
-              {userData.title || "Add your designation"}
-            </p>
+            {/* Phone Number */}
+            {userData.phoneNumber && (
+              <div 
+                className="flex items-center justify-between px-3 py-2 rounded-md bg-slate-50 border border-slate-100"
+                style={getElementStyle(
+                  'phone',
+                  "inset 0 1px 0 white, 0 1px 3px rgba(0, 0, 0, 0.05)",
+                  "inset 0 1px 0 white, 0 4px 6px -1px rgba(0, 0, 0, 0.08)"
+                )}
+                onMouseEnter={() => setHoveredSection('phone')}
+                onMouseLeave={() => setHoveredSection(null)}
+              >
+                <div className="flex items-center gap-2">
+                  <Phone className="h-4 w-4 text-blue-500" />
+                  <span className="text-sm text-slate-700 truncate max-w-[150px]">
+                    {userData.phoneNumber}
+                  </span>
+                </div>
+                <button
+                  className="p-1 rounded hover:bg-slate-200 transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    copyToClipboard(userData.phoneNumber || "", "Phone");
+                  }}
+                >
+                  <Copy className="h-3.5 w-3.5 text-slate-500" />
+                </button>
+              </div>
+            )}
             
-            {/* Paper cut corner */}
-            <div className="absolute -top-1 -right-1 h-4 w-4 bg-amber-50 transform rotate-45"></div>
-          </div>
-        </div>
-        
-        {/* Contact details with paper cutout effect */}
-        <div className="flex-1 space-y-3 px-4 relative z-10">
-          {/* Domain */}
-          {userData.domain && (
-            <div className="paper-cutout-item flex items-center gap-2 bg-white p-2 rounded-lg shadow-clay-sm transform hover:translate-y-[-2px] hover:rotate-1 transition-all duration-200">
-              <div className="paper-icon-container bg-amber-100 h-8 w-8 rounded-full flex items-center justify-center shadow-clay-sm">
-                <Code className="h-4 w-4 text-amber-700" />
+            {/* Profile Link */}
+            <div 
+              className="flex items-center justify-between px-3 py-2 rounded-md bg-slate-50 border border-slate-100"
+              style={getElementStyle(
+                'profile-link',
+                "inset 0 1px 0 white, 0 1px 3px rgba(0, 0, 0, 0.05)",
+                "inset 0 1px 0 white, 0 4px 6px -1px rgba(0, 0, 0, 0.08)"
+              )}
+              onMouseEnter={() => setHoveredSection('profile-link')}
+              onMouseLeave={() => setHoveredSection(null)}
+            >
+              <div className="flex items-center gap-2">
+                <Globe className="h-4 w-4 text-blue-500" />
+                <span className="text-sm text-slate-700 truncate max-w-[150px]">
+                  {profileLink}
+                </span>
               </div>
-              <span className="text-sm text-amber-900 font-medium">
-                {userData.domain}
-              </span>
+              <button
+                className="p-1 rounded hover:bg-slate-200 transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  copyToClipboard(`https://${profileLink}`, "Link");
+                }}
+              >
+                <Copy className="h-3.5 w-3.5 text-slate-500" />
+              </button>
             </div>
-          )}
-          
-          {/* Industry */}
-          {userData.industry && (
-            <div className="paper-cutout-item flex items-center gap-2 bg-white p-2 rounded-lg shadow-clay-sm transform hover:translate-y-[-2px] hover:rotate-1 transition-all duration-200">
-              <div className="paper-icon-container bg-amber-100 h-8 w-8 rounded-full flex items-center justify-center shadow-clay-sm">
-                <Building2 className="h-4 w-4 text-amber-700" />
+            
+            {/* Copy success message */}
+            {copySuccess && (
+              <div 
+                className="absolute bottom-20 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-3 py-1 rounded-full text-xs"
+                style={{
+                  boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                  animation: "fadeInOut 2s forwards"
+                }}
+              >
+                {copySuccess}
               </div>
-              <span className="text-sm text-amber-900 font-medium">
-                {userData.industry}
-              </span>
-            </div>
-          )}
-          
-          {/* Company */}
-          {userData.company && (
-            <div className="paper-cutout-item flex items-center gap-2 bg-white p-2 rounded-lg shadow-clay-sm transform hover:translate-y-[-2px] hover:rotate-1 transition-all duration-200">
-              <div className="paper-icon-container bg-amber-100 h-8 w-8 rounded-full flex items-center justify-center shadow-clay-sm">
-                <Briefcase className="h-4 w-4 text-amber-700" />
-              </div>
-              <span className="text-sm text-amber-900 font-medium">
-                {userData.company}
-              </span>
-            </div>
-          )}
-          
-          {/* Location */}
-          {userData.location && (
-            <div className="paper-cutout-item flex items-center gap-2 bg-white p-2 rounded-lg shadow-clay-sm transform hover:translate-y-[-2px] hover:rotate-1 transition-all duration-200">
-              <div className="paper-icon-container bg-amber-100 h-8 w-8 rounded-full flex items-center justify-center shadow-clay-sm">
-                <MapPin className="h-4 w-4 text-amber-700" />
-              </div>
-              <span className="text-sm text-amber-900 font-medium">
-                {userData.location}
-              </span>
-            </div>
-          )}
-          
-          {/* Email */}
-          <div className="paper-cutout-item flex items-center gap-2 bg-white p-2 rounded-lg shadow-clay-sm transform hover:translate-y-[-2px] hover:rotate-1 transition-all duration-200">
-            <div className="paper-icon-container bg-amber-100 h-8 w-8 rounded-full flex items-center justify-center shadow-clay-sm">
-              <Mail className="h-4 w-4 text-amber-700" />
-            </div>
-            <span className="text-sm text-amber-900 font-medium">
-              {userData.email}
-            </span>
+            )}
           </div>
           
-          {/* Phone */}
-          <div className="paper-cutout-item flex items-center gap-2 bg-white p-2 rounded-lg shadow-clay-sm transform hover:translate-y-[-2px] hover:rotate-1 transition-all duration-200">
-            <div className="paper-icon-container bg-amber-100 h-8 w-8 rounded-full flex items-center justify-center shadow-clay-sm">
-              <Phone className="h-4 w-4 text-amber-700" />
-            </div>
-            <span className="text-sm text-amber-900 font-medium">
-              {userData.phoneNumber || "Add phone number"}
-            </span>
+          {/* Special features - print and share */}
+          <div className="flex justify-center gap-3 mt-4">
+            <button 
+              className="flex items-center gap-1 px-3 py-1.5 rounded-md bg-white text-xs text-slate-600"
+              style={getElementStyle(
+                'print',
+                "0 1px 2px rgba(0, 0, 0, 0.05), inset 0 0 0 1px rgba(0, 0, 0, 0.05)",
+                "0 4px 6px -1px rgba(0, 0, 0, 0.08), inset 0 0 0 1px rgba(0, 0, 0, 0.05)"
+              )}
+              onClick={printCard}
+              onMouseEnter={() => setHoveredSection('print')}
+              onMouseLeave={() => setHoveredSection(null)}
+            >
+              <Printer className="h-3.5 w-3.5" />
+              <span>Print</span>
+            </button>
+            
+            <button 
+              className="flex items-center gap-1 px-3 py-1.5 rounded-md bg-white text-xs text-slate-600"
+              style={getElementStyle(
+                'share',
+                "0 1px 2px rgba(0, 0, 0, 0.05), inset 0 0 0 1px rgba(0, 0, 0, 0.05)",
+                "0 4px 6px -1px rgba(0, 0, 0, 0.08), inset 0 0 0 1px rgba(0, 0, 0, 0.05)"
+              )}
+              onClick={() => copyToClipboard(`https://${profileLink}`, "Card link")}
+              onMouseEnter={() => setHoveredSection('share')}
+              onMouseLeave={() => setHoveredSection(null)}
+            >
+              <Share2 className="h-3.5 w-3.5" />
+              <span>Share</span>
+            </button>
           </div>
-          
-          {/* Profile Link */}
-          <div className="paper-cutout-item flex items-center gap-2 bg-white p-2 rounded-lg shadow-clay-sm transform hover:translate-y-[-2px] hover:rotate-1 transition-all duration-200">
-            <div className="paper-icon-container bg-amber-100 h-8 w-8 rounded-full flex items-center justify-center shadow-clay-sm">
-              <Globe className="h-4 w-4 text-amber-700" />
-            </div>
-            <span className="text-sm text-amber-900 font-medium">
-              {profileLink}
-            </span>
-          </div>
-        </div>
-        
-        {/* Footer with clay effect */}
-        <div className="py-3 px-4 mt-4 text-center bg-amber-100 relative z-10">
-          <span className="text-xs text-amber-800 font-medium">Handcrafted Digital Card</span>
-          
-          {/* Clay deco elements */}
-          <div className="absolute -right-2 bottom-4 h-5 w-5 rounded-full bg-amber-200 shadow-clay"></div>
-          <div className="absolute -left-2 bottom-2 h-3 w-3 rounded-full bg-amber-300 shadow-clay"></div>
         </div>
       </div>
       
-      {/* Style for clay and paper card */}
-      <style dangerouslySetInnerHTML={{ __html: `
-        .clay-card-main {
-          box-shadow: 8px 8px 0px rgba(0, 0, 0, 0.1), 
-                      inset -3px -3px 10px rgba(0, 0, 0, 0.05),
-                      inset 3px 3px 10px rgba(255, 255, 255, 0.7);
+      {/* CSS Animations */}
+      <style>{`
+        @keyframes fadeInOut {
+          0% { opacity: 0; transform: translate(-50%, 10px); }
+          10% { opacity: 1; transform: translate(-50%, 0); }
+          90% { opacity: 1; transform: translate(-50%, 0); }
+          100% { opacity: 0; transform: translate(-50%, -10px); }
         }
         
-        .shadow-clay {
-          box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.1),
-                      inset -2px -2px 5px rgba(0, 0, 0, 0.05),
-                      inset 2px 2px 5px rgba(255, 255, 255, 0.7);
+        @media print {
+          body * {
+            visibility: hidden;
+          }
+          .clay-paper-card, .clay-paper-card * {
+            visibility: visible;
+          }
+          .clay-paper-card {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+          }
         }
-        
-        .shadow-clay-sm {
-          box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.07),
-                      inset -1px -1px 3px rgba(0, 0, 0, 0.03),
-                      inset 1px 1px 3px rgba(255, 255, 255, 0.5);
-        }
-        
-        .paper-wave {
-          background: 
-            radial-gradient(circle at 20% 50%, transparent 0, transparent 14px, #FBBF24 15px),
-            radial-gradient(circle at 40% 50%, transparent 0, transparent 14px, #FBBF24 15px),
-            radial-gradient(circle at 60% 50%, transparent 0, transparent 14px, #FBBF24 15px),
-            radial-gradient(circle at 80% 50%, transparent 0, transparent 14px, #FBBF24 15px),
-            radial-gradient(circle at 100% 50%, transparent 0, transparent 14px, #FBBF24 15px),
-            #FEF3C7;
-          background-size: 20% 100%;
-          background-repeat: repeat-x;
-        }
-        
-        .paper-cutout-item {
-          transform-origin: center left;
-        }
-        
-        @keyframes paperFloat {
-          0%, 100% { transform: translateY(0) rotate(0); }
-          50% { transform: translateY(-4px) rotate(1deg); }
-        }
-        
-        .clay-photo-frame:hover {
-          animation: paperFloat 2s ease-in-out infinite;
-        }
-        
-        .paper-label {
-          transform-origin: center;
-        }
-      `}} />
+      `}</style>
     </div>
   );
 };
