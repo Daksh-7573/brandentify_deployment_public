@@ -109,6 +109,12 @@ export default function Education() {
   const handleSaveEducation = async () => {
     try {
       console.log("Attempting to save education:", newEducation);
+      // Add debug for API request context
+      console.log("API request details:", {
+        method: newEducation.id ? 'PUT' : 'POST',
+        url: newEducation.id ? `/api/educations/${newEducation.id}` : '/api/educations',
+        userId: userId
+      });
       
       // Validate form
       if (!newEducation.degree || !newEducation.institution || !newEducation.startDate) {
@@ -202,9 +208,17 @@ export default function Education() {
         
         // No need to reset date pickers as SimpleDatePicker manages its own state
       } else {
-        const errorData = await response.json();
-        console.error("Server error response:", errorData);
-        throw new Error(`Failed to ${newEducation.id ? 'update' : 'save'} education: ${JSON.stringify(errorData)}`);
+        try {
+          const errorData = await response.json();
+          console.error("Server error response:", errorData);
+          throw new Error(`Failed to ${newEducation.id ? 'update' : 'save'} education: ${JSON.stringify(errorData)}`);
+        } catch (jsonError) {
+          console.error("Failed to parse error response as JSON:", jsonError);
+          // Get the text response instead
+          const errorText = await response.text();
+          console.error("Error response text:", errorText);
+          throw new Error(`Server error (${response.status}): Failed to ${newEducation.id ? 'update' : 'save'} education`);
+        }
       }
     } catch (error) {
       console.error("Error saving education:", error);
@@ -238,6 +252,12 @@ export default function Education() {
   const handleDelete = async (id: number) => {
     try {
       console.log("Deleting education with ID:", id);
+      // Add debug for API request context
+      console.log("Delete API request details:", {
+        method: 'DELETE',
+        url: `/api/educations/${id}`,
+        userId: userId
+      });
       const response = await apiRequest({
         method: 'DELETE', 
         url: `/api/educations/${id}`
@@ -257,9 +277,17 @@ export default function Education() {
         // Refresh data
         refetch();
       } else {
-        const errorData = await response.json();
-        console.error("Server error response:", errorData);
-        throw new Error(`Failed to delete education: ${JSON.stringify(errorData)}`);
+        try {
+          const errorData = await response.json();
+          console.error("Server error response:", errorData);
+          throw new Error(`Failed to delete education: ${JSON.stringify(errorData)}`);
+        } catch (jsonError) {
+          console.error("Failed to parse error response as JSON:", jsonError);
+          // Get the text response instead
+          const errorText = await response.text();
+          console.error("Error response text:", errorText);
+          throw new Error(`Server error (${response.status}): Failed to delete education`);
+        }
       }
     } catch (error) {
       console.error("Error deleting education:", error);
