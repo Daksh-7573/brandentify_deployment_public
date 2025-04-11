@@ -14,7 +14,8 @@ import {
   Github, 
   Twitter,
   Instagram,
-  QrCode
+  QrCode,
+  User
 } from "lucide-react";
 
 interface ThreeDAnimatedCardProps {

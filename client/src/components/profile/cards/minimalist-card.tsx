@@ -1,5 +1,5 @@
 import React from "react";
-import { Mail, Phone, Globe, Briefcase } from "lucide-react";
+import { Mail, Phone, Globe, Briefcase, MapPin, User } from "lucide-react";
 import { UserData } from "@/types/user";
 
 interface MinimalistCardProps {
@@ -74,6 +74,14 @@ const MinimalistCard: React.FC<MinimalistCardProps> = ({ userData }) => {
             </div>
           )}
           
+          {/* Location */}
+          {userData.location && (
+            <div className="flex items-center gap-3 text-sm">
+              <MapPin className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+              <span className="text-gray-800 dark:text-gray-300">{userData.location}</span>
+            </div>
+          )}
+          
           {/* Email */}
           <div className="flex items-center gap-3 text-sm">
             <Mail className="h-4 w-4 text-blue-600 dark:text-blue-400" />
@@ -93,6 +101,16 @@ const MinimalistCard: React.FC<MinimalistCardProps> = ({ userData }) => {
             <Globe className="h-4 w-4 text-blue-600 dark:text-blue-400" />
             <span className="text-blue-600 dark:text-blue-400">{profileLink}</span>
           </div>
+          
+          {/* Brief Professional Summary */}
+          {(userData.aboutMe || userData.lookingFor) && (
+            <div className="flex items-start gap-3 text-sm mt-4">
+              <User className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5" />
+              <p className="text-gray-700 dark:text-gray-400 text-xs">
+                {userData.aboutMe || userData.lookingFor || `Professional with experience in ${userData.industry || 'various industries'}.`}
+              </p>
+            </div>
+          )}
         </div>
       </div>
       
