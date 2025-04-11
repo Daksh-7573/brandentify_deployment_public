@@ -1,0 +1,90 @@
+🧠 New Concept Name:
+🎨 “Layered Identity Canvas”
+A tactile, dimensional, and scrollable mini-profile board — like a digital collage of the person, made from soft paper, waxed clay, and floating elements.
+
+🔷 Core Concept Highlights:
+✂️ Inspired by artisanal paper-cut styles and tactile clay models
+
+🧩 Feels like a physical board you can touch, peel, or explore
+
+📐 Visually divided into folded sections and interactive pieces
+
+💫 Modern minimalist meets handmade aesthetics
+
+📄 Canvas Layout (Section by Section)
+🧍‍♂️ 1. Profile Block (Top Left, Pinned Like a Polaroid)
+ Profile Picture
+
+Looks like a physical photo taped/pinned to the canvas
+
+Tilted slightly (like it's pasted manually)
+
+Subtle shadow & elevation
+
+ Full Name + Job Title
+
+Rendered as hand-stamped text or printed label
+
+Slight offset shadow like it's stuck on separately
+
+🏷️ 2. Layered Tag Swatches (Bottom of Name Area)
+ Industry / Domain Tags
+
+Clay-colored fabric-like ribbons
+
+Floating above or slightly hanging from the main name layer
+
+Glows or stretches slightly on hover
+
+🏢 3. Current Role Block (Folded Card Style)
+ Company Name
+
+Appears like a folded sticky note or open letter
+
+Clicking expands more job details (timeline, projects)
+
+Clay button: “See Role History” (launches vertical scroll modal)
+
+ Location
+
+Small paper plane or map marker in clay pressed style
+
+✉️ 4. Contact Strip (Side-Stitched or Tear-Off Tab)
+ Email + Phone
+
+On a perforated card strip on right side
+
+Has “tear-off” look (like coupons or tickets)
+
+Hover = peel animation
+
+Click = copy or action
+
+🌫️ 5. Background & Texture Ideas
+ Light canvas background with subtle grain
+
+ Visual layers of clay & paper sheets stacked
+
+ Floating dust particles for subtle depth
+
+🎨 Color Scheme & Typography
+Element	Style Idea
+Background	Soft white + pastel clay (taupe, nude, sage, mist blue)
+Font Style	Retro-modern: Sora, Space Grotesk, or Poppins
+Icon Style	Custom outline set with hand-sketched feel
+Interaction Color	Paper yellow, blush coral, graphite black, muted lilac
+🪄 Interactive Touches
+ Tilt/Shadow based on cursor
+
+ Click-to-flip for backside info (QR code, services, social)
+
+ Wax seal animation when connecting or sending a message
+
+ Ripped-paper reveal transition when switching views
+
+🔧 Optional Add-Ons
+ Mini paper clip near picture = quick connect
+
+ Floating Post-it notes = endorsements or testimonials
+
+ Stamp icon if profile is verified or recommended
