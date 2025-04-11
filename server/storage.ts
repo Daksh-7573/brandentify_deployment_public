@@ -2612,57 +2612,56 @@ export class MemStorage implements IStorage {
     
     return { title, content, hashtags: uniqueHashtags.slice(0, 5) };
   }
+
+  // User Personal Info methods
+  async getUserPersonalInfoByUserId(userId: number): Promise<UserPersonalInfo | undefined> {
+    const personalInfos = Array.from(this.userPersonalInfo.values());
+    return personalInfos.find((info) => info.userId === userId);
+  }
+
+  async createUserPersonalInfo(insertPersonalInfo: InsertUserPersonalInfo): Promise<UserPersonalInfo> {
+    const id = this.currentUserPersonalInfoId++;
+    const personalInfo: UserPersonalInfo = { 
+      ...insertPersonalInfo, 
+      id,
+      // Handle nullable fields with explicit nulls instead of undefined
+      contactEmail: insertPersonalInfo.contactEmail ?? null,
+      contactPhone: insertPersonalInfo.contactPhone ?? null,
+      website: insertPersonalInfo.website ?? null,
+      githubProfile: insertPersonalInfo.githubProfile ?? null,
+      linkedinProfile: insertPersonalInfo.linkedinProfile ?? null,
+      twitterProfile: insertPersonalInfo.twitterProfile ?? null,
+      instagramProfile: insertPersonalInfo.instagramProfile ?? null,
+      calendlyLink: insertPersonalInfo.calendlyLink ?? null,
+      preferredContactMethod: insertPersonalInfo.preferredContactMethod ?? null,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    
+    this.userPersonalInfo.set(id, personalInfo);
+    return personalInfo;
+  }
+
+  async updateUserPersonalInfo(id: number, personalInfoData: Partial<UserPersonalInfo>): Promise<UserPersonalInfo | undefined> {
+    const personalInfo = this.userPersonalInfo.get(id);
+    if (!personalInfo) return undefined;
+    
+    const updatedInfo = { 
+      ...personalInfo, 
+      ...personalInfoData,
+      updatedAt: new Date() 
+    };
+    
+    this.userPersonalInfo.set(id, updatedInfo);
+    return updatedInfo;
+  }
+
+  async deleteUserPersonalInfo(id: number): Promise<boolean> {
+    return this.userPersonalInfo.delete(id);
+  }
 }
 
 // Create storage instance
 const memStorage = new MemStorage();
-
-// Add UserPersonalInfo methods directly to storage instance
-// This ensures the methods are available immediately
-memStorage.getUserPersonalInfoByUserId = async function(userId: number): Promise<UserPersonalInfo | undefined> {
-  const personalInfos = Array.from(this.userPersonalInfo.values());
-  return personalInfos.find((info: UserPersonalInfo) => info.userId === userId);
-};
-
-memStorage.createUserPersonalInfo = async function(insertPersonalInfo: InsertUserPersonalInfo): Promise<UserPersonalInfo> {
-  const id = this.currentUserPersonalInfoId++;
-  const personalInfo: UserPersonalInfo = { 
-    ...insertPersonalInfo, 
-    id,
-    // Handle nullable fields with explicit nulls instead of undefined
-    contactEmail: insertPersonalInfo.contactEmail ?? null,
-    contactPhone: insertPersonalInfo.contactPhone ?? null,
-    website: insertPersonalInfo.website ?? null,
-    githubProfile: insertPersonalInfo.githubProfile ?? null,
-    linkedinProfile: insertPersonalInfo.linkedinProfile ?? null,
-    twitterProfile: insertPersonalInfo.twitterProfile ?? null,
-    instagramProfile: insertPersonalInfo.instagramProfile ?? null,
-    calendlyLink: insertPersonalInfo.calendlyLink ?? null,
-    preferredContactMethod: insertPersonalInfo.preferredContactMethod ?? null,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  };
-  
-  this.userPersonalInfo.set(id, personalInfo);
-  return personalInfo;
-};
-
-memStorage.updateUserPersonalInfo = async function(id: number, personalInfoData: Partial<UserPersonalInfo>): Promise<UserPersonalInfo | undefined> {
-  const personalInfo = this.userPersonalInfo.get(id);
-  if (!personalInfo) return undefined;
-  
-  const updatedInfo = { 
-    ...personalInfo, 
-    ...personalInfoData,
-    updatedAt: new Date() 
-  };
-  
-  this.userPersonalInfo.set(id, updatedInfo);
-  return updatedInfo;
-};
-
-memStorage.deleteUserPersonalInfo = async function(id: number): Promise<boolean> {
-  return this.userPersonalInfo.delete(id);
-};
 
 export const storage = memStorage;
