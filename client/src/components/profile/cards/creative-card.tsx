@@ -45,7 +45,6 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
   // Interactive states
   const [hoveredSection, setHoveredSection] = useState<string | null>(null);
   const [copySuccess, setCopySuccess] = useState<string | null>(null);
-  const [isFlipped, setIsFlipped] = useState(false);
   
   // Format profile link
   const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\\s+/g, '') : userData.username}`;
@@ -96,29 +95,16 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
       });
   };
   
-  // Card flip handler
-  const handleCardFlip = () => {
-    setIsFlipped(!isFlipped);
-  };
-  
   return (
     <div className="creative-card relative w-full aspect-[2/3.5] select-none">
-      {/* Main Card Container with Perspective */}
-      <div 
-        className={`w-full h-full relative transition-all duration-500 transform-gpu ${isFlipped ? 'rotate-y-180' : ''}`}
-        style={{ 
-          perspective: "1000px",
-          transformStyle: "preserve-3d",
-        }}
-      >
-        {/* FRONT SIDE OF CARD */}
+      {/* Main Card Container */}
+      <div className="w-full h-full relative">
+        {/* Card */}
         <div 
-          className={`absolute inset-0 backface-hidden rounded-xl overflow-hidden transition-all duration-500`}
+          className="absolute inset-0 rounded-xl overflow-hidden"
           style={{
             backgroundColor: creativeColors.cream,
             boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-            transformStyle: "preserve-3d",
-            backfaceVisibility: "hidden",
           }}
         >
           {/* Background Paper Texture */}
@@ -553,104 +539,7 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
             </div>
           </div>
         </div>
-        
-        {/* BACK SIDE OF CARD (Optional) */}
-        <div 
-          className="absolute inset-0 backface-hidden rounded-xl overflow-hidden bg-white rotate-y-180"
-          style={{
-            backfaceVisibility: "hidden",
-            transform: "rotateY(180deg)",
-            boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-          }}
-        >
-          {/* Back content could be added here in the future */}
-          <div className="p-8 flex flex-col items-center justify-center h-full">
-            <div 
-              className="w-48 h-48 mb-6"
-              style={{
-                background: `linear-gradient(45deg, ${creativeColors.indigo}, ${creativeColors.violet})`,
-                borderRadius: "24px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "white",
-                fontWeight: "bold",
-                fontSize: "5rem",
-                boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1)",
-              }}
-            >
-              {/* QR Code placeholder */}
-              <div className="grid grid-cols-4 grid-rows-4 gap-1 w-2/3 h-2/3 bg-white p-2">
-                {Array.from({ length: 16 }).map((_, i) => (
-                  <div 
-                    key={i} 
-                    className="bg-black"
-                    style={{
-                      opacity: Math.random() > 0.5 ? 1 : 0
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
-            
-            <h3 
-              className="text-xl font-bold mb-2"
-              style={{
-                fontFamily: "DM Serif Display, serif",
-                color: creativeColors.darkText,
-              }}
-            >
-              Scan to Connect
-            </h3>
-            
-            <p className="text-sm text-gray-600 text-center mb-6">
-              Use your phone camera to scan this QR code and instantly save my contact information.
-            </p>
-            
-            <button 
-              className="flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium"
-              style={{
-                background: `linear-gradient(45deg, ${creativeColors.coral}, ${creativeColors.peach})`,
-                color: "white",
-                boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
-                transition: "all 0.2s ease"
-              }}
-              onClick={handleCardFlip}
-            >
-              Back to Card
-            </button>
-          </div>
-        </div>
       </div>
-      
-      {/* Card Flip Button */}
-      <button 
-        className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-md"
-        style={{
-          border: `2px solid ${creativeColors.mint}`,
-        }}
-        onClick={handleCardFlip}
-        title="Flip Card"
-      >
-        <svg 
-          viewBox="0 0 24 24" 
-          width="16" 
-          height="16" 
-          stroke="currentColor" 
-          strokeWidth="2" 
-          fill="none" 
-          strokeLinecap="round" 
-          strokeLinejoin="round"
-          style={{
-            color: creativeColors.darkText,
-          }}
-        >
-          <path d="M23 4v6h-6"></path>
-          <path d="M1 20v-6h6"></path>
-          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"></path>
-          <path d="M20.49 15a9 9 0 0 1-14.85 3.36L1 14"></path>
-        </svg>
-      </button>
       
       {/* Copy Success Message */}
       {copySuccess && (
@@ -702,15 +591,6 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
           @keyframes tiltLeft {
             0% { transform: translateY(0); }
             100% { transform: translateY(-5px) rotate(-1deg); }
-          }
-          
-          /* Utility classes for 3D transforms */
-          .backface-hidden {
-            backface-visibility: hidden;
-          }
-          
-          .rotate-y-180 {
-            transform: rotateY(180deg);
           }
           
           /* Font imports */
