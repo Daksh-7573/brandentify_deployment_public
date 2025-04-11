@@ -31,35 +31,18 @@ export function ProfileUpload({
   onCancel,
   isUploading = false
 }: ProfileUploadProps) {
-  // Internal state
+  // State for the image editing
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [zoomLevel, setZoomLevel] = useState<number>(1);
-  const [rotation, setRotation] = useState<number>(0);
-  const [offsetX, setOffsetX] = useState<number>(0);
-  const [offsetY, setOffsetY] = useState<number>(0);
-  const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [dragStart, setDragStart] = useState<{x: number, y: number}>({x: 0, y: 0});
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showAlert, setShowAlert] = useState<boolean>(false);
   
   // Refs
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const imageContainerRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
 
   // Default placeholder image 
   const placeholderImage = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'%3E%3C/path%3E%3Ccircle cx='12' cy='7' r='4'%3E%3C/circle%3E%3C/svg%3E";
   
-  // Reset the editing state when a new image is selected
-  useEffect(() => {
-    if (selectedImage) {
-      setZoomLevel(1);
-      setRotation(0);
-      setOffsetX(0);
-      setOffsetY(0);
-    }
-  }, [selectedImage]);
-
   // Function to convert File to base64
   const convertToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -118,110 +101,54 @@ export function ProfileUpload({
     }
   };
 
-  // Helper function to draw image on canvas with transformations
-  const drawImageWithTransformations = (
-    img: HTMLImageElement,
-    zoom: number,
-    rot: number,
-    dx: number,
-    dy: number
-  ): string => {
-    // Create a new canvas for our processing
-    const canvas = document.createElement('canvas');
-    canvas.width = TARGET_SIZE;
-    canvas.height = TARGET_SIZE;
-    const ctx = canvas.getContext('2d');
-    
-    if (!ctx) {
-      throw new Error("Could not create image processing context");
-    }
-    
-    // Get the original image dimensions
-    const origWidth = img.width;
-    const origHeight = img.height;
-    
-    // Calculate the square crop size (minimum of width and height)
-    const cropSize = Math.min(origWidth, origHeight);
-    
-    // Calculate crop positions to center the image
-    const cropX = (origWidth - cropSize) / 2;
-    const cropY = (origHeight - cropSize) / 2;
-    
-    try {
-      // Step 1: Start with a clean slate and fill with white background
-      ctx.fillStyle = "#FFFFFF";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
-      // Step 2: Move to center of canvas for transformations
-      ctx.save();
-      ctx.translate(canvas.width / 2, canvas.height / 2);
-      
-      // Step 3: Apply rotation
-      ctx.rotate((rot * Math.PI) / 180);
-      
-      // Step 4: Apply scaling
-      ctx.scale(zoom, zoom);
-      
-      // Step 5: Translate based on user's dragging
-      ctx.translate(dx / zoom, dy / zoom);
-      
-      // Step 6: Draw the image centered 
-      ctx.drawImage(
-        img,
-        cropX, cropY, cropSize, cropSize, // Source: Crop a square from the original image
-        -TARGET_SIZE / 2 / zoom, -TARGET_SIZE / 2 / zoom, // Destination: Center at origin
-        TARGET_SIZE / zoom, TARGET_SIZE / zoom // Destination: Scale properly
-      );
-      
-      // Restore the context
-      ctx.restore();
-      
-      // Convert to high-quality JPEG
-      return canvas.toDataURL('image/jpeg', 0.95);
-    } catch (error) {
-      console.error("Error processing image:", error);
-      throw new Error(`Failed to process image: ${error}`);
-    }
-  };
-
-  // Save the selected image with transformations
+  // Process and save the selected image
   const handleSave = () => {
     if (!selectedImage || isUploading) return;
     
     try {
-      // Process the image
       const img = new Image();
+      
       img.onload = () => {
-        try {
-          // Use the helper function to create the transformed image
-          const processedImage = drawImageWithTransformations(
-            img, 
-            zoomLevel, 
-            rotation, 
-            offsetX, 
-            offsetY
-          );
-          
-          // Send to parent for saving
-          onImageSelected(processedImage);
-        } catch (error) {
-          console.error("Error processing image:", error);
-          setErrorMessage("Error processing image. Please try again.");
-          setShowAlert(true);
+        // Create a canvas for processing
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        if (!ctx) {
+          throw new Error("Could not create image processing context");
         }
+        
+        // Set up canvas dimensions for target size
+        canvas.width = TARGET_SIZE;
+        canvas.height = TARGET_SIZE;
+        
+        // Calculate dimensions for square crop
+        const size = Math.min(img.width, img.height);
+        const offsetX = (img.width - size) / 2;
+        const offsetY = (img.height - size) / 2;
+        
+        // Draw the image to the canvas - simply crop and resize
+        ctx.drawImage(
+          img,
+          offsetX, offsetY, size, size,
+          0, 0, TARGET_SIZE, TARGET_SIZE
+        );
+        
+        // Convert to JPEG with high quality
+        const processedImage = canvas.toDataURL('image/jpeg', 0.95);
+        
+        // Send to parent for saving
+        onImageSelected(processedImage);
       };
       
-      // Handle loading error
       img.onerror = () => {
         setErrorMessage("Error loading image. Please try a different image.");
         setShowAlert(true);
       };
       
-      // Start loading
       img.src = selectedImage;
     } catch (error) {
-      console.error("Error in handleSave:", error);
-      setErrorMessage("An error occurred while saving the image. Please try again.");
+      console.error("Error processing image:", error);
+      setErrorMessage("Error processing image. Please try again.");
       setShowAlert(true);
     }
   };
@@ -234,64 +161,12 @@ export function ProfileUpload({
     }
   };
 
-  // Mouse/touch event handlers for dragging
-  const handleMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    setIsDragging(true);
-    setDragStart({x: e.clientX, y: e.clientY});
-  }, []);
-
-  const handleTouchStart = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
-    if (e.touches.length === 1) {
-      setIsDragging(true);
-      setDragStart({x: e.touches[0].clientX, y: e.touches[0].clientY});
-    }
-  }, []);
-
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (isDragging) {
-      const dx = (e.clientX - dragStart.x) / zoomLevel;
-      const dy = (e.clientY - dragStart.y) / zoomLevel;
-      setOffsetX(prev => prev + dx);
-      setOffsetY(prev => prev + dy);
-      setDragStart({x: e.clientX, y: e.clientY});
-    }
-  }, [isDragging, dragStart, zoomLevel]);
-
-  const handleTouchMove = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
-    if (isDragging && e.touches.length === 1) {
-      const dx = (e.touches[0].clientX - dragStart.x) / zoomLevel;
-      const dy = (e.touches[0].clientY - dragStart.y) / zoomLevel;
-      setOffsetX(prev => prev + dx);
-      setOffsetY(prev => prev + dy);
-      setDragStart({x: e.touches[0].clientX, y: e.touches[0].clientY});
-    }
-  }, [isDragging, dragStart, zoomLevel]);
-
-  const handleMouseUp = useCallback(() => {
-    setIsDragging(false);
-  }, []);
-
-  // Zoom and rotation handlers
-  const handleZoomIn = () => setZoomLevel(prev => Math.min(prev + 0.1, 2));
-  const handleZoomOut = () => setZoomLevel(prev => Math.max(prev - 0.1, 0.5));
-  const handleRotateClockwise = () => setRotation(prev => (prev + 90) % 360);
-  const handleRotateCounterClockwise = () => setRotation(prev => (prev - 90 + 360) % 360);
-
   return (
     <>
       <div className="w-full flex flex-col items-center gap-4">
-        {/* Image Preview with editable area */}
+        {/* Image Preview */}
         <div 
-          ref={imageContainerRef}
           className="relative w-80 h-80 rounded-full overflow-hidden border-4 border-white shadow-lg bg-gray-100"
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleMouseUp}
-          style={{ cursor: selectedImage ? 'move' : 'default' }}
         >
           <div className="absolute inset-0 flex items-center justify-center">
             {selectedImage ? (
@@ -299,15 +174,7 @@ export function ProfileUpload({
                 ref={imageRef}
                 src={selectedImage} 
                 alt="Profile Preview"
-                className="max-w-none"
-                style={{ 
-                  transform: `rotate(${rotation}deg) scale(${zoomLevel})`,
-                  transformOrigin: 'center',
-                  marginLeft: `${offsetX}px`, 
-                  marginTop: `${offsetY}px`,
-                  transition: isDragging ? 'none' : 'all 0.2s ease-out',
-                }}
-                draggable={false}
+                className="h-full w-full object-cover"
               />
             ) : (
               <img 
@@ -322,89 +189,18 @@ export function ProfileUpload({
             )}
           </div>
           
-          {/* Image Controls Overlay */}
+          {/* Remove button */}
           {selectedImage && (
-            <>
-              <button 
-                onClick={handleRemove}
-                className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1.5 shadow-md hover:bg-red-600 transition-colors"
-                aria-label="Remove image"
-                type="button"
-              >
-                <X size={18} />
-              </button>
-              
-              <div className="absolute left-1/2 top-2 transform -translate-x-1/2 bg-black/60 backdrop-blur-sm rounded-full px-3 py-1 text-white text-xs">
-                Drag to reposition
-              </div>
-            </>
+            <button 
+              onClick={handleRemove}
+              className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1.5 shadow-md hover:bg-red-600 transition-colors"
+              aria-label="Remove image"
+              type="button"
+            >
+              <X size={18} />
+            </button>
           )}
         </div>
-        
-        {/* Image editing controls */}
-        {selectedImage && (
-          <div className="w-full max-w-md space-y-2 bg-gray-50 p-3 rounded-md">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-700">Zoom</span>
-              <div className="flex items-center gap-2">
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  size="icon" 
-                  onClick={handleZoomOut}
-                  disabled={zoomLevel <= 0.5}
-                  className="h-7 w-7"
-                >
-                  <ZoomOut size={14} />
-                </Button>
-                <Slider
-                  value={[zoomLevel * 100]}
-                  min={50}
-                  max={200}
-                  step={5}
-                  className="w-32"
-                  onValueChange={(values) => setZoomLevel(values[0] / 100)}
-                />
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  size="icon" 
-                  onClick={handleZoomIn}
-                  disabled={zoomLevel >= 2}
-                  className="h-7 w-7"
-                >
-                  <ZoomIn size={14} />
-                </Button>
-              </div>
-            </div>
-            
-            <Separator />
-            
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-700">Rotate</span>
-              <div className="flex items-center gap-2">
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  size="icon" 
-                  onClick={handleRotateCounterClockwise}
-                  className="h-7 w-7"
-                >
-                  <RotateCcw size={14} />
-                </Button>
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  size="icon" 
-                  onClick={handleRotateClockwise}
-                  className="h-7 w-7"
-                >
-                  <RotateCw size={14} />
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
         
         <input
           type="file"
