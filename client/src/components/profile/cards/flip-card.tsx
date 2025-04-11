@@ -181,7 +181,7 @@ const FlipCard: React.FC<FlipCardProps> = ({ userData }) => {
           
           {/* Footer */}
           <div className={`h-6 ${footerStyles} flex items-center justify-center`}>
-            <span className="text-xs font-light">Digital Visiting Card</span>
+            <span className="text-xs font-light">Quantum Card</span>
           </div>
         </div>
         
@@ -256,7 +256,7 @@ const FlipCard: React.FC<FlipCardProps> = ({ userData }) => {
           
           {/* Footer */}
           <div className={`h-6 ${footerStyles} flex items-center justify-center`}>
-            <span className="text-xs font-light">Digital Visiting Card</span>
+            <span className="text-xs font-light">Quantum Card</span>
           </div>
         </div>
       </div>
