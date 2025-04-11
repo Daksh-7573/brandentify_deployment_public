@@ -124,7 +124,10 @@ export default function Skills() {
     if (!skillId) return;
     
     try {
-      await apiRequest('DELETE', `/api/skills/${skillId}`);
+      await apiRequest({
+        method: 'DELETE', 
+        url: `/api/skills/${skillId}`
+      });
       setSkills(prev => prev.filter(skill => skill.id !== skillId));
       toast({
         title: "Skill deleted",
@@ -145,6 +148,7 @@ export default function Skills() {
   };
   
   const handleSaveSkill = async () => {
+    // Validate both skill name and proficiency level are provided
     if (!newSkill.name) {
       toast({
         title: "Validation Error",
@@ -154,15 +158,28 @@ export default function Skills() {
       return;
     }
     
+    if (!newSkill.level) {
+      toast({
+        title: "Validation Error",
+        description: "Proficiency level is required",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     try {
       const method = newSkill.id ? 'PUT' : 'POST';
-      const endpoint = newSkill.id ? `/api/skills/${newSkill.id}` : '/api/skills';
+      const url = newSkill.id ? `/api/skills/${newSkill.id}` : '/api/skills';
       const data = {
         ...newSkill,
         userId: userId
       };
       
-      await apiRequest(method, endpoint, data);
+      await apiRequest({
+        method,
+        url,
+        data
+      });
       
       toast({
         title: newSkill.id ? "Skill updated" : "Skill added",
@@ -291,7 +308,7 @@ export default function Skills() {
             
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="level" className="text-right">
-                Proficiency Level
+                Proficiency Level*
               </Label>
               <div className="col-span-3">
                 <CustomSelect 
