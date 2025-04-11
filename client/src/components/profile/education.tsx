@@ -263,15 +263,20 @@ const educationSchema = z.object({
 type Education = z.infer<typeof educationSchema> & { id?: number };
 
 // Define a type for API-compatible education data with string dates
+// Define what the API expects
 interface EducationApiData {
   id?: number;
   userId: number;
   institution: string;
   degree: string;
-  field?: string;
   location?: string;
   startDate?: string;
   endDate?: string;
+}
+
+// Define what we use in the UI (superset of API data)
+interface EducationUIData extends EducationApiData {
+  field?: string;
   currentlyEnrolled: boolean;
   description?: string;
   industry?: string;
@@ -320,8 +325,20 @@ export default function Education() {
   
   // Create education mutation
   const createEducationMutation = useMutation({
-    mutationFn: async (data: EducationApiData) => {
-      const res = await apiRequest("POST", "/api/educations", data);
+    mutationFn: async (data: any) => {
+      console.log("Submitting education data:", data);
+      const res = await fetch("/api/educations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error("Server error:", errorText);
+        throw new Error(`Server error: ${res.status} ${errorText.substring(0, 100)}`);
+      }
       return await res.json();
     },
     onSuccess: () => {
@@ -344,8 +361,20 @@ export default function Education() {
   
   // Update education mutation
   const updateEducationMutation = useMutation({
-    mutationFn: async (data: EducationApiData) => {
-      const res = await apiRequest("PUT", `/api/educations/${editingEducation?.id}`, data);
+    mutationFn: async (data: any) => {
+      console.log("Updating education data:", data);
+      const res = await fetch(`/api/educations/${editingEducation?.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error("Server error:", errorText);
+        throw new Error(`Server error: ${res.status} ${errorText.substring(0, 100)}`);
+      }
       return await res.json();
     },
     onSuccess: () => {
@@ -370,7 +399,15 @@ export default function Education() {
   // Delete education mutation
   const deleteEducationMutation = useMutation({
     mutationFn: async (id: number) => {
-      const res = await apiRequest("DELETE", `/api/educations/${id}`);
+      console.log("Deleting education with ID:", id);
+      const res = await fetch(`/api/educations/${id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error("Server error:", errorText);
+        throw new Error(`Server error: ${res.status} ${errorText.substring(0, 100)}`);
+      }
       return res.ok;
     },
     onSuccess: () => {
@@ -414,9 +451,8 @@ export default function Education() {
       data.endDate = undefined;
     }
     
-    // Convert Date objects to strings for the API
-    // Only include fields that exist in the database schema
-    const convertedData: EducationApiData = {
+    // Store all the UI data for display purposes
+    const uiData = {
       id: data.id,
       userId: data.userId,
       institution: data.institution,
@@ -424,7 +460,6 @@ export default function Education() {
       location: data.location,
       startDate: data.startDate ? data.startDate.toISOString().split('T')[0] : undefined, // YYYY-MM-DD format
       endDate: data.endDate ? data.endDate.toISOString().split('T')[0] : undefined, // YYYY-MM-DD format
-      // Keep these fields for the form but remove them from what gets sent to the API
       field: data.field,
       currentlyEnrolled: data.currentlyEnrolled,
       description: data.description,
@@ -434,13 +469,13 @@ export default function Education() {
     
     // Create a filtered version with only the fields that exist in the database schema
     const apiData = {
-      id: convertedData.id,
-      userId: convertedData.userId,
-      institution: convertedData.institution,
-      degree: convertedData.degree,
-      location: convertedData.location,
-      startDate: convertedData.startDate,
-      endDate: convertedData.endDate
+      id: uiData.id,
+      userId: uiData.userId,
+      institution: uiData.institution,
+      degree: uiData.degree,
+      location: uiData.location,
+      startDate: uiData.startDate,
+      endDate: uiData.endDate
     };
     
     if (editingEducation) {
