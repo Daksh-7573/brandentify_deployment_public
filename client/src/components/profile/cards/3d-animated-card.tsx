@@ -94,9 +94,10 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
     <div className="w-full" style={{ perspective: "1200px" }}>
       <div 
         ref={cardRef}
-        className="w-full aspect-[7/10] rounded-[20px] overflow-hidden shadow-xl relative cursor-pointer"
+        className="aspect-[7/10] rounded-[20px] overflow-hidden shadow-xl relative cursor-pointer"
         style={{
-          width: "350px",
+          width: "300px", 
+          height: "425px",
           maxWidth: "100%",
           margin: "0 auto",
           transformStyle: "preserve-3d",
