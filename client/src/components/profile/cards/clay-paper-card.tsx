@@ -1,35 +1,46 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { 
   Mail, 
   Phone, 
-  Globe, 
   MapPin, 
   Building2, 
   Copy,
-  Share2,
+  Hash,
+  Globe,
+  ExternalLink,
+  ChevronUp,
+  ChevronDown,
+  Circle,
+  CircleDot
 } from "lucide-react";
 import { UserData } from "@/types/user";
 
-// Quantum Orb Color Palette
-const orbColors = {
-  // Core colors
-  darkBlue: "#0f172a",     // Background base
-  deepPurple: "#1e1b4b",   // Secondary background
-  midnightBlue: "#0f1729", // Dark accent
+// Clay & Paper Card Color Palette
+const colors = {
+  // Background colors
+  bgDark: "#07071C",         // Base dark background
+  bgNavy: "#0C0C2C",         // Navy panel background
+  bgCard: "#14142B",         // Card background
   
-  // Orb and particle effects
-  glassBlue: "rgba(56, 189, 248, 0.12)",  // Orb glass
-  glassGlow: "rgba(186, 230, 253, 0.05)",  // Outer glow
-  particleBlue: "#38bdf8",  // Light blue particles
-  particlePurple: "#c084fc", // Light purple particles
-  particleWhite: "#f8fafc",  // Light particles
+  // Neon colors
+  teal: "#08F7C0",           // Primary neon
+  magenta: "#DF09CA",        // Secondary neon
+  cyberBlue: "#00A3FF",      // Accent neon
   
-  // Text and highlights
-  neonBlue: "#38bdf8",     // Primary text/glow
-  neonPurple: "#a855f7",   // Secondary text/glow
-  neonPink: "#ec4899",     // Accent glow
-  textPrimary: "#f8fafc",  // Primary text
-  textSecondary: "#94a3b8", // Secondary text
+  // UI colors
+  panelBg: "rgba(20, 20, 43, 0.8)",  // Panel background
+  cardOverlay: "rgba(8, 247, 192, 0.03)", // Card overlay
+  glassOverlay: "rgba(255, 255, 255, 0.03)",  // Glass highlight
+  
+  // Text colors
+  textPrimary: "#FFFFFF",    // Primary text
+  textSecondary: "#B4B4DE",  // Secondary text
+  textMuted: "#6B6B95",      // Muted text
+  
+  // Border and shadows
+  border: "rgba(8, 247, 192, 0.2)",  // Border glow
+  shadowTeal: "0 0 15px rgba(8, 247, 192, 0.5)",  // Teal shadow
+  shadowMagenta: "0 0 15px rgba(223, 9, 202, 0.5)",  // Magenta shadow
 };
 
 interface ClayPaperCardProps {
@@ -37,23 +48,21 @@ interface ClayPaperCardProps {
 }
 
 const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
-  // Interaction states
+  // Interactive states
   const [hoveredSection, setHoveredSection] = useState<string | null>(null);
   const [copySuccess, setCopySuccess] = useState<string | null>(null);
-  const [activeRing, setActiveRing] = useState<string | null>(null);
-  const [rotation, setRotation] = useState({ x: 0, y: 0 });
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isContactExpanded, setIsContactExpanded] = useState(false);
+  const [onlineStatus, setOnlineStatus] = useState<'online' | 'offline' | 'away'>('online');
   
-  // Refs
+  // Refs for tilt effect
   const cardRef = useRef<HTMLDivElement>(null);
-  const orbRef = useRef<HTMLDivElement>(null);
-  const intervalRef = useRef<number | null>(null);
+  const [rotation, setRotation] = useState({ x: 0, y: 0 });
   
   // Format profile link
-  const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\\s+/g, '') : userData.username}`;
+  const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;
   
-  // Define industry tags
-  const industryTags = userData.industry ? userData.industry.split(/,\\s*/) : [];
+  // Industry tags
+  const industryTags = userData.industry ? userData.industry.split(/,\s*/).filter(tag => tag.trim()) : [];
   if (!industryTags.length && userData.industry) {
     industryTags.push(userData.industry);
   }
@@ -70,25 +79,24 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
       });
   };
   
-  // Handle mouse movement for 3D effect
+  // Handle mouse movement for subtle 3D effect
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (cardRef.current && orbRef.current) {
-      const rect = cardRef.current.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
-      
-      // Calculate rotation based on mouse position
-      const rotationX = ((e.clientY - centerY) / (rect.height / 2)) * 5; // Max 5deg
-      const rotationY = ((centerX - e.clientX) / (rect.width / 2)) * 5;  // Max 5deg
-      
-      setRotation({ x: rotationX, y: rotationY });
-    }
+    if (!cardRef.current) return;
+    
+    const rect = cardRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    // Calculate rotation based on mouse position - keep subtle (max 3deg)
+    const rotationX = ((e.clientY - centerY) / (rect.height / 2)) * 3;
+    const rotationY = ((centerX - e.clientX) / (rect.width / 2)) * 3;
+    
+    setRotation({ x: rotationX, y: rotationY });
   };
   
   // Reset rotation when mouse leaves
   const handleMouseLeave = () => {
     setHoveredSection(null);
-    setActiveRing(null);
     
     // Smoothly transition back to center
     const startTime = Date.now();
@@ -115,639 +123,526 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
     requestAnimationFrame(animateReset);
   };
   
-  // Handle ring clicks
-  const toggleRing = (ring: string) => {
-    if (activeRing === ring) {
-      setActiveRing(null);
-    } else {
-      setActiveRing(ring);
-    }
-  };
-  
-  // Particle animation
+  // Animation effect for simulating online status change
   useEffect(() => {
-    // Create canvas and set up particle system
-    const setupParticles = () => {
-      if (!cardRef.current) return;
-      
-      // Setup automatic rotation
-      let angle = 0;
-      intervalRef.current = window.setInterval(() => {
-        angle += 0.005;
-        
-        // Apply gentle horizontal rotation
-        if (!hoveredSection && activeRing === null) {
-          setRotation({
-            x: Math.sin(angle) * 2,
-            y: Math.cos(angle) * 2
-          });
-        }
-      }, 50);
-    };
+    const interval = setInterval(() => {
+      const statuses: Array<'online' | 'offline' | 'away'> = ['online', 'away', 'online'];
+      const randomIndex = Math.floor(Math.random() * statuses.length);
+      setOnlineStatus(statuses[randomIndex]);
+    }, 30000); // Change every 30 seconds
     
-    setupParticles();
-    
-    // Cleanup
-    return () => {
-      if (intervalRef.current !== null) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, [hoveredSection, activeRing]);
+    return () => clearInterval(interval);
+  }, []);
   
-  // Main render
   return (
     <div 
       ref={cardRef}
-      className="quantum-orb-card w-full aspect-[2/3.5] relative select-none overflow-hidden rounded-2xl"
+      className="clay-paper-card w-full aspect-[2/3.5] relative select-none overflow-hidden rounded-2xl"
+      style={{
+        backgroundColor: colors.bgCard,
+        boxShadow: `0 20px 30px -10px rgba(0, 0, 0, 0.5),
+                    inset 0 0 0 1px ${colors.border},
+                    0 0 20px ${colors.teal}20`,
+        transform: `perspective(1000px) rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
+        transition: "transform 0.2s ease-out",
+      }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      style={{
-        perspective: "1000px",
-        background: `radial-gradient(circle at center, ${orbColors.deepPurple} 0%, ${orbColors.darkBlue} 70%, ${orbColors.midnightBlue} 100%)`,
-        boxShadow: `0 0 30px -5px ${orbColors.glassGlow}, inset 0 0 20px 0px ${orbColors.glassGlow}`
-      }}
     >
-      {/* Subtle Star Field */}
+      {/* Grid Background with Lines */}
       <div 
-        className="absolute inset-0 z-0"
+        className="absolute inset-0 opacity-10"
         style={{
           backgroundImage: `
-            radial-gradient(circle at 20% 30%, ${orbColors.glassGlow} 1px, transparent 1px),
-            radial-gradient(circle at 50% 80%, ${orbColors.glassGlow} 1px, transparent 1px),
-            radial-gradient(circle at 80% 15%, ${orbColors.glassGlow} 1px, transparent 1px),
-            radial-gradient(circle at 25% 65%, ${orbColors.glassGlow} 1px, transparent 1px),
-            radial-gradient(circle at 70% 45%, ${orbColors.glassGlow} 1px, transparent 1px)
+            linear-gradient(to right, ${colors.teal}30 1px, transparent 1px),
+            linear-gradient(to bottom, ${colors.teal}20 1px, transparent 1px)
           `,
-          backgroundSize: "120px 120px",
-          opacity: 0.5
+          backgroundSize: "20px 20px",
         }}
       />
       
-      {/* Moving Orb Container */}
+      {/* Background Glow Effects */}
       <div 
-        ref={orbRef}
-        className="absolute inset-0 flex items-center justify-center z-10 p-4"
-        style={{
-          transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
-          transition: hoveredSection || activeRing ? "transform 0.1s ease-out" : "transform 0.5s ease-out"
+        className="absolute left-0 top-[10%] w-[70%] h-[20%] opacity-20 blur-3xl"
+        style={{ 
+          background: `radial-gradient(circle, ${colors.teal} 0%, transparent 70%)`,
+          animation: "pulse 8s infinite alternate ease-in-out" 
         }}
-      >
-        {/* Main Glass Orb */}
-        <div 
-          className="relative w-3/4 aspect-square rounded-full flex items-center justify-center"
-          style={{
-            background: `radial-gradient(circle at 30% 30%, ${orbColors.glassBlue} 0%, rgba(10, 12, 32, 0.6) 80%)`,
-            boxShadow: `0 0 40px -5px ${orbColors.glassGlow}, inset 0 0 20px 0px ${orbColors.glassGlow}`,
-            backdropFilter: "blur(2px)",
-            border: `1px solid rgba(255, 255, 255, 0.1)`,
-            animation: "pulse 8s infinite alternate ease-in-out"
-          }}
-        >
-          {/* Rotating Light Line */}
+      />
+      <div 
+        className="absolute right-0 bottom-[30%] w-[50%] h-[30%] opacity-15 blur-3xl"
+        style={{ 
+          background: `radial-gradient(circle, ${colors.magenta} 0%, transparent 70%)`,
+          animation: "pulse 10s 2s infinite alternate ease-in-out" 
+        }}
+      />
+      
+      {/* Subtle Floating Dots */}
+      <div 
+        className="absolute top-[15%] right-[10%] w-1 h-1 rounded-full"
+        style={{ 
+          backgroundColor: colors.teal, 
+          animation: "float 6s infinite ease-in-out",
+          opacity: 0.6, 
+        }}
+      />
+      <div 
+        className="absolute bottom-[25%] left-[15%] w-1 h-1 rounded-full"
+        style={{ 
+          backgroundColor: colors.cyberBlue, 
+          animation: "float 8s 1s infinite ease-in-out",
+          opacity: 0.6, 
+        }}
+      />
+      <div 
+        className="absolute top-[45%] right-[25%] w-1.5 h-1.5 rounded-full"
+        style={{ 
+          backgroundColor: colors.magenta, 
+          animation: "float 7s 2s infinite ease-in-out",
+          opacity: 0.5, 
+        }}
+      />
+      
+      {/* Content Layout Grid */}
+      <div className="absolute inset-0 flex flex-col p-5 z-10">
+        {/* Profile Section */}
+        <div className="relative mb-6 flex flex-col items-center">
+          {/* Profile Picture with Neon Ring */}
           <div 
-            className="absolute inset-0 rounded-full"
-            style={{
-              background: "transparent",
-              border: `1px solid ${orbColors.neonBlue}`,
-              opacity: 0.2,
-              animation: "rotate 20s infinite linear"
-            }}
-          />
-          
-          {/* Second Rotating Light Line */}
-          <div 
-            className="absolute inset-[5%] rounded-full"
-            style={{
-              background: "transparent",
-              border: `1px solid ${orbColors.neonPurple}`,
-              opacity: 0.15,
-              animation: "rotate 30s infinite linear reverse"
-            }}
-          />
-          
-          {/* Profile Picture Core */}
-          <div 
-            className="relative w-[45%] aspect-square rounded-full overflow-hidden z-20"
-            style={{
-              border: `1px solid rgba(255, 255, 255, 0.2)`,
-              boxShadow: `0 0 15px 0px ${orbColors.glassGlow}`,
-              animation: "pulse 6s infinite alternate ease-in-out"
-            }}
+            className="relative mb-3 w-24 h-24"
             onMouseEnter={() => setHoveredSection('profile')}
             onMouseLeave={() => setHoveredSection(null)}
           >
-            {userData.photoURL ? (
-              <img 
-                src={userData.photoURL} 
-                alt={userData.name || "Profile"} 
-                className="h-full w-full object-cover"
-                style={{
-                  filter: "brightness(1.1) contrast(1.1)",
-                  animation: "rotate3d 20s infinite linear",
-                }}
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = "https://ui-avatars.com/api/?name=" + (userData.name || "User") + "&background=0f172a&color=38bdf8";
-                }}
-              />
-            ) : (
-              <img 
-                src={`https://ui-avatars.com/api/?name=${userData.name || "User"}&background=0f172a&color=38bdf8`}
-                alt={userData.name || "Profile"} 
-                className="h-full w-full object-cover"
-                style={{
-                  animation: "rotate3d 20s infinite linear",
-                }}
-              />
-            )}
-            
-            {/* Glow overlay */}
+            {/* Avatar Glow Ring */}
             <div 
               className="absolute inset-0 rounded-full"
               style={{
-                background: `radial-gradient(circle at 30% 30%, ${orbColors.glassGlow} 0%, transparent 70%)`,
-                opacity: hoveredSection === 'profile' ? 0.8 : 0.3,
-                transition: "opacity 0.5s ease"
+                transform: "scale(1.05)",
+                background: `radial-gradient(circle, transparent 55%, ${colors.teal} 75%, transparent 75%)`,
+                opacity: hoveredSection === 'profile' ? 0.9 : 0.4,
+                animation: "pulse 3s infinite alternate ease-in-out",
+                transition: "opacity 0.5s ease",
               }}
             />
+            
+            {/* Rotating Ring */}
+            <div 
+              className="absolute inset-0 rounded-full"
+              style={{
+                boxShadow: `0 0 10px ${colors.teal}80, inset 0 0 2px ${colors.teal}`,
+                opacity: hoveredSection === 'profile' ? 1 : 0.8,
+                transform: "scale(1.02)",
+                animation: "rotate 15s linear infinite",
+                transition: "opacity 0.3s ease",
+              }}
+            />
+            
+            {/* Avatar Container */}
+            <div className="absolute inset-0 rounded-full overflow-hidden flex items-center justify-center">
+              {userData.photoURL ? (
+                <img 
+                  src={userData.photoURL}
+                  alt={userData.name || "Profile"}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = `https://ui-avatars.com/api/?name=${userData.name || "User"}&background=${colors.bgNavy.substring(1)}&color=${colors.teal.substring(1)}`;
+                  }}
+                />
+              ) : (
+                <img 
+                  src={`https://ui-avatars.com/api/?name=${userData.name || "User"}&background=${colors.bgNavy.substring(1)}&color=${colors.teal.substring(1)}`}
+                  alt={userData.name || "Profile"}
+                  className="w-full h-full object-cover"
+                />
+              )}
+              
+              {/* Additional Overlay Glow */}
+              <div 
+                className="absolute inset-0"
+                style={{
+                  background: `radial-gradient(circle at 30% 30%, transparent 65%, ${colors.glassOverlay} 100%)`,
+                }}
+              />
+            </div>
+            
+            {/* Online Status Indicator */}
+            <div className="absolute bottom-1 right-1 z-20">
+              {onlineStatus === 'online' && (
+                <div className="relative">
+                  <CircleDot className="h-4 w-4 text-green-500" />
+                  <div 
+                    className="absolute inset-0 rounded-full"
+                    style={{
+                      boxShadow: `0 0 8px rgba(34, 197, 94, 0.7)`,
+                      animation: "pulse 2s infinite",
+                    }}
+                  />
+                </div>
+              )}
+              {onlineStatus === 'away' && (
+                <Circle className="h-4 w-4 text-yellow-500" />
+              )}
+              {onlineStatus === 'offline' && (
+                <Circle className="h-4 w-4 text-gray-400" />
+              )}
+            </div>
           </div>
           
-          {/* Name & Title */}
+          {/* Name and Title with Neon Text Effect */}
           <div 
-            className="absolute inset-0 flex items-center justify-center pointer-events-none"
+            className="text-center relative"
             style={{
-              animation: "slow-rotate 60s infinite linear",
+              transform: `translateY(${hoveredSection === 'name' ? '-2px' : '0'})`,
+              transition: "transform 0.3s ease",
             }}
+            onMouseEnter={() => setHoveredSection('name')}
+            onMouseLeave={() => setHoveredSection(null)}
           >
-            <div 
-              className="absolute text-center tracking-wider"
+            <h2 
+              className="text-xl font-bold mb-1"
               style={{
-                color: orbColors.textPrimary,
-                textShadow: `0 0 10px ${orbColors.neonBlue}`,
-                fontFamily: "'Orbitron', sans-serif",
-                opacity: 0.9,
+                color: colors.textPrimary,
+                fontFamily: "'Space Grotesk', 'Sora', sans-serif",
+                textShadow: hoveredSection === 'name' 
+                  ? `0 0 10px ${colors.teal}, 0 0 20px ${colors.teal}60`
+                  : `0 0 5px ${colors.teal}80`,
+                letterSpacing: "0.05em",
+                transition: "text-shadow 0.3s ease",
               }}
             >
-              <h2 
-                className="text-base font-bold mb-1"
-                style={{
-                  letterSpacing: "0.15em",
-                }}
-              >
-                {userData.name || "YOUR NAME"}
-              </h2>
+              {userData.name || "YOUR NAME"}
+            </h2>
+            
+            {/* Job Title in Glowing Pill */}
+            <div 
+              className="inline-block px-3 py-1 rounded-full"
+              style={{
+                background: `linear-gradient(90deg, ${colors.bgNavy}, ${colors.bgCard})`,
+                border: `1px solid ${colors.border}`,
+                boxShadow: `0 0 10px ${colors.teal}40`,
+              }}
+            >
               <p 
-                className="text-[10px]"
+                className="text-sm font-medium"
                 style={{
-                  color: orbColors.textSecondary,
-                  letterSpacing: "0.1em",
+                  color: colors.textSecondary,
+                  textShadow: `0 0 5px ${colors.teal}60`,
                 }}
               >
                 {userData.title || "ADD DESIGNATION"}
               </p>
             </div>
           </div>
-          
-          {/* First Ring - Industry */}
-          <div 
-            className="absolute w-[150%] aspect-square rounded-full"
-            style={{
-              border: `1px solid ${activeRing === 'industry' ? orbColors.neonPurple : 'rgba(255, 255, 255, 0.1)'}`,
-              opacity: activeRing === 'industry' ? 0.5 : 0.15,
-              animation: "slow-rotate 80s infinite linear",
-              transition: "all 0.3s ease",
-              cursor: "pointer"
-            }}
-            onClick={() => toggleRing('industry')}
-          >
-            {/* Industry Marker */}
-            <div 
-              className="absolute top-[5%] left-1/2 transform -translate-x-1/2"
-              style={{
-                backgroundColor: orbColors.neonBlue,
-                width: "8px",
-                height: "8px",
-                borderRadius: "50%",
-                boxShadow: `0 0 5px 1px ${orbColors.neonBlue}`,
-                opacity: hoveredSection === 'industry' || activeRing === 'industry' ? 1 : 0.5,
-                transition: "opacity 0.3s ease"
-              }}
-              onMouseEnter={() => setHoveredSection('industry')}
-              onMouseLeave={() => setHoveredSection(null)}
-            />
-            
-            {/* Industry Data Panel */}
-            {(hoveredSection === 'industry' || activeRing === 'industry') && industryTags.length > 0 && (
-              <div 
-                className="absolute top-[-40px] left-1/2 transform -translate-x-1/2 bg-opacity-20 backdrop-blur-md rounded-lg p-2 z-30"
-                style={{
-                  backgroundColor: 'rgba(15, 23, 42, 0.75)',
-                  boxShadow: `0 0 15px -5px ${orbColors.neonBlue}, inset 0 0 5px 0px ${orbColors.neonBlue}`,
-                  borderTop: `1px solid ${orbColors.neonBlue}`,
-                  borderBottom: `1px solid ${orbColors.neonBlue}`,
-                  minWidth: "160px",
-                  pointerEvents: "auto"
-                }}
-              >
-                <div className="text-center mb-1">
-                  <p 
-                    className="text-[10px]"
-                    style={{
-                      color: orbColors.neonBlue,
-                      letterSpacing: "0.1em",
-                      fontFamily: "'Orbitron', sans-serif",
-                    }}
-                  >
-                    INDUSTRY
-                  </p>
-                </div>
-                
-                <div className="flex flex-wrap justify-center gap-1">
-                  {industryTags.map((tag, index) => (
-                    <div 
-                      key={index}
-                      className="text-[9px] px-2 py-1 rounded-md"
-                      style={{
-                        backgroundColor: 'rgba(56, 189, 248, 0.1)',
-                        color: orbColors.textPrimary,
-                        border: `1px solid ${orbColors.neonBlue}`,
-                      }}
-                    >
-                      {tag.trim()}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-          
-          {/* Second Ring - Company */}
-          {userData.company && (
-            <div 
-              className="absolute w-[180%] aspect-square rounded-full"
-              style={{
-                border: `1px solid ${activeRing === 'company' ? orbColors.neonPink : 'rgba(255, 255, 255, 0.1)'}`,
-                opacity: activeRing === 'company' ? 0.5 : 0.15,
-                animation: "slow-rotate 120s infinite linear reverse",
-                transition: "all 0.3s ease",
-                cursor: "pointer"
-              }}
-              onClick={() => toggleRing('company')}
-            >
-              {/* Company Marker */}
-              <div 
-                className="absolute top-[7%] left-1/2 transform -translate-x-1/2 rotate-45"
-                style={{
-                  backgroundColor: orbColors.neonPink,
-                  width: "8px",
-                  height: "8px",
-                  borderRadius: "50%",
-                  boxShadow: `0 0 5px 1px ${orbColors.neonPink}`,
-                  opacity: hoveredSection === 'company' || activeRing === 'company' ? 1 : 0.5,
-                  transition: "opacity 0.3s ease"
-                }}
-                onMouseEnter={() => setHoveredSection('company')}
-                onMouseLeave={() => setHoveredSection(null)}
-              />
-              
-              {/* Company Data Panel */}
-              {(hoveredSection === 'company' || activeRing === 'company') && (
+        </div>
+        
+        {/* Glow Divider */}
+        <div 
+          className="w-full h-px mb-5"
+          style={{
+            background: `linear-gradient(90deg, transparent, ${colors.teal}, transparent)`,
+            boxShadow: `0 0 8px ${colors.teal}80`,
+          }}
+        />
+        
+        {/* Industry Tags Section */}
+        {industryTags.length > 0 && (
+          <div className="mb-5">
+            <div className="flex flex-wrap justify-center gap-2">
+              {industryTags.slice(0, 3).map((tag, index) => (
                 <div 
-                  className="absolute top-[-40px] left-1/2 transform -translate-x-1/2 bg-opacity-20 backdrop-blur-md rounded-lg p-2 z-30"
+                  key={index}
+                  className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium"
                   style={{
-                    backgroundColor: 'rgba(15, 23, 42, 0.75)',
-                    boxShadow: `0 0 15px -5px ${orbColors.neonPink}, inset 0 0 5px 0px ${orbColors.neonPink}`,
-                    borderTop: `1px solid ${orbColors.neonPink}`,
-                    borderBottom: `1px solid ${orbColors.neonPink}`,
-                    minWidth: "160px",
-                    pointerEvents: "auto"
+                    backgroundColor: `${colors.bgNavy}`,
+                    color: index === 0 ? colors.teal : index === 1 ? colors.cyberBlue : colors.magenta,
+                    border: `1px solid ${index === 0 ? colors.teal : index === 1 ? colors.cyberBlue : colors.magenta}40`,
+                    boxShadow: `0 0 8px ${index === 0 ? colors.teal : index === 1 ? colors.cyberBlue : colors.magenta}30`,
+                    transform: `translateY(${hoveredSection === `tag-${index}` ? '-2px' : '0'})`,
+                    transition: "all 0.2s ease",
+                  }}
+                  onMouseEnter={() => setHoveredSection(`tag-${index}`)}
+                  onMouseLeave={() => setHoveredSection(null)}
+                >
+                  <Hash className="h-3 w-3 mr-1 opacity-70" />
+                  {tag.trim()}
+                </div>
+              ))}
+              
+              {industryTags.length > 3 && (
+                <div 
+                  className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium"
+                  style={{
+                    backgroundColor: colors.bgNavy,
+                    color: colors.textMuted,
+                    border: `1px solid ${colors.border}`,
                   }}
                 >
-                  <div className="text-center mb-1">
-                    <p 
-                      className="text-[10px]"
-                      style={{
-                        color: orbColors.neonPink,
-                        letterSpacing: "0.1em",
-                        fontFamily: "'Orbitron', sans-serif",
-                      }}
-                    >
-                      COMPANY
-                    </p>
-                  </div>
-                  
-                  <div className="flex items-center justify-center gap-2">
-                    <Building2 className="w-3 h-3" style={{ color: orbColors.neonPink }} />
-                    <span 
-                      className="text-[11px]"
-                      style={{
-                        color: orbColors.textPrimary,
-                      }}
-                    >
-                      {userData.company}
-                    </span>
-                  </div>
+                  +{industryTags.length - 3} more
                 </div>
               )}
             </div>
+          </div>
+        )}
+        
+        {/* Company and Location */}
+        <div className="mb-auto space-y-3">
+          {/* Company */}
+          {userData.company && (
+            <div 
+              className="flex items-center gap-2 px-3 py-2 rounded-md"
+              style={{
+                backgroundColor: colors.panelBg,
+                borderLeft: `2px solid ${colors.cyberBlue}`,
+                transform: `translateX(${hoveredSection === 'company' ? '3px' : '0'})`,
+                transition: "transform 0.3s ease",
+              }}
+              onMouseEnter={() => setHoveredSection('company')}
+              onMouseLeave={() => setHoveredSection(null)}
+            >
+              <Building2 
+                className="h-4 w-4 flex-shrink-0"
+                style={{
+                  color: colors.cyberBlue,
+                  filter: `drop-shadow(0 0 3px ${colors.cyberBlue}80)`,
+                }}
+              />
+              <span 
+                className="text-sm"
+                style={{
+                  color: colors.textSecondary,
+                }}
+              >
+                {userData.company}
+              </span>
+            </div>
           )}
           
-          {/* Third Ring - Location */}
+          {/* Location */}
           {userData.location && (
             <div 
-              className="absolute w-[210%] aspect-square rounded-full"
+              className="flex items-center gap-2 px-3 py-2 rounded-md"
               style={{
-                border: `1px solid ${activeRing === 'location' ? orbColors.neonPurple : 'rgba(255, 255, 255, 0.1)'}`,
-                opacity: activeRing === 'location' ? 0.5 : 0.15,
-                animation: "slow-rotate 160s infinite linear",
-                transition: "all 0.3s ease",
-                cursor: "pointer"
+                backgroundColor: colors.panelBg,
+                borderLeft: `2px solid ${colors.magenta}`,
+                transform: `translateX(${hoveredSection === 'location' ? '3px' : '0'})`,
+                transition: "transform 0.3s ease",
               }}
-              onClick={() => toggleRing('location')}
+              onMouseEnter={() => setHoveredSection('location')}
+              onMouseLeave={() => setHoveredSection(null)}
             >
-              {/* Location Marker */}
-              <div 
-                className="absolute top-[9%] left-1/2 transform -translate-x-1/2 rotate-90"
+              <MapPin 
+                className="h-4 w-4 flex-shrink-0"
                 style={{
-                  backgroundColor: orbColors.neonPurple,
-                  width: "8px",
-                  height: "8px",
-                  borderRadius: "50%",
-                  boxShadow: `0 0 5px 1px ${orbColors.neonPurple}`,
-                  opacity: hoveredSection === 'location' || activeRing === 'location' ? 1 : 0.5,
-                  transition: "opacity 0.3s ease"
+                  color: colors.magenta,
+                  filter: `drop-shadow(0 0 3px ${colors.magenta}80)`,
                 }}
-                onMouseEnter={() => setHoveredSection('location')}
-                onMouseLeave={() => setHoveredSection(null)}
               />
-              
-              {/* Location Data Panel */}
-              {(hoveredSection === 'location' || activeRing === 'location') && (
-                <div 
-                  className="absolute top-[-40px] left-1/2 transform -translate-x-1/2 bg-opacity-20 backdrop-blur-md rounded-lg p-2 z-30"
-                  style={{
-                    backgroundColor: 'rgba(15, 23, 42, 0.75)',
-                    boxShadow: `0 0 15px -5px ${orbColors.neonPurple}, inset 0 0 5px 0px ${orbColors.neonPurple}`,
-                    borderTop: `1px solid ${orbColors.neonPurple}`,
-                    borderBottom: `1px solid ${orbColors.neonPurple}`,
-                    minWidth: "160px",
-                    pointerEvents: "auto"
-                  }}
-                >
-                  <div className="text-center mb-1">
-                    <p 
-                      className="text-[10px]"
-                      style={{
-                        color: orbColors.neonPurple,
-                        letterSpacing: "0.1em",
-                        fontFamily: "'Orbitron', sans-serif",
-                      }}
-                    >
-                      LOCATION
-                    </p>
-                  </div>
-                  
-                  <div className="flex items-center justify-center gap-2">
-                    <MapPin className="w-3 h-3" style={{ color: orbColors.neonPurple }} />
-                    <span 
-                      className="text-[11px]"
-                      style={{
-                        color: orbColors.textPrimary,
-                      }}
-                    >
-                      {userData.location}
-                    </span>
-                  </div>
-                </div>
-              )}
+              <span 
+                className="text-sm"
+                style={{
+                  color: colors.textMuted,
+                }}
+              >
+                {userData.location}
+              </span>
             </div>
           )}
         </div>
         
-        {/* Floating Contact Nodes */}
-        <div className="absolute inset-0 z-20 pointer-events-none">
-          {/* Email Node */}
+        {/* Contact Section - Slide Up Panel */}
+        <div className="mt-4">
+          {/* Contact Header with Toggle */}
           <div 
-            className="absolute top-[18%] right-[15%] cursor-pointer"
+            className="flex justify-between items-center px-2 py-1.5 mb-2 cursor-pointer"
             style={{
-              animation: "float 8s infinite alternate ease-in-out",
-              pointerEvents: "auto"
+              borderBottom: `1px solid ${colors.border}`,
             }}
-            onMouseEnter={() => setHoveredSection('email')}
-            onMouseLeave={() => setHoveredSection(null)}
+            onClick={() => setIsContactExpanded(!isContactExpanded)}
           >
-            <div 
-              className="flex items-center justify-center w-8 h-8 rounded-full"
+            <h3 
+              className="text-xs font-bold tracking-wider"
               style={{
-                backgroundColor: 'rgba(15, 23, 42, 0.7)',
-                boxShadow: hoveredSection === 'email' 
-                  ? `0 0 12px 2px ${orbColors.neonBlue}`
-                  : `0 0 6px 1px ${orbColors.neonBlue}`,
-                border: `1px solid ${orbColors.neonBlue}`,
-                transition: "all 0.3s ease"
+                color: colors.textSecondary,
+                letterSpacing: "0.1em",
               }}
             >
-              <Mail 
-                className="w-4 h-4" 
-                style={{ 
-                  color: hoveredSection === 'email' ? orbColors.textPrimary : orbColors.neonBlue,
-                  filter: hoveredSection === 'email' ? `drop-shadow(0 0 3px ${orbColors.neonBlue})` : 'none',
-                  transition: "all 0.3s ease"
-                }} 
-              />
-            </div>
+              CONTACT INFO
+            </h3>
             
-            {/* Email Panel */}
-            {hoveredSection === 'email' && (
-              <div 
-                className="absolute top-[100%] left-1/2 transform -translate-x-1/2 mt-2 bg-opacity-20 backdrop-blur-md rounded-lg p-2 z-30 whitespace-nowrap"
-                style={{
-                  backgroundColor: 'rgba(15, 23, 42, 0.8)',
-                  boxShadow: `0 0 15px -5px ${orbColors.neonBlue}, inset 0 0 5px 0px ${orbColors.neonBlue}`,
-                  borderTop: `1px solid ${orbColors.neonBlue}`,
-                  borderBottom: `1px solid ${orbColors.neonBlue}`,
-                }}
-              >
-                <span 
-                  className="text-[10px] flex items-center gap-2"
+            <div
+              style={{
+                color: colors.teal,
+                transform: `rotate(${isContactExpanded ? '0deg' : '180deg'})`,
+                transition: "transform 0.3s ease",
+              }}
+            >
+              {isContactExpanded ? (
+                <ChevronDown className="h-4 w-4" />
+              ) : (
+                <ChevronUp className="h-4 w-4" />
+              )}
+            </div>
+          </div>
+          
+          {/* Contact Content */}
+          <div
+            className="space-y-3 overflow-hidden"
+            style={{
+              maxHeight: isContactExpanded ? '200px' : '0',
+              opacity: isContactExpanded ? 1 : 0,
+              transition: "max-height 0.5s ease, opacity 0.3s ease",
+            }}
+          >
+            {/* Email */}
+            <div 
+              className="flex items-center justify-between px-3 py-2 rounded-md"
+              style={{
+                backgroundColor: colors.panelBg,
+                transform: `translateY(${hoveredSection === 'email' ? '-2px' : '0'})`,
+                transition: "transform 0.3s ease",
+              }}
+              onMouseEnter={() => setHoveredSection('email')}
+              onMouseLeave={() => setHoveredSection(null)}
+            >
+              <div className="flex items-center gap-2">
+                <Mail 
+                  className="h-4 w-4 flex-shrink-0"
                   style={{
-                    color: orbColors.textPrimary,
+                    color: colors.teal,
+                    filter: `drop-shadow(0 0 3px ${colors.teal}80)`,
+                  }}
+                />
+                <span 
+                  className="text-sm truncate max-w-[150px]"
+                  style={{
+                    color: colors.textSecondary,
                   }}
                 >
                   {userData.email}
-                  <button
-                    className="p-1 rounded hover:bg-[rgba(56,189,248,0.2)] transition-colors"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      copyToClipboard(userData.email, "Email");
-                    }}
-                    style={{
-                      color: orbColors.neonBlue
-                    }}
-                  >
-                    <Copy className="h-3 w-3" />
-                  </button>
                 </span>
               </div>
-            )}
-          </div>
-          
-          {/* Phone Node */}
-          {userData.phoneNumber && (
-            <div 
-              className="absolute bottom-[23%] left-[15%] cursor-pointer"
-              style={{
-                animation: "float 7s infinite alternate-reverse ease-in-out",
-                pointerEvents: "auto"
-              }}
-              onMouseEnter={() => setHoveredSection('phone')}
-              onMouseLeave={() => setHoveredSection(null)}
-            >
-              <div 
-                className="flex items-center justify-center w-8 h-8 rounded-full"
-                style={{
-                  backgroundColor: 'rgba(15, 23, 42, 0.7)',
-                  boxShadow: hoveredSection === 'phone' 
-                    ? `0 0 12px 2px ${orbColors.neonPink}`
-                    : `0 0 6px 1px ${orbColors.neonPink}`,
-                  border: `1px solid ${orbColors.neonPink}`,
-                  transition: "all 0.3s ease"
-                }}
-              >
-                <Phone 
-                  className="w-4 h-4" 
-                  style={{ 
-                    color: hoveredSection === 'phone' ? orbColors.textPrimary : orbColors.neonPink,
-                    filter: hoveredSection === 'phone' ? `drop-shadow(0 0 3px ${orbColors.neonPink})` : 'none',
-                    transition: "all 0.3s ease"
-                  }} 
-                />
-              </div>
               
-              {/* Phone Panel */}
-              {hoveredSection === 'phone' && (
-                <div 
-                  className="absolute top-[100%] left-1/2 transform -translate-x-1/2 mt-2 bg-opacity-20 backdrop-blur-md rounded-lg p-2 z-30 whitespace-nowrap"
-                  style={{
-                    backgroundColor: 'rgba(15, 23, 42, 0.8)',
-                    boxShadow: `0 0 15px -5px ${orbColors.neonPink}, inset 0 0 5px 0px ${orbColors.neonPink}`,
-                    borderTop: `1px solid ${orbColors.neonPink}`,
-                    borderBottom: `1px solid ${orbColors.neonPink}`,
-                  }}
-                >
-                  <span 
-                    className="text-[10px] flex items-center gap-2"
+              <button
+                className="p-1 rounded hover:bg-black/20 transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  copyToClipboard(userData.email, "Email");
+                }}
+                title="Copy email"
+              >
+                <Copy 
+                  className="h-3.5 w-3.5" 
+                  style={{ color: colors.textMuted }}
+                />
+              </button>
+            </div>
+            
+            {/* Phone */}
+            {userData.phoneNumber && (
+              <div 
+                className="flex items-center justify-between px-3 py-2 rounded-md"
+                style={{
+                  backgroundColor: colors.panelBg,
+                  transform: `translateY(${hoveredSection === 'phone' ? '-2px' : '0'})`,
+                  transition: "transform 0.3s ease",
+                }}
+                onMouseEnter={() => setHoveredSection('phone')}
+                onMouseLeave={() => setHoveredSection(null)}
+              >
+                <div className="flex items-center gap-2">
+                  <Phone 
+                    className="h-4 w-4 flex-shrink-0"
                     style={{
-                      color: orbColors.textPrimary,
+                      color: colors.cyberBlue,
+                      filter: `drop-shadow(0 0 3px ${colors.cyberBlue}80)`,
+                      animation: hoveredSection === 'phone' ? 'shake 0.8s ease-in-out infinite' : 'none',
+                    }}
+                  />
+                  <span 
+                    className="text-sm truncate max-w-[150px]"
+                    style={{
+                      color: colors.textSecondary,
                     }}
                   >
                     {userData.phoneNumber}
-                    <button
-                      className="p-1 rounded hover:bg-[rgba(236,72,153,0.2)] transition-colors"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        copyToClipboard(userData.phoneNumber || "", "Phone");
-                      }}
-                      style={{
-                        color: orbColors.neonPink
-                      }}
-                    >
-                      <Copy className="h-3 w-3" />
-                    </button>
                   </span>
                 </div>
-              )}
-            </div>
-          )}
-          
-          {/* Website Node */}
-          <div 
-            className="absolute bottom-[25%] right-[18%] cursor-pointer"
-            style={{
-              animation: "float 9s infinite alternate-reverse ease-in-out",
-              pointerEvents: "auto"
-            }}
-            onMouseEnter={() => setHoveredSection('website')}
-            onMouseLeave={() => setHoveredSection(null)}
-          >
-            <div 
-              className="flex items-center justify-center w-8 h-8 rounded-full"
-              style={{
-                backgroundColor: 'rgba(15, 23, 42, 0.7)',
-                boxShadow: hoveredSection === 'website' 
-                  ? `0 0 12px 2px ${orbColors.neonPurple}`
-                  : `0 0 6px 1px ${orbColors.neonPurple}`,
-                border: `1px solid ${orbColors.neonPurple}`,
-                transition: "all 0.3s ease"
-              }}
-            >
-              <Globe 
-                className="w-4 h-4" 
-                style={{ 
-                  color: hoveredSection === 'website' ? orbColors.textPrimary : orbColors.neonPurple,
-                  filter: hoveredSection === 'website' ? `drop-shadow(0 0 3px ${orbColors.neonPurple})` : 'none',
-                  transition: "all 0.3s ease"
-                }} 
-              />
-            </div>
+                
+                <button
+                  className="p-1 rounded hover:bg-black/20 transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    copyToClipboard(userData.phoneNumber, "Phone");
+                  }}
+                  title="Copy phone"
+                >
+                  <Copy 
+                    className="h-3.5 w-3.5" 
+                    style={{ color: colors.textMuted }}
+                  />
+                </button>
+              </div>
+            )}
             
-            {/* Website Panel */}
-            {hoveredSection === 'website' && (
-              <div 
-                className="absolute top-[100%] left-1/2 transform -translate-x-1/2 mt-2 bg-opacity-20 backdrop-blur-md rounded-lg p-2 z-30 whitespace-nowrap"
-                style={{
-                  backgroundColor: 'rgba(15, 23, 42, 0.8)',
-                  boxShadow: `0 0 15px -5px ${orbColors.neonPurple}, inset 0 0 5px 0px ${orbColors.neonPurple}`,
-                  borderTop: `1px solid ${orbColors.neonPurple}`,
-                  borderBottom: `1px solid ${orbColors.neonPurple}`,
-                }}
-              >
-                <span 
-                  className="text-[10px] flex items-center gap-2"
+            {/* Profile Link */}
+            <div 
+              className="flex items-center justify-between px-3 py-2 rounded-md"
+              style={{
+                backgroundColor: colors.panelBg,
+                transform: `translateY(${hoveredSection === 'profile-link' ? '-2px' : '0'})`,
+                transition: "transform 0.3s ease",
+              }}
+              onMouseEnter={() => setHoveredSection('profile-link')}
+              onMouseLeave={() => setHoveredSection(null)}
+            >
+              <div className="flex items-center gap-2">
+                <Globe 
+                  className="h-4 w-4 flex-shrink-0"
                   style={{
-                    color: orbColors.textPrimary,
+                    color: colors.magenta,
+                    filter: `drop-shadow(0 0 3px ${colors.magenta}80)`,
+                  }}
+                />
+                <span 
+                  className="text-sm truncate max-w-[150px]"
+                  style={{
+                    color: colors.textSecondary,
                   }}
                 >
                   {profileLink}
-                  <button
-                    className="p-1 rounded hover:bg-[rgba(168,85,247,0.2)] transition-colors"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      copyToClipboard(`https://${profileLink}`, "Link");
-                    }}
-                    style={{
-                      color: orbColors.neonPurple
-                    }}
-                  >
-                    <Copy className="h-3 w-3" />
-                  </button>
                 </span>
               </div>
-            )}
-          </div>
-          
-          {/* Share Button */}
-          <div 
-            className="absolute bottom-[10%] left-1/2 transform -translate-x-1/2"
-            style={{
-              animation: "pulse 3s infinite alternate ease-in-out"
-            }}
-          >
-            <button
-              className="flex items-center gap-1 px-4 py-2 rounded-full"
-              style={{
-                backgroundColor: 'rgba(0, 0, 0, 0.3)',
-                backdropFilter: "blur(4px)",
-                color: orbColors.textPrimary,
-                border: `1px solid ${orbColors.neonBlue}`,
-                boxShadow: `0 0 10px -3px ${orbColors.neonBlue}`,
-              }}
-              onClick={() => copyToClipboard(`https://${profileLink}`, "Profile link")}
-            >
-              <Share2 className="h-3.5 w-3.5" />
-              <span className="text-[11px] uppercase tracking-wider">Share</span>
-            </button>
+              
+              <div className="flex gap-1">
+                <button
+                  className="p-1 rounded hover:bg-black/20 transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    copyToClipboard(`https://${profileLink}`, "Link");
+                  }}
+                  title="Copy link"
+                >
+                  <Copy 
+                    className="h-3.5 w-3.5" 
+                    style={{ color: colors.textMuted }}
+                  />
+                </button>
+                <button
+                  className="p-1 rounded hover:bg-black/20 transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    window.open(`https://${profileLink}`, '_blank');
+                  }}
+                  title="Open link"
+                >
+                  <ExternalLink 
+                    className="h-3.5 w-3.5" 
+                    style={{ color: colors.textMuted }}
+                  />
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -755,79 +650,57 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
       {/* Copy Success Message */}
       {copySuccess && (
         <div 
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full text-xs z-50 px-3 py-1"
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-4 py-2 rounded-lg z-50"
           style={{
-            backgroundColor: 'rgba(0, 0, 0, 0.7)',
-            color: orbColors.textPrimary,
-            border: `1px solid ${orbColors.neonBlue}`,
-            boxShadow: `0 0 15px -5px ${orbColors.neonBlue}`,
-            backdropFilter: "blur(4px)",
-            animation: "fadeInOut 2s forwards"
+            backgroundColor: 'rgba(20, 20, 43, 0.95)',
+            color: colors.teal,
+            boxShadow: `0 0 20px ${colors.teal}40, 0 0 5px ${colors.teal}30`,
+            border: `1px solid ${colors.border}`,
+            animation: "fadeInOut 2s forwards",
+            backdropFilter: "blur(5px)",
           }}
         >
-          {copySuccess}
+          <span className="text-sm font-medium">{copySuccess}</span>
         </div>
       )}
       
-      {/* Animations and Styles */}
+      {/* Animations */}
       <style>
         {`
-          @keyframes fadeInOut {
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
-            15% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            85% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
-          }
-          
           @keyframes pulse {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.05); }
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
           }
           
           @keyframes rotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-          
-          @keyframes rotate3d {
-            0% { transform: rotate3d(0, 1, 0.2, 0deg); }
-            100% { transform: rotate3d(0, 1, 0.2, 360deg); }
-          }
-          
-          @keyframes slow-rotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
           }
           
           @keyframes float {
-            0% { transform: translateY(0px); }
-            100% { transform: translateY(-8px); }
+            0% { transform: translateY(0) rotate(0); }
+            50% { transform: translateY(-5px) rotate(3deg); }
+            100% { transform: translateY(0) rotate(0); }
           }
           
-          /* Font import for neofuturistic text */
-          @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&display=swap');
-          
-          /* Print styles */
-          @media print {
-            body * {
-              visibility: hidden;
-            }
-            .quantum-orb-card, .quantum-orb-card * {
-              visibility: visible;
-              transform: none !important;
-              animation: none !important;
-            }
-            .quantum-orb-card {
-              position: absolute;
-              left: 0;
-              top: 0;
-              width: 100%;
-              height: 100%;
-              background: #0f172a !important;
-              -webkit-print-color-adjust: exact !important;
-              print-color-adjust: exact !important;
-            }
+          @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(1px); }
+            50% { transform: translateX(-1px); }
+            75% { transform: translateX(1px); }
+            100% { transform: translateX(0); }
           }
+          
+          @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
+            15% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            85% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
+          }
+          
+          /* Font imports */
+          @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Sora:wght@400;500;700&display=swap');
         `}
       </style>
     </div>
