@@ -118,74 +118,96 @@ export function ProfileUpload({
     }
   };
 
-  // Save the selected image with transformations
-  const handleSave = () => {
-    if (!selectedImage || isUploading) return;
-    
-    // Create a canvas to apply transformations
+  // Helper function to draw image on canvas with transformations
+  const drawImageWithTransformations = (
+    img: HTMLImageElement,
+    zoom: number,
+    rot: number,
+    dx: number,
+    dy: number
+  ): string => {
     const canvas = document.createElement('canvas');
     canvas.width = TARGET_SIZE;
     canvas.height = TARGET_SIZE;
     const ctx = canvas.getContext('2d');
     
     if (!ctx) {
-      setErrorMessage("Could not create image processing context. Please try again.");
-      setShowAlert(true);
-      return;
+      throw new Error("Could not create image processing context");
     }
     
-    // Process the image
-    const img = new Image();
-    img.onload = () => {
-      // Fill background
-      ctx.fillStyle = "#FFFFFF";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
-      // Calculate square crop
-      const size = Math.min(img.width, img.height);
-      const offsetSrcX = (img.width - size) / 2;
-      const offsetSrcY = (img.height - size) / 2;
-      
-      // Apply transformations in EXACT same order as in the CSS transform
-      ctx.save();
-      
-      // Center point of transformation
-      ctx.translate(canvas.width / 2, canvas.height / 2);
-      
-      // CRITICAL: Match the exact transform order in the CSS
-      // First position offset
-      ctx.translate(offsetX, offsetY);
-      
-      // Then zoom
-      ctx.scale(zoomLevel, zoomLevel);
-      
-      // Then rotation
-      ctx.rotate((rotation * Math.PI) / 180);
-      
-      // Draw image
-      ctx.drawImage(
-        img,
-        offsetSrcX, offsetSrcY, size, size,
-        -TARGET_SIZE / 2, -TARGET_SIZE / 2, TARGET_SIZE, TARGET_SIZE
-      );
-      
-      ctx.restore();
-      
-      // Convert to high-quality JPEG
-      const processedImage = canvas.toDataURL('image/jpeg', 0.95);
-      
-      // Send to parent for saving
-      onImageSelected(processedImage);
-    };
+    // Fill background
+    ctx.fillStyle = "#FFFFFF";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // Handle loading error
-    img.onerror = () => {
-      setErrorMessage("Error loading image. Please try a different image.");
+    // Set center point
+    ctx.translate(canvas.width / 2, canvas.height / 2);
+    
+    // Apply transformations exactly as shown in the preview
+    if (rot !== 0) {
+      ctx.rotate((rot * Math.PI) / 180);
+    }
+    
+    if (zoom !== 1) {
+      ctx.scale(zoom, zoom);
+    }
+    
+    // Calculate the size for square crop
+    const size = Math.min(img.width, img.height);
+    const cropX = (img.width - size) / 2;
+    const cropY = (img.height - size) / 2;
+    
+    // Draw the image centered with transformations
+    ctx.drawImage(
+      img,
+      cropX, cropY, size, size,
+      -TARGET_SIZE / 2 + dx, -TARGET_SIZE / 2 + dy, 
+      TARGET_SIZE, TARGET_SIZE
+    );
+    
+    // Convert to JPEG
+    return canvas.toDataURL('image/jpeg', 0.95);
+  };
+
+  // Save the selected image with transformations
+  const handleSave = () => {
+    if (!selectedImage || isUploading) return;
+    
+    try {
+      // Process the image
+      const img = new Image();
+      img.onload = () => {
+        try {
+          // Use the helper function to create the transformed image
+          const processedImage = drawImageWithTransformations(
+            img, 
+            zoomLevel, 
+            rotation, 
+            offsetX, 
+            offsetY
+          );
+          
+          // Send to parent for saving
+          onImageSelected(processedImage);
+        } catch (error) {
+          console.error("Error processing image:", error);
+          setErrorMessage("Error processing image. Please try again.");
+          setShowAlert(true);
+        }
+      };
+      
+      // Handle loading error
+      img.onerror = () => {
+        setErrorMessage("Error loading image. Please try a different image.");
+        setShowAlert(true);
+      };
+      
+      // Start loading
+      img.src = selectedImage;
+    } catch (error) {
+      console.error("Error in handleSave:", error);
+      setErrorMessage("An error occurred while saving the image. Please try again.");
       setShowAlert(true);
-    };
-    
-    // Start loading
-    img.src = selectedImage;
+    }
   };
   
   // Remove selected image
@@ -263,11 +285,11 @@ export function ProfileUpload({
                 alt="Profile Preview"
                 className="max-w-none"
                 style={{ 
-                  /* Transformation order is critically important: 
-                     Must match exactly with the canvas transformation order in handleSave */
-                  transform: `translate(${offsetX}px, ${offsetY}px) scale(${zoomLevel}) rotate(${rotation}deg)`,
+                  transform: `rotate(${rotation}deg) scale(${zoomLevel})`,
                   transformOrigin: 'center',
-                  transition: isDragging ? 'none' : 'transform 0.2s ease-out',
+                  marginLeft: `${offsetX}px`, 
+                  marginTop: `${offsetY}px`,
+                  transition: isDragging ? 'none' : 'all 0.2s ease-out',
                 }}
                 draggable={false}
               />
