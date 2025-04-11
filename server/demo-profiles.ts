@@ -8,6 +8,11 @@ import {
   InsertProjectCollaborator
 } from '../shared/schema';
 
+// Helper to convert Date objects to string dates for schema compatibility
+function formatDate(date: Date): string {
+  return date.toISOString().split('T')[0]; // Returns YYYY-MM-DD format
+}
+
 /**
  * Creates three complete demo profiles with all details
  */
@@ -45,7 +50,7 @@ async function createTechExecutiveProfile(storage: IStorage) {
     location: "San Francisco, CA",
     industry: "Technology",
     lookingFor: "Strategic partnerships and mentoring opportunities",
-    profileCompleted: true,
+    profileCompleted: 100, // Integer for profile completion percentage
     emailVerified: true,
     emailVerificationToken: null,
     emailVerificationExpires: null,
