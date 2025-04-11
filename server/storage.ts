@@ -2588,4 +2588,9 @@ export class MemStorage implements IStorage {
   }
 }
 
+import { addUserPersonalInfoMethods } from './user-personal-info';
+
+// Add UserPersonalInfo methods to MemStorage prototype
+addUserPersonalInfoMethods(MemStorage.prototype);
+
 export const storage = new MemStorage();

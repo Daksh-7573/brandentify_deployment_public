@@ -1,86 +1,83 @@
-import { IStorage } from './storage';
-import { InsertUserPersonalInfo } from '../shared/schema';
-
 /**
  * Helper function that adds personal information to all demo profiles
  * This provides contact details and links for each user
  */
+
+import { InsertUserPersonalInfo } from "../shared/schema";
+import { IStorage } from "./storage";
+
 export async function addDemoPersonalInfo(storage: IStorage) {
-  
-  // Get user IDs from storage
-  const elonMusk = await storage.getUserByUsername("elon_musk");
-  const techExec = await storage.getUserByUsername("alex_johnson");
-  const designer = await storage.getUserByUsername("maya_rodriguez");
-  const dataScientist = await storage.getUserByUsername("david_patel");
-  
-  if (!elonMusk || !techExec || !designer || !dataScientist) {
-    console.log("Demo profiles not found. Create them first using createDemoProfiles()");
-    return;
-  }
+  console.log("[demo-personal-info] Adding personal information to demo profiles");
 
-  // Personal info for Elon Musk (Industry Leader)
+  // Elon Musk personal information
   const muskPersonalInfo: InsertUserPersonalInfo = {
-    userId: elonMusk.id,
-    contactEmail: "elon.musk@example.com",
-    contactPhone: "+1 (512) 555-7890",
-    website: "https://www.spacex.com",
-    githubProfile: "elonmusk",
-    linkedinProfile: "elonmusk",
-    twitterProfile: "elonmusk",
-    instagramProfile: "elonmusk",
-    calendlyLink: "https://calendly.com/elonmusk-demo",
-    preferredContactMethod: "email"
-  };
-
-  // Personal info for Tech Executive (Alex Johnson)
-  const techExecPersonalInfo: InsertUserPersonalInfo = {
-    userId: techExec.id,
-    contactEmail: "alex.johnson@example.com",
-    contactPhone: "+1 (415) 555-1234",
-    website: "https://www.alexjohnson-tech.example.com",
-    githubProfile: "alexj-tech",
-    linkedinProfile: "alex-johnson-tech",
-    twitterProfile: "alexj_tech",
+    userId: 2, // Musk user ID
+    contactEmail: "elon@spacex.com",
+    contactPhone: "+1 (800) MARS-NOW",
+    website: "https://spacex.com",
+    linkedinProfile: "https://linkedin.com/in/elonmusk",
+    twitterProfile: "https://twitter.com/elonmusk",
     instagramProfile: null,
-    calendlyLink: "https://calendly.com/alexjohnson-demo",
-    preferredContactMethod: "linkedin"
+    githubProfile: null,
+    preferredContactMethod: "twitter"
   };
-
-  // Personal info for UX Designer (Maya Rodriguez)
-  const designerPersonalInfo: InsertUserPersonalInfo = {
-    userId: designer.id,
-    contactEmail: "maya.rodriguez@example.com",
-    contactPhone: "+1 (628) 555-9876",
-    website: "https://www.mayarodriguez-design.example.com",
-    githubProfile: "mayarodriguez",
-    linkedinProfile: "maya-rodriguez-ux",
-    twitterProfile: "maya_designs",
-    instagramProfile: "maya.ux",
-    calendlyLink: "https://calendly.com/mayarodriguez-demo",
-    preferredContactMethod: "email"
-  };
-
-  // Personal info for Data Scientist (David Patel)
-  const dataScientistPersonalInfo: InsertUserPersonalInfo = {
-    userId: dataScientist.id,
-    contactEmail: "david.patel@example.com",
-    contactPhone: "+1 (312) 555-5678",
-    website: "https://www.davidpatel-ai.example.com",
-    githubProfile: "dpatel-ai",
-    linkedinProfile: "david-patel-ml",
-    twitterProfile: "davidpatel_ai",
-    instagramProfile: null,
-    calendlyLink: "https://calendly.com/davidpatel-demo",
-    preferredContactMethod: "linkedin"
-  };
-
-  // Create all personal info entries
-  console.log("Adding personal information for all demo profiles...");
-  
   await storage.createUserPersonalInfo(muskPersonalInfo);
+
+  // Tech Executive personal information
+  const techExecPersonalInfo: InsertUserPersonalInfo = {
+    userId: 3, // Tech Exec user ID
+    contactEmail: "alex.johnson@techcorp.com",
+    contactPhone: "+1 (415) 555-1234",
+    website: "https://alexjohnson.dev",
+    linkedinProfile: "https://linkedin.com/in/alexjohnson",
+    twitterProfile: "https://twitter.com/alexjtech",
+    githubProfile: "https://github.com/alexjohnson-dev",
+    instagramProfile: "https://instagram.com/alexj.tech",
+    preferredContactMethod: "email"
+  };
   await storage.createUserPersonalInfo(techExecPersonalInfo);
+
+  // Designer personal information
+  const designerPersonalInfo: InsertUserPersonalInfo = {
+    userId: 4, // Designer user ID
+    contactEmail: "maya@designbymaya.com",
+    contactPhone: "+1 (628) 555-9876",
+    website: "https://designbymaya.com",
+    linkedinProfile: "https://linkedin.com/in/mayarodriguez",
+    twitterProfile: null,
+    githubProfile: "https://github.com/maya-designs",
+    instagramProfile: "https://instagram.com/maya.designs",
+    preferredContactMethod: "website"
+  };
   await storage.createUserPersonalInfo(designerPersonalInfo);
+
+  // Data Scientist personal information
+  const dataScientistPersonalInfo: InsertUserPersonalInfo = {
+    userId: 5, // Data Scientist user ID
+    contactEmail: "david.patel@datainsights.ai",
+    contactPhone: "+1 (510) 555-4567",
+    website: "https://davidpatel.ai",
+    linkedinProfile: "https://linkedin.com/in/davidpatel",
+    twitterProfile: "https://twitter.com/davidpatel_ai",
+    githubProfile: "https://github.com/davidpatel",
+    instagramProfile: null,
+    preferredContactMethod: "linkedin"
+  };
   await storage.createUserPersonalInfo(dataScientistPersonalInfo);
 
-  console.log("Successfully added personal information for all demo profiles!");
+  // Create personal info for demo user (user1)
+  const demoUserPersonalInfo: InsertUserPersonalInfo = {
+    userId: 1, // Demo user ID
+    contactEmail: "user1@example.com",
+    contactPhone: "+1 (555) 123-4567",
+    website: "https://myportfolio.com",
+    linkedinProfile: "https://linkedin.com/in/seniorpro",
+    twitterProfile: "https://twitter.com/seniorpro",
+    githubProfile: "https://github.com/seniorpro",
+    instagramProfile: "https://instagram.com/seniorpro",
+    preferredContactMethod: "email"
+  };
+  await storage.createUserPersonalInfo(demoUserPersonalInfo);
+
+  console.log("[demo-personal-info] Successfully added personal information to all demo profiles");
 }
