@@ -415,25 +415,38 @@ export default function Education() {
     }
     
     // Convert Date objects to strings for the API
+    // Only include fields that exist in the database schema
     const convertedData: EducationApiData = {
       id: data.id,
       userId: data.userId,
       institution: data.institution,
       degree: data.degree,
-      field: data.field,
       location: data.location,
       startDate: data.startDate ? data.startDate.toISOString().split('T')[0] : undefined, // YYYY-MM-DD format
       endDate: data.endDate ? data.endDate.toISOString().split('T')[0] : undefined, // YYYY-MM-DD format
+      // Keep these fields for the form but remove them from what gets sent to the API
+      field: data.field,
       currentlyEnrolled: data.currentlyEnrolled,
       description: data.description,
       industry: data.industry,
       domain: data.domain
     };
     
+    // Create a filtered version with only the fields that exist in the database schema
+    const apiData = {
+      id: convertedData.id,
+      userId: convertedData.userId,
+      institution: convertedData.institution,
+      degree: convertedData.degree,
+      location: convertedData.location,
+      startDate: convertedData.startDate,
+      endDate: convertedData.endDate
+    };
+    
     if (editingEducation) {
-      updateEducationMutation.mutate(convertedData);
+      updateEducationMutation.mutate(apiData);
     } else {
-      createEducationMutation.mutate(convertedData);
+      createEducationMutation.mutate(apiData);
     }
   };
   
