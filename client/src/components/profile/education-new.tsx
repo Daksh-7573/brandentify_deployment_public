@@ -108,6 +108,8 @@ export default function Education() {
   
   const handleSaveEducation = async () => {
     try {
+      console.log("Attempting to save education:", newEducation);
+      
       // Validate form
       if (!newEducation.degree || !newEducation.institution || !newEducation.startDate) {
         toast({
@@ -137,11 +139,20 @@ export default function Education() {
         }
       }
       
+      // Handle "Present" end date
+      let endDateForServer: string | undefined = newEducation.endDate;
+      if (isCurrentlyStudying || newEducation.endDate === 'Present') {
+        endDateForServer = undefined;
+      }
+      
       // Add userId to the education if it's not already there
       const educationToSave = {
         ...newEducation,
-        userId: userId
+        userId: userId,
+        endDate: endDateForServer
       };
+      
+      console.log("Prepared education object for server:", educationToSave);
       
       let response;
       let successMessage;
@@ -149,15 +160,24 @@ export default function Education() {
       // Check if we're editing an existing education (has an id) or creating a new one
       if (newEducation.id) {
         // Update existing education
-        response = await apiRequest('PUT', `/api/educations/${newEducation.id}`, educationToSave);
+        response = await apiRequest(`/api/educations/${newEducation.id}`, {
+          method: 'PUT',
+          body: JSON.stringify(educationToSave),
+          headers: { 'Content-Type': 'application/json' }
+        });
         successMessage = "Your education has been updated successfully";
       } else {
         // Create new education
-        response = await apiRequest('POST', '/api/educations', educationToSave);
+        response = await apiRequest('/api/educations', {
+          method: 'POST',
+          body: JSON.stringify(educationToSave),
+          headers: { 'Content-Type': 'application/json' }
+        });
         successMessage = "Your education has been added successfully";
       }
       
       if (response.ok) {
+        console.log("Education saved successfully, response:", response);
         // Close modal
         setIsAddModalOpen(false);
         
@@ -178,10 +198,13 @@ export default function Education() {
           startDate: '',
           endDate: ''
         });
+        setIsCurrentlyStudying(false);
         
         // No need to reset date pickers as SimpleDatePicker manages its own state
       } else {
-        throw new Error(`Failed to ${newEducation.id ? 'update' : 'save'} education`);
+        const errorData = await response.json();
+        console.error("Server error response:", errorData);
+        throw new Error(`Failed to ${newEducation.id ? 'update' : 'save'} education: ${JSON.stringify(errorData)}`);
       }
     } catch (error) {
       console.error("Error saving education:", error);
@@ -436,8 +459,10 @@ export default function Education() {
                       className="rounded border-gray-300 text-primary focus:ring-primary"
                       checked={isCurrentlyStudying || newEducation.endDate === 'Present'}
                       onChange={(e) => {
-                        setIsCurrentlyStudying(e.target.checked);
-                        if (e.target.checked) {
+                        const isChecked = e.target.checked;
+                        console.log("Current education checkbox changed:", isChecked);
+                        setIsCurrentlyStudying(isChecked);
+                        if (isChecked) {
                           setNewEducation({
                             ...newEducation,
                             endDate: 'Present'
