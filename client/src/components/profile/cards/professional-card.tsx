@@ -12,10 +12,12 @@ import {
   QrCode, 
   MessageSquare,
   Sun,
-  Moon
+  Moon,
+  GraduationCap
 } from "lucide-react";
 import { UserData } from "@/types/user";
 import { useCurrentCompany } from "@/hooks/use-current-company";
+import { useEducation } from "@/hooks/use-education";
 
 interface ProfessionalCardProps {
   userData: UserData;
