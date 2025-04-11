@@ -5,7 +5,8 @@ import {
   InsertEducation, 
   InsertSkill, 
   InsertProject,
-  InsertProjectCollaborator
+  InsertProjectCollaborator,
+  InsertService
 } from '../shared/schema';
 
 // Helper to convert Date objects to string dates for schema compatibility
@@ -51,6 +52,15 @@ function fixCollaborator(collab: any): InsertProjectCollaborator {
     profileLink: collab.contribution || "", // Use contribution text as profileLink
     role: collab.role,
   };
+}
+
+/**
+ * Helper function to add services to a user profile
+ */
+async function addServicesToProfile(storage: IStorage, userId: number, services: InsertService[]) {
+  for (const service of services) {
+    await storage.createService(service);
+  }
 }
 
 /**
@@ -246,6 +256,36 @@ async function createElonMuskProfile(storage: IStorage) {
   
   const fixedCollaborator = fixCollaborator(collaborator);
   await storage.createProjectCollaborator(fixedCollaborator);
+  
+  // Add services
+  const services: InsertService[] = [
+    {
+      userId: user.id,
+      title: "Executive Mentorship for Tech Leaders",
+      description: "One-on-one mentorship sessions for C-suite executives and high-potential leaders in tech companies. Sharing insights on disruptive innovation, scaling operations, and creating a culture of engineering excellence.",
+      category: "coaching",
+      priceUsd: "5000",
+      isHourly: false,
+      features: JSON.stringify(["Strategic vision development", "Leadership during hypergrowth", "First principles thinking approach", "Disruption strategy"]),
+      imageUrl: "/images/demo/mentorship-service.png",
+      order: 1,
+      isActive: true
+    },
+    {
+      userId: user.id,
+      title: "Strategic Advisory for Space Ventures",
+      description: "Advisory services for companies developing space technologies or planning commercial space operations. Includes technical review, business model evaluation, and strategic roadmap development.",
+      category: "consulting",
+      priceUsd: "25000",
+      isHourly: false,
+      features: JSON.stringify(["Technical feasibility assessment", "Cost optimization strategies", "Regulatory navigation", "Long-term vision alignment"]),
+      imageUrl: "/images/demo/space-consulting.png",
+      order: 2,
+      isActive: true
+    }
+  ];
+  
+  await addServicesToProfile(storage, user.id, services);
 
   return user;
 }
