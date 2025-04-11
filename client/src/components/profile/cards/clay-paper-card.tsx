@@ -43,11 +43,11 @@ const colors = {
   shadowMagenta: "0 0 15px rgba(223, 9, 202, 0.5)",  // Magenta shadow
 };
 
-interface ClayPaperCardProps {
+interface NeoGlowCardProps {
   userData: UserData;
 }
 
-const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
+const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
   // Interactive states
   const [hoveredSection, setHoveredSection] = useState<string | null>(null);
   const [copySuccess, setCopySuccess] = useState<string | null>(null);
@@ -707,4 +707,4 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
   );
 };
 
-export default ClayPaperCard;
+export default NeoGlowCard;

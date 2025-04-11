@@ -13,7 +13,7 @@ const CARD_TYPES = [
   { id: "professional-renewed", name: "Professional", description: "Modern professional design with sleek UI elements" },
   { id: "3d-animated", name: "3D Animated", description: "Interactive 3D hover effects" },
   { id: "holographic", name: "Holographic Glass", description: "Modern transparent design" },
-  { id: "clay-paper", name: "Clay & Paper", description: "Playful 3D claymation & paper-cut style" },
+  { id: "neoglow", name: "NeoGlow", description: "Dark mode design with electric neon elements" },
   { id: "creative", name: "Creative", description: "Colorful artistic layout" },
   { id: "artistic", name: "Artistic", description: "Hand-drawn watercolor style" },
 ];
@@ -144,7 +144,7 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
                 <TabsTrigger value="holographic">Holographic</TabsTrigger>
               </TabsList>
               <TabsList className="grid grid-cols-3 mb-6">
-                <TabsTrigger value="clay-paper">Clay & Paper</TabsTrigger>
+                <TabsTrigger value="neoglow">NeoGlow</TabsTrigger>
                 <TabsTrigger value="creative">Creative</TabsTrigger>
                 <TabsTrigger value="artistic">Artistic</TabsTrigger>
               </TabsList>

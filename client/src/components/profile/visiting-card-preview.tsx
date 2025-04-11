@@ -3,7 +3,7 @@ import { UserData } from "@/types/user";
 import { Mail, Phone, Globe, Briefcase, MapPin, Code, Building2 } from "lucide-react";
 import ThreeDAnimatedCard from "./cards/3d-animated-card";
 import HolographicCard from "./cards/holographic-card";
-import ClayPaperCard from "./cards/clay-paper-card";
+import NeoGlowCard from "./cards/clay-paper-card";
 import CreativeCard from "./cards/creative-card";
 import ArtisticCard from "./cards/artistic-card";
 import ProfessionalCardRenewed from "./cards/professional-card-renewed";
@@ -38,11 +38,11 @@ const VisitingCardPreview: React.FC<VisitingCardPreviewProps> = ({
     );
   }
   
-  // For clay paper card style, use the specialized component
-  if (cardType === "clay-paper") {
+  // For NeoGlow card style, use the specialized component
+  if (cardType === "neoglow" || cardType === "clay-paper") {
     return (
       <div className="visiting-card-preview">
-        <ClayPaperCard userData={userData} />
+        <NeoGlowCard userData={userData} />
       </div>
     );
   }
