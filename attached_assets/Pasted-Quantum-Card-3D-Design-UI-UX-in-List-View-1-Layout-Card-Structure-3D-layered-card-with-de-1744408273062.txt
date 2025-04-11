@@ -1,0 +1,111 @@
+Quantum Card – 3D Design (UI/UX in List View)
+🔷 1. Layout & Card Structure
+ 3D layered card with depth and perspective tilt
+
+ Card size: ~360x520 px
+
+ Parallax tilt effect on cursor movement (for web) or phone tilt (for mobile)
+
+ Multiple Z-indexed layers for floating elements
+
+ Subtle shadow layers for visual depth
+
+👤 2. Profile Picture
+ Placed at the top center, popped out above the card surface
+
+ Glowing circular frame with light reflection animation
+
+ Slight hover bobbing effect to simulate floating
+
+🧑‍💼 3. Name & Job Title
+ Name
+
+Large, semi-glowing font with light reflection overlay
+
+Positioned centrally or upper-left for balance
+
+ Job Title
+
+Smaller text, floating below name
+
+3D shadow or embossed effect
+
+Optional label-style background with soft hover animation
+
+🧩 4. Professional Info (Floating Panels)
+ Industry / Domain
+
+Displayed as floating glowing badges (e.g., #Marketing, #UIUX)
+
+Soft floating animation with occasional pulse
+
+ Company / Organization
+
+🏢 icon + company name
+
+Appears on a 3D card-in-card layer (like a business card inside the frame)
+
+Subtle slide-in or lift animation
+
+ Location
+
+📍Icon + City, State
+
+Positioned on a curved path or orbit-style ring (optional)
+
+✉️ 5. Contact Information Layer
+ Sits at the bottom layer of the card with a blurred glass effect
+
+ Email Address
+
+📧 icon + click-to-copy
+
+Appears as an animated tag that rises into view on hover
+
+ Phone Number
+
+📞 icon + tap-to-call or copy
+
+Displays like a holographic stamp at the corner of the card
+
+🎨 6. Visual Theme & Styling
+ 3D Theme Base:
+
+Soft glass with neon outlines OR
+
+Matte clay texture with embossed fields
+
+ Accent Colors:
+
+Electric blue, silver gray, charcoal black, mint green
+
+ Typography:
+
+Futuristic (Orbitron, Sora, or Inter SemiBold)
+
+Light spacing and subtle depth shadows
+
+🧠 7. Interactions & Micro UX
+ 3D Tilt:
+
+Reacts to mouse or device motion (rotateX, rotateY)
+
+ Depth Glow:
+
+Inner shadow/glow expands slightly on hover
+
+ Animated Entrances:
+
+Elements slide in or rise in layers when loaded
+
+ Soft Sound FX (Optional):
+
+Light “ping” when clicking copy buttons
+
+🛠️ 8. Extras & Optional Features
+ “View Full Profile” button rises from the base layer
+
+ “Powered by Musk” hologram tag in bottom-right
+
+ Optional animated background behind card (slow loop or particle float)
+

@@ -6,16 +6,13 @@ import {
   Globe, 
   Briefcase, 
   MapPin, 
-  Code, 
-  Building2, 
   ExternalLink, 
-  Linkedin, 
-  Github, 
-  Twitter,
-  Instagram,
-  MessageCircle,
   Copy,
-  Hash
+  Hash,
+  Building2,
+  Sparkles,
+  Volume2,
+  VolumeX
 } from "lucide-react";
 
 interface ThreeDAnimatedCardProps {
@@ -23,14 +20,18 @@ interface ThreeDAnimatedCardProps {
 }
 
 const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => {
-  const [isHovered, setIsHovered] = useState(false);
+  // State variables
   const [rotateX, setRotateX] = useState(0);
   const [rotateY, setRotateY] = useState(0);
-  const [glowIntensity, setGlowIntensity] = useState(0);
-  const [showContactInfo, setShowContactInfo] = useState(false);
-  const [copySuccess, setCopySuccess] = useState("");
+  const [isHovered, setIsHovered] = useState(false);
+  const [copySuccess, setCopySuccess] = useState<string | null>(null);
+  const [contactExpanded, setContactExpanded] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(false);
+  const [layers, setLayers] = useState<HTMLElement[]>([]);
+  
+  // Refs
   const cardRef = useRef<HTMLDivElement>(null);
-  const cardContentRef = useRef<HTMLDivElement>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   
   // Format profile link
   const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;
@@ -41,173 +42,211 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
     industryTags.push(userData.industry);
   }
   
-  // Handle entrance animation
+  // Colors
+  const colors = {
+    electricBlue: "#38bdf8",
+    silverGray: "#cbd5e1",
+    charcoalBlack: "#1e293b",
+    mintGreen: "#10b981",
+    neonPurple: "#c084fc"
+  };
+  
+  // Set up audio element
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (cardContentRef.current) {
-        cardContentRef.current.style.opacity = "1";
-        cardContentRef.current.style.transform = "translateY(0)";
+    audioRef.current = new Audio("/sounds/ping-sound.mp3");
+    return () => {
+      if (audioRef.current) {
+        audioRef.current = null;
       }
-    }, 100);
-    
-    return () => clearTimeout(timer);
+    };
   }, []);
   
-  // Handle mouse/touch movement for 3D effect
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
+  // Collect elements for parallax effect
+  useEffect(() => {
+    if (cardRef.current) {
+      const layerElements = cardRef.current.querySelectorAll('[data-layer]');
+      setLayers(Array.from(layerElements) as HTMLElement[]);
+    }
+  }, []);
+  
+  // Handle sound effects
+  const playSound = () => {
+    if (soundEnabled && audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch(e => console.error("Error playing sound:", e));
+    }
+  };
+  
+  // Handle 3D tilt effect
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
     
     setIsHovered(true);
-    
     const rect = cardRef.current.getBoundingClientRect();
+    
+    // Calculate center point of the card
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
     
-    // Get coordinates from either mouse or touch event
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
-    
-    // Calculate distance from center
-    const mouseX = clientX - centerX;
-    const mouseY = clientY - centerY;
+    // Calculate mouse position relative to center
+    const mouseX = e.clientX - centerX;
+    const mouseY = e.clientY - centerY;
     
     // Calculate rotation (max 15 degrees)
-    const rotX = (mouseY / (rect.height / 2)) * -10; // Invert Y rotation for natural tilt
+    const rotX = (mouseY / (rect.height / 2)) * -10; // Invert Y rotation
     const rotY = (mouseX / (rect.width / 2)) * 10;
     
-    // Calculate glow based on movement
-    const movement = Math.sqrt(Math.pow(mouseX, 2) + Math.pow(mouseY, 2));
-    const normalizedMovement = Math.min(movement / (rect.width / 2), 1);
-    const glow = normalizedMovement * 15;
-    
-    // Update state
+    // Update rotation state
     setRotateX(rotX);
     setRotateY(rotY);
-    setGlowIntensity(glow);
+    
+    // Apply parallax effect to layers
+    layers.forEach(layer => {
+      const depth = parseFloat(layer.getAttribute('data-layer') || "0");
+      const moveX = mouseX * depth * 0.01;
+      const moveY = mouseY * depth * 0.01;
+      layer.style.transform = `translate3d(${moveX}px, ${moveY}px, 0)`;
+    });
   };
   
-  // Reset on mouse/touch leave
-  const handleMovementEnd = () => {
+  // Reset on mouse leave
+  const handleMouseLeave = () => {
     setIsHovered(false);
     setRotateX(0);
     setRotateY(0);
-    setGlowIntensity(0);
+    
+    // Reset layer positions
+    layers.forEach(layer => {
+      layer.style.transform = 'translate3d(0, 0, 0)';
+    });
   };
   
-  // Toggle contact info slide-in
-  const toggleContactInfo = () => {
-    setShowContactInfo(!showContactInfo);
-  };
-  
-  // Copy to clipboard function
+  // Copy to clipboard with sound feedback
   const copyToClipboard = (text: string, type: string) => {
     navigator.clipboard.writeText(text)
       .then(() => {
         setCopySuccess(`${type} copied!`);
-        setTimeout(() => setCopySuccess(""), 2000);
+        playSound();
+        setTimeout(() => setCopySuccess(null), 2000);
       })
       .catch(err => {
         console.error('Error copying text: ', err);
       });
   };
   
+  // Handle contact info expansion
+  const toggleContactInfo = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setContactExpanded(!contactExpanded);
+  };
+  
+  // Toggle sound effects
+  const toggleSound = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSoundEnabled(!soundEnabled);
+  };
+
   return (
     <div className="w-full" style={{ perspective: "1200px" }}>
-      <div 
+      {/* Main Card Container */}
+      <div
         ref={cardRef}
-        className="w-full aspect-[2/3.5] rounded-[20px] overflow-hidden relative cursor-pointer"
+        className="w-full aspect-[2/3.5] rounded-lg overflow-hidden relative cursor-pointer"
         style={{
+          width: "100%",
+          maxWidth: "360px",
+          margin: "0 auto",
           transformStyle: "preserve-3d",
-          transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
+          transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
+          transition: "transform 0.1s ease-out",
           boxShadow: isHovered 
-            ? `0 25px 50px -12px rgba(0, 0, 0, 0.4),
-               0 0 ${glowIntensity}px ${Math.max(2, glowIntensity / 2)}px rgba(56, 189, 248, ${0.4 + glowIntensity / 25})`
-            : `0 10px 30px -5px rgba(0, 0, 0, 0.3),
-               0 0 5px 1px rgba(56, 189, 248, 0.3)`,
-          transition: "box-shadow 0.3s ease-out",
+            ? `0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 15px 2px ${colors.electricBlue}30`
+            : "0 10px 30px -5px rgba(0, 0, 0, 0.3)",
         }}
         onMouseMove={handleMouseMove}
-        onTouchMove={handleMouseMove}
-        onMouseLeave={handleMovementEnd}
-        onTouchEnd={handleMovementEnd}
-        onClick={toggleContactInfo}
+        onMouseLeave={handleMouseLeave}
       >
-        {/* Glassmorphism background */}
+        {/* Glass background with subtle particles */}
         <div 
-          className="absolute inset-0 z-0"
+          className="absolute inset-0"
           style={{
-            background: `
-              linear-gradient(135deg, 
-              rgba(30, 41, 59, 0.8) 0%, 
-              rgba(17, 24, 39, 0.9) 100%)
-            `,
-            backdropFilter: "blur(10px)",
-            WebkitBackdropFilter: "blur(10px)",
-            borderRadius: "20px",
-            border: "1px solid rgba(255, 255, 255, 0.1)",
-            overflow: "hidden"
+            background: `linear-gradient(135deg, ${colors.charcoalBlack} 0%, #0f172a 100%)`,
+            overflow: "hidden",
+            zIndex: 0
           }}
         >
-          {/* Animated gradient overlay */}
-          <div 
-            className="absolute inset-0 opacity-30"
-            style={{
-              background: "linear-gradient(45deg, transparent 65%, rgba(56, 189, 248, 0.4) 100%)",
-              filter: "blur(5px)",
-              animation: isHovered ? "gradientShift 3s ease infinite" : "none"
-            }}
-          ></div>
+          {/* Subtle background particles */}
+          {[...Array(15)].map((_, index) => (
+            <div
+              key={index}
+              className="absolute rounded-full"
+              style={{
+                width: `${Math.random() * 4 + 2}px`,
+                height: `${Math.random() * 4 + 2}px`,
+                backgroundColor: `${colors.electricBlue}${Math.floor(Math.random() * 40 + 10)}`,
+                top: `${Math.random() * 100}%`,
+                left: `${Math.random() * 100}%`,
+                opacity: Math.random() * 0.5 + 0.1,
+                animation: `floatParticle ${Math.random() * 10 + 15}s infinite ease-in-out`,
+                animationDelay: `${Math.random() * 5}s`
+              }}
+            />
+          ))}
           
-          {/* Subtle particles */}
-          <div className="particles-container absolute inset-0 overflow-hidden">
-            {[...Array(12)].map((_, i) => (
-              <div 
-                key={i}
-                className="particle absolute rounded-full bg-white/10"
-                style={{
-                  width: `${Math.random() * 4 + 1}px`,
-                  height: `${Math.random() * 4 + 1}px`,
-                  top: `${Math.random() * 100}%`,
-                  left: `${Math.random() * 100}%`,
-                  opacity: Math.random() * 0.5 + 0.1,
-                  animation: `float ${Math.random() * 10 + 10}s linear infinite`
-                }}
-              ></div>
-            ))}
-          </div>
+          {/* Subtle grid overlay */}
+          <div 
+            className="absolute inset-0" 
+            style={{
+              backgroundImage: `
+                linear-gradient(90deg, ${colors.electricBlue}08 1px, transparent 1px),
+                linear-gradient(0deg, ${colors.electricBlue}08 1px, transparent 1px)
+              `,
+              backgroundSize: "20px 20px",
+              opacity: 0.3
+            }}
+          />
         </div>
         
-        {/* Card content with entrance animation */}
-        <div 
-          ref={cardContentRef}
-          className="absolute inset-0 z-10 flex flex-col p-6"
-          style={{
-            opacity: 0,
-            transform: "translateY(10px)",
-            transition: "opacity 0.6s ease-out, transform 0.6s ease-out"
-          }}
-        >
-          {/* Top section - Profile identity */}
-          <div className="flex flex-col items-center mb-6">
-            {/* Profile picture with animated glow */}
-            <div className="relative mb-4">
-              {/* Animated glow ring */}
+        {/* Card Content Container */}
+        <div className="absolute inset-0 p-6 flex flex-col z-10">
+          {/* Profile Picture Section */}
+          <div 
+            className="flex justify-center mb-6 relative"
+            data-layer="5"
+          >
+            {/* Animated glow ring */}
+            <div className="relative w-28 h-28">
+              {/* Outer glow ring */}
               <div 
                 className="absolute inset-0 rounded-full"
                 style={{
-                  background: "conic-gradient(from 0deg, #38bdf8, #818cf8, #c084fc, #38bdf8)",
+                  transform: "scale(1.15)",
+                  background: `conic-gradient(from 0deg, ${colors.electricBlue}, ${colors.neonPurple}, ${colors.mintGreen}, ${colors.electricBlue})`,
                   filter: "blur(8px)",
-                  opacity: isHovered ? 0.8 : 0.4,
-                  transform: "scale(1.2)",
-                  animation: "spin 5s linear infinite",
-                  transition: "opacity 0.3s ease"
+                  opacity: isHovered ? 0.8 : 0.5,
+                  animation: "spin 8s linear infinite",
                 }}
-              ></div>
+              />
+              
+              {/* Inner glow ring */}
+              <div 
+                className="absolute inset-0 rounded-full"
+                style={{
+                  transform: "scale(1.05)",
+                  boxShadow: `0 0 15px ${colors.electricBlue}60`,
+                  animation: "pulse 3s infinite alternate ease-in-out",
+                }}
+              />
               
               {/* Profile image container */}
-              <div className="w-24 h-24 rounded-full overflow-hidden border border-slate-700 relative z-10 transform-gpu" style={{
-                boxShadow: "0 0 20px rgba(56, 189, 248, 0.3)"
-              }}>
+              <div 
+                className="absolute inset-0 rounded-full overflow-hidden border-2"
+                style={{
+                  borderColor: "rgba(255, 255, 255, 0.2)",
+                  animation: "float 5s infinite ease-in-out",
+                  boxShadow: `0 0 20px ${colors.electricBlue}40`,
+                }}
+              >
                 {userData.photoURL ? (
                   <img 
                     src={userData.photoURL} 
@@ -215,199 +254,410 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
                     className="h-full w-full object-cover"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
-                      target.src = "https://ui-avatars.com/api/?name=" + (userData.name || "User") + "&background=1e3a8a&color=fff";
+                      target.src = `https://ui-avatars.com/api/?name=${userData.name || "User"}&background=1e293b&color=38bdf8`;
                     }}
                   />
                 ) : (
                   <img 
-                    src={`https://ui-avatars.com/api/?name=${userData.name || "User"}&background=1e3a8a&color=fff`}
+                    src={`https://ui-avatars.com/api/?name=${userData.name || "User"}&background=1e293b&color=38bdf8`}
                     alt={userData.name || "Profile"}
                     className="h-full w-full object-cover"
                   />
                 )}
+                
+                {/* Light reflection overlay */}
+                <div 
+                  className="absolute inset-0"
+                  style={{
+                    background: "linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.1) 45%, rgba(255, 255, 255, 0.25) 50%, rgba(255, 255, 255, 0.1) 55%, transparent 60%)",
+                    animation: "reflectionSweep 5s infinite ease-in-out",
+                  }}
+                />
               </div>
             </div>
-            
-            {/* Name and title */}
-            <div className="text-center" style={{ transform: `translateZ(30px)` }}>
-              <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-white to-slate-300 mb-1">
+          </div>
+          
+          {/* Name & Job Title Section */}
+          <div 
+            className="text-center mb-6"
+            data-layer="4"
+          >
+            {/* Name with reflection effect */}
+            <h2 
+              className="text-2xl font-bold mb-1"
+              style={{
+                fontFamily: "'Sora', sans-serif",
+                color: "white",
+                letterSpacing: "0.02em",
+                textShadow: `0 0 10px ${colors.electricBlue}40, 0 0 20px ${colors.electricBlue}30`,
+                position: "relative",
+              }}
+            >
+              {userData.name || "Your Name"}
+              
+              {/* Light reflection on text */}
+              <span 
+                className="absolute inset-0 block overflow-hidden"
+                style={{
+                  background: "linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%)",
+                  WebkitBackgroundClip: "text",
+                  backgroundClip: "text",
+                  color: "transparent",
+                  animation: "textSweep 5s infinite ease-in-out",
+                  animationDelay: "0.5s",
+                }}
+              >
                 {userData.name || "Your Name"}
-              </h2>
-              <p className="text-sm text-sky-200/90 font-light">
+              </span>
+            </h2>
+            
+            {/* Job Title */}
+            <div 
+              className="inline-block px-4 py-1 rounded-md"
+              style={{
+                background: `linear-gradient(90deg, ${colors.charcoalBlack}90, ${colors.charcoalBlack}70)`,
+                border: `1px solid ${colors.electricBlue}30`,
+                boxShadow: `0 2px 10px ${colors.electricBlue}20`,
+                transform: "translateZ(20px)",
+                animation: "float 4s infinite ease-in-out",
+                animationDelay: "1s",
+              }}
+            >
+              <p 
+                className="text-sm font-medium"
+                style={{
+                  color: colors.silverGray,
+                  textShadow: `0 0 5px ${colors.electricBlue}20`,
+                }}
+              >
                 {userData.title || "Add your designation"}
               </p>
             </div>
           </div>
           
-          {/* Professional details section */}
-          <div className="space-y-4 mb-6">
-            {/* Industry/domain tags */}
-            {industryTags.length > 0 && (
-              <div className="flex flex-wrap justify-center gap-2 mb-5">
-                {industryTags.map((tag, index) => (
-                  <div 
-                    key={index}
-                    className="flex items-center px-3 py-1 rounded-full bg-slate-800/60 border border-sky-900/30 text-xs text-sky-300"
-                  >
-                    <Hash className="h-3 w-3 mr-1 text-sky-400" />
-                    {tag.trim()}
-                  </div>
-                ))}
-              </div>
-            )}
-            
-            {/* Company */}
-            {userData.company && (
-              <div className="flex items-center gap-3 text-white/90">
-                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-slate-800/60 text-sky-400">
-                  <Building2 className="h-4 w-4" />
-                </div>
-                <span className="text-sm">{userData.company}</span>
-              </div>
-            )}
-            
-            {/* Location */}
-            {userData.location && (
-              <div className="flex items-center gap-3 text-white/90">
-                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-slate-800/60 text-sky-400">
-                  <MapPin className="h-4 w-4" />
-                </div>
-                <span className="text-sm">{userData.location}</span>
-              </div>
-            )}
-          </div>
-          
-          {/* Footer section with profile link */}
-          <div className="mt-auto">
-            <div className="flex items-center justify-center gap-3 text-white/80">
-              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-slate-800/60 text-sky-400">
-                <Globe className="h-4 w-4" />
-              </div>
-              <span className="text-sm">{profileLink}</span>
-            </div>
-            
-            {/* Tap to view contact info */}
-            <div className="text-center mt-4">
-              <p className="text-xs text-sky-200/60">Tap to view contact info</p>
-            </div>
-          </div>
-        </div>
-        
-        {/* Contact information slide-in panel */}
-        <div 
-          className="absolute inset-x-0 bottom-0 bg-slate-900/90 backdrop-blur-lg border-t border-sky-900/30 p-5 rounded-t-3xl transition-transform duration-300 ease-in-out z-20"
-          style={{
-            transform: showContactInfo ? "translateY(0)" : "translateY(100%)",
-            height: "40%",
-            boxShadow: "0 -10px 30px -5px rgba(0, 0, 0, 0.3)"
-          }}
-        >
-          <div className="flex flex-col h-full">
-            <h3 className="text-lg font-semibold text-center text-white mb-4">Contact Information</h3>
-            
-            <div className="space-y-4">
-              {/* Email */}
-              <div className="flex items-center gap-3 text-white group">
-                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-slate-800/70 text-sky-400">
-                  <Mail className="h-5 w-5" />
-                </div>
-                <div className="flex-1 overflow-hidden">
-                  <p className="text-xs text-slate-400">Email</p>
-                  <p className="text-sm truncate">{userData.email}</p>
-                </div>
-                <button 
-                  className="p-2 rounded-full hover:bg-slate-700/50 transition-colors"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    copyToClipboard(userData.email, "Email");
+          {/* Industry Tags Section */}
+          {industryTags.length > 0 && (
+            <div 
+              className="flex flex-wrap justify-center gap-2 mb-6"
+              data-layer="3"
+            >
+              {industryTags.slice(0, 3).map((tag, index) => (
+                <div 
+                  key={index}
+                  className="flex items-center px-3 py-1 rounded-full text-xs font-medium"
+                  style={{
+                    background: `linear-gradient(90deg, ${colors.charcoalBlack}90, ${colors.charcoalBlack}70)`,
+                    border: `1px solid ${[colors.electricBlue, colors.mintGreen, colors.neonPurple][index % 3]}50`,
+                    color: [colors.electricBlue, colors.mintGreen, colors.neonPurple][index % 3],
+                    boxShadow: `0 0 10px ${[colors.electricBlue, colors.mintGreen, colors.neonPurple][index % 3]}20`,
+                    animation: `float ${4 + index * 0.5}s infinite ease-in-out`,
+                    animationDelay: `${index * 0.5}s`,
                   }}
                 >
-                  <Copy className="h-4 w-4 text-slate-400" />
-                </button>
+                  <Hash className="h-3 w-3 mr-1 opacity-80" />
+                  {tag.trim()}
+                </div>
+              ))}
+            </div>
+          )}
+          
+          {/* Company Info - Business Card Style */}
+          {userData.company && (
+            <div 
+              className="mx-auto mb-5 px-4 py-3 rounded-md relative"
+              data-layer="2"
+              style={{
+                width: "85%",
+                background: `linear-gradient(135deg, ${colors.charcoalBlack}80, ${colors.charcoalBlack}50)`,
+                backdropFilter: "blur(5px)",
+                border: `1px solid ${colors.silverGray}20`,
+                boxShadow: `0 10px 15px -5px ${colors.charcoalBlack}70`,
+                transform: "translateZ(15px)",
+                animation: "slideIn 0.5s ease-out",
+              }}
+            >
+              <div className="flex items-center gap-3">
+                <div 
+                  className="flex items-center justify-center w-10 h-10 rounded-full"
+                  style={{
+                    background: `linear-gradient(135deg, ${colors.charcoalBlack}, ${colors.charcoalBlack}90)`,
+                    border: `1px solid ${colors.silverGray}30`,
+                  }}
+                >
+                  <Building2 
+                    className="h-5 w-5"
+                    style={{ color: colors.silverGray }}
+                  />
+                </div>
+                <div>
+                  <p className="text-xs text-gray-400">Company</p>
+                  <p className="text-sm font-medium text-white">
+                    {userData.company}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {/* Location with Orbital Style */}
+          {userData.location && (
+            <div 
+              className="flex justify-center mb-6"
+              data-layer="2"
+            >
+              <div 
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
+                style={{
+                  background: `linear-gradient(90deg, ${colors.charcoalBlack}80, ${colors.charcoalBlack}50)`,
+                  border: `1px solid ${colors.neonPurple}30`,
+                  boxShadow: `0 0 10px ${colors.neonPurple}10`,
+                  animation: "orbit 10s infinite linear",
+                }}
+              >
+                <MapPin className="h-4 w-4 text-gray-300" />
+                <span className="text-sm text-gray-300">
+                  {userData.location}
+                </span>
+              </div>
+            </div>
+          )}
+          
+          {/* Contact Information with Glass Effect */}
+          <div 
+            className="mt-auto"
+            data-layer="1"
+          >
+            <div 
+              className={`w-full rounded-md overflow-hidden transition-all duration-300`}
+              style={{
+                background: `linear-gradient(135deg, ${colors.charcoalBlack}80, ${colors.charcoalBlack}60)`,
+                backdropFilter: "blur(10px)",
+                border: `1px solid ${colors.electricBlue}20`,
+                boxShadow: `0 0 20px ${colors.electricBlue}10`,
+                height: contactExpanded ? "auto" : "40px",
+              }}
+            >
+              {/* Contact Header */}
+              <div 
+                className="flex items-center justify-between px-4 py-2 cursor-pointer"
+                onClick={toggleContactInfo}
+                style={{
+                  borderBottom: contactExpanded ? `1px solid ${colors.electricBlue}20` : "none",
+                }}
+              >
+                <h3 
+                  className="text-sm font-medium"
+                  style={{ color: contactExpanded ? colors.electricBlue : colors.silverGray }}
+                >
+                  Contact Information
+                </h3>
+                <div className="flex items-center gap-2">
+                  <button
+                    className="p-1 rounded hover:bg-white/10"
+                    onClick={toggleSound}
+                    title={soundEnabled ? "Disable sound effects" : "Enable sound effects"}
+                  >
+                    {soundEnabled ? (
+                      <Volume2 className="h-3.5 w-3.5 text-gray-400" />
+                    ) : (
+                      <VolumeX className="h-3.5 w-3.5 text-gray-400" />
+                    )}
+                  </button>
+                  <Sparkles 
+                    className={`h-4 w-4 transition-opacity duration-500 ${contactExpanded ? 'opacity-100' : 'opacity-0'}`}
+                    style={{ color: colors.electricBlue }}
+                  />
+                </div>
               </div>
               
-              {/* Phone */}
-              <div className="flex items-center gap-3 text-white group">
-                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-slate-800/70 text-sky-400">
-                  <Phone className="h-5 w-5" />
-                </div>
-                <div className="flex-1 overflow-hidden">
-                  <p className="text-xs text-slate-400">Phone</p>
-                  <p className="text-sm truncate">{userData.phoneNumber || "Add phone number"}</p>
-                </div>
-                {userData.phoneNumber && (
-                  <button 
-                    className="p-2 rounded-full hover:bg-slate-700/50 transition-colors"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      copyToClipboard(userData.phoneNumber || "", "Phone");
-                    }}
+              {/* Contact Details */}
+              <div className="px-4 py-3 space-y-3">
+                {/* Email */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Mail className="h-4 w-4 text-gray-400" />
+                    <span className="text-sm text-gray-300 truncate max-w-[180px]">
+                      {userData.email}
+                    </span>
+                  </div>
+                  <button
+                    className="p-1.5 rounded-full hover:bg-white/10 transition-colors"
+                    onClick={() => copyToClipboard(userData.email, "Email")}
+                    title="Copy email"
                   >
-                    <Copy className="h-4 w-4 text-slate-400" />
+                    <Copy className="h-3.5 w-3.5 text-gray-400" />
                   </button>
+                </div>
+                
+                {/* Phone Number */}
+                {userData.phoneNumber && (
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Phone className="h-4 w-4 text-gray-400" />
+                      <span className="text-sm text-gray-300 truncate max-w-[180px]">
+                        {userData.phoneNumber}
+                      </span>
+                    </div>
+                    <button
+                      className="p-1.5 rounded-full hover:bg-white/10 transition-colors"
+                      onClick={() => copyToClipboard(userData.phoneNumber || "", "Phone")}
+                      title="Copy phone"
+                    >
+                      <Copy className="h-3.5 w-3.5 text-gray-400" />
+                    </button>
+                  </div>
                 )}
+                
+                {/* Profile Link */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Globe className="h-4 w-4 text-gray-400" />
+                    <span className="text-sm text-gray-300 truncate max-w-[180px]">
+                      {profileLink}
+                    </span>
+                  </div>
+                  <button
+                    className="p-1.5 rounded-full hover:bg-white/10 transition-colors"
+                    onClick={() => copyToClipboard(profileLink, "Profile link")}
+                    title="Copy profile link"
+                  >
+                    <Copy className="h-3.5 w-3.5 text-gray-400" />
+                  </button>
+                </div>
               </div>
             </div>
             
-            {/* Copy success message */}
-            {copySuccess && (
-              <div className="absolute top-2 right-2 bg-sky-500 text-white px-3 py-1 rounded-full text-xs animate-fade-in-out">
-                {copySuccess}
-              </div>
-            )}
+            {/* View Full Profile Button */}
+            <button
+              className="w-full mt-3 px-4 py-2 rounded-md text-sm font-medium transition-transform duration-300 hover:translate-y-[-2px]"
+              style={{
+                background: `linear-gradient(90deg, ${colors.electricBlue}, ${colors.neonPurple})`,
+                color: "white",
+                boxShadow: `0 5px 15px ${colors.electricBlue}30`,
+                animation: "rise 0.5s ease-out",
+              }}
+            >
+              <span className="flex items-center justify-center gap-1">
+                View Full Profile 
+                <ExternalLink className="h-3.5 w-3.5" />
+              </span>
+            </button>
             
-            <div className="text-center mt-auto">
-              <p className="text-xs text-slate-400">Tap card to close</p>
+            {/* Powered by Musk Tag */}
+            <div 
+              className="absolute bottom-3 right-3 px-2 py-1 rounded text-xs flex items-center gap-1"
+              style={{
+                background: `linear-gradient(90deg, ${colors.charcoalBlack}70, ${colors.charcoalBlack}50)`,
+                backdropFilter: "blur(5px)",
+                border: `1px solid ${colors.electricBlue}20`,
+                color: colors.silverGray,
+                animation: "hueRotate 10s infinite alternate",
+              }}
+            >
+              <span className="opacity-70">Powered by</span>
+              <span className="font-bold" style={{ color: colors.electricBlue }}>
+                Musk
+              </span>
             </div>
           </div>
         </div>
         
-        {/* Neon edge glow effect */}
+        {/* Copy Success Message */}
+        {copySuccess && (
+          <div 
+            className="absolute top-4 left-1/2 transform -translate-x-1/2 px-3 py-1 rounded-full z-50 text-xs"
+            style={{
+              background: colors.electricBlue,
+              color: "white",
+              boxShadow: `0 0 10px ${colors.electricBlue}50`,
+              animation: "fadeInOut 2s forwards",
+            }}
+          >
+            {copySuccess}
+          </div>
+        )}
+        
+        {/* Neon Edge Effect */}
         <div 
-          className="absolute inset-0 rounded-[20px] pointer-events-none"
+          className="absolute inset-0 rounded-lg pointer-events-none z-30"
           style={{
             boxShadow: isHovered 
-              ? "inset 0 0 0 1px rgba(56, 189, 248, 0.5), 0 0 15px 2px rgba(56, 189, 248, 0.3)" 
-              : "inset 0 0 0 1px rgba(56, 189, 248, 0.2), 0 0 5px 1px rgba(56, 189, 248, 0.2)",
+              ? `inset 0 0 0 1px ${colors.electricBlue}50, 0 0 20px 1px ${colors.electricBlue}30` 
+              : `inset 0 0 0 1px ${colors.electricBlue}20`,
             transition: "box-shadow 0.3s ease"
           }}
-        ></div>
+        />
       </div>
       
-      {/* CSS keyframes and animations */}
+      {/* CSS Animations */}
       <style jsx>{`
         @keyframes spin {
-          from { transform: rotate(0deg) scale(1.2); }
-          to { transform: rotate(360deg) scale(1.2); }
-        }
-        
-        @keyframes gradientShift {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-        
-        @keyframes float {
-          0% { transform: translateY(0); }
-          50% { transform: translateY(-10px); }
-          100% { transform: translateY(0); }
+          from { transform: rotate(0deg) scale(1.15); }
+          to { transform: rotate(360deg) scale(1.15); }
         }
         
         @keyframes pulse {
           0% { opacity: 0.4; }
-          50% { opacity: 0.7; }
+          50% { opacity: 0.8; }
           100% { opacity: 0.4; }
         }
         
-        @keyframes animate-fade-in-out {
-          0% { opacity: 0; }
-          10% { opacity: 1; }
-          90% { opacity: 1; }
+        @keyframes float {
+          0% { transform: translateY(0); }
+          50% { transform: translateY(-5px); }
+          100% { transform: translateY(0); }
+        }
+        
+        @keyframes floatParticle {
+          0% { transform: translate(0, 0); }
+          25% { transform: translate(10px, 10px); }
+          50% { transform: translate(5px, -10px); }
+          75% { transform: translate(-10px, 5px); }
+          100% { transform: translate(0, 0); }
+        }
+        
+        @keyframes fadeInOut {
+          0% { opacity: 0; transform: translate(-50%, -10px); }
+          10% { opacity: 1; transform: translate(-50%, 0); }
+          90% { opacity: 1; transform: translate(-50%, 0); }
+          100% { opacity: 0; transform: translate(-50%, -10px); }
+        }
+        
+        @keyframes reflectionSweep {
+          0% { transform: translateX(-100%) rotate(-45deg); }
+          50% { transform: translateX(100%) rotate(-45deg); }
+          50.1% { opacity: 0; }
           100% { opacity: 0; }
         }
         
-        .animate-fade-in-out {
-          animation: animate-fade-in-out 2s ease-in-out;
+        @keyframes textSweep {
+          0% { transform: translateX(-100%); }
+          40% { transform: translateX(100%); }
+          40.1% { opacity: 0; }
+          100% { opacity: 0; }
+        }
+        
+        @keyframes rise {
+          0% { transform: translateY(20px); opacity: 0; }
+          100% { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes slideIn {
+          0% { transform: translateX(-30px); opacity: 0; }
+          100% { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes orbit {
+          0% { transform: translateX(-30px); }
+          25% { transform: translateY(-15px) translateX(0); }
+          50% { transform: translateX(30px); }
+          75% { transform: translateY(15px) translateX(0); }
+          100% { transform: translateX(-30px); }
+        }
+        
+        @keyframes hueRotate {
+          0% { filter: hue-rotate(0deg); }
+          100% { filter: hue-rotate(30deg); }
         }
       `}</style>
     </div>
