@@ -16,8 +16,8 @@ interface ClayPaperCardProps {
 }
 
 const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
-  // Get the latest company from work experience
-  const { company } = useCurrentCompany(userData.id);
+  // Get the latest company from work experience or use fallback
+  const { company } = useCurrentCompany(userData.id, userData.company || "Brandentifier");
   
   // Format profile link
   const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;

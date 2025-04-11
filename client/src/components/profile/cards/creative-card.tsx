@@ -14,8 +14,8 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
   const [isFabOpen, setIsFabOpen] = useState(false);
   const [currentView, setCurrentView] = useState<'contact' | 'main' | 'about'>('main');
   
-  // Get current company from latest work experience
-  const { company } = useCurrentCompany(userData.id);
+  // Get current company from latest work experience or use fallback
+  const { company } = useCurrentCompany(userData.id, userData.company || "Brandentifier");
   
   const profileLink = `https://brandentifier.com/@${userData.username}`;
   

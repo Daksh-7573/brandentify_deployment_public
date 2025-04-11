@@ -4,18 +4,36 @@ import { useEffect, useState } from "react";
 /**
  * Custom hook to get the latest company a user works for or has worked for
  * @param userId - User ID
+ * @param fallbackCompany - Optional fallback company name if no experience data is available
  * @returns The company name from the most recent work experience
  */
-export const useCurrentCompany = (userId: string | number | null) => {
-  const [company, setCompany] = useState<string | null>(null);
+export const useCurrentCompany = (userId: string | number | null, fallbackCompany?: string) => {
+  const [company, setCompany] = useState<string | null>(fallbackCompany || null);
+  const isDemoUser = typeof userId === 'string' && userId.includes('firebase_');
+  
+  // Use numeric ID for API calls if available
+  const userNumericId = typeof userId === 'number' ? userId : null;
+  
+  console.log("useCurrentCompany - userID:", userId, "userNumericId:", userNumericId, "isDemoUser:", isDemoUser);
 
-  // Fetch user experiences
+  // Fetch user experiences - only enabled for numeric IDs
   const { data: experiences, isLoading: isLoadingExperiences } = useQuery<any[]>({
-    queryKey: [userId ? `/api/users/${userId}/experiences` : null],
-    enabled: !!userId,
+    queryKey: [userNumericId ? `/api/users/${userNumericId}/experiences` : null],
+    enabled: !!userNumericId,
   });
 
   useEffect(() => {
+    // For demo users, provide default values
+    if (isDemoUser) {
+      if (fallbackCompany) {
+        setCompany(fallbackCompany);
+      } else {
+        // Demo users get a default company
+        setCompany("Brandentifier Labs");
+      }
+      return;
+    }
+    
     // If experiences are loaded, find the most recent one
     if (experiences && experiences.length > 0) {
       // Sort experiences by start date (most recent first) and prioritize current positions
@@ -31,11 +49,12 @@ export const useCurrentCompany = (userId: string | number | null) => {
       });
       
       // Get company from the most recent experience
-      setCompany(sortedExperiences[0]?.company || null);
+      setCompany(sortedExperiences[0]?.company || fallbackCompany || null);
     } else {
-      setCompany(null);
+      // Use fallback company if provided, otherwise null
+      setCompany(fallbackCompany || null);
     }
-  }, [experiences]);
+  }, [experiences, isDemoUser, fallbackCompany]);
 
   return { company, isLoading: isLoadingExperiences };
 };

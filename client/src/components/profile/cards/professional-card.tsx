@@ -26,8 +26,8 @@ const ProfessionalCard: React.FC<ProfessionalCardProps> = ({ userData }) => {
   const [isRevealed, setIsRevealed] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   
-  // Get current company from latest work experience
-  const { company } = useCurrentCompany(userData.id);
+  // Get current company from latest work experience or use fallback
+  const { company } = useCurrentCompany(userData.id, userData.company || "Brandentifier");
   
   // Format profile link
   const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;

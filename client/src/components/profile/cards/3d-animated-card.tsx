@@ -29,8 +29,8 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
   const [showQR, setShowQR] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   
-  // Get current company from latest work experience
-  const { company } = useCurrentCompany(userData.id);
+  // Get current company from latest work experience or use fallback
+  const { company } = useCurrentCompany(userData.id, userData.company || "Brandentifier");
   
   // Format profile link
   const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;
@@ -459,7 +459,8 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
       </div>
       
       {/* CSS keyframes and animations */}
-      <style jsx>{`
+      <style dangerouslySetInnerHTML={{ 
+        __html: `
         @keyframes shine {
           to { background-position: 200% center; }
         }
@@ -480,7 +481,8 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
           0% { transform: scale(0.8); opacity: 0; }
           100% { transform: scale(1); opacity: 1; }
         }
-      `}</style>
+        `
+      }}></style>
     </div>
   );
 };
