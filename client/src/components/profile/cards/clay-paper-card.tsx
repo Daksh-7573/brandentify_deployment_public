@@ -13,6 +13,14 @@ import {
 } from "lucide-react";
 import { UserData } from "@/types/user";
 
+// Define soft clay colors palette
+const clayColors = {
+  pastelBlue: "#d4e3f6",
+  blush: "#f0e6e9",
+  taupe: "#e6e2dd",
+  offWhite: "#fdfcfa",
+};
+
 interface ClayPaperCardProps {
   userData: UserData;
 }
@@ -60,31 +68,43 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
   
   return (
     <div className="clay-paper-card w-full aspect-[2/3.5] relative">
-      {/* Background layer with clay effect */}
+      {/* Background layer with clay effect - soft clay colors */}
       <div 
-        className="absolute inset-0 rounded-3xl bg-slate-100"
+        className="absolute inset-0 rounded-3xl"
         style={{
           transform: "translate(10px, 10px)",
-          boxShadow: "-2px -2px 5px rgba(255, 255, 255, 0.7), 2px 2px 5px rgba(0, 0, 0, 0.1)"
+          background: `linear-gradient(135deg, ${clayColors.taupe} 0%, ${clayColors.pastelBlue} 50%, ${clayColors.blush} 100%)`,
+          boxShadow: "-3px -3px 6px rgba(255, 255, 255, 0.8), 3px 3px 8px rgba(174, 164, 164, 0.3)"
         }}
       />
       
-      {/* Main card with paper effect */}
+      {/* Main card with enhanced paper effect and inner shadows */}
       <div 
-        className="absolute inset-0 rounded-2xl bg-white overflow-hidden flex flex-col"
+        className="absolute inset-0 rounded-2xl overflow-hidden flex flex-col"
         style={{
-          boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05)",
+          background: "#fdfcfa", // Off-white paper color
+          boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1), inset 0 0 10px rgba(0, 0, 0, 0.05)",
           borderTop: "1px solid rgba(255, 255, 255, 0.8)",
           borderLeft: "1px solid rgba(255, 255, 255, 0.8)",
           borderRight: "1px solid rgba(200, 200, 200, 0.5)",
           borderBottom: "1px solid rgba(200, 200, 200, 0.5)"
         }}
       >
-        {/* Paper texture overlay */}
+        {/* Japanese Washi paper texture overlay */}
+        <div 
+          className="absolute inset-0 opacity-30 pointer-events-none"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+            backgroundRepeat: "repeat",
+            mixBlendMode: "multiply"
+          }}
+        />
+        
+        {/* Additional subtle fiber texture - simulates handmade paper */}
         <div 
           className="absolute inset-0 opacity-10 pointer-events-none"
           style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23000000' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E")`,
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,0 L200,200 M40,0 L200,160 M80,0 L200,120 M120,0 L200,80 M160,0 L200,40 M0,40 L160,200 M0,80 L120,200 M0,120 L80,200 M0,160 L40,200 M0,200 L200,0 M0,160 L160,0 M0,120 L120,0 M0,80 L80,0 M0,40 L40,0' stroke='%23c9c7c3' stroke-width='0.5' fill='none' stroke-opacity='0.4'/%3E%3C/svg%3E")`,
             backgroundRepeat: "repeat"
           }}
         />
@@ -152,14 +172,22 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
               }}
             >
               <h2 
-                className="text-2xl font-bold text-slate-800 mb-1 font-serif"
+                className="text-2xl font-bold text-slate-800 mb-1"
                 style={{
+                  fontFamily: "'Poppins', sans-serif", 
+                  letterSpacing: "0.01em",
                   textShadow: "1px 1px 0 white"
                 }}
               >
                 {userData.name || "Your Name"}
               </h2>
-              <p className="text-sm text-slate-600">
+              <p 
+                className="text-sm text-slate-600"
+                style={{
+                  fontFamily: "'Nunito', sans-serif",
+                  letterSpacing: "0.03em"
+                }}
+              >
                 {userData.title || "Add your designation"}
               </p>
               
@@ -182,12 +210,19 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
                 {industryTags.map((tag, index) => (
                   <div 
                     key={index}
-                    className="flex items-center px-3 py-1 rounded-full text-xs bg-slate-50"
-                    style={getElementStyle(
-                      `tag-${index}`, 
-                      "0 1px 2px rgba(0, 0, 0, 0.05), inset 0 0 0 1px rgba(0, 0, 0, 0.05)",
-                      "0 4px 6px -1px rgba(0, 0, 0, 0.08), inset 0 0 0 1px rgba(0, 0, 0, 0.05)"
-                    )}
+                    className="flex items-center px-3 py-1 rounded-full text-xs"
+                    style={{
+                      background: index % 3 === 0 ? clayColors.pastelBlue : 
+                                index % 3 === 1 ? clayColors.blush : 
+                                clayColors.taupe,
+                      fontFamily: "'Nunito', sans-serif",
+                      letterSpacing: "0.03em",
+                      ...getElementStyle(
+                        `tag-${index}`, 
+                        "0 1px 2px rgba(0, 0, 0, 0.05), inset 0 0 0 1px rgba(0, 0, 0, 0.05)",
+                        "0 4px 6px -1px rgba(0, 0, 0, 0.08), inset 0 0 0 1px rgba(0, 0, 0, 0.05)"
+                      )
+                    }}
                     onMouseEnter={() => setHoveredSection(`tag-${index}`)}
                     onMouseLeave={() => setHoveredSection(null)}
                   >
@@ -203,7 +238,9 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
               <div 
                 className="flex items-center justify-center gap-2 mb-3 mx-auto px-4 py-2 rounded-lg max-w-[85%]"
                 style={{
-                  background: "linear-gradient(to bottom, #f8fafc, #f1f5f9)",
+                  background: `linear-gradient(to bottom, ${clayColors.offWhite}, ${clayColors.taupe})`,
+                  fontFamily: "'Nunito', sans-serif",
+                  letterSpacing: "0.02em",
                   ...getElementStyle(
                     'company',
                     "0 1px 3px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9)",
@@ -227,7 +264,9 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
                   className="flex items-center justify-center gap-2 mb-2"
                   style={{
                     transition: "transform 0.2s ease",
-                    transform: hoveredSection === 'location' ? 'translateY(-2px)' : 'translateY(0)'
+                    transform: hoveredSection === 'location' ? 'translateY(-2px)' : 'translateY(0)',
+                    fontFamily: "'Nunito', sans-serif",
+                    letterSpacing: "0.02em"
                   }}
                   onMouseEnter={() => setHoveredSection('location')}
                   onMouseLeave={() => setHoveredSection(null)}
@@ -256,12 +295,17 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
           <div className="mt-auto space-y-3">
             {/* Email Address */}
             <div 
-              className="flex items-center justify-between px-3 py-2 rounded-md bg-slate-50 border border-slate-100"
-              style={getElementStyle(
-                'email',
-                "inset 0 1px 0 white, 0 1px 3px rgba(0, 0, 0, 0.05)",
-                "inset 0 1px 0 white, 0 4px 6px -1px rgba(0, 0, 0, 0.08)"
-              )}
+              className="flex items-center justify-between px-3 py-2 rounded-md border border-slate-100"
+              style={{
+                background: clayColors.offWhite,
+                fontFamily: "'Nunito', sans-serif",
+                letterSpacing: "0.02em",
+                ...getElementStyle(
+                  'email',
+                  "inset 0 1px 0 white, 0 1px 3px rgba(0, 0, 0, 0.05)",
+                  "inset 0 1px 0 white, 0 4px 6px -1px rgba(0, 0, 0, 0.08)"
+                )
+              }}
               onMouseEnter={() => setHoveredSection('email')}
               onMouseLeave={() => setHoveredSection(null)}
             >
@@ -285,12 +329,17 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
             {/* Phone Number */}
             {userData.phoneNumber && (
               <div 
-                className="flex items-center justify-between px-3 py-2 rounded-md bg-slate-50 border border-slate-100"
-                style={getElementStyle(
-                  'phone',
-                  "inset 0 1px 0 white, 0 1px 3px rgba(0, 0, 0, 0.05)",
-                  "inset 0 1px 0 white, 0 4px 6px -1px rgba(0, 0, 0, 0.08)"
-                )}
+                className="flex items-center justify-between px-3 py-2 rounded-md border border-slate-100"
+                style={{
+                  background: clayColors.offWhite,
+                  fontFamily: "'Nunito', sans-serif",
+                  letterSpacing: "0.02em",
+                  ...getElementStyle(
+                    'phone',
+                    "inset 0 1px 0 white, 0 1px 3px rgba(0, 0, 0, 0.05)",
+                    "inset 0 1px 0 white, 0 4px 6px -1px rgba(0, 0, 0, 0.08)"
+                  )
+                }}
                 onMouseEnter={() => setHoveredSection('phone')}
                 onMouseLeave={() => setHoveredSection(null)}
               >
