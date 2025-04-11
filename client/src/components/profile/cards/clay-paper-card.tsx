@@ -13,12 +13,22 @@ import {
 } from "lucide-react";
 import { UserData } from "@/types/user";
 
-// Define soft clay colors palette
+// Define soft clay colors palette (updated with refined Japanese aesthetic)
 const clayColors = {
-  pastelBlue: "#d4e3f6",
-  blush: "#f0e6e9",
-  taupe: "#e6e2dd",
+  // Primary shades
   offWhite: "#fdfcfa",
+  coolIvory: "#f5f2ed",
+  lightSandstone: "#e8e4dc",
+  
+  // Clay accents
+  pastelBlue: "#d4e3f6", // Steel blue (desaturated)
+  blush: "#f0e6e9",      // Desaturated blush
+  taupe: "#e6e2dd",      // Matte olive/neutral
+  
+  // Interactive highlights
+  burntCoral: "#e8a193",
+  cyberTeal: "#8cc9c9",
+  lavenderNeon: "#c8c0e0",
 };
 
 interface ClayPaperCardProps {
@@ -78,16 +88,49 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
         }}
       />
       
+      {/* Layered paper sheets - slightly offset */}
+      <div 
+        className="absolute rounded-2xl"
+        style={{
+          top: "2px",
+          left: "2px",
+          right: "-2px",
+          bottom: "-2px",
+          background: clayColors.lightSandstone,
+          transform: "rotate(0.5deg)",
+          boxShadow: "0 4px 10px -2px rgba(0, 0, 0, 0.1)",
+          borderRadius: "16px",
+          zIndex: 1
+        }}
+      />
+      
+      {/* Second layer - rotated slightly differently */}
+      <div 
+        className="absolute rounded-2xl"
+        style={{
+          top: "1px",
+          left: "-1px",
+          right: "1px",
+          bottom: "1px",
+          background: clayColors.coolIvory,
+          transform: "rotate(-0.3deg)",
+          boxShadow: "0 4px 8px -2px rgba(0, 0, 0, 0.08)",
+          borderRadius: "14px",
+          zIndex: 2
+        }}
+      />
+      
       {/* Main card with enhanced paper effect and inner shadows */}
       <div 
         className="absolute inset-0 rounded-2xl overflow-hidden flex flex-col"
         style={{
-          background: "#fdfcfa", // Off-white paper color
+          background: clayColors.offWhite,
           boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1), inset 0 0 10px rgba(0, 0, 0, 0.05)",
           borderTop: "1px solid rgba(255, 255, 255, 0.8)",
           borderLeft: "1px solid rgba(255, 255, 255, 0.8)",
           borderRight: "1px solid rgba(200, 200, 200, 0.5)",
-          borderBottom: "1px solid rgba(200, 200, 200, 0.5)"
+          borderBottom: "1px solid rgba(200, 200, 200, 0.5)",
+          zIndex: 3
         }}
       >
         {/* Japanese Washi paper texture overlay */}
@@ -363,12 +406,17 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
             
             {/* Profile Link */}
             <div 
-              className="flex items-center justify-between px-3 py-2 rounded-md bg-slate-50 border border-slate-100"
-              style={getElementStyle(
-                'profile-link',
-                "inset 0 1px 0 white, 0 1px 3px rgba(0, 0, 0, 0.05)",
-                "inset 0 1px 0 white, 0 4px 6px -1px rgba(0, 0, 0, 0.08)"
-              )}
+              className="flex items-center justify-between px-3 py-2 rounded-md border border-slate-100"
+              style={{
+                background: clayColors.coolIvory,
+                fontFamily: "'Nunito', sans-serif",
+                letterSpacing: "0.02em",
+                ...getElementStyle(
+                  'profile-link',
+                  "inset 0 1px 0 white, 0 1px 3px rgba(0, 0, 0, 0.05)",
+                  "inset 0 1px 0 white, 0 4px 6px -1px rgba(0, 0, 0, 0.08)"
+                )
+              }}
               onMouseEnter={() => setHoveredSection('profile-link')}
               onMouseLeave={() => setHoveredSection(null)}
             >
@@ -403,37 +451,73 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
             )}
           </div>
           
-          {/* Special features - print and share */}
-          <div className="flex justify-center gap-3 mt-4">
-            <button 
-              className="flex items-center gap-1 px-3 py-1.5 rounded-md bg-white text-xs text-slate-600"
-              style={getElementStyle(
-                'print',
-                "0 1px 2px rgba(0, 0, 0, 0.05), inset 0 0 0 1px rgba(0, 0, 0, 0.05)",
-                "0 4px 6px -1px rgba(0, 0, 0, 0.08), inset 0 0 0 1px rgba(0, 0, 0, 0.05)"
-              )}
-              onClick={printCard}
-              onMouseEnter={() => setHoveredSection('print')}
-              onMouseLeave={() => setHoveredSection(null)}
-            >
-              <Printer className="h-3.5 w-3.5" />
-              <span>Print</span>
-            </button>
+          {/* Paper Fold Corner for printing and sharing */}
+          <div className="relative mt-6">
+            {/* Folded corner effect */}
+            <div 
+              className="absolute bottom-0 right-0 w-12 h-12 opacity-80"
+              style={{
+                clipPath: "polygon(100% 0, 100% 100%, 0 100%)",
+                background: clayColors.lightSandstone,
+                boxShadow: "inset 1px 1px 3px rgba(0, 0, 0, 0.1)",
+                zIndex: 1
+              }}
+            />
             
-            <button 
-              className="flex items-center gap-1 px-3 py-1.5 rounded-md bg-white text-xs text-slate-600"
-              style={getElementStyle(
-                'share',
-                "0 1px 2px rgba(0, 0, 0, 0.05), inset 0 0 0 1px rgba(0, 0, 0, 0.05)",
-                "0 4px 6px -1px rgba(0, 0, 0, 0.08), inset 0 0 0 1px rgba(0, 0, 0, 0.05)"
-              )}
-              onClick={() => copyToClipboard(`https://${profileLink}`, "Card link")}
-              onMouseEnter={() => setHoveredSection('share')}
-              onMouseLeave={() => setHoveredSection(null)}
-            >
-              <Share2 className="h-3.5 w-3.5" />
-              <span>Share</span>
-            </button>
+            {/* Fold line */}
+            <div 
+              className="absolute bottom-0 right-0 w-12 h-12"
+              style={{
+                clipPath: "polygon(100% 0, 0 100%, 1px 0)",
+                background: "rgba(0, 0, 0, 0.05)",
+                zIndex: 2
+              }}
+            />
+            
+            {/* Special features - print and share */}
+            <div className="flex justify-center gap-3 mt-4">
+              <button 
+                className="flex items-center gap-1 px-3 py-1.5 rounded-md text-xs"
+                style={{
+                  background: clayColors.cyberTeal,
+                  color: "#fff",
+                  fontFamily: "'Nunito', sans-serif",
+                  letterSpacing: "0.03em",
+                  boxShadow: hoveredSection === 'print' 
+                    ? "0 4px 6px -1px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(255, 255, 255, 0.1)" 
+                    : "0 1px 2px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(255, 255, 255, 0.1)",
+                  transform: hoveredSection === 'print' ? 'translateY(-2px)' : 'translateY(0)',
+                  transition: "all 0.2s ease"
+                }}
+                onClick={printCard}
+                onMouseEnter={() => setHoveredSection('print')}
+                onMouseLeave={() => setHoveredSection(null)}
+              >
+                <Printer className="h-3.5 w-3.5" />
+                <span>Print</span>
+              </button>
+              
+              <button 
+                className="flex items-center gap-1 px-3 py-1.5 rounded-md text-xs"
+                style={{
+                  background: clayColors.burntCoral,
+                  color: "#fff",
+                  fontFamily: "'Nunito', sans-serif",
+                  letterSpacing: "0.03em",
+                  boxShadow: hoveredSection === 'share' 
+                    ? "0 4px 6px -1px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(255, 255, 255, 0.1)" 
+                    : "0 1px 2px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(255, 255, 255, 0.1)",
+                  transform: hoveredSection === 'share' ? 'translateY(-2px)' : 'translateY(0)',
+                  transition: "all 0.2s ease"
+                }}
+                onClick={() => copyToClipboard(`https://${profileLink}`, "Card link")}
+                onMouseEnter={() => setHoveredSection('share')}
+                onMouseLeave={() => setHoveredSection(null)}
+              >
+                <Share2 className="h-3.5 w-3.5" />
+                <span>Share</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
