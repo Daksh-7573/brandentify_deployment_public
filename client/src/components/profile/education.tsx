@@ -259,7 +259,24 @@ const educationSchema = z.object({
   path: ["endDate"]
 });
 
+// Define the basic Education type from the schema
 type Education = z.infer<typeof educationSchema> & { id?: number };
+
+// Define a type for API-compatible education data with string dates
+interface EducationApiData {
+  id?: number;
+  userId: number;
+  institution: string;
+  degree: string;
+  field?: string;
+  location?: string;
+  startDate?: string;
+  endDate?: string;
+  currentlyEnrolled: boolean;
+  description?: string;
+  industry?: string;
+  domain?: string;
+}
 
 export default function Education() {
   const { user } = useAuth();
@@ -272,10 +289,8 @@ export default function Education() {
   const [selectedDomain, setSelectedDomain] = useState<string>("");
   const [domainOptions, setDomainOptions] = useState<string[]>([]);
   
-  // Use ID 0 for development or demo mode
-  // This will be replaced with actual userId in production
-  // Hardcoded to be consistent with Profile component and for development
-  const effectiveUserId = 0;
+  // Use the actual user ID from auth context if available, or 1 for demo mode
+  const effectiveUserId = user?.id || 1;
   
   // Fetch education data for user
   const { data: educations = [], isLoading } = useQuery<Education[]>({
@@ -305,7 +320,7 @@ export default function Education() {
   
   // Create education mutation
   const createEducationMutation = useMutation({
-    mutationFn: async (data: Education) => {
+    mutationFn: async (data: EducationApiData) => {
       const res = await apiRequest("POST", "/api/educations", data);
       return await res.json();
     },
@@ -329,7 +344,7 @@ export default function Education() {
   
   // Update education mutation
   const updateEducationMutation = useMutation({
-    mutationFn: async (data: Education) => {
+    mutationFn: async (data: EducationApiData) => {
       const res = await apiRequest("PUT", `/api/educations/${editingEducation?.id}`, data);
       return await res.json();
     },
@@ -399,10 +414,26 @@ export default function Education() {
       data.endDate = undefined;
     }
     
+    // Convert Date objects to strings for the API
+    const convertedData: EducationApiData = {
+      id: data.id,
+      userId: data.userId,
+      institution: data.institution,
+      degree: data.degree,
+      field: data.field,
+      location: data.location,
+      startDate: data.startDate ? data.startDate.toISOString().split('T')[0] : undefined, // YYYY-MM-DD format
+      endDate: data.endDate ? data.endDate.toISOString().split('T')[0] : undefined, // YYYY-MM-DD format
+      currentlyEnrolled: data.currentlyEnrolled,
+      description: data.description,
+      industry: data.industry,
+      domain: data.domain
+    };
+    
     if (editingEducation) {
-      updateEducationMutation.mutate(data);
+      updateEducationMutation.mutate(convertedData);
     } else {
-      createEducationMutation.mutate(data);
+      createEducationMutation.mutate(convertedData);
     }
   };
   
