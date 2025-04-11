@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import { 
   Mail, 
   Phone, 
@@ -7,35 +7,28 @@ import {
   Building2, 
   Hash,
   Copy,
-  Briefcase,
-  ArrowRight
+  Printer,
+  Share2,
+  Paperclip
 } from "lucide-react";
 import { UserData } from "@/types/user";
 
-// Modern futuristic colors for the orb interface
-const orbColors = {
-  // Deep space background
-  deepSpace: "#0a0e17",
-  midnightBlue: "#0f1b2d",
-  nebulaPurple: "#2c1e4a",
+// Clay & Paper Colors - refined artisanal palette
+const clayColors = {
+  // Paper shades
+  paperWhite: "#faf8f3",    // Pure paper background
+  paperCream: "#f7f4ec",    // Cream paper
   
-  // Orb elements
-  orbGlass: "rgba(220, 230, 255, 0.12)",
-  orbCore: "rgba(150, 180, 255, 0.15)",
-  ringBlue: "rgba(64, 156, 255, 0.75)",
-  ringPurple: "rgba(147, 112, 219, 0.65)",
-  ringTeal: "rgba(80, 200, 200, 0.7)",
+  // Clay tones  
+  softGreen: "#e1e4df",     // Soft mossy clay
+  softBrown: "#e7dfd4",     // Warm earthy clay
+  softBlue: "#e6ecf0",      // Light blue clay
+  softPink: "#f0e6e9",      // Rose clay
   
-  // Text and highlights
-  glowText: "#ffffff",
-  highlightBlue: "#4cc4ff",
-  highlightPurple: "#a78bfa",
-  highlightTeal: "#2dd4bf",
-  
-  // Particles and effects
-  particle1: "rgba(100, 200, 255, 0.8)",
-  particle2: "rgba(180, 120, 255, 0.7)",
-  particle3: "rgba(120, 220, 220, 0.7)",
+  // Accent colors
+  sticky: "#f5df98",        // Post-it yellow
+  coral: "#e89b8e",         // Terra cotta
+  slate: "#3a3a3a",         // Dark text/ink
 };
 
 interface ClayPaperCardProps {
@@ -43,18 +36,11 @@ interface ClayPaperCardProps {
 }
 
 const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
-  // State to track hover and interaction
+  // Interaction states
   const [hoveredSection, setHoveredSection] = useState<string | null>(null);
-  const [activeRing, setActiveRing] = useState<number | null>(null);
   const [copySuccess, setCopySuccess] = useState<string | null>(null);
-  const [orbRotation, setOrbRotation] = useState({ x: 0, y: 0 });
-  const [isDeepView, setIsDeepView] = useState(false);
   
-  // Refs
-  const orbRef = useRef<HTMLDivElement>(null);
-  const animationRef = useRef<number | null>(null);
-  
-  // Profile link format
+  // Format profile link
   const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\\s+/g, '') : userData.username}`;
   
   // Define industry tags
@@ -63,60 +49,7 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
     industryTags.push(userData.industry);
   }
   
-  // Define identity keywords for orbiting text
-  const identityKeywords = [
-    "Innovator",
-    "Problem Solver",
-    "Team Builder",
-    "Thought Leader",
-    "Visionary"
-  ];
-  
-  // Handle mouse movement for orb interaction
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!orbRef.current) return;
-      
-      const rect = orbRef.current.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
-      
-      // Calculate distance from center (normalized to -1 to 1)
-      const deltaX = (e.clientX - centerX) / (rect.width / 2);
-      const deltaY = (e.clientY - centerY) / (rect.height / 2);
-      
-      // Apply rotation based on mouse position with dampening
-      setOrbRotation({
-        x: deltaY * -10, // Invert Y axis for natural tilt
-        y: deltaX * 10
-      });
-    };
-    
-    // Automatic gentle rotation when not interacting
-    const autoRotate = () => {
-      setOrbRotation(prev => ({
-        x: prev.x * 0.95,
-        y: prev.y * 0.95
-      }));
-      
-      animationRef.current = requestAnimationFrame(autoRotate);
-    };
-    
-    // Start auto-rotation
-    animationRef.current = requestAnimationFrame(autoRotate);
-    
-    // Add mousemove event listener
-    window.addEventListener('mousemove', handleMouseMove);
-    
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
-  }, []);
-  
-  // Clipboard function
+  // Copy to clipboard function
   const copyToClipboard = (text: string, type: string) => {
     navigator.clipboard.writeText(text)
       .then(() => {
@@ -128,107 +61,81 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
       });
   };
   
-  // Toggle deep view mode
-  const toggleDeepView = () => {
-    setIsDeepView(!isDeepView);
-  };
-  
-  // Generate random position for floating particles
-  const getRandomPosition = () => {
-    return {
-      top: `${Math.random() * 100}%`,
-      left: `${Math.random() * 100}%`,
-      animationDelay: `${Math.random() * 5}s`,
-      animationDuration: `${5 + Math.random() * 10}s`
-    };
+  // Print card function
+  const printCard = () => {
+    window.print();
   };
   
   return (
-    <div 
-      ref={orbRef}
-      className="orb-interface w-full aspect-[2/3.5] relative select-none overflow-hidden"
-      style={{
-        background: `radial-gradient(ellipse at center, ${orbColors.midnightBlue} 0%, ${orbColors.deepSpace} 100%)`,
-        borderRadius: "24px",
-        perspective: "1200px"
-      }}
-    >
-      {/* Background particles */}
-      <div className="absolute inset-0 overflow-hidden">
-        {[...Array(20)].map((_, i) => (
-          <div 
-            key={i}
-            className="absolute rounded-full"
-            style={{
-              width: `${Math.random() * 3 + 1}px`,
-              height: `${Math.random() * 3 + 1}px`,
-              backgroundColor: i % 3 === 0 ? orbColors.particle1 : 
-                             i % 3 === 1 ? orbColors.particle2 : 
-                             orbColors.particle3,
-              opacity: Math.random() * 0.7 + 0.3,
-              ...getRandomPosition(),
-              animation: `floatParticle ${Math.random() * 15 + 10}s infinite linear`
-            }}
-          />
-        ))}
-      </div>
-      
-      {/* Main 3D Orb Container */}
+    <div className="clay-paper-card w-full aspect-[2/3.5] relative select-none overflow-hidden">
+      {/* Main background with subtle shadow and texture */}
       <div 
-        className="absolute inset-0 flex items-center justify-center"
+        className="absolute inset-0 rounded-2xl"
         style={{
-          perspective: "1200px",
-          transformStyle: "preserve-3d",
+          background: clayColors.paperWhite,
+          boxShadow: "0 10px 25px -10px rgba(0, 0, 0, 0.15)",
         }}
       >
-        {/* The Orb - Main 3D Element */}
+        {/* Subtle paper texture overlay */}
         <div 
-          className="orb relative w-[85%] aspect-square rounded-full"
+          className="absolute inset-0 opacity-30"
           style={{
-            background: `radial-gradient(circle at 30% 30%, ${orbColors.orbGlass}, ${orbColors.orbCore})`,
-            boxShadow: `0 0 60px rgba(100, 180, 255, 0.15), 
-                       inset 0 0 40px rgba(255, 255, 255, 0.1)`,
-            backdropFilter: "blur(5px)",
-            transform: `rotateX(${orbRotation.x}deg) rotateY(${orbRotation.y}deg)`,
-            transformStyle: "preserve-3d",
-            transition: "transform 0.1s ease-out"
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.1'/%3E%3C/svg%3E")`,
           }}
-          onClick={toggleDeepView}
+        />
+      </div>
+      
+      {/* Background paper layer - top */}
+      <div 
+        className="absolute left-0 right-0 top-[12%] h-[35%]"
+        style={{
+          background: clayColors.softGreen, 
+          transform: "translateX(4%) rotate(-1deg)",
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
+          zIndex: 1
+        }}
+      />
+      
+      {/* Background paper layer - bottom */}
+      <div 
+        className="absolute left-0 right-0 bottom-[12%] h-[35%]"
+        style={{
+          background: clayColors.softBrown, 
+          transform: "translateX(2%) rotate(0.5deg)",
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
+          zIndex: 1
+        }}
+      />
+      
+      {/* Main content area with padding */}
+      <div className="absolute inset-0 p-5 flex flex-col items-center z-10">
+        {/* PROFILE PHOTO - Polaroid style with paperclip */}
+        <div 
+          className="relative mb-4 pt-3"
+          style={{
+            transform: hoveredSection === 'profile' ? 'translateY(-3px) rotate(1deg)' : 'translateY(0)',
+            transition: 'transform 0.3s ease',
+          }}
+          onMouseEnter={() => setHoveredSection('profile')}
+          onMouseLeave={() => setHoveredSection(null)}
         >
-          {/* Light glint effect */}
-          <div 
-            className="absolute top-[20%] left-[25%] w-[15%] h-[10%] rounded-full bg-white opacity-30 blur-sm"
-            style={{
-              animation: "glintSlide 7s infinite ease-in-out"
-            }}
-          />
+          {/* Paperclip effect */}
+          <div className="absolute -top-1 right-0 transform rotate-12">
+            <Paperclip className="w-6 h-6 text-gray-400" />
+          </div>
           
-          {/* Pulsating core light */}
+          {/* Polaroid frame */}
           <div 
-            className="absolute inset-[15%] rounded-full"
+            className="bg-white p-2 rounded-sm transform rotate(-1deg)"
             style={{
-              background: "radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(120,160,255,0.05) 100%)",
-              animation: "pulsate 4s infinite ease-in-out",
-              boxShadow: "0 0 30px rgba(100, 180, 255, 0.2)"
-            }}
-          />
-          
-          {/* Center core with profile */}
-          <div 
-            className="absolute inset-[30%] rounded-full flex items-center justify-center overflow-hidden"
-            style={{
-              background: "rgba(30, 40, 80, 0.3)",
-              backdropFilter: "blur(3px)",
-              boxShadow: "inset 0 0 20px rgba(100, 180, 255, 0.2)",
-              animation: "slowRotate 20s infinite linear"
+              boxShadow: "0 4px 10px -3px rgba(0, 0, 0, 0.15)",
             }}
           >
-            {/* Profile Image */}
+            {/* Photo */}
             <div 
-              className="w-[90%] h-[90%] rounded-full overflow-hidden"
+              className="w-24 h-24 overflow-hidden"
               style={{
-                border: "1px solid rgba(255, 255, 255, 0.2)",
-                opacity: 0.9
+                border: "1px solid #f0f0f0",
               }}
             >
               {userData.photoURL ? (
@@ -238,385 +145,307 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
                   className="h-full w-full object-cover"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
-                    target.src = "https://ui-avatars.com/api/?name=" + (userData.name || "User") + "&background=152238&color=e2e8f0";
+                    target.src = "https://ui-avatars.com/api/?name=" + (userData.name || "User") + "&background=f1f5f9&color=334155";
                   }}
                 />
               ) : (
                 <img 
-                  src={`https://ui-avatars.com/api/?name=${userData.name || "User"}&background=152238&color=e2e8f0`}
-                  alt={userData.name || "Profile"}
+                  src={`https://ui-avatars.com/api/?name=${userData.name || "User"}&background=f1f5f9&color=334155`}
+                  alt={userData.name || "Profile"} 
                   className="h-full w-full object-cover"
                 />
               )}
             </div>
-          </div>
-          
-          {/* First Orbital Ring - Name & Title */}
-          <div 
-            className={`absolute inset-[-5%] rounded-full border border-opacity-30 z-10
-                      ${hoveredSection === 'identity' ? 'ring-glow' : ''}`}
-            style={{
-              borderColor: orbColors.ringBlue,
-              transform: "rotateX(75deg) rotateY(15deg)",
-              animation: "rotateSlow 30s infinite linear",
-              boxShadow: hoveredSection === 'identity' ? `0 0 15px ${orbColors.ringBlue}, inset 0 0 10px ${orbColors.ringBlue}` : 'none',
-              opacity: activeRing === 1 ? 1 : activeRing ? 0.3 : 0.8
-            }}
-            onMouseEnter={() => {setHoveredSection('identity'); setActiveRing(1);}}
-            onMouseLeave={() => {setHoveredSection(null); setActiveRing(null);}}
-          >
-            {/* Name panel */}
-            <div 
-              className="absolute top-[20%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 px-3 py-2 rounded backdrop-blur-md"
-              style={{
-                background: "rgba(60, 100, 200, 0.15)",
-                boxShadow: "0 0 15px rgba(100, 180, 255, 0.3)",
-                border: "1px solid rgba(100, 180, 255, 0.2)",
-                textAlign: "center"
-              }}
-            >
-              <h2 
-                className="text-lg font-bold"
-                style={{
-                  color: orbColors.glowText,
-                  textShadow: `0 0 10px ${orbColors.highlightBlue}`,
-                  fontFamily: "'Orbitron', sans-serif"
-                }}
-              >
-                {userData.name || "Your Name"}
-              </h2>
-              <p
-                className="text-xs mt-1"
-                style={{
-                  color: orbColors.glowText,
-                  opacity: 0.8,
-                  fontFamily: "'Sora', sans-serif"
-                }}
-              >
-                {userData.title || "Your Position"}
-              </p>
-            </div>
             
-            {/* Identity keywords circling the ring */}
-            {identityKeywords.map((keyword, index) => {
-              const angle = (index / identityKeywords.length) * 360;
-              const radians = (angle * Math.PI) / 180;
-              
-              return (
-                <div 
-                  key={index}
-                  className="absolute text-xs font-medium"
-                  style={{
-                    color: orbColors.glowText,
-                    opacity: 0.7,
-                    fontFamily: "'Sora', sans-serif",
-                    textShadow: `0 0 5px ${orbColors.highlightBlue}`,
-                    top: `${50 + 45 * Math.sin(radians)}%`,
-                    left: `${50 + 45 * Math.cos(radians)}%`,
-                    transform: "translate(-50%, -50%)",
-                    animation: `pulseOpacity 4s infinite ease-in-out ${index * 0.5}s`
-                  }}
-                >
-                  {keyword}
-                </div>
-              );
-            })}
-          </div>
-          
-          {/* Second Orbital Ring - Industry */}
-          <div 
-            className={`absolute inset-[-15%] rounded-full border border-opacity-30 z-20
-                      ${hoveredSection === 'industry' ? 'ring-glow' : ''}`}
-            style={{
-              borderColor: orbColors.ringPurple,
-              transform: "rotateX(55deg) rotateY(25deg)",
-              animation: "rotateSlow 40s infinite linear reverse",
-              boxShadow: hoveredSection === 'industry' ? `0 0 15px ${orbColors.ringPurple}, inset 0 0 10px ${orbColors.ringPurple}` : 'none',
-              opacity: activeRing === 2 ? 1 : activeRing ? 0.3 : 0.8
-            }}
-            onMouseEnter={() => {setHoveredSection('industry'); setActiveRing(2);}}
-            onMouseLeave={() => {setHoveredSection(null); setActiveRing(null);}}
-          >
-            {/* Industry panel */}
-            <div 
-              className="absolute top-[25%] left-[55%] transform -translate-x-1/2 -translate-y-1/2 px-3 py-2 rounded backdrop-blur-md"
-              style={{
-                background: "rgba(130, 100, 200, 0.15)",
-                boxShadow: "0 0 15px rgba(147, 112, 219, 0.3)",
-                border: "1px solid rgba(147, 112, 219, 0.2)",
-                minWidth: "120px"
-              }}
-            >
-              <div 
-                className="text-xs font-bold mb-1 flex items-center"
-                style={{
-                  color: orbColors.highlightPurple,
-                  fontFamily: "'Sora', sans-serif"
-                }}
-              >
-                <Hash size={12} className="mr-1" />
-                INDUSTRY
-              </div>
-              <div className="flex flex-wrap gap-1">
-                {industryTags.map((tag, index) => (
-                  <span 
-                    key={index}
-                    className="text-xs px-2 py-0.5 rounded"
-                    style={{
-                      background: "rgba(147, 112, 219, 0.2)",
-                      color: orbColors.glowText,
-                      border: "1px solid rgba(147, 112, 219, 0.3)",
-                      fontFamily: "'Sora', sans-serif"
-                    }}
-                  >
-                    {tag.trim()}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-          
-          {/* Third Orbital Ring - Company & Location */}
-          <div 
-            className={`absolute inset-[-25%] rounded-full border border-opacity-30 z-30
-                      ${hoveredSection === 'company' ? 'ring-glow' : ''}`}
-            style={{
-              borderColor: orbColors.ringTeal,
-              transform: "rotateX(65deg) rotateY(-15deg)",
-              animation: "rotateSlow 50s infinite linear",
-              boxShadow: hoveredSection === 'company' ? `0 0 15px ${orbColors.ringTeal}, inset 0 0 10px ${orbColors.ringTeal}` : 'none',
-              opacity: activeRing === 3 ? 1 : activeRing ? 0.3 : 0.8
-            }}
-            onMouseEnter={() => {setHoveredSection('company'); setActiveRing(3);}}
-            onMouseLeave={() => {setHoveredSection(null); setActiveRing(null);}}
-          >
-            {/* Company panel */}
-            {userData.company && (
-              <div 
-                className="absolute bottom-[30%] left-[30%] transform -translate-x-1/2 -translate-y-1/2 px-3 py-2 rounded backdrop-blur-md"
-                style={{
-                  background: "rgba(80, 200, 200, 0.15)",
-                  boxShadow: "0 0 15px rgba(80, 200, 200, 0.3)",
-                  border: "1px solid rgba(80, 200, 200, 0.2)"
-                }}
-              >
-                <div 
-                  className="text-xs font-bold mb-1 flex items-center"
-                  style={{
-                    color: orbColors.highlightTeal,
-                    fontFamily: "'Sora', sans-serif"
-                  }}
-                >
-                  <Building2 size={12} className="mr-1" />
-                  COMPANY
-                </div>
-                <p
-                  className="text-sm"
-                  style={{
-                    color: orbColors.glowText,
-                    fontFamily: "'Sora', sans-serif"
-                  }}
-                >
-                  {userData.company}
-                </p>
-              </div>
-            )}
-            
-            {/* Location panel */}
-            {userData.location && (
-              <div 
-                className="absolute top-[30%] right-[25%] transform -translate-x-1/2 -translate-y-1/2 px-3 py-2 rounded backdrop-blur-md"
-                style={{
-                  background: "rgba(80, 200, 200, 0.15)",
-                  boxShadow: "0 0 15px rgba(80, 200, 200, 0.3)",
-                  border: "1px solid rgba(80, 200, 200, 0.2)"
-                }}
-              >
-                <div 
-                  className="text-xs font-bold mb-1 flex items-center"
-                  style={{
-                    color: orbColors.highlightTeal,
-                    fontFamily: "'Sora', sans-serif"
-                  }}
-                >
-                  <MapPin size={12} className="mr-1" />
-                  LOCATION
-                </div>
-                <p
-                  className="text-sm"
-                  style={{
-                    color: orbColors.glowText,
-                    fontFamily: "'Sora', sans-serif"
-                  }}
-                >
-                  {userData.location}
-                </p>
-              </div>
-            )}
+            {/* Polaroid bottom frame */}
+            <div className="h-5 bg-white mt-1" />
           </div>
         </div>
         
-        {/* Contact Satellites */}
-        <div className="absolute inset-0">
-          {/* Email satellite */}
-          <div 
-            className={`absolute rounded-full flex items-center justify-center cursor-pointer
-                      ${hoveredSection === 'email' ? 'satellite-glow' : ''}`}
+        {/* NAME & TITLE - Letterpress style */}
+        <div 
+          className="mb-4 text-center"
+          style={{
+            transform: hoveredSection === 'name' ? 'translateY(-2px)' : 'translateY(0)',
+            transition: 'transform 0.3s ease',
+          }}
+          onMouseEnter={() => setHoveredSection('name')}
+          onMouseLeave={() => setHoveredSection(null)}
+        >
+          <h2 
+            className="text-xl font-bold mb-1 px-2"
             style={{
-              width: "40px",
-              height: "40px",
-              background: "rgba(100, 180, 255, 0.15)",
-              border: "1px solid rgba(100, 180, 255, 0.3)",
-              boxShadow: hoveredSection === 'email' ? "0 0 15px rgba(100, 180, 255, 0.5)" : "0 0 5px rgba(100, 180, 255, 0.3)",
-              bottom: "20%",
-              left: "15%",
-              animation: "orbit 25s infinite linear",
-              transition: "all 0.3s ease"
+              color: clayColors.slate,
+              textShadow: "0px 1px 0 white",
+              letterSpacing: "0.01em"
             }}
-            onMouseEnter={() => setHoveredSection('email')}
-            onMouseLeave={() => setHoveredSection(null)}
-            onClick={() => copyToClipboard(userData.email, "Email")}
           >
-            <Mail 
-              size={18} 
+            {userData.name || "Your Name"}
+          </h2>
+          
+          <p 
+            className="text-sm text-gray-700 px-2"
+            style={{
+              letterSpacing: "0.02em"
+            }}
+          >
+            {userData.title || "Add your designation"}
+          </p>
+          
+          {/* Embossed underline */}
+          <div 
+            className="h-px w-32 mx-auto mt-2 bg-gray-300"
+            style={{
+              boxShadow: "0 1px 0 rgba(255, 255, 255, 0.8)"
+            }}
+          />
+        </div>
+        
+        {/* TAGS - Clay ribbon style */}
+        {industryTags.length > 0 && (
+          <div className="flex flex-wrap justify-center gap-2 mb-4 max-w-[90%]">
+            {industryTags.map((tag, index) => (
+              <div 
+                key={index}
+                className="flex items-center px-3 py-1 text-xs font-medium"
+                style={{
+                  background: 
+                    index % 4 === 0 ? clayColors.softGreen : 
+                    index % 4 === 1 ? clayColors.softBrown : 
+                    index % 4 === 2 ? clayColors.softBlue : 
+                    clayColors.softPink,
+                  color: clayColors.slate,
+                  borderRadius: "2px",
+                  boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
+                  transform: hoveredSection === `tag-${index}` ? 'scale(1.05)' : 'scale(1)',
+                  transition: 'all 0.2s ease',
+                  clipPath: "polygon(4% 0%, 96% 0%, 100% 50%, 96% 100%, 4% 100%, 0% 50%)"
+                }}
+                onMouseEnter={() => setHoveredSection(`tag-${index}`)}
+                onMouseLeave={() => setHoveredSection(null)}
+              >
+                <Hash className="h-3 w-3 mr-1 opacity-70" />
+                {tag.trim()}
+              </div>
+            ))}
+          </div>
+        )}
+        
+        {/* COMPANY - Sticky note style */}
+        {userData.company && (
+          <div 
+            className="relative mb-3 max-w-[80%]"
+            style={{
+              transform: hoveredSection === 'company' ? 'translateY(-2px)' : 'translateY(0)',
+              transition: 'transform 0.3s ease',
+            }}
+            onMouseEnter={() => setHoveredSection('company')}
+            onMouseLeave={() => setHoveredSection(null)}
+          >
+            {/* Folded corner effect */}
+            <div 
+              className="absolute -top-2 -right-2 w-5 h-5"
               style={{
-                color: orbColors.glowText,
-                filter: "drop-shadow(0 0 3px rgba(100, 180, 255, 0.7))"
+                background: "#e8d28d",
+                transformOrigin: "bottom left",
+                transform: "rotate(45deg)",
+                boxShadow: "1px -1px 1px rgba(0,0,0,0.05)",
+                zIndex: 1
               }}
             />
             
-            {/* Email tooltip */}
-            {hoveredSection === 'email' && (
-              <div 
-                className="absolute left-full ml-3 px-3 py-1.5 rounded backdrop-blur-md whitespace-nowrap z-50"
-                style={{
-                  background: "rgba(20, 30, 60, 0.7)",
-                  border: "1px solid rgba(100, 180, 255, 0.3)",
-                  boxShadow: "0 0 10px rgba(100, 180, 255, 0.3)",
-                  color: orbColors.glowText,
-                  fontFamily: "'Sora', sans-serif",
-                  fontSize: "0.75rem"
-                }}
-              >
-                {userData.email}
-                <div 
-                  className="absolute inset-y-0 -left-2 flex items-center"
-                  style={{
-                    color: orbColors.highlightBlue
-                  }}
-                >
-                  <ArrowRight size={16} />
-                </div>
+            {/* Note content */}
+            <div 
+              className="flex items-center gap-2 px-3 py-2 rounded-sm"
+              style={{
+                background: clayColors.sticky,
+                boxShadow: "0 2px 5px -1px rgba(0, 0, 0, 0.1)"
+              }}
+            >
+              <Building2 className="h-4 w-4 text-gray-700" />
+              <span className="text-sm font-medium text-gray-800">
+                {userData.company}
+              </span>
+            </div>
+          </div>
+        )}
+        
+        {/* LOCATION - Map badge style */}
+        {userData.location && (
+          <div 
+            className="mb-3"
+            style={{
+              transform: hoveredSection === 'location' ? 'translateY(-2px)' : 'translateY(0)',
+              transition: 'transform 0.3s ease',
+            }}
+            onMouseEnter={() => setHoveredSection('location')}
+            onMouseLeave={() => setHoveredSection(null)}
+          >
+            <div 
+              className="flex items-center gap-2 px-3 py-1.5 rounded-full"
+              style={{
+                background: clayColors.softBlue,
+                boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)"
+              }}
+            >
+              <div className="h-5 w-5 rounded-full flex items-center justify-center bg-white">
+                <MapPin className="h-3 w-3 text-gray-700" />
               </div>
-            )}
+              <span className="text-xs text-gray-800 font-medium">
+                {userData.location}
+              </span>
+            </div>
+          </div>
+        )}
+        
+        {/* Separator before contact section */}
+        <div className="w-full h-px bg-gray-200 my-2" />
+        
+        {/* CONTACT DETAILS - Tear-off coupon style */}
+        <div className="w-full space-y-2 mt-auto">
+          {/* Perforated edge */}
+          <div className="w-full relative mb-3">
+            <div 
+              className="absolute top-0 left-0 right-0 h-[1px]"
+              style={{
+                backgroundImage: "linear-gradient(90deg, transparent, #00000022 50%, transparent 50%)",
+                backgroundSize: "6px 1px",
+                backgroundRepeat: "repeat-x"
+              }}
+            />
           </div>
           
-          {/* Phone satellite */}
-          {userData.phoneNumber && (
+          {/* Contact elements */}
+          <div className="space-y-2">
+            {/* Email */}
             <div 
-              className={`absolute rounded-full flex items-center justify-center cursor-pointer
-                        ${hoveredSection === 'phone' ? 'satellite-glow' : ''}`}
+              className="flex items-center justify-between px-3 py-2 rounded-md bg-white"
               style={{
-                width: "40px",
-                height: "40px",
-                background: "rgba(147, 112, 219, 0.15)",
-                border: "1px solid rgba(147, 112, 219, 0.3)",
-                boxShadow: hoveredSection === 'phone' ? "0 0 15px rgba(147, 112, 219, 0.5)" : "0 0 5px rgba(147, 112, 219, 0.3)",
-                top: "20%",
-                right: "15%",
-                animation: "orbit 30s infinite linear reverse",
-                transition: "all 0.3s ease"
+                border: "1px dashed rgba(0,0,0,0.08)",
+                boxShadow: hoveredSection === 'email' ? '0 3px 6px -1px rgba(0, 0, 0, 0.1)' : 'none',
+                transform: hoveredSection === 'email' ? 'translateX(-2px)' : 'translateX(0)',
+                transition: 'all 0.2s ease'
               }}
-              onMouseEnter={() => setHoveredSection('phone')}
+              onMouseEnter={() => setHoveredSection('email')}
               onMouseLeave={() => setHoveredSection(null)}
-              onClick={() => copyToClipboard(userData.phoneNumber || "", "Phone")}
             >
-              <Phone 
-                size={18} 
-                style={{
-                  color: orbColors.glowText,
-                  filter: "drop-shadow(0 0 3px rgba(147, 112, 219, 0.7))"
-                }}
-              />
-              
-              {/* Phone tooltip */}
-              {hoveredSection === 'phone' && (
-                <div 
-                  className="absolute right-full mr-3 px-3 py-1.5 rounded backdrop-blur-md whitespace-nowrap z-50"
-                  style={{
-                    background: "rgba(20, 30, 60, 0.7)",
-                    border: "1px solid rgba(147, 112, 219, 0.3)",
-                    boxShadow: "0 0 10px rgba(147, 112, 219, 0.3)",
-                    color: orbColors.glowText,
-                    fontFamily: "'Sora', sans-serif",
-                    fontSize: "0.75rem"
-                  }}
-                >
-                  {userData.phoneNumber}
-                  <div 
-                    className="absolute inset-y-0 -right-2 flex items-center"
-                    style={{
-                      color: orbColors.highlightPurple
-                    }}
-                  >
-                    <ArrowRight size={16} className="transform rotate-180" />
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-          
-          {/* Profile link satellite */}
-          <div 
-            className={`absolute rounded-full flex items-center justify-center cursor-pointer
-                      ${hoveredSection === 'link' ? 'satellite-glow' : ''}`}
-            style={{
-              width: "40px",
-              height: "40px",
-              background: "rgba(80, 200, 200, 0.15)",
-              border: "1px solid rgba(80, 200, 200, 0.3)",
-              boxShadow: hoveredSection === 'link' ? "0 0 15px rgba(80, 200, 200, 0.5)" : "0 0 5px rgba(80, 200, 200, 0.3)",
-              bottom: "30%",
-              right: "20%",
-              animation: "orbit 28s infinite linear",
-              transition: "all 0.3s ease"
-            }}
-            onMouseEnter={() => setHoveredSection('link')}
-            onMouseLeave={() => setHoveredSection(null)}
-            onClick={() => copyToClipboard(`https://${profileLink}`, "Profile link")}
-          >
-            <Globe 
-              size={18} 
-              style={{
-                color: orbColors.glowText,
-                filter: "drop-shadow(0 0 3px rgba(80, 200, 200, 0.7))"
-              }}
-            />
-            
-            {/* Link tooltip */}
-            {hoveredSection === 'link' && (
-              <div 
-                className="absolute bottom-full mb-3 px-3 py-1.5 rounded backdrop-blur-md whitespace-nowrap z-50"
-                style={{
-                  background: "rgba(20, 30, 60, 0.7)",
-                  border: "1px solid rgba(80, 200, 200, 0.3)",
-                  boxShadow: "0 0 10px rgba(80, 200, 200, 0.3)",
-                  color: orbColors.glowText,
-                  fontFamily: "'Sora', sans-serif",
-                  fontSize: "0.75rem"
+              <div className="flex items-center gap-2">
+                <Mail className="h-4 w-4 text-gray-600" />
+                <span className="text-sm truncate max-w-[150px] text-gray-800">
+                  {userData.email}
+                </span>
+              </div>
+              <button
+                className="p-1 rounded hover:bg-gray-100 transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  copyToClipboard(userData.email, "Email");
                 }}
               >
-                {profileLink}
-                <div 
-                  className="absolute top-full left-1/2 transform -translate-x-1/2 text-xs mt-1"
-                  style={{
-                    color: orbColors.highlightTeal
+                <Copy className="h-3.5 w-3.5 text-gray-500" />
+              </button>
+            </div>
+            
+            {/* Phone Number */}
+            {userData.phoneNumber && (
+              <div 
+                className="flex items-center justify-between px-3 py-2 rounded-md bg-white"
+                style={{
+                  border: "1px dashed rgba(0,0,0,0.08)",
+                  boxShadow: hoveredSection === 'phone' ? '0 3px 6px -1px rgba(0, 0, 0, 0.1)' : 'none',
+                  transform: hoveredSection === 'phone' ? 'translateX(-2px)' : 'translateX(0)',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={() => setHoveredSection('phone')}
+                onMouseLeave={() => setHoveredSection(null)}
+              >
+                <div className="flex items-center gap-2">
+                  <Phone className="h-4 w-4 text-gray-600" />
+                  <span className="text-sm truncate max-w-[150px] text-gray-800">
+                    {userData.phoneNumber}
+                  </span>
+                </div>
+                <button
+                  className="p-1 rounded hover:bg-gray-100 transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    copyToClipboard(userData.phoneNumber || "", "Phone");
                   }}
                 >
-                  <ArrowRight size={16} className="transform rotate-90" />
-                </div>
+                  <Copy className="h-3.5 w-3.5 text-gray-500" />
+                </button>
               </div>
             )}
+            
+            {/* Profile Link */}
+            <div 
+              className="flex items-center justify-between px-3 py-2 rounded-md bg-white"
+              style={{
+                border: "1px dashed rgba(0,0,0,0.08)",
+                boxShadow: hoveredSection === 'profile-link' ? '0 3px 6px -1px rgba(0, 0, 0, 0.1)' : 'none',
+                transform: hoveredSection === 'profile-link' ? 'translateX(-2px)' : 'translateX(0)',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={() => setHoveredSection('profile-link')}
+              onMouseLeave={() => setHoveredSection(null)}
+            >
+              <div className="flex items-center gap-2">
+                <Globe className="h-4 w-4 text-gray-600" />
+                <span className="text-sm truncate max-w-[150px] text-gray-800">
+                  {profileLink}
+                </span>
+              </div>
+              <button
+                className="p-1 rounded hover:bg-gray-100 transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  copyToClipboard(`https://${profileLink}`, "Link");
+                }}
+              >
+                <Copy className="h-3.5 w-3.5 text-gray-500" />
+              </button>
+            </div>
+          </div>
+          
+          {/* ACTION BUTTONS */}
+          <div className="flex justify-center gap-3 mt-4">
+            <button 
+              className="flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium"
+              style={{
+                background: clayColors.softBlue,
+                color: clayColors.slate,
+                boxShadow: hoveredSection === 'print' ? 
+                  '0 3px 5px -1px rgba(0, 0, 0, 0.1)' : 
+                  '0 1px 3px -1px rgba(0, 0, 0, 0.05)',
+                transform: hoveredSection === 'print' ? 'translateY(-2px)' : 'translateY(0)',
+                transition: 'all 0.2s ease'
+              }}
+              onClick={printCard}
+              onMouseEnter={() => setHoveredSection('print')}
+              onMouseLeave={() => setHoveredSection(null)}
+            >
+              <Printer className="h-3.5 w-3.5" />
+              <span>Print</span>
+            </button>
+            
+            <button 
+              className="flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium"
+              style={{
+                background: clayColors.coral,
+                color: "white",
+                boxShadow: hoveredSection === 'share' ? 
+                  '0 3px 5px -1px rgba(0, 0, 0, 0.1)' : 
+                  '0 1px 3px -1px rgba(0, 0, 0, 0.05)',
+                transform: hoveredSection === 'share' ? 'translateY(-2px)' : 'translateY(0)',
+                transition: 'all 0.2s ease'
+              }}
+              onClick={() => copyToClipboard(`https://${profileLink}`, "Card link")}
+              onMouseEnter={() => setHoveredSection('share')}
+              onMouseLeave={() => setHoveredSection(null)}
+            >
+              <Share2 className="h-3.5 w-3.5" />
+              <span>Share</span>
+            </button>
           </div>
         </div>
       </div>
@@ -624,13 +453,9 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
       {/* Copy success notification */}
       {copySuccess && (
         <div 
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-4 py-2 rounded backdrop-blur-md z-50"
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-slate-800 text-white px-3 py-1 rounded-full text-xs z-50"
           style={{
-            background: "rgba(20, 30, 60, 0.7)",
-            border: "1px solid rgba(100, 180, 255, 0.3)",
-            boxShadow: "0 0 20px rgba(100, 180, 255, 0.3)",
-            color: orbColors.glowText,
-            fontFamily: "'Sora', sans-serif",
+            boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
             animation: "fadeInOut 2s forwards"
           }}
         >
@@ -638,77 +463,31 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
         </div>
       )}
       
-      {/* Instructions hint */}
-      <div 
-        className="absolute bottom-3 left-1/2 transform -translate-x-1/2 text-xs opacity-70"
-        style={{
-          color: orbColors.glowText,
-          fontFamily: "'Sora', sans-serif",
-          textAlign: "center",
-          animation: "pulseOpacity 4s infinite ease-in-out"
-        }}
-      >
-        Hover rings to explore • Click satellites to copy
-      </div>
-      
       {/* CSS Animations */}
       <style>
         {`
           @keyframes fadeInOut {
-            0% { opacity: 0; transform: translate(-50%, -40%) scale(0.9); }
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
             15% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
             85% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            100% { opacity: 0; transform: translate(-50%, -60%) scale(0.9); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
           }
           
-          @keyframes rotateSlow {
-            from { transform: rotateZ(0deg); }
-            to { transform: rotateZ(360deg); }
-          }
-          
-          @keyframes glintSlide {
-            0% { opacity: 0; transform: translate(-50px, -30px) scale(1); }
-            30% { opacity: 0.3; transform: translate(0, 0) scale(1.2); }
-            60% { opacity: 0; transform: translate(50px, 30px) scale(1); }
-            100% { opacity: 0; transform: translate(-50px, -30px) scale(1); }
-          }
-          
-          @keyframes pulsate {
-            0% { transform: scale(0.95); opacity: 0.7; }
-            50% { transform: scale(1.05); opacity: 1; }
-            100% { transform: scale(0.95); opacity: 0.7; }
-          }
-          
-          @keyframes orbit {
-            from { transform: rotate(0deg) translateX(130px) rotate(0deg); }
-            to { transform: rotate(360deg) translateX(130px) rotate(-360deg); }
-          }
-          
-          @keyframes pulseOpacity {
-            0% { opacity: 0.4; }
-            50% { opacity: 0.8; }
-            100% { opacity: 0.4; }
-          }
-          
-          @keyframes slowRotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-          }
-          
-          @keyframes floatParticle {
-            0% { transform: translateY(0) translateX(0); }
-            25% { transform: translateY(-20px) translateX(10px); }
-            50% { transform: translateY(-10px) translateX(20px); }
-            75% { transform: translateY(20px) translateX(10px); }
-            100% { transform: translateY(0) translateX(0); }
-          }
-          
-          .satellite-glow {
-            animation: pulsate 1.5s infinite ease-in-out !important;
-          }
-          
-          .ring-glow {
-            animation: pulsate 3s infinite ease-in-out !important;
+          @media print {
+            body * {
+              visibility: hidden;
+            }
+            .clay-paper-card, .clay-paper-card * {
+              visibility: visible;
+              transform: none !important;
+            }
+            .clay-paper-card {
+              position: absolute;
+              left: 0;
+              top: 0;
+              width: 100%;
+              height: 100%;
+            }
           }
         `}
       </style>
