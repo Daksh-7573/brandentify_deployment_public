@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { UserData } from "@/types/user";
 import { 
   Mail, 
@@ -6,7 +6,6 @@ import {
   Globe, 
   Briefcase, 
   MapPin, 
-  Code, 
   Building2, 
   ExternalLink, 
   Linkedin, 
@@ -511,29 +510,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
         </div>
       </div>
       
-      {/* CSS keyframes and animations */}
-      <style jsx>{`
-        @keyframes shine {
-          to { background-position: 200% center; }
-        }
-        
-        @keyframes floating {
-          0% { transform: translateY(0px); }
-          50% { transform: translateY(-8px); }
-          100% { transform: translateY(0px); }
-        }
-        
-        @keyframes glowPulse {
-          0% { filter: drop-shadow(0 0 2px rgba(99,102,241,0.6)); }
-          50% { filter: drop-shadow(0 0 8px rgba(168,85,247,0.8)); }
-          100% { filter: drop-shadow(0 0 2px rgba(99,102,241,0.6)); }
-        }
-        
-        @keyframes qrReveal {
-          0% { transform: scale(0.8); opacity: 0; }
-          100% { transform: scale(1); opacity: 1; }
-        }
-      `}</style>
+      {/* CSS keyframes handled outside component for now */}
     </div>
   );
 };
