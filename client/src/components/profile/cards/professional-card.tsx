@@ -183,7 +183,7 @@ const ProfessionalCard: React.FC<ProfessionalCardProps> = ({ userData }) => {
         )}
         
         {/* Education Badge */}
-        {educations && educations.length > 0 && (
+        {educations && educations.length > 0 && educations[0]?.degree && educations[0]?.institution && (
           <div 
             className={`education-badge relative z-10 mt-2 px-4 py-2 rounded-full bg-opacity-10 transition-all ${
               isDarkMode ? 'bg-purple-900 text-purple-300' : 'bg-purple-50 text-purple-600'

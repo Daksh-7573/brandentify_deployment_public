@@ -265,14 +265,17 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
               )}
               
               {/* Education */}
-              {educations && educations.length > 0 && (
+              {educations && educations.length > 0 && educations[0]?.degree && educations[0]?.institution && (
                 <div className="flex items-center gap-3">
                   <div className="h-8 w-8 rounded-full bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center">
                     <GraduationCap className="h-4 w-4 text-indigo-300" />
                   </div>
                   <div className="text-indigo-100 font-light">
                     <span>{educations[0].degree}</span>
-                    <div className="text-xs text-indigo-300/70">{educations[0].institution}, {new Date(educations[0].endDate).getFullYear()}</div>
+                    <div className="text-xs text-indigo-300/70">
+                      {educations[0].institution}
+                      {educations[0].endDate && `, ${new Date(educations[0].endDate).getFullYear()}`}
+                    </div>
                   </div>
                 </div>
               )}
@@ -471,7 +474,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
               )}
               
               {/* Education */}
-              {educations && educations.length > 0 && (
+              {educations && educations.length > 0 && educations[0]?.degree && educations[0]?.institution && (
                 <div className="flex items-center gap-4">
                   <div 
                     className="h-12 w-12 rounded-full bg-indigo-600/20 border border-indigo-400/30 flex items-center justify-center shadow-lg"
@@ -483,7 +486,10 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
                     <p className="text-xs text-indigo-300/70 font-light">Education</p>
                     <div className="text-indigo-100 text-sm font-light">
                       <span>{educations[0].degree}</span>
-                      <div className="text-xs text-indigo-300/70">{educations[0].institution}, {new Date(educations[0].endDate).getFullYear()}</div>
+                      <div className="text-xs text-indigo-300/70">
+                        {educations[0].institution}
+                        {educations[0].endDate && `, ${new Date(educations[0].endDate).getFullYear()}`}
+                      </div>
                       {educations[0].field && <div className="text-xs text-indigo-300/70">{educations[0].field}</div>}
                     </div>
                   </div>
