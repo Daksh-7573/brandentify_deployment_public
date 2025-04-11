@@ -20,25 +20,59 @@ export function useProfilePicture(userId: number | string | null = null) {
         throw new Error("Invalid user ID. Please log in again.");
       }
       
-      // Send only the photoURL update to the API
-      const res = await apiRequest('PUT', `/api/users/${targetUserId}`, {
-        photoURL: base64Image
-      });
+      // Check image size before uploading
+      const imageSizeInBytes = base64Image.length * 0.75; // Approximate size conversion from base64 to bytes
+      const maxSizeInBytes = 5 * 1024 * 1024; // 5MB limit
       
-      return await res.json() as User;
+      if (imageSizeInBytes > maxSizeInBytes) {
+        throw new Error("Image size exceeds 5MB limit. Please upload a smaller image.");
+      }
+      
+      try {
+        // Send only the photoURL update to the API using the new API request format
+        const res = await apiRequest({
+          method: 'PUT',
+          url: `/api/users/${targetUserId}`,
+          data: {
+            photoURL: base64Image
+          }
+        });
+        
+        return await res.json() as User;
+      } catch (error) {
+        console.error("API request failed:", error);
+        
+        // Enhance error message
+        if (error instanceof Error) {
+          if (error.message.includes("413")) {
+            throw new Error("Image is too large. Please use a smaller image (max 5MB).");
+          } else if (error.message.includes("Network error")) {
+            throw new Error("Network error. Please check your internet connection and try again.");
+          } else {
+            throw error;
+          }
+        }
+        throw new Error("Failed to update profile picture. Please try again.");
+      }
     },
     onSuccess: async (data) => {
       // Invalidate and refetch user data
       queryClient.invalidateQueries({ queryKey: [`/api/users/${targetUserId}`] });
       
       // Immediately refresh the auth context
-      await refreshUserData();
+      if (refreshUserData) {
+        try {
+          await refreshUserData();
+        } catch (err) {
+          console.warn("Could not refresh user data after profile picture update", err);
+        }
+      }
       
       // Force invalidate all user data queries
       queryClient.invalidateQueries({ queryKey: [`/api/users/${targetUserId}`] });
       
       toast({
-        title: "Profile picture updated",
+        title: "Success!",
         description: "Your profile picture has been updated successfully",
       });
     },
