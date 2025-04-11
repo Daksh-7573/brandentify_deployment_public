@@ -6,7 +6,7 @@ export function addUserPersonalInfoMethods(memStoragePrototype: any) {
   // Get personal info by user ID
   memStoragePrototype.getUserPersonalInfoByUserId = async function(userId: number): Promise<UserPersonalInfo | undefined> {
     const personalInfos = Array.from(this.userPersonalInfo.values());
-    return personalInfos.find(info => info.userId === userId);
+    return personalInfos.find((info: UserPersonalInfo) => info.userId === userId);
   };
   
   // Create personal info

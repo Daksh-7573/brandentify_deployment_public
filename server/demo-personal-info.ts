@@ -4,8 +4,8 @@ import { IStorage } from "./storage";
 /**
  * Creates personal information for demo users
  */
-export async function createDemoPersonalInfo(storage: IStorage): Promise<void> {
-  console.log("[createDemoPersonalInfo] Creating personal info for demo profiles");
+export async function addDemoPersonalInfo(storage: IStorage): Promise<void> {
+  console.log("[addDemoPersonalInfo] Creating personal info for demo profiles");
   
   // Personal info for Alex Johnson (VP of Engineering)
   const techPersonalInfo: UserPersonalInfo = await storage.createUserPersonalInfo({
@@ -63,5 +63,5 @@ export async function createDemoPersonalInfo(storage: IStorage): Promise<void> {
     preferredContactMethod: "twitter"
   });
   
-  console.log("[createDemoPersonalInfo] Created personal info for all demo profiles");
+  console.log("[addDemoPersonalInfo] Created personal info for all demo profiles");
 }
