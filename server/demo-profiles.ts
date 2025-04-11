@@ -54,7 +54,7 @@ function fixCollaborator(collab: any): InsertProjectCollaborator {
 }
 
 /**
- * Creates three complete demo profiles with all details
+ * Creates complete demo profiles with all details including industry leaders
  */
 export async function createDemoProfiles(storage: IStorage) {
   console.log("Creating demo profiles...");
@@ -68,13 +68,186 @@ export async function createDemoProfiles(storage: IStorage) {
   // Demo Profile 3: Data Scientist
   const dataScientistProfile = await createDataScientistProfile(storage);
   
-  console.log(`Successfully created 3 demo profiles with IDs: ${techProfile.id}, ${designerProfile.id}, ${dataScientistProfile.id}`);
+  // Demo Profile 4: Elon Musk (Industry Leader)
+  const elonMuskProfile = await createElonMuskProfile(storage);
+  
+  console.log(`Successfully created 4 demo profiles with IDs: ${techProfile.id}, ${designerProfile.id}, ${dataScientistProfile.id}, ${elonMuskProfile.id}`);
   
   return {
     techProfile,
     designerProfile,
-    dataScientistProfile
+    dataScientistProfile,
+    elonMuskProfile
   };
+}
+
+/**
+ * Creates a demo profile for Elon Musk with industry leader status
+ */
+async function createElonMuskProfile(storage: IStorage) {
+  // Create the user
+  const muskUser: InsertUser = {
+    username: "elon_musk",
+    email: "elon.musk@example.com",
+    password: null,
+    name: "Elon Musk",
+    phoneNumber: null,
+    photoURL: "/assets/Musk.png", // Using the Musk image from assets
+    title: "CEO & Chief Engineer",
+    aboutMe: "Entrepreneur and business magnate focused on space exploration, electric vehicles, AI, and sustainable energy. Founder of SpaceX, Tesla, and several other companies.",
+    location: "Austin, TX",
+    industry: "Technology",
+    domain: "Aerospace, Automotive, AI",
+    company: "X Corp, SpaceX, Tesla, Neuralink",
+    lookingFor: "Innovative engineering talent and visionary collaborators",
+    visitingCardType: "minimal",
+    profileCompleted: 100,
+    geoLatitude: 30.2672,
+    geoLongitude: -97.7431,
+    geoVisibleNearby: true
+  };
+
+  const user = await storage.createUser(muskUser);
+
+  // Work experiences
+  const experiences = [
+    {
+      userId: user.id,
+      title: "CEO & Chief Engineer",
+      company: "SpaceX",
+      location: "Hawthorne, CA",
+      description: "Leading advanced rockets and spacecraft manufacturing company with the mission of enabling the colonization of Mars. Overseeing development of Starship, the world's first fully reusable spacecraft designed for missions to the Moon, Mars, and beyond.",
+      startDate: new Date("2002-03-01"),
+      endDate: null,
+      isCurrent: true,
+      industry: "Aerospace"
+    },
+    {
+      userId: user.id,
+      title: "CEO",
+      company: "Tesla",
+      location: "Austin, TX",
+      description: "Leading the company's mission to accelerate the world's transition to sustainable energy through electric vehicles, solar energy, and integrated renewable energy solutions for homes and businesses.",
+      startDate: new Date("2008-10-01"),
+      endDate: null,
+      isCurrent: true,
+      industry: "Automotive, Energy"
+    },
+    {
+      userId: user.id,
+      title: "Founder & CEO",
+      company: "Neuralink",
+      location: "Fremont, CA",
+      description: "Developing ultra high bandwidth brain-machine interfaces to connect humans and computers. The company is focused on creating devices that can be implanted in the human brain with the goal of helping humans merge with AI.",
+      startDate: new Date("2016-07-01"),
+      endDate: null,
+      isCurrent: true,
+      industry: "Neurotechnology"
+    }
+  ];
+
+  for (const experience of experiences) {
+    await storage.createWorkExperience(fixWorkExperience(experience));
+  }
+
+  // Education
+  const educations = [
+    {
+      userId: user.id,
+      institution: "University of Pennsylvania",
+      degree: "Bachelor of Science",
+      field: "Physics",
+      location: "Philadelphia, PA",
+      startDate: new Date("1992-09-01"),
+      endDate: new Date("1995-05-30"),
+      description: "Double major in Physics and Economics"
+    },
+    {
+      userId: user.id,
+      institution: "Stanford University",
+      degree: "PhD Program",
+      field: "Applied Physics & Materials Science",
+      location: "Stanford, CA",
+      startDate: new Date("1995-09-01"),
+      endDate: new Date("1995-10-01"),
+      description: "Left after two days to start Zip2"
+    }
+  ];
+
+  for (const education of educations) {
+    await storage.createEducation(fixEducation(education));
+  }
+
+  // Skills
+  const skills = [
+    {
+      userId: user.id,
+      name: "Rocket Engineering",
+      level: "Expert"
+    },
+    {
+      userId: user.id,
+      name: "Electric Vehicle Technology",
+      level: "Expert"
+    },
+    {
+      userId: user.id,
+      name: "Sustainable Energy",
+      level: "Expert"
+    },
+    {
+      userId: user.id,
+      name: "Strategic Leadership",
+      level: "Expert"
+    },
+    {
+      userId: user.id,
+      name: "AI & Neural Interfaces",
+      level: "Expert"
+    },
+    {
+      userId: user.id,
+      name: "Space Exploration",
+      level: "Expert"
+    }
+  ];
+
+  for (const skill of skills) {
+    await storage.createSkill(skill);
+  }
+
+  // Project for Mars colonization
+  const project = {
+    userId: user.id,
+    title: "Mars Colonization Project",
+    description: "Developing the technology and infrastructure required to establish a self-sustaining city on Mars. This multi-decade project involves the creation of Starship - a fully reusable spacecraft, life support systems, and permanent habitation solutions for the Red Planet.",
+    thumbnailUrl: "/images/demo/mars-project.png",
+    mediaUrls: ["/images/demo/mars-1.png", "/images/demo/mars-2.png"],
+    skills: ["Aerospace Engineering", "Life Support Systems", "Propulsion Technology", "Materials Science"],
+    startDate: new Date("2016-09-01"),
+    endDate: null,
+    isCurrent: true,
+    isPublished: true,
+    url: "https://www.spacex.com/mission/"
+  };
+  
+  const fixedProject = fixProject(project);
+  const createdProject = await storage.createProject(fixedProject);
+  
+  // Add collaborators to the project
+  const collaborator = {
+    projectId: createdProject.id,
+    userId: user.id,
+    name: "SpaceX Engineering Team",
+    role: "Spacecraft Development",
+    contribution: "Leading the design and manufacturing of the Starship rocket and Mars habitation systems",
+    isVerified: 1
+  };
+  
+  const fixedCollaborator = fixCollaborator(collaborator);
+  await storage.createProjectCollaborator(fixedCollaborator);
+
+  return user;
 }
 
 async function createTechExecutiveProfile(storage: IStorage) {
