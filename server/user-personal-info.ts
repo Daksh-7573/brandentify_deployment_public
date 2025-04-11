@@ -9,7 +9,8 @@ export function addUserPersonalInfoMethods(MemStoragePrototype: any) {
   // User Personal Info operations
   MemStoragePrototype.getUserPersonalInfoByUserId = async function(userId: number): Promise<UserPersonalInfo | undefined> {
     const allInfo = Array.from(this.userPersonalInfo.values());
-    return allInfo.find(info => info.userId === userId);
+    // Use type assertion to help TypeScript understand the object structure
+    return allInfo.find((info: any) => info.userId === userId) as UserPersonalInfo | undefined;
   };
 
   MemStoragePrototype.createUserPersonalInfo = async function(personalInfo: InsertUserPersonalInfo): Promise<UserPersonalInfo> {

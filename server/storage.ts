@@ -1,3 +1,5 @@
+import { addUserPersonalInfoMethods } from './user-personal-info';
+
 import { 
   users, User, InsertUser, 
   resumes, Resume, InsertResume,
@@ -2594,9 +2596,10 @@ export class MemStorage implements IStorage {
   }
 }
 
-import { addUserPersonalInfoMethods } from './user-personal-info';
+// Create storage instance
+const memStorage = new MemStorage();
 
 // Add UserPersonalInfo methods to MemStorage prototype
 addUserPersonalInfoMethods(MemStorage.prototype);
 
-export const storage = new MemStorage();
+export const storage = memStorage;

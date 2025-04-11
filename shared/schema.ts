@@ -21,6 +21,7 @@ export const users = pgTable("users", {
   lookingFor: text("looking_for"), // What the user is looking for (networking type)
   visitingCardType: text("visiting_card_type"), // Type of digital visiting card
   profileCompleted: integer("profile_completed").default(0), // Percentage
+  isIndustryLeader: boolean("is_industry_leader").default(false), // Added for industry leader tag
   // Smart Radar geolocation data
   geoLatitude: decimal("geo_latitude", { precision: 10, scale: 7 }), // Latitude for geo search
   geoLongitude: decimal("geo_longitude", { precision: 10, scale: 7 }), // Longitude for geo search
