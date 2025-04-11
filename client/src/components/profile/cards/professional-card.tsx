@@ -31,6 +31,9 @@ const ProfessionalCard: React.FC<ProfessionalCardProps> = ({ userData }) => {
   // Get current company from latest work experience or use fallback
   const { company } = useCurrentCompany(userData.id, userData.company || "Brandentifier");
   
+  // Get education data
+  const { educations } = useEducation(userData.id);
+  
   // Format profile link
   const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;
   
@@ -179,6 +182,18 @@ const ProfessionalCard: React.FC<ProfessionalCardProps> = ({ userData }) => {
           </div>
         )}
         
+        {/* Education Badge */}
+        {educations && educations.length > 0 && (
+          <div 
+            className={`education-badge relative z-10 mt-2 px-4 py-2 rounded-full bg-opacity-10 transition-all ${
+              isDarkMode ? 'bg-purple-900 text-purple-300' : 'bg-purple-50 text-purple-600'
+            } flex items-center gap-2`}
+          >
+            <GraduationCap className="h-4 w-4" />
+            <span className="font-medium">{educations[0].degree}, {educations[0].institution}</span>
+          </div>
+        )}
+        
         {/* LinkedIn & reveal button */}
         <div className="mt-auto w-full relative z-10 flex flex-col items-center space-y-4">
           {/* LinkedIn button */}
@@ -322,6 +337,32 @@ const ProfessionalCard: React.FC<ProfessionalCardProps> = ({ userData }) => {
                 <ChevronUp className={`h-4 w-4 rotate-90 ${
                   isDarkMode ? 'text-slate-300' : 'text-slate-500'
                 }`} />
+              </div>
+            </div>
+          )}
+          
+          {/* Education */}
+          {educations && educations.length > 0 && (
+            <div
+              className={`contact-item flex items-center gap-3 p-3 rounded-lg transition-all ${
+                isDarkMode ? 'bg-slate-700/50' : 'bg-slate-50 hover:bg-purple-50/30'
+              } shadow-sm`}
+            >
+              <div className={`icon-container h-10 w-10 rounded-full flex items-center justify-center ${
+                isDarkMode ? 'bg-purple-900/50' : 'bg-purple-100'
+              }`}>
+                <GraduationCap className={`h-5 w-5 ${
+                  isDarkMode ? 'text-purple-300' : 'text-purple-600'
+                }`} />
+              </div>
+              <div className="flex-1">
+                <p className={`text-sm font-medium ${isDarkMode ? 'text-purple-200' : 'text-purple-600'}`}>Education</p>
+                <p className={`text-sm truncate max-w-[180px] ${
+                  isDarkMode ? 'text-slate-300' : 'text-slate-600'
+                }`}>{educations[0].degree}</p>
+                <p className={`text-xs truncate max-w-[180px] ${
+                  isDarkMode ? 'text-slate-400' : 'text-slate-500'
+                }`}>{educations[0].institution}, {new Date(educations[0].endDate).getFullYear()}</p>
               </div>
             </div>
           )}

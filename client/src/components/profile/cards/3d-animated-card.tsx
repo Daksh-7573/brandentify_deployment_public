@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { UserData } from "@/types/user";
 import { useCurrentCompany } from "@/hooks/use-current-company";
+import { useEducation } from "@/hooks/use-education";
 import { 
   Mail, 
   Phone, 
@@ -15,7 +16,8 @@ import {
   Twitter,
   Instagram,
   QrCode,
-  User
+  User,
+  GraduationCap
 } from "lucide-react";
 
 interface ThreeDAnimatedCardProps {
@@ -32,6 +34,9 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
   
   // Get current company from latest work experience or use fallback
   const { company } = useCurrentCompany(userData.id, userData.company || "Brandentifier");
+  
+  // Get education data
+  const { educations } = useEducation(userData.id);
   
   // Format profile link
   const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;
@@ -258,6 +263,19 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
                   </span>
                 </div>
               )}
+              
+              {/* Education */}
+              {educations && educations.length > 0 && (
+                <div className="flex items-center gap-3">
+                  <div className="h-8 w-8 rounded-full bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center">
+                    <GraduationCap className="h-4 w-4 text-indigo-300" />
+                  </div>
+                  <div className="text-indigo-100 font-light">
+                    <span>{educations[0].degree}</span>
+                    <div className="text-xs text-indigo-300/70">{educations[0].institution}, {new Date(educations[0].endDate).getFullYear()}</div>
+                  </div>
+                </div>
+              )}
             </div>
             
             {/* Social links */}
@@ -448,6 +466,26 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
                       <span>{userData.location}</span>
                       <ExternalLink className="h-3 w-3" />
                     </a>
+                  </div>
+                </div>
+              )}
+              
+              {/* Education */}
+              {educations && educations.length > 0 && (
+                <div className="flex items-center gap-4">
+                  <div 
+                    className="h-12 w-12 rounded-full bg-indigo-600/20 border border-indigo-400/30 flex items-center justify-center shadow-lg"
+                    style={{ animation: "glowPulse 2s ease-in-out infinite" }}
+                  >
+                    <GraduationCap className="h-5 w-5 text-indigo-300" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-xs text-indigo-300/70 font-light">Education</p>
+                    <div className="text-indigo-100 text-sm font-light">
+                      <span>{educations[0].degree}</span>
+                      <div className="text-xs text-indigo-300/70">{educations[0].institution}, {new Date(educations[0].endDate).getFullYear()}</div>
+                      {educations[0].field && <div className="text-xs text-indigo-300/70">{educations[0].field}</div>}
+                    </div>
                   </div>
                 </div>
               )}
