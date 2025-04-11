@@ -5,7 +5,7 @@
  */
 
 import { IStorage } from './storage';
-import { InsertEducation, InsertService, InsertSkill, InsertWorkExperience } from '@shared/schema';
+import { InsertEducation, InsertService, InsertSkill, InsertUserPersonalInfo, InsertWorkExperience } from '@shared/schema';
 
 /**
  * Add comprehensive skills to the demo account
@@ -254,6 +254,40 @@ async function addServicesToMainDemo(storage: IStorage): Promise<void> {
 }
 
 /**
+ * Add personal contact information to the demo account
+ */
+async function addPersonalInfoToMainDemo(storage: IStorage): Promise<void> {
+  console.log('[enhance-demo] Adding personal contact information to main demo account');
+  
+  const demoUserId = 1;
+  
+  // Check if personal info already exists
+  const existingInfo = await storage.getUserPersonalInfoByUserId(demoUserId);
+  
+  if (existingInfo) {
+    console.log(`[enhance-demo] Personal info already exists for demo user ID ${demoUserId}`);
+    return;
+  }
+  
+  // Create new personal info for the Tech Professional (same as in demo-personal-info.ts)
+  const personalInfo: InsertUserPersonalInfo = {
+    userId: demoUserId,
+    contactEmail: "alex.johnson@techcompany.com",
+    contactPhone: "+1 (555) 123-4567",
+    website: "https://alexjohnson.dev",
+    githubProfile: "https://github.com/alexjohnson-dev",
+    linkedinProfile: "https://linkedin.com/in/alexjohnson-dev",
+    twitterProfile: "https://twitter.com/alexjohnson_dev",
+    instagramProfile: null,
+    calendlyLink: "https://calendly.com/alexjohnson-dev",
+    preferredContactMethod: "email"
+  };
+  
+  const createdInfo = await storage.createUserPersonalInfo(personalInfo);
+  console.log(`[enhance-demo] Successfully added personal info with ID: ${createdInfo?.id} to demo account`);
+}
+
+/**
  * Main function to enhance the demo profile with comprehensive data
  */
 export async function enhanceMainDemoProfile(storage: IStorage): Promise<boolean> {
@@ -271,6 +305,9 @@ export async function enhanceMainDemoProfile(storage: IStorage): Promise<boolean
     
     // Add or update services
     await addServicesToMainDemo(storage);
+    
+    // Add personal contact information
+    await addPersonalInfoToMainDemo(storage);
     
     console.log('[enhance-demo] Successfully enhanced main demo profile with comprehensive data');
     return true;
