@@ -450,15 +450,18 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
           )}
         </div>
         
-        {/* Contact Section - Slide Up Panel */}
-        <div className="mt-4">
-          {/* Contact Header with Toggle */}
+        {/* Contact Section - Slide Up Panel with Hover Effect */}
+        <div 
+          className="mt-4"
+          onMouseEnter={() => setIsContactExpanded(true)}
+          onMouseLeave={() => setIsContactExpanded(false)}
+        >
+          {/* Contact Header with Hover Indicator */}
           <div 
             className="flex justify-between items-center px-2 py-1.5 mb-2 cursor-pointer"
             style={{
               borderBottom: `1px solid ${colors.border}`,
             }}
-            onClick={() => setIsContactExpanded(!isContactExpanded)}
           >
             <h3 
               className="text-xs font-bold tracking-wider"
