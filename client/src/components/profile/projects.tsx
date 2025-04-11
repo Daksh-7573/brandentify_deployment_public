@@ -30,8 +30,8 @@ import { Badge } from "@/components/ui/badge";
 // Define schemas for forms
 const projectSchema = z.object({
   title: z.string().min(1, { message: "Title is required" }),
-  description: z.string().nullable().optional(),
-  category: z.string().nullable().optional(),
+  description: z.string().min(1, { message: "Description is required" }),
+  category: z.string().min(1, { message: "Category is required" }),
   startDate: z.string().min(1, { message: "Start date is required" }),
   projectUrl: z.string().url().nullable().optional().or(z.literal('')),
   mediaUrls: z.array(z.string()).nullable().optional(),
