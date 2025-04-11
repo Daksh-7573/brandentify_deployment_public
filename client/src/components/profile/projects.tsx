@@ -34,7 +34,7 @@ const projectSchema = z.object({
   category: z.string().min(1, { message: "Category is required" }),
   startDate: z.string().min(1, { message: "Start date is required" }),
   projectUrl: z.string().url({ message: "Valid URL is required" }).min(1, { message: "Project URL is required" }),
-  mediaUrls: z.array(z.string()).nullable().optional(),
+  mediaUrls: z.array(z.string()).min(1, { message: "At least one project media item is required" }),
 });
 
 const collaboratorSchema = z.object({
@@ -354,7 +354,13 @@ export default function Projects() {
     
     // Validate additional media files
     let validationFailed = false;
-    const newMediaErrors: {images?: string, video?: string} = {};
+    const newMediaErrors: {images?: string, video?: string, general?: string} = {};
+    
+    // Validate at least one media item is required (either images or video)
+    if (projectImages.length === 0 && !projectVideo) {
+      newMediaErrors.general = "At least one project image or video is required";
+      validationFailed = true;
+    }
     
     // Validate project images (max 10)
     if (projectImages.length > 10) {
