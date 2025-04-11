@@ -65,6 +65,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     await handleCreateDemoProfiles(req, res, storage);
   });
   
+  // Add a special endpoint to enhance the main demo profile with all necessary details
+  apiRouter.post("/debug/enhance-main-demo", async (req: Request, res: Response) => {
+    try {
+      console.log("Enhancing main demo profile with comprehensive data");
+      
+      // Import the function to enhance the main demo profile
+      const { enhanceMainDemoProfile } = await import('./demo-enhanced-profile');
+      
+      // Enhance the main demo profile with comprehensive data
+      const success = await enhanceMainDemoProfile(storage);
+      
+      if (success) {
+        res.status(200).json({
+          success: true,
+          message: "Successfully enhanced main demo profile with skills, work experience, education, and services"
+        });
+      } else {
+        res.status(500).json({
+          success: false,
+          message: "Failed to enhance main demo profile"
+        });
+      }
+    } catch (error) {
+      console.error("Error enhancing main demo profile:", error);
+      res.status(500).json({
+        success: false,
+        message: "Error enhancing main demo profile",
+        error: String(error)
+      });
+    }
+  });
+  
   // Add a special endpoint to create comprehensive demo data with all components
   apiRouter.post("/debug/create-comprehensive-demo", async (req: Request, res: Response) => {
     try {
