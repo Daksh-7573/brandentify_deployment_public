@@ -19,56 +19,67 @@ async function addSkillsToMainDemo(storage: IStorage): Promise<void> {
     {
       userId: demoUserId,
       name: "JavaScript",
+      level: "Advanced",
       proficiency: 95
     },
     {
       userId: demoUserId,
       name: "React",
+      level: "Advanced",
       proficiency: 92
     },
     {
       userId: demoUserId,
       name: "TypeScript",
+      level: "Advanced",
       proficiency: 88
     },
     {
       userId: demoUserId,
       name: "Node.js",
+      level: "Advanced",
       proficiency: 90
     },
     {
       userId: demoUserId,
       name: "AWS",
+      level: "Advanced",
       proficiency: 85
     },
     {
       userId: demoUserId,
       name: "Docker",
+      level: "Intermediate",
       proficiency: 80
     },
     {
       userId: demoUserId,
       name: "CI/CD",
+      level: "Intermediate",
       proficiency: 82
     },
     {
       userId: demoUserId,
       name: "REST API Design",
+      level: "Advanced",
       proficiency: 94
     },
     {
       userId: demoUserId,
       name: "SQL",
+      level: "Advanced",
       proficiency: 86
     },
     {
       userId: demoUserId,
       name: "Agile Development",
+      level: "Advanced",
       proficiency: 88
     },
     {
       userId: demoUserId, 
       name: "UI/UX Design",
+      level: "Intermediate",
       proficiency: 78
     }
   ];
