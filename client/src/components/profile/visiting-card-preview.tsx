@@ -1,7 +1,7 @@
 import React from "react";
 import { UserData } from "@/types/user";
 import { Mail, Phone, Globe, Briefcase, MapPin, Code, Building2 } from "lucide-react";
-import ThreeDAnimatedCard from "./cards/3d-animated-card-new";
+import ThreeDAnimatedCard from "./cards/3d-animated-card";
 import HolographicCard from "./cards/holographic-card";
 import ClayPaperCard from "./cards/clay-paper-card";
 import CreativeCard from "./cards/creative-card";

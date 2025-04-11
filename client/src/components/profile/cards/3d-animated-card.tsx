@@ -336,7 +336,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
           {/* Futuristic footer */}
           <div className="h-8 bg-indigo-900/30 backdrop-blur-sm border-t border-indigo-400/10 flex items-center justify-center relative">
             <div className="absolute inset-0 bg-gradient-to-t from-fuchsia-600/10 to-transparent"></div>
-            <span className="text-xs text-indigo-200/70 font-light relative z-10 tracking-widest">QUANTUM CARD</span>
+            <span className="text-xs text-indigo-200/70 font-light relative z-10 tracking-widest">PROFESSIONAL CARD</span>
           </div>
         </div>
         
@@ -353,9 +353,9 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
           <div className="h-16 bg-indigo-900/30 backdrop-blur-sm border-b border-indigo-400/10 flex items-center justify-center relative">
             <div className="absolute inset-0 bg-gradient-to-b from-fuchsia-600/10 to-transparent"></div>
             <h2 
-              className="text-lg font-semibold relative z-10"
+              className="text-lg font-medium"
               style={{ 
-                backgroundImage: "linear-gradient(90deg, rgba(99,102,241,1) 0%, rgba(168,85,247,1) 35%, rgba(59,130,246,1) 70%, rgba(99,102,241,1) 100%)",
+                backgroundImage: "linear-gradient(90deg, rgba(99,102,241,1) 0%, rgba(168,85,247,1) 50%, rgba(99,102,241,1) 100%)",
                 backgroundSize: "200% auto",
                 WebkitBackgroundClip: "text",
                 backgroundClip: "text",
@@ -367,150 +367,123 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
             </h2>
           </div>
           
-          {/* Main content */}
-          <div className="flex-1 p-6 flex flex-col relative">
-            {/* Radial gradient background */}
-            <div className="absolute inset-0 opacity-50" style={{ backgroundImage: "radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 70%)" }}></div>
-            
-            {/* QR code section - visible only when button is clicked */}
-            {showQR && (
+          {/* Contact details area */}
+          <div className="flex-1 p-6 space-y-5 overflow-y-auto">
+            {/* Email */}
+            <div className="flex items-center gap-4 group">
               <div 
-                className="absolute inset-0 bg-slate-900/90 backdrop-blur-sm z-30 flex flex-col items-center justify-center p-6"
-                style={{ animation: "qrReveal 0.3s ease-out" }}
+                className="h-12 w-12 rounded-full bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center shadow-md group-hover:shadow-indigo-500/20 transition-all"
+                style={{ 
+                  transform: "translateZ(5px)",
+                  animation: "glowPulse 3s infinite alternate"
+                }}
               >
+                <Mail className="h-6 w-6 text-indigo-300" />
+              </div>
+              <div className="flex-1">
+                <p className="text-xs text-indigo-300/70 font-light mb-1">Email</p>
+                <a 
+                  href={`mailto:${userData.email}`} 
+                  className="text-indigo-100 font-light truncate block hover:text-fuchsia-300 transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {userData.email}
+                </a>
+              </div>
+            </div>
+            
+            {/* Phone - if available */}
+            {userData.phoneNumber && (
+              <div className="flex items-center gap-4 group">
                 <div 
-                  className="w-48 h-48 bg-white p-3 rounded-lg"
-                  style={{ animation: "glowPulse 2s ease-in-out infinite" }}
+                  className="h-12 w-12 rounded-full bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center shadow-md group-hover:shadow-indigo-500/20 transition-all"
+                  style={{ 
+                    transform: "translateZ(5px)",
+                    animation: "glowPulse 3s infinite alternate",
+                    animationDelay: "0.5s"
+                  }}
                 >
-                  <img src={qrCodeUrl} alt="QR Code" className="w-full h-full" />
+                  <Phone className="h-6 w-6 text-indigo-300" />
                 </div>
-                <p className="text-sm text-indigo-200 mt-4">{profileLink}</p>
-                <button 
-                  className="mt-6 px-4 py-2 bg-indigo-600/30 border border-indigo-400/20 rounded-md text-sm text-indigo-200 hover:bg-indigo-500/40 transition-colors"
-                  onClick={toggleQR}
-                >
-                  Close
-                </button>
+                <div className="flex-1">
+                  <p className="text-xs text-indigo-300/70 font-light mb-1">Phone</p>
+                  <a 
+                    href={`tel:${userData.phoneNumber}`} 
+                    className="text-indigo-100 font-light truncate block hover:text-fuchsia-300 transition-colors"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {userData.phoneNumber}
+                  </a>
+                </div>
               </div>
             )}
             
-            {/* Contact items */}
-            <div className="space-y-5">
-              {/* Email with glow animation */}
-              <div className="flex items-center gap-4">
-                <div 
-                  className="h-12 w-12 rounded-full bg-indigo-600/20 border border-indigo-400/30 flex items-center justify-center shadow-lg"
-                  style={{ animation: "glowPulse 2s ease-in-out infinite" }}
-                >
-                  <Mail className="h-5 w-5 text-indigo-300" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-xs text-indigo-300/70 font-light">Email</p>
-                  <a 
-                    href={`mailto:${userData.email}`} 
-                    className="text-indigo-100 text-sm font-light hover:text-fuchsia-300 transition-colors"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {userData.email}
-                  </a>
-                </div>
+            {/* Website - if available */}
+            <div className="flex items-center gap-4 group">
+              <div 
+                className="h-12 w-12 rounded-full bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center shadow-md group-hover:shadow-indigo-500/20 transition-all"
+                style={{ 
+                  transform: "translateZ(5px)",
+                  animation: "glowPulse 3s infinite alternate",
+                  animationDelay: "1s"
+                }}
+              >
+                <Globe className="h-6 w-6 text-indigo-300" />
               </div>
-              
-              {/* Phone */}
-              <div className="flex items-center gap-4">
-                <div 
-                  className="h-12 w-12 rounded-full bg-indigo-600/20 border border-indigo-400/30 flex items-center justify-center shadow-lg"
-                  style={{ animation: "glowPulse 2s ease-in-out infinite" }}
+              <div className="flex-1">
+                <p className="text-xs text-indigo-300/70 font-light mb-1">Profile URL</p>
+                <a 
+                  href={`https://${profileLink}`} 
+                  className="text-indigo-100 font-light truncate block hover:text-fuchsia-300 transition-colors flex items-center gap-1"
+                  onClick={(e) => e.stopPropagation()}
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
-                  <Phone className="h-5 w-5 text-indigo-300" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-xs text-indigo-300/70 font-light">Phone</p>
-                  <a 
-                    href={userData.phoneNumber ? `tel:${userData.phoneNumber}` : "#"} 
-                    className="text-indigo-100 text-sm font-light hover:text-fuchsia-300 transition-colors"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {userData.phoneNumber || "Add phone number"}
-                  </a>
-                </div>
+                  <span>{profileLink}</span>
+                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </a>
               </div>
-              
-              {/* Profile Link */}
-              <div className="flex items-center gap-4">
-                <div 
-                  className="h-12 w-12 rounded-full bg-indigo-600/20 border border-indigo-400/30 flex items-center justify-center shadow-lg"
-                  style={{ animation: "glowPulse 2s ease-in-out infinite" }}
-                >
-                  <Globe className="h-5 w-5 text-indigo-300" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-xs text-indigo-300/70 font-light">Profile</p>
-                  <a 
-                    href={`https://${profileLink}`} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="text-indigo-100 text-sm font-light hover:text-fuchsia-300 transition-colors flex items-center gap-1"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <span>{profileLink}</span>
-                    <ExternalLink className="h-3 w-3" />
-                  </a>
-                </div>
-              </div>
-              
-              {/* Location with map link */}
-              {userData.location && (
-                <div className="flex items-center gap-4">
-                  <div 
-                    className="h-12 w-12 rounded-full bg-indigo-600/20 border border-indigo-400/30 flex items-center justify-center shadow-lg"
-                    style={{ animation: "glowPulse 2s ease-in-out infinite" }}
-                  >
-                    <MapPin className="h-5 w-5 text-indigo-300" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-xs text-indigo-300/70 font-light">Location</p>
-                    <a 
-                      href={`https://maps.google.com/?q=${encodeURIComponent(userData.location)}`} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-indigo-100 text-sm font-light hover:text-fuchsia-300 transition-colors flex items-center gap-1"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <span>{userData.location}</span>
-                      <ExternalLink className="h-3 w-3" />
-                    </a>
-                  </div>
-                </div>
-              )}
             </div>
             
-            {/* QR Code Button */}
-            <div className="flex justify-center mt-6">
+            {/* QR Code for sharing */}
+            <div className="flex flex-col items-center justify-center mt-6 pt-4 border-t border-indigo-400/10">
               <button 
-                className="px-4 py-2 bg-indigo-600/30 border border-indigo-400/20 rounded-md text-sm text-indigo-200 hover:bg-indigo-500/40 transition-colors flex items-center gap-2"
                 onClick={toggleQR}
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-600/30 border border-indigo-400/20 text-indigo-200 text-sm font-light hover:bg-indigo-500/40 transition-colors"
               >
                 <QrCode className="h-4 w-4" />
-                <span>View QR Code</span>
+                <span>Show Profile QR Code</span>
               </button>
-            </div>
-            
-            {/* Hint text */}
-            <div className="text-center mt-auto text-xs text-indigo-200/60 pt-4">
-              <p>Tap to flip card</p>
+              
+              {/* QR Code display */}
+              {showQR && (
+                <div 
+                  className="mt-4 p-3 bg-white/90 rounded-xl shadow-lg"
+                  style={{ 
+                    animation: "qrReveal 0.3s ease-out forwards",
+                    transformOrigin: "center" 
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <img 
+                    src={qrCodeUrl} 
+                    alt="Profile QR Code" 
+                    className="h-40 w-40 rounded-lg"
+                  />
+                </div>
+              )}
             </div>
           </div>
           
           {/* Futuristic footer */}
           <div className="h-8 bg-indigo-900/30 backdrop-blur-sm border-t border-indigo-400/10 flex items-center justify-center relative">
             <div className="absolute inset-0 bg-gradient-to-t from-fuchsia-600/10 to-transparent"></div>
-            <span className="text-xs text-indigo-200/70 font-light relative z-10 tracking-widest">QUANTUM CARD</span>
+            <span className="text-xs text-indigo-200/70 font-light relative z-10 tracking-widest">PROFESSIONAL CARD</span>
           </div>
         </div>
       </div>
       
-      {/* CSS keyframes handled outside component for now */}
+      {/* CSS keyframes handled in index.css */}
     </div>
   );
 };
