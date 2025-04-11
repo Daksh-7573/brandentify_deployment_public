@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, Phone, Share2, Plus, X, MapPin, ChevronLeft, ChevronRight, Briefcase, MessageSquare, QrCode, Copy, Linkedin } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useCurrentCompany } from '@/hooks/use-current-company';
 
 import type { UserData } from '@/types/user';
 
@@ -12,6 +13,9 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
   const { toast } = useToast();
   const [isFabOpen, setIsFabOpen] = useState(false);
   const [currentView, setCurrentView] = useState<'contact' | 'main' | 'about'>('main');
+  
+  // Get current company from latest work experience
+  const { company } = useCurrentCompany(userData.id);
   
   const profileLink = `https://brandentifier.com/@${userData.username}`;
   
@@ -123,10 +127,10 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
             
             {/* Additional info */}
             <div className="w-full space-y-3">
-              {userData.company && (
+              {company && (
                 <div className="flex items-center justify-center gap-2">
                   <Briefcase className="h-4 w-4 text-white/70" />
-                  <span className="text-sm">{userData.company}</span>
+                  <span className="text-sm">{company}</span>
                 </div>
               )}
               
