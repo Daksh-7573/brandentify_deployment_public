@@ -6,7 +6,6 @@ import HolographicCard from "./cards/holographic-card";
 import ClayPaperCard from "./cards/clay-paper-card";
 import CreativeCard from "./cards/creative-card";
 import ArtisticCard from "./cards/artistic-card";
-import ProfessionalCard from "./cards/professional-card";
 import ProfessionalCardRenewed from "./cards/professional-card-renewed";
 
 interface VisitingCardPreviewProps {
