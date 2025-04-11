@@ -1414,7 +1414,7 @@ export default function Profile() {
       <Dialog open={showEditBasicInfo} onOpenChange={setShowEditBasicInfo}>
         <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Profile Information</DialogTitle>
+            <DialogTitle>All About Me</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit}>
             <div className="grid gap-4 py-4">
