@@ -1609,9 +1609,9 @@ export default function Profile() {
                 </Select>
               </div>
               
-              {/* About Me section */}
+              {/* What I'm All About section */}
               <div className="grid gap-2">
-                <Label htmlFor="aboutMe">About Me</Label>
+                <Label htmlFor="aboutMe">What I'm All About</Label>
                 <Textarea
                   id="aboutMe"
                   name="aboutMe"
@@ -1826,10 +1826,10 @@ export default function Profile() {
                     </p>
                   )}
                   
-                  {/* About Me section */}
+                  {/* What I'm All About section */}
                   {userData?.aboutMe && (
                     <div className="mt-4">
-                      <h3 className="text-sm font-medium text-gray-900">About Me</h3>
+                      <h3 className="text-sm font-medium text-gray-900">What I'm All About</h3>
                       <p className="mt-2 text-sm text-gray-500 whitespace-pre-line">
                         {userData.aboutMe}
                       </p>
