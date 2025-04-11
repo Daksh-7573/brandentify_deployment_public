@@ -347,6 +347,7 @@ export class MemStorage implements IStorage {
     this.currentNewsSourceId = 1;
     this.currentNewsArticleId = 1;
     this.currentNewsUserPreferenceId = 1;
+    this.currentUserPersonalInfoId = 1;
     
     // Initialize with a default user for development/demo
     this.initializeDemoData();
@@ -442,6 +443,7 @@ export class MemStorage implements IStorage {
     this.currentNewsSourceId = 1;
     this.currentNewsArticleId = 1;
     this.currentNewsUserPreferenceId = 1;
+    this.currentUserPersonalInfoId = 1;
     
     // No pre-created skills
     
@@ -547,6 +549,9 @@ export class MemStorage implements IStorage {
     
     // Clear all existing portfolios
     this.portfolios.clear();
+    
+    // Clear all existing personal info
+    this.userPersonalInfo.clear();
     
     // Clear all existing services
     this.services.clear();
