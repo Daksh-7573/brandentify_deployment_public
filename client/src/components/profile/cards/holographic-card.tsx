@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { UserData } from "@/types/user";
+import { useCurrentCompany } from "@/hooks/use-current-company";
 import { Mail, Phone, Globe, Briefcase, MapPin, Code, Building2 } from "lucide-react";
 
 interface HolographicCardProps {
@@ -15,6 +16,9 @@ const HolographicCard: React.FC<HolographicCardProps> = ({ userData }) => {
   const [showIcons, setShowIcons] = useState(false);
   const [showContent, setShowContent] = useState(false);
   const [hoveredElement, setHoveredElement] = useState<string | null>(null);
+  
+  // Get current company from latest work experience
+  const { company } = useCurrentCompany(userData.id);
   
   // Format profile link
   const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;
@@ -202,7 +206,7 @@ const HolographicCard: React.FC<HolographicCardProps> = ({ userData }) => {
             )}
             
             {/* Company */}
-            {userData.company && (
+            {company && (
               <div 
                 className={`flex items-center gap-2 transition-all duration-300 delay-200
                   ${showIcons ? 'opacity-100' : 'opacity-0'}
@@ -220,7 +224,7 @@ const HolographicCard: React.FC<HolographicCardProps> = ({ userData }) => {
                   />
                 </div>
                 <span className="text-white">
-                  {userData.company}
+                  {company}
                 </span>
               </div>
             )}
@@ -330,7 +334,7 @@ const HolographicCard: React.FC<HolographicCardProps> = ({ userData }) => {
           className={`h-6 bg-white/10 flex items-center justify-center transition-all duration-1000
             ${showContent ? 'opacity-100' : 'opacity-0'}`}
         >
-          <span className="text-xs text-white font-light">Digital Visiting Card</span>
+          <span className="text-xs text-white font-light tracking-widest">QUANTUM CARD</span>
         </div>
       </div>
 

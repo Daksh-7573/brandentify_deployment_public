@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { UserData } from "@/types/user";
+import { useCurrentCompany } from "@/hooks/use-current-company";
 import { 
   Mail, 
   Phone, 
@@ -27,6 +28,9 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
   const [glowIntensity, setGlowIntensity] = useState(0);
   const [showQR, setShowQR] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+  
+  // Get current company from latest work experience
+  const { company } = useCurrentCompany(userData.id);
   
   // Format profile link
   const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;
@@ -226,7 +230,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
               )}
               
               {/* Company - clickable with glow effect */}
-              {userData.company && (
+              {company && (
                 <div className="flex items-center gap-3">
                   <div className="h-8 w-8 rounded-full bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center">
                     <Briefcase className="h-4 w-4 text-indigo-300" />
@@ -236,7 +240,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
                     className="text-indigo-100 font-light flex items-center gap-1 hover:text-fuchsia-300 transition-colors group" 
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <span>{userData.company}</span>
+                    <span>{company}</span>
                     <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </a>
                 </div>
