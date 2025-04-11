@@ -59,6 +59,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize the email service
   await initEmailService();
   
+  // Create detailed demo profiles with work experiences, education, skills, and projects
+  apiRouter.post("/debug/create-demo-profiles", async (req: Request, res: Response) => {
+    await handleCreateDemoProfiles(req, res, storage);
+  });
+  
   // Add a special endpoint to clear all demo user profile data (for development purposes)
   apiRouter.get("/debug/reset-demo-profile", async (req: Request, res: Response) => {
     try {

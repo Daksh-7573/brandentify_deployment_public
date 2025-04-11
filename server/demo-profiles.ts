@@ -13,6 +13,33 @@ function formatDate(date: Date): string {
   return date.toISOString().split('T')[0]; // Returns YYYY-MM-DD format
 }
 
+// Fix work experience with string dates
+function fixWorkExperience(exp: any): InsertWorkExperience {
+  return {
+    ...exp,
+    startDate: formatDate(exp.startDate as Date),
+    endDate: exp.endDate ? formatDate(exp.endDate as Date) : null
+  };
+}
+
+// Fix education with string dates
+function fixEducation(edu: any): InsertEducation {
+  return {
+    ...edu,
+    startDate: formatDate(edu.startDate as Date),
+    endDate: edu.endDate ? formatDate(edu.endDate as Date) : null
+  };
+}
+
+// Fix project with string dates
+function fixProject(proj: any): InsertProject {
+  return {
+    ...proj,
+    startDate: formatDate(proj.startDate as Date),
+    endDate: proj.endDate ? formatDate(proj.endDate as Date) : null
+  };
+}
+
 /**
  * Creates three complete demo profiles with all details
  */
@@ -51,15 +78,13 @@ async function createTechExecutiveProfile(storage: IStorage) {
     industry: "Technology",
     lookingFor: "Strategic partnerships and mentoring opportunities",
     profileCompleted: 100, // Integer for profile completion percentage
-    emailVerified: true,
-    emailVerificationToken: null,
-    emailVerificationExpires: null,
+    // Note: emailVerified field is managed by the storage layer
   };
   
   const user = await storage.createUser(techExecUser);
   
   // Add work experiences
-  const experiences: InsertWorkExperience[] = [
+  const experiences = [
     {
       userId: user.id,
       company: "TechNova",
@@ -93,7 +118,8 @@ async function createTechExecutiveProfile(storage: IStorage) {
   ];
   
   for (const exp of experiences) {
-    await storage.createWorkExperience(exp);
+    const fixedExp = fixWorkExperience(exp);
+    await storage.createWorkExperience(fixedExp);
   }
   
   // Add education
