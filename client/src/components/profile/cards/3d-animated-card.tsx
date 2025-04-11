@@ -1,7 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
 import { UserData } from "@/types/user";
-import { useCurrentCompany } from "@/hooks/use-current-company";
-import { useEducation } from "@/hooks/use-education";
 import { 
   Mail, 
   Phone, 
@@ -15,9 +13,7 @@ import {
   Github, 
   Twitter,
   Instagram,
-  QrCode,
-  User,
-  GraduationCap
+  QrCode
 } from "lucide-react";
 
 interface ThreeDAnimatedCardProps {
@@ -31,12 +27,6 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
   const [glowIntensity, setGlowIntensity] = useState(0);
   const [showQR, setShowQR] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
-  
-  // Get current company from latest work experience or use fallback
-  const { company } = useCurrentCompany(userData.id, userData.company || "Brandentifier");
-  
-  // Get education data
-  const { educations } = useEducation(userData.id);
   
   // Format profile link
   const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;
@@ -236,7 +226,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
               )}
               
               {/* Company - clickable with glow effect */}
-              {company && (
+              {userData.company && (
                 <div className="flex items-center gap-3">
                   <div className="h-8 w-8 rounded-full bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center">
                     <Briefcase className="h-4 w-4 text-indigo-300" />
@@ -246,7 +236,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
                     className="text-indigo-100 font-light flex items-center gap-1 hover:text-fuchsia-300 transition-colors group" 
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <span>{company}</span>
+                    <span>{userData.company}</span>
                     <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </a>
                 </div>
@@ -261,24 +251,6 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
                   <span className="text-indigo-100 font-light">
                     {userData.location}
                   </span>
-                </div>
-              )}
-              
-              {/* Education */}
-              {educations && educations.length > 0 && educations[0]?.degree && educations[0]?.institution && (
-                <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-full bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center">
-                    <GraduationCap className="h-4 w-4 text-indigo-300" />
-                  </div>
-                  <div className="text-indigo-100 font-light">
-                    <span>{educations[0].degree}</span>
-                    <div className="text-xs text-indigo-300/70">
-                      {educations[0].institution}
-                      {educations[0].endDate && educations[0].endDate !== 'Present' 
-                        ? `, ${new Date(educations[0].endDate).getFullYear()}`
-                        : educations[0].endDate === 'Present' ? ', Present' : ''}
-                    </div>
-                  </div>
                 </div>
               )}
             </div>
@@ -431,25 +403,6 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
                 </div>
               </div>
               
-              {/* Professional Summary */}
-              {(userData.aboutMe || userData.lookingFor) && (
-                <div className="flex items-start gap-4 mt-4">
-                  <div 
-                    className="h-12 w-12 rounded-full bg-indigo-600/20 border border-indigo-400/30 flex items-center justify-center shadow-lg"
-                    style={{ animation: "glowPulse 2s ease-in-out infinite" }}
-                  >
-                    <User className="h-5 w-5 text-indigo-300" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-xs text-indigo-300/70 font-light">About Me</p>
-                    <p className="text-indigo-100 text-sm font-light leading-tight mt-1">
-                      {userData.aboutMe || userData.lookingFor || 
-                        `Professional with experience in ${userData.industry || 'various industries'}. Let's connect!`}
-                    </p>
-                  </div>
-                </div>
-              )}
-              
               {/* Location with map link */}
               {userData.location && (
                 <div className="flex items-center gap-4">
@@ -471,31 +424,6 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
                       <span>{userData.location}</span>
                       <ExternalLink className="h-3 w-3" />
                     </a>
-                  </div>
-                </div>
-              )}
-              
-              {/* Education */}
-              {educations && educations.length > 0 && educations[0]?.degree && educations[0]?.institution && (
-                <div className="flex items-center gap-4">
-                  <div 
-                    className="h-12 w-12 rounded-full bg-indigo-600/20 border border-indigo-400/30 flex items-center justify-center shadow-lg"
-                    style={{ animation: "glowPulse 2s ease-in-out infinite" }}
-                  >
-                    <GraduationCap className="h-5 w-5 text-indigo-300" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-xs text-indigo-300/70 font-light">Education</p>
-                    <div className="text-indigo-100 text-sm font-light">
-                      <span>{educations[0].degree}</span>
-                      <div className="text-xs text-indigo-300/70">
-                        {educations[0].institution}
-                        {educations[0].endDate && educations[0].endDate !== 'Present' 
-                          ? `, ${new Date(educations[0].endDate).getFullYear()}`
-                          : educations[0].endDate === 'Present' ? ', Present' : ''}
-                      </div>
-                      {educations[0].field && <div className="text-xs text-indigo-300/70">{educations[0].field}</div>}
-                    </div>
                   </div>
                 </div>
               )}
@@ -527,8 +455,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
       </div>
       
       {/* CSS keyframes and animations */}
-      <style dangerouslySetInnerHTML={{ 
-        __html: `
+      <style jsx>{`
         @keyframes shine {
           to { background-position: 200% center; }
         }
@@ -549,8 +476,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
           0% { transform: scale(0.8); opacity: 0; }
           100% { transform: scale(1); opacity: 1; }
         }
-        `
-      }}></style>
+      `}</style>
     </div>
   );
 };

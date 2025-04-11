@@ -12,12 +12,9 @@ import {
   QrCode, 
   MessageSquare,
   Sun,
-  Moon,
-  GraduationCap
+  Moon
 } from "lucide-react";
 import { UserData } from "@/types/user";
-import { useCurrentCompany } from "@/hooks/use-current-company";
-import { useEducation } from "@/hooks/use-education";
 
 interface ProfessionalCardProps {
   userData: UserData;
@@ -27,12 +24,6 @@ const ProfessionalCard: React.FC<ProfessionalCardProps> = ({ userData }) => {
   // State for card interaction
   const [isRevealed, setIsRevealed] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  
-  // Get current company from latest work experience or use fallback
-  const { company } = useCurrentCompany(userData.id, userData.company || "Brandentifier");
-  
-  // Get education data
-  const { educations } = useEducation(userData.id);
   
   // Format profile link
   const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;
@@ -65,8 +56,8 @@ const ProfessionalCard: React.FC<ProfessionalCardProps> = ({ userData }) => {
         window.open("https://linkedin.com", "_blank");
         break;
       case "company":
-        if (company) {
-          window.open(`https://www.google.com/search?q=${encodeURIComponent(company)}`, "_blank");
+        if (userData.company) {
+          window.open(`https://www.google.com/search?q=${encodeURIComponent(userData.company)}`, "_blank");
         }
         break;
       case "location":
@@ -170,7 +161,7 @@ const ProfessionalCard: React.FC<ProfessionalCardProps> = ({ userData }) => {
         </div>
         
         {/* Company (clickable) */}
-        {company && (
+        {userData.company && (
           <div 
             className={`company-badge relative z-10 mt-4 px-4 py-2 rounded-full bg-opacity-10 cursor-pointer transition-all ${
               isDarkMode ? 'bg-blue-900 text-blue-300 hover:bg-blue-800' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
@@ -178,19 +169,7 @@ const ProfessionalCard: React.FC<ProfessionalCardProps> = ({ userData }) => {
             onClick={(e) => handleContact("company", e)}
           >
             <Building2 className="h-4 w-4" />
-            <span className="font-medium">{company}</span>
-          </div>
-        )}
-        
-        {/* Education Badge */}
-        {educations && educations.length > 0 && educations[0]?.degree && educations[0]?.institution && (
-          <div 
-            className={`education-badge relative z-10 mt-2 px-4 py-2 rounded-full bg-opacity-10 transition-all ${
-              isDarkMode ? 'bg-purple-900 text-purple-300' : 'bg-purple-50 text-purple-600'
-            } flex items-center gap-2`}
-          >
-            <GraduationCap className="h-4 w-4" />
-            <span className="font-medium">{educations[0].degree}, {educations[0].institution}</span>
+            <span className="font-medium">{userData.company}</span>
           </div>
         )}
         
@@ -340,37 +319,6 @@ const ProfessionalCard: React.FC<ProfessionalCardProps> = ({ userData }) => {
               </div>
             </div>
           )}
-          
-          {/* Education */}
-          {educations && educations.length > 0 && (
-            <div
-              className={`contact-item flex items-center gap-3 p-3 rounded-lg transition-all ${
-                isDarkMode ? 'bg-slate-700/50' : 'bg-slate-50 hover:bg-purple-50/30'
-              } shadow-sm`}
-            >
-              <div className={`icon-container h-10 w-10 rounded-full flex items-center justify-center ${
-                isDarkMode ? 'bg-purple-900/50' : 'bg-purple-100'
-              }`}>
-                <GraduationCap className={`h-5 w-5 ${
-                  isDarkMode ? 'text-purple-300' : 'text-purple-600'
-                }`} />
-              </div>
-              <div className="flex-1">
-                <p className={`text-sm font-medium ${isDarkMode ? 'text-purple-200' : 'text-purple-600'}`}>Education</p>
-                <p className={`text-sm truncate max-w-[180px] ${
-                  isDarkMode ? 'text-slate-300' : 'text-slate-600'
-                }`}>{educations[0].degree}</p>
-                <p className={`text-xs truncate max-w-[180px] ${
-                  isDarkMode ? 'text-slate-400' : 'text-slate-500'
-                }`}>
-                  {educations[0].institution}
-                  {educations[0].endDate && educations[0].endDate !== 'Present' 
-                    ? `, ${new Date(educations[0].endDate).getFullYear()}`
-                    : educations[0].endDate === 'Present' ? ', Present' : ''}
-                </p>
-              </div>
-            </div>
-          )}
         </div>
         
         {/* QR Code section (simulated) */}
@@ -386,7 +334,7 @@ const ProfessionalCard: React.FC<ProfessionalCardProps> = ({ userData }) => {
           </div>
           <p className={`mt-2 text-sm ${
             isDarkMode ? 'text-slate-400' : 'text-slate-500'
-          }`}>Quantum Card</p>
+          }`}>Scan to save contact</p>
         </div>
         
         {/* Custom message and back button */}

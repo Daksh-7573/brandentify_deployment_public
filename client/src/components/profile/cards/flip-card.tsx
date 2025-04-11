@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { UserData } from "@/types/user";
-import { Mail, Phone, Globe, Briefcase, MapPin, Code, Building2, Moon, Sun, User } from "lucide-react";
+import { Mail, Phone, Globe, Briefcase, MapPin, Code, Building2, Moon, Sun } from "lucide-react";
 
 interface FlipCardProps {
   userData: UserData;
@@ -181,7 +181,7 @@ const FlipCard: React.FC<FlipCardProps> = ({ userData }) => {
           
           {/* Footer */}
           <div className={`h-6 ${footerStyles} flex items-center justify-center`}>
-            <span className="text-xs font-light">Quantum Card</span>
+            <span className="text-xs font-light">Digital Visiting Card</span>
           </div>
         </div>
         
@@ -248,31 +248,15 @@ const FlipCard: React.FC<FlipCardProps> = ({ userData }) => {
               </div>
             </div>
             
-            {/* Professional Summary */}
-            {(userData.aboutMe || userData.lookingFor) && (
-              <div className="flex items-start gap-3 relative mt-2">
-                <div className={`h-10 w-10 rounded-full ${iconBgColor} flex items-center justify-center`}>
-                  <User className={`h-5 w-5 ${iconColor}`} />
-                </div>
-                <div>
-                  <p className={`text-xs opacity-70 ${textColor}`}>About Me</p>
-                  <p className={`text-sm ${textColor} leading-tight`}>
-                    {userData.aboutMe || userData.lookingFor || 
-                      `Professional with experience in ${userData.industry || 'various industries'}. Let's connect!`}
-                  </p>
-                </div>
-              </div>
-            )}
-            
             {/* Hint text */}
-            <div className="text-center mt-4 text-xs opacity-70">
+            <div className="text-center mt-2 text-xs opacity-70">
               <p className={textColor}>Tap to flip back</p>
             </div>
           </div>
           
           {/* Footer */}
           <div className={`h-6 ${footerStyles} flex items-center justify-center`}>
-            <span className="text-xs font-light">Quantum Card</span>
+            <span className="text-xs font-light">Digital Visiting Card</span>
           </div>
         </div>
       </div>

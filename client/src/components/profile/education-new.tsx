@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Loader2, CalendarIcon, Plus, Pencil, Trash } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -108,14 +108,6 @@ export default function Education() {
   
   const handleSaveEducation = async () => {
     try {
-      console.log("Attempting to save education:", newEducation);
-      // Add debug for API request context
-      console.log("API request details:", {
-        method: newEducation.id ? 'PUT' : 'POST',
-        url: newEducation.id ? `/api/educations/${newEducation.id}` : '/api/educations',
-        userId: userId
-      });
-      
       // Validate form
       if (!newEducation.degree || !newEducation.institution || !newEducation.startDate) {
         toast({
@@ -145,20 +137,11 @@ export default function Education() {
         }
       }
       
-      // Handle "Present" end date
-      let endDateForServer: string | undefined = newEducation.endDate;
-      if (isCurrentlyStudying || newEducation.endDate === 'Present') {
-        endDateForServer = undefined;
-      }
-      
       // Add userId to the education if it's not already there
       const educationToSave = {
         ...newEducation,
-        userId: userId,
-        endDate: endDateForServer
+        userId: userId
       };
-      
-      console.log("Prepared education object for server:", educationToSave);
       
       let response;
       let successMessage;
@@ -166,24 +149,15 @@ export default function Education() {
       // Check if we're editing an existing education (has an id) or creating a new one
       if (newEducation.id) {
         // Update existing education
-        response = await apiRequest({
-          method: 'PUT', 
-          url: `/api/educations/${newEducation.id}`, 
-          data: educationToSave
-        });
+        response = await apiRequest('PUT', `/api/educations/${newEducation.id}`, educationToSave);
         successMessage = "Your education has been updated successfully";
       } else {
         // Create new education
-        response = await apiRequest({
-          method: 'POST', 
-          url: '/api/educations', 
-          data: educationToSave
-        });
+        response = await apiRequest('POST', '/api/educations', educationToSave);
         successMessage = "Your education has been added successfully";
       }
       
       if (response.ok) {
-        console.log("Education saved successfully, response:", response);
         // Close modal
         setIsAddModalOpen(false);
         
@@ -204,21 +178,10 @@ export default function Education() {
           startDate: '',
           endDate: ''
         });
-        setIsCurrentlyStudying(false);
         
         // No need to reset date pickers as SimpleDatePicker manages its own state
       } else {
-        try {
-          const errorData = await response.json();
-          console.error("Server error response:", errorData);
-          throw new Error(`Failed to ${newEducation.id ? 'update' : 'save'} education: ${JSON.stringify(errorData)}`);
-        } catch (jsonError) {
-          console.error("Failed to parse error response as JSON:", jsonError);
-          // Get the text response instead
-          const errorText = await response.text();
-          console.error("Error response text:", errorText);
-          throw new Error(`Server error (${response.status}): Failed to ${newEducation.id ? 'update' : 'save'} education`);
-        }
+        throw new Error(`Failed to ${newEducation.id ? 'update' : 'save'} education`);
       }
     } catch (error) {
       console.error("Error saving education:", error);
@@ -251,20 +214,8 @@ export default function Education() {
 
   const handleDelete = async (id: number) => {
     try {
-      console.log("Deleting education with ID:", id);
-      // Add debug for API request context
-      console.log("Delete API request details:", {
-        method: 'DELETE',
-        url: `/api/educations/${id}`,
-        userId: userId
-      });
-      const response = await apiRequest({
-        method: 'DELETE', 
-        url: `/api/educations/${id}`
-      });
-      
+      const response = await apiRequest('DELETE', `/api/educations/${id}`);
       if (response.ok) {
-        console.log("Education deleted successfully");
         // Update local state immediately for responsiveness
         setEducations(educations.filter(edu => edu.id !== id));
         
@@ -277,17 +228,7 @@ export default function Education() {
         // Refresh data
         refetch();
       } else {
-        try {
-          const errorData = await response.json();
-          console.error("Server error response:", errorData);
-          throw new Error(`Failed to delete education: ${JSON.stringify(errorData)}`);
-        } catch (jsonError) {
-          console.error("Failed to parse error response as JSON:", jsonError);
-          // Get the text response instead
-          const errorText = await response.text();
-          console.error("Error response text:", errorText);
-          throw new Error(`Server error (${response.status}): Failed to delete education`);
-        }
+        throw new Error("Failed to delete education");
       }
     } catch (error) {
       console.error("Error deleting education:", error);
@@ -495,10 +436,8 @@ export default function Education() {
                       className="rounded border-gray-300 text-primary focus:ring-primary"
                       checked={isCurrentlyStudying || newEducation.endDate === 'Present'}
                       onChange={(e) => {
-                        const isChecked = e.target.checked;
-                        console.log("Current education checkbox changed:", isChecked);
-                        setIsCurrentlyStudying(isChecked);
-                        if (isChecked) {
+                        setIsCurrentlyStudying(e.target.checked);
+                        if (e.target.checked) {
                           setNewEducation({
                             ...newEducation,
                             endDate: 'Present'

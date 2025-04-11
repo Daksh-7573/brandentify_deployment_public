@@ -9,16 +9,12 @@ import {
   Code
 } from "lucide-react";
 import { UserData } from "@/types/user";
-import { useCurrentCompany } from "@/hooks/use-current-company";
 
 interface ClayPaperCardProps {
   userData: UserData;
 }
 
 const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
-  // Get the latest company from work experience or use fallback
-  const { company } = useCurrentCompany(userData.id, userData.company || "Brandentifier");
-  
   // Format profile link
   const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;
   
@@ -68,7 +64,7 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
               {userData.name || "Your Name"}
             </h2>
             <p className="text-sm text-amber-700">
-              {userData.title || "Add your job title"}
+              {userData.title || "Add your designation"}
             </p>
             
             {/* Paper cut corner */}
@@ -78,23 +74,14 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
         
         {/* Contact details with paper cutout effect */}
         <div className="flex-1 space-y-3 px-4 relative z-10">
-          {/* About Me / Brief Professional Summary */}
-          {userData.aboutMe && (
-            <div className="paper-cutout-item flex flex-col gap-1 bg-white p-2 rounded-lg shadow-clay-sm transform hover:translate-y-[-2px] hover:rotate-1 transition-all duration-200 mb-3">
-              <p className="text-sm text-amber-900 font-medium italic">
-                "{userData.aboutMe}"
-              </p>
-            </div>
-          )}
-          
-          {/* Company from Work Experience */}
-          {company && (
+          {/* Domain */}
+          {userData.domain && (
             <div className="paper-cutout-item flex items-center gap-2 bg-white p-2 rounded-lg shadow-clay-sm transform hover:translate-y-[-2px] hover:rotate-1 transition-all duration-200">
               <div className="paper-icon-container bg-amber-100 h-8 w-8 rounded-full flex items-center justify-center shadow-clay-sm">
-                <Briefcase className="h-4 w-4 text-amber-700" />
+                <Code className="h-4 w-4 text-amber-700" />
               </div>
               <span className="text-sm text-amber-900 font-medium">
-                {company}
+                {userData.domain}
               </span>
             </div>
           )}
@@ -107,6 +94,18 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
               </div>
               <span className="text-sm text-amber-900 font-medium">
                 {userData.industry}
+              </span>
+            </div>
+          )}
+          
+          {/* Company */}
+          {userData.company && (
+            <div className="paper-cutout-item flex items-center gap-2 bg-white p-2 rounded-lg shadow-clay-sm transform hover:translate-y-[-2px] hover:rotate-1 transition-all duration-200">
+              <div className="paper-icon-container bg-amber-100 h-8 w-8 rounded-full flex items-center justify-center shadow-clay-sm">
+                <Briefcase className="h-4 w-4 text-amber-700" />
+              </div>
+              <span className="text-sm text-amber-900 font-medium">
+                {userData.company}
               </span>
             </div>
           )}
@@ -156,7 +155,7 @@ const ClayPaperCard: React.FC<ClayPaperCardProps> = ({ userData }) => {
         
         {/* Footer with clay effect */}
         <div className="py-3 px-4 mt-4 text-center bg-amber-100 relative z-10">
-          <span className="text-xs text-amber-800 font-medium">Quantum Card</span>
+          <span className="text-xs text-amber-800 font-medium">Handcrafted Digital Card</span>
           
           {/* Clay deco elements */}
           <div className="absolute -right-2 bottom-4 h-5 w-5 rounded-full bg-amber-200 shadow-clay"></div>

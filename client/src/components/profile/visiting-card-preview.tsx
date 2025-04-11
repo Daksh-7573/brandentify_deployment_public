@@ -189,7 +189,7 @@ const VisitingCardPreview: React.FC<VisitingCardPreviewProps> = ({
         
         {/* Footer */}
         <div className={`h-6 ${cardType === "minimalist" ? "bg-gradient-to-r from-blue-600 to-blue-800" : "bg-white/10"} flex items-center justify-center`}>
-          <span className="text-xs text-white font-light">Quantum Card</span>
+          <span className="text-xs text-white font-light">Digital Visiting Card</span>
         </div>
       </div>
     </div>

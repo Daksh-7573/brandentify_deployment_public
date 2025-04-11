@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { Mail, Phone, Globe, Briefcase, Palette, Instagram, Twitter, Linkedin, MapPin } from "lucide-react";
+import { Mail, Phone, Globe, Briefcase, Palette, Instagram, Twitter, Linkedin } from "lucide-react";
 import { UserData } from "@/types/user";
-import { useCurrentCompany } from "@/hooks/use-current-company";
 
 interface ArtisticCardProps {
   userData: UserData;
@@ -11,9 +10,6 @@ const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
   // State to track hover and animations
   const [isHovered, setIsHovered] = useState(false);
   const [hoveredContact, setHoveredContact] = useState<string | null>(null);
-  
-  // Get current company from latest work experience or use fallback
-  const { company } = useCurrentCompany(userData.id, userData.company || "Brandentifier");
   
   // Format profile link
   const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;
@@ -201,7 +197,7 @@ const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
             </svg>
             
             {/* Company with ink effect */}
-            {company && (
+            {userData.company && (
               <div 
                 className="flex items-center gap-3 ink-item"
                 onMouseEnter={() => setHoveredContact("company")}
@@ -214,7 +210,7 @@ const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
                   className="text-sm text-[#006d77]" 
                   style={{ fontFamily: "'Georgia', serif" }}
                 >
-                  {company}
+                  {userData.company}
                 </span>
               </div>
             )}
@@ -342,8 +338,8 @@ const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
             />
           </svg>
           <div className="relative inline-block px-6 py-1 bg-[#006d77]/10 brush-reveal" style={{ animationDelay: "0.7s" }}>
-            <p className="text-xs text-[#006d77] tracking-widest" style={{ fontFamily: "'Georgia', serif" }}>
-              QUANTUM CARD
+            <p className="text-xs text-[#006d77] italic" style={{ fontFamily: "'Georgia', serif" }}>
+              Artistic Digital Card
             </p>
           </div>
           <svg className="absolute -bottom-6 left-0 w-full h-6 opacity-70">

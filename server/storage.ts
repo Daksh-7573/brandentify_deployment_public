@@ -1,5 +1,3 @@
-// Implementation of UserPersonalInfo is now included directly in this file
-
 import { 
   users, User, InsertUser, 
   resumes, Resume, InsertResume,
@@ -27,9 +25,7 @@ import {
   // New models for News Pulse feature
   newsSources, NewsSource, InsertNewsSource,
   newsArticles, NewsArticle, InsertNewsArticle,
-  newsUserPreferences, NewsUserPreference, InsertNewsUserPreference,
-  // User Personal Info
-  userPersonalInfo, UserPersonalInfo, InsertUserPersonalInfo
+  newsUserPreferences, NewsUserPreference, InsertNewsUserPreference
 } from "@shared/schema";
 
 // Interface for all storage operations
@@ -40,12 +36,6 @@ export interface IStorage {
   getFollowedHashtagsByUserId(userId: number): Promise<Hashtag[]>;
   isHashtagFollowedByUser(userId: number, hashtagId: number): Promise<boolean>;
   getPulsesByFollowedHashtags(userId: number): Promise<Pulse[]>;
-  
-  // User Personal Info operations
-  getUserPersonalInfoByUserId(userId: number): Promise<UserPersonalInfo | undefined>;
-  createUserPersonalInfo(personalInfo: InsertUserPersonalInfo): Promise<UserPersonalInfo>;
-  updateUserPersonalInfo(id: number, personalInfoData: Partial<UserPersonalInfo>): Promise<UserPersonalInfo | undefined>;
-  deleteUserPersonalInfo(id: number): Promise<boolean>;
   
   // User operations
   getUser(id: number): Promise<User | undefined>;
@@ -155,12 +145,6 @@ export interface IStorage {
   updatePortfolio(id: number, portfolio: Partial<Portfolio>): Promise<Portfolio | undefined>;
   deletePortfolio(id: number): Promise<boolean>;
   
-  // User Personal Info operations
-  getUserPersonalInfoByUserId(userId: number): Promise<UserPersonalInfo | undefined>;
-  createUserPersonalInfo(personalInfo: InsertUserPersonalInfo): Promise<UserPersonalInfo>;
-  updateUserPersonalInfo(userId: number, personalInfo: Partial<UserPersonalInfo>): Promise<UserPersonalInfo | undefined>;
-  deleteUserPersonalInfo(userId: number): Promise<boolean>;
-  
   // Service operations
   getServicesByUserId(userId: number): Promise<Service[]>;
   getServiceById(id: number): Promise<Service | undefined>;
@@ -240,63 +224,61 @@ export interface IStorage {
 
 // In-memory implementation of the storage
 export class MemStorage implements IStorage {
-  public users: Map<number, User>;
-  public resumes: Map<number, Resume>;
-  public workExperiences: Map<number, WorkExperience>;
-  public educations: Map<number, Education>;
-  public skills: Map<number, Skill>;
-  public chatMessages: Map<number, ChatMessage>;
-  public otpVerifications: Map<number, OtpVerification>;
-  public emailVerifications: Map<number, EmailVerification>;
-  public projects: Map<number, Project>;
-  public projectCollaborators: Map<number, ProjectCollaborator>;
-  public projectEndorsements: Map<number, ProjectEndorsement>;
-  public portfolios: Map<number, Portfolio>;
-  public userPersonalInfo: Map<number, UserPersonalInfo>;
-  public hashtags: Map<number, Hashtag>;
-  public pulseHashtags: Map<number, PulseHashtag>;
-  public services: Map<number, Service>;
-  public pulses: Map<number, Pulse>;
-  public pulseComments: Map<number, PulseComment>;
-  public pollVotes: Map<number, PollVote>;
-  public userHashtagFollows: Map<number, UserHashtagFollow>;
+  private users: Map<number, User>;
+  private resumes: Map<number, Resume>;
+  private workExperiences: Map<number, WorkExperience>;
+  private educations: Map<number, Education>;
+  private skills: Map<number, Skill>;
+  private chatMessages: Map<number, ChatMessage>;
+  private otpVerifications: Map<number, OtpVerification>;
+  private emailVerifications: Map<number, EmailVerification>;
+  private projects: Map<number, Project>;
+  private projectCollaborators: Map<number, ProjectCollaborator>;
+  private projectEndorsements: Map<number, ProjectEndorsement>;
+  private portfolios: Map<number, Portfolio>;
+  private hashtags: Map<number, Hashtag>;
+  private pulseHashtags: Map<number, PulseHashtag>;
+  private services: Map<number, Service>;
+  private pulses: Map<number, Pulse>;
+  private pulseComments: Map<number, PulseComment>;
+  private pollVotes: Map<number, PollVote>;
+  private userHashtagFollows: Map<number, UserHashtagFollow>;
   // New models for Industry Pulse Interaction System
-  public pulseReactions: Map<number, PulseReaction>;
-  public userReactionQuotas: Map<number, UserReactionQuota>;
-  public pulseShares: Map<number, PulseShare>;
+  private pulseReactions: Map<number, PulseReaction>;
+  private userReactionQuotas: Map<number, UserReactionQuota>;
+  private pulseShares: Map<number, PulseShare>;
   // New models for News Pulse feature
-  public newsSources: Map<number, NewsSource>;
-  public newsArticles: Map<number, NewsArticle>;
-  public newsUserPreferences: Map<number, NewsUserPreference>;
+  private newsSources: Map<number, NewsSource>;
+  private newsArticles: Map<number, NewsArticle>;
+  private newsUserPreferences: Map<number, NewsUserPreference>;
   
-  public currentUserId: number;
-  public currentResumeId: number;
-  public currentWorkExperienceId: number;
-  public currentEducationId: number;
-  public currentSkillId: number;
-  public currentChatMessageId: number;
-  public currentOtpVerificationId: number;
-  public currentEmailVerificationId: number;
-  public currentProjectId: number;
-  public currentProjectCollaboratorId: number;
-  public currentProjectEndorsementId: number;
-  public currentPortfolioId: number;
-  public currentServiceId: number;
-  public currentPulseId: number;
-  public currentPulseCommentId: number;
-  public currentPollVoteId: number;
-  public currentHashtagId: number;
-  public currentPulseHashtagId: number;
-  public currentUserHashtagFollowId: number;
+  private currentUserId: number;
+  private currentResumeId: number;
+  private currentWorkExperienceId: number;
+  private currentEducationId: number;
+  private currentSkillId: number;
+  private currentChatMessageId: number;
+  private currentOtpVerificationId: number;
+  private currentEmailVerificationId: number;
+  private currentProjectId: number;
+  private currentProjectCollaboratorId: number;
+  private currentProjectEndorsementId: number;
+  private currentPortfolioId: number;
+  private currentServiceId: number;
+  private currentPulseId: number;
+  private currentPulseCommentId: number;
+  private currentPollVoteId: number;
+  private currentHashtagId: number;
+  private currentPulseHashtagId: number;
+  private currentUserHashtagFollowId: number;
   // Pulse interaction system IDs
-  public currentPulseReactionId: number;
-  public currentUserReactionQuotaId: number;
-  public currentPulseShareId: number;
+  private currentPulseReactionId: number;
+  private currentUserReactionQuotaId: number;
+  private currentPulseShareId: number;
   // New IDs for News Pulse feature
-  public currentNewsSourceId: number;
-  public currentNewsArticleId: number;
-  public currentNewsUserPreferenceId: number;
-  public currentUserPersonalInfoId: number;
+  private currentNewsSourceId: number;
+  private currentNewsArticleId: number;
+  private currentNewsUserPreferenceId: number;
 
   constructor() {
     this.users = new Map();
@@ -311,7 +293,6 @@ export class MemStorage implements IStorage {
     this.projectCollaborators = new Map();
     this.projectEndorsements = new Map();
     this.portfolios = new Map();
-    this.userPersonalInfo = new Map();
     this.services = new Map();
     this.pulses = new Map();
     this.pulseComments = new Map();
@@ -355,7 +336,6 @@ export class MemStorage implements IStorage {
     this.currentNewsSourceId = 1;
     this.currentNewsArticleId = 1;
     this.currentNewsUserPreferenceId = 1;
-    this.currentUserPersonalInfoId = 1;
     
     // Initialize with a default user for development/demo
     this.initializeDemoData();
@@ -375,19 +355,10 @@ export class MemStorage implements IStorage {
       name: "Senior Professional",
       photoURL: null,
       title: "Senior Software Engineer",
-      aboutMe: "Experienced software engineer with over 10 years in the tech industry.",
-      domain: "Software Development",
-      company: "Tech Solutions Inc.",
-      visitingCardType: "professional",
-      isIndustryLeader: false,
       location: "San Francisco, CA, USA",
       industry: "Technology",
       lookingFor: "A Career Mentor",
       profileCompleted: 65,
-      geoLatitude: "37.7749",
-      geoLongitude: "-122.4194",
-      geoVisibleNearby: true,
-      geoLastUpdated: new Date(),
       emailVerified: true,
       emailVerificationToken: null,
       emailVerificationExpires: null,
@@ -460,7 +431,6 @@ export class MemStorage implements IStorage {
     this.currentNewsSourceId = 1;
     this.currentNewsArticleId = 1;
     this.currentNewsUserPreferenceId = 1;
-    this.currentUserPersonalInfoId = 1;
     
     // No pre-created skills
     
@@ -567,9 +537,6 @@ export class MemStorage implements IStorage {
     // Clear all existing portfolios
     this.portfolios.clear();
     
-    // Clear all existing personal info
-    this.userPersonalInfo.clear();
-    
     // Clear all existing services
     this.services.clear();
     
@@ -675,19 +642,10 @@ export class MemStorage implements IStorage {
       name: insertUser.name ?? null,
       photoURL: insertUser.photoURL ?? null,
       title: insertUser.title ?? null,
-      aboutMe: insertUser.aboutMe ?? null,
-      domain: insertUser.domain ?? null,
-      company: insertUser.company ?? null,
-      visitingCardType: insertUser.visitingCardType ?? null,
       location: insertUser.location ?? null,
       industry: insertUser.industry ?? null,
       lookingFor: insertUser.lookingFor ?? null,
       profileCompleted: insertUser.profileCompleted ?? null,
-      isIndustryLeader: insertUser.isIndustryLeader ?? false,
-      geoLatitude: insertUser.geoLatitude ?? null,
-      geoLongitude: insertUser.geoLongitude ?? null,
-      geoVisibleNearby: insertUser.geoVisibleNearby ?? true,
-      geoLastUpdated: insertUser.geoLastUpdated ?? new Date(),
       emailVerified: false,
       emailVerificationToken: null,
       emailVerificationExpires: null
@@ -2612,56 +2570,6 @@ export class MemStorage implements IStorage {
     
     return { title, content, hashtags: uniqueHashtags.slice(0, 5) };
   }
-
-  // User Personal Info methods
-  async getUserPersonalInfoByUserId(userId: number): Promise<UserPersonalInfo | undefined> {
-    const personalInfos = Array.from(this.userPersonalInfo.values());
-    return personalInfos.find((info) => info.userId === userId);
-  }
-
-  async createUserPersonalInfo(insertPersonalInfo: InsertUserPersonalInfo): Promise<UserPersonalInfo> {
-    const id = this.currentUserPersonalInfoId++;
-    const personalInfo: UserPersonalInfo = { 
-      ...insertPersonalInfo, 
-      id,
-      // Handle nullable fields with explicit nulls instead of undefined
-      contactEmail: insertPersonalInfo.contactEmail ?? null,
-      contactPhone: insertPersonalInfo.contactPhone ?? null,
-      website: insertPersonalInfo.website ?? null,
-      githubProfile: insertPersonalInfo.githubProfile ?? null,
-      linkedinProfile: insertPersonalInfo.linkedinProfile ?? null,
-      twitterProfile: insertPersonalInfo.twitterProfile ?? null,
-      instagramProfile: insertPersonalInfo.instagramProfile ?? null,
-      calendlyLink: insertPersonalInfo.calendlyLink ?? null,
-      preferredContactMethod: insertPersonalInfo.preferredContactMethod ?? null,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-    
-    this.userPersonalInfo.set(id, personalInfo);
-    return personalInfo;
-  }
-
-  async updateUserPersonalInfo(id: number, personalInfoData: Partial<UserPersonalInfo>): Promise<UserPersonalInfo | undefined> {
-    const personalInfo = this.userPersonalInfo.get(id);
-    if (!personalInfo) return undefined;
-    
-    const updatedInfo = { 
-      ...personalInfo, 
-      ...personalInfoData,
-      updatedAt: new Date() 
-    };
-    
-    this.userPersonalInfo.set(id, updatedInfo);
-    return updatedInfo;
-  }
-
-  async deleteUserPersonalInfo(id: number): Promise<boolean> {
-    return this.userPersonalInfo.delete(id);
-  }
 }
 
-// Create storage instance
-const memStorage = new MemStorage();
-
-export const storage = memStorage;
+export const storage = new MemStorage();

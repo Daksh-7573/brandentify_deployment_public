@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { UserData } from "@/types/user";
-import { useCurrentCompany } from "@/hooks/use-current-company";
-import { Mail, Phone, Globe, Briefcase, MapPin, Code, Building2, User } from "lucide-react";
+import { Mail, Phone, Globe, Briefcase, MapPin, Code, Building2 } from "lucide-react";
 
 interface HolographicCardProps {
   userData: UserData;
@@ -16,9 +15,6 @@ const HolographicCard: React.FC<HolographicCardProps> = ({ userData }) => {
   const [showIcons, setShowIcons] = useState(false);
   const [showContent, setShowContent] = useState(false);
   const [hoveredElement, setHoveredElement] = useState<string | null>(null);
-  
-  // Get current company from latest work experience or use fallback
-  const { company } = useCurrentCompany(userData.id, userData.company || "Brandentifier");
   
   // Format profile link
   const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;
@@ -206,7 +202,7 @@ const HolographicCard: React.FC<HolographicCardProps> = ({ userData }) => {
             )}
             
             {/* Company */}
-            {company && (
+            {userData.company && (
               <div 
                 className={`flex items-center gap-2 transition-all duration-300 delay-200
                   ${showIcons ? 'opacity-100' : 'opacity-0'}
@@ -224,7 +220,7 @@ const HolographicCard: React.FC<HolographicCardProps> = ({ userData }) => {
                   />
                 </div>
                 <span className="text-white">
-                  {company}
+                  {userData.company}
                 </span>
               </div>
             )}
@@ -326,40 +322,6 @@ const HolographicCard: React.FC<HolographicCardProps> = ({ userData }) => {
                 {profileLink}
               </span>
             </div>
-            
-            {/* Professional Summary with staggered animation */}
-            {(userData.aboutMe || userData.lookingFor) && (
-              <div 
-                className={`flex items-start gap-2 transition-all duration-300 delay-700
-                  ${showIcons ? 'opacity-100' : 'opacity-0'}
-                  ${hoveredElement === 'aboutMe' ? 'scale-105' : 'scale-100'}`}
-                onMouseEnter={() => setHoveredElement('aboutMe')}
-                onMouseLeave={() => setHoveredElement(null)}
-              >
-                <div className={`flex items-center justify-center w-8 h-8 rounded-full mt-0.5
-                  ${hoveredElement === 'aboutMe' ? 'bg-white/30' : 'bg-white/10'}
-                  transition-all duration-300 ease-in-out`}
-                >
-                  <User 
-                    className={`h-4 w-4 transition-all duration-500
-                      ${hoveredElement === 'aboutMe' ? 'text-white' : 'text-white/70'}`} 
-                  />
-                </div>
-                <div className="flex-1">
-                  <span 
-                    className={`text-white text-xs ${hoveredElement === 'aboutMe' ? 'text-white' : 'text-white/80'}`}
-                    style={{
-                      textShadow: hoveredElement === 'aboutMe' 
-                        ? '0 0 10px rgba(255,255,255,0.8), 0 0 20px rgba(255,255,255,0.4)' 
-                        : 'none'
-                    }}
-                  >
-                    {userData.aboutMe || userData.lookingFor || 
-                      `Professional with experience in ${userData.industry || 'various industries'}. Let's connect!`}
-                  </span>
-                </div>
-              </div>
-            )}
           </div>
         </div>
         
@@ -368,7 +330,7 @@ const HolographicCard: React.FC<HolographicCardProps> = ({ userData }) => {
           className={`h-6 bg-white/10 flex items-center justify-center transition-all duration-1000
             ${showContent ? 'opacity-100' : 'opacity-0'}`}
         >
-          <span className="text-xs text-white font-light tracking-widest">QUANTUM CARD</span>
+          <span className="text-xs text-white font-light">Digital Visiting Card</span>
         </div>
       </div>
 

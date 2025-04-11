@@ -11,7 +11,6 @@ import { projectThumbnailUpload, getFileUrl } from "./utils/upload";
 import { handleParseResume } from "./routes-parse-resume";
 import { handleCreateDemoProfiles } from "./routes-demo-profiles";
 import { updateUserGeolocation, updateUserRadarVisibility, getNearbyUsers } from "./routes-radar";
-import { createDemoNewsPulses } from "./demo-news-pulses";
 import { 
   insertUserSchema, 
   insertResumeSchema, 
@@ -63,63 +62,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create detailed demo profiles with work experiences, education, skills, and projects
   apiRouter.post("/debug/create-demo-profiles", async (req: Request, res: Response) => {
     await handleCreateDemoProfiles(req, res, storage);
-  });
-  
-  // Add a special endpoint to enhance the main demo profile with all necessary details
-  apiRouter.post("/debug/enhance-main-demo", async (req: Request, res: Response) => {
-    try {
-      console.log("Enhancing main demo profile with comprehensive data");
-      
-      // Import the function to enhance the main demo profile
-      const { enhanceMainDemoProfile } = await import('./demo-enhanced-profile');
-      
-      // Enhance the main demo profile with comprehensive data
-      const success = await enhanceMainDemoProfile(storage);
-      
-      if (success) {
-        res.status(200).json({
-          success: true,
-          message: "Successfully enhanced main demo profile with skills, work experience, education, and services"
-        });
-      } else {
-        res.status(500).json({
-          success: false,
-          message: "Failed to enhance main demo profile"
-        });
-      }
-    } catch (error) {
-      console.error("Error enhancing main demo profile:", error);
-      res.status(500).json({
-        success: false,
-        message: "Error enhancing main demo profile",
-        error: String(error)
-      });
-    }
-  });
-  
-  // Add a special endpoint to create comprehensive demo data with all components
-  apiRouter.post("/debug/create-comprehensive-demo", async (req: Request, res: Response) => {
-    try {
-      console.log("Creating comprehensive demo data with all profile components");
-      
-      // Import the function to initialize all comprehensive demo data
-      const { initializeComprehensiveDemoData } = await import('./initialize-demo-data');
-      
-      // Initialize all comprehensive demo data
-      await initializeComprehensiveDemoData(storage);
-      
-      res.status(200).json({
-        success: true,
-        message: "Successfully created comprehensive demo data including users, work experiences, education, skills, projects, services, and personal info"
-      });
-    } catch (error) {
-      console.error("Error creating comprehensive demo data:", error);
-      res.status(500).json({
-        success: false,
-        message: "Error creating comprehensive demo data",
-        error: String(error)
-      });
-    }
   });
   
   // Add a special endpoint to clear all demo user profile data (for development purposes)
@@ -185,99 +127,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Create demo news pulses including industry leader (Elon Musk) news
-  apiRouter.post("/debug/create-demo-news", async (req: Request, res: Response) => {
-    try {
-      console.log("Creating demo news pulses including Musk industry leader news");
-      
-      const newsPulses = await createDemoNewsPulses(storage);
-      
-      if (!newsPulses || (!newsPulses.muskNewsPulse && !newsPulses.techNewsPulse)) {
-        return res.status(404).json({ 
-          message: "Could not create demo news pulses. Make sure Elon Musk profile exists by running /debug/create-demo-profiles first."
-        });
-      }
-      
-      console.log("Successfully created demo news pulses");
-      
-      res.status(200).json({ 
-        message: "Demo news pulses created successfully",
-        newsPulses
-      });
-    } catch (error) {
-      console.error("Error creating demo news pulses:", error);
-      res.status(500).json({ message: "Failed to create demo news pulses" });
-    }
-  });
-  
-  // UserPersonalInfo routes
-  apiRouter.get('/personal-info/:userId', async (req: Request, res: Response) => {
-    try {
-      const userId = parseInt(req.params.userId);
-      if (isNaN(userId)) {
-        return res.status(400).json({ message: "Invalid user ID" });
-      }
-      
-      const personalInfo = await storage.getUserPersonalInfoByUserId(userId);
-      if (!personalInfo) {
-        return res.status(404).json({ message: "Personal info not found" });
-      }
-      
-      return res.json(personalInfo);
-    } catch (error) {
-      console.error("[GET /personal-info/:userId] Error:", error);
-      return res.status(500).json({ message: "Server error" });
-    }
-  });
-  
-  apiRouter.post('/personal-info', async (req: Request, res: Response) => {
-    try {
-      const personalInfo = await storage.createUserPersonalInfo(req.body);
-      return res.status(201).json(personalInfo);
-    } catch (error) {
-      console.error("[POST /personal-info] Error:", error);
-      return res.status(500).json({ message: "Server error" });
-    }
-  });
-  
-  apiRouter.patch('/personal-info/:id', async (req: Request, res: Response) => {
-    try {
-      const id = parseInt(req.params.id);
-      if (isNaN(id)) {
-        return res.status(400).json({ message: "Invalid ID" });
-      }
-      
-      const updatedInfo = await storage.updateUserPersonalInfo(id, req.body);
-      if (!updatedInfo) {
-        return res.status(404).json({ message: "Personal info not found" });
-      }
-      
-      return res.json(updatedInfo);
-    } catch (error) {
-      console.error("[PATCH /personal-info/:id] Error:", error);
-      return res.status(500).json({ message: "Server error" });
-    }
-  });
-  
-  apiRouter.delete('/personal-info/:id', async (req: Request, res: Response) => {
-    try {
-      const id = parseInt(req.params.id);
-      if (isNaN(id)) {
-        return res.status(400).json({ message: "Invalid ID" });
-      }
-      
-      const deleted = await storage.deleteUserPersonalInfo(id);
-      if (!deleted) {
-        return res.status(404).json({ message: "Personal info not found" });
-      }
-      
-      return res.status(204).end();
-    } catch (error) {
-      console.error("[DELETE /personal-info/:id] Error:", error);
-      return res.status(500).json({ message: "Server error" });
-    }
-  });
-
   // User routes
   apiRouter.post("/users", async (req: Request, res: Response) => {
     try {
@@ -2514,17 +2363,10 @@ Musk, Your Career Partner`;
           phoneNumber: null,
           photoURL: null,
           title: "Professional",
-          aboutMe: null,
-          domain: null,
-          company: null,
-          visitingCardType: null,
           location: "Remote",
           industry: targetIndustry,
           lookingFor: null,
           profileCompleted: null,
-          geoLatitude: null,
-          geoLongitude: null,
-          geoVisibleNearby: null,
           emailVerified: false,
           emailVerificationToken: null,
           emailVerificationExpires: null,
