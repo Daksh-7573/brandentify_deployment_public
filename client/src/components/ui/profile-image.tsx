@@ -6,6 +6,7 @@ interface ProfileImageProps {
   alt: string;
   className?: string;
   fallbackClassName?: string;
+  objectFit?: "cover" | "contain" | "fill";
 }
 
 /**
@@ -16,13 +17,24 @@ export function ProfileImage({
   src, 
   alt, 
   className = "h-full w-full object-cover", 
-  fallbackClassName = "h-full w-full flex items-center justify-center bg-muted"
+  fallbackClassName = "h-full w-full flex items-center justify-center bg-muted",
+  objectFit = "cover"
 }: ProfileImageProps) {
   const [error, setError] = useState(false);
+  const [optimizedSrc, setOptimizedSrc] = useState<string | null | undefined>(src);
   
   // Reset error state if src changes
   useEffect(() => {
     setError(false);
+    
+    // Process image source when it changes
+    if (src) {
+      // If it's a data URL (base64), it's already been processed by our canvas
+      // No additional processing needed for base64 images
+      setOptimizedSrc(src);
+    } else {
+      setOptimizedSrc(null);
+    }
   }, [src]);
   
   // Get the initials from the alt text for the fallback
@@ -31,7 +43,7 @@ export function ProfileImage({
     
     return alt
       .split(' ')
-      .map(word => word[0])
+      .map(word => word?.[0] || '')
       .slice(0, 2)
       .join('')
       .toUpperCase();
@@ -52,15 +64,19 @@ export function ProfileImage({
     );
   };
 
-  if (!src || error) {
+  if (!optimizedSrc || error) {
     return renderFallback();
   }
 
+  // Apply specific object-fit setting based on prop
+  const imageStyle = objectFit !== "cover" ? { objectFit } : undefined;
+
   return (
     <img
-      src={src}
+      src={optimizedSrc}
       alt={alt}
       className={className}
+      style={imageStyle}
       onError={() => setError(true)}
       referrerPolicy="no-referrer"
       loading="lazy"

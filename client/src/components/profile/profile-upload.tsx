@@ -119,7 +119,7 @@ export function ProfileUpload({
 
   // Save the selected image with applied transformations
   const handleSave = () => {
-    if (selectedImage && imageRef.current) {
+    if (selectedImage) {
       // Create a canvas to apply transformations and crop
       const canvas = document.createElement('canvas');
       canvas.width = TARGET_SIZE;
@@ -127,32 +127,75 @@ export function ProfileUpload({
       const ctx = canvas.getContext('2d');
       
       if (ctx) {
-        // Draw the image with transformations
-        ctx.save();
-        ctx.translate(TARGET_SIZE / 2, TARGET_SIZE / 2);
-        ctx.rotate((rotation * Math.PI) / 180);
-        ctx.scale(zoomLevel, zoomLevel);
-        ctx.translate(-TARGET_SIZE / 2 + offsetX, -TARGET_SIZE / 2 + offsetY);
-        
         const img = new Image();
-        img.src = selectedImage;
         
-        // Draw the image and ensure it's center-cropped
-        const size = Math.min(img.width, img.height);
-        const offsetSrcX = (img.width - size) / 2;
-        const offsetSrcY = (img.height - size) / 2;
+        // Use a promise to ensure image is loaded before drawing
+        const processImage = new Promise<string>((resolve) => {
+          img.onload = () => {
+            try {
+              // Clear the canvas
+              ctx.clearRect(0, 0, canvas.width, canvas.height);
+              
+              // Fill with a background color (optional)
+              ctx.fillStyle = "#FFFFFF";
+              ctx.fillRect(0, 0, canvas.width, canvas.height);
+              
+              // Calculate the scale to fit the image properly
+              const size = Math.min(img.width, img.height);
+              const offsetSrcX = (img.width - size) / 2;
+              const offsetSrcY = (img.height - size) / 2;
+              
+              // Set up the transformations properly by considering the image dimensions
+              ctx.save();
+              
+              // Move to center of the canvas
+              ctx.translate(canvas.width / 2, canvas.height / 2);
+              
+              // Apply rotation
+              ctx.rotate((rotation * Math.PI) / 180);
+              
+              // Apply zoom
+              ctx.scale(zoomLevel, zoomLevel);
+              
+              // Apply offset relative to the center
+              ctx.translate(offsetX, offsetY);
+              
+              // Draw from the center of the image
+              ctx.drawImage(
+                img, 
+                offsetSrcX, offsetSrcY, size, size, 
+                -TARGET_SIZE / 2, -TARGET_SIZE / 2, TARGET_SIZE, TARGET_SIZE
+              );
+              
+              ctx.restore();
+              
+              // Get the final image as base64 with proper quality
+              const processedImage = canvas.toDataURL('image/jpeg', 0.95);
+              
+              // Return the processed image
+              resolve(processedImage);
+            } catch (error) {
+              console.error("Error processing image:", error);
+              resolve(selectedImage); // Fallback to original if processing fails
+            }
+          };
+          
+          img.onerror = () => {
+            console.error("Error loading image");
+            resolve(selectedImage); // Fallback to original if loading fails
+          };
+          
+          // Set the source to start loading
+          img.src = selectedImage;
+        });
         
-        ctx.drawImage(
-          img, 
-          offsetSrcX, offsetSrcY, size, size, 
-          0, 0, TARGET_SIZE, TARGET_SIZE
-        );
-        
-        ctx.restore();
-        
-        // Get the final image as base64
-        const processedImage = canvas.toDataURL('image/jpeg', 0.9);
-        onImageSelected(processedImage);
+        // Wait for image processing to complete then pass to callback
+        processImage.then(processedImage => {
+          onImageSelected(processedImage);
+        });
+      } else {
+        // Fallback if canvas context is not available
+        onImageSelected(selectedImage);
       }
     }
   };
