@@ -202,43 +202,6 @@
   animation-delay: 1.5s;
 }
 
-/* 3D Quantum Card animations */
-@keyframes shine {
-  to { background-position: 200% center; }
-}
-
-@keyframes floating {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-8px); }
-  100% { transform: translateY(0px); }
-}
-
-@keyframes glowPulse {
-  0% { filter: drop-shadow(0 0 2px rgba(99,102,241,0.6)); }
-  50% { filter: drop-shadow(0 0 8px rgba(168,85,247,0.8)); }
-  100% { filter: drop-shadow(0 0 2px rgba(99,102,241,0.6)); }
-}
-
-@keyframes qrReveal {
-  0% { transform: scale(0.8); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
-}
-
-@keyframes rotateGlow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-@keyframes cardEntrance {
-  0% { opacity: 0; transform: translateY(25px) scale(0.9); }
-  100% { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-@keyframes slideUpIn {
-  0% { transform: translateY(20px); opacity: 0; }
-  100% { transform: translateY(0); opacity: 1; }
-}
-
 @layer base {
   * {
     @apply border-border;
