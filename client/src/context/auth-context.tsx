@@ -102,7 +102,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Specialized function for demo user data
   const fetchDemoUserData = async () => {
-    const demoUser = await fetchUserData(1, true);
+    // Use tech executive profile (one of our fully populated demo profiles)
+    const demoUser = await fetchUserData(5, true);
     if (demoUser) {
       setUser(demoUser);
     }
@@ -415,8 +416,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Add the refreshUserData function to update user profile data
   const refreshUserData = async () => {
-    // Get the user ID
-    const userId = isDemoMode ? 1 : (user?.uid ? user.uid : null);
+    // Get the user ID - use the tech executive demo profile (ID: 5) in demo mode
+    const userId = isDemoMode ? 5 : (user?.uid ? user.uid : null);
     
     if (!userId) {
       console.log("Cannot refresh user data: No user ID available");
