@@ -803,41 +803,6 @@ export default function Education() {
                 )}
               />
               
-              {/* Industry */}
-              <FormField
-                control={form.control}
-                name="industry"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Industry</FormLabel>
-                    <FormControl>
-                      <Select
-                        value={field.value}
-                        onValueChange={(value) => {
-                          field.onChange(value);
-                          setSelectedIndustry(value);
-                        }}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select an industry" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {INDUSTRIES.map((industry) => (
-                            <SelectItem key={industry} value={industry}>
-                              {industry}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <FormDescription>
-                      The primary industry related to your field of study
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
               {/* Domain - only show if industry is selected */}
               {selectedIndustry && (
                 <FormField
@@ -883,7 +848,7 @@ export default function Education() {
                   name="startDate"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel>Start Date</FormLabel>
+                      <FormLabel>Start Date*</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
