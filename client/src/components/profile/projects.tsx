@@ -10,8 +10,23 @@ import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Loader2, Pencil, Trash2, Plus, FolderKanban, CalendarIcon, ExternalLinkIcon, Star, X, CheckCircle, Clock } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { 
+  Loader2, 
+  Pencil, 
+  Trash2, 
+  Plus, 
+  FolderKanban, 
+  CalendarIcon, 
+  ExternalLinkIcon, 
+  ExternalLink,
+  Star, 
+  X, 
+  CheckCircle, 
+  Clock,
+  ChevronLeft,
+  ChevronRight
+} from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
@@ -226,6 +241,11 @@ export default function Projects() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  
+  // Lightbox state
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [lightboxImages, setLightboxImages] = useState<string[]>([]);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
   // Form setup
   const projectForm = useForm<ProjectFormValues>({
@@ -1764,9 +1784,9 @@ export default function Projects() {
                         <Button 
                           variant="outline" 
                           className="gap-2 w-full sm:w-auto"
-                          onClick={() => window.open(currentProject.projectUrl, '_blank', 'noopener,noreferrer')}
+                          onClick={() => window.open(currentProject.projectUrl ?? '', '_blank', 'noopener,noreferrer')}
                         >
-                          <ExternalLink className="h-4 w-4" />
+                          <ExternalLinkIcon className="h-4 w-4" />
                           Visit Site
                           <span className="sr-only">(opens in a new tab)</span>
                         </Button>
@@ -1878,6 +1898,69 @@ export default function Projects() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+      )}
+      
+      {/* Lightbox for images */}
+      {isLightboxOpen && (
+        <div 
+          className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center p-4"
+          onClick={() => setIsLightboxOpen(false)}
+        >
+          {/* Close button */}
+          <button 
+            className="absolute top-4 right-4 p-2 bg-black bg-opacity-50 rounded-full text-white hover:bg-opacity-70"
+            onClick={() => setIsLightboxOpen(false)}
+          >
+            <X className="w-6 h-6" />
+          </button>
+          
+          {/* Image container */}
+          <div className="relative max-w-4xl max-h-[80vh] flex items-center justify-center">
+            <img 
+              src={lightboxImages[currentImageIndex]} 
+              alt={`Project image ${currentImageIndex + 1}`}
+              className="max-h-full max-w-full object-contain rounded-md"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+          
+          {/* Navigation buttons */}
+          {lightboxImages.length > 1 && (
+            <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-4">
+              <button 
+                className="p-2 rounded-full bg-black bg-opacity-50 text-white hover:bg-opacity-80"
+                onClick={(e) => { 
+                  e.stopPropagation(); 
+                  setCurrentImageIndex(prev => 
+                    prev === 0 ? lightboxImages.length - 1 : prev - 1
+                  ); 
+                }}
+                aria-label="Previous image"
+              >
+                <ChevronLeft className="w-8 h-8" />
+              </button>
+              <button 
+                className="p-2 rounded-full bg-black bg-opacity-50 text-white hover:bg-opacity-80"
+                onClick={(e) => { 
+                  e.stopPropagation(); 
+                  setCurrentImageIndex(prev => 
+                    prev === lightboxImages.length - 1 ? 0 : prev + 1
+                  ); 
+                }}
+                aria-label="Next image"
+              >
+                <ChevronRight className="w-8 h-8" />
+              </button>
+            </div>
+          )}
+          
+          {/* Image counter */}
+          {lightboxImages.length > 1 && (
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black bg-opacity-50 rounded-full px-3 py-1 text-white text-sm">
+              {currentImageIndex + 1} / {lightboxImages.length}
+            </div>
+          )}
+        </div>
       )}
     </>
   );
