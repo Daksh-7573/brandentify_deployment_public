@@ -540,7 +540,11 @@ export default function WorkExperience() {
   const createExperienceMutation = useMutation({
     mutationFn: async (data: any) => {
       console.log("Creating work experience:", data);
-      const res = await apiRequest('POST', '/api/experiences', data);
+      const res = await apiRequest({
+        method: 'POST', 
+        url: '/api/experiences',
+        data: data
+      });
       return await res.json();
     },
     onSuccess: () => {
@@ -565,7 +569,11 @@ export default function WorkExperience() {
   const updateExperienceMutation = useMutation({
     mutationFn: async (data: any) => {
       console.log("Updating work experience:", data);
-      const res = await apiRequest('PUT', `/api/experiences/${data.id}`, data);
+      const res = await apiRequest({
+        method: 'PUT', 
+        url: `/api/experiences/${data.id}`,
+        data: data
+      });
       return await res.json();
     },
     onSuccess: () => {
@@ -590,7 +598,10 @@ export default function WorkExperience() {
   const deleteExperienceMutation = useMutation({
     mutationFn: async (id: number) => {
       console.log("Deleting work experience:", id);
-      const res = await apiRequest('DELETE', `/api/experiences/${id}`);
+      const res = await apiRequest({
+        method: 'DELETE', 
+        url: `/api/experiences/${id}`
+      });
       
       // For 204 No Content responses, just return a success value without trying to parse JSON
       if (res.status === 204) {
