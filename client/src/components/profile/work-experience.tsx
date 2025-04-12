@@ -22,7 +22,7 @@ const workExperienceFormSchema = z.object({
   domain: z.string().min(1, { message: "Domain is required" }),
   startDate: z.date({ required_error: "Start date is required" }),
   endDate: z.date().optional().nullable(),
-  description: z.string().optional(),
+  keyResponsibilities: z.array(z.string()).max(10, { message: "Maximum 10 items allowed" }).optional().default([]),
   isCurrentlyWorking: z.boolean().default(false),
   userId: z.number()
 });
@@ -418,7 +418,7 @@ export default function WorkExperience() {
       location: "",
       industry: "",
       domain: "",
-      description: "",
+      keyResponsibilities: [],
       isCurrentlyWorking: false,
       userId: userNumericId
     }
@@ -483,7 +483,7 @@ export default function WorkExperience() {
     domain: '',
     startDate: undefined as Date | undefined,
     endDate: undefined as Date | undefined,
-    description: '',
+    keyResponsibilities: [] as string[],
     userId: userNumericId || 0,
     isCurrentlyWorking: false
   });
@@ -512,7 +512,7 @@ export default function WorkExperience() {
       domain: '',
       startDate: undefined,
       endDate: undefined,
-      description: '',
+      keyResponsibilities: [],
       userId: userNumericId || 0,
       isCurrentlyWorking: false
     });
@@ -977,8 +977,15 @@ export default function WorkExperience() {
                       )}
                     </div>
                     
-                    {experience.description && (
-                      <p className="mt-2 text-sm">{experience.description}</p>
+                    {experience.keyResponsibilities && experience.keyResponsibilities.length > 0 && (
+                      <div className="mt-2">
+                        <h4 className="text-sm font-medium">Key Responsibilities & Achievements</h4>
+                        <ul className="list-disc pl-5 mt-1 text-sm space-y-1">
+                          {experience.keyResponsibilities.map((item: string, idx: number) => (
+                            <li key={idx}>{item}</li>
+                          ))}
+                        </ul>
+                      </div>
                     )}
                   </div>
                   
