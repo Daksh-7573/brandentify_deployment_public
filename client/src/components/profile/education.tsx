@@ -589,8 +589,8 @@ export default function Education() {
     <Card className="mb-6">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <div>
-          <CardTitle className="text-xl font-bold">Education</CardTitle>
-          <CardDescription>Add your educational background</CardDescription>
+          <CardTitle className="text-xl font-bold">Academic Background</CardTitle>
+          <CardDescription>Add your academic journey</CardDescription>
         </div>
         <Button 
           variant="outline" 
@@ -599,7 +599,7 @@ export default function Education() {
           onClick={handleAddEducation}
         >
           <Plus className="h-3.5 w-3.5" />
-          <span>Add</span>
+          <span>Add Academic Background</span>
         </Button>
       </CardHeader>
       
@@ -618,7 +618,7 @@ export default function Education() {
           // Empty state
           <div className="py-6 text-center">
             <GraduationCap className="mx-auto h-10 w-10 text-muted-foreground/50" />
-            <p className="mt-2 text-muted-foreground">No education added yet.</p>
+            <p className="mt-2 text-muted-foreground">No academic background added yet.</p>
           </div>
         ) : (
           // Education list
@@ -710,12 +710,12 @@ export default function Education() {
         <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editingEducation ? "Edit Education" : "Add Education"}
+              {editingEducation ? "Edit Academic Background" : "Add Academic Background"}
             </DialogTitle>
             <DialogDescription>
               {editingEducation 
-                ? "Update your educational information below." 
-                : "Add your educational information below."}
+                ? "Update your academic background information below." 
+                : "Add your academic background information below."}
             </DialogDescription>
           </DialogHeader>
           
@@ -1067,7 +1067,7 @@ export default function Education() {
               
               <DialogFooter>
                 <Button type="submit" disabled={createEducationMutation.isPending || updateEducationMutation.isPending}>
-                  {editingEducation ? "Update" : "Add"} Education
+                  {editingEducation ? "Update" : "Add"} Academic Background
                 </Button>
               </DialogFooter>
             </form>
