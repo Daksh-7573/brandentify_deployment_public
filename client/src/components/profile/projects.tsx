@@ -1666,7 +1666,7 @@ export default function Projects() {
         </Dialog>
       )}
       
-      {/* View Project Details Modal */}
+      {/* View Showcase Details Modal */}
       {currentProject && (
         <Dialog open={isDetailModalOpen} onOpenChange={setIsDetailModalOpen}>
           <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto p-0">
@@ -1746,7 +1746,7 @@ export default function Projects() {
                     {/* Project Media Carousel */}
                     {currentProject.mediaUrls && Array.isArray(currentProject.mediaUrls) && currentProject.mediaUrls.length > 0 && (
                       <div className="space-y-2 mt-4">
-                        <h3 className="text-sm font-medium">Project Media</h3>
+                        <h3 className="text-sm font-medium">Showcase Media</h3>
                         <div className="flex overflow-x-auto gap-3 pb-2 snap-x">
                           {currentProject.mediaUrls.map((url, index) => (
                             <div 
@@ -1791,7 +1791,7 @@ export default function Projects() {
                     
                     {/* Project Description */}
                     <div>
-                      <h3 className="text-base font-semibold mb-2">About this project</h3>
+                      <h3 className="text-base font-semibold mb-2">About this showcase</h3>
                       <div className="text-muted-foreground space-y-2">
                         {currentProject.description?.split('\n').map((paragraph, i) => (
                           <p key={i}>{paragraph}</p>
@@ -1943,7 +1943,7 @@ export default function Projects() {
           <div className="relative max-w-4xl max-h-[80vh] flex items-center justify-center">
             <img 
               src={lightboxImages[currentImageIndex]} 
-              alt={`Project image ${currentImageIndex + 1}`}
+              alt={`Showcase image ${currentImageIndex + 1}`}
               className="max-h-full max-w-full object-contain rounded-md"
               onClick={(e) => e.stopPropagation()}
             />
