@@ -246,7 +246,21 @@ const educationSchema = z.object({
   startDate: z.date({
     required_error: "Start date is required",
   }),
-  endDate: z.date().optional(),
+  endDate: z.date({
+    required_error: "End date is required",
+  }).optional().superRefine((endDate, ctx) => {
+    // Get the currently enrolled value from the parent object
+    // @ts-ignore - accessing the parent object which TypeScript doesn't recognize
+    const isCurrentlyEnrolled = ctx.parent.currentlyEnrolled;
+    
+    // If they're not currently enrolled, end date is required
+    if (!isCurrentlyEnrolled && !endDate) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "End date is required unless currently enrolled"
+      });
+    }
+  }),
   currentlyEnrolled: z.boolean().default(false),
   description: z.string().optional(),
   domain: z.string().optional(),
@@ -448,25 +462,28 @@ export default function Education() {
   
   // Handle form submission
   const onSubmit = (data: Education) => {
-    // If no end date and currently enrolled, set end date to null
-    if (data.currentlyEnrolled) {
-      data.endDate = undefined;
+    // Create a copy of the data to avoid modifying the original
+    const processedData = {...data};
+    
+    // If currently enrolled, remove end date
+    if (processedData.currentlyEnrolled) {
+      processedData.endDate = undefined;
     }
     
     // Store all the UI data for display purposes
     const uiData = {
-      id: data.id,
-      userId: data.userId,
-      institution: data.institution,
-      degree: data.degree,
-      location: data.location,
-      startDate: data.startDate ? data.startDate.toISOString().split('T')[0] : undefined, // YYYY-MM-DD format
-      endDate: data.endDate ? data.endDate.toISOString().split('T')[0] : undefined, // YYYY-MM-DD format
-      field: data.field,
-      currentlyEnrolled: data.currentlyEnrolled,
-      description: data.description,
-      industry: data.industry,
-      domain: data.domain
+      id: processedData.id,
+      userId: processedData.userId,
+      institution: processedData.institution,
+      degree: processedData.degree,
+      location: processedData.location,
+      startDate: processedData.startDate ? processedData.startDate.toISOString().split('T')[0] : undefined, // YYYY-MM-DD format
+      endDate: processedData.endDate ? processedData.endDate.toISOString().split('T')[0] : undefined, // YYYY-MM-DD format
+      field: processedData.field,
+      currentlyEnrolled: processedData.currentlyEnrolled,
+      description: processedData.description,
+      industry: processedData.industry,
+      domain: processedData.domain
     };
     
     // Create a filtered version with only the fields that exist in the database schema
@@ -890,7 +907,7 @@ export default function Education() {
                     name="endDate"
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
-                        <FormLabel>End Date</FormLabel>
+                        <FormLabel>End Date*</FormLabel>
                         <Popover>
                           <PopoverTrigger asChild>
                             <FormControl>
@@ -945,7 +962,7 @@ export default function Education() {
                         onCheckedChange={(checked) => {
                           field.onChange(checked);
                           if (checked) {
-                            form.setValue("endDate", undefined);
+                            form.setValue("endDate", undefined, { shouldValidate: true });
                           }
                         }}
                       />
