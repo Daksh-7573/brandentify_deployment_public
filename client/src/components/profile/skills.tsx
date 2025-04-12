@@ -224,7 +224,7 @@ export default function Skills() {
             onClick={() => setIsAddModalOpen(true)}
           >
             <Plus className="h-3.5 w-3.5" />
-            <span>What I'm Good At</span>
+            <span>Add What You're Good At</span>
           </Button>
         </CardHeader>
         <CardContent>
@@ -279,7 +279,7 @@ export default function Skills() {
           ) : (
             <div className="py-6 text-center">
               <Lightbulb className="mx-auto h-10 w-10 text-muted-foreground/50" />
-              <p className="mt-2 text-muted-foreground">Nothing added yet. Tell people what you're good at!</p>
+              <p className="mt-2 text-muted-foreground">Nothing added yet. Share what you're good at!</p>
             </div>
           )}
         </CardContent>
@@ -289,19 +289,19 @@ export default function Skills() {
       <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
         <DialogContent className="sm:max-w-[550px]">
           <DialogHeader>
-            <DialogTitle>{newSkill.id ? 'Edit Skill' : 'What I\'m Good At'}</DialogTitle>
+            <DialogTitle>{newSkill.id ? 'Edit What You\'re Good At' : 'Add What You\'re Good At'}</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="name" className="text-right">
-                Skill Name*
+                What You're Good At*
               </Label>
               <Input
                 id="name"
                 value={newSkill.name}
                 onChange={(e) => setNewSkill({...newSkill, name: e.target.value})}
                 className="col-span-3"
-                placeholder="JavaScript"
+                placeholder="e.g., JavaScript, Project Management, Public Speaking"
                 required
               />
             </div>
