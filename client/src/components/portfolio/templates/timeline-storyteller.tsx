@@ -737,20 +737,8 @@ export default function TimelineStoryteller({
                           )}
                         </div>
                         
-                        {/* Key responsibilities/achievements */}
-                        {exp.keyResponsibilities && exp.keyResponsibilities.length > 0 ? (
-                          <div className={`mt-4 ${index % 2 === 0 ? 'md:text-right' : 'md:text-left'}`}>
-                            <h4 className="text-sm font-medium text-gray-700 mb-2">Key Achievements:</h4>
-                            <ul className={`space-y-1 text-sm text-gray-600 ${index % 2 === 0 ? 'md:list-inside' : ''}`}>
-                              {exp.keyResponsibilities.slice(0, 3).map((item, i) => (
-                                <li key={i} className={`flex items-start ${index % 2 === 0 ? 'md:justify-end' : ''}`}>
-                                  <CheckCircle className="h-4 w-4 text-indigo-500 mt-0.5 flex-shrink-0 mr-2" />
-                                  <span>{item}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        ) : exp.description ? (
+                        {/* Description or details */}
+                        {exp.description ? (
                           <p className="mt-3 text-gray-600 text-sm">{exp.description}</p>
                         ) : null}
                       </div>
@@ -814,7 +802,7 @@ export default function TimelineStoryteller({
                           <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
                             <Calendar className="h-4 w-4" />
                             <span>
-                              {formatDate(edu.startDate)} - {edu.currentlyEnrolled ? 'Present' : formatDate(edu.endDate || '')}
+                              {formatDate(edu.startDate)} - {edu.endDate ? formatDate(edu.endDate) : 'Present'}
                             </span>
                           </div>
                           
@@ -826,29 +814,12 @@ export default function TimelineStoryteller({
                           )}
                         </div>
                         
-                        {/* Field of study and achievements */}
-                        <div className={`mt-4 ${index % 2 === 0 ? 'md:text-right' : 'md:text-left'}`}>
-                          {edu.industry && (
-                            <Badge className="bg-violet-100 text-violet-800 hover:bg-violet-200 mb-2">
-                              {edu.industry}
-                            </Badge>
-                          )}
-                          
-                          {/* Skills acquired */}
-                          {edu.skillsAcquired && edu.skillsAcquired.length > 0 ? (
-                            <div>
-                              <h4 className="text-sm font-medium text-gray-700 mb-2">Skills & Achievements:</h4>
-                              <ul className={`space-y-1 text-sm text-gray-600 ${index % 2 === 0 ? 'md:list-inside' : ''}`}>
-                                {edu.skillsAcquired.slice(0, 3).map((skill, i) => (
-                                  <li key={i} className={`flex items-start ${index % 2 === 0 ? 'md:justify-end' : ''}`}>
-                                    <CheckCircle className="h-4 w-4 text-violet-500 mt-0.5 flex-shrink-0 mr-2" />
-                                    <span>{skill}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          ) : null}
-                        </div>
+                        {/* Additional details */}
+                        {edu.fieldOfStudy && (
+                          <div className="mt-3 text-gray-600">
+                            <span className="font-medium">Field of Study:</span> {edu.fieldOfStudy}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
