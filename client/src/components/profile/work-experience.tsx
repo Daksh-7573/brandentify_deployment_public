@@ -653,11 +653,24 @@ export default function WorkExperience() {
       endDate = new Date(experience.endDate);
     }
     
+    // Convert old description to keyResponsibilities array if needed
+    let keyResponsibilities: string[] = [];
+    if (experience.keyResponsibilities && Array.isArray(experience.keyResponsibilities)) {
+      keyResponsibilities = experience.keyResponsibilities;
+    } else if (experience.description && typeof experience.description === 'string') {
+      // If we have a legacy description but no keyResponsibilities,
+      // add the description as the first item in the array
+      if (experience.description.trim()) {
+        keyResponsibilities = [experience.description];
+      }
+    }
+    
     setFormData({
       ...experience,
       startDate,
       endDate,
-      isCurrentlyWorking
+      isCurrentlyWorking,
+      keyResponsibilities
     });
     
     setShowEditDialog(true);
@@ -1253,16 +1266,69 @@ export default function WorkExperience() {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                disabled={createExperienceMutation.isPending}
-                placeholder="Describe your responsibilities and achievements..."
-                rows={3}
-              />
+              <Label htmlFor="keyResponsibilities">Key Responsibilities & Achievements</Label>
+              <div className="border rounded-md p-3 space-y-3 bg-gray-50">
+                {formData.keyResponsibilities.map((item, index) => (
+                  <div key={index} className="flex gap-2">
+                    <Input
+                      value={item}
+                      onChange={(e) => {
+                        const newItems = [...formData.keyResponsibilities];
+                        newItems[index] = e.target.value;
+                        setFormData(prev => ({ ...prev, keyResponsibilities: newItems }));
+                      }}
+                      placeholder={`Responsibility or achievement ${index + 1}`}
+                      disabled={createExperienceMutation.isPending}
+                      className="flex-1"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        const newItems = [...formData.keyResponsibilities];
+                        newItems.splice(index, 1);
+                        setFormData(prev => ({ ...prev, keyResponsibilities: newItems }));
+                      }}
+                      disabled={createExperienceMutation.isPending}
+                    >
+                      <Trash2 className="h-4 w-4 text-red-500" />
+                    </Button>
+                  </div>
+                ))}
+                
+                {formData.keyResponsibilities.length < 10 && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="w-full mt-2"
+                    onClick={() => {
+                      if (formData.keyResponsibilities.length < 10) {
+                        setFormData(prev => ({
+                          ...prev,
+                          keyResponsibilities: [...prev.keyResponsibilities, ""]
+                        }));
+                      }
+                    }}
+                    disabled={createExperienceMutation.isPending}
+                  >
+                    <Plus className="h-4 w-4 mr-2" /> Add Item
+                  </Button>
+                )}
+                
+                {formData.keyResponsibilities.length === 0 && (
+                  <p className="text-sm text-muted-foreground text-center py-2">
+                    Add up to 10 key responsibilities or achievements
+                  </p>
+                )}
+                
+                {formData.keyResponsibilities.length === 10 && (
+                  <p className="text-sm text-muted-foreground text-center py-1">
+                    Maximum 10 items reached
+                  </p>
+                )}
+              </div>
             </div>
           </div>
           
@@ -1525,16 +1591,69 @@ export default function WorkExperience() {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                disabled={updateExperienceMutation.isPending}
-                placeholder="Describe your responsibilities and achievements..."
-                rows={3}
-              />
+              <Label htmlFor="keyResponsibilities">Key Responsibilities & Achievements</Label>
+              <div className="border rounded-md p-3 space-y-3 bg-gray-50">
+                {formData.keyResponsibilities.map((item, index) => (
+                  <div key={index} className="flex gap-2">
+                    <Input
+                      value={item}
+                      onChange={(e) => {
+                        const newItems = [...formData.keyResponsibilities];
+                        newItems[index] = e.target.value;
+                        setFormData(prev => ({ ...prev, keyResponsibilities: newItems }));
+                      }}
+                      placeholder={`Responsibility or achievement ${index + 1}`}
+                      disabled={updateExperienceMutation.isPending}
+                      className="flex-1"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        const newItems = [...formData.keyResponsibilities];
+                        newItems.splice(index, 1);
+                        setFormData(prev => ({ ...prev, keyResponsibilities: newItems }));
+                      }}
+                      disabled={updateExperienceMutation.isPending}
+                    >
+                      <Trash2 className="h-4 w-4 text-red-500" />
+                    </Button>
+                  </div>
+                ))}
+                
+                {formData.keyResponsibilities.length < 10 && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="w-full mt-2"
+                    onClick={() => {
+                      if (formData.keyResponsibilities.length < 10) {
+                        setFormData(prev => ({
+                          ...prev,
+                          keyResponsibilities: [...prev.keyResponsibilities, ""]
+                        }));
+                      }
+                    }}
+                    disabled={updateExperienceMutation.isPending}
+                  >
+                    <Plus className="h-4 w-4 mr-2" /> Add Item
+                  </Button>
+                )}
+                
+                {formData.keyResponsibilities.length === 0 && (
+                  <p className="text-sm text-muted-foreground text-center py-2">
+                    Add up to 10 key responsibilities or achievements
+                  </p>
+                )}
+                
+                {formData.keyResponsibilities.length === 10 && (
+                  <p className="text-sm text-muted-foreground text-center py-1">
+                    Maximum 10 items reached
+                  </p>
+                )}
+              </div>
             </div>
           </div>
           
