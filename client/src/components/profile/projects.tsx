@@ -220,7 +220,10 @@ export default function Projects() {
 
   const loadCollaborators = async (projectId: number) => {
     try {
-      const response = await apiRequest('GET', `/api/projects/${projectId}/collaborators`);
+      const response = await apiRequest({
+        method: 'GET', 
+        url: `/api/projects/${projectId}/collaborators`
+      });
       const data = await response.json();
       setCollaborators(data);
     } catch (error) {
@@ -230,7 +233,10 @@ export default function Projects() {
 
   const loadEndorsements = async (projectId: number) => {
     try {
-      const response = await apiRequest('GET', `/api/projects/${projectId}/endorsements`);
+      const response = await apiRequest({
+        method: 'GET', 
+        url: `/api/projects/${projectId}/endorsements`
+      });
       const data = await response.json();
       setEndorsements(data);
     } catch (error) {
@@ -312,7 +318,11 @@ export default function Projects() {
     if (!confirm('Are you sure you want to delete this project?')) return;
     
     try {
-      const response = await apiRequest('DELETE', `/api/projects/${id}`);
+      const response = await apiRequest({
+        method: 'DELETE', 
+        url: `/api/projects/${id}`
+      });
+      
       if (response.ok) {
         // Update local state immediately for responsiveness
         setProjects(projects.filter(p => p.id !== id));
@@ -398,7 +408,11 @@ export default function Projects() {
       
       if (currentProject) {
         // Update existing project
-        response = await apiRequest('PUT', `/api/projects/${currentProject.id}`, values);
+        response = await apiRequest({
+          method: 'PUT', 
+          url: `/api/projects/${currentProject.id}`, 
+          data: values
+        });
         projectData = await response.json();
         
         // If we have a thumbnail file, upload it
@@ -468,7 +482,11 @@ export default function Projects() {
         };
         
         // First create the project
-        response = await apiRequest('POST', '/api/projects', newProjectData);
+        response = await apiRequest({
+          method: 'POST', 
+          url: '/api/projects', 
+          data: newProjectData
+        });
         projectData = await response.json();
         
         // If we have a thumbnail file, upload it (we already validated it exists above)
@@ -574,7 +592,11 @@ export default function Projects() {
         projectId: currentProject.id,
       };
       
-      const response = await apiRequest('POST', '/api/project-collaborators', collaboratorData);
+      const response = await apiRequest({
+        method: 'POST', 
+        url: '/api/project-collaborators', 
+        data: collaboratorData
+      });
       const data = await response.json();
       
       setCollaborators([...collaborators, data]);
@@ -598,7 +620,10 @@ export default function Projects() {
     if (!confirm('Are you sure you want to remove this collaborator?')) return;
     
     try {
-      await apiRequest('DELETE', `/api/project-collaborators/${collaboratorId}`);
+      await apiRequest({
+        method: 'DELETE', 
+        url: `/api/project-collaborators/${collaboratorId}`
+      });
       
       setCollaborators(collaborators.filter(c => c.id !== collaboratorId));
       
@@ -629,7 +654,11 @@ export default function Projects() {
         projectId: currentProject.id,
       };
       
-      const response = await apiRequest('POST', '/api/project-endorsements', endorsementData);
+      const response = await apiRequest({
+        method: 'POST', 
+        url: '/api/project-endorsements', 
+        data: endorsementData
+      });
       const data = await response.json();
       
       setEndorsements([...endorsements, data]);
@@ -653,7 +682,10 @@ export default function Projects() {
     if (!confirm('Are you sure you want to remove this endorsement?')) return;
     
     try {
-      await apiRequest('DELETE', `/api/project-endorsements/${endorsementId}`);
+      await apiRequest({
+        method: 'DELETE', 
+        url: `/api/project-endorsements/${endorsementId}`
+      });
       
       setEndorsements(endorsements.filter(e => e.id !== endorsementId));
       
