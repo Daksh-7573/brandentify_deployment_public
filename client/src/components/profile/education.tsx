@@ -240,13 +240,15 @@ const educationSchema = z.object({
   userId: z.number(),
   institution: z.string().min(1, "Institution is required"),
   degree: z.string().min(1, "Degree is required"),
+  industry: z.string().min(1, "Industry is required"),
   field: z.string().optional(),
   location: z.string().optional(),
-  startDate: z.date().optional(),
+  startDate: z.date({
+    required_error: "Start date is required",
+  }),
   endDate: z.date().optional(),
   currentlyEnrolled: z.boolean().default(false),
   description: z.string().optional(),
-  industry: z.string().optional(),
   domain: z.string().optional(),
 }).refine(data => !data.currentlyEnrolled || !data.endDate, {
   message: "End date should be empty if currently enrolled",
@@ -717,6 +719,38 @@ export default function Education() {
                     <FormDescription>
                       Type to filter suggestions (e.g., "bach" for Bachelor degrees)
                     </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              {/* Industry */}
+              <FormField
+                control={form.control}
+                name="industry"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Industry*</FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value}
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          setSelectedIndustry(value);
+                        }}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select an industry" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {INDUSTRIES.map((industry) => (
+                            <SelectItem key={industry} value={industry}>
+                              {industry}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
