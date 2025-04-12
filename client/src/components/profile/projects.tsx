@@ -808,7 +808,7 @@ export default function Projects() {
                   {(project.thumbnailUrl || (project.mediaUrls && Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0)) && (
                     <div className="w-full h-32 overflow-hidden bg-muted">
                       <img 
-                        src={project.thumbnailUrl || (Array.isArray(project.mediaUrls) && project.mediaUrls[0])}
+                        src={project.thumbnailUrl || (Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0 ? project.mediaUrls[0] : undefined)}
                         alt={project.title} 
                         className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
                       />
@@ -1707,9 +1707,12 @@ export default function Projects() {
                       <div 
                         className="w-full aspect-square rounded-xl shadow-sm overflow-hidden bg-muted cursor-pointer"
                         onClick={() => {
-                          setLightboxImages([currentProject.thumbnailUrl || '']);
-                          setCurrentImageIndex(0);
-                          setIsLightboxOpen(true);
+                          // Open the thumbnail in the lightbox
+                          if (currentProject.thumbnailUrl) {
+                            setLightboxImages([currentProject.thumbnailUrl]);
+                            setCurrentImageIndex(0);
+                            setIsLightboxOpen(true);
+                          }
                         }}
                       >
                         <img 
@@ -1739,13 +1742,11 @@ export default function Projects() {
                               key={index} 
                               className="flex-none w-24 h-24 rounded-lg overflow-hidden bg-muted shadow-sm snap-center cursor-pointer"
                               onClick={() => {
-                                setLightboxImages(
-                                  Array.isArray(currentProject.mediaUrls) ? 
-                                  currentProject.mediaUrls as string[] : 
-                                  [currentProject.thumbnailUrl || '']
-                                );
-                                setCurrentImageIndex(index);
-                                setIsLightboxOpen(true);
+                                if (currentProject.mediaUrls && Array.isArray(currentProject.mediaUrls)) {
+                                  setLightboxImages(currentProject.mediaUrls);
+                                  setCurrentImageIndex(index);
+                                  setIsLightboxOpen(true);
+                                }
                               }}
                             >
                               <img 
