@@ -262,7 +262,7 @@ const educationSchema = z.object({
     }
   }),
   currentlyEnrolled: z.boolean().default(false),
-  description: z.string().optional(),
+  skillsAcquired: z.array(z.string()).max(10, { message: "Maximum 10 skills/achievements allowed" }).optional().default([]),
   domain: z.string().optional(),
 }).refine(data => !data.currentlyEnrolled || !data.endDate, {
   message: "End date should be empty if currently enrolled",
@@ -294,7 +294,7 @@ interface EducationApiData {
 interface EducationUIData extends EducationApiData {
   field?: string;
   currentlyEnrolled: boolean;
-  description?: string;
+  skillsAcquired?: string[];
   industry?: string;
   domain?: string;
 }
@@ -309,6 +309,8 @@ export default function Education() {
   const [selectedIndustry, setSelectedIndustry] = useState<string>("");
   const [selectedDomain, setSelectedDomain] = useState<string>("");
   const [domainOptions, setDomainOptions] = useState<string[]>([]);
+  const [newSkillInput, setNewSkillInput] = useState<string>("");
+  const [skillsAcquired, setSkillsAcquired] = useState<string[]>([]);
   
   // Use the actual user ID from auth context if available, or 1 for demo mode
   const effectiveUserId = user?.id || 1;
