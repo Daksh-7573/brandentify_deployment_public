@@ -134,11 +134,27 @@ export default function Projects() {
         });
         const freshData = await response.json();
         console.log("Projects - Got direct fetch data:", freshData);
+        
         // Force update
         if (freshData && Array.isArray(freshData)) {
-          setProjects([...freshData]);
+          // Normalize data to ensure mediaUrls is always an array
+          const normalizedData = freshData.map(project => {
+            // If mediaUrls is a string (JSON), parse it into an array
+            if (project.mediaUrls && typeof project.mediaUrls === 'string') {
+              try {
+                project.mediaUrls = JSON.parse(project.mediaUrls);
+              } catch (error) {
+                console.error("Error parsing mediaUrls:", error);
+                project.mediaUrls = [];
+              }
+            }
+            return project;
+          });
+          
+          console.log("Projects received updated data:", normalizedData);
+          setProjects([...normalizedData]);
           // Update the ref as well
-          latestProjectsRef.current = [...freshData];
+          latestProjectsRef.current = [...normalizedData];
         }
       } catch (error) {
         console.error("Error during direct projects fetch:", error);
@@ -155,22 +171,50 @@ export default function Projects() {
   // Initialize projects from serverProjects on first load
   useEffect(() => {
     if (serverProjects && Array.isArray(serverProjects) && serverProjects.length > 0) {
-      console.log("Projects: Initial data from server:", serverProjects);
-      setProjects(serverProjects);
-      latestProjectsRef.current = serverProjects;
+      // Normalize data to ensure mediaUrls is always an array
+      const normalizedData = serverProjects.map(project => {
+        // If mediaUrls is a string (JSON), parse it into an array
+        if (project.mediaUrls && typeof project.mediaUrls === 'string') {
+          try {
+            project.mediaUrls = JSON.parse(project.mediaUrls);
+          } catch (error) {
+            console.error("Error parsing mediaUrls:", error);
+            project.mediaUrls = [];
+          }
+        }
+        return project;
+      });
+      
+      console.log("Projects: Initial data from server:", normalizedData);
+      setProjects(normalizedData);
+      latestProjectsRef.current = normalizedData;
     }
   }, []);
   
   // Update projects state when server data changes
   useEffect(() => {
     if (serverProjects && Array.isArray(serverProjects)) {
-      console.log("Projects received updated data:", serverProjects);
+      // Normalize data to ensure mediaUrls is always an array
+      const normalizedData = serverProjects.map(project => {
+        // If mediaUrls is a string (JSON), parse it into an array
+        if (project.mediaUrls && typeof project.mediaUrls === 'string') {
+          try {
+            project.mediaUrls = JSON.parse(project.mediaUrls);
+          } catch (error) {
+            console.error("Error parsing mediaUrls:", error);
+            project.mediaUrls = [];
+          }
+        }
+        return project;
+      });
+      
+      console.log("Projects received updated data:", normalizedData);
       
       // Always update our reference with the latest data
-      latestProjectsRef.current = [...serverProjects];
+      latestProjectsRef.current = [...normalizedData];
       
       // Update the state too to trigger re-renders
-      setProjects([...serverProjects]);
+      setProjects([...normalizedData]);
     }
   }, [serverProjects]);
   
