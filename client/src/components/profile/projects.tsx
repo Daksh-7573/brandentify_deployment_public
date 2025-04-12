@@ -34,7 +34,7 @@ const projectSchema = z.object({
   category: z.string().min(1, { message: "Category is required" }),
   startDate: z.string().min(1, { message: "Start date is required" }),
   projectUrl: z.string().url({ message: "Valid URL is required" }).min(1, { message: "Project URL is required" }),
-  mediaUrls: z.array(z.string()).min(1, { message: "At least one project media item is required" }),
+  mediaUrls: z.array(z.string()).optional(), // This is handled separately with our custom validation
 });
 
 const collaboratorSchema = z.object({
@@ -339,6 +339,9 @@ export default function Projects() {
   };
 
   const onProjectSubmit = async (values: ProjectFormValues) => {
+    console.log("Form submission triggered", values);
+    console.log("Form errors:", projectForm.formState.errors);
+    
     if (!userId) return;
     
     // Validate thumbnail is required for new projects
