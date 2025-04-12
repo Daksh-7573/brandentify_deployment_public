@@ -214,7 +214,7 @@ export default function Skills() {
       <Card className="mb-6">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <div>
-            <CardTitle className="text-xl font-bold">Skills</CardTitle>
+            <CardTitle className="text-xl font-bold">What I'm Good At</CardTitle>
             <CardDescription>Add your professional skills and expertise levels</CardDescription>
           </div>
           <Button 
@@ -224,7 +224,7 @@ export default function Skills() {
             onClick={() => setIsAddModalOpen(true)}
           >
             <Plus className="h-3.5 w-3.5" />
-            <span>Add</span>
+            <span>What I'm Good At</span>
           </Button>
         </CardHeader>
         <CardContent>
@@ -279,7 +279,7 @@ export default function Skills() {
           ) : (
             <div className="py-6 text-center">
               <Lightbulb className="mx-auto h-10 w-10 text-muted-foreground/50" />
-              <p className="mt-2 text-muted-foreground">No skills added yet.</p>
+              <p className="mt-2 text-muted-foreground">Nothing added yet. Tell people what you're good at!</p>
             </div>
           )}
         </CardContent>
@@ -289,7 +289,7 @@ export default function Skills() {
       <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
         <DialogContent className="sm:max-w-[550px]">
           <DialogHeader>
-            <DialogTitle>{newSkill.id ? 'Edit Skill' : 'Add Skill'}</DialogTitle>
+            <DialogTitle>{newSkill.id ? 'Edit Skill' : 'What I\'m Good At'}</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
