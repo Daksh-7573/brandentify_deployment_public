@@ -1712,9 +1712,15 @@ export default function Projects() {
                           console.log("Thumbnail URL:", currentProject.thumbnailUrl);
                           if (currentProject.thumbnailUrl) {
                             console.log("Setting lightbox for thumbnail");
-                            setLightboxImages([currentProject.thumbnailUrl]);
+                            const thumbImage = [currentProject.thumbnailUrl];
+                            setLightboxImages(thumbImage);
                             setCurrentImageIndex(0);
-                            setIsLightboxOpen(true);
+                            
+                            // Use a setTimeout to ensure state updates complete before showing lightbox
+                            setTimeout(() => {
+                              setIsLightboxOpen(true);
+                              console.log("Thumbnail lightbox should be open now");
+                            }, 50);
                           }
                         }}
                       >
@@ -1915,9 +1921,9 @@ export default function Projects() {
       
       {/* Lightbox for images */}
       {console.log("Rendering lightbox component, isLightboxOpen:", isLightboxOpen)}
-      {isLightboxOpen && (
+      {isLightboxOpen && lightboxImages.length > 0 && (
         <div 
-          className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center p-4"
+          className="fixed inset-0 z-[9999] bg-black bg-opacity-90 flex items-center justify-center p-4"
           onClick={() => {
             console.log("Lightbox background clicked, closing");
             setIsLightboxOpen(false);
