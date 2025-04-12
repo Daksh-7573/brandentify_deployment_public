@@ -335,7 +335,7 @@ export default function Education() {
       startDate: undefined,
       endDate: undefined,
       currentlyEnrolled: false,
-      description: "",
+      skillsAcquired: [],
       industry: "",
       domain: "",
     }
@@ -483,7 +483,7 @@ export default function Education() {
       endDate: processedData.endDate ? processedData.endDate.toISOString().split('T')[0] : undefined, // YYYY-MM-DD format
       field: processedData.field,
       currentlyEnrolled: processedData.currentlyEnrolled,
-      description: processedData.description,
+      skillsAcquired: processedData.skillsAcquired,
       industry: processedData.industry,
       domain: processedData.domain
     };
@@ -519,12 +519,18 @@ export default function Education() {
       setDomainOptions(INDUSTRY_DOMAINS[education.industry] || []);
     }
     
+    // Initialize the skills state
+    setSkillsAcquired(education.skillsAcquired || []);
+    setNewSkillInput("");
+    
     // Update form values
     form.reset({
       ...education,
       // Convert string dates to Date objects if they exist
       startDate: education.startDate ? new Date(education.startDate) : undefined,
       endDate: education.endDate ? new Date(education.endDate) : undefined,
+      // Ensure skillsAcquired is an array
+      skillsAcquired: education.skillsAcquired || [],
     });
     
     setOpenDialog(true);
@@ -544,10 +550,12 @@ export default function Education() {
       startDate: undefined,
       endDate: undefined,
       currentlyEnrolled: false,
-      description: "",
+      skillsAcquired: [],
       industry: "",
       domain: "",
     });
+    setSkillsAcquired([]);
+    setNewSkillInput("");
     setOpenDialog(true);
   };
   
@@ -679,8 +687,15 @@ export default function Education() {
                     </div>
                   )}
                   
-                  {education.description && (
-                    <p className="mt-2 text-sm ml-7">{education.description}</p>
+                  {education.skillsAcquired && education.skillsAcquired.length > 0 && (
+                    <div className="mt-2 ml-7">
+                      <h4 className="text-xs font-medium text-muted-foreground mb-1">Skills & Achievements</h4>
+                      <ul className="list-disc pl-4 text-sm space-y-1">
+                        {education.skillsAcquired.map((skill, i) => (
+                          <li key={i}>{skill}</li>
+                        ))}
+                      </ul>
+                    </div>
                   )}
                 </div>
                 {index < educations.length - 1 && <Separator className="my-4" />}
@@ -973,20 +988,78 @@ export default function Education() {
                 )}
               />
               
-              {/* Description */}
+              {/* Skills Acquired & Academic Achievements */}
               <FormField
                 control={form.control}
-                name="description"
+                name="skillsAcquired"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder="Describe your education, achievements, or activities" 
-                        className="resize-none min-h-[100px]"
-                        {...field} 
-                      />
-                    </FormControl>
+                    <FormLabel>Skills Acquired & Academic Achievements</FormLabel>
+                    <div className="space-y-4">
+                      {/* Input for adding new skills */}
+                      <div className="flex space-x-2">
+                        <FormControl>
+                          <Input
+                            placeholder="e.g., Statistical Analysis, Academic Scholarship"
+                            value={newSkillInput}
+                            onChange={(e) => setNewSkillInput(e.target.value)}
+                            className="flex-1"
+                          />
+                        </FormControl>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="secondary"
+                          onClick={() => {
+                            if (newSkillInput.trim()) {
+                              const updatedSkills = [...field.value, newSkillInput.trim()];
+                              field.onChange(updatedSkills);
+                              setSkillsAcquired(updatedSkills);
+                              setNewSkillInput("");
+                            }
+                          }}
+                          disabled={!newSkillInput.trim() || field.value.length >= 10}
+                        >
+                          Add
+                        </Button>
+                      </div>
+
+                      {/* List of added skills */}
+                      {field.value.length > 0 ? (
+                        <div className="border rounded-md p-3">
+                          <ul className="space-y-2">
+                            {field.value.map((skill, index) => (
+                              <li key={index} className="flex items-center justify-between group">
+                                <div className="flex items-start">
+                                  <BookOpen className="h-4 w-4 mt-0.5 mr-2 text-muted-foreground flex-shrink-0" />
+                                  <span className="text-sm">{skill}</span>
+                                </div>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                                  onClick={() => {
+                                    const updatedSkills = field.value.filter((_, i) => i !== index);
+                                    field.onChange(updatedSkills);
+                                    setSkillsAcquired(updatedSkills);
+                                  }}
+                                >
+                                  <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                                </Button>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ) : (
+                        <div className="text-sm text-muted-foreground text-center py-3 border border-dashed rounded-md">
+                          No skills or achievements added yet
+                        </div>
+                      )}
+                    </div>
+                    <FormDescription>
+                      Add up to 10 skills or achievements (e.g., "Data Analysis", "Academic Scholarship")
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
