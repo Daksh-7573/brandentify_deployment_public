@@ -210,13 +210,17 @@ export default function MinimalistPro({
         <section className="mb-12 animate-fade-in">
           <h2 className="section-header">What I'm All About</h2>
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-            <p className="text-gray-800 leading-relaxed font-serif text-lg">
-              {userInfo.lookingFor || 
-                `Experienced ${userInfo.title || "professional"} with a focus on ${userInfo.industry || "industry"} 
-                solutions. I specialize in ${userInfo.domain || "my domain"} and am passionate about delivering results
-                that exceed expectations.`
-              }
-            </p>
+            {userInfo.lookingFor || userInfo.title || userInfo.industry ? (
+              <p className="text-gray-800 leading-relaxed font-serif text-lg">
+                {userInfo.lookingFor || 
+                  `Experienced ${userInfo.title || "professional"} with a focus on ${userInfo.industry || "industry"} 
+                  solutions. I specialize in ${userInfo.domain || "my domain"} and am passionate about delivering results
+                  that exceed expectations.`
+                }
+              </p>
+            ) : (
+              <p className="text-gray-500 text-center py-4">Personal description will appear here</p>
+            )}
           </div>
         </section>
         
@@ -248,9 +252,9 @@ export default function MinimalistPro({
         </section>
         
         {/* What I Offer (Services Section) */}
-        {sortedServices.length > 0 && (
-          <section className="mb-12 animate-fade-in">
-            <h2 className="section-header">What I Offer</h2>
+        <section className="mb-12 animate-fade-in">
+          <h2 className="section-header">What I Offer</h2>
+          {sortedServices.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {sortedServices.slice(0, 3).map((service) => (
                 <div 
@@ -281,132 +285,142 @@ export default function MinimalistPro({
                 </div>
               ))}
             </div>
-          </section>
-        )}
+          ) : (
+            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+              <p className="text-gray-500 text-center py-4">Services will appear here</p>
+            </div>
+          )}
+        </section>
         
         {/* Showcase (Projects Section) */}
-        {userProjects.length > 0 && (
-          <section className="mb-12 animate-fade-in">
-            <h2 className="section-header">Showcase</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {userProjects.map((project) => (
-                <div 
-                  key={project.id}
-                  className="animate-lift bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100"
-                  onClick={() => setProjectInLightbox(project)}
-                >
-                  {/* Project thumbnail - square ratio */}
-                  <div className="aspect-square relative overflow-hidden cursor-pointer">
-                    <img 
-                      src={project.thumbnailUrl || "/images/placeholder-project.jpg"} 
-                      alt={project.title}
-                      className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
-                    />
-                  </div>
-                  
-                  <div className="p-4">
-                    <div className="flex justify-between items-start">
-                      <h3 className="font-medium text-gray-900">{project.title}</h3>
-                      
-                      {/* Category tag as a pill */}
-                      {project.category && (
-                        <Badge className="bg-primary/10 text-primary hover:bg-primary/20">
-                          {project.category}
-                        </Badge>
-                      )}
-                    </div>
-                    
-                    {/* Project date in subtle font */}
-                    {project.startDate && (
-                      <p className="text-xs text-gray-500 mt-1 mb-2">
-                        {formatDate(project.startDate)}
-                      </p>
-                    )}
-                    
-                    {/* Project URL as button with icon */}
-                    {project.projectUrl && (
-                      <div className="mt-3">
-                        <a 
-                          href={project.projectUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center text-xs text-primary hover:underline"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <ExternalLink className="h-3 w-3 mr-1" />
-                          View Project
-                        </a>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-            
-            {/* Project Lightbox */}
-            {projectInLightbox && (
-              <div 
-                className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4"
-                onClick={() => setProjectInLightbox(null)}
-              >
-                <div 
-                  className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {/* Project Media Carousel */}
-                  {projectInLightbox.mediaUrls && projectInLightbox.mediaUrls.length > 0 && (
-                    <div className="aspect-video bg-gray-100 relative overflow-hidden">
+        <section className="mb-12 animate-fade-in">
+          <h2 className="section-header">Showcase</h2>
+          {userProjects.length > 0 ? (
+            <div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {userProjects.map((project) => (
+                  <div 
+                    key={project.id}
+                    className="animate-lift bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100"
+                    onClick={() => setProjectInLightbox(project)}
+                  >
+                    {/* Project thumbnail - square ratio */}
+                    <div className="aspect-square relative overflow-hidden cursor-pointer">
                       <img 
-                        src={projectInLightbox.mediaUrls[0]} 
-                        alt={projectInLightbox.title}
-                        className="object-cover w-full h-full"
+                        src={project.thumbnailUrl || "/images/placeholder-project.jpg"} 
+                        alt={project.title}
+                        className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
                       />
                     </div>
-                  )}
-                  
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">{projectInLightbox.title}</h3>
                     
-                    <div className="flex items-center gap-3 mb-4">
-                      {projectInLightbox.category && (
-                        <Badge className="bg-primary/10 text-primary">
-                          {projectInLightbox.category}
-                        </Badge>
+                    <div className="p-4">
+                      <div className="flex justify-between items-start">
+                        <h3 className="font-medium text-gray-900">{project.title}</h3>
+                        
+                        {/* Category tag as a pill */}
+                        {project.category && (
+                          <Badge className="bg-primary/10 text-primary hover:bg-primary/20">
+                            {project.category}
+                          </Badge>
+                        )}
+                      </div>
+                      
+                      {/* Project date in subtle font */}
+                      {project.startDate && (
+                        <p className="text-xs text-gray-500 mt-1 mb-2">
+                          {formatDate(project.startDate)}
+                        </p>
                       )}
                       
-                      {projectInLightbox.startDate && (
-                        <span className="text-sm text-gray-500">
-                          {formatDate(projectInLightbox.startDate)}
-                        </span>
+                      {/* Project URL as button with icon */}
+                      {project.projectUrl && (
+                        <div className="mt-3">
+                          <a 
+                            href={project.projectUrl} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center text-xs text-primary hover:underline"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <ExternalLink className="h-3 w-3 mr-1" />
+                            View Project
+                          </a>
+                        </div>
                       )}
                     </div>
-                    
-                    {projectInLightbox.description && (
-                      <p className="text-gray-700 mb-4">{projectInLightbox.description}</p>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Project Lightbox */}
+              {projectInLightbox && (
+                <div 
+                  className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4"
+                  onClick={() => setProjectInLightbox(null)}
+                >
+                  <div 
+                    className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {/* Project Media Carousel */}
+                    {projectInLightbox.mediaUrls && projectInLightbox.mediaUrls.length > 0 && (
+                      <div className="aspect-video bg-gray-100 relative overflow-hidden">
+                        <img 
+                          src={projectInLightbox.mediaUrls[0]} 
+                          alt={projectInLightbox.title}
+                          className="object-cover w-full h-full"
+                        />
+                      </div>
                     )}
                     
-                    {projectInLightbox.projectUrl && (
-                      <Button 
-                        variant="outline"
-                        size="sm"
-                        className="mt-2"
-                        onClick={() => window.open(projectInLightbox.projectUrl, '_blank')}
-                      >
-                        Visit Project
-                        <ExternalLink className="ml-2 h-3.5 w-3.5" />
-                      </Button>
-                    )}
+                    <div className="p-6">
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">{projectInLightbox.title}</h3>
+                      
+                      <div className="flex items-center gap-3 mb-4">
+                        {projectInLightbox.category && (
+                          <Badge className="bg-primary/10 text-primary">
+                            {projectInLightbox.category}
+                          </Badge>
+                        )}
+                        
+                        {projectInLightbox.startDate && (
+                          <span className="text-sm text-gray-500">
+                            {formatDate(projectInLightbox.startDate)}
+                          </span>
+                        )}
+                      </div>
+                      
+                      {projectInLightbox.description && (
+                        <p className="text-gray-700 mb-4">{projectInLightbox.description}</p>
+                      )}
+                      
+                      {projectInLightbox.projectUrl && (
+                        <Button 
+                          variant="outline"
+                          size="sm"
+                          className="mt-2"
+                          onClick={() => window.open(projectInLightbox.projectUrl, '_blank')}
+                        >
+                          Visit Project
+                          <ExternalLink className="ml-2 h-3.5 w-3.5" />
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
-          </section>
-        )}
+              )}
+            </div>
+          ) : (
+            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+              <p className="text-gray-500 text-center py-4">Showcase projects will appear here</p>
+            </div>
+          )}
+        </section>
         
         {/* Career Path (Experience Timeline) */}
-        {sortedExperiences.length > 0 && (
-          <section className="mb-12 animate-fade-in">
-            <h2 className="section-header">Career Path</h2>
+        <section className="mb-12 animate-fade-in">
+          <h2 className="section-header">Career Path</h2>
+          {sortedExperiences.length > 0 ? (
             <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
               <div className="relative pl-10">
                 {sortedExperiences.map((exp, index) => (
@@ -447,13 +461,17 @@ export default function MinimalistPro({
                 ))}
               </div>
             </div>
-          </section>
-        )}
+          ) : (
+            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+              <p className="text-gray-500 text-center py-4">Career experience will appear here</p>
+            </div>
+          )}
+        </section>
         
         {/* Academic Background (Education Section) */}
-        {sortedEducations.length > 0 && (
-          <section className="mb-12 animate-fade-in">
-            <h2 className="section-header">Academic Background</h2>
+        <section className="mb-12 animate-fade-in">
+          <h2 className="section-header">Academic Background</h2>
+          {sortedEducations.length > 0 ? (
             <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
               <div className="relative pl-10">
                 {sortedEducations.map((edu, index) => (
@@ -505,8 +523,12 @@ export default function MinimalistPro({
                 ))}
               </div>
             </div>
-          </section>
-        )}
+          ) : (
+            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+              <p className="text-gray-500 text-center py-4">Academic background will appear here</p>
+            </div>
+          )}
+        </section>
         
         {/* Sticky Contact Button */}
         <div className="fixed bottom-4 right-4 z-40">
