@@ -100,7 +100,7 @@ export default function Projects() {
   const [thumbnailError, setThumbnailError] = useState<string | null>(null);
   const [projectImages, setProjectImages] = useState<File[]>([]);
   const [projectVideo, setProjectVideo] = useState<File | null>(null);
-  const [mediaErrors, setMediaErrors] = useState<{images?: string, video?: string} | null>(null);
+  const [mediaErrors, setMediaErrors] = useState<{images?: string, video?: string, general?: string} | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
   const multipleImagesInputRef = useRef<HTMLInputElement>(null);
@@ -375,6 +375,7 @@ export default function Projects() {
     }
     
     if (validationFailed) {
+      console.log("Media validation failed:", newMediaErrors);
       setMediaErrors(newMediaErrors);
       toast({
         title: "Validation Error",
@@ -905,7 +906,10 @@ export default function Projects() {
                   </FormItem>
                   
                   <div className="space-y-4 border p-4 rounded-md">
-                    <h3 className="text-sm font-medium">Project Media (Choose One Type)</h3>
+                    <h3 className="text-sm font-medium">Project Media (Choose One Type)*</h3>
+                    {mediaErrors?.general && (
+                      <p className="text-sm font-medium text-destructive">{mediaErrors.general}</p>
+                    )}
                     <div className="flex items-center gap-2 mb-4">
                       <div className="flex items-center">
                         <input
@@ -1254,7 +1258,10 @@ export default function Projects() {
                     </FormItem>
                     
                     <div className="space-y-4 border p-4 rounded-md">
-                      <h3 className="text-sm font-medium">Project Media (Choose One Type)</h3>
+                      <h3 className="text-sm font-medium">Project Media (Choose One Type)*</h3>
+                      {mediaErrors?.general && (
+                        <p className="text-sm font-medium text-destructive">{mediaErrors.general}</p>
+                      )}
                       <div className="flex items-center gap-2 mb-4">
                         <div className="flex items-center">
                           <input
