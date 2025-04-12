@@ -806,12 +806,14 @@ export default function Projects() {
                 <div key={project.id} className="border border-gray-200 rounded-md overflow-hidden">
                   {/* Project Thumbnail */}
                   {(project.thumbnailUrl || (project.mediaUrls && Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0)) && (
-                    <div className="w-full aspect-square overflow-hidden bg-muted">
-                      <img 
-                        src={project.thumbnailUrl || (Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0 ? project.mediaUrls[0] : undefined)}
-                        alt={project.title} 
-                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
-                      />
+                    <div className="flex justify-center items-center p-4">
+                      <div className="w-1/2 aspect-square overflow-hidden bg-muted rounded-md shadow-sm">
+                        <img 
+                          src={project.thumbnailUrl || (Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0 ? project.mediaUrls[0] : undefined)}
+                          alt={project.title} 
+                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
+                        />
+                      </div>
                     </div>
                   )}
                   
