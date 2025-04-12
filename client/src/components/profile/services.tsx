@@ -100,19 +100,19 @@ export default function Services() {
     <Card className="mb-6">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <div>
-          <CardTitle className="text-xl font-bold">Services</CardTitle>
+          <CardTitle className="text-xl font-bold">What I Offer</CardTitle>
           <CardDescription>List professional services you provide (max 6)</CardDescription>
         </div>
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
             <Button variant="outline" size="sm" className="h-8 gap-1">
               <PlusCircle className="h-3.5 w-3.5" />
-              <span>Add</span>
+              <span>Add What You Offer</span>
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[525px] max-h-[88vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Add Service</DialogTitle>
+              <DialogTitle>Add What You Offer</DialogTitle>
               <DialogDescription>
                 Enter a single service you offer professionally (one at a time).
               </DialogDescription>
@@ -134,7 +134,7 @@ export default function Services() {
         ) : services.length === 0 ? (
           <div className="py-6 text-center">
             <Package className="mx-auto h-10 w-10 text-muted-foreground/50" />
-            <p className="mt-2 text-muted-foreground">No services added yet.</p>
+            <p className="mt-2 text-muted-foreground">Nothing added yet. Share what you offer!</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -182,7 +182,7 @@ export default function Services() {
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="sm:max-w-[525px] max-h-[88vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Edit Service</DialogTitle>
+            <DialogTitle>Edit What You Offer</DialogTitle>
             <DialogDescription>
               Update your professional service.
             </DialogDescription>
@@ -206,11 +206,11 @@ export default function Services() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              Are you sure you want to delete this service?
+              Are you sure you want to delete this offering?
             </AlertDialogTitle>
             <AlertDialogDescription>
               This action cannot be undone. This will permanently delete your
-              service and remove it from our servers.
+              offering and remove it from our servers.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
