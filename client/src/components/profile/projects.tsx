@@ -1675,7 +1675,7 @@ export default function Projects() {
                   </div>
                 )}
                 
-                <div className="space-y-4">
+                <div className="space-y-6">
                   <div>
                     <h3 className="text-sm font-medium">Description</h3>
                     <p className="mt-1 text-sm text-muted-foreground">
@@ -1704,6 +1704,32 @@ export default function Projects() {
                       </div>
                     )}
                   </div>
+                  
+                  {/* Show Project Media (Images) */}
+                  {currentProject.mediaUrls && Array.isArray(currentProject.mediaUrls) && currentProject.mediaUrls.length > 0 && (
+                    <div>
+                      <h3 className="text-sm font-medium mb-2">Project Media</h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
+                        {currentProject.mediaUrls.map((url, index) => (
+                          <div key={index} className="relative aspect-square rounded-md overflow-hidden bg-muted border">
+                            <img 
+                              src={url} 
+                              alt={`Project media ${index + 1}`} 
+                              className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Show Project Category */}
+                  {currentProject.category && (
+                    <div>
+                      <h3 className="text-sm font-medium">Category</h3>
+                      <p className="text-sm text-muted-foreground mt-1">{currentProject.category}</p>
+                    </div>
+                  )}
                 </div>
               </TabsContent>
               
