@@ -783,50 +783,63 @@ export default function Projects() {
           ) : displayProjects && displayProjects.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {displayProjects.map((project) => (
-                <div key={project.id} className="border border-gray-200 rounded-md p-3">
-                  <div className="flex justify-between mb-1">
-                    <div>
-                      <span className="text-sm font-medium text-gray-700">{project.title}</span>
-                      {project.category && (
-                        <Badge variant="outline" className="ml-2 text-xs">
-                          {project.category}
-                        </Badge>
-                      )}
+                <div key={project.id} className="border border-gray-200 rounded-md overflow-hidden">
+                  {/* Project Thumbnail */}
+                  {(project.thumbnailUrl || (project.mediaUrls && Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0)) && (
+                    <div className="w-full h-32 overflow-hidden bg-muted">
+                      <img 
+                        src={project.thumbnailUrl || (Array.isArray(project.mediaUrls) && project.mediaUrls[0])}
+                        alt={project.title} 
+                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
+                      />
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <button 
-                        className="text-gray-400 hover:text-gray-600 focus:outline-none"
-                        onClick={() => handleEdit(project)}
-                      >
-                        <Pencil className="h-3.5 w-3.5" />
-                      </button>
-                      <button 
-                        className="text-gray-400 hover:text-gray-600 focus:outline-none"
-                        onClick={() => handleDelete(project.id)}
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                  
-                  {project.description && (
-                    <p className="text-xs text-gray-500 line-clamp-2 mb-2">{project.description}</p>
                   )}
                   
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center text-xs text-gray-500">
-                      <CalendarIcon className="h-3 w-3 mr-1" />
-                      <span>{formatDate(project.startDate)}</span>
+                  <div className="p-3">
+                    <div className="flex justify-between mb-1">
+                      <div>
+                        <span className="text-sm font-medium text-gray-700">{project.title}</span>
+                        {project.category && (
+                          <Badge variant="outline" className="ml-2 text-xs">
+                            {project.category}
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <button 
+                          className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                          onClick={() => handleEdit(project)}
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </button>
+                        <button 
+                          className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                          onClick={() => handleDelete(project.id)}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
                     </div>
                     
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="h-7 text-xs px-2" 
-                      onClick={() => handleView(project)}
-                    >
-                      View Details
-                    </Button>
+                    {project.description && (
+                      <p className="text-xs text-gray-500 line-clamp-2 mb-2">{project.description}</p>
+                    )}
+                    
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center text-xs text-gray-500">
+                        <CalendarIcon className="h-3 w-3 mr-1" />
+                        <span>{formatDate(project.startDate)}</span>
+                      </div>
+                      
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-7 text-xs px-2" 
+                        onClick={() => handleView(project)}
+                      >
+                        View Details
+                      </Button>
+                    </div>
                   </div>
                 </div>
               ))}
