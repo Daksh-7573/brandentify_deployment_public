@@ -932,7 +932,7 @@ export default function WorkExperience() {
     <Card className="mb-6">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <div>
-          <CardTitle className="text-xl font-bold">Work Experience</CardTitle>
+          <CardTitle className="text-xl font-bold">Career Path</CardTitle>
           <CardDescription>Add your professional experience</CardDescription>
         </div>
         <Button 
@@ -942,7 +942,7 @@ export default function WorkExperience() {
           onClick={openAddDialog}
         >
           <Plus className="h-3.5 w-3.5" />
-          <span>Add</span>
+          <span>Add Career Path</span>
         </Button>
       </CardHeader>
       <CardContent>
@@ -955,7 +955,7 @@ export default function WorkExperience() {
         ) : sortedExperiences.length === 0 ? (
           <div className="py-6 text-center">
             <Briefcase className="mx-auto h-10 w-10 text-muted-foreground/50" />
-            <p className="mt-2 text-muted-foreground">No work experience added yet.</p>
+            <p className="mt-2 text-muted-foreground">No career path added yet.</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -1036,9 +1036,9 @@ export default function WorkExperience() {
       <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
         <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Add Work Experience</DialogTitle>
+            <DialogTitle>Add Career Path</DialogTitle>
             <DialogDescription>
-              Add details about your work experience
+              Add details about your career journey
             </DialogDescription>
           </DialogHeader>
           
@@ -1366,7 +1366,7 @@ export default function WorkExperience() {
               onClick={handleAddSubmit}
               disabled={createExperienceMutation.isPending}
             >
-              {createExperienceMutation.isPending ? "Adding..." : "Add Experience"}
+              {createExperienceMutation.isPending ? "Adding..." : "Add Career Path"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -1376,9 +1376,9 @@ export default function WorkExperience() {
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
         <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Edit Work Experience</DialogTitle>
+            <DialogTitle>Edit Career Path</DialogTitle>
             <DialogDescription>
-              Update details about your work experience
+              Update details about your career journey
             </DialogDescription>
           </DialogHeader>
           
@@ -1706,7 +1706,7 @@ export default function WorkExperience() {
               onClick={handleEditSubmit}
               disabled={updateExperienceMutation.isPending}
             >
-              {updateExperienceMutation.isPending ? "Updating..." : "Update Experience"}
+              {updateExperienceMutation.isPending ? "Updating..." : "Update Career Path"}
             </Button>
           </DialogFooter>
         </DialogContent>
