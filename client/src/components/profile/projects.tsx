@@ -806,7 +806,7 @@ export default function Projects() {
                 <div key={project.id} className="border border-gray-200 rounded-md overflow-hidden">
                   {/* Project Thumbnail */}
                   {(project.thumbnailUrl || (project.mediaUrls && Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0)) && (
-                    <div className="w-full h-32 overflow-hidden bg-muted">
+                    <div className="w-full aspect-square overflow-hidden bg-muted">
                       <img 
                         src={project.thumbnailUrl || (Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0 ? project.mediaUrls[0] : undefined)}
                         alt={project.title} 
