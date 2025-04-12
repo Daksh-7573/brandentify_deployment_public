@@ -1647,10 +1647,11 @@ export default function Projects() {
       {/* View Project Details Modal */}
       {currentProject && (
         <Dialog open={isDetailModalOpen} onOpenChange={setIsDetailModalOpen}>
-          <DialogContent className="sm:max-w-[650px] max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
+          <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto p-0">
+            {/* Header with close button and edit button */}
+            <div className="p-6 pb-2">
               <div className="flex justify-between items-center">
-                <DialogTitle className="text-xl">{currentProject.title}</DialogTitle>
+                <DialogTitle className="text-2xl font-bold">{currentProject.title}</DialogTitle>
                 <div className="flex space-x-1">
                   <Button 
                     size="icon" 
@@ -1663,86 +1664,118 @@ export default function Projects() {
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
+                  <DialogClose className="h-8 w-8 rounded-full flex items-center justify-center hover:bg-muted">
+                    <X className="h-4 w-4" />
+                  </DialogClose>
                 </div>
               </div>
-              {currentProject.category && (
-                <Badge className="mt-1">{currentProject.category}</Badge>
-              )}
-            </DialogHeader>
+            </div>
             
             <Tabs defaultValue="details" className="w-full" onValueChange={setActiveTab} value={activeTab}>
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className="grid w-full grid-cols-3 px-6">
                 <TabsTrigger value="details">Details</TabsTrigger>
                 <TabsTrigger value="team">Team</TabsTrigger>
                 <TabsTrigger value="endorsements">Endorsements</TabsTrigger>
               </TabsList>
               
-              <TabsContent value="details" className="space-y-4 pt-4">
-                {currentProject.thumbnailUrl && (
-                  <div className="w-full h-48 overflow-hidden bg-muted rounded-md mb-4">
-                    <img 
-                      src={currentProject.thumbnailUrl} 
-                      alt={currentProject.title} 
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                )}
-                
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-sm font-medium">Description</h3>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {currentProject.description || "No description provided."}
-                    </p>
-                  </div>
-                  
-                  <div className="flex flex-wrap gap-4">
-                    <div>
-                      <h3 className="text-sm font-medium">Project Date</h3>
-                      <p className="text-sm text-muted-foreground">{formatDate(currentProject.startDate)}</p>
-                    </div>
+              <TabsContent value="details" className="p-6 pt-4 animate-in fade-in-50">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Left Column - Thumbnail and Project Media */}
+                  <div className="space-y-4">
+                    {/* Project Thumbnail */}
+                    {currentProject.thumbnailUrl && (
+                      <div 
+                        className="w-full aspect-square rounded-xl shadow-sm overflow-hidden bg-muted cursor-pointer"
+                        onClick={() => {
+                          setLightboxImages([currentProject.thumbnailUrl || '']);
+                          setCurrentImageIndex(0);
+                          setIsLightboxOpen(true);
+                        }}
+                      >
+                        <img 
+                          src={currentProject.thumbnailUrl} 
+                          alt={currentProject.title} 
+                          className="w-full h-full object-cover hover:scale-[1.03] transition-all duration-300 ease-in-out"
+                        />
+                      </div>
+                    )}
                     
-                    {currentProject.projectUrl && (
-                      <div>
-                        <h3 className="text-sm font-medium">Project URL</h3>
-                        <a 
-                          href={currentProject.projectUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-sm text-primary hover:underline flex items-center"
-                        >
-                          <ExternalLinkIcon className="h-3 w-3 mr-1" />
-                          View Project
-                        </a>
+                    {/* Category Badge */}
+                    {currentProject.category && (
+                      <div className="flex items-center">
+                        <Badge className="px-3 py-1 text-sm rounded-full font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+                          {currentProject.category}
+                        </Badge>
+                      </div>
+                    )}
+                    
+                    {/* Project Media Carousel */}
+                    {currentProject.mediaUrls && Array.isArray(currentProject.mediaUrls) && currentProject.mediaUrls.length > 0 && (
+                      <div className="space-y-2 mt-4">
+                        <h3 className="text-sm font-medium">Project Media</h3>
+                        <div className="flex overflow-x-auto gap-3 pb-2 snap-x">
+                          {currentProject.mediaUrls.map((url, index) => (
+                            <div 
+                              key={index} 
+                              className="flex-none w-24 h-24 rounded-lg overflow-hidden bg-muted shadow-sm snap-center cursor-pointer"
+                              onClick={() => {
+                                setLightboxImages(
+                                  Array.isArray(currentProject.mediaUrls) ? 
+                                  currentProject.mediaUrls as string[] : 
+                                  [currentProject.thumbnailUrl || '']
+                                );
+                                setCurrentImageIndex(index);
+                                setIsLightboxOpen(true);
+                              }}
+                            >
+                              <img 
+                                src={url} 
+                                alt={`Project media ${index + 1}`} 
+                                className="w-full h-full object-cover hover:scale-110 transition-transform duration-200"
+                              />
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </div>
                   
-                  {/* Show Project Media (Images) */}
-                  {currentProject.mediaUrls && Array.isArray(currentProject.mediaUrls) && currentProject.mediaUrls.length > 0 && (
+                  {/* Right Column - Project Details */}
+                  <div className="space-y-6">
+                    {/* Project Date */}
+                    <div className="text-sm text-muted-foreground">
+                      <CalendarIcon className="inline-block h-4 w-4 mr-1 -mt-0.5" />
+                      {formatDate(currentProject.startDate)}
+                    </div>
+                    
+                    {/* Project Description */}
                     <div>
-                      <h3 className="text-sm font-medium mb-2">Project Media</h3>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
-                        {currentProject.mediaUrls.map((url, index) => (
-                          <div key={index} className="relative aspect-square rounded-md overflow-hidden bg-muted border">
-                            <img 
-                              src={url} 
-                              alt={`Project media ${index + 1}`} 
-                              className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
-                            />
-                          </div>
-                        ))}
+                      <h3 className="text-base font-semibold mb-2">About this project</h3>
+                      <div className="text-muted-foreground space-y-2">
+                        {currentProject.description?.split('\n').map((paragraph, i) => (
+                          <p key={i}>{paragraph}</p>
+                        )) || "No description provided."}
                       </div>
                     </div>
-                  )}
-                  
-                  {/* Show Project Category */}
-                  {currentProject.category && (
-                    <div>
-                      <h3 className="text-sm font-medium">Category</h3>
-                      <p className="text-sm text-muted-foreground mt-1">{currentProject.category}</p>
-                    </div>
-                  )}
+                    
+                    {/* Project URL Button */}
+                    {currentProject.projectUrl && (
+                      <div className="mt-4">
+                        <Button 
+                          variant="outline" 
+                          className="gap-2 w-full sm:w-auto"
+                          onClick={() => window.open(currentProject.projectUrl, '_blank', 'noopener,noreferrer')}
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                          Visit Site
+                          <span className="sr-only">(opens in a new tab)</span>
+                        </Button>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {currentProject.projectUrl}
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </TabsContent>
               
