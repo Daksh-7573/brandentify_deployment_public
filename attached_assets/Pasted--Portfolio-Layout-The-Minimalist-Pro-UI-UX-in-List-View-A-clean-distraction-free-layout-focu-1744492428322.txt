@@ -1,0 +1,322 @@
+🧼 Portfolio Layout – The Minimalist Pro (UI/UX in List View)
+A clean, distraction-free layout focused on personal clarity and structured storytelling.
+
+🔷 1. Header Section (Top Banner)
+Profile Picture
+
+
+Circular or square with soft border shadow
+
+
+Positioned top-left (desktop) or centered (mobile)
+
+
+Optional: Hover zoom, grayscale-to-color effect
+
+
+"I am"
+
+
+Bold identity label → Example: “I am a Product Designer”
+
+
+Positioned next to or below profile image
+
+
+Font: Large, strong sans-serif (e.g., Satoshi / Inter)
+
+
+"From"
+
+
+Small location tag below name/identity
+
+
+Icon: 📍 + City, Country
+
+
+Industry & Domain
+
+
+Displayed as labeled chips or vertical label pair
+
+
+Example: Industry: Fintech • Domain: Product Strategy
+
+
+"Looking for"
+
+
+Highlighted pill-style tag
+
+
+e.g., “Looking for Mentors”, “Looking for Collaborators”
+
+
+
+🧠 2. What I'm All About
+Short personal description / mission statement
+
+
+Max 3–5 lines, aligned left
+
+
+Font: Serif for elegance or modern mono for a unique vibe
+
+
+Optional: Quote styling (with line separator)
+
+
+
+💡 3. What I'm Good At (Skills Section)
+Titled section with horizontal icon-based skill chips
+
+
+Skills shown as rounded tags with progress bar or badge level
+
+
+Optional grouping by skill type (e.g., Tech, Soft Skills, Tools)
+
+
+
+💼 4. What I Offer (Services Section)
+Up to 3 service cards
+
+
+Card layout with:
+
+
+Service name
+
+
+Short description (1–2 lines)
+
+
+Price (INR + USD)
+
+
+Optional: “Request” or “Hire Me” CTA button
+
+
+
+🖼️ 5. Showcase (Projects Section)
+Grid or masonry layout
+
+
+Each project block includes:
+
+
+Title
+
+
+Thumbnail (square)
+
+
+Category tag
+
+
+Click to expand (lightbox or new page view)
+
+
+
+🧭 6. Career Path (Experience Timeline)
+Vertical timeline layout
+
+
+Each item includes:
+
+
+Role
+
+
+Company + duration
+
+
+Brief responsibility bullet(s)
+
+
+Optional 3D scroll or dot animation
+
+
+
+🎓 7. Academic Background (Education Section)
+Timeline or card layout (follows Career Path style)
+
+
+Each entry includes:
+
+
+Degree
+
+
+Institute
+
+
+Years attended
+
+
+Optional: GPA / Achievements
+
+
+
+🎨 8. Visual Design & UX Details
+Typography
+Font choices:
+
+
+Primary: Inter, Satoshi, or Poppins
+
+
+Optional: Playfair or DM Serif for headings (for elegance)
+
+
+Font sizes:
+
+
+Headings: 24–32px
+
+
+Body text: 16–18px
+
+
+Tags/labels: 12–14px
+
+
+
+🔹 Color Scheme
+Base: Light mode with white or soft gray background (#F9FAFB, #FFFFFF)
+
+
+Text: Dark gray/black (#111827, #1F2937)
+
+
+Accent colors (choose one based on brand vibe):
+
+
+Soft Blue (#3B82F6)
+
+
+Mint Green (#10B981)
+
+
+Coral (#F87171)
+
+
+Cyber Purple (#8B5CF6)
+
+
+Use accent color for:
+
+
+Section headers
+
+
+CTA buttons
+
+
+Tag highlights
+
+
+Timeline dots
+
+
+
+🔹 Layout
+Content width: ~1000px on desktop (centered)
+
+
+Fluid stack on mobile (100% width with proper padding)
+
+
+Section padding: 40–60px vertical, 24–32px horizontal
+
+
+
+🔹 Card & Section Styling
+Border radius: 12–16px
+
+
+Card backgrounds: white with soft shadow (shadow-md)
+
+
+Section headers:
+
+
+Thin divider line above
+
+
+Label in uppercase or bold
+
+
+Dividers between blocks using light gray (#E5E7EB)
+
+
+
+🔹 Interaction & Animation
+Section fade-in on scroll (e.g., AOS / Framer Motion)
+
+
+Hover effects:
+
+
+Cards lift slightly (transform: translateY(-4px))
+
+
+Buttons show border glow or fill-in animation
+
+
+Smooth transitions (duration: 300–500ms)
+
+
+
+🔹 Buttons & CTAs
+Rounded corners (8–12px)
+
+
+Ghost style OR solid with accent background
+
+
+Hover state: background darkens slightly, icon moves subtly
+
+
+Click ripple or pulse feedback (mobile-friendly)
+
+
+
+🔹 Media Styling
+Images: Rounded corners + subtle shadows
+
+
+Video (if any): 16:9 frame with consistent margins
+
+
+Hover to zoom or open in lightbox
+
+
+
+🔹 General UX Best Practices
+Consistent section spacing and font hierarchy
+
+
+Clearly labeled blocks
+
+
+Accessible color contrast and legible font sizes
+
+
+Mobile responsiveness across all sections
+
+
+Smooth scrolling and no content jank
+
+
+
+
+
+
+
+
+
+
+🧠 Bonus Features (Optional)
+Sticky “Hire Me” or “Contact” button (floating bottom right)
