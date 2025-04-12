@@ -791,7 +791,7 @@ export default function Projects() {
             onClick={handleAdd}
           >
             <Plus className="h-3.5 w-3.5" />
-            <span>Add</span>
+            <span>Add Showcase</span>
           </Button>
         </CardHeader>
         
@@ -869,7 +869,7 @@ export default function Projects() {
           ) : (
             <div className="py-6 text-center">
               <FolderKanban className="mx-auto h-10 w-10 text-muted-foreground/50" />
-              <p className="mt-2 text-muted-foreground">No projects added yet.</p>
+              <p className="mt-2 text-muted-foreground">No showcase items added yet.</p>
             </div>
           )}
         </CardContent>
@@ -879,7 +879,7 @@ export default function Projects() {
       <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
         <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Add New Project</DialogTitle>
+            <DialogTitle>Add New Showcase</DialogTitle>
           </DialogHeader>
           
           <Form {...projectForm}>
@@ -1206,7 +1206,7 @@ export default function Projects() {
                   Cancel
                 </Button>
                 <Button type="submit">
-                  Save Project
+                  Save Showcase
                 </Button>
               </DialogFooter>
             </form>
@@ -1219,7 +1219,7 @@ export default function Projects() {
         <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
           <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Edit Project</DialogTitle>
+              <DialogTitle>Edit Showcase</DialogTitle>
             </DialogHeader>
             
             <Form {...projectForm}>
