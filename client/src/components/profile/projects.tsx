@@ -1708,7 +1708,10 @@ export default function Projects() {
                         className="w-full aspect-square rounded-xl shadow-sm overflow-hidden bg-muted cursor-pointer"
                         onClick={() => {
                           // Open the thumbnail in the lightbox
+                          console.log("Thumbnail clicked, currentProject:", currentProject);
+                          console.log("Thumbnail URL:", currentProject.thumbnailUrl);
                           if (currentProject.thumbnailUrl) {
+                            console.log("Setting lightbox for thumbnail");
                             setLightboxImages([currentProject.thumbnailUrl]);
                             setCurrentImageIndex(0);
                             setIsLightboxOpen(true);
@@ -1742,10 +1745,19 @@ export default function Projects() {
                               key={index} 
                               className="flex-none w-24 h-24 rounded-lg overflow-hidden bg-muted shadow-sm snap-center cursor-pointer"
                               onClick={() => {
+                                console.log("Image clicked:", url);
+                                console.log("Current project media:", currentProject.mediaUrls);
                                 if (currentProject.mediaUrls && Array.isArray(currentProject.mediaUrls)) {
-                                  setLightboxImages(currentProject.mediaUrls);
+                                  console.log("Setting lightbox images:", currentProject.mediaUrls);
+                                  // Create a new array to ensure React detects the change
+                                  const mediaImages = [...currentProject.mediaUrls];
+                                  setLightboxImages(mediaImages);
                                   setCurrentImageIndex(index);
-                                  setIsLightboxOpen(true);
+                                  // Using a timeout to ensure state updates are applied
+                                  setTimeout(() => {
+                                    setIsLightboxOpen(true);
+                                    console.log("Lightbox should be open now after timeout");
+                                  }, 50);
                                 }
                               }}
                             >
@@ -1902,10 +1914,14 @@ export default function Projects() {
       )}
       
       {/* Lightbox for images */}
+      {console.log("Rendering lightbox component, isLightboxOpen:", isLightboxOpen)}
       {isLightboxOpen && (
         <div 
           className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center p-4"
-          onClick={() => setIsLightboxOpen(false)}
+          onClick={() => {
+            console.log("Lightbox background clicked, closing");
+            setIsLightboxOpen(false);
+          }}
         >
           {/* Close button */}
           <button 
