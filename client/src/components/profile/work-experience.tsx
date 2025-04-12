@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, Edit, CalendarIcon, Building, MapPin, Briefcase, TagIcon, AlertCircle } from "lucide-react";
+import { Plus, Trash2, Edit, CalendarIcon, Building, MapPin, Briefcase, TagIcon, AlertCircle, X } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -501,6 +501,10 @@ export default function WorkExperience() {
     endDate: false
   });
   
+  // State for new responsibility input
+  const [newResponsibilityInput, setNewResponsibilityInput] = useState('');
+  const [editResponsibilityInput, setEditResponsibilityInput] = useState('');
+  
   // Reset form data
   const resetForm = () => {
     setFormData({
@@ -524,6 +528,9 @@ export default function WorkExperience() {
       startDate: false,
       endDate: false
     });
+    // Reset responsibility inputs
+    setNewResponsibilityInput('');
+    setEditResponsibilityInput('');
   };
   
   // Fetch user experiences - use numeric ID when available
@@ -1267,67 +1274,82 @@ export default function WorkExperience() {
             
             <div className="space-y-2">
               <Label htmlFor="keyResponsibilities">Key Responsibilities & Achievements</Label>
-              <div className="border rounded-md p-3 space-y-3 bg-gray-50">
-                {formData.keyResponsibilities.map((item, index) => (
-                  <div key={index} className="flex gap-2">
-                    <Input
-                      value={item}
-                      onChange={(e) => {
-                        const newItems = [...formData.keyResponsibilities];
-                        newItems[index] = e.target.value;
-                        setFormData(prev => ({ ...prev, keyResponsibilities: newItems }));
-                      }}
-                      placeholder={`Responsibility or achievement ${index + 1}`}
-                      disabled={createExperienceMutation.isPending}
-                      className="flex-1"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => {
-                        const newItems = [...formData.keyResponsibilities];
-                        newItems.splice(index, 1);
-                        setFormData(prev => ({ ...prev, keyResponsibilities: newItems }));
-                      }}
-                      disabled={createExperienceMutation.isPending}
-                    >
-                      <Trash2 className="h-4 w-4 text-red-500" />
-                    </Button>
-                  </div>
-                ))}
-                
-                {formData.keyResponsibilities.length < 10 && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="w-full mt-2"
-                    onClick={() => {
-                      if (formData.keyResponsibilities.length < 10) {
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Input
+                    id="newResponsibility"
+                    placeholder="Add a responsibility or achievement"
+                    className="flex-1"
+                    value={newResponsibilityInput}
+                    onChange={(e) => setNewResponsibilityInput(e.target.value)}
+                    disabled={createExperienceMutation.isPending}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && newResponsibilityInput.trim() && formData.keyResponsibilities.length < 10) {
+                        e.preventDefault();
                         setFormData(prev => ({
                           ...prev,
-                          keyResponsibilities: [...prev.keyResponsibilities, ""]
+                          keyResponsibilities: [...prev.keyResponsibilities, newResponsibilityInput.trim()]
                         }));
+                        setNewResponsibilityInput('');
                       }
                     }}
-                    disabled={createExperienceMutation.isPending}
+                  />
+                  <Button
+                    type="button"
+                    size="sm"
+                    disabled={!newResponsibilityInput.trim() || formData.keyResponsibilities.length >= 10 || createExperienceMutation.isPending}
+                    onClick={() => {
+                      if (newResponsibilityInput.trim() && formData.keyResponsibilities.length < 10) {
+                        setFormData(prev => ({
+                          ...prev,
+                          keyResponsibilities: [...prev.keyResponsibilities, newResponsibilityInput.trim()]
+                        }));
+                        setNewResponsibilityInput('');
+                      }
+                    }}
                   >
-                    <Plus className="h-4 w-4 mr-2" /> Add Item
+                    <Plus className="h-4 w-4" />
                   </Button>
+                </div>
+                
+                {formData.keyResponsibilities.length > 0 && (
+                  <div className="border rounded-md p-3 bg-gray-50">
+                    <ul className="space-y-2">
+                      {formData.keyResponsibilities.map((item, index) => (
+                        <li key={index} className="flex items-center gap-2 group">
+                          <span className="flex-1 text-sm">{item}</span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={() => {
+                              const newItems = [...formData.keyResponsibilities];
+                              newItems.splice(index, 1);
+                              setFormData(prev => ({
+                                ...prev,
+                                keyResponsibilities: newItems
+                              }));
+                            }}
+                            disabled={createExperienceMutation.isPending}
+                          >
+                            <X className="h-3.5 w-3.5 text-muted-foreground" />
+                          </Button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 )}
                 
-                {formData.keyResponsibilities.length === 0 && (
-                  <p className="text-sm text-muted-foreground text-center py-2">
-                    Add up to 10 key responsibilities or achievements
-                  </p>
-                )}
-                
-                {formData.keyResponsibilities.length === 10 && (
-                  <p className="text-sm text-muted-foreground text-center py-1">
-                    Maximum 10 items reached
-                  </p>
-                )}
+                <div className="text-xs text-muted-foreground">
+                  {formData.keyResponsibilities.length === 0 ? (
+                    <p>Add up to 10 responsibilities or achievements</p>
+                  ) : formData.keyResponsibilities.length === 10 ? (
+                    <p>Maximum 10 items reached</p>
+                  ) : (
+                    <p>{formData.keyResponsibilities.length} of 10 items added</p>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -1592,67 +1614,82 @@ export default function WorkExperience() {
             
             <div className="space-y-2">
               <Label htmlFor="keyResponsibilities">Key Responsibilities & Achievements</Label>
-              <div className="border rounded-md p-3 space-y-3 bg-gray-50">
-                {formData.keyResponsibilities.map((item, index) => (
-                  <div key={index} className="flex gap-2">
-                    <Input
-                      value={item}
-                      onChange={(e) => {
-                        const newItems = [...formData.keyResponsibilities];
-                        newItems[index] = e.target.value;
-                        setFormData(prev => ({ ...prev, keyResponsibilities: newItems }));
-                      }}
-                      placeholder={`Responsibility or achievement ${index + 1}`}
-                      disabled={updateExperienceMutation.isPending}
-                      className="flex-1"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => {
-                        const newItems = [...formData.keyResponsibilities];
-                        newItems.splice(index, 1);
-                        setFormData(prev => ({ ...prev, keyResponsibilities: newItems }));
-                      }}
-                      disabled={updateExperienceMutation.isPending}
-                    >
-                      <Trash2 className="h-4 w-4 text-red-500" />
-                    </Button>
-                  </div>
-                ))}
-                
-                {formData.keyResponsibilities.length < 10 && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="w-full mt-2"
-                    onClick={() => {
-                      if (formData.keyResponsibilities.length < 10) {
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Input
+                    id="editResponsibility"
+                    placeholder="Add a responsibility or achievement"
+                    className="flex-1"
+                    value={editResponsibilityInput}
+                    onChange={(e) => setEditResponsibilityInput(e.target.value)}
+                    disabled={updateExperienceMutation.isPending}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && editResponsibilityInput.trim() && formData.keyResponsibilities.length < 10) {
+                        e.preventDefault();
                         setFormData(prev => ({
                           ...prev,
-                          keyResponsibilities: [...prev.keyResponsibilities, ""]
+                          keyResponsibilities: [...prev.keyResponsibilities, editResponsibilityInput.trim()]
                         }));
+                        setEditResponsibilityInput('');
                       }
                     }}
-                    disabled={updateExperienceMutation.isPending}
+                  />
+                  <Button
+                    type="button"
+                    size="sm"
+                    disabled={!editResponsibilityInput.trim() || formData.keyResponsibilities.length >= 10 || updateExperienceMutation.isPending}
+                    onClick={() => {
+                      if (editResponsibilityInput.trim() && formData.keyResponsibilities.length < 10) {
+                        setFormData(prev => ({
+                          ...prev,
+                          keyResponsibilities: [...prev.keyResponsibilities, editResponsibilityInput.trim()]
+                        }));
+                        setEditResponsibilityInput('');
+                      }
+                    }}
                   >
-                    <Plus className="h-4 w-4 mr-2" /> Add Item
+                    <Plus className="h-4 w-4" />
                   </Button>
+                </div>
+                
+                {formData.keyResponsibilities.length > 0 && (
+                  <div className="border rounded-md p-3 bg-gray-50">
+                    <ul className="space-y-2">
+                      {formData.keyResponsibilities.map((item, index) => (
+                        <li key={index} className="flex items-center gap-2 group">
+                          <span className="flex-1 text-sm">{item}</span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={() => {
+                              const newItems = [...formData.keyResponsibilities];
+                              newItems.splice(index, 1);
+                              setFormData(prev => ({
+                                ...prev,
+                                keyResponsibilities: newItems
+                              }));
+                            }}
+                            disabled={updateExperienceMutation.isPending}
+                          >
+                            <X className="h-3.5 w-3.5 text-muted-foreground" />
+                          </Button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 )}
                 
-                {formData.keyResponsibilities.length === 0 && (
-                  <p className="text-sm text-muted-foreground text-center py-2">
-                    Add up to 10 key responsibilities or achievements
-                  </p>
-                )}
-                
-                {formData.keyResponsibilities.length === 10 && (
-                  <p className="text-sm text-muted-foreground text-center py-1">
-                    Maximum 10 items reached
-                  </p>
-                )}
+                <div className="text-xs text-muted-foreground">
+                  {formData.keyResponsibilities.length === 0 ? (
+                    <p>Add up to 10 responsibilities or achievements</p>
+                  ) : formData.keyResponsibilities.length === 10 ? (
+                    <p>Maximum 10 items reached</p>
+                  ) : (
+                    <p>{formData.keyResponsibilities.length} of 10 items added</p>
+                  )}
+                </div>
               </div>
             </div>
           </div>
