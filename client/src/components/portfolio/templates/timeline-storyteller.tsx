@@ -96,7 +96,7 @@ export default function TimelineStoryteller({
   const sortedServices = [...userServices];
   
   // Helper for formatting dates
-  const formatDate = (dateStr: string) => {
+  const formatDate = (dateStr: string | null) => {
     if (!dateStr) return '';
     const date = new Date(dateStr);
     return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
@@ -105,7 +105,9 @@ export default function TimelineStoryteller({
   // Scroll to chapter
   const scrollToChapter = (chapter: keyof typeof chapterRefs) => {
     setActiveChapter(chapter);
-    chapterRefs[chapter]?.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (chapterRefs[chapter]?.current) {
+      chapterRefs[chapter]?.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   };
   
   // Toggle narration
