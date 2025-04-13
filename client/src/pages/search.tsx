@@ -446,8 +446,8 @@ const SearchPage = () => {
     <DashboardLayout hideRightSidebar={true}>
       <div className="container mx-auto px-4 py-6">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Discover & Connect</h1>
-          <p className="text-gray-600">Find content, professionals, and networking opportunities in one place</p>
+          <h1 className="text-3xl font-bold mb-2 neo-text-glow">Discover & Connect</h1>
+          <p className="text-gray-400">Find content, professionals, and networking opportunities in one place</p>
         </div>
 
         {/* Main Tabs: Search vs Smart Connect */}
@@ -534,7 +534,7 @@ const SearchPage = () => {
                       </Card>
                     ))}
                   </div>
-                ) : searchResults?.pulses?.length > 0 ? (
+                ) : searchResults?.pulses && searchResults.pulses.length > 0 ? (
                   <div className="space-y-4">
                     {searchResults.pulses.map((pulse: {
                       id: number;
@@ -547,22 +547,22 @@ const SearchPage = () => {
                         photoURL: string | null;
                       };
                     }) => (
-                      <Card key={pulse.id} className="hover:border-primary/40 transition-colors cursor-pointer">
+                      <Card key={pulse.id} className="neo-card hover:border-primary/30 transition-all cursor-pointer">
                         <CardContent className="p-4">
                           <div className="flex items-center gap-3 mb-3">
-                            <Avatar>
+                            <Avatar className="border border-primary/30">
                               <AvatarImage src={pulse.user.photoURL || undefined} />
-                              <AvatarFallback>{getInitials(pulse.user.name)}</AvatarFallback>
+                              <AvatarFallback className="bg-black/40 text-primary">{getInitials(pulse.user.name)}</AvatarFallback>
                             </Avatar>
                             <div>
-                              <h3 className="font-medium">{pulse.user.name}</h3>
-                              <p className="text-sm text-gray-500">
+                              <h3 className="font-medium text-gray-100">{pulse.user.name}</h3>
+                              <p className="text-sm text-gray-400">
                                 {formatDistanceToNow(new Date(pulse.createdAt), { addSuffix: true })}
                               </p>
                             </div>
                           </div>
-                          <h4 className="font-medium mb-2">{pulse.title}</h4>
-                          <p className="text-gray-600 mb-3 line-clamp-2">{pulse.content}</p>
+                          <h4 className="font-medium mb-2 text-gray-100">{pulse.title}</h4>
+                          <p className="text-gray-400 mb-3 line-clamp-2">{pulse.content}</p>
                           <div className="flex">
                             <Badge variant={
                               pulse.type === "poll" ? "secondary" : 
@@ -628,22 +628,22 @@ const SearchPage = () => {
                       location: string | null;
                       industry: string | null;
                     }) => (
-                      <Card key={profile.id} className="overflow-hidden">
-                        <div className="bg-gradient-to-r from-primary/20 to-primary/10 h-24"></div>
+                      <Card key={profile.id} className="neo-card overflow-hidden">
+                        <div className="bg-gradient-to-r from-primary/30 to-primary/5 h-24 backdrop-blur-sm"></div>
                         <div className="px-6 pb-6">
                           <div className="flex justify-center -mt-10 mb-4">
-                            <Avatar className="h-20 w-20 border-4 border-white">
+                            <Avatar className="h-20 w-20 border-4 border-black/30 shadow-lg breathe-animation-subtle">
                               <AvatarImage src={profile.photoURL || undefined} />
-                              <AvatarFallback className="text-lg">{getInitials(profile.name)}</AvatarFallback>
+                              <AvatarFallback className="text-lg bg-black/50 text-primary">{getInitials(profile.name)}</AvatarFallback>
                             </Avatar>
                           </div>
                           <div className="text-center">
-                            <h3 className="text-xl font-semibold">{profile.name}</h3>
+                            <h3 className="text-xl font-semibold text-white neo-text-glow">{profile.name}</h3>
                             {profile.title && (
-                              <p className="text-gray-600 mt-1">{profile.title}</p>
+                              <p className="text-gray-300 mt-1">{profile.title}</p>
                             )}
                             {(profile.location || profile.industry) && (
-                              <p className="text-gray-500 text-sm mt-2">
+                              <p className="text-gray-400 text-sm mt-2">
                                 {profile.location && profile.location}
                                 {profile.location && profile.industry && " • "}
                                 {profile.industry && profile.industry}
@@ -701,14 +701,14 @@ const SearchPage = () => {
                       name: string;
                       count: number;
                     }) => (
-                      <Card key={tag.id} className="hover:border-primary/50 transition-colors cursor-pointer">
+                      <Card key={tag.id} className="neo-card hover:border-primary/30 transition-all cursor-pointer">
                         <CardContent className="p-4">
                           <div className="flex items-center justify-between">
                             <div>
-                              <h3 className="text-lg font-medium">#{tag.name}</h3>
-                              <p className="text-gray-500 text-sm">{tag.count} {tag.count === 1 ? 'post' : 'posts'}</p>
+                              <h3 className="text-lg font-medium text-white">#{tag.name}</h3>
+                              <p className="text-gray-400 text-sm">{tag.count} {tag.count === 1 ? 'post' : 'posts'}</p>
                             </div>
-                            <Hash className="h-8 w-8 text-primary/40" />
+                            <Hash className="h-8 w-8 text-primary breathe-animation-subtle" />
                           </div>
                         </CardContent>
                       </Card>
@@ -731,9 +731,9 @@ const SearchPage = () => {
           <TabsContent value="smart-connect" className="mt-6">
             <div className="space-y-6">
               {/* Matchmaking Form */}
-              <Card>
+              <Card className="neo-card">
                 <CardHeader>
-                  <CardTitle>{showMatchResults ? "Your Match Criteria" : "Find Your Match"}</CardTitle>
+                  <CardTitle className="text-white">{showMatchResults ? "Your Match Criteria" : "Find Your Match"}</CardTitle>
                   <CardDescription>
                     {showMatchResults 
                       ? "Based on these criteria, we found relevant matches for you" 
