@@ -356,10 +356,18 @@ Make your response detailed but practical. Focus on actionable advice that the u
       } catch (anthropicError: any) {
         console.error("Anthropic API also failed:", anthropicError);
         
-        // Final fallback: Generate demo content based on advice type
-        console.log("Both APIs failed. Using demo content as final fallback...");
+        // Final fallback: Use our defined fallback service based on advice type
+        console.log("Both APIs failed. Using structured fallback content based on advice type...");
         
-        if (userProfile.adviceType === 'industry-switch') {
+        // Import our dedicated fallback service
+        const { generateCareerAdviceFallback } = await import('./ai-fallback-service');
+        
+        // Return the type-specific fallback content
+        const userName = userProfile.user?.name || "User";
+        return generateCareerAdviceFallback(userProfile.adviceType, userName);
+        
+        // This code should never execute now, keeping for historical reference
+        if (false && userProfile.adviceType === 'industry-switch') {
           const userName = userProfile.user?.name || "User";
           const skills = userProfile.skills.map(skill => skill.name).join(', ') || 'product management, strategic planning, and team leadership';
           

@@ -2010,21 +2010,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error in career advice endpoint:", error);
       
+      // Re-access the request body values to be safe
+      const reqUserId = req.body.userId;
+      const reqAdviceType = req.body.adviceType || 'general';
+      
       try {
         // Import the AI fallback service for career advice
         const { generateCareerAdviceFallback } = await import('./services/ai-fallback-service');
         
+        let userName = "User";
+        if (reqUserId) {
+          try {
+            const userData = await storage.getUser(reqUserId);
+            if (userData?.name) {
+              userName = userData.name;
+            }
+          } catch (userError) {
+            console.log("Could not fetch user data for personalization:", userError);
+          }
+        }
+        
         // Generate fallback advice based on the advice type
-        const userName = userData?.name || "User";
-        const fallbackAdvice = generateCareerAdviceFallback(adviceType, userName);
+        const adviceTypeStr = typeof reqAdviceType === 'string' ? reqAdviceType : 'general';
+        const fallbackAdvice = generateCareerAdviceFallback(adviceTypeStr, userName);
         
         // Save the fallback advice as a chat message
-        await storage.createChatMessage({
-          userId,
-          sender: "ai",
-          content: fallbackAdvice,
-          messageType: "career_advice"
-        });
+        if (reqUserId) {
+          await storage.createChatMessage({
+            userId: parseInt(reqUserId),
+            sender: "ai",
+            content: fallbackAdvice,
+            messageType: "career_advice"
+          });
+        }
         
         // Return the fallback advice
         res.json({
@@ -2241,8 +2259,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           phoneNumber: null,
           photoURL: null,
           title: "Professional",
+          aboutMe: "Professional profile",
           location: "Remote",
+          domain: null,
+          company: null,
           industry: targetIndustry,
+          visitingCardType: null,
+          contactEmail: null,
+          contactPhone: null,
+          website: null,
           lookingFor: null,
           profileCompleted: null,
           emailVerified: false,
