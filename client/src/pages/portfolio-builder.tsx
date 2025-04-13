@@ -401,6 +401,13 @@ export default function PortfolioBuilder() {
       description: `✔ Theme: Vibrant & Playful
 ✔ Best For: Freelancers, Influencers, Coaches`,
       theme: "#FF7F50"
+    },
+    { 
+      id: "freelancer-hub-new", 
+      name: "The Freelancer Hub (New)", 
+      description: `✔ Theme: Colorful, Playful, Expressive
+✔ Best For: Freelancers, Influencers, Coaches, Creators`,
+      theme: "#FF5757"
     }
   ];
 
