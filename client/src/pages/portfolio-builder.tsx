@@ -945,6 +945,31 @@ export default function PortfolioBuilder() {
               </Card>
             )}
             
+            {form.watch("layout") === "scholar" && (
+              <Card className="overflow-hidden bg-white border-gray-200 shadow-lg">
+                <CardContent className="p-0">
+                  <Scholar 
+                    userInfo={{
+                      name: userData?.name || user?.name || '',
+                      title: userData?.title || null,
+                      industry: userData?.industry || null,
+                      domain: userData?.domain || null,
+                      location: userData?.location || null,
+                      email: userData?.email || user?.email || '',
+                      photoURL: userData?.photoURL || user?.photoURL || null,
+                      lookingFor: userData?.lookingFor || null,
+                      jobLevel: userData?.jobLevel || null
+                    }}
+                    userSkills={userSkills || []}
+                    userServices={userServices || []}
+                    userExperiences={userExperiences || []}
+                    userEducations={userEducations || []}
+                    userProjects={userProjects || []}
+                  />
+                </CardContent>
+              </Card>
+            )}
+            
             <div className="flex justify-between">
               <Button 
                 variant="outline"
