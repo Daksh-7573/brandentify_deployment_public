@@ -299,7 +299,7 @@ export default function PortfolioBuilder() {
   const form = useForm<PortfolioFormValues>({
     resolver: zodResolver(portfolioFormSchema),
     defaultValues: {
-      layout: "professional", // Updated to match the backend schema enum values
+      layout: "corporate-executive", // Set to show The Corporate Executive by default
       isPublished: false,
       publicUrl: "",
     }
@@ -365,11 +365,11 @@ export default function PortfolioBuilder() {
   // Layout templates
   const layoutOptions = [
     { 
-      id: "minimalist-pro", 
-      name: "The Minimalist Pro", 
-      description: `✔ Theme: Clean, Elegant, & Modern
-✔ Best For: Tech Professionals, Consultants, Business Executives`,
-      theme: "#0044CC"
+      id: "corporate-executive", 
+      name: "The Corporate Executive", 
+      description: `✔ Theme: High-End, Premium, & Polished
+✔ Best For: Senior Executives, Investors, Industry Experts`,
+      theme: "#DAA520"
     },
     { 
       id: "timeline-storyteller", 
@@ -384,13 +384,6 @@ export default function PortfolioBuilder() {
       description: `✔ Theme: Image-First, Creative & Bold
 ✔ Best For: Designers, Photographers, Marketers`,
       theme: "#F8C471"
-    },
-    { 
-      id: "corporate-executive", 
-      name: "The Corporate Executive", 
-      description: `✔ Theme: High-End, Premium, & Polished
-✔ Best For: Senior Executives, Investors, Industry Experts`,
-      theme: "#DAA520"
     },
     { 
       id: "dynamic-innovator", 
