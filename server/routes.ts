@@ -2028,8 +2028,77 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userName = user.name || "User";
       }
       
+      // Check for explore_options
+      if (adviceType === 'explore_options' || (typeof adviceType === 'object' && adviceType.toString().includes('explore_options'))) {
+        console.log("DEMO ADVICE: Using EXPLORE OPTIONS template");
+        return `# Career Path Analysis for ${userName}
+
+After thoroughly analyzing your professional background, skills, and interests, I've identified several promising career paths that align with your experience and potential. Here's a comprehensive breakdown of your options:
+
+## 🔍 What Stands Out in Your Profile
+
+- **Strong experience** in technology development and project execution
+- **Transferable skills** in strategic planning, communication, and problem-solving
+- **Consistent demonstration** of leadership and adaptability throughout your career
+- **Notable technical expertise** in software development and systems integration
+
+## 🎯 Career Path Suggestions
+
+### 1️⃣ Product Management Leadership
+This path builds on your technical knowledge while leveraging your strategic thinking and communication skills. Product leadership roles offer growth potential to executive positions like CPO and are in high demand across industries.
+
+**Why it fits:**
+- Combines your technical expertise with business acumen
+- Allows you to influence product strategy and innovation
+- Provides clear progression to senior leadership roles
+- Offers competitive compensation ($140K-$200K+ depending on location)
+
+### 2️⃣ Technology Consulting
+This path leverages your problem-solving abilities and industry knowledge to help organizations solve complex challenges through technology.
+
+**Why it fits:**
+- Utilizes your cross-functional communication skills
+- Offers variety in project types and client industries
+- Provides opportunities for specialized expertise development
+- Creates networking opportunities across multiple industries
+
+### 3️⃣ Entrepreneurship/Startup Leadership
+A bold pivot that would allow you to channel your experience into building something from the ground up.
+
+**Why it fits:**
+- Your experience provides credibility with investors and partners
+- Your technical background enables you to evaluate technology solutions
+- Leadership experience translates directly to team building
+- Market understanding helps identify viable opportunities
+
+## 📚 Upskilling Ideas
+
+To strengthen your positioning for these career paths, consider:
+
+- **Learning** advanced product management methodologies (Agile, Lean, OKRs)
+- **Getting certified** in relevant areas (PMP, Scrum, CSPO)
+- **Building a portfolio** of side projects demonstrating leadership and vision
+- **Developing expertise** in emerging technologies like AI, blockchain, or IoT
+- **Strengthening** financial analysis and business modeling skills
+
+## 🧭 Short-Term Strategy
+
+1. **Update your Brandentifier portfolio** to highlight achievements relevant to your target path
+2. **Leverage Brandentifier's Smart Connect** to identify and reach out to professionals in your target roles
+3. **Create tailored resumes** that emphasize transferable skills for each potential path
+4. **Apply the 70% rule** - pursue roles where you match at least 70% of requirements
+5. **Conduct 3-5 informational interviews** with professionals in your target fields
+
+## Medium to Long-Term Vision
+
+As you progress, focus on developing specialized expertise in your chosen path, building a personal brand through thought leadership, and pursuing leadership opportunities that align with your values and strengths.
+
+Remember that career transitions often follow a "two-step" approach - first moving laterally to gain relevant experience, then advancing vertically within your new specialty.
+
+Musk, Your Career Partner`;
+      }
       // Check for strings "switch_industry" and also the object format fallback
-      if (adviceType === 'switch_industry' || (typeof adviceType === 'object' && adviceType.toString().includes('switch_industry'))) {
+      else if (adviceType === 'switch_industry' || (typeof adviceType === 'object' && adviceType.toString().includes('switch_industry'))) {
         console.log("DEMO ADVICE: Using SWITCH INDUSTRY template");
         return `# Industry Transition Analysis for ${userName}
 

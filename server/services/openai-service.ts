@@ -314,7 +314,7 @@ Musk, Your Career Partner`;
           const userName = userProfile.user?.name || "User";
           const userIndustry = userProfile.user?.industry || "your current industry";
           const skills = userProfile.skills.map(skill => skill.name).join(', ') || "project management and team leadership";
-          const education = userProfile.educations.length > 0 ? userProfile.educations[0].fieldOfStudy || "your field" : "your field";
+          const education = userProfile.educations.length > 0 ? userProfile.educations[0].degree || "your field" : "your field";
           
           return `# Career Development Insights for ${userName}
 
