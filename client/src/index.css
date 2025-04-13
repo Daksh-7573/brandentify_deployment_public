@@ -331,9 +331,24 @@
   animation: breathe 3s infinite alternate ease-in-out;
 }
 
+.breathe-animation-subtle {
+  animation: breathe-subtle 3s infinite alternate ease-in-out;
+}
+
 @keyframes breathe {
   0% { transform: scale(1); }
   100% { transform: scale(1.05); }
+}
+
+@keyframes breathe-subtle {
+  0% { 
+    transform: scale(1);
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+  }
+  100% { 
+    transform: scale(1.02);
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+  }
 }
 
 @layer base {
