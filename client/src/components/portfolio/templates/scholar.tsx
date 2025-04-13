@@ -18,14 +18,12 @@ import {
   Wrench as Tool
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useTypewriter } from "@/hooks/use-typewriter";
-import { formatDistanceToNow } from "date-fns";
 
-// Define the props interface
 interface ScholarProps {
   userInfo: {
     name: string;
@@ -84,65 +82,65 @@ interface ScholarProps {
   }[];
 }
 
-// Helper function to get a theme color for skills based on their names
-const getSkillColor = (skill: string): string => {
-  const colors: Record<string, string> = {
-    "Programming": "bg-blue-100 text-blue-800",
-    "Design": "bg-purple-100 text-purple-800",
-    "Marketing": "bg-green-100 text-green-800",
-    "Business": "bg-amber-100 text-amber-800",
-    "Communication": "bg-pink-100 text-pink-800",
-    "Leadership": "bg-indigo-100 text-indigo-800",
-    "Data Analysis": "bg-cyan-100 text-cyan-800",
-    "Research": "bg-emerald-100 text-emerald-800",
-  };
-
-  // Check if skill contains any keywords
-  for (const [keyword, color] of Object.entries(colors)) {
-    if (skill.toLowerCase().includes(keyword.toLowerCase())) {
-      return color;
-    }
-  }
-
-  // Default color if no match
-  return "bg-slate-100 text-slate-800";
-};
-
-// Helper function to get category icon
-const getCategoryIcon = (category: string) => {
-  switch (category?.toLowerCase()) {
-    case 'research':
-      return <BookOpen className="h-4 w-4" />;
-    case 'academic':
-      return <GraduationCap className="h-4 w-4" />;
-    case 'hackathon':
-      return <Code className="h-4 w-4" />;
-    case 'internship':
-      return <Briefcase className="h-4 w-4" />;
-    default:
-      return <FileText className="h-4 w-4" />;
-  }
-};
-
 export default function Scholar({
   userInfo,
   userSkills,
   userServices,
   userExperiences,
   userEducations,
-  userProjects,
+  userProjects
 }: ScholarProps) {
-  // Use the typewriter effect for bio intro
-  const [text] = useTypewriter({
-    words: [
-      userInfo.title 
-        ? `I am a ${userInfo.title}${userInfo.industry ? ` in ${userInfo.industry}` : ''}` 
-        : 'I am a student passionate about learning and growth'
-    ],
-    loop: 1,
+  // Set up animated typewriter text based on user info
+  const phrases = [
+    userInfo.title || "Student & Lifelong Learner",
+    userInfo.industry ? `Specializing in ${userInfo.industry}` : "Knowledge Seeker",
+    userInfo.domain ? `Focused on ${userInfo.domain}` : "Passionate about Learning",
+    userInfo.lookingFor ? `Looking for ${userInfo.lookingFor}` : "Open to Opportunities"
+  ];
+
+  const { text } = useTypewriter({
+    words: phrases,
+    loop: true,
     typeSpeed: 80,
     deleteSpeed: 50,
+    delaySpeed: 2000
   });
+
+  // Function to choose a color for skills based on skill name
+  const getSkillColor = (name: string) => {
+    const nameToLower = name.toLowerCase();
+    
+    if (nameToLower.includes('communication') || nameToLower.includes('speaking')) {
+      return 'bg-blue-50 text-blue-700 border-blue-200';
+    } else if (nameToLower.includes('leadership') || nameToLower.includes('management')) {
+      return 'bg-purple-50 text-purple-700 border-purple-200';
+    } else if (nameToLower.includes('teamwork') || nameToLower.includes('collaboration')) {
+      return 'bg-green-50 text-green-700 border-green-200';
+    } else if (nameToLower.includes('problem') || nameToLower.includes('analytical')) {
+      return 'bg-orange-50 text-orange-700 border-orange-200';
+    } else if (nameToLower.includes('creative') || nameToLower.includes('design')) {
+      return 'bg-pink-50 text-pink-700 border-pink-200';
+    } else {
+      return 'bg-gray-50 text-gray-700 border-gray-200';
+    }
+  };
+
+  // Helper function to get icon for project categories
+  const getCategoryIcon = (category: string) => {
+    const categoryLower = category.toLowerCase();
+    
+    if (categoryLower.includes('research') || categoryLower.includes('academic')) {
+      return <BookOpen className="h-3.5 w-3.5" />;
+    } else if (categoryLower.includes('web') || categoryLower.includes('software')) {
+      return <Code className="h-3.5 w-3.5" />;
+    } else if (categoryLower.includes('volunteer') || categoryLower.includes('community')) {
+      return <Globe className="h-3.5 w-3.5" />;
+    } else if (categoryLower.includes('design') || categoryLower.includes('creative')) {
+      return <Briefcase className="h-3.5 w-3.5" />;
+    } else {
+      return <FileText className="h-3.5 w-3.5" />;
+    }
+  };
 
   // Group skills by category
   const skillCategories = {
@@ -183,6 +181,13 @@ export default function Scholar({
     new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
   );
 
+  // Check if we have any data sections to display
+  const hasSkills = userSkills && userSkills.length > 0;
+  const hasExperiences = userExperiences && userExperiences.length > 0;
+  const hasEducation = userEducations && userEducations.length > 0;
+  const hasProjects = userProjects && userProjects.length > 0;
+  const hasServices = userServices && userServices.length > 0;
+  
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
@@ -279,110 +284,123 @@ export default function Scholar({
             What I'm Good At
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Technical Skills */}
-            {skillCategories.technical.length > 0 && (
-              <Card>
-                <CardContent className="p-6">
-                  <h3 className="text-lg font-semibold mb-4 flex items-center">
-                    <Code className="h-5 w-5 mr-2 text-blue-600" /> Technical Skills
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {skillCategories.technical.map((skill) => (
-                      <div key={skill.id} className="w-full mb-3">
-                        <div className="flex justify-between mb-1">
-                          <span className="text-sm font-medium">{skill.name}</span>
-                          <div className="flex">
-                            {Array.from({ length: 5 }).map((_, i) => (
-                              <Star
-                                key={i}
-                                className={`h-4 w-4 ${i < Math.round(skill.proficiency / 20) ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'}`}
-                              />
-                            ))}
+          {!hasSkills && (
+            <Card className="mb-6 border-dashed border-blue-200">
+              <CardContent className="p-6 text-center">
+                <p className="text-gray-500 italic">Add skills to showcase your strengths and abilities to potential employers or collaborators.</p>
+                <Button variant="outline" className="mt-4 text-blue-600 border-blue-200 hover:bg-blue-50">
+                  Add Skills
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+          
+          {hasSkills && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Technical Skills */}
+              {skillCategories.technical.length > 0 && (
+                <Card>
+                  <CardContent className="p-6">
+                    <h3 className="text-lg font-semibold mb-4 flex items-center">
+                      <Code className="h-5 w-5 mr-2 text-blue-600" /> Technical Skills
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {skillCategories.technical.map((skill) => (
+                        <div key={skill.id} className="w-full mb-3">
+                          <div className="flex justify-between mb-1">
+                            <span className="text-sm font-medium">{skill.name}</span>
+                            <div className="flex">
+                              {Array.from({ length: 5 }).map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className={`h-4 w-4 ${i < Math.round(skill.proficiency / 20) ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'}`}
+                                />
+                              ))}
+                            </div>
                           </div>
+                          <Progress
+                            value={skill.proficiency}
+                            className="h-2 bg-blue-100"
+                          />
                         </div>
-                        <Progress
-                          value={skill.proficiency}
-                          className="h-2 bg-blue-100"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-            
-            {/* Soft Skills */}
-            {skillCategories.soft.length > 0 && (
-              <Card>
-                <CardContent className="p-6">
-                  <h3 className="text-lg font-semibold mb-4 flex items-center">
-                    <MessageSquare className="h-5 w-5 mr-2 text-indigo-600" /> Soft Skills
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {skillCategories.soft.map((skill) => (
-                      <Badge 
-                        key={skill.id} 
-                        variant="outline"
-                        className={`text-sm py-2 px-3 ${getSkillColor(skill.name)}`}
-                      >
-                        {skill.name}
-                      </Badge>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-            
-            {/* Tools */}
-            {skillCategories.tools.length > 0 && (
-              <Card>
-                <CardContent className="p-6">
-                  <h3 className="text-lg font-semibold mb-4 flex items-center">
-                    <Tool className="h-5 w-5 mr-2 text-purple-600" /> Tools & Software
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {skillCategories.tools.map((skill) => (
-                      <Badge 
-                        key={skill.id} 
-                        variant="outline"
-                        className="bg-purple-50 text-purple-700 border-purple-200"
-                      >
-                        {skill.name}
-                      </Badge>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-            
-            {/* Other Skills */}
-            {skillCategories.other.length > 0 && (
-              <Card>
-                <CardContent className="p-6">
-                  <h3 className="text-lg font-semibold mb-4 flex items-center">
-                    <Award className="h-5 w-5 mr-2 text-green-600" /> Other Skills
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {skillCategories.other.map((skill) => (
-                      <Badge 
-                        key={skill.id} 
-                        variant="outline"
-                        className={`text-sm py-2 px-3 ${getSkillColor(skill.name)}`}
-                      >
-                        {skill.name}
-                      </Badge>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+              
+              {/* Soft Skills */}
+              {skillCategories.soft.length > 0 && (
+                <Card>
+                  <CardContent className="p-6">
+                    <h3 className="text-lg font-semibold mb-4 flex items-center">
+                      <MessageSquare className="h-5 w-5 mr-2 text-indigo-600" /> Soft Skills
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {skillCategories.soft.map((skill) => (
+                        <Badge 
+                          key={skill.id} 
+                          variant="outline"
+                          className={`text-sm py-2 px-3 ${getSkillColor(skill.name)}`}
+                        >
+                          {skill.name}
+                        </Badge>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+              
+              {/* Tools */}
+              {skillCategories.tools.length > 0 && (
+                <Card>
+                  <CardContent className="p-6">
+                    <h3 className="text-lg font-semibold mb-4 flex items-center">
+                      <Tool className="h-5 w-5 mr-2 text-purple-600" /> Tools & Software
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {skillCategories.tools.map((skill) => (
+                        <Badge 
+                          key={skill.id} 
+                          variant="outline"
+                          className="bg-purple-50 text-purple-700 border-purple-200"
+                        >
+                          {skill.name}
+                        </Badge>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+              
+              {/* Other Skills */}
+              {skillCategories.other.length > 0 && (
+                <Card>
+                  <CardContent className="p-6">
+                    <h3 className="text-lg font-semibold mb-4 flex items-center">
+                      <Award className="h-5 w-5 mr-2 text-green-600" /> Other Skills
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {skillCategories.other.map((skill) => (
+                        <Badge 
+                          key={skill.id} 
+                          variant="outline"
+                          className={`text-sm py-2 px-3 ${getSkillColor(skill.name)}`}
+                        >
+                          {skill.name}
+                        </Badge>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          )}
         </div>
       </section>
 
       {/* Services Section (if services exist) */}
-      {userServices && userServices.length > 0 && (
+      {hasServices && (
         <section className="py-12 bg-white">
           <div className="container mx-auto px-4 md:px-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
@@ -411,14 +429,25 @@ export default function Scholar({
       )}
 
       {/* Projects Section */}
-      {userProjects && userProjects.length > 0 && (
-        <section className="py-12 bg-gray-50">
-          <div className="container mx-auto px-4 md:px-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-              <span className="w-8 h-0.5 bg-blue-500 mr-3"></span> 
-              Showcase
-            </h2>
-            
+      <section className="py-12 bg-gray-50">
+        <div className="container mx-auto px-4 md:px-8">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+            <span className="w-8 h-0.5 bg-blue-500 mr-3"></span> 
+            Showcase
+          </h2>
+          
+          {!hasProjects && (
+            <Card className="mb-6 border-dashed border-blue-200">
+              <CardContent className="p-6 text-center">
+                <p className="text-gray-500 italic">Add projects to showcase your work and accomplishments.</p>
+                <Button variant="outline" className="mt-4 text-blue-600 border-blue-200 hover:bg-blue-50">
+                  Add Projects
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+          
+          {hasProjects && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {userProjects.map((project) => (
                 <Card key={project.id} className="overflow-hidden hover:shadow-md transition-shadow">
@@ -472,19 +501,30 @@ export default function Scholar({
                 </Card>
               ))}
             </div>
-          </div>
-        </section>
-      )}
+          )}
+        </div>
+      </section>
 
       {/* Experience Section */}
-      {userExperiences && userExperiences.length > 0 && (
-        <section className="py-12 bg-white">
-          <div className="container mx-auto px-4 md:px-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-              <span className="w-8 h-0.5 bg-blue-500 mr-3"></span> 
-              Career Path
-            </h2>
+      <section className="py-12 bg-white">
+        <div className="container mx-auto px-4 md:px-8">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+            <span className="w-8 h-0.5 bg-blue-500 mr-3"></span> 
+            Career Path
+          </h2>
+          
+          {!hasExperiences && (
+            <Card className="mb-6 border-dashed border-blue-200">
+              <CardContent className="p-6 text-center">
+                <p className="text-gray-500 italic">Add work experience to showcase your professional journey and achievements.</p>
+                <Button variant="outline" className="mt-4 text-blue-600 border-blue-200 hover:bg-blue-50">
+                  Add Work Experience
+                </Button>
+              </CardContent>
+            </Card>
+          )}
             
+          {hasExperiences && (
             <div className="relative">
               {/* Timeline line */}
               <div className="absolute left-0 md:left-3 top-0 bottom-0 w-0.5 bg-blue-200"></div>
@@ -544,19 +584,30 @@ export default function Scholar({
                 ))}
               </div>
             </div>
-          </div>
-        </section>
-      )}
+          )}
+        </div>
+      </section>
 
       {/* Education Section */}
-      {sortedEducations && sortedEducations.length > 0 && (
-        <section className="py-12 bg-gray-50">
-          <div className="container mx-auto px-4 md:px-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-              <span className="w-8 h-0.5 bg-blue-500 mr-3"></span> 
-              Academic Background
-            </h2>
-            
+      <section className="py-12 bg-gray-50">
+        <div className="container mx-auto px-4 md:px-8">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+            <span className="w-8 h-0.5 bg-blue-500 mr-3"></span> 
+            Academic Background
+          </h2>
+          
+          {!hasEducation && (
+            <Card className="mb-6 border-dashed border-blue-200">
+              <CardContent className="p-6 text-center">
+                <p className="text-gray-500 italic">Add education details to showcase your academic background and achievements.</p>
+                <Button variant="outline" className="mt-4 text-blue-600 border-blue-200 hover:bg-blue-50">
+                  Add Education
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+          
+          {hasEducation && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {sortedEducations.map((education) => (
                 <Card key={education.id} className="border-blue-100 hover:shadow-md transition-shadow">
@@ -608,9 +659,9 @@ export default function Scholar({
                 </Card>
               ))}
             </div>
-          </div>
-        </section>
-      )}
+          )}
+        </div>
+      </section>
 
       {/* Contact Section / CTA */}
       <section className="py-12 bg-gradient-to-r from-blue-50 to-indigo-50">
