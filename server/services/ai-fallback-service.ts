@@ -143,6 +143,51 @@ Many professionals underestimate how valuable their cross-functional communicati
 Musk, Your Career Partner`;
   } 
   
+  // Check for build_skills
+  else if (adviceType === 'build_skills') {
+    return `# Your Future Role Readiness Plan
+
+I've analyzed your professional profile to identify the core skills you should build for future career advancement. Here's a comprehensive plan based on your background and industry trends.
+
+## 🌟 Potential Future Roles
+
+Role | Match % | Why You're a Fit
+-----|---------|----------------
+AI Product Strategist | 87% | Your experience with cross-functional teams and market insights positions you well for this emerging role
+Head of Marketing Operations | 76% | Your background with MarTech tools and team leadership creates a strong foundation
+Growth Lead - SaaS | 79% | Your analytical mindset and campaign delivery track record are valuable assets
+UX Research Director | 82% | Your focus on user-centered design and data-driven decisions align with this leadership position
+
+## 🧠 Core Skills to Build Now
+
+- **Prompt Engineering** | ⭐️ Must-have | Essential for future-facing marketing and AI content roles
+- **Product Analytics (Mixpanel, GA4)** | ⭐️ Must-have | Required to move into Product or Strategy leadership
+- **AI Ethics & Policy** | 🔸 Optional | Valuable if entering regulated industries or AI governance
+- **Funnel Optimization** | 🔹 Medium | Important for Growth and Product Management positions
+- **Leadership Communication** | 🔹 Medium | Key for advancement into team and strategy roles
+- **Data Visualization** | ⭐️ Must-have | Critical for presenting insights to stakeholders across all future roles
+
+## 📚 Suggested Learning Tracks
+
+- **AI for Product Thinkers** | LinkedIn Learning | 6 hours
+- **SQL & Funnel Data Analysis** | Mode Analytics Academy | 4 hours
+- **UX for Strategic Growth** | Coursera (Google UX Certificate) | 8 hours
+- **Prompt Engineering Mastery** | Udemy | 3 hours
+- **Leadership Communication** | Harvard Business School Online | 6 weeks
+
+## 🔁 Ongoing Practice Suggestions
+
+- Write one long-form AI-assisted blog each week on topics related to your target industry
+- Shadow product sprints to learn Jira/Figma workflows as a side contributor
+- Set up Notion-based growth dashboards for side projects or current work initiatives
+- Join a cross-functional project outside your core expertise to build collaboration skills
+- Create a weekly learning routine with Brandentifier's portfolio updates to document your skill growth
+
+Remember that consistent, deliberate practice of these skills is more important than trying to learn everything at once. Focus on one skill from each category (technical, strategic, and communication) for balanced growth.
+
+Musk, Your Career Partner`;
+  }
+
   // Default general advice
   else {
     return `# Career Development Insights for ${userName}

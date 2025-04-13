@@ -681,6 +681,38 @@ export default function AICareerPage() {
                                     </p>
                                   );
                                 }
+                                // For markdown tables - check for | separator (tables have multiple | characters)
+                                else if (line.includes('|') && line.split('|').length > 2) {
+                                  // Check if this is a header separator row (contains ---)
+                                  if (line.includes('---')) {
+                                    return null; // Skip separator rows, they're just for markdown formatting
+                                  }
+                                  
+                                  // Split the row into cells and trim whitespace
+                                  const cells = line.split('|')
+                                    .filter(cell => cell.trim() !== '') // Remove empty cells from start/end
+                                    .map(cell => cell.trim());
+                                  
+                                  // Determine if this is a header row (usually the first row of a table)
+                                  const isHeaderRow = i > 0 && 
+                                    adviceHistory[0].content.split('\n')[i+1] && 
+                                    adviceHistory[0].content.split('\n')[i+1].includes('---');
+                                  
+                                  return (
+                                    <div key={i} className={`flex w-full ${isHeaderRow ? 'font-bold bg-primary/10 text-primary' : 'border-b border-gray-100'} my-0`}>
+                                      {cells.map((cell, cellIndex) => (
+                                        <div 
+                                          key={`cell-${cellIndex}`} 
+                                          className={`px-3 py-2 flex-1 ${cellIndex === 0 ? 'font-medium' : ''}`}
+                                          style={{ minWidth: cellIndex === 0 ? '120px' : '80px' }}
+                                        >
+                                          {cell}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  );
+                                }
+                                
                                 // For signature line
                                 else if (line.includes("Musk, Your Career Partner")) {
                                   return (
@@ -850,6 +882,38 @@ export default function AICareerPage() {
                                           </div>
                                         );
                                       }
+                                      // For markdown tables - check for | separator (tables have multiple | characters)
+                                      else if (line.includes('|') && line.split('|').length > 2) {
+                                        // Check if this is a header separator row (contains ---)
+                                        if (line.includes('---')) {
+                                          return null; // Skip separator rows, they're just for markdown formatting
+                                        }
+                                        
+                                        // Split the row into cells and trim whitespace
+                                        const cells = line.split('|')
+                                          .filter(cell => cell.trim() !== '') // Remove empty cells from start/end
+                                          .map(cell => cell.trim());
+                                        
+                                        // Determine if this is a header row (usually the first row of a table)
+                                        const isHeaderRow = i > 0 && 
+                                          message.content.split('\n')[i+1] && 
+                                          message.content.split('\n')[i+1].includes('---');
+                                        
+                                        return (
+                                          <div key={i} className={`flex w-full ${isHeaderRow ? 'font-bold bg-primary/10 text-primary' : 'border-b border-gray-100'} my-0`}>
+                                            {cells.map((cell, cellIndex) => (
+                                              <div 
+                                                key={`cell-${cellIndex}`} 
+                                                className={`px-3 py-2 flex-1 ${cellIndex === 0 ? 'font-medium' : ''}`}
+                                                style={{ minWidth: cellIndex === 0 ? '120px' : '80px' }}
+                                              >
+                                                {cell}
+                                              </div>
+                                            ))}
+                                          </div>
+                                        );
+                                      }
+                                      
                                       // For book titles or emphasized terms (_text_)
                                       else if (line.match(/^_.*_$/)) {
                                         return (

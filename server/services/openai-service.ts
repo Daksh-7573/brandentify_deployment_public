@@ -157,7 +157,55 @@ export async function generateCareerAdvice(userProfile: {
         break;
       case "build_skills":
         adviceTypeText = "building core skills for future roles";
-        specificPrompt = `Focus on identifying skill gaps compared to industry standards and future trends. Recommend specific skills to develop, with practical ways to acquire them (courses, certifications, projects, etc).`;
+        specificPrompt = `Follow this exact structure for your response:
+
+1. First, perform a thorough profile analysis, categorizing their:
+   - Experience (domains worked in, industries exposed to, scope of roles)
+   - Tools & Tech (platforms used, stack familiarity, certifications)
+   - Achievements (results delivered, scale of ownership)
+   - Role Titles & Transitions (career momentum, managerial vs hands-on growth)
+
+2. Create a current strength mapping, categorizing:
+   - Hard Skills (technical tools, platforms, programming languages)
+   - Soft Skills (leadership, strategic thinking, etc.)
+   - Industry Tags (specific sectors they have experience in)
+   - Career Stage (early, mid-level, senior, executive)
+
+3. Predict 3-5 high-fit future roles based on:
+   - Resume signals
+   - Industry trajectory
+   - Cross-role transitions
+   - Job market trends
+
+4. For each predicted role, identify:
+   - Core skill gaps (what they're missing)
+   - Skill priority level (must-have, good-to-have, optional)
+   - Skill category (technical, strategic, creative, communication)
+
+5. Create a structured "Future Role Readiness Plan" with these exact sections:
+   
+   ## 🌟 Potential Future Roles
+   
+   Create a table with columns for Role, Match Percentage, and Why You're a Fit
+   
+   ## 🧠 Core Skills to Build Now
+   
+   List each skill with:
+   - Priority (⭐️ Must-have, 🔹 Medium, 🔸 Optional)
+   - Use Case (which future roles need this skill)
+   
+   ## 📚 Suggested Learning Tracks
+   
+   Include specific courses with:
+   - Track name
+   - Platform (specific website, not general)
+   - Estimated hours
+   
+   ## 🔁 Ongoing Practice Suggestions
+   
+   3-5 specific activities they can do regularly to build these skills
+
+Make your response detailed but practical. Focus on actionable advice that the user can implement immediately.`;
         break;
       case "get_certifications":
         adviceTypeText = "acquiring valuable certifications";
