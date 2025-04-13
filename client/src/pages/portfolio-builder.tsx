@@ -69,7 +69,7 @@ const portfolioFormSchema = z.object({
   layout: z.enum([
     "professional", "creative", "minimal", "technical", "executive", "minimalist_pro",
     "minimalist-pro", "timeline-storyteller", "visual-expert", "corporate-executive", 
-    "dynamic-innovator", "freelancer-hub", "animated"
+    "dynamic-innovator", "freelancer-hub", "animated", "scholar"
   ]),
   isPublished: z.boolean().default(false),
   publicUrl: z.string().nullable().optional(),
@@ -370,6 +370,13 @@ export default function PortfolioBuilder() {
       description: `✔ Theme: High-End, Premium, & Polished
 ✔ Best For: Senior Executives, Investors, Industry Experts`,
       theme: "#DAA520"
+    },
+    { 
+      id: "scholar", 
+      name: "The Scholar", 
+      description: `✔ Theme: Clean, Modern, Knowledge-Centric
+✔ Best For: Students, Fresh Graduates, Interns, Early-Career Professionals`,
+      theme: "#4F86C6"
     },
     { 
       id: "timeline-storyteller", 

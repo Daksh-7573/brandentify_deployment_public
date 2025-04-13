@@ -1,82 +1,114 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 interface TypewriterOptions {
-  text: string;
-  loop?: boolean;
-  speed?: number;
-  delay?: number;
+  words: string[];
+  loop?: number;
+  typeSpeed?: number;
+  deleteSpeed?: number;
+  delayBetween?: number;
 }
 
 /**
- * Custom hook for creating a typewriter text effect
- * @param options.text - Text to be typed
- * @param options.loop - Whether to loop the typing effect (default: false)
- * @param options.speed - Typing speed in milliseconds (default: 100)
- * @param options.delay - Delay before typing starts in milliseconds (default: 0)
- * @returns The text with typewriter effect applied
+ * A hook that creates a typewriter effect
+ * @param options The typewriter options
+ * @returns The current text and cursor status
  */
-export default function useTypewriter({
-  text,
-  loop = false,
-  speed = 100,
-  delay = 0,
-}: TypewriterOptions): string {
-  const [displayText, setDisplayText] = useState('');
-  const [currentIndex, setCurrentIndex] = useState(0);
+export function useTypewriter({
+  words = [],
+  loop = 0,
+  typeSpeed = 80,
+  deleteSpeed = 50,
+  delayBetween = 1500
+}: TypewriterOptions): [string, boolean] {
+  const [currentText, setCurrentText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
-  const [isDelayed, setIsDelayed] = useState(delay > 0);
+  const [wordIndex, setWordIndex] = useState(0);
+  const [isWaiting, setIsWaiting] = useState(false);
+  const [loopCount, setLoopCount] = useState(0);
+  const [isDone, setIsDone] = useState(false);
 
   useEffect(() => {
-    // Handle initial delay
-    if (isDelayed) {
-      const delayTimeout = setTimeout(() => {
-        setIsDelayed(false);
-      }, delay);
-
-      return () => clearTimeout(delayTimeout);
+    // If no words, or loop completed, return
+    if (words.length === 0 || (loop > 0 && loopCount >= loop)) {
+      setIsDone(true);
+      return;
     }
 
-    // Don't start typing until delay is completed
-    if (isDelayed) return;
+    let timeout: NodeJS.Timeout;
 
-    // Handle typing effect
-    if (!isDeleting && currentIndex <= text.length) {
-      const timeout = setTimeout(() => {
-        setDisplayText(text.substring(0, currentIndex));
-        setCurrentIndex(currentIndex + 1);
-      }, speed);
-
-      return () => clearTimeout(timeout);
-    }
-    
-    // Handle deletion (for loop effect)
-    if (isDeleting && currentIndex >= 0) {
-      const timeout = setTimeout(() => {
-        setDisplayText(text.substring(0, currentIndex));
-        setCurrentIndex(currentIndex - 1);
-      }, speed / 2);
-
-      return () => clearTimeout(timeout);
-    }
-
-    // Handle loop effect
-    if (loop && currentIndex > text.length) {
-      const timeout = setTimeout(() => {
+    // If we're waiting between words
+    if (isWaiting) {
+      timeout = setTimeout(() => {
+        setIsWaiting(false);
         setIsDeleting(true);
-      }, 2000); // Pause at the end before deleting
-
+      }, delayBetween);
       return () => clearTimeout(timeout);
     }
 
-    // Reset loop
-    if (loop && isDeleting && currentIndex === 0) {
-      const timeout = setTimeout(() => {
-        setIsDeleting(false);
-      }, 1000); // Pause before retyping
-
-      return () => clearTimeout(timeout);
+    const currentWord = words[wordIndex];
+    
+    // Deleting text
+    if (isDeleting) {
+      timeout = setTimeout(() => {
+        setCurrentText(prev => prev.slice(0, -1));
+        
+        // If all text is deleted
+        if (currentText.length <= 1) {
+          setIsDeleting(false);
+          
+          // Move to the next word or loop back to the first
+          const nextIndex = (wordIndex + 1) % words.length;
+          setWordIndex(nextIndex);
+          
+          // Increment loop count if we've gone through all words
+          if (nextIndex === 0) {
+            setLoopCount(prev => prev + 1);
+            
+            // If we've reached the loop limit, stop
+            if (loop > 0 && (loopCount + 1) >= loop) {
+              setIsDone(true);
+              return;
+            }
+          }
+        }
+      }, deleteSpeed);
+    } 
+    // Typing text
+    else {
+      // If we've typed the full word
+      if (currentText === currentWord) {
+        // If there's only one word or we've reached the loop limit, we're done
+        if (words.length === 1 && loop <= 1) {
+          setIsDone(true);
+          return;
+        }
+        
+        // Otherwise, wait for a bit before deleting
+        setIsWaiting(true);
+      } else {
+        // Type the next character
+        timeout = setTimeout(() => {
+          const nextChar = currentWord.charAt(currentText.length);
+          setCurrentText(prev => prev + nextChar);
+        }, typeSpeed);
+      }
     }
-  }, [currentIndex, isDeleting, text, loop, speed, isDelayed, delay]);
 
-  return displayText;
+    return () => clearTimeout(timeout);
+  }, [
+    currentText,
+    words,
+    wordIndex,
+    isDeleting,
+    isWaiting,
+    loop,
+    loopCount,
+    typeSpeed,
+    deleteSpeed,
+    delayBetween
+  ]);
+
+  return [currentText, isDone];
 }
+
+export default useTypewriter;
