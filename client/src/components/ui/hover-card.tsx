@@ -1,23 +1,25 @@
-import { HTMLMotionProps, motion } from "framer-motion";
-import { ReactNode, forwardRef } from "react";
-import { VARIANTS, AnimationVariant, getAnimationIntensity } from "@/lib/animation-utils";
-import { cn } from "@/lib/utils";
+import { forwardRef, ReactNode, HTMLAttributes } from 'react';
+import { motion, MotionProps } from 'framer-motion';
+import { cn } from '@/lib/utils';
+import { AnimationVariant, getVariantByIntensity, VARIANTS } from '@/lib/animation-utils';
 
-export interface HoverCardProps extends HTMLMotionProps<"div"> {
+export type HoverEffect = 'scale' | 'lift' | 'glow' | 'border' | 'tilt';
+
+interface HoverCardProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
   className?: string;
   variant?: AnimationVariant;
-  effect?: 'scale' | 'lift' | 'glow' | 'border' | 'tilt';
+  effect?: HoverEffect;
   disabled?: boolean;
 }
 
 /**
- * HoverCard - A card component with hover animations
+ * HoverCard - A card component with hover effects
  * 
- * This component uses Framer Motion to provide a variety of hover effects
- * for card elements throughout the application.
+ * This component provides various hover animations for card-like elements,
+ * such as scaling, lifting, glowing, etc.
  */
-const HoverCard = forwardRef<HTMLDivElement, HoverCardProps>(({
+export const HoverCard = forwardRef<HTMLDivElement, HoverCardProps>(({
   children,
   className,
   variant = 'normal',
@@ -25,73 +27,84 @@ const HoverCard = forwardRef<HTMLDivElement, HoverCardProps>(({
   disabled = false,
   ...props
 }, ref) => {
-  const intensity = getAnimationIntensity(variant);
+  // Get hover animation based on the variant and effect
+  const getHoverAnimation = () => {
+    if (disabled) return {};
+    
+    // Get the animation intensity based on the variant
+    const cardVariants = getVariantByIntensity(variant, VARIANTS.cardHover);
+    
+    switch (effect) {
+      case 'scale':
+        return {
+          whileHover: cardVariants.hover,
+          whileTap: cardVariants.tap
+        };
+      case 'lift':
+        return {
+          whileHover: { y: -5, boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)' },
+          whileTap: { y: -2 }
+        };
+      case 'glow':
+        return {
+          whileHover: { 
+            boxShadow: '0 0 15px rgba(var(--primary), 0.5)',
+            scale: 1.02
+          },
+          whileTap: { scale: 0.98 }
+        };
+      case 'border':
+        return {
+          whileHover: { 
+            boxShadow: 'inset 0 0 0 2px rgba(var(--primary), 0.7)',
+            scale: 1.01
+          },
+          whileTap: { scale: 0.99 }
+        };
+      case 'tilt':
+        return {
+          whileHover: (info) => {
+            const rect = info.target.getBoundingClientRect();
+            const x = info.clientX - rect.left;
+            const y = info.clientY - rect.top;
+            
+            // Calculate rotation angles based on cursor position
+            const rotateX = 10 * ((y - rect.height / 2) / rect.height);
+            const rotateY = -10 * ((x - rect.width / 2) / rect.width);
+            
+            return { 
+              rotateX, 
+              rotateY, 
+              scale: 1.05,
+              z: 10
+            };
+          },
+          whileTap: { scale: 0.98, rotateX: 0, rotateY: 0 },
+          transition: { type: 'spring', stiffness: 400, damping: 17 }
+        };
+      default:
+        return {
+          whileHover: cardVariants.hover,
+          whileTap: cardVariants.tap
+        };
+    }
+  };
   
-  // Set animation based on the requested effect
-  let hoverAnimation = {};
-  let initialAnimation = {};
-  
-  switch (effect) {
-    case 'scale':
-      initialAnimation = { scale: 1 };
-      hoverAnimation = { scale: disabled ? 1 : intensity.scale };
-      break;
-    case 'lift':
-      initialAnimation = { y: 0, boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)' };
-      hoverAnimation = disabled ? {} : { 
-        y: -intensity.distance,
-        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)' 
-      };
-      break;
-    case 'glow':
-      initialAnimation = { boxShadow: '0 0 0 rgba(var(--primary), 0)' };
-      hoverAnimation = disabled ? {} : { 
-        boxShadow: `0 0 ${intensity.distance * 2}px rgba(var(--primary), 0.5)` 
-      };
-      break;
-    case 'border':
-      initialAnimation = { 
-        boxShadow: 'inset 0 0 0 1px rgba(var(--primary), 0.1)' 
-      };
-      hoverAnimation = disabled ? {} : { 
-        boxShadow: 'inset 0 0 0 2px rgba(var(--primary), 0.7)'
-      };
-      break;
-    case 'tilt':
-      initialAnimation = { 
-        rotateX: 0,
-        rotateY: 0,
-        transformPerspective: '1000px' 
-      };
-      hoverAnimation = disabled ? {} : { 
-        rotateX: -5,
-        rotateY: 5
-      };
-      break;
-    default:
-      initialAnimation = { scale: 1 };
-      hoverAnimation = disabled ? {} : { scale: intensity.scale };
-  }
+  const hoverAnimation = getHoverAnimation();
   
   return (
     <motion.div
       ref={ref}
-      className={cn(
-        "relative transition-all duration-300 rounded-lg overflow-hidden", 
-        className
+      className={cn(className, 
+        effect === 'tilt' && 'transform-style-preserve-3d',
+        disabled && 'opacity-70 cursor-not-allowed'
       )}
-      initial={initialAnimation}
-      whileHover={hoverAnimation}
-      transition={{ 
-        type: 'spring', 
-        stiffness: 400, 
-        damping: 17,
-        duration: intensity.duration 
-      }}
+      {...hoverAnimation}
       {...props}
     >
       {children}
     </motion.div>
   );
 });
+
 HoverCard.displayName = "HoverCard";
