@@ -66,7 +66,11 @@ import Header from "@/components/layout/header";
 
 // Define the schema for portfolio form
 const portfolioFormSchema = z.object({
-  layout: z.enum(["professional", "creative", "minimal", "technical", "executive", "minimalist_pro"]),
+  layout: z.enum([
+    "professional", "creative", "minimal", "technical", "executive", "minimalist_pro",
+    "minimalist-pro", "timeline-storyteller", "visual-expert", "corporate-executive", 
+    "dynamic-innovator", "freelancer-hub", "animated"
+  ]),
   isPublished: z.boolean().default(false),
   publicUrl: z.string().nullable().optional(),
 });
@@ -401,6 +405,13 @@ export default function PortfolioBuilder() {
       description: `✔ Theme: Colorful, Playful, Expressive
 ✔ Best For: Freelancers, Influencers, Coaches, Creators`,
       theme: "#FF5757"
+    },
+    { 
+      id: "animated", 
+      name: "The Animated", 
+      description: `✔ Theme: Fully Animated, Motion-Driven, Interactive
+✔ Best For: Motion Designers, VFX Artists, Web Animators, AR/VR & Game Designers`,
+      theme: "#00E5FF"
     }
   ];
 
@@ -861,6 +872,44 @@ export default function PortfolioBuilder() {
               <Card className="overflow-hidden bg-white border-gray-200 shadow-lg">
                 <CardContent className="p-0">
                   <FreelancerHub 
+                    userInfo={{
+                      name: userData?.name || user?.name || '',
+                      title: userData?.title || '',
+                      industry: userData?.industry || '',
+                      domain: userData?.domain || '',
+                      location: userData?.location || '',
+                      email: userData?.email || user?.email || '',
+                      photoURL: userData?.photoURL || user?.photoURL || null,
+                      lookingFor: userData?.lookingFor || '',
+                      jobLevel: userData?.jobLevel || ''
+                    }}
+                    userSkills={userSkills || []}
+                    userServices={userServices || []}
+                    userExperiences={userExperiences || []}
+                    userEducations={userEducations || []}
+                    userProjects={userProjects?.map(p => ({
+                      id: p.id,
+                      title: p.title,
+                      description: p.description,
+                      userId: p.userId,
+                      startDate: p.startDate,
+                      createdAt: null,
+                      projectUrl: null,
+                      category: null,
+                      thumbnailUrl: null,
+                      thumbnailFile: null,
+                      mediaUrls: [],
+                      updatedAt: null
+                    })) || []}
+                  />
+                </CardContent>
+              </Card>
+            )}
+            
+            {form.watch("layout") === "animated" && (
+              <Card className="overflow-hidden bg-black border-gray-800 shadow-lg">
+                <CardContent className="p-0">
+                  <Animated 
                     userInfo={{
                       name: userData?.name || user?.name || '',
                       title: userData?.title || '',

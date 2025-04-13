@@ -650,7 +650,7 @@ export default function Animated({
             </motion.div>
           )}
         </div>
-      </section>
+      </motion.section>
 
       {/* Experience Section with animated timeline */}
       <motion.section 
