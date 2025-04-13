@@ -83,69 +83,7 @@ export async function generateCareerAdvice(userProfile: {
     switch (userProfile.adviceType) {
       case "explore_options":
         adviceTypeText = "exploring career options";
-        specificPrompt = `
-Conduct a thorough profile analysis:
-
-1. Analyze the Profile Thoroughly
-   - Education: Degrees, certifications, academic strengths
-   - Work Experience: Industries, roles, achievements, duration, progression
-   - Skills: Technical, soft, languages, tools
-   - Projects: Independent or collaborative, relevance to career goals
-   - Interests & Hobbies: Look for passion-based career possibilities
-   - Volunteering & Extra-curriculars: Leadership, teamwork, social responsibility
-
-2. Identify Core Strengths and Transferable Skills
-   - What they do best (problem solving, leadership, writing, tech skills, etc.)
-   - Skills that are valuable across industries (project management, communication, data analysis, etc.)
-
-3. Understand Their Personality, Goals & Preferences
-   - Consider career goals (money, passion, impact, balance?)
-   - Reflect on values (stability, growth, creativity, social good?)
-
-4. Suggest Tailored Career Paths
-   - Traditional roles they are already suited for
-   - Adjacent roles where their skills are transferable
-   - Emerging career paths they might not know of yet
-   - Creative or unconventional options based on their background
-
-5. Recommend Upskilling Paths (if needed)
-   - Courses, certifications, or tools to master
-   - Skills in demand in their target industries
-   - Ways to build a portfolio or gain real-world experience (freelancing, internships)
-
-6. Create a Career Roadmap
-   - Short-term goals (next role, skill-building)
-   - Medium-term goals (domain expertise, leadership, relocation)
-   - Long-term vision (entrepreneurship, management, legacy work)
-
-7. Provide Mindset and Strategy Tips
-   - How to network effectively
-   - How to tailor resumes for each role
-   - Interview prep ideas
-   - Encouragement to explore, pivot, and experiment
-
-Format your response to include:
-
-🔍 What Stands Out in Their Profile:
-- Strong experience in [specific areas]
-- Transferable skills in [specific areas]
-- Consistent demonstration of [growth/adaptability/leadership]
-- Notable [certifications/projects/internships]
-
-🎯 Career Path Suggestions:
-- [Option 1] – With rationale explaining why it builds on their skillset, has growth potential, and aligns with their experience
-- [Option 2] – With similar rationale
-- [Option 3 – Bold Pivot] – A more ambitious shift but with explanation of why their experience gives them a unique edge
-
-📚 Upskilling Ideas:
-- Specific tools/platforms/languages to learn
-- Relevant courses or certifications
-- Project portfolio suggestions
-
-🧭 Short-Term Strategy:
-- Resume and profile optimization tactics
-- Networking recommendations
-- Application approach (70% skill match is sufficient)`;
+        specificPrompt = `Analyze their profile thoroughly (education, work experience, skills, projects) and identify their core strengths and transferable skills. Then suggest at least 3-5 tailored career paths (including traditional roles, adjacent roles, and emerging opportunities), provide upskilling recommendations, and create a short/medium/long-term career roadmap. Include networking and strategy tips.`;
         break;
       case "switch_industry":
         adviceTypeText = "switching industries";
@@ -297,7 +235,10 @@ After this analysis, provide specific advice for making the transition to 3-4 re
         console.log("Both APIs failed. Using demo content as final fallback...");
         
         if (userProfile.adviceType === 'industry-switch') {
-          return `# Industry Transition Analysis for ${userProfile.name || "User"}
+          const userName = userProfile.user?.name || "User";
+          const skills = userProfile.skills.map(skill => skill.name).join(', ') || 'product management, strategic planning, and team leadership';
+          
+          return `# Industry Transition Analysis for ${userName}
 
 After conducting a comprehensive analysis of your professional profile, I've evaluated your potential for industry transition across 10 key factors. Here's my assessment:
 
@@ -306,7 +247,7 @@ After conducting a comprehensive analysis of your professional profile, I've eva
 Your background provides you with a strong foundation for exploring new industries. The skills you've developed are highly transferable, and several adjacent industries could benefit from your expertise.
 
 ### Transferable Skills Mapping
-Your hard skills in ${userProfile.skills?.join(', ') || 'product management, strategic planning, and team leadership'} are in high demand across multiple industries. Your soft skills in communication, stakeholder management, and problem-solving are universal assets that translate well to any new sector.
+Your hard skills in ${skills} are in high demand across multiple industries. Your soft skills in communication, stakeholder management, and problem-solving are universal assets that translate well to any new sector.
 
 ### Industry Overlaps
 Based on your profile, these industries have significant operational or functional overlap with your current experience:
@@ -370,15 +311,20 @@ Considering practical factors:
 Musk, Your Career Partner`;
         } else {
           // Default general career advice
-          return `# Career Development Insights for ${userProfile.name || "User"}
+          const userName = userProfile.user?.name || "User";
+          const userIndustry = userProfile.user?.industry || "your current industry";
+          const skills = userProfile.skills.map(skill => skill.name).join(', ') || "project management and team leadership";
+          const education = userProfile.educations.length > 0 ? userProfile.educations[0].fieldOfStudy || "your field" : "your field";
+          
+          return `# Career Development Insights for ${userName}
 
 Based on your professional profile, here are my recommendations to help advance your career:
 
 ## Key Strengths to Leverage
 
-- Your experience in ${userProfile.industry || "your current industry"} provides you with valuable domain expertise
-- Your skills in ${userProfile.skills?.join(', ') || "project management and team leadership"} are highly marketable
-- Your educational background in ${userProfile.education || "your field"} gives you a strong foundation
+- Your experience in ${userIndustry} provides you with valuable domain expertise
+- Your skills in ${skills} are highly marketable
+- Your educational background in ${education} gives you a strong foundation
 
 ## Growth Opportunities
 
