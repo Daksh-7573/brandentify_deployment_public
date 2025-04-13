@@ -5,7 +5,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "./context/auth-context";
 import { useAuth } from "./hooks/use-auth";
 import { useEffect } from "react";
-import { ThemeProvider } from "./components/theme/theme-provider";
 
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
@@ -22,7 +21,6 @@ import AuthPage from "@/pages/auth-page";
 import EmailVerification from "@/pages/email-verification";
 import NewsSourcesPage from "@/pages/news-sources";
 import Radar from "@/pages/radar";
-import NeoThemeDemo from "@/pages/neo-theme-demo";
 
 // Redirect component to handle page redirects
 const Redirect = ({ to }: { to: string }) => {
@@ -105,9 +103,6 @@ function Router() {
       <Route path="/radar">
         <ProtectedRoute path="/radar" component={Radar} />
       </Route>
-      <Route path="/neo-theme">
-        <ProtectedRoute path="/neo-theme" component={NeoThemeDemo} />
-      </Route>
       <Route component={NotFound} />
     </Switch>
   );
@@ -116,12 +111,10 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <AuthProvider>
-          <Router />
-          <Toaster />
-        </AuthProvider>
-      </ThemeProvider>
+      <AuthProvider>
+        <Router />
+        <Toaster />
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
