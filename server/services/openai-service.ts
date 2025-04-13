@@ -83,7 +83,69 @@ export async function generateCareerAdvice(userProfile: {
     switch (userProfile.adviceType) {
       case "explore_options":
         adviceTypeText = "exploring career options";
-        specificPrompt = `Focus on identifying diverse career paths that would be a good match for ${userName}'s skills and experience. Suggest at least 3-5 potential career options with rationale for each.`;
+        specificPrompt = `
+Conduct a thorough profile analysis:
+
+1. Analyze the Profile Thoroughly
+   - Education: Degrees, certifications, academic strengths
+   - Work Experience: Industries, roles, achievements, duration, progression
+   - Skills: Technical, soft, languages, tools
+   - Projects: Independent or collaborative, relevance to career goals
+   - Interests & Hobbies: Look for passion-based career possibilities
+   - Volunteering & Extra-curriculars: Leadership, teamwork, social responsibility
+
+2. Identify Core Strengths and Transferable Skills
+   - What they do best (problem solving, leadership, writing, tech skills, etc.)
+   - Skills that are valuable across industries (project management, communication, data analysis, etc.)
+
+3. Understand Their Personality, Goals & Preferences
+   - Consider career goals (money, passion, impact, balance?)
+   - Reflect on values (stability, growth, creativity, social good?)
+
+4. Suggest Tailored Career Paths
+   - Traditional roles they are already suited for
+   - Adjacent roles where their skills are transferable
+   - Emerging career paths they might not know of yet
+   - Creative or unconventional options based on their background
+
+5. Recommend Upskilling Paths (if needed)
+   - Courses, certifications, or tools to master
+   - Skills in demand in their target industries
+   - Ways to build a portfolio or gain real-world experience (freelancing, internships)
+
+6. Create a Career Roadmap
+   - Short-term goals (next role, skill-building)
+   - Medium-term goals (domain expertise, leadership, relocation)
+   - Long-term vision (entrepreneurship, management, legacy work)
+
+7. Provide Mindset and Strategy Tips
+   - How to network effectively
+   - How to tailor resumes for each role
+   - Interview prep ideas
+   - Encouragement to explore, pivot, and experiment
+
+Format your response to include:
+
+🔍 What Stands Out in Their Profile:
+- Strong experience in [specific areas]
+- Transferable skills in [specific areas]
+- Consistent demonstration of [growth/adaptability/leadership]
+- Notable [certifications/projects/internships]
+
+🎯 Career Path Suggestions:
+- [Option 1] – With rationale explaining why it builds on their skillset, has growth potential, and aligns with their experience
+- [Option 2] – With similar rationale
+- [Option 3 – Bold Pivot] – A more ambitious shift but with explanation of why their experience gives them a unique edge
+
+📚 Upskilling Ideas:
+- Specific tools/platforms/languages to learn
+- Relevant courses or certifications
+- Project portfolio suggestions
+
+🧭 Short-Term Strategy:
+- Resume and profile optimization tactics
+- Networking recommendations
+- Application approach (70% skill match is sufficient)`;
         break;
       case "switch_industry":
         adviceTypeText = "switching industries";
