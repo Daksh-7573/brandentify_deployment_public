@@ -54,25 +54,25 @@ export default function Header() {
   const photoURL = userData?.photoURL || user?.photoURL;
 
   return (
-    <nav className="bg-white border-b border-gray-200 shadow-sm fixed top-0 left-0 right-0 z-50">
+    <nav className="bg-ui-white border-b border-ui-shadow shadow-sm fixed top-0 left-0 right-0 z-50">
       <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <div className="flex-shrink-0 flex items-center mr-8">
               <div className="flex items-center">
                 <div
-                  className="flex items-center gap-1.5 cursor-pointer group"
+                  className="flex items-center gap-1.5 cursor-pointer group slide-in"
                   onClick={() => setLocation('/dashboard')}
                 >
-                  <div className="h-8 w-8 bg-gradient-to-br from-primary to-indigo-600 rounded-lg flex items-center justify-center shadow-sm transition-transform group-hover:scale-105">
+                  <div className="h-8 w-8 bg-gradient-to-br from-ui-aqua to-ui-teal rounded-lg flex items-center justify-center shadow-sm transition-transform group-hover:scale-110 neon-glow-primary">
                     <span className="text-white font-bold text-lg">B</span>
                   </div>
-                  <span className="text-primary text-xl font-bold cursor-pointer bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/80">
+                  <span className="text-ui-charcoal text-xl font-bold cursor-pointer bg-clip-text text-transparent bg-gradient-to-r from-ui-aqua to-ui-teal">
                     Brandentifier
                   </span>
                 </div>
                 {isDemoMode && (
-                  <Badge variant="outline" className="ml-2 text-orange-500 border-orange-500">
+                  <Badge variant="outline" className="ml-2 text-ui-pink border-ui-pink">
                     Demo Mode
                   </Badge>
                 )}
@@ -84,56 +84,56 @@ export default function Header() {
               <Button
                 variant="ghost"
                 size="sm"
-                className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
+                className={`flex items-center gap-2 font-medium px-3.5 py-2 h-auto button-expand ${
                   isActive('/industry-pulse') 
-                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
-                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
+                    ? 'text-ui-aqua bg-ui-aqua/5 hover:bg-ui-aqua/10 neon-border-primary border-b-2 border-ui-aqua' 
+                    : 'text-ui-charcoal hover:text-ui-aqua hover:bg-ui-warm-white border-b-2 border-transparent'
                 }`}
                 onClick={() => setLocation('/industry-pulse')}
               >
-                <Home className="h-4 w-4" />
+                <Home className={`h-4 w-4 ${isActive('/industry-pulse') ? 'text-ui-aqua' : 'text-ui-charcoal'}`} />
                 <span>Industry Pulse</span>
               </Button>
               
               <Button
                 variant="ghost"
                 size="sm"
-                className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
+                className={`flex items-center gap-2 font-medium px-3.5 py-2 h-auto button-expand ${
                   isActive('/search') 
-                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
-                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
+                    ? 'text-ui-aqua bg-ui-aqua/5 hover:bg-ui-aqua/10 neon-border-primary border-b-2 border-ui-aqua' 
+                    : 'text-ui-charcoal hover:text-ui-aqua hover:bg-ui-warm-white border-b-2 border-transparent'
                 }`}
                 onClick={() => setLocation('/search')}
               >
-                <Search className="h-4 w-4" />
+                <Search className={`h-4 w-4 ${isActive('/search') ? 'text-ui-aqua' : 'text-ui-charcoal'}`} />
                 <span>Discover & Connect</span>
               </Button>
               
               <Button
                 variant="ghost"
                 size="sm" 
-                className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
+                className={`flex items-center gap-2 font-medium px-3.5 py-2 h-auto button-expand ${
                   isActive('/ai-career') 
-                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
-                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
+                    ? 'text-ui-aqua bg-ui-aqua/5 hover:bg-ui-aqua/10 neon-border-primary border-b-2 border-ui-aqua' 
+                    : 'text-ui-charcoal hover:text-ui-aqua hover:bg-ui-warm-white border-b-2 border-transparent'
                 }`}
                 onClick={() => setLocation('/ai-career')}
               >
-                <Bot className="h-4 w-4" />
+                <Bot className={`h-4 w-4 ${isActive('/ai-career') ? 'text-ui-aqua' : 'text-ui-charcoal'}`} />
                 <span>AI Career Booster</span>
               </Button>
               
               <Button
                 variant="ghost"
                 size="sm" 
-                className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
+                className={`flex items-center gap-2 font-medium px-3.5 py-2 h-auto button-expand ${
                   isActive('/radar') 
-                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
-                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
+                    ? 'text-ui-aqua bg-ui-aqua/5 hover:bg-ui-aqua/10 neon-border-primary border-b-2 border-ui-aqua' 
+                    : 'text-ui-charcoal hover:text-ui-aqua hover:bg-ui-warm-white border-b-2 border-transparent'
                 }`}
                 onClick={() => setLocation('/radar')}
               >
-                <MapPin className="h-4 w-4" />
+                <MapPin className={`h-4 w-4 ${isActive('/radar') ? 'text-ui-aqua' : 'text-ui-charcoal'}`} />
                 <span>Smart Radar</span>
               </Button>
             </div>
@@ -143,22 +143,34 @@ export default function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden rounded-md p-2 hover:bg-gray-100 transition-colors"
+              className="md:hidden rounded-md p-2 hover:bg-ui-warm-white transition-colors"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label="Mobile menu"
             >
               {isMobileMenuOpen ? (
-                <X className="h-5 w-5 text-gray-600" />
+                <X className="h-5 w-5 text-ui-charcoal" />
               ) : (
-                <Menu className="h-5 w-5 text-gray-600" />
+                <Menu className="h-5 w-5 text-ui-charcoal" />
               )}
+            </Button>
+            
+            {/* Notifications */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hidden sm:flex rounded-full w-9 h-9 hover:bg-ui-warm-white transition-colors relative"
+              onClick={() => {/* Toggle notifications */}}
+              aria-label="Notifications"
+            >
+              <Bell className="h-5 w-5 text-ui-charcoal" />
+              <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-ui-pink"></span>
             </Button>
 
             {/* Create Pulse Button */}
             <Button 
               variant="default" 
               size="sm"
-              className="hidden sm:flex px-4 py-2 text-sm font-medium bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-700 text-white shadow-sm items-center gap-1.5"
+              className="hidden sm:flex px-4 py-2 text-sm font-medium bg-ui-pink hover:bg-ui-pink/90 text-white shadow-sm items-center gap-1.5 neon-glow-secondary button-expand"
               onClick={() => setLocation('/create-pulse')}
             >
               <Zap className="h-4 w-4" /> Create Pulse
@@ -168,34 +180,38 @@ export default function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className="hidden sm:flex rounded-md p-2 hover:bg-gray-100 transition-colors"
+              className="hidden sm:flex rounded-full w-9 h-9 hover:bg-ui-warm-white transition-colors"
               onClick={() => setLocation('/settings')}
               aria-label="Settings"
             >
-              <Settings className="h-5 w-5 text-gray-600" />
+              <Settings className="h-5 w-5 text-ui-charcoal" />
             </Button>
             
             {/* User profile section - combined name and avatar */}
             <div 
-              className={`flex items-center gap-2 cursor-pointer px-3 py-1.5 rounded-lg border ${
+              className={`flex items-center gap-2 cursor-pointer px-3 py-2 rounded-lg ${
                 isActive('/profile') 
-                  ? 'border-primary/30 bg-primary/5 shadow-sm' 
-                  : 'border-gray-100 hover:bg-gray-50 hover:border-gray-200'
+                  ? 'bg-ui-aqua/5 neon-glow-primary' 
+                  : 'hover:bg-ui-warm-white'
               } transition-all duration-200 group`}
               onClick={() => setLocation('/profile')}
             >
               {/* User name */}
-              <span className="text-sm font-medium text-gray-800 hidden md:block">
+              <span className="text-sm font-medium text-ui-charcoal hidden md:block group-hover:text-ui-aqua transition-colors">
                 {userData?.name || (user && 'displayName' in user ? user.displayName : null) || "Profile"}
               </span>
               
               {/* User avatar */}
               <div className="relative">
                 <div 
-                  className="flex items-center rounded-full focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary/70 transition-all"
+                  className="flex items-center rounded-full focus:outline-none transition-all"
                 >
                   <span className="sr-only">Open user menu</span>
-                  <div className="h-8 w-8 rounded-full overflow-hidden bg-primary/5 flex items-center justify-center border border-primary/10 shadow-sm group-hover:shadow-md transition-all">
+                  <div className={`h-8 w-8 rounded-full overflow-hidden flex items-center justify-center border transition-all ${
+                    isActive('/profile')
+                      ? 'border-ui-aqua shadow-md' 
+                      : 'border-ui-shadow group-hover:border-ui-aqua shadow-sm group-hover:shadow-md'
+                  }`}>
                     <img 
                       className="h-full w-full object-cover" 
                       src={photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
@@ -215,116 +231,116 @@ export default function Header() {
 
       {/* Mobile menu dropdown */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-white border-b border-gray-200 shadow-lg">
+        <div className="md:hidden bg-white border-b border-ui-shadow shadow-lg animate-fadeIn">
           <div className="px-4 pt-3 pb-4 space-y-2">
             <Button
               variant="ghost"
               size="sm"
-              className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
+              className={`w-full justify-start py-2.5 text-sm font-medium rounded-md staggered-item ${
                 isActive('/industry-pulse') 
-                  ? 'text-primary bg-primary/5' 
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                  ? 'text-ui-aqua bg-ui-aqua/5' 
+                  : 'text-ui-charcoal hover:bg-ui-warm-white hover:text-ui-aqua'
               }`}
               onClick={() => {
                 setLocation('/industry-pulse');
                 setIsMobileMenuOpen(false);
               }}
             >
-              <Home className="h-4 w-4 mr-3 ml-0.5" />
+              <Home className={`h-4 w-4 mr-3 ml-0.5 ${isActive('/industry-pulse') ? 'text-ui-aqua' : 'text-ui-charcoal'}`} />
               <span>Industry Pulse</span>
             </Button>
             
             <Button
               variant="ghost"
               size="sm"
-              className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
+              className={`w-full justify-start py-2.5 text-sm font-medium rounded-md staggered-item ${
                 isActive('/search') 
-                  ? 'text-primary bg-primary/5' 
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                  ? 'text-ui-aqua bg-ui-aqua/5' 
+                  : 'text-ui-charcoal hover:bg-ui-warm-white hover:text-ui-aqua'
               }`}
               onClick={() => {
                 setLocation('/search');
                 setIsMobileMenuOpen(false);
               }}
             >
-              <Search className="h-4 w-4 mr-3 ml-0.5" />
+              <Search className={`h-4 w-4 mr-3 ml-0.5 ${isActive('/search') ? 'text-ui-aqua' : 'text-ui-charcoal'}`} />
               <span>Discover & Connect</span>
             </Button>
             
             <Button
               variant="ghost"
               size="sm"
-              className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
+              className={`w-full justify-start py-2.5 text-sm font-medium rounded-md staggered-item ${
                 isActive('/ai-career') 
-                  ? 'text-primary bg-primary/5' 
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                  ? 'text-ui-aqua bg-ui-aqua/5' 
+                  : 'text-ui-charcoal hover:bg-ui-warm-white hover:text-ui-aqua'
               }`}
               onClick={() => {
                 setLocation('/ai-career');
                 setIsMobileMenuOpen(false);
               }}
             >
-              <Bot className="h-4 w-4 mr-3 ml-0.5" />
+              <Bot className={`h-4 w-4 mr-3 ml-0.5 ${isActive('/ai-career') ? 'text-ui-aqua' : 'text-ui-charcoal'}`} />
               <span>AI Career Booster</span>
             </Button>
             
             <Button
               variant="ghost"
               size="sm"
-              className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
+              className={`w-full justify-start py-2.5 text-sm font-medium rounded-md staggered-item ${
                 isActive('/radar') 
-                  ? 'text-primary bg-primary/5' 
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                  ? 'text-ui-aqua bg-ui-aqua/5' 
+                  : 'text-ui-charcoal hover:bg-ui-warm-white hover:text-ui-aqua'
               }`}
               onClick={() => {
                 setLocation('/radar');
                 setIsMobileMenuOpen(false);
               }}
             >
-              <MapPin className="h-4 w-4 mr-3 ml-0.5" />
+              <MapPin className={`h-4 w-4 mr-3 ml-0.5 ${isActive('/radar') ? 'text-ui-aqua' : 'text-ui-charcoal'}`} />
               <span>Smart Radar</span>
             </Button>
             
 
-            <div className="pt-4 mt-2 border-t border-gray-200">
+            <div className="pt-4 mt-2 border-t border-ui-shadow">
               <Button
                 variant="ghost"
                 size="sm"
-                className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
+                className={`w-full justify-start py-2.5 text-sm font-medium rounded-md staggered-item ${
                   isActive('/profile') 
-                    ? 'text-primary bg-primary/5' 
-                    : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                    ? 'text-ui-aqua bg-ui-aqua/5' 
+                    : 'text-ui-charcoal hover:bg-ui-warm-white hover:text-ui-aqua'
                 }`}
                 onClick={() => {
                   setLocation('/profile');
                   setIsMobileMenuOpen(false);
                 }}
               >
-                <User className="h-4 w-4 mr-3 ml-0.5" />
+                <User className={`h-4 w-4 mr-3 ml-0.5 ${isActive('/profile') ? 'text-ui-aqua' : 'text-ui-charcoal'}`} />
                 <span>My Profile</span>
               </Button>
               
               <Button
                 variant="ghost"
                 size="sm"
-                className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
+                className={`w-full justify-start py-2.5 text-sm font-medium rounded-md staggered-item ${
                   isActive('/settings') 
-                    ? 'text-primary bg-primary/5' 
-                    : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                    ? 'text-ui-aqua bg-ui-aqua/5' 
+                    : 'text-ui-charcoal hover:bg-ui-warm-white hover:text-ui-aqua'
                 }`}
                 onClick={() => {
                   setLocation('/settings');
                   setIsMobileMenuOpen(false);
                 }}
               >
-                <Settings className="h-4 w-4 mr-3 ml-0.5" />
+                <Settings className={`h-4 w-4 mr-3 ml-0.5 ${isActive('/settings') ? 'text-ui-aqua' : 'text-ui-charcoal'}`} />
                 <span>Settings</span>
               </Button>
               
               <Button
                 variant="default"
                 size="sm"
-                className="w-full mt-3 justify-center py-3 text-sm font-medium bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-700 shadow-sm rounded-md"
+                className="w-full mt-3 justify-center py-3 text-sm font-medium bg-ui-pink hover:bg-ui-pink/90 text-white shadow-sm rounded-md neon-glow-secondary staggered-item"
                 onClick={() => {
                   setLocation('/create-pulse');
                   setIsMobileMenuOpen(false);
