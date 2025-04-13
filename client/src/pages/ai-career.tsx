@@ -37,10 +37,10 @@ export default function AICareerPage() {
     queryKey: ["/api/users", user?.id, "chat-messages"],
     queryFn: async () => {
       if (!user?.id) return [];
-      const res = await apiRequest(
-        "GET",
-        `/api/users/${user.id}/chat-messages`
-      );
+      const res = await apiRequest({
+        method: "GET",
+        url: `/api/users/${user.id}/chat-messages`
+      });
       return res.json();
     },
     enabled: !!user?.id // Only run query if user is logged in
@@ -52,11 +52,15 @@ export default function AICareerPage() {
       if (!user?.id) {
         throw new Error("User ID not found");
       }
-      const res = await apiRequest("POST", "/api/chat-messages", {
-        userId: user.id,
-        content: message,
-        messageType: "career_advice",
-        sender: "user"
+      const res = await apiRequest({
+        method: "POST", 
+        url: "/api/chat-messages",
+        data: {
+          userId: user.id,
+          content: message,
+          messageType: "career_advice",
+          sender: "user"
+        }
       });
       return res.json();
     },
@@ -91,10 +95,14 @@ export default function AICareerPage() {
       if (!user?.id) {
         throw new Error("User ID not found");
       }
-      const res = await apiRequest("POST", "/api/ai/career-advice", {
-        userId: user.id,
-        adviceType: careerAdviceType,
-        customAdviceText: showCustomTextInput ? customAdviceText : undefined
+      const res = await apiRequest({
+        method: "POST", 
+        url: "/api/ai/career-advice", 
+        data: {
+          userId: user.id,
+          adviceType: careerAdviceType,
+          customAdviceText: showCustomTextInput ? customAdviceText : undefined
+        }
       });
       return res.json();
     },
@@ -136,7 +144,11 @@ export default function AICareerPage() {
   // Resume analysis mutation
   const resumeAnalysisMutation = useMutation({
     mutationFn: async (data: { resumeText?: string; fileData?: string; userId: number }) => {
-      const res = await apiRequest("POST", "/api/ai/analyze-resume", data);
+      const res = await apiRequest({
+        method: "POST", 
+        url: "/api/ai/analyze-resume", 
+        data
+      });
       return res.json();
     },
     onSuccess: () => {
