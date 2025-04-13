@@ -147,6 +147,30 @@ After this analysis, provide specific advice for making the transition to 3-4 re
         break;
     }
 
+    // Check if any profile sections are missing or minimal
+    const hasWorkExperience = userProfile.workExperiences && userProfile.workExperiences.length > 0;
+    const hasSkills = userProfile.skills && userProfile.skills.length > 0;
+    const hasEducation = userProfile.educations && userProfile.educations.length > 0;
+    
+    // Create a list of incomplete sections
+    const incompleteSections = [];
+    if (!hasWorkExperience) incompleteSections.push("work experience");
+    if (!hasSkills) incompleteSections.push("skills");
+    if (!hasEducation) incompleteSections.push("education");
+    
+    // Add profile completion guidance if needed
+    let profileCompletionGuidance = "";
+    if (incompleteSections.length > 0) {
+      profileCompletionGuidance = `
+      IMPORTANT: This profile is missing or has minimal information in these sections: ${incompleteSections.join(", ")}. 
+      
+      As part of your career advice, include a section called "PROFILE COMPLETION RECOMMENDATIONS" 
+      with specific suggestions for how completing these missing sections would enhance their career prospects 
+      and allow for more personalized advice in the future. Explain why each missing section is important 
+      for career development and how it impacts the quality of advice possible.
+      `;
+    }
+    
     const prompt = `
     I need personalized career advice about ${adviceTypeText} for ${userName}, who is currently working as ${userTitle} in ${userIndustry}, located in ${userLocation}.
     
@@ -162,6 +186,8 @@ After this analysis, provide specific advice for making the transition to 3-4 re
     ${educationText || "No education provided"}
     
     ${specificPrompt}
+    
+    ${profileCompletionGuidance}
     
     Please provide:
     1. A personalized assessment of their situation related to ${adviceTypeText}
