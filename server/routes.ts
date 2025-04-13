@@ -2008,8 +2008,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
         apiStatus: "OPENAI_DYNAMIC"
       });
     } catch (error) {
-      console.error("Unexpected error in career advice endpoint:", error);
-      res.status(500).json({ message: "Unexpected error in career advice endpoint" });
+      console.error("Error in career advice endpoint:", error);
+      
+      try {
+        // Import the AI fallback service for career advice
+        const { generateCareerAdviceFallback } = await import('./services/ai-fallback-service');
+        
+        // Generate fallback advice based on the advice type
+        const userName = userData?.name || "User";
+        const fallbackAdvice = generateCareerAdviceFallback(adviceType, userName);
+        
+        // Save the fallback advice as a chat message
+        await storage.createChatMessage({
+          userId,
+          sender: "ai",
+          content: fallbackAdvice,
+          messageType: "career_advice"
+        });
+        
+        // Return the fallback advice
+        res.json({
+          advice: fallbackAdvice,
+          apiStatus: "FALLBACK"
+        });
+      } catch (fallbackError) {
+        console.error("Error generating fallback advice:", fallbackError);
+        res.status(500).json({ message: "Unable to generate career advice at this time" });
+      }
     }
   });
   
