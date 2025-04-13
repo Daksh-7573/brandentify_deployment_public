@@ -19,7 +19,7 @@ export default function RightSidebar() {
       if (!firebaseUid) return null;
       
       console.log(`RightSidebar: Fetching user data with ID: ${firebaseUid}`);
-      const response = await apiRequest('GET', `/api/users/${firebaseUid}`);
+      const response = await apiRequest(`/api/users/${firebaseUid}`);
       
       if (response.status === 404) {
         console.error(`User with ID ${firebaseUid} not found in backend`);
@@ -47,7 +47,7 @@ export default function RightSidebar() {
     queryKey: [`/api/users/${userNumericId}/skills`],
     queryFn: async () => {
       if (!userNumericId) return [];
-      const response = await apiRequest('GET', `/api/users/${userNumericId}/skills`);
+      const response = await apiRequest(`/api/users/${userNumericId}/skills`);
       return await response.json();
     },
     enabled: !!userNumericId
@@ -59,7 +59,7 @@ export default function RightSidebar() {
     queryFn: async () => {
       if (!userNumericId) return [];
       // Use the numeric user ID for the experiences API
-      const response = await apiRequest('GET', `/api/users/${userNumericId}/experiences`);
+      const response = await apiRequest(`/api/users/${userNumericId}/experiences`);
       console.log(`RightSidebar: Fetching experiences with numeric userId: ${userNumericId}`);
       return await response.json();
     },
@@ -71,7 +71,7 @@ export default function RightSidebar() {
     queryKey: [`/api/users/${userNumericId}/educations`],
     queryFn: async () => {
       if (!userNumericId) return [];
-      const response = await apiRequest('GET', `/api/users/${userNumericId}/educations`);
+      const response = await apiRequest(`/api/users/${userNumericId}/educations`);
       return await response.json();
     },
     enabled: !!userNumericId
@@ -82,7 +82,7 @@ export default function RightSidebar() {
     queryKey: [`/api/users/${userNumericId}/projects`],
     queryFn: async () => {
       if (!userNumericId) return [];
-      const response = await apiRequest('GET', `/api/users/${userNumericId}/projects`);
+      const response = await apiRequest(`/api/users/${userNumericId}/projects`);
       return await response.json();
     },
     enabled: !!userNumericId
@@ -93,7 +93,7 @@ export default function RightSidebar() {
     queryKey: [`/api/users/${userNumericId}/services`],
     queryFn: async () => {
       if (!userNumericId) return [];
-      const response = await apiRequest('GET', `/api/users/${userNumericId}/services`);
+      const response = await apiRequest(`/api/users/${userNumericId}/services`);
       return await response.json();
     },
     enabled: !!userNumericId
@@ -124,10 +124,10 @@ export default function RightSidebar() {
   const isProfileComplete = userData?.profileCompleted === true;
   
   return (
-    <div className="bg-white w-80 border-l border-gray-200 p-5 overflow-y-auto">
+    <div className="bg-black/80 backdrop-blur-sm w-80 border-l border-white/10 p-5 overflow-y-auto">
       <div className="mb-6">
         <div className="flex items-center">
-          <div className="h-12 w-12 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
+          <div className="h-12 w-12 rounded-full overflow-hidden bg-black/50 border border-primary/30 flex items-center justify-center breathe-animation-subtle">
             <img 
               className="h-full w-full object-cover" 
               src={photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
@@ -139,29 +139,29 @@ export default function RightSidebar() {
             />
           </div>
           <div className="ml-3">
-            <h2 className="text-base font-medium text-gray-900">{displayName}</h2>
-            {userTitle && <p className="text-sm text-gray-500">{userTitle}</p>}
+            <h2 className="text-base font-medium text-white neo-text-glow">{displayName}</h2>
+            {userTitle && <p className="text-sm text-gray-400">{userTitle}</p>}
           </div>
         </div>
       </div>
       
-      <div className="border-t border-gray-200 pt-4 mb-6">
-        <h3 className="text-sm font-medium text-primary mb-3">Profile Completion</h3>
+      <div className="border-t border-white/10 pt-4 mb-6">
+        <h3 className="text-sm font-medium text-primary mb-3 neo-text-glow">Profile Completion</h3>
         <div className="flex items-center">
-          <div className="flex-1 bg-gray-200 rounded-full h-2">
+          <div className="flex-1 bg-gray-800 rounded-full h-2">
             <div className="bg-primary h-2 rounded-full" style={{ width: `${profileCompletionPercentage}%` }}></div>
           </div>
-          <span className="ml-3 text-sm font-medium text-gray-900">{profileCompletionPercentage}/100</span>
+          <span className="ml-3 text-sm font-medium text-white">{profileCompletionPercentage}/100</span>
         </div>
-        <p className="mt-2 text-xs text-gray-500">
+        <p className="mt-2 text-xs text-gray-400">
           Complete your profile to improve your visibility to recruiters and clients.
         </p>
       </div>
       
       {/* Skills section - show regardless of profile completion status */}
       {hasSkills ? (
-        <div className="border-t border-gray-200 pt-4 mb-6">
-          <h3 className="text-sm font-medium text-gray-900 mb-3">Skill Development</h3>
+        <div className="border-t border-white/10 pt-4 mb-6">
+          <h3 className="text-sm font-medium text-primary mb-3 neo-text-glow">Skill Development</h3>
           <div className="space-y-3">
             {skills?.slice(0, 3).map((skill: Skill, index: number) => (
               <SkillBar 
@@ -175,18 +175,18 @@ export default function RightSidebar() {
           </div>
         </div>
       ) : (
-        <div className="border-t border-gray-200 pt-4 mb-6">
-          <h3 className="text-sm font-medium text-gray-900 mb-3">Skill Development</h3>
-          <div className="flex flex-col items-center justify-center py-2 text-center text-gray-500">
+        <div className="border-t border-white/10 pt-4 mb-6">
+          <h3 className="text-sm font-medium text-primary mb-3 neo-text-glow">Skill Development</h3>
+          <div className="flex flex-col items-center justify-center py-2 text-center text-gray-400">
             <p className="text-xs">Add skills to your profile to showcase your expertise</p>
           </div>
         </div>
       )}
       
       {isProfileComplete && (
-        <div className="border-t border-gray-200 pt-4">
-          <h3 className="text-sm font-medium text-gray-900 mb-3">Notifications</h3>
-          <div className="flex flex-col items-center justify-center py-4 text-center text-gray-500">
+        <div className="border-t border-white/10 pt-4">
+          <h3 className="text-sm font-medium text-primary mb-3 neo-text-glow">Notifications</h3>
+          <div className="flex flex-col items-center justify-center py-4 text-center text-gray-400">
             <p className="text-xs">No notifications yet</p>
           </div>
         </div>
