@@ -509,9 +509,9 @@ const SearchPage = () => {
               <TabsContent value="pulses">
                 {!submittedQuery ? (
                   <div className="text-center py-12">
-                    <MessageSquare className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium">Search for pulses</h3>
-                    <p className="text-gray-500 mt-2">
+                    <MessageSquare className="mx-auto h-12 w-12 text-primary/70 mb-4 breathe-animation-subtle" />
+                    <h3 className="text-lg font-medium text-white neo-text-glow">Search for pulses</h3>
+                    <p className="text-gray-400 mt-2">
                       Discover polls, media shares, and projects from professionals
                     </p>
                   </div>
@@ -578,8 +578,8 @@ const SearchPage = () => {
                   </div>
                 ) : (
                   <div className="text-center py-12 border border-white/10 rounded-lg bg-black/30 backdrop-blur-sm">
-                    <MessageSquare className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium text-white">No pulses found</h3>
+                    <MessageSquare className="mx-auto h-12 w-12 text-primary/50 mb-4 breathe-animation-subtle" />
+                    <h3 className="text-lg font-medium text-white neo-text-glow">No pulses found</h3>
                     <p className="text-gray-400 mt-2">
                       Try a different search term or check for typos
                     </p>
@@ -591,9 +591,9 @@ const SearchPage = () => {
               <TabsContent value="profiles">
                 {!submittedQuery ? (
                   <div className="text-center py-12">
-                    <Users className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium">Search for profiles</h3>
-                    <p className="text-gray-500 mt-2">
+                    <Users className="mx-auto h-12 w-12 text-primary/70 mb-4 breathe-animation-subtle" />
+                    <h3 className="text-lg font-medium text-white neo-text-glow">Search for profiles</h3>
+                    <p className="text-gray-400 mt-2">
                       Discover professionals across various industries
                     </p>
                   </div>
@@ -618,7 +618,7 @@ const SearchPage = () => {
                       </Card>
                     ))}
                   </div>
-                ) : searchResults?.profiles?.length > 0 ? (
+                ) : searchResults?.profiles && searchResults.profiles.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {searchResults.profiles.map((profile: {
                       id: number;
@@ -677,9 +677,9 @@ const SearchPage = () => {
               <TabsContent value="hashtags">
                 {!submittedQuery ? (
                   <div className="text-center py-12">
-                    <Hash className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium">Search for hashtags</h3>
-                    <p className="text-gray-500 mt-2">
+                    <Hash className="mx-auto h-12 w-12 text-primary/70 mb-4 breathe-animation-subtle" />
+                    <h3 className="text-lg font-medium text-white neo-text-glow">Search for hashtags</h3>
+                    <p className="text-gray-400 mt-2">
                       Discover trending topics and hashtags across the platform
                     </p>
                   </div>
@@ -694,7 +694,7 @@ const SearchPage = () => {
                       </Card>
                     ))}
                   </div>
-                ) : searchResults?.hashtags?.length > 0 ? (
+                ) : searchResults?.hashtags && searchResults.hashtags.length > 0 ? (
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {searchResults.hashtags.map((tag: {
                       id: number;
