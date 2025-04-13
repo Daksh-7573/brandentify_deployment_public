@@ -518,18 +518,18 @@ const SearchPage = () => {
                 ) : isLoading ? (
                   <div className="space-y-4">
                     {[1, 2, 3].map((i) => (
-                      <Card key={i}>
+                      <Card key={i} className="neo-card">
                         <CardContent className="py-4">
                           <div className="flex items-center gap-3 mb-3">
-                            <Skeleton className="h-10 w-10 rounded-full" />
+                            <Skeleton className="h-10 w-10 rounded-full bg-primary/10" />
                             <div className="space-y-1">
-                              <Skeleton className="h-4 w-32" />
-                              <Skeleton className="h-3 w-24" />
+                              <Skeleton className="h-4 w-32 bg-primary/10" />
+                              <Skeleton className="h-3 w-24 bg-primary/10" />
                             </div>
                           </div>
-                          <Skeleton className="h-4 w-full mb-3" />
-                          <Skeleton className="h-4 w-full mb-3" />
-                          <Skeleton className="h-4 w-3/4" />
+                          <Skeleton className="h-4 w-full mb-3 bg-primary/10" />
+                          <Skeleton className="h-4 w-full mb-3 bg-primary/10" />
+                          <Skeleton className="h-4 w-3/4 bg-primary/10" />
                         </CardContent>
                       </Card>
                     ))}
@@ -600,18 +600,18 @@ const SearchPage = () => {
                 ) : isLoading ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {[1, 2, 3, 4, 5, 6].map((i) => (
-                      <Card key={i}>
-                        <div className="bg-gradient-to-r from-gray-200 to-gray-100 h-24"></div>
+                      <Card key={i} className="neo-card overflow-hidden">
+                        <div className="bg-gradient-to-r from-primary/20 to-primary/5 h-24 backdrop-blur-sm"></div>
                         <div className="px-6 pb-6">
                           <div className="flex justify-center -mt-10 mb-4">
-                            <Skeleton className="h-20 w-20 rounded-full" />
+                            <Skeleton className="h-20 w-20 rounded-full bg-primary/10 border-4 border-black/30" />
                           </div>
                           <div className="text-center space-y-2">
-                            <Skeleton className="h-4 w-32 mx-auto" />
-                            <Skeleton className="h-3 w-24 mx-auto" />
-                            <Skeleton className="h-3 w-40 mx-auto" />
+                            <Skeleton className="h-4 w-32 mx-auto bg-primary/10" />
+                            <Skeleton className="h-3 w-24 mx-auto bg-primary/10" />
+                            <Skeleton className="h-3 w-40 mx-auto bg-primary/10" />
                             <div className="py-2">
-                              <Skeleton className="h-8 w-20 mx-auto rounded-md" />
+                              <Skeleton className="h-8 w-20 mx-auto rounded-md bg-primary/10" />
                             </div>
                           </div>
                         </div>
@@ -664,8 +664,8 @@ const SearchPage = () => {
                   </div>
                 ) : (
                   <div className="text-center py-12 border border-white/10 rounded-lg bg-black/30 backdrop-blur-sm">
-                    <Users className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium text-white">No profiles found</h3>
+                    <Users className="mx-auto h-12 w-12 text-primary/50 mb-4 breathe-animation-subtle" />
+                    <h3 className="text-lg font-medium text-white neo-text-glow">No profiles found</h3>
                     <p className="text-gray-400 mt-2">
                       Try a different search term or check for typos
                     </p>
@@ -686,10 +686,15 @@ const SearchPage = () => {
                 ) : isLoading ? (
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-                      <Card key={i}>
+                      <Card key={i} className="neo-card">
                         <CardContent className="p-4">
-                          <Skeleton className="h-6 w-24 mb-2" />
-                          <Skeleton className="h-4 w-16" />
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <Skeleton className="h-6 w-24 mb-2 bg-primary/10" />
+                              <Skeleton className="h-4 w-16 bg-primary/10" />
+                            </div>
+                            <Skeleton className="h-8 w-8 rounded-full bg-primary/10" />
+                          </div>
                         </CardContent>
                       </Card>
                     ))}
@@ -716,8 +721,8 @@ const SearchPage = () => {
                   </div>
                 ) : (
                   <div className="text-center py-12 border border-white/10 rounded-lg bg-black/30 backdrop-blur-sm">
-                    <Hash className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium text-white">No hashtags found</h3>
+                    <Hash className="mx-auto h-12 w-12 text-primary/50 mb-4 breathe-animation-subtle" />
+                    <h3 className="text-lg font-medium text-white neo-text-glow">No hashtags found</h3>
                     <p className="text-gray-400 mt-2">
                       Try a different search term or check for typos
                     </p>
@@ -1005,21 +1010,21 @@ const SearchPage = () => {
                   ) : matchMutation.isPending ? (
                     <div className="space-y-4">
                       {[1, 2, 3].map((i) => (
-                        <Card key={i} className="border border-gray-200">
+                        <Card key={i} className="neo-card border-primary/10">
                           <CardContent className="p-4">
                             <div className="flex gap-4 items-center">
-                              <Skeleton className="h-16 w-16 rounded-full" />
+                              <Skeleton className="h-16 w-16 rounded-full bg-primary/10" />
                               <div className="flex-grow space-y-2">
-                                <Skeleton className="h-4 w-32" />
-                                <Skeleton className="h-3 w-24" />
+                                <Skeleton className="h-4 w-32 bg-primary/10" />
+                                <Skeleton className="h-3 w-24 bg-primary/10" />
                                 <div className="flex gap-1 mt-2">
-                                  <Skeleton className="h-3 w-12 rounded-full" />
-                                  <Skeleton className="h-3 w-12 rounded-full" />
-                                  <Skeleton className="h-3 w-12 rounded-full" />
+                                  <Skeleton className="h-3 w-12 rounded-full bg-primary/10" />
+                                  <Skeleton className="h-3 w-12 rounded-full bg-primary/10" />
+                                  <Skeleton className="h-3 w-12 rounded-full bg-primary/10" />
                                 </div>
                               </div>
                               <div className="w-20">
-                                <Skeleton className="h-8 w-full rounded-md" />
+                                <Skeleton className="h-8 w-full rounded-md bg-primary/10" />
                               </div>
                             </div>
                           </CardContent>
@@ -1117,8 +1122,8 @@ const SearchPage = () => {
                     </div>
                   ) : (
                     <div className="text-center py-12 border border-white/10 rounded-lg bg-black/30 backdrop-blur-sm">
-                      <UserPlus className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                      <h3 className="text-lg font-medium text-white">No matches found</h3>
+                      <UserPlus className="mx-auto h-12 w-12 text-primary/50 mb-4 breathe-animation-subtle" />
+                      <h3 className="text-lg font-medium text-white neo-text-glow">No matches found</h3>
                       <p className="text-gray-400 mt-2">
                         Try adjusting your criteria to find more professionals
                       </p>
