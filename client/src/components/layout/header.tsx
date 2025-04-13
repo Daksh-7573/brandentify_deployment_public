@@ -25,7 +25,10 @@ export default function Header() {
       if (!userId) return null;
       
       console.log(`Fetching user data for header with ID: ${userId}`);
-      const response = await apiRequest('GET', `/api/users/${userId}`);
+      const response = await apiRequest({
+        method: 'GET',
+        url: `/api/users/${userId}`
+      });
       
       if (response.status === 404) {
         console.error(`User with ID ${userId} not found in backend`);
@@ -54,7 +57,7 @@ export default function Header() {
   const photoURL = userData?.photoURL || user?.photoURL;
 
   return (
-    <nav className="bg-white border-b border-gray-200 shadow-sm fixed top-0 left-0 right-0 z-50">
+    <nav className="bg-black/40 backdrop-blur-xl border-b border-white/10 fixed top-0 left-0 right-0 z-50 shadow-lg">
       <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
@@ -64,15 +67,15 @@ export default function Header() {
                   className="flex items-center gap-1.5 cursor-pointer group"
                   onClick={() => setLocation('/dashboard')}
                 >
-                  <div className="h-8 w-8 bg-gradient-to-br from-primary to-indigo-600 rounded-lg flex items-center justify-center shadow-sm transition-transform group-hover:scale-105">
-                    <span className="text-white font-bold text-lg">B</span>
+                  <div className="h-10 w-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center shadow-md transition-transform group-hover:scale-105 group-hover:shadow-primary/30">
+                    <span className="text-white font-bold text-lg neo-text-glow">B</span>
                   </div>
-                  <span className="text-primary text-xl font-bold cursor-pointer bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/80">
+                  <span className="text-primary text-xl font-bold cursor-pointer bg-clip-text text-transparent bg-gradient-to-r from-primary to-indigo-400 neo-text-glow">
                     Brandentifier
                   </span>
                 </div>
                 {isDemoMode && (
-                  <Badge variant="outline" className="ml-2 text-orange-500 border-orange-500">
+                  <Badge variant="outline" className="ml-2 text-orange-400 border-orange-500/50 bg-orange-500/10 backdrop-blur-md">
                     Demo Mode
                   </Badge>
                 )}
@@ -86,12 +89,12 @@ export default function Header() {
                 size="sm"
                 className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
                   isActive('/industry-pulse') 
-                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
-                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
-                }`}
+                    ? 'text-primary bg-primary/10 hover:bg-primary/20 backdrop-blur-md' 
+                    : 'text-white hover:text-primary hover:bg-white/5'
+                } transition-all duration-300`}
                 onClick={() => setLocation('/industry-pulse')}
               >
-                <Home className="h-4 w-4" />
+                <Home className={`h-4 w-4 ${isActive('/industry-pulse') ? 'text-primary' : 'text-gray-300'}`} />
                 <span>Industry Pulse</span>
               </Button>
               
@@ -100,12 +103,12 @@ export default function Header() {
                 size="sm"
                 className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
                   isActive('/search') 
-                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
-                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
-                }`}
+                    ? 'text-primary bg-primary/10 hover:bg-primary/20 backdrop-blur-md' 
+                    : 'text-white hover:text-primary hover:bg-white/5'
+                } transition-all duration-300`}
                 onClick={() => setLocation('/search')}
               >
-                <Search className="h-4 w-4" />
+                <Search className={`h-4 w-4 ${isActive('/search') ? 'text-primary' : 'text-gray-300'}`} />
                 <span>Discover & Connect</span>
               </Button>
               
@@ -114,12 +117,12 @@ export default function Header() {
                 size="sm" 
                 className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
                   isActive('/ai-career') 
-                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
-                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
-                }`}
+                    ? 'text-primary bg-primary/10 hover:bg-primary/20 backdrop-blur-md' 
+                    : 'text-white hover:text-primary hover:bg-white/5'
+                } transition-all duration-300`}
                 onClick={() => setLocation('/ai-career')}
               >
-                <Bot className="h-4 w-4" />
+                <Bot className={`h-4 w-4 ${isActive('/ai-career') ? 'text-primary' : 'text-gray-300'}`} />
                 <span>AI Career Booster</span>
               </Button>
               
@@ -128,12 +131,12 @@ export default function Header() {
                 size="sm" 
                 className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
                   isActive('/radar') 
-                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
-                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
-                }`}
+                    ? 'text-primary bg-primary/10 hover:bg-primary/20 backdrop-blur-md' 
+                    : 'text-white hover:text-primary hover:bg-white/5'
+                } transition-all duration-300`}
                 onClick={() => setLocation('/radar')}
               >
-                <MapPin className="h-4 w-4" />
+                <MapPin className={`h-4 w-4 ${isActive('/radar') ? 'text-primary' : 'text-gray-300'}`} />
                 <span>Smart Radar</span>
               </Button>
             </div>
@@ -143,22 +146,20 @@ export default function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden rounded-md p-2 hover:bg-gray-100 transition-colors"
+              className="md:hidden rounded-md p-2 text-white hover:bg-white/10 transition-colors"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label="Mobile menu"
             >
               {isMobileMenuOpen ? (
-                <X className="h-5 w-5 text-gray-600" />
+                <X className="h-5 w-5 text-white" />
               ) : (
-                <Menu className="h-5 w-5 text-gray-600" />
+                <Menu className="h-5 w-5 text-white" />
               )}
             </Button>
 
             {/* Create Pulse Button */}
             <Button 
-              variant="default" 
-              size="sm"
-              className="hidden sm:flex px-4 py-2 text-sm font-medium bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-700 text-white shadow-sm items-center gap-1.5"
+              className="hidden sm:flex px-4 py-2 text-sm font-medium neo-button items-center gap-1.5"
               onClick={() => setLocation('/create-pulse')}
             >
               <Zap className="h-4 w-4" /> Create Pulse
@@ -168,24 +169,24 @@ export default function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className="hidden sm:flex rounded-md p-2 hover:bg-gray-100 transition-colors"
+              className="hidden sm:flex rounded-md p-2 text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
               onClick={() => setLocation('/settings')}
               aria-label="Settings"
             >
-              <Settings className="h-5 w-5 text-gray-600" />
+              <Settings className="h-5 w-5" />
             </Button>
             
             {/* User profile section - combined name and avatar */}
             <div 
-              className={`flex items-center gap-2 cursor-pointer px-3 py-1.5 rounded-lg border ${
+              className={`flex items-center gap-2 cursor-pointer px-3 py-1.5 rounded-xl ${
                 isActive('/profile') 
-                  ? 'border-primary/30 bg-primary/5 shadow-sm' 
-                  : 'border-gray-100 hover:bg-gray-50 hover:border-gray-200'
+                  ? 'bg-white/10 backdrop-blur-lg shadow-lg border border-white/10' 
+                  : 'bg-black/20 hover:bg-white/10 border border-white/5'
               } transition-all duration-200 group`}
               onClick={() => setLocation('/profile')}
             >
               {/* User name */}
-              <span className="text-sm font-medium text-gray-800 hidden md:block">
+              <span className="text-sm font-medium text-white hidden md:block">
                 {userData?.name || (user && 'displayName' in user ? user.displayName : null) || "Profile"}
               </span>
               
@@ -195,7 +196,7 @@ export default function Header() {
                   className="flex items-center rounded-full focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary/70 transition-all"
                 >
                   <span className="sr-only">Open user menu</span>
-                  <div className="h-8 w-8 rounded-full overflow-hidden bg-primary/5 flex items-center justify-center border border-primary/10 shadow-sm group-hover:shadow-md transition-all">
+                  <div className="h-8 w-8 rounded-full overflow-hidden bg-primary/10 flex items-center justify-center border border-primary/20 shadow-md group-hover:shadow-lg transition-all">
                     <img 
                       className="h-full w-full object-cover" 
                       src={photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
@@ -207,6 +208,9 @@ export default function Header() {
                     />
                   </div>
                 </div>
+                <div className="absolute -bottom-1 -right-1">
+                  <div className="animated-status-dot"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -215,16 +219,16 @@ export default function Header() {
 
       {/* Mobile menu dropdown */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-white border-b border-gray-200 shadow-lg">
+        <div className="md:hidden bg-black/60 backdrop-blur-xl border-b border-white/10 shadow-xl">
           <div className="px-4 pt-3 pb-4 space-y-2">
             <Button
               variant="ghost"
               size="sm"
               className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
                 isActive('/industry-pulse') 
-                  ? 'text-primary bg-primary/5' 
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
-              }`}
+                  ? 'text-primary bg-primary/10 backdrop-blur-md' 
+                  : 'text-gray-200 hover:bg-white/5 hover:text-primary'
+              } transition-all duration-300`}
               onClick={() => {
                 setLocation('/industry-pulse');
                 setIsMobileMenuOpen(false);
@@ -239,9 +243,9 @@ export default function Header() {
               size="sm"
               className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
                 isActive('/search') 
-                  ? 'text-primary bg-primary/5' 
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
-              }`}
+                  ? 'text-primary bg-primary/10 backdrop-blur-md' 
+                  : 'text-gray-200 hover:bg-white/5 hover:text-primary'
+              } transition-all duration-300`}
               onClick={() => {
                 setLocation('/search');
                 setIsMobileMenuOpen(false);
@@ -256,9 +260,9 @@ export default function Header() {
               size="sm"
               className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
                 isActive('/ai-career') 
-                  ? 'text-primary bg-primary/5' 
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
-              }`}
+                  ? 'text-primary bg-primary/10 backdrop-blur-md' 
+                  : 'text-gray-200 hover:bg-white/5 hover:text-primary'
+              } transition-all duration-300`}
               onClick={() => {
                 setLocation('/ai-career');
                 setIsMobileMenuOpen(false);
@@ -273,9 +277,9 @@ export default function Header() {
               size="sm"
               className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
                 isActive('/radar') 
-                  ? 'text-primary bg-primary/5' 
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
-              }`}
+                  ? 'text-primary bg-primary/10 backdrop-blur-md' 
+                  : 'text-gray-200 hover:bg-white/5 hover:text-primary'
+              } transition-all duration-300`}
               onClick={() => {
                 setLocation('/radar');
                 setIsMobileMenuOpen(false);
@@ -286,15 +290,15 @@ export default function Header() {
             </Button>
             
 
-            <div className="pt-4 mt-2 border-t border-gray-200">
+            <div className="pt-4 mt-2 border-t border-white/10">
               <Button
                 variant="ghost"
                 size="sm"
                 className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
                   isActive('/profile') 
-                    ? 'text-primary bg-primary/5' 
-                    : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
-                }`}
+                    ? 'text-primary bg-primary/10 backdrop-blur-md' 
+                    : 'text-gray-200 hover:bg-white/5 hover:text-primary'
+                } transition-all duration-300`}
                 onClick={() => {
                   setLocation('/profile');
                   setIsMobileMenuOpen(false);
@@ -309,9 +313,9 @@ export default function Header() {
                 size="sm"
                 className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
                   isActive('/settings') 
-                    ? 'text-primary bg-primary/5' 
-                    : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
-                }`}
+                    ? 'text-primary bg-primary/10 backdrop-blur-md' 
+                    : 'text-gray-200 hover:bg-white/5 hover:text-primary'
+                } transition-all duration-300`}
                 onClick={() => {
                   setLocation('/settings');
                   setIsMobileMenuOpen(false);
@@ -322,9 +326,7 @@ export default function Header() {
               </Button>
               
               <Button
-                variant="default"
-                size="sm"
-                className="w-full mt-3 justify-center py-3 text-sm font-medium bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-700 shadow-sm rounded-md"
+                className="w-full mt-3 justify-center py-3 text-sm font-medium neo-button rounded-xl"
                 onClick={() => {
                   setLocation('/create-pulse');
                   setIsMobileMenuOpen(false);
