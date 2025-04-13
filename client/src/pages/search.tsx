@@ -446,8 +446,8 @@ const SearchPage = () => {
     <DashboardLayout hideRightSidebar={true}>
       <div className="container mx-auto px-4 py-6">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2 neo-text-glow">Discover & Connect</h1>
-          <p className="text-gray-400">Find content, professionals, and networking opportunities in one place</p>
+          <h1 className="text-3xl font-bold mb-2">Discover & Connect</h1>
+          <p className="text-gray-600">Find content, professionals, and networking opportunities in one place</p>
         </div>
 
         {/* Main Tabs: Search vs Smart Connect */}
@@ -509,32 +509,32 @@ const SearchPage = () => {
               <TabsContent value="pulses">
                 {!submittedQuery ? (
                   <div className="text-center py-12">
-                    <MessageSquare className="mx-auto h-12 w-12 text-primary/70 mb-4 breathe-animation-subtle" />
-                    <h3 className="text-lg font-medium text-white neo-text-glow">Search for pulses</h3>
-                    <p className="text-gray-400 mt-2">
+                    <MessageSquare className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                    <h3 className="text-lg font-medium">Search for pulses</h3>
+                    <p className="text-gray-500 mt-2">
                       Discover polls, media shares, and projects from professionals
                     </p>
                   </div>
                 ) : isLoading ? (
                   <div className="space-y-4">
                     {[1, 2, 3].map((i) => (
-                      <Card key={i} className="neo-card">
+                      <Card key={i}>
                         <CardContent className="py-4">
                           <div className="flex items-center gap-3 mb-3">
-                            <Skeleton className="h-10 w-10 rounded-full bg-primary/10" />
+                            <Skeleton className="h-10 w-10 rounded-full" />
                             <div className="space-y-1">
-                              <Skeleton className="h-4 w-32 bg-primary/10" />
-                              <Skeleton className="h-3 w-24 bg-primary/10" />
+                              <Skeleton className="h-4 w-32" />
+                              <Skeleton className="h-3 w-24" />
                             </div>
                           </div>
-                          <Skeleton className="h-4 w-full mb-3 bg-primary/10" />
-                          <Skeleton className="h-4 w-full mb-3 bg-primary/10" />
-                          <Skeleton className="h-4 w-3/4 bg-primary/10" />
+                          <Skeleton className="h-4 w-full mb-3" />
+                          <Skeleton className="h-4 w-full mb-3" />
+                          <Skeleton className="h-4 w-3/4" />
                         </CardContent>
                       </Card>
                     ))}
                   </div>
-                ) : searchResults?.pulses && searchResults.pulses.length > 0 ? (
+                ) : searchResults?.pulses?.length > 0 ? (
                   <div className="space-y-4">
                     {searchResults.pulses.map((pulse: {
                       id: number;
@@ -547,22 +547,22 @@ const SearchPage = () => {
                         photoURL: string | null;
                       };
                     }) => (
-                      <Card key={pulse.id} className="neo-card hover:border-primary/30 transition-all cursor-pointer">
+                      <Card key={pulse.id} className="hover:border-primary/40 transition-colors cursor-pointer">
                         <CardContent className="p-4">
                           <div className="flex items-center gap-3 mb-3">
-                            <Avatar className="border border-primary/30">
+                            <Avatar>
                               <AvatarImage src={pulse.user.photoURL || undefined} />
-                              <AvatarFallback className="bg-black/40 text-primary">{getInitials(pulse.user.name)}</AvatarFallback>
+                              <AvatarFallback>{getInitials(pulse.user.name)}</AvatarFallback>
                             </Avatar>
                             <div>
-                              <h3 className="font-medium text-gray-100">{pulse.user.name}</h3>
-                              <p className="text-sm text-gray-400">
+                              <h3 className="font-medium">{pulse.user.name}</h3>
+                              <p className="text-sm text-gray-500">
                                 {formatDistanceToNow(new Date(pulse.createdAt), { addSuffix: true })}
                               </p>
                             </div>
                           </div>
-                          <h4 className="font-medium mb-2 text-gray-100">{pulse.title}</h4>
-                          <p className="text-gray-400 mb-3 line-clamp-2">{pulse.content}</p>
+                          <h4 className="font-medium mb-2">{pulse.title}</h4>
+                          <p className="text-gray-600 mb-3 line-clamp-2">{pulse.content}</p>
                           <div className="flex">
                             <Badge variant={
                               pulse.type === "poll" ? "secondary" : 
@@ -577,10 +577,10 @@ const SearchPage = () => {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12 border border-white/10 rounded-lg bg-black/30 backdrop-blur-sm">
-                    <MessageSquare className="mx-auto h-12 w-12 text-primary/50 mb-4 breathe-animation-subtle" />
-                    <h3 className="text-lg font-medium text-white neo-text-glow">No pulses found</h3>
-                    <p className="text-gray-400 mt-2">
+                  <div className="text-center py-12 border rounded-lg bg-gray-50">
+                    <MessageSquare className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                    <h3 className="text-lg font-medium">No pulses found</h3>
+                    <p className="text-gray-500 mt-2">
                       Try a different search term or check for typos
                     </p>
                   </div>
@@ -591,34 +591,34 @@ const SearchPage = () => {
               <TabsContent value="profiles">
                 {!submittedQuery ? (
                   <div className="text-center py-12">
-                    <Users className="mx-auto h-12 w-12 text-primary/70 mb-4 breathe-animation-subtle" />
-                    <h3 className="text-lg font-medium text-white neo-text-glow">Search for profiles</h3>
-                    <p className="text-gray-400 mt-2">
+                    <Users className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                    <h3 className="text-lg font-medium">Search for profiles</h3>
+                    <p className="text-gray-500 mt-2">
                       Discover professionals across various industries
                     </p>
                   </div>
                 ) : isLoading ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {[1, 2, 3, 4, 5, 6].map((i) => (
-                      <Card key={i} className="neo-card overflow-hidden">
-                        <div className="bg-gradient-to-r from-primary/20 to-primary/5 h-24 backdrop-blur-sm"></div>
+                      <Card key={i}>
+                        <div className="bg-gradient-to-r from-gray-200 to-gray-100 h-24"></div>
                         <div className="px-6 pb-6">
                           <div className="flex justify-center -mt-10 mb-4">
-                            <Skeleton className="h-20 w-20 rounded-full bg-primary/10 border-4 border-black/30" />
+                            <Skeleton className="h-20 w-20 rounded-full" />
                           </div>
                           <div className="text-center space-y-2">
-                            <Skeleton className="h-4 w-32 mx-auto bg-primary/10" />
-                            <Skeleton className="h-3 w-24 mx-auto bg-primary/10" />
-                            <Skeleton className="h-3 w-40 mx-auto bg-primary/10" />
+                            <Skeleton className="h-4 w-32 mx-auto" />
+                            <Skeleton className="h-3 w-24 mx-auto" />
+                            <Skeleton className="h-3 w-40 mx-auto" />
                             <div className="py-2">
-                              <Skeleton className="h-8 w-20 mx-auto rounded-md bg-primary/10" />
+                              <Skeleton className="h-8 w-20 mx-auto rounded-md" />
                             </div>
                           </div>
                         </div>
                       </Card>
                     ))}
                   </div>
-                ) : searchResults?.profiles && searchResults.profiles.length > 0 ? (
+                ) : searchResults?.profiles?.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {searchResults.profiles.map((profile: {
                       id: number;
@@ -628,22 +628,22 @@ const SearchPage = () => {
                       location: string | null;
                       industry: string | null;
                     }) => (
-                      <Card key={profile.id} className="neo-card overflow-hidden">
-                        <div className="bg-gradient-to-r from-primary/30 to-primary/5 h-24 backdrop-blur-sm"></div>
+                      <Card key={profile.id} className="overflow-hidden">
+                        <div className="bg-gradient-to-r from-primary/20 to-primary/10 h-24"></div>
                         <div className="px-6 pb-6">
                           <div className="flex justify-center -mt-10 mb-4">
-                            <Avatar className="h-20 w-20 border-4 border-black/30 shadow-lg breathe-animation-subtle">
+                            <Avatar className="h-20 w-20 border-4 border-white">
                               <AvatarImage src={profile.photoURL || undefined} />
-                              <AvatarFallback className="text-lg bg-black/50 text-primary">{getInitials(profile.name)}</AvatarFallback>
+                              <AvatarFallback className="text-lg">{getInitials(profile.name)}</AvatarFallback>
                             </Avatar>
                           </div>
                           <div className="text-center">
-                            <h3 className="text-xl font-semibold text-white neo-text-glow">{profile.name}</h3>
+                            <h3 className="text-xl font-semibold">{profile.name}</h3>
                             {profile.title && (
-                              <p className="text-gray-300 mt-1">{profile.title}</p>
+                              <p className="text-gray-600 mt-1">{profile.title}</p>
                             )}
                             {(profile.location || profile.industry) && (
-                              <p className="text-gray-400 text-sm mt-2">
+                              <p className="text-gray-500 text-sm mt-2">
                                 {profile.location && profile.location}
                                 {profile.location && profile.industry && " • "}
                                 {profile.industry && profile.industry}
@@ -663,10 +663,10 @@ const SearchPage = () => {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12 border border-white/10 rounded-lg bg-black/30 backdrop-blur-sm">
-                    <Users className="mx-auto h-12 w-12 text-primary/50 mb-4 breathe-animation-subtle" />
-                    <h3 className="text-lg font-medium text-white neo-text-glow">No profiles found</h3>
-                    <p className="text-gray-400 mt-2">
+                  <div className="text-center py-12 border rounded-lg bg-gray-50">
+                    <Users className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                    <h3 className="text-lg font-medium">No profiles found</h3>
+                    <p className="text-gray-500 mt-2">
                       Try a different search term or check for typos
                     </p>
                   </div>
@@ -677,53 +677,48 @@ const SearchPage = () => {
               <TabsContent value="hashtags">
                 {!submittedQuery ? (
                   <div className="text-center py-12">
-                    <Hash className="mx-auto h-12 w-12 text-primary/70 mb-4 breathe-animation-subtle" />
-                    <h3 className="text-lg font-medium text-white neo-text-glow">Search for hashtags</h3>
-                    <p className="text-gray-400 mt-2">
+                    <Hash className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                    <h3 className="text-lg font-medium">Search for hashtags</h3>
+                    <p className="text-gray-500 mt-2">
                       Discover trending topics and hashtags across the platform
                     </p>
                   </div>
                 ) : isLoading ? (
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-                      <Card key={i} className="neo-card">
+                      <Card key={i}>
                         <CardContent className="p-4">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <Skeleton className="h-6 w-24 mb-2 bg-primary/10" />
-                              <Skeleton className="h-4 w-16 bg-primary/10" />
-                            </div>
-                            <Skeleton className="h-8 w-8 rounded-full bg-primary/10" />
-                          </div>
+                          <Skeleton className="h-6 w-24 mb-2" />
+                          <Skeleton className="h-4 w-16" />
                         </CardContent>
                       </Card>
                     ))}
                   </div>
-                ) : searchResults?.hashtags && searchResults.hashtags.length > 0 ? (
+                ) : searchResults?.hashtags?.length > 0 ? (
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {searchResults.hashtags.map((tag: {
                       id: number;
                       name: string;
                       count: number;
                     }) => (
-                      <Card key={tag.id} className="neo-card hover:border-primary/30 transition-all cursor-pointer">
+                      <Card key={tag.id} className="hover:border-primary/50 transition-colors cursor-pointer">
                         <CardContent className="p-4">
                           <div className="flex items-center justify-between">
                             <div>
-                              <h3 className="text-lg font-medium text-white">#{tag.name}</h3>
-                              <p className="text-gray-400 text-sm">{tag.count} {tag.count === 1 ? 'post' : 'posts'}</p>
+                              <h3 className="text-lg font-medium">#{tag.name}</h3>
+                              <p className="text-gray-500 text-sm">{tag.count} {tag.count === 1 ? 'post' : 'posts'}</p>
                             </div>
-                            <Hash className="h-8 w-8 text-primary breathe-animation-subtle" />
+                            <Hash className="h-8 w-8 text-primary/40" />
                           </div>
                         </CardContent>
                       </Card>
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12 border border-white/10 rounded-lg bg-black/30 backdrop-blur-sm">
-                    <Hash className="mx-auto h-12 w-12 text-primary/50 mb-4 breathe-animation-subtle" />
-                    <h3 className="text-lg font-medium text-white neo-text-glow">No hashtags found</h3>
-                    <p className="text-gray-400 mt-2">
+                  <div className="text-center py-12 border rounded-lg bg-gray-50">
+                    <Hash className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                    <h3 className="text-lg font-medium">No hashtags found</h3>
+                    <p className="text-gray-500 mt-2">
                       Try a different search term or check for typos
                     </p>
                   </div>
@@ -736,9 +731,9 @@ const SearchPage = () => {
           <TabsContent value="smart-connect" className="mt-6">
             <div className="space-y-6">
               {/* Matchmaking Form */}
-              <Card className="neo-card">
+              <Card>
                 <CardHeader>
-                  <CardTitle className="text-white">{showMatchResults ? "Your Match Criteria" : "Find Your Match"}</CardTitle>
+                  <CardTitle>{showMatchResults ? "Your Match Criteria" : "Find Your Match"}</CardTitle>
                   <CardDescription>
                     {showMatchResults 
                       ? "Based on these criteria, we found relevant matches for you" 
@@ -950,36 +945,36 @@ const SearchPage = () => {
 
               {/* Network Recommendations */}
               {!showMatchResults && (
-                <Card className="neo-card">
+                <Card>
                   <CardHeader>
-                    <CardTitle className="text-white">Network Tips</CardTitle>
+                    <CardTitle>Network Tips</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="flex gap-3">
-                      <div className="bg-primary/20 backdrop-blur-sm rounded-full p-2 h-fit">
-                        <Star className="h-4 w-4 text-primary breathe-animation-subtle" />
+                      <div className="bg-primary/10 rounded-full p-2 h-fit">
+                        <Star className="h-4 w-4 text-primary" />
                       </div>
                       <div>
-                        <h4 className="font-medium text-sm text-gray-200">Complete your profile</h4>
-                        <p className="text-gray-400 text-xs">Profiles with 80%+ completion get 3x more connections</p>
+                        <h4 className="font-medium text-sm">Complete your profile</h4>
+                        <p className="text-gray-500 text-xs">Profiles with 80%+ completion get 3x more connections</p>
                       </div>
                     </div>
                     <div className="flex gap-3">
-                      <div className="bg-primary/20 backdrop-blur-sm rounded-full p-2 h-fit">
-                        <ArrowUpRight className="h-4 w-4 text-primary breathe-animation-subtle" />
+                      <div className="bg-primary/10 rounded-full p-2 h-fit">
+                        <ArrowUpRight className="h-4 w-4 text-primary" />
                       </div>
                       <div>
-                        <h4 className="font-medium text-sm text-gray-200">Specify your industry</h4>
-                        <p className="text-gray-400 text-xs">Match with professionals in your field</p>
+                        <h4 className="font-medium text-sm">Specify your industry</h4>
+                        <p className="text-gray-500 text-xs">Match with professionals in your field</p>
                       </div>
                     </div>
                     <div className="flex gap-3">
-                      <div className="bg-primary/20 backdrop-blur-sm rounded-full p-2 h-fit">
-                        <ArrowDownRight className="h-4 w-4 text-primary breathe-animation-subtle" />
+                      <div className="bg-primary/10 rounded-full p-2 h-fit">
+                        <ArrowDownRight className="h-4 w-4 text-primary" />
                       </div>
                       <div>
-                        <h4 className="font-medium text-sm text-gray-200">Clarify what you seek</h4>
-                        <p className="text-gray-400 text-xs">Our algorithm works best with clear intentions</p>
+                        <h4 className="font-medium text-sm">Clarify what you seek</h4>
+                        <p className="text-gray-500 text-xs">Our algorithm works best with clear intentions</p>
                       </div>
                     </div>
                   </CardContent>
@@ -987,9 +982,9 @@ const SearchPage = () => {
               )}
 
               {/* Match Results */}
-              <Card className="neo-card">
+              <Card>
                 <CardHeader>
-                  <CardTitle className="text-white">Smart Connect Results</CardTitle>
+                  <CardTitle>Smart Connect Results</CardTitle>
                   <CardDescription>
                     {showMatchResults 
                       ? matchMutation.isSuccess 
@@ -1001,30 +996,30 @@ const SearchPage = () => {
                 <CardContent>
                   {!showMatchResults ? (
                     <div className="text-center py-12">
-                      <UserPlus className="mx-auto h-12 w-12 text-primary/70 mb-4 breathe-animation-subtle" />
-                      <h3 className="text-lg font-medium text-white">Define your criteria</h3>
-                      <p className="text-gray-400 mt-2">
+                      <UserPlus className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                      <h3 className="text-lg font-medium">Define your criteria</h3>
+                      <p className="text-gray-500 mt-2">
                         Fill out the form to find professionals that match your needs
                       </p>
                     </div>
                   ) : matchMutation.isPending ? (
                     <div className="space-y-4">
                       {[1, 2, 3].map((i) => (
-                        <Card key={i} className="neo-card border-primary/10">
+                        <Card key={i} className="border border-gray-200">
                           <CardContent className="p-4">
                             <div className="flex gap-4 items-center">
-                              <Skeleton className="h-16 w-16 rounded-full bg-primary/10" />
+                              <Skeleton className="h-16 w-16 rounded-full" />
                               <div className="flex-grow space-y-2">
-                                <Skeleton className="h-4 w-32 bg-primary/10" />
-                                <Skeleton className="h-3 w-24 bg-primary/10" />
+                                <Skeleton className="h-4 w-32" />
+                                <Skeleton className="h-3 w-24" />
                                 <div className="flex gap-1 mt-2">
-                                  <Skeleton className="h-3 w-12 rounded-full bg-primary/10" />
-                                  <Skeleton className="h-3 w-12 rounded-full bg-primary/10" />
-                                  <Skeleton className="h-3 w-12 rounded-full bg-primary/10" />
+                                  <Skeleton className="h-3 w-12 rounded-full" />
+                                  <Skeleton className="h-3 w-12 rounded-full" />
+                                  <Skeleton className="h-3 w-12 rounded-full" />
                                 </div>
                               </div>
                               <div className="w-20">
-                                <Skeleton className="h-8 w-full rounded-md bg-primary/10" />
+                                <Skeleton className="h-8 w-full rounded-md" />
                               </div>
                             </div>
                           </CardContent>
@@ -1034,28 +1029,28 @@ const SearchPage = () => {
                   ) : matchMutation.isSuccess && matchMutation.data.length > 0 ? (
                     <div className="space-y-4">
                       {matchMutation.data.map((match) => (
-                        <Card key={match.id} className="neo-card border-primary/20 overflow-hidden">
+                        <Card key={match.id} className="border border-gray-200 overflow-hidden">
                           <CardContent className="p-4">
                             <div className="flex gap-4 items-center">
-                              <Avatar className="h-16 w-16 border-2 border-primary/30 shadow-lg breathe-animation-subtle">
+                              <Avatar className="h-16 w-16">
                                 <AvatarImage src={match.photoURL || undefined} />
-                                <AvatarFallback className="text-lg bg-black/50 text-primary">{getInitials(match.name)}</AvatarFallback>
+                                <AvatarFallback className="text-lg">{getInitials(match.name)}</AvatarFallback>
                               </Avatar>
                               
                               <div className="flex-grow">
-                                <h4 className="font-medium text-white neo-text-glow">{match.name}</h4>
-                                <p className="text-sm text-gray-300">{match.title}</p>
+                                <h4 className="font-medium">{match.name}</h4>
+                                <p className="text-sm text-gray-600">{match.title}</p>
                                 
                                 <div className="flex flex-wrap gap-1 mt-2">
                                   {match.skills.map((skill, i) => (
-                                    <Badge key={i} variant="outline" className="text-xs font-normal border-primary/30 text-gray-300">
+                                    <Badge key={i} variant="outline" className="text-xs font-normal">
                                       {skill}
                                     </Badge>
                                   ))}
                                 </div>
                                 
-                                <div className="flex items-center mt-3 text-xs text-gray-400">
-                                  <MapPin size={12} className="mr-1 text-primary/80" />
+                                <div className="flex items-center mt-3 text-xs text-gray-500">
+                                  <MapPin size={12} className="mr-1" />
                                   {match.location}
                                 </div>
                               </div>
@@ -1081,37 +1076,37 @@ const SearchPage = () => {
                             </div>
                             
                             {/* Match Details */}
-                            <div className="mt-3 pt-3 border-t border-white/10">
-                              <h5 className="text-xs font-medium mb-2 text-white">Match Details</h5>
+                            <div className="mt-3 pt-3 border-t border-gray-100">
+                              <h5 className="text-xs font-medium mb-2">Match Details</h5>
                               <div className="grid grid-cols-4 gap-2">
                                 {match.matchDetails.complementaryMatch && (
                                   <div>
-                                    <p className="text-xs text-gray-400">Goals Match</p>
+                                    <p className="text-xs text-gray-500">Goals Match</p>
                                     <div className="flex items-center mt-1">
-                                      <Progress value={match.matchDetails.complementaryMatch} className="h-1 mr-2 [&>div]:bg-primary" />
-                                      <span className="text-xs text-white">{match.matchDetails.complementaryMatch}%</span>
+                                      <Progress value={match.matchDetails.complementaryMatch} className="h-1 mr-2" />
+                                      <span className="text-xs">{match.matchDetails.complementaryMatch}%</span>
                                     </div>
                                   </div>
                                 )}
                                 <div>
-                                  <p className="text-xs text-gray-400">Industry</p>
+                                  <p className="text-xs text-gray-500">Industry</p>
                                   <div className="flex items-center mt-1">
-                                    <Progress value={match.matchDetails.industryMatch} className="h-1 mr-2 [&>div]:bg-primary" />
-                                    <span className="text-xs text-white">{match.matchDetails.industryMatch}%</span>
+                                    <Progress value={match.matchDetails.industryMatch} className="h-1 mr-2" />
+                                    <span className="text-xs">{match.matchDetails.industryMatch}%</span>
                                   </div>
                                 </div>
                                 <div>
-                                  <p className="text-xs text-gray-400">Domain</p>
+                                  <p className="text-xs text-gray-500">Domain</p>
                                   <div className="flex items-center mt-1">
-                                    <Progress value={match.matchDetails.domainMatch} className="h-1 mr-2 [&>div]:bg-primary" />
-                                    <span className="text-xs text-white">{match.matchDetails.domainMatch}%</span>
+                                    <Progress value={match.matchDetails.domainMatch} className="h-1 mr-2" />
+                                    <span className="text-xs">{match.matchDetails.domainMatch}%</span>
                                   </div>
                                 </div>
                                 <div>
-                                  <p className="text-xs text-gray-400">Experience</p>
+                                  <p className="text-xs text-gray-500">Experience</p>
                                   <div className="flex items-center mt-1">
-                                    <Progress value={match.matchDetails.experienceMatch} className="h-1 mr-2 [&>div]:bg-primary" />
-                                    <span className="text-xs text-white">{match.matchDetails.experienceMatch}%</span>
+                                    <Progress value={match.matchDetails.experienceMatch} className="h-1 mr-2" />
+                                    <span className="text-xs">{match.matchDetails.experienceMatch}%</span>
                                   </div>
                                 </div>
                               </div>
@@ -1121,10 +1116,10 @@ const SearchPage = () => {
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center py-12 border border-white/10 rounded-lg bg-black/30 backdrop-blur-sm">
-                      <UserPlus className="mx-auto h-12 w-12 text-primary/50 mb-4 breathe-animation-subtle" />
-                      <h3 className="text-lg font-medium text-white neo-text-glow">No matches found</h3>
-                      <p className="text-gray-400 mt-2">
+                    <div className="text-center py-12 border rounded-lg bg-gray-50">
+                      <UserPlus className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                      <h3 className="text-lg font-medium">No matches found</h3>
+                      <p className="text-gray-500 mt-2">
                         Try adjusting your criteria to find more professionals
                       </p>
                     </div>
