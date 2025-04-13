@@ -87,29 +87,61 @@ export async function generateCareerAdvice(userProfile: {
         break;
       case "switch_industry":
         adviceTypeText = "switching industries";
-        specificPrompt = `Perform a detailed analysis of ${userName}'s profile for industry transition, considering these 10 key factors:
+        specificPrompt = `Conduct a comprehensive industry transition analysis for ${userName} currently in ${userIndustry} as ${userTitle}. Use the following structured approach:
 
-1. Transferable Skills Mapping: Analyze both hard and soft skills from ${userIndustry} and identify industries where these skills are in high demand.
+1. DEEP PROFILE ANALYSIS:
+   - Analyze hard skills (tools, tech stacks, certifications, platforms)
+   - Identify soft skills (leadership, communication, problem-solving)
+   - Examine career progression patterns (managerial vs hands-on)
+   - Detect domain-specific language and expertise
+   - Note quantifiable achievements and results
+   - Determine if their roles are primarily operational, strategic, creative, or technical
 
-2. Industry Overlaps: Identify 3-4 industries with operational, functional, or technological overlap with ${userIndustry} (e.g., IT services → Fintech, EdTech, HealthTech).
+2. INDUSTRY SKILL MAPPING:
+   - Cross-reference identified skills with growing industries
+   - Create skill clusters to match transferable expertise to new domains
+   - Map current experience to potential industries (e.g., Software Dev → AI/ML, FinTech, HealthTech)
 
-3. Growth & Opportunity Analysis: Suggest rapidly growing industries or those with hiring gaps, focusing on future-proof sectors like AI, Green Tech, Cybersecurity, and Creator Economy.
+3. FIT SCORING FOR EACH POTENTIAL INDUSTRY:
+   - Skill Match Score
+   - Interest Alignment Score based on CV keywords
+   - Growth Potential
+   - Ease of Transition
+   - Future-Proofing Rating
 
-4. Job Role Flexibility: Recommend industries where ${userName}'s current role exists or can evolve (e.g., "${userTitle} in ${userIndustry}" → similar role in new industry).
-
-5. Learning Curve & Effort: Evaluate how much upskilling would be required for different industries, suggesting those with smoother transitions.
-
-6. Network Access: Assess if ${userName} likely has connections or previous exposure in potential new industries based on their background.
-
-7. Career Goal Alignment: Compare their current profile with potential industries that align with typical career progression.
-
-8. Previous Cross-Industry Experience: Check if there's evidence of past work or certifications that indicate partial experience in other industries.
-
-9. Behavioral Traits & Passion Areas: Infer from their profile possible passion areas and matching industries.
-
-10. Feasibility & Practical Fit: Consider practical factors like location (${userLocation}), typical salary expectations, job availability, and any potential cultural fit.
-
-After this analysis, provide specific advice for making the transition to 3-4 recommended industries.`;
+4. PROVIDE A VISUALIZATION-READY OUTPUT:
+   Present your results in this format:
+   
+   # Industry Transition Map for ${userName}
+   
+   ## Your Current Role: ${userTitle}
+   
+   ## Viable Industry Switch Options
+   
+   For each recommended industry (4-5 total), include:
+   
+   ### [Industry Name] - [Match Level: High/Medium/Low]
+   
+   - Example Entry-Level Role: [Specific job title]
+   - Why It Fits You: [2-3 key reasons based on skills]
+   - Roles to Explore: [3-4 specific positions]
+   - Difficulty Level: [Easy/Medium/Hard] with brief explanation
+   - Skill Transferability: [List top transferable skills]
+   - Suggested First Steps: [Concrete actions to take]
+   
+   ## Practical Transition Strategy
+   
+   - Resume Rewrite Focus: [How to adapt resume for each industry]
+   - Learning Priority: [Skills gaps to fill]
+   - Networking Strategy: [Using Brandentifier's Smart Connect plus industry-specific networks]
+   
+   ## Success Stories
+   
+   Include 1-2 brief examples of professionals who made similar transitions.
+   
+   ## Why This Path Might Surprise You
+   
+   Add unexpected benefits or opportunities in these new industries.`;
         break;
       case "build_skills":
         adviceTypeText = "building core skills for future roles";
@@ -271,75 +303,63 @@ After this analysis, provide specific advice for making the transition to 3-4 re
           const userName = userProfile.user?.name || "User";
           const skills = userProfile.skills.map(skill => skill.name).join(', ') || 'product management, strategic planning, and team leadership';
           
-          return `# Industry Transition Analysis for ${userName}
+          return `# Industry Transition Map for ${userName}
 
-After conducting a comprehensive analysis of your professional profile, I've evaluated your potential for industry transition across 10 key factors. Here's my assessment:
+## Your Current Role: Product Manager in Technology
 
-## Situation Assessment
+## Viable Industry Switch Options
 
-Your background provides you with a strong foundation for exploring new industries. The skills you've developed are highly transferable, and several adjacent industries could benefit from your expertise.
+### FinTech - 🟢 High Match
 
-### Transferable Skills Mapping
-Your hard skills in ${skills} are in high demand across multiple industries. Your soft skills in communication, stakeholder management, and problem-solving are universal assets that translate well to any new sector.
+- Example Entry-Level Role: FinTech Product Manager
+- Why It Fits You: Your experience with product development cycles and strategic planning translates directly to financial technology products. Your analytical approach is well-suited for financial services.
+- Roles to Explore: FinTech Product Manager, Financial Solutions Strategist, Digital Banking Product Lead
+- Difficulty Level: Easy - minimal domain knowledge required beyond financial basics
+- Skill Transferability: Product management, user experience design, stakeholder management, analytics, strategic planning
+- Suggested First Steps: Complete an online course in financial services fundamentals and connect with 3-5 FinTech professionals through Brandentifier's Smart Connect
 
-### Industry Overlaps
-Based on your profile, these industries have significant operational or functional overlap with your current experience:
-- FinTech: Similar technology stack and product development approach
-- HealthTech: Growing demand for professionals who understand user experience and data systems
-- EdTech: Increasing need for product expertise as the sector undergoes digital transformation
-- Green Technology: Emerging field where product development skills are highly valuable
+### HealthTech - 🟡 Medium Match
 
-### Growth & Opportunity Analysis
-Among fast-growing sectors where your skills would be valuable:
-- AI & Machine Learning: Projected 38% annual growth through 2027
-- Cybersecurity: 33% projected job growth over the next decade
-- Green Tech: Expected to grow 25% annually with significant government investment
-- Digital Health: 27% compound annual growth rate expected through 2028
+- Example Entry-Level Role: Healthcare Solutions Specialist
+- Why It Fits You: Your focus on user experience and data systems is valuable in patient-centered healthcare technology. Healthcare is increasingly digital and needs product expertise.
+- Roles to Explore: Health IT Product Manager, Patient Experience Designer, Healthcare Analytics Manager
+- Difficulty Level: Medium - requires understanding of healthcare operations and compliance
+- Skill Transferability: User experience design, data analysis, product lifecycle management
+- Suggested First Steps: Take a healthcare IT certification course and find mentors already working in the field
 
-### Job Role Flexibility
-Your current position could evolve into these roles in new industries:
-- Product Manager in HealthTech (focusing on patient experience platforms)
-- Director of Product Strategy in EdTech (developing learning management systems)
-- Head of Digital Transformation in Financial Services
-- Product Innovation Lead in Sustainability Tech
+### EdTech - 🟢 High Match
 
-### Learning Curve & Effort Assessment
-Industry transition difficulty ranking (1-10, where 10 is most difficult):
-- FinTech: 3/10 (Minimal upskilling required)
-- HealthTech: 5/10 (Some domain-specific knowledge needed)
-- EdTech: 4/10 (Moderate learning curve with familiar technology components)
-- Green Tech: 6/10 (Domain expertise needed but high demand for your underlying skills)
+- Example Entry-Level Role: Learning Experience Product Manager
+- Why It Fits You: Education technology needs product managers who understand how to create engaging digital experiences. Your background in user-centered design is valuable here.
+- Roles to Explore: EdTech Product Manager, Digital Learning Strategist, Education Content Developer
+- Difficulty Level: Easy - education domain knowledge is relatively accessible
+- Skill Transferability: UX/UI design, project management, analytics, stakeholder management
+- Suggested First Steps: Volunteer for an education nonprofit to gain domain experience while building your portfolio in Brandentifier
 
-### Network Access
-Your professional background likely provides you with some connections to FinTech and EdTech through overlapping technology communities. Brandentifier's Smart Connect feature can help you identify existing connections in your target industries and suggest strategic networking opportunities to build presence in sectors where your network is currently limited.
+### Green Technology - 🟠 Low Match
 
-### Career Goal Alignment
-The industries I've highlighted align well with typical career progression paths for someone with your background. FinTech and HealthTech particularly offer clear advancement opportunities for product leaders.
+- Example Entry-Level Role: Sustainability Solutions Coordinator
+- Why It Fits You: Growing field with increasing technical needs. Your product development skills can help bring sustainability solutions to market.
+- Roles to Explore: Sustainable Product Manager, Green Technology Analyst, Clean Energy Project Coordinator
+- Difficulty Level: Hard - requires substantial domain knowledge in sustainability
+- Skill Transferability: Project management, data analysis, strategic planning
+- Suggested First Steps: Complete a sustainability certification and join environmental technology forums
 
-### Previous Cross-Industry Experience
-Your portfolio suggests you've already worked on projects that crossed industry boundaries, which demonstrates adaptability and will make your transition more credible to potential employers.
+## Practical Transition Strategy
 
-### Behavioral Traits & Passion Areas
-Your profile indicates strength in innovation and problem-solving, which matches well with emerging technologies in healthcare and education. Your analytical approach would be particularly valuable in data-heavy sectors like FinTech.
+- Resume Rewrite Focus: Highlight transferable skills like user-centered design, data analysis, and product development while incorporating industry-specific terminology for each target
+- Learning Priority: Financial services fundamentals for FinTech, healthcare operations for HealthTech, educational theory for EdTech
+- Networking Strategy: Use Brandentifier's Smart Connect to find professionals in target industries; join industry-specific LinkedIn groups and professional associations
 
-### Feasibility & Practical Fit
-Considering practical factors:
-- Geographic accessibility: All recommended industries have strong presence in major tech hubs
-- Salary expectations: Comparable or higher compensation in all suggested industries
-- Work-life balance: Varies by company, with EdTech typically offering better balance than FinTech
-- Cultural fit: Your adaptability suggests you could thrive in any of these environments
+## Success Stories
 
-## Immediate Action Steps
+Maria T. transitioned from Product Management at a tech company to leading healthcare products at a major HealthTech startup within 6 months by leveraging her experience with user research and data visualization. She focused on learning healthcare regulations while emphasizing her transferable skills.
 
-1. **Develop industry-specific expertise** in your target sectors through online courses and certifications.
+David K. moved from software project management to FinTech by taking a financial services course and targeting companies that needed strong product leadership but were willing to train on industry specifics. He highlighted his experience managing complex stakeholder relationships.
 
-2. **Rebrand your resume and portfolio** to highlight transferable skills and relevant projects. Use Brandentifier's Portfolio Builder to create industry-specific versions of your professional profile.
+## Why This Path Might Surprise You
 
-3. **Connect with professionals** in your target industries through Brandentifier's Smart Connect feature, LinkedIn groups, and industry conferences.
-
-4. **Contribute to industry conversations** by publishing articles or participating in webinars on topics that bridge your current expertise with your target industry.
-
-5. **Look for hybrid opportunities** that combine your current skills with exposure to new industries, such as consulting roles or projects at the intersection of technology and your target sector.
+FinTech and HealthTech offer significantly higher compensation than traditional tech roles due to the specialized domain knowledge. EdTech provides better work-life balance than most tech sectors while still offering innovation opportunities. Green Technology offers ground-floor opportunities in a sector predicted to grow exponentially over the next decade.
 
 Musk, Your Career Partner`;
         } else {
