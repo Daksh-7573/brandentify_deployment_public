@@ -33,6 +33,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 // Import our portfolio templates
 import MinimalistPro from "@/components/portfolio/templates/minimalist-pro";
 import FreelancerHub from "@/components/portfolio/templates/freelancer-hub";
+import FreelancerHubNew from "@/components/portfolio/templates/freelancer-hub-new";
 import TimelineStoryteller from "@/components/portfolio/templates/timeline-storyteller";
 import VisualExpert from "@/components/portfolio/templates/visual-expert";
 import CorporateExecutive from "@/components/portfolio/templates/corporate-executive";
