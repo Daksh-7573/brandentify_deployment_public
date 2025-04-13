@@ -149,13 +149,6 @@ Musk, Your Career Partner`;
 
 I've analyzed your professional profile to identify the core skills you should build for future career advancement. Here's a comprehensive plan based on your background and industry trends.
 
-## ✅ Profile Analysis
-
-- **Experience**: Your work spans marketing, product development, and team leadership roles
-- **Tools & Tech**: You show proficiency in design tools, analytics platforms, and project management software
-- **Achievements**: You've delivered measurable results in campaign management and product launches
-- **Role Titles & Transitions**: Your career shows steady progression toward strategic leadership positions
-
 ## 🔎 Current Strength Mapping
 
 - **Hard Skills**: Marketing automation, content strategy, basic data analysis, project management
