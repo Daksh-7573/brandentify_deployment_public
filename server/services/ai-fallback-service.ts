@@ -145,34 +145,47 @@ Musk, Your Career Partner`;
   
   // Check for build_skills
   else if (adviceType === 'build_skills') {
-    return `# Your Future Role Readiness Plan
+    return `# Your Future Role Readiness Plan by Musk
 
 I've analyzed your professional profile to identify the core skills you should build for future career advancement. Here's a comprehensive plan based on your background and industry trends.
+
+## ✅ Profile Analysis
+
+- **Experience**: Your work spans marketing, product development, and team leadership roles
+- **Tools & Tech**: You show proficiency in design tools, analytics platforms, and project management software
+- **Achievements**: You've delivered measurable results in campaign management and product launches
+- **Role Titles & Transitions**: Your career shows steady progression toward strategic leadership positions
+
+## 🔎 Current Strength Mapping
+
+- **Hard Skills**: Marketing automation, content strategy, basic data analysis, project management
+- **Soft Skills**: Communication, stakeholder management, creative problem-solving, team coordination
+- **Industry Tags**: MarTech, Digital Media, SaaS, Consumer Technology
+- **Career Stage**: Mid-level with emerging leadership responsibilities
 
 ## 🌟 Potential Future Roles
 
 Role | Match % | Why You're a Fit
 -----|---------|----------------
-AI Product Strategist | 87% | Your experience with cross-functional teams and market insights positions you well for this emerging role
-Head of Marketing Operations | 76% | Your background with MarTech tools and team leadership creates a strong foundation
-Growth Lead - SaaS | 79% | Your analytical mindset and campaign delivery track record are valuable assets
-UX Research Director | 82% | Your focus on user-centered design and data-driven decisions align with this leadership position
+AI Product Strategist | 87% | Your cross-functional experience and market insights position you well
+Head of Marketing Operations | 76% | You already use MarTech tools and lead teams effectively
+Growth Lead – SaaS | 79% | Your analytical mindset and campaign delivery record show aptitude
+UX Research Director | 82% | Your user-centered approach aligns with this leadership path
 
 ## 🧠 Core Skills to Build Now
 
 - **Prompt Engineering** | ⭐️ Must-have | Essential for future-facing marketing and AI content roles
-- **Product Analytics (Mixpanel, GA4)** | ⭐️ Must-have | Required to move into Product or Strategy leadership
-- **AI Ethics & Policy** | 🔸 Optional | Valuable if entering regulated industries or AI governance
-- **Funnel Optimization** | 🔹 Medium | Important for Growth and Product Management positions
-- **Leadership Communication** | 🔹 Medium | Key for advancement into team and strategy roles
-- **Data Visualization** | ⭐️ Must-have | Critical for presenting insights to stakeholders across all future roles
+- **Product Analytics (Mixpanel, GA4)** | ⭐️ Must-have | Required for Product and Strategy positions
+- **AI Ethics & Policy** | 🔸 Optional | Valuable if entering regulated industries
+- **Funnel Optimization** | 🔹 Medium | Needed in Growth/PM roles
+- **Leadership Communication** | 🔹 Medium | Key for moving up into team/strategy roles
 
 ## 📚 Suggested Learning Tracks
 
-- **AI for Product Thinkers** | LinkedIn Learning | 6 hours
-- **SQL & Funnel Data Analysis** | Mode Analytics Academy | 4 hours
-- **UX for Strategic Growth** | Coursera (Google UX Certificate) | 8 hours
-- **Prompt Engineering Mastery** | Udemy | 3 hours
+- **AI for Product Thinkers** | LinkedIn Learning | 6 hrs
+- **SQL & Funnel Data Analysis** | Mode Analytics Academy | 4 hrs
+- **UX for Strategic Growth** | Coursera (Google UX) | 8 hrs
+- **Prompt Engineering Mastery** | Udemy | 3 hrs
 - **Leadership Communication** | Harvard Business School Online | 6 weeks
 
 ## 🔁 Ongoing Practice Suggestions

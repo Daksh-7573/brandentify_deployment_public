@@ -693,10 +693,11 @@ export default function AICareerPage() {
                                     .filter(cell => cell.trim() !== '') // Remove empty cells from start/end
                                     .map(cell => cell.trim());
                                   
-                                  // Determine if this is a header row (usually the first row of a table)
-                                  const isHeaderRow = i > 0 && 
-                                    adviceHistory[0].content.split('\n')[i+1] && 
-                                    adviceHistory[0].content.split('\n')[i+1].includes('---');
+                                  // Determine if this is a header row based on column headers like "Role | Match % | Why"
+                                  const isHeaderRow = line.includes('Role') || 
+                                                    line.includes('Track') || 
+                                                    (cells.length >= 3 && 
+                                                    cells.some(cell => cell.includes('%') || cell.includes('Match')));
                                   
                                   return (
                                     <div key={i} className={`flex w-full ${isHeaderRow ? 'font-bold bg-primary/10 text-primary' : 'border-b border-gray-100'} my-0`}>
@@ -894,10 +895,11 @@ export default function AICareerPage() {
                                           .filter(cell => cell.trim() !== '') // Remove empty cells from start/end
                                           .map(cell => cell.trim());
                                         
-                                        // Determine if this is a header row (usually the first row of a table)
-                                        const isHeaderRow = i > 0 && 
-                                          message.content.split('\n')[i+1] && 
-                                          message.content.split('\n')[i+1].includes('---');
+                                        // Determine if this is a header row based on column headers like "Role | Match % | Why"
+                                        const isHeaderRow = line.includes('Role') || 
+                                                         line.includes('Track') || 
+                                                         (cells.length >= 3 && 
+                                                         cells.some(cell => cell.includes('%') || cell.includes('Match')));
                                         
                                         return (
                                           <div key={i} className={`flex w-full ${isHeaderRow ? 'font-bold bg-primary/10 text-primary' : 'border-b border-gray-100'} my-0`}>
