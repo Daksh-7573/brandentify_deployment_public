@@ -19,7 +19,10 @@ export default function RightSidebar() {
       if (!firebaseUid) return null;
       
       console.log(`RightSidebar: Fetching user data with ID: ${firebaseUid}`);
-      const response = await apiRequest(`/api/users/${firebaseUid}`);
+      const response = await apiRequest({
+        url: `/api/users/${firebaseUid}`,
+        method: 'GET'
+      });
       
       if (response.status === 404) {
         console.error(`User with ID ${firebaseUid} not found in backend`);
@@ -47,7 +50,10 @@ export default function RightSidebar() {
     queryKey: [`/api/users/${userNumericId}/skills`],
     queryFn: async () => {
       if (!userNumericId) return [];
-      const response = await apiRequest(`/api/users/${userNumericId}/skills`);
+      const response = await apiRequest({
+        url: `/api/users/${userNumericId}/skills`,
+        method: 'GET'
+      });
       return await response.json();
     },
     enabled: !!userNumericId
@@ -59,7 +65,10 @@ export default function RightSidebar() {
     queryFn: async () => {
       if (!userNumericId) return [];
       // Use the numeric user ID for the experiences API
-      const response = await apiRequest(`/api/users/${userNumericId}/experiences`);
+      const response = await apiRequest({
+        url: `/api/users/${userNumericId}/experiences`,
+        method: 'GET'
+      });
       console.log(`RightSidebar: Fetching experiences with numeric userId: ${userNumericId}`);
       return await response.json();
     },
@@ -71,7 +80,10 @@ export default function RightSidebar() {
     queryKey: [`/api/users/${userNumericId}/educations`],
     queryFn: async () => {
       if (!userNumericId) return [];
-      const response = await apiRequest(`/api/users/${userNumericId}/educations`);
+      const response = await apiRequest({
+        url: `/api/users/${userNumericId}/educations`,
+        method: 'GET'
+      });
       return await response.json();
     },
     enabled: !!userNumericId
@@ -82,7 +94,10 @@ export default function RightSidebar() {
     queryKey: [`/api/users/${userNumericId}/projects`],
     queryFn: async () => {
       if (!userNumericId) return [];
-      const response = await apiRequest(`/api/users/${userNumericId}/projects`);
+      const response = await apiRequest({
+        url: `/api/users/${userNumericId}/projects`,
+        method: 'GET'
+      });
       return await response.json();
     },
     enabled: !!userNumericId
@@ -93,7 +108,10 @@ export default function RightSidebar() {
     queryKey: [`/api/users/${userNumericId}/services`],
     queryFn: async () => {
       if (!userNumericId) return [];
-      const response = await apiRequest(`/api/users/${userNumericId}/services`);
+      const response = await apiRequest({
+        url: `/api/users/${userNumericId}/services`,
+        method: 'GET'
+      });
       return await response.json();
     },
     enabled: !!userNumericId
