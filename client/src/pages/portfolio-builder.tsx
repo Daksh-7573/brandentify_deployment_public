@@ -32,8 +32,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 
 // Import our portfolio templates
 import MinimalistPro from "@/components/portfolio/templates/minimalist-pro";
-import FreelancerHub from "@/components/portfolio/templates/freelancer-hub";
-import FreelancerHubNew from "@/components/portfolio/templates/freelancer-hub-new";
+import FreelancerHub from "@/components/portfolio/templates/freelancer-hub"; // Using the new improved template
 import TimelineStoryteller from "@/components/portfolio/templates/timeline-storyteller";
 import VisualExpert from "@/components/portfolio/templates/visual-expert";
 import CorporateExecutive from "@/components/portfolio/templates/corporate-executive";
@@ -398,13 +397,6 @@ export default function PortfolioBuilder() {
     { 
       id: "freelancer-hub", 
       name: "The Freelancer Hub", 
-      description: `✔ Theme: Vibrant & Playful
-✔ Best For: Freelancers, Influencers, Coaches`,
-      theme: "#FF7F50"
-    },
-    { 
-      id: "freelancer-hub-new", 
-      name: "The Freelancer Hub (New)", 
       description: `✔ Theme: Colorful, Playful, Expressive
 ✔ Best For: Freelancers, Influencers, Coaches, Creators`,
       theme: "#FF5757"
@@ -868,44 +860,6 @@ export default function PortfolioBuilder() {
               <Card className="overflow-hidden bg-white border-gray-200 shadow-lg">
                 <CardContent className="p-0">
                   <FreelancerHub 
-                    userInfo={{
-                      name: userData?.name || user?.name || '',
-                      title: userData?.title || '',
-                      industry: userData?.industry || '',
-                      domain: userData?.domain || '',
-                      location: userData?.location || '',
-                      email: userData?.email || user?.email || '',
-                      photoURL: userData?.photoURL || user?.photoURL || null,
-                      lookingFor: userData?.lookingFor || '',
-                      jobLevel: userData?.jobLevel || ''
-                    }}
-                    userSkills={userSkills || []}
-                    userServices={userServices || []}
-                    userExperiences={userExperiences || []}
-                    userEducations={userEducations || []}
-                    userProjects={userProjects?.map(p => ({
-                      id: p.id,
-                      title: p.title,
-                      description: p.description,
-                      userId: p.userId,
-                      startDate: p.startDate,
-                      createdAt: null,
-                      projectUrl: null,
-                      category: null,
-                      thumbnailUrl: null,
-                      thumbnailFile: null,
-                      mediaUrls: [],
-                      updatedAt: null
-                    })) || []}
-                  />
-                </CardContent>
-              </Card>
-            )}
-            
-            {form.watch("layout") === "freelancer-hub-new" && (
-              <Card className="overflow-hidden bg-white border-gray-200 shadow-lg">
-                <CardContent className="p-0">
-                  <FreelancerHubNew 
                     userInfo={{
                       name: userData?.name || user?.name || '',
                       title: userData?.title || '',
