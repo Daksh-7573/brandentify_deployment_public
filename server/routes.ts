@@ -1919,7 +1919,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log("Career advice request received with type:", req.body.adviceType);
       
-      const { userId, adviceType } = req.body;
+      const { userId, adviceType, customAdviceText } = req.body;
       
       if (!userId) {
         return res.status(400).json({ message: "User ID is required" });
@@ -1929,26 +1929,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Advice type is required" });
       }
       
-      // Import the fallback service
-      const { generateCareerAdviceFallback } = await import('./services/ai-fallback-service');
-      
-      // Get user data for personalization
-      let userData = null;
-      let userName = "User";
-      try {
-        userData = await storage.getUser(userId);
-        if (userData && userData.name) {
-          userName = userData.name;
+      // Check for OpenAI API key
+      if (!process.env.OPENAI_API_KEY) {
+        console.log("OPENAI_API_KEY not found. Falling back to demo service.");
+        
+        // Import the fallback service
+        const { generateCareerAdviceFallback } = await import('./services/ai-fallback-service');
+        
+        // Get user data for personalization
+        let userData = null;
+        let userName = "User";
+        try {
+          userData = await storage.getUser(userId);
+          if (userData && userData.name) {
+            userName = userData.name;
+          }
+        } catch (userError) {
+          console.log("Error fetching user for personalization:", userError);
         }
-      } catch (userError) {
-        console.log("Error fetching user for personalization:", userError);
+        
+        // Ensure adviceType is a string
+        let adviceTypeStr = typeof adviceType === 'string' ? adviceType : 'general';
+        
+        // Get the advice content from the fallback service
+        const advice = generateCareerAdviceFallback(adviceTypeStr, userName);
+        
+        // Save the advice as a chat message
+        await storage.createChatMessage({
+          userId,
+          sender: "ai",
+          content: advice,
+          messageType: "career_advice"
+        });
+        
+        // Return the advice with a flag indicating it's from the fallback mode
+        return res.json({ 
+          advice,
+          apiStatus: "DEMO_FALLBACK"
+        });
       }
       
-      // Ensure adviceType is a string
-      let adviceTypeStr = typeof adviceType === 'string' ? adviceType : 'general';
+      // If we have OpenAI API key, generate dynamic advice
+      console.log("Generating dynamic career advice using OpenAI API");
       
-      // Get the advice content from the fallback service
-      const advice = generateCareerAdviceFallback(adviceTypeStr, userName);
+      // Import the OpenAI service
+      const { generateCareerAdvice } = await import('./services/openai-service');
+      
+      // Get user data for analysis
+      const userData = await storage.getUser(userId);
+      const workExperiences = await storage.getWorkExperiencesByUserId(userId);
+      const skills = await storage.getSkillsByUserId(userId);
+      const educations = await storage.getEducationsByUserId(userId);
+      
+      // Prepare user profile for AI analysis
+      const userProfile = {
+        user: userData,
+        workExperiences,
+        skills,
+        educations,
+        adviceType,
+        customAdviceText
+      };
+      
+      // Generate advice using OpenAI
+      const advice = await generateCareerAdvice(userProfile);
       
       // Save the advice as a chat message
       await storage.createChatMessage({
@@ -1958,10 +2002,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         messageType: "career_advice"
       });
       
-      // Return the advice with a flag indicating it's from the fallback mode
+      // Return the dynamic advice
       res.json({ 
         advice,
-        apiStatus: "DEMO_FALLBACK"
+        apiStatus: "OPENAI_DYNAMIC"
       });
     } catch (error) {
       console.error("Unexpected error in career advice endpoint:", error);
