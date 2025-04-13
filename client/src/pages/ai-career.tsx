@@ -264,9 +264,11 @@ export default function AICareerPage() {
         
         
         {/* Main content area */}
-        <div className="flex-1 overflow-auto p-4 sm:p-6 bg-gray-50">
+        <div className="flex-1 overflow-auto p-4 sm:p-6">
           <div className="mx-auto max-w-6xl">
-            <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">AI Career Assistant</h1>
+            <h1 className="mb-4 sm:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-100 neo-text-glow">
+              AI Career Assistant
+            </h1>
       
             <div className="grid grid-cols-1 gap-6">
               <div className="w-full">
@@ -278,15 +280,15 @@ export default function AICareerPage() {
                       setResumeText("");
                     }
                   }}>
-                  <TabsList className="grid w-full grid-cols-2 mb-4">
-                    <TabsTrigger value="career">Career Advice</TabsTrigger>
-                    <TabsTrigger value="resume">Resume Analysis</TabsTrigger>
+                  <TabsList className="grid w-full grid-cols-2 mb-4 bg-black/40 backdrop-blur-md border border-white/10">
+                    <TabsTrigger value="career" className="data-[state=active]:bg-white/10 data-[state=active]:text-primary">Career Advice</TabsTrigger>
+                    <TabsTrigger value="resume" className="data-[state=active]:bg-white/10 data-[state=active]:text-primary">Resume Analysis</TabsTrigger>
                   </TabsList>
                   
                   <TabsContent value="career" className="mt-2">
-                    <Card className="p-4 sm:p-6">
-                      <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Get Career Advice</h2>
-                      <p className="text-sm text-muted-foreground mb-4">
+                    <Card className="p-4 sm:p-6 neo-card">
+                      <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-primary">Get Career Advice</h2>
+                      <p className="text-sm text-gray-300 mb-4">
                         Get personalized career advice from Musk, your AI career assistant. 
                         Choose a topic below and Musk will analyze your profile to provide tailored guidance and answer your follow-up questions.
                       </p>
@@ -368,14 +370,14 @@ export default function AICareerPage() {
                   </TabsContent>
                   
                   <TabsContent value="resume" className="mt-2">
-                    <Card className="p-4 sm:p-6">
-                      <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Resume Analysis</h2>
-                      <p className="text-sm text-muted-foreground mb-4">
+                    <Card className="p-4 sm:p-6 neo-card">
+                      <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-primary">Resume Analysis</h2>
+                      <p className="text-sm text-gray-300 mb-4">
                         Upload your resume file to get AI-powered analysis with suggestions for improvement by Musk.
                       </p>
                       
                       {/* File Upload Section */}
-                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-primary transition-colors">
+                      <div className="border-2 border-dashed border-white/20 rounded-lg p-4 text-center hover:border-primary/50 transition-colors bg-black/20 backdrop-blur-sm">
                         <div className="flex flex-col items-center">
                           <input 
                             id="resume-file-input"
@@ -490,7 +492,7 @@ export default function AICareerPage() {
                 </div>
                 
                 {messagesLoading ? (
-                  <div className="flex justify-center py-8 sm:py-12 border rounded-lg bg-muted/10">
+                  <div className="flex justify-center py-8 sm:py-12 border border-white/10 rounded-xl bg-black/30 backdrop-blur-md">
                     <Loader2 className="h-8 w-8 animate-spin text-primary" />
                   </div>
                 ) : (() => {
@@ -507,27 +509,25 @@ export default function AICareerPage() {
                   
                   if (filteredMessages.length === 0) {
                     return (
-                      <div className="text-center py-10 sm:py-14 border rounded-lg bg-muted/10 flex flex-col items-center">
+                      <div className="text-center py-10 sm:py-14 border border-white/10 rounded-xl bg-black/30 backdrop-blur-md flex flex-col items-center neo-card">
                         {activeTab === "career" ? (
-                          <div className="bg-primary/10 rounded-full p-3 mb-4">
-                            <BarChart className="h-7 w-7 text-primary" />
+                          <div className="bg-primary/20 rounded-full p-4 mb-4 shadow-lg border border-primary/10 breathe-animation">
+                            <BarChart className="h-8 w-8 text-primary neo-text-glow" />
                           </div>
                         ) : (
-                          <div className="bg-primary/10 rounded-full p-3 mb-4">
-                            <BookOpen className="h-7 w-7 text-primary" />
+                          <div className="bg-primary/20 rounded-full p-4 mb-4 shadow-lg border border-primary/10 breathe-animation">
+                            <BookOpen className="h-8 w-8 text-primary neo-text-glow" />
                           </div>
                         )}
-                        <h3 className="text-base sm:text-lg font-medium">No AI insights yet</h3>
-                        <p className="text-sm text-muted-foreground mt-2 max-w-md mx-auto">
+                        <h3 className="text-base sm:text-lg font-medium text-white">No AI insights yet</h3>
+                        <p className="text-sm text-gray-300 mt-2 max-w-md mx-auto">
                           {activeTab === "career" ? 
                             "Choose a career advice topic from the menu on the left to start a conversation with Musk." :
                             "Upload your resume to get AI-powered analysis and improvement suggestions."}
                         </p>
                         <div className="mt-6">
                           <Button 
-                            size="sm"
-                            variant="outline"
-                            className="flex items-center gap-2"
+                            className="flex items-center gap-2 neo-button"
                             onClick={() => {
                               if (activeTab === "resume") {
                                 document.getElementById('resume-file-input')?.click();
@@ -712,20 +712,20 @@ export default function AICareerPage() {
                 {/* Chat Interface with Musk */}
                 {showChatWindow && activeTab === "career" && (
                   <div className="mt-6">
-                    <div className="bg-gradient-to-b from-gray-50 to-white border rounded-lg p-4 sm:p-6 shadow-md">
-                      <div className="flex items-center gap-3 mb-5 pb-3 border-b border-gray-100">
-                        <div className="flex items-center justify-center h-9 w-9 rounded-full bg-primary/15 shadow-sm">
-                          <Sparkles className="h-5 w-5 text-primary" />
+                    <div className="neo-card p-4 sm:p-6">
+                      <div className="flex items-center gap-3 mb-5 pb-3 border-b border-white/10">
+                        <div className="flex items-center justify-center h-10 w-10 rounded-full bg-primary/20 shadow-lg border border-primary/30">
+                          <Sparkles className="h-5 w-5 text-primary neo-text-glow" />
                         </div>
                         <div>
-                          <h3 className="text-lg font-semibold text-primary/90">Chat with Musk</h3>
-                          <p className="text-xs text-muted-foreground">Ask follow-up questions based on your career profile</p>
+                          <h3 className="text-lg font-semibold text-primary neo-text-glow">Chat with Musk</h3>
+                          <p className="text-xs text-gray-400">Ask follow-up questions based on your career profile</p>
                         </div>
                       </div>
                       
                       <div className="space-y-5">
                         {/* Chat messages - fixed height container */}
-                        <div className="space-y-4 h-[450px] overflow-y-auto p-5 border border-gray-200 rounded-lg bg-gray-50/20 shadow-inner" id="chat-container">
+                        <div className="space-y-4 h-[450px] overflow-y-auto p-5 border border-white/10 rounded-xl bg-black/20 backdrop-blur-sm shadow-inner" id="chat-container">
                           {chatHistory.map((message, index) => (
                             <div 
                               key={index} 
@@ -737,10 +737,10 @@ export default function AICareerPage() {
                                 </div>
                               )}
                               <div 
-                                className={`max-w-[85%] p-4 rounded-lg ${
+                                className={`max-w-[85%] p-4 rounded-xl ${
                                   message.sender === "user" 
-                                    ? "bg-primary text-primary-foreground shadow-sm" 
-                                    : "bg-white border border-gray-100 shadow-md hover:shadow-lg transition-shadow"
+                                    ? "bg-gradient-to-r from-primary to-primary/90 text-white shadow-md border border-primary/30 backdrop-blur-sm" 
+                                    : "bg-black/30 border border-white/10 shadow-md hover:shadow-lg transition-shadow backdrop-blur-md"
                                 }`}
                               >
                                 {message.sender === "user" ? (
