@@ -109,7 +109,15 @@ export async function generateCareerAdvice(userProfile: {
    - Ease of Transition
    - Future-Proofing Rating
 
-4. PROVIDE A VISUALIZATION-READY OUTPUT:
+4. MARKET TREND ANALYSIS:
+   - Current Industry Growth Rates and Market Size
+   - Hiring Demand & Compensation Trends
+   - Regional/Global Market Variations
+   - Future Industry Forecasts (5-10 year outlook)
+   - Emerging Roles and Skill Requirements
+   - Economic Factors Affecting Industry Stability
+
+5. PROVIDE A VISUALIZATION-READY OUTPUT:
    Present your results in this format:
    
    # Industry Transition Map for ${userName}
@@ -314,6 +322,8 @@ export async function generateCareerAdvice(userProfile: {
 - Example Entry-Level Role: FinTech Product Manager
 - Why It Fits You: Your experience with product development cycles and strategic planning translates directly to financial technology products. Your analytical approach is well-suited for financial services.
 - Roles to Explore: FinTech Product Manager, Financial Solutions Strategist, Digital Banking Product Lead
+- Current Market Trends: 24% annual growth rate, $190B market size, high demand for product expertise
+- Future Outlook: Explosive growth in decentralized finance and embedded financial services
 - Difficulty Level: Easy - minimal domain knowledge required beyond financial basics
 - Skill Transferability: Product management, user experience design, stakeholder management, analytics, strategic planning
 - Suggested First Steps: Complete an online course in financial services fundamentals and connect with 3-5 FinTech professionals through Brandentifier's Smart Connect
@@ -323,6 +333,8 @@ export async function generateCareerAdvice(userProfile: {
 - Example Entry-Level Role: Healthcare Solutions Specialist
 - Why It Fits You: Your focus on user experience and data systems is valuable in patient-centered healthcare technology. Healthcare is increasingly digital and needs product expertise.
 - Roles to Explore: Health IT Product Manager, Patient Experience Designer, Healthcare Analytics Manager
+- Current Market Trends: 27% growth in digital health solutions, $350B global market, increasing investment
+- Future Outlook: AI-driven diagnostics and remote patient monitoring solutions will dominate by 2030
 - Difficulty Level: Medium - requires understanding of healthcare operations and compliance
 - Skill Transferability: User experience design, data analysis, product lifecycle management
 - Suggested First Steps: Take a healthcare IT certification course and find mentors already working in the field
@@ -332,6 +344,8 @@ export async function generateCareerAdvice(userProfile: {
 - Example Entry-Level Role: Learning Experience Product Manager
 - Why It Fits You: Education technology needs product managers who understand how to create engaging digital experiences. Your background in user-centered design is valuable here.
 - Roles to Explore: EdTech Product Manager, Digital Learning Strategist, Education Content Developer
+- Current Market Trends: 16.5% annual growth, $404B global market value, increasing adoption in higher education
+- Future Outlook: Mixed reality learning environments and AI-powered personalized education becoming mainstream
 - Difficulty Level: Easy - education domain knowledge is relatively accessible
 - Skill Transferability: UX/UI design, project management, analytics, stakeholder management
 - Suggested First Steps: Volunteer for an education nonprofit to gain domain experience while building your portfolio in Brandentifier
@@ -341,6 +355,8 @@ export async function generateCareerAdvice(userProfile: {
 - Example Entry-Level Role: Sustainability Solutions Coordinator
 - Why It Fits You: Growing field with increasing technical needs. Your product development skills can help bring sustainability solutions to market.
 - Roles to Explore: Sustainable Product Manager, Green Technology Analyst, Clean Energy Project Coordinator
+- Current Market Trends: 22.4% CAGR, significant government investment ($369B through IRA), high funding activity
+- Future Outlook: Mass adoption of circular economy principles and carbon capture technologies by 2030
 - Difficulty Level: Hard - requires substantial domain knowledge in sustainability
 - Skill Transferability: Project management, data analysis, strategic planning
 - Suggested First Steps: Complete a sustainability certification and join environmental technology forums
