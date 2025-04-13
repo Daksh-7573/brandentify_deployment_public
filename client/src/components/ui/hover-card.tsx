@@ -1,110 +1,27 @@
-import { forwardRef, ReactNode, HTMLAttributes } from 'react';
-import { motion, MotionProps } from 'framer-motion';
-import { cn } from '@/lib/utils';
-import { AnimationVariant, getVariantByIntensity, VARIANTS } from '@/lib/animation-utils';
+import * as React from "react"
+import * as HoverCardPrimitive from "@radix-ui/react-hover-card"
 
-export type HoverEffect = 'scale' | 'lift' | 'glow' | 'border' | 'tilt';
+import { cn } from "@/lib/utils"
 
-interface HoverCardProps extends HTMLAttributes<HTMLDivElement> {
-  children: ReactNode;
-  className?: string;
-  variant?: AnimationVariant;
-  effect?: HoverEffect;
-  disabled?: boolean;
-}
+const HoverCard = HoverCardPrimitive.Root
 
-/**
- * HoverCard - A card component with hover effects
- * 
- * This component provides various hover animations for card-like elements,
- * such as scaling, lifting, glowing, etc.
- */
-export const HoverCard = forwardRef<HTMLDivElement, HoverCardProps>(({
-  children,
-  className,
-  variant = 'normal',
-  effect = 'scale',
-  disabled = false,
-  ...props
-}, ref) => {
-  // Get hover animation based on the variant and effect
-  const getHoverAnimation = () => {
-    if (disabled) return {};
-    
-    // Get the animation intensity based on the variant
-    const cardVariants = getVariantByIntensity(variant, VARIANTS.cardHover);
-    
-    switch (effect) {
-      case 'scale':
-        return {
-          whileHover: cardVariants.hover,
-          whileTap: cardVariants.tap
-        };
-      case 'lift':
-        return {
-          whileHover: { y: -5, boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)' },
-          whileTap: { y: -2 }
-        };
-      case 'glow':
-        return {
-          whileHover: { 
-            boxShadow: '0 0 15px rgba(var(--primary), 0.5)',
-            scale: 1.02
-          },
-          whileTap: { scale: 0.98 }
-        };
-      case 'border':
-        return {
-          whileHover: { 
-            boxShadow: 'inset 0 0 0 2px rgba(var(--primary), 0.7)',
-            scale: 1.01
-          },
-          whileTap: { scale: 0.99 }
-        };
-      case 'tilt':
-        return {
-          whileHover: (info) => {
-            const rect = info.target.getBoundingClientRect();
-            const x = info.clientX - rect.left;
-            const y = info.clientY - rect.top;
-            
-            // Calculate rotation angles based on cursor position
-            const rotateX = 10 * ((y - rect.height / 2) / rect.height);
-            const rotateY = -10 * ((x - rect.width / 2) / rect.width);
-            
-            return { 
-              rotateX, 
-              rotateY, 
-              scale: 1.05,
-              z: 10
-            };
-          },
-          whileTap: { scale: 0.98, rotateX: 0, rotateY: 0 },
-          transition: { type: 'spring', stiffness: 400, damping: 17 }
-        };
-      default:
-        return {
-          whileHover: cardVariants.hover,
-          whileTap: cardVariants.tap
-        };
-    }
-  };
-  
-  const hoverAnimation = getHoverAnimation();
-  
-  return (
-    <motion.div
-      ref={ref}
-      className={cn(className, 
-        effect === 'tilt' && 'transform-style-preserve-3d',
-        disabled && 'opacity-70 cursor-not-allowed'
-      )}
-      {...hoverAnimation}
-      {...props}
-    >
-      {children}
-    </motion.div>
-  );
-});
+const HoverCardTrigger = HoverCardPrimitive.Trigger
 
-HoverCard.displayName = "HoverCard";
+const HoverCardContent = React.forwardRef<
+  React.ElementRef<typeof HoverCardPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof HoverCardPrimitive.Content>
+>(({ className, align = "center", sideOffset = 4, ...props }, ref) => (
+  <HoverCardPrimitive.Content
+    ref={ref}
+    align={align}
+    sideOffset={sideOffset}
+    className={cn(
+      "z-50 w-64 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+      className
+    )}
+    {...props}
+  />
+))
+HoverCardContent.displayName = HoverCardPrimitive.Content.displayName
+
+export { HoverCard, HoverCardTrigger, HoverCardContent }

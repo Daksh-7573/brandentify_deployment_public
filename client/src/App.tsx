@@ -21,7 +21,6 @@ import AuthPage from "@/pages/auth-page";
 import EmailVerification from "@/pages/email-verification";
 import NewsSourcesPage from "@/pages/news-sources";
 import Radar from "@/pages/radar";
-import AnimationDemo from "@/pages/animation-demo";
 
 // Redirect component to handle page redirects
 const Redirect = ({ to }: { to: string }) => {
@@ -103,9 +102,6 @@ function Router() {
       </Route>
       <Route path="/radar">
         <ProtectedRoute path="/radar" component={Radar} />
-      </Route>
-      <Route path="/animation-demo">
-        <ProtectedRoute path="/animation-demo" component={AnimationDemo} />
       </Route>
       <Route component={NotFound} />
     </Switch>
