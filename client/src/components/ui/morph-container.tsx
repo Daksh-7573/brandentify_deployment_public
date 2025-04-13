@@ -1,75 +1,51 @@
-import { HTMLMotionProps, motion } from "framer-motion";
-import { ReactNode, forwardRef } from "react";
-import { EASING, DURATIONS } from "@/lib/animation-utils";
-import { cn } from "@/lib/utils";
+import { forwardRef, ReactNode, CSSProperties } from 'react';
+import { motion } from 'framer-motion';
+import { EASING, DURATIONS } from '@/lib/animation-utils';
+import { cn } from '@/lib/utils';
 
-export interface MorphContainerProps extends HTMLMotionProps<"div"> {
+type MorphingStyles = {
+  [key: string]: string | number;
+};
+
+interface MorphContainerProps {
   children: ReactNode;
+  from: MorphingStyles;
+  to: MorphingStyles;
   className?: string;
-  from?: {
-    borderRadius?: string | number;
-    width?: string | number;
-    height?: string | number;
-    opacity?: number;
-    scale?: number;
-    rotate?: number;
-    [key: string]: any;
-  };
-  to?: {
-    borderRadius?: string | number;
-    width?: string | number;
-    height?: string | number;
-    opacity?: number;
-    scale?: number;
-    rotate?: number;
-    [key: string]: any;
-  };
+  style?: CSSProperties;
   duration?: number;
+  ease?: number[] | string;
   delay?: number;
 }
 
 /**
- * MorphContainer - A container that morphs between different shapes
+ * MorphContainer - A container that smoothly morphs between different styles
  * 
- * This component uses Framer Motion to smoothly transition between different
- * visual states, creating morphing animations.
+ * This component allows for smooth transitions between different style states,
+ * such as changing dimensions, colors, border radius, etc.
  */
-const MorphContainer = forwardRef<HTMLDivElement, MorphContainerProps>(({
+export const MorphContainer = forwardRef<HTMLDivElement, MorphContainerProps>(({
   children,
+  from,
+  to,
   className,
-  from = {},
-  to = {},
+  style,
   duration = DURATIONS.normal,
+  ease = EASING.spring,
   delay = 0,
   ...props
 }, ref) => {
-  // Default from/to states if not provided
-  const defaultFrom = {
-    borderRadius: "4px",
-    opacity: 1,
-    scale: 1,
-    ...from
-  };
-  
-  const defaultTo = {
-    borderRadius: "16px",
-    opacity: 1,
-    scale: 1,
-    ...to
-  };
-  
   return (
     <motion.div
       ref={ref}
-      className={cn("overflow-hidden", className)}
-      initial={defaultFrom}
-      animate={defaultTo}
-      exit={defaultFrom}
+      className={cn(className)}
+      style={{ ...style, ...from }}
+      animate={{ ...to }}
+      initial={{ ...from }}
       transition={{
-        type: "tween",
-        ease: EASING.easeInOut,
         duration,
-        delay,
+        ease,
+        delay
       }}
       {...props}
     >
@@ -77,6 +53,5 @@ const MorphContainer = forwardRef<HTMLDivElement, MorphContainerProps>(({
     </motion.div>
   );
 });
-MorphContainer.displayName = "MorphContainer";
 
-export { MorphContainer };
+MorphContainer.displayName = "MorphContainer";
