@@ -1,8 +1,8 @@
-import { WorkExperience, Education } from "@shared/schema";
+import { WorkExperience as SchemaWorkExperience, Education as SchemaEducation, Service as SchemaService, Skill as SchemaSkill } from "@shared/schema";
 
 // Type aliases for compatibility with existing components
-export type UserExperience = WorkExperience;
-export type UserEducation = Education;
+export type UserExperience = SchemaWorkExperience;
+export type UserEducation = SchemaEducation;
 
 // Firebase user type definition
 export type AuthUser = {
@@ -24,3 +24,24 @@ export type UserInfo = {
   lookingFor: string | null;
   jobLevel: string | null;
 };
+
+// Extended types for portfolio templates
+export interface ProjectFull {
+  id: number;
+  userId: number;
+  title: string;
+  description: string | null;
+  startDate: string;
+  createdAt: string | null;
+  projectUrl: string | null;
+  category: string | null;
+  thumbnailUrl: string | null;
+  thumbnailFile: string | null;
+  mediaUrls: string[];
+  updatedAt: string | null;
+}
+
+export type Skill = SchemaSkill;
+export type WorkExperience = SchemaWorkExperience;
+export type Education = SchemaEducation;
+export type Service = SchemaService;
