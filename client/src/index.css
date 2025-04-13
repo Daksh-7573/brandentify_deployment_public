@@ -1,3 +1,6 @@
+/* Import Neo-Futuristic theme styles */
+@import './styles/neo-futuristic.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

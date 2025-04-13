@@ -1,0 +1,80 @@
+1. 🎨 Visual Style
+Design Vibe: Neo-Futuristic meets Soft Minimalism
+
+Inspiration: Apple Vision Pro, Humane AI pin UI, Notion, Figma's playground
+
+Key Elements:
+
+Soft shadows, glassmorphism, subtle neon glow
+
+Rounded corners everywhere
+
+Calming gradients and translucent panels
+
+Animated cards that feel like they “breathe”
+
+2. 🎯 Interaction Style (Gamified + Flow-based)
+Cards that open like books or peel when clicked
+
+Hover/click = bounce, fold, glow, or subtle ripple effects
+
+Drag-and-drop to rearrange portfolio items
+
+Smart assistant/chat bubble that suggests profile updates
+
+3. 🎢 Micro-Animations
+Smooth, purposeful animations (nothing jerky or robotic):
+
+Buttons gently expand on hover
+
+Skills animate into view like progress lines being drawn
+
+Projects slide in one by one on scroll
+
+“Talk” button pulses gently like a breathing dot
+
+4. 🧩 Layout Idea
+Left: Sidebar (Fixed)
+Profile picture
+
+Animated status dot (e.g., green → available to talk)
+
+“Talk” & “Grab My Resume” sticky buttons
+
+Right: Scrollable content
+Section headers animate in with storytelling flow
+
+Accordion-style unfolding of content
+
+Use horizontal scroll sections for:
+
+Projects (Showcase)
+
+Career Timeline (snap-scroll)
+
+Skill chips that pop open with hover showing proof (certs/projects)
+
+5. 🧠 Smart & Personal
+Let the user customize color schemes to reflect personality
+
+Add a mood toggle (Calm, Energetic, Bold — affects animations/colors)
+
+Use personal avatars or AI-generated emojis to make it feel more “them”
+
+6. 🎡 Fun Elements
+Hover over a project thumbnail = playful lens zoom or scrolls through the preview
+
+“What I’m Good At” shows skill badges that glow subtly on hover
+
+“What I Offer” as flipping service cards with fun taglines on the back
+
+Add “Fun Fact” cards or icebreaker chips (optional)
+
+7. 🎨 Color & Style Guidelines
+Element	Style
+Background	Soft gradient (Midnight Blue → Indigo), subtle noise texture
+Primary Accent	Neon Cyan or Electric Purple
+Secondary Accent	Soft Pink or Warm Coral
+Text	Pure White + Muted Gray (#d1d1d1)
+Cards	Frosted Glass (Glassmorphism) with soft border glow
+Icons	Minimal Line Icons with subtle animation

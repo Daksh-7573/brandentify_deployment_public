@@ -1,0 +1,381 @@
+/* Neo-Futuristic Theme - Dark Mode styling */
+
+:root {
+  /* Base colors */
+  --neo-bg-gradient-start: #050a18;
+  --neo-bg-gradient-end: #1a123b;
+  --neo-primary: #8a2be2; /* Electric Purple */
+  --neo-secondary: #00ffff; /* Cyan */
+  --neo-accent: #ff5e86; /* Soft Pink */
+  
+  /* Text colors */
+  --neo-text-primary: #ffffff;
+  --neo-text-secondary: #d1d1d1;
+  
+  /* Card effects */
+  --neo-glass-bg: rgba(15, 20, 45, 0.6);
+  --neo-glass-border: rgba(255, 255, 255, 0.1);
+  --neo-glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+  --neo-card-glow: 0 0 15px rgba(138, 43, 226, 0.4);
+  
+  /* Animation timing */
+  --neo-transition-slow: 0.5s ease;
+  --neo-transition-medium: 0.3s ease;
+  --neo-transition-fast: 0.15s ease;
+}
+
+/* Apply dark theme styling */
+.dark-theme {
+  background: linear-gradient(135deg, var(--neo-bg-gradient-start), var(--neo-bg-gradient-end));
+  color: var(--neo-text-primary);
+  min-height: 100vh;
+  background-attachment: fixed;
+}
+
+/* Add subtle noise texture to background */
+.dark-theme::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+  z-index: -1;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* Glassmorphic Card */
+.neo-card {
+  background: var(--neo-glass-bg);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  border: 1px solid var(--neo-glass-border);
+  box-shadow: var(--neo-glass-shadow);
+  padding: 1.5rem;
+  transition: transform var(--neo-transition-medium), box-shadow var(--neo-transition-medium);
+}
+
+.neo-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--neo-glass-shadow), var(--neo-card-glow);
+}
+
+/* Buttons */
+.neo-button {
+  background: linear-gradient(135deg, rgba(138, 43, 226, 0.8), rgba(138, 43, 226, 0.6));
+  color: white;
+  border: none;
+  border-radius: 100px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  transition: all var(--neo-transition-medium);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 0 0 rgba(138, 43, 226, 0.3);
+}
+
+.neo-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transform: translateX(-100%);
+}
+
+.neo-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 15px 2px rgba(138, 43, 226, 0.5);
+}
+
+.neo-button:hover::before {
+  transform: translateX(100%);
+  transition: transform 1s;
+}
+
+.neo-button:active {
+  transform: translateY(1px);
+}
+
+/* Sidebar styling */
+.neo-sidebar {
+  background: var(--neo-glass-bg);
+  backdrop-filter: blur(12px);
+  border-right: 1px solid var(--neo-glass-border);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: fixed;
+  height: 100vh;
+  width: 250px;
+  z-index: 10;
+}
+
+/* Profile picture with glowing border */
+.neo-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid transparent;
+  background: 
+    linear-gradient(var(--neo-glass-bg), var(--neo-glass-bg)) padding-box,
+    linear-gradient(135deg, var(--neo-secondary), var(--neo-primary)) border-box;
+  margin-bottom: 1.5rem;
+  transition: all var(--neo-transition-medium);
+  position: relative;
+}
+
+.neo-avatar::after {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border-radius: 50%;
+  z-index: -1;
+  background: transparent;
+  box-shadow: 0 0 12px rgba(138, 43, 226, 0.5);
+  opacity: 0;
+  transition: opacity var(--neo-transition-medium);
+}
+
+.neo-avatar:hover::after {
+  opacity: 1;
+}
+
+/* Status indicator dot */
+.neo-status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #4caf50;
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  border: 2px solid var(--neo-bg-gradient-start);
+  box-shadow: 0 0 0 0 rgba(76, 175, 80, 1);
+  animation: neo-pulse 2s infinite;
+}
+
+@keyframes neo-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(76, 175, 80, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+  }
+}
+
+/* Section headers with animated underline */
+.neo-section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--neo-text-primary);
+  margin-bottom: 1rem;
+  position: relative;
+  display: inline-block;
+}
+
+.neo-section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--neo-secondary), var(--neo-primary));
+  transition: width var(--neo-transition-slow);
+}
+
+.neo-section-title:hover::after {
+  width: 100%;
+}
+
+/* Skill tags */
+.neo-skill {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(0, 255, 255, 0.15);
+  border-radius: 100px;
+  padding: 0.4rem 1rem;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+  transition: all var(--neo-transition-fast);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.neo-skill:hover {
+  background: rgba(0, 255, 255, 0.25);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Service/Offer cards */
+.neo-offer-card {
+  background: var(--neo-glass-bg);
+  border-radius: 12px;
+  border: 1px solid var(--neo-glass-border);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  transition: all var(--neo-transition-medium);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.neo-offer-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, var(--neo-primary), var(--neo-secondary));
+}
+
+.neo-offer-card:hover {
+  transform: translateX(5px);
+  box-shadow: var(--neo-glass-shadow);
+}
+
+/* Project showcase cards */
+.neo-project-card {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all var(--neo-transition-medium);
+  margin-bottom: 1.5rem;
+}
+
+.neo-project-card img {
+  width: 100%;
+  height: auto;
+  transition: transform var(--neo-transition-medium);
+}
+
+.neo-project-card:hover img {
+  transform: scale(1.05);
+}
+
+.neo-project-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1.5rem;
+  background: linear-gradient(to top, rgba(5, 10, 24, 0.9), transparent);
+  transform: translateY(100%);
+  transition: transform var(--neo-transition-medium);
+}
+
+.neo-project-card:hover .neo-project-overlay {
+  transform: translateY(0);
+}
+
+/* Timeline elements */
+.neo-timeline {
+  position: relative;
+}
+
+.neo-timeline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--neo-primary), var(--neo-secondary));
+}
+
+.neo-timeline-item {
+  padding-left: 2rem;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.neo-timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--neo-primary);
+  box-shadow: 0 0 0 rgba(138, 43, 226, 0.6);
+  animation: neo-timeline-pulse 3s infinite;
+}
+
+@keyframes neo-timeline-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(138, 43, 226, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(138, 43, 226, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(138, 43, 226, 0);
+  }
+}
+
+/* Layout grid for content */
+.neo-content-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  min-height: 100vh;
+}
+
+/* Main content area */
+.neo-main-content {
+  padding: 2rem;
+  margin-left: 250px; /* Match sidebar width */
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 1024px) {
+  .neo-content-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .neo-sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    border-right: none;
+    border-bottom: 1px solid var(--neo-glass-border);
+  }
+  
+  .neo-main-content {
+    margin-left: 0;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--neo-bg-gradient-start);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(var(--neo-primary), var(--neo-secondary));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--neo-primary);
+}
