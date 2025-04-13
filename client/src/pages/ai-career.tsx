@@ -592,6 +592,32 @@ export default function AICareerPage() {
                                 // For tertiary headings (### Title)
                                 else if (line.trim().match(/^###\s/)) {
                                   const text = line.replace(/^###\s/, '');
+                                  // Special handling for industry match level indicators (🟢 High Match, 🟡 Medium Match, 🟠 Low Match)
+                                  if (text.includes('🟢') || text.includes('🟡') || text.includes('🟠')) {
+                                    // Split the text into industry name and match level
+                                    const parts = text.split(' - ');
+                                    if (parts.length === 2) {
+                                      const industryName = parts[0];
+                                      const matchLevel = parts[1];
+                                      return (
+                                        <div key={i} className="border-l-4 pl-3 py-2 my-3 bg-background rounded-sm shadow-sm" 
+                                             style={{ 
+                                               borderLeftColor: 
+                                                 matchLevel.includes('🟢') ? 'rgb(34, 197, 94)' : 
+                                                 matchLevel.includes('🟡') ? 'rgb(234, 179, 8)' : 
+                                                 matchLevel.includes('🟠') ? 'rgb(249, 115, 22)' : 'currentColor' 
+                                             }}>
+                                          <div className="font-bold text-lg text-foreground">
+                                            {industryName}
+                                          </div>
+                                          <div className="text-sm font-medium">
+                                            {matchLevel}
+                                          </div>
+                                        </div>
+                                      );
+                                    }
+                                  }
+                                  // Standard tertiary heading
                                   return (
                                     <div key={i} className="font-semibold text-sm text-foreground/90 mt-4 mb-2 uppercase tracking-wide">
                                       {text}
