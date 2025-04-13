@@ -577,10 +577,10 @@ const SearchPage = () => {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12 border rounded-lg bg-gray-50">
+                  <div className="text-center py-12 border border-white/10 rounded-lg bg-black/30 backdrop-blur-sm">
                     <MessageSquare className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium">No pulses found</h3>
-                    <p className="text-gray-500 mt-2">
+                    <h3 className="text-lg font-medium text-white">No pulses found</h3>
+                    <p className="text-gray-400 mt-2">
                       Try a different search term or check for typos
                     </p>
                   </div>
@@ -663,10 +663,10 @@ const SearchPage = () => {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12 border rounded-lg bg-gray-50">
+                  <div className="text-center py-12 border border-white/10 rounded-lg bg-black/30 backdrop-blur-sm">
                     <Users className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium">No profiles found</h3>
-                    <p className="text-gray-500 mt-2">
+                    <h3 className="text-lg font-medium text-white">No profiles found</h3>
+                    <p className="text-gray-400 mt-2">
                       Try a different search term or check for typos
                     </p>
                   </div>
@@ -715,10 +715,10 @@ const SearchPage = () => {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12 border rounded-lg bg-gray-50">
+                  <div className="text-center py-12 border border-white/10 rounded-lg bg-black/30 backdrop-blur-sm">
                     <Hash className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium">No hashtags found</h3>
-                    <p className="text-gray-500 mt-2">
+                    <h3 className="text-lg font-medium text-white">No hashtags found</h3>
+                    <p className="text-gray-400 mt-2">
                       Try a different search term or check for typos
                     </p>
                   </div>
@@ -945,36 +945,36 @@ const SearchPage = () => {
 
               {/* Network Recommendations */}
               {!showMatchResults && (
-                <Card>
+                <Card className="neo-card">
                   <CardHeader>
-                    <CardTitle>Network Tips</CardTitle>
+                    <CardTitle className="text-white">Network Tips</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="flex gap-3">
-                      <div className="bg-primary/10 rounded-full p-2 h-fit">
-                        <Star className="h-4 w-4 text-primary" />
+                      <div className="bg-primary/20 backdrop-blur-sm rounded-full p-2 h-fit">
+                        <Star className="h-4 w-4 text-primary breathe-animation-subtle" />
                       </div>
                       <div>
-                        <h4 className="font-medium text-sm">Complete your profile</h4>
-                        <p className="text-gray-500 text-xs">Profiles with 80%+ completion get 3x more connections</p>
+                        <h4 className="font-medium text-sm text-gray-200">Complete your profile</h4>
+                        <p className="text-gray-400 text-xs">Profiles with 80%+ completion get 3x more connections</p>
                       </div>
                     </div>
                     <div className="flex gap-3">
-                      <div className="bg-primary/10 rounded-full p-2 h-fit">
-                        <ArrowUpRight className="h-4 w-4 text-primary" />
+                      <div className="bg-primary/20 backdrop-blur-sm rounded-full p-2 h-fit">
+                        <ArrowUpRight className="h-4 w-4 text-primary breathe-animation-subtle" />
                       </div>
                       <div>
-                        <h4 className="font-medium text-sm">Specify your industry</h4>
-                        <p className="text-gray-500 text-xs">Match with professionals in your field</p>
+                        <h4 className="font-medium text-sm text-gray-200">Specify your industry</h4>
+                        <p className="text-gray-400 text-xs">Match with professionals in your field</p>
                       </div>
                     </div>
                     <div className="flex gap-3">
-                      <div className="bg-primary/10 rounded-full p-2 h-fit">
-                        <ArrowDownRight className="h-4 w-4 text-primary" />
+                      <div className="bg-primary/20 backdrop-blur-sm rounded-full p-2 h-fit">
+                        <ArrowDownRight className="h-4 w-4 text-primary breathe-animation-subtle" />
                       </div>
                       <div>
-                        <h4 className="font-medium text-sm">Clarify what you seek</h4>
-                        <p className="text-gray-500 text-xs">Our algorithm works best with clear intentions</p>
+                        <h4 className="font-medium text-sm text-gray-200">Clarify what you seek</h4>
+                        <p className="text-gray-400 text-xs">Our algorithm works best with clear intentions</p>
                       </div>
                     </div>
                   </CardContent>
@@ -982,9 +982,9 @@ const SearchPage = () => {
               )}
 
               {/* Match Results */}
-              <Card>
+              <Card className="neo-card">
                 <CardHeader>
-                  <CardTitle>Smart Connect Results</CardTitle>
+                  <CardTitle className="text-white">Smart Connect Results</CardTitle>
                   <CardDescription>
                     {showMatchResults 
                       ? matchMutation.isSuccess 
@@ -996,9 +996,9 @@ const SearchPage = () => {
                 <CardContent>
                   {!showMatchResults ? (
                     <div className="text-center py-12">
-                      <UserPlus className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                      <h3 className="text-lg font-medium">Define your criteria</h3>
-                      <p className="text-gray-500 mt-2">
+                      <UserPlus className="mx-auto h-12 w-12 text-primary/70 mb-4 breathe-animation-subtle" />
+                      <h3 className="text-lg font-medium text-white">Define your criteria</h3>
+                      <p className="text-gray-400 mt-2">
                         Fill out the form to find professionals that match your needs
                       </p>
                     </div>
@@ -1029,28 +1029,28 @@ const SearchPage = () => {
                   ) : matchMutation.isSuccess && matchMutation.data.length > 0 ? (
                     <div className="space-y-4">
                       {matchMutation.data.map((match) => (
-                        <Card key={match.id} className="border border-gray-200 overflow-hidden">
+                        <Card key={match.id} className="neo-card border-primary/20 overflow-hidden">
                           <CardContent className="p-4">
                             <div className="flex gap-4 items-center">
-                              <Avatar className="h-16 w-16">
+                              <Avatar className="h-16 w-16 border-2 border-primary/30 shadow-lg breathe-animation-subtle">
                                 <AvatarImage src={match.photoURL || undefined} />
-                                <AvatarFallback className="text-lg">{getInitials(match.name)}</AvatarFallback>
+                                <AvatarFallback className="text-lg bg-black/50 text-primary">{getInitials(match.name)}</AvatarFallback>
                               </Avatar>
                               
                               <div className="flex-grow">
-                                <h4 className="font-medium">{match.name}</h4>
-                                <p className="text-sm text-gray-600">{match.title}</p>
+                                <h4 className="font-medium text-white neo-text-glow">{match.name}</h4>
+                                <p className="text-sm text-gray-300">{match.title}</p>
                                 
                                 <div className="flex flex-wrap gap-1 mt-2">
                                   {match.skills.map((skill, i) => (
-                                    <Badge key={i} variant="outline" className="text-xs font-normal">
+                                    <Badge key={i} variant="outline" className="text-xs font-normal border-primary/30 text-gray-300">
                                       {skill}
                                     </Badge>
                                   ))}
                                 </div>
                                 
-                                <div className="flex items-center mt-3 text-xs text-gray-500">
-                                  <MapPin size={12} className="mr-1" />
+                                <div className="flex items-center mt-3 text-xs text-gray-400">
+                                  <MapPin size={12} className="mr-1 text-primary/80" />
                                   {match.location}
                                 </div>
                               </div>
@@ -1076,37 +1076,37 @@ const SearchPage = () => {
                             </div>
                             
                             {/* Match Details */}
-                            <div className="mt-3 pt-3 border-t border-gray-100">
-                              <h5 className="text-xs font-medium mb-2">Match Details</h5>
+                            <div className="mt-3 pt-3 border-t border-white/10">
+                              <h5 className="text-xs font-medium mb-2 text-white">Match Details</h5>
                               <div className="grid grid-cols-4 gap-2">
                                 {match.matchDetails.complementaryMatch && (
                                   <div>
-                                    <p className="text-xs text-gray-500">Goals Match</p>
+                                    <p className="text-xs text-gray-400">Goals Match</p>
                                     <div className="flex items-center mt-1">
-                                      <Progress value={match.matchDetails.complementaryMatch} className="h-1 mr-2" />
-                                      <span className="text-xs">{match.matchDetails.complementaryMatch}%</span>
+                                      <Progress value={match.matchDetails.complementaryMatch} className="h-1 mr-2 [&>div]:bg-primary" />
+                                      <span className="text-xs text-white">{match.matchDetails.complementaryMatch}%</span>
                                     </div>
                                   </div>
                                 )}
                                 <div>
-                                  <p className="text-xs text-gray-500">Industry</p>
+                                  <p className="text-xs text-gray-400">Industry</p>
                                   <div className="flex items-center mt-1">
-                                    <Progress value={match.matchDetails.industryMatch} className="h-1 mr-2" />
-                                    <span className="text-xs">{match.matchDetails.industryMatch}%</span>
+                                    <Progress value={match.matchDetails.industryMatch} className="h-1 mr-2 [&>div]:bg-primary" />
+                                    <span className="text-xs text-white">{match.matchDetails.industryMatch}%</span>
                                   </div>
                                 </div>
                                 <div>
-                                  <p className="text-xs text-gray-500">Domain</p>
+                                  <p className="text-xs text-gray-400">Domain</p>
                                   <div className="flex items-center mt-1">
-                                    <Progress value={match.matchDetails.domainMatch} className="h-1 mr-2" />
-                                    <span className="text-xs">{match.matchDetails.domainMatch}%</span>
+                                    <Progress value={match.matchDetails.domainMatch} className="h-1 mr-2 [&>div]:bg-primary" />
+                                    <span className="text-xs text-white">{match.matchDetails.domainMatch}%</span>
                                   </div>
                                 </div>
                                 <div>
-                                  <p className="text-xs text-gray-500">Experience</p>
+                                  <p className="text-xs text-gray-400">Experience</p>
                                   <div className="flex items-center mt-1">
-                                    <Progress value={match.matchDetails.experienceMatch} className="h-1 mr-2" />
-                                    <span className="text-xs">{match.matchDetails.experienceMatch}%</span>
+                                    <Progress value={match.matchDetails.experienceMatch} className="h-1 mr-2 [&>div]:bg-primary" />
+                                    <span className="text-xs text-white">{match.matchDetails.experienceMatch}%</span>
                                   </div>
                                 </div>
                               </div>
@@ -1116,10 +1116,10 @@ const SearchPage = () => {
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center py-12 border rounded-lg bg-gray-50">
+                    <div className="text-center py-12 border border-white/10 rounded-lg bg-black/30 backdrop-blur-sm">
                       <UserPlus className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                      <h3 className="text-lg font-medium">No matches found</h3>
-                      <p className="text-gray-500 mt-2">
+                      <h3 className="text-lg font-medium text-white">No matches found</h3>
+                      <p className="text-gray-400 mt-2">
                         Try adjusting your criteria to find more professionals
                       </p>
                     </div>
