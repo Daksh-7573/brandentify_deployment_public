@@ -11,6 +11,7 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       colors: {
+        // Default shadcn colors
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {
@@ -44,6 +45,18 @@ export default {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
+        
+        // New UI theme colors
+        'ui': {
+          'white': '#FFFFFF',
+          'warm-white': '#F9F9F9',
+          'aqua': '#1DE9B6',
+          'pink': '#F94892',
+          'teal': '#00C9FF',
+          'charcoal': '#222222',
+          'grey': '#888888',
+          'shadow': 'rgba(0, 0, 0, 0.07)'
+        },
         chart: {
           "1": "hsl(var(--chart-1))",
           "2": "hsl(var(--chart-2))",
