@@ -31,6 +31,8 @@ export default function AICareerPage() {
   const [showChatWindow, setShowChatWindow] = useState<boolean>(false);
   const [chatMessage, setChatMessage] = useState<string>("");
   const [chatHistory, setChatHistory] = useState<Array<{content: string, sender: "user" | "musk", timestamp: Date}>>([]);
+  const [targetRole, setTargetRole] = useState<string>("");
+  const [targetIndustry, setTargetIndustry] = useState<string>("");
   
   // Fetch existing chat messages for the user
   const { data: chatMessages, isLoading: messagesLoading } = useQuery({
@@ -143,7 +145,7 @@ export default function AICareerPage() {
 
   // Resume analysis mutation
   const resumeAnalysisMutation = useMutation({
-    mutationFn: async (data: { resumeText?: string; fileData?: string; userId: number }) => {
+    mutationFn: async (data: { resumeText?: string; fileData?: string; userId: number; targetRole?: string; targetIndustry?: string }) => {
       const res = await apiRequest({
         method: "POST", 
         url: "/api/ai/analyze-resume", 

@@ -617,6 +617,9 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
     // Import the resume intelligence system
     const { generateResumeAnalysisPrompt } = await import('./resume-intelligence');
     
+    // Import the multi-layered resume improvement engine
+    const { generateCompleteResumeImprovementPrompt } = await import('./resume-improvement-engine');
+    
     // Generate a dynamic system prompt for resume analysis
     let systemPrompt = `You are Musk, an expert resume coach and career strategist within the Brandentifier platform. Your goal is not just to analyze resumes but to actively IMPROVE them with specific, actionable suggestions.
 
@@ -628,7 +631,17 @@ As a resume improvement expert, you:
 - Provide specific rewrites, not just general advice
 - Maintain an encouraging, coach-like tone throughout
 
-Your response should feel like a professional resume coach, career expert, and AI strategist combined - focused entirely on helping this specific person elevate their resume for better career opportunities.`;
+You're equipped with a multi-layered resume improvement engine that performs:
+- Bullet-level intelligence (detecting weak phrasing, missing metrics, passive language)
+- Section-level recommendations (summary, experience, skills, education)
+- Role & industry-based customization (tailored advice for target positions)
+- Formatting & visual suggestions (layout, density, ATS compatibility)
+- Smart additions (identifying missing elements that would strengthen the resume)
+- Rewrite engine (transforming existing content to be more impactful)
+- Scoring & feedback (helping users understand strengths and weaknesses)
+- Special case handling (freelancers, career gaps, career switchers)
+
+Your responses should feel like a professional resume coach, career expert, and AI strategist combined - focused entirely on helping this specific person elevate their resume for better career opportunities.`;
     let userPrompt = "";
     
     if (isLinkValue) {
@@ -884,99 +897,12 @@ Your response should feel like a professional resume coach, career expert, and A
           ? resumeText.substring(0, MAX_TEXT_LENGTH) + "...(truncated due to length)"
           : resumeText;
       
+        // Apply the advanced multi-layered resume improvement engine
         userPrompt = `
-      I need you to help this person IMPROVE their resume - not just analyze it. Your goal is to provide actionable, specific ways to enhance their resume to stand out and advance their career. Act as a professional resume coach focused on creating career growth opportunities.
-        
+      ${generateCompleteResumeImprovementPrompt()}
+      
       RESUME TEXT:
       ${truncatedText}
-      
-      Follow this EXACT formatting structure:
-      
-      # Resume Upgrade Plan for [Person's Name]
-      
-      Start with one of these behavioral nudges based on the resume quality:
-      - For resumes with weak or no quantifiable achievements: "Let's give your CV a power-up!"
-      - For resumes with passive wording: "You've done more than your resume shows. Let me fix that."
-      - For resumes with solid experience but poor formatting: "Your experience is solid, but the design might be hurting you."
-      - For resumes showing high impact but suggesting low compensation: "You might be undercharging based on your results."
-      
-      ## 1. What's Working Well (Score: X/100)
-      - ✅ [Strength 1]: Example from resume + why it's effective
-      - ✅ [Strength 2]: Example from resume + why it's effective
-      - ✅ [Strength 3]: Example from resume + why it's effective
-      
-      ## 2. High-Impact Improvements (Score: X/100)
-      - 🔹 [Improvement Area 1]:
-        - Current version: What's currently in the resume
-        - Upgraded version: Specific rewrite with stronger impact
-        - Why this works: Brief explanation of the improvement
-      
-      - 🔹 [Improvement Area 2]:
-        - Current version: What's currently in the resume
-        - Upgraded version: Specific rewrite with stronger impact
-        - Why this works: Brief explanation of the improvement
-      
-      ## 3. Bullet Point Rewrites
-      - 📝 [First Weak Bullet]:
-        ❌ Current version: "..." (exact text from resume)
-        ✅ Improved version: "..." (your action-focused rewrite)
-      
-      - 📝 [Second Weak Bullet]:
-        ❌ Current version: "..." (exact text from resume)
-        ✅ Improved version: "..." (your action-focused rewrite)
-      
-      ## 4. Headline & Summary Makeover
-      ❌ Current version: "..." (their exact headline/summary or note if missing)
-      ✅ Recommended headline: "..." (punchy, keyword-rich title)
-      ✅ New summary: "..." (3-4 sentence impactful professional summary)
-      
-      ## 5. Skills & Keywords Optimization
-      - 🎯 Missing Keywords: List of 5-7 job-relevant keywords they should add
-      - 🎯 Skills to Highlight: The 3-4 skills from their experience that deserve more prominence
-      - 🎯 ATS Enhancement: Specific formatting suggestions for better ATS performance
-      
-      ## 6. Content & Structure Fixes
-      - 📊 Section Order: Recommended sequence of sections for maximum impact
-      - 📊 Missing Sections: Any critical sections they should add (Projects, Certifications, etc.)
-      - 📊 Formatting Improvements: Specific design/layout changes (spacing, fonts, margins, etc.)
-      
-      ## 7. Experience Section Improvements
-      - 🌟 Most Impressive Role: Which role should be expanded/highlighted and why
-      - 🌟 Quantifiable Results: Suggestions for adding metrics to specific achievements
-      - 🌟 Leadership Indicators: How to better showcase leadership (even in non-management roles)
-      
-      ## 8. Brandentifier Tools to Leverage
-      - 📱 Portfolio Builder: How to showcase specific projects/skills from their resume
-      - 📱 Smart Connect: Specific networking recommendations based on their background
-      - 📱 Services Showcase: How to position their expertise as services
-      
-      ## 9. Quick Wins (One-Week Action Plan)
-      1. [Day 1 Action]: Specific task with expected outcome
-      2. [Day 3 Action]: Specific task with expected outcome
-      3. [Day 7 Action]: Specific task with expected outcome
-      
-      ## 10. Follow-Up Questions
-      Based on what I've seen in your resume, would you like me to:
-      1. [Question about a specific aspect of their resume that needs clarification]
-      2. [Question about their target role or industry to better customize advice]
-      
-      Apply these evaluation criteria:
-      - Content Quality: Generic vs. strong action-based bullet points
-      - Achievements: Quantifiable, results-driven content
-      - Tone of Voice: Confident vs. passive language
-      - Structure & Layout: Length, spacing, design effectiveness
-      - ATS Optimization: Industry and role-specific keywords
-      - Skills Positioning: Strategic placement of key skills
-      - Headline & Summary: Uniqueness and focus
-      - Gaps or Redundancies: Missing or repetitive information
-      
-      Make sure to:
-      1. Use proper Markdown formatting with # and ## for headings
-      2. Use consistent emoji bullet points for visual distinction
-      3. Include specific examples directly from their resume
-      4. Provide clear before/after examples for all suggestions
-      5. Maintain a coach-like, encouraging tone
-      6. Follow the exact section structure outlined above
       
       Your analysis must be EXTREMELY PERSONALIZED, using their specific name and directly referencing their exact experiences. Every suggestion should be tailored to their situation, not generic advice.
       `;
