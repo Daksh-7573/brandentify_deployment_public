@@ -757,27 +757,53 @@ Your responses should feel like a professional resume coach, career expert, and 
           // Read the file into a buffer for PDF extraction
           const fileBuffer = await fs.readFile(tmpFilePath);
           
-          // Extract text from the PDF
-          const extractedText = await extractTextFromPdf(fileBuffer);
+          // Use Musk Resume Intelligence for advanced PDF processing with smart fallbacks
+          console.log("🧠 Using Musk Resume Intelligence for advanced PDF understanding...");
           
-          // Clean up the temporary file
-          await fs.unlink(tmpFilePath);
-          
-          // If we got meaningful text from direct extraction, use it
-          if (extractedText && extractedText.length > 100) {
-            console.log(`Successfully extracted text (${extractedText.length} chars)`);
-            // Update resumeText with the extracted text and set isDirectTextInput to true
-            resumeText = extractedText;
-            isDirectTextInput = true;
-            isBase64Value = false;
-          } else {
-            console.log("Direct text extraction failed or returned insufficient text");
+          try {
+            // Use our new advanced PDF processing pipeline
+            const result = await muskResumeIntelligence(fileBuffer);
             
-            // Since we're using image analysis, let's do a direct text extraction with OpenAI
-            console.log("Direct text extraction failed. Using OpenAI for resume analysis.");
-            try {
-              // Since OpenAI doesn't directly support PDF analysis in the vision API, 
-              // we'll use GPT-4o with a prompt to extract insights from the resume
+            if (result && result.extractedText && result.extractedText.length > 200) {
+              console.log(`✅ Successfully extracted text with Musk Resume Intelligence (${result.extractedText.length} chars)`);
+              console.log(`📊 Extraction confidence score: ${result.confidenceScore}`);
+              console.log("Sample (first 100 chars):", result.extractedText.substring(0, 100));
+              
+              // Update resumeText with the extracted text and set isDirectTextInput to true
+              resumeText = result.extractedText;
+              isDirectTextInput = true;
+              isBase64Value = false;
+            } else {
+              throw new Error("Musk Resume Intelligence failed to extract sufficient text");
+            }
+            
+          } catch (muskError: any) {
+            console.error("❌ Error using Musk Resume Intelligence:", muskError);
+            
+            // Fallback to traditional extraction
+            console.log("Falling back to traditional extraction methods...");
+            
+            // Extract text using traditional PDF extractor
+            const extractedText = await extractTextFromPdf(fileBuffer);
+            
+            // Clean up the temporary file
+            await fs.unlink(tmpFilePath);
+            
+            // If we got meaningful text from direct extraction, use it
+            if (extractedText && extractedText.length > 100) {
+              console.log(`Successfully extracted text (${extractedText.length} chars)`);
+              // Update resumeText with the extracted text and set isDirectTextInput to true
+              resumeText = extractedText;
+              isDirectTextInput = true;
+              isBase64Value = false;
+            } else {
+              console.log("Direct text extraction failed or returned insufficient text");
+              
+              // Second fallback: Use GPT-4o with a specialized prompt
+              console.log("All direct extraction failed. Using GPT-4o as final fallback for resume analysis.");
+              try {
+                // Since OpenAI doesn't directly support PDF analysis in the vision API, 
+                // we'll use GPT-4o with a prompt to extract insights from the resume
               // without relying on the vision API
               
               const systemContent = `
