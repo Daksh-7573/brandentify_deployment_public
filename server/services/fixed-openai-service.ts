@@ -554,17 +554,26 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
       
       console.log("Successfully received response from Claude API");
       
-      // Handle different types of content response from API
+      // Extract text from the API response (which may have different formats)
       let responseText = "";
       
-      // Check if the response content is an array and has at least one item
-      if (Array.isArray(anthropicResponse.content) && anthropicResponse.content.length > 0) {
-        // Handle different types of content blocks
-        for (const block of anthropicResponse.content) {
-          if (block.type === "text") {
-            responseText = block.text;
-            break;
+      // Check if the response content exists
+      if (anthropicResponse.content) {
+        // For array of content blocks (Claude API newer versions)
+        if (Array.isArray(anthropicResponse.content) && anthropicResponse.content.length > 0) {
+          for (const block of anthropicResponse.content) {
+            // Handle different block types
+            if (typeof block === 'object' && block !== null) {
+              if (block.type === 'text' && typeof block.text === 'string') {
+                responseText = block.text;
+                break;
+              }
+            }
           }
+        }
+        // For direct text property (older Claude API versions)
+        else if (typeof anthropicResponse.content === 'string') {
+          responseText = anthropicResponse.content;
         }
       }
       
@@ -956,7 +965,30 @@ Your advice should look professional, consistent, and easy to read at a glance. 
           messages: [{ role: "user", content: prompt }],
         });
         
-        return anthropicResponse.content[0].text;
+        // Extract text from Anthropic response
+        let responseText = "";
+        
+        // Process response content
+        if (anthropicResponse.content) {
+          // For array of content blocks (Claude API newer versions)
+          if (Array.isArray(anthropicResponse.content) && anthropicResponse.content.length > 0) {
+            for (const block of anthropicResponse.content) {
+              // Handle different block types
+              if (typeof block === 'object' && block !== null) {
+                if (block.type === 'text' && typeof block.text === 'string') {
+                  responseText = block.text;
+                  break;
+                }
+              }
+            }
+          }
+          // For direct text property (older Claude API versions)
+          else if (typeof anthropicResponse.content === 'string') {
+            responseText = anthropicResponse.content;
+          }
+        }
+        
+        return responseText || "Unable to generate career advice. Please try again later.";
       } catch (anthropicError) {
         console.error("Error calling Anthropic API:", anthropicError);
         throw new Error("Failed to generate career advice. Please try again later.");
@@ -1100,7 +1132,30 @@ Your advice should look professional, consistent, and easy to read at a glance. 
           messages: [{ role: "user", content: prompt }],
         });
         
-        return anthropicResponse.content[0].text;
+        // Extract text from Anthropic response
+        let responseText = "";
+        
+        // Process response content
+        if (anthropicResponse.content) {
+          // For array of content blocks (Claude API newer versions)
+          if (Array.isArray(anthropicResponse.content) && anthropicResponse.content.length > 0) {
+            for (const block of anthropicResponse.content) {
+              // Handle different block types
+              if (typeof block === 'object' && block !== null) {
+                if (block.type === 'text' && typeof block.text === 'string') {
+                  responseText = block.text;
+                  break;
+                }
+              }
+            }
+          }
+          // For direct text property (older Claude API versions)
+          else if (typeof anthropicResponse.content === 'string') {
+            responseText = anthropicResponse.content;
+          }
+        }
+        
+        return responseText || "Unable to generate networking recommendations. Please try again later.";
       } catch (anthropicError) {
         console.error("Error calling Anthropic API for networking recommendations:", anthropicError);
         throw new Error("Failed to generate networking recommendations. Please try again later.");

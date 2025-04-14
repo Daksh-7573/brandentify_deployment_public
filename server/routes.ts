@@ -2144,7 +2144,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             targetRole,
             targetIndustry
           } as any);
-          analysis = result.analysis;
+          analysis = result.analysis || "Unable to analyze resume. Please try again or provide your resume text directly.";
           
           console.log("Successfully received OpenAI analysis for direct text input");
         } else {
