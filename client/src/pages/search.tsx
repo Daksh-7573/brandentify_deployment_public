@@ -1106,7 +1106,7 @@ const SearchPage = () => {
 
                       <button 
                         type="submit" 
-                        className="w-full mt-6 px-5 py-2.5 rounded-md bg-primary text-white hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm font-medium transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+                        className="w-full mt-6 px-5 py-2.5 rounded-full bg-gradient-to-r from-primary to-primary/90 text-white hover:from-primary/95 hover:to-primary/85 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm font-medium transition-all disabled:opacity-70 disabled:cursor-not-allowed"
                         disabled={matchMutation.isPending}
                       >
                         {matchMutation.isPending ? (
@@ -1115,7 +1115,10 @@ const SearchPage = () => {
                             <span>Finding matches...</span>
                           </span>
                         ) : (
-                          "Find Matches"
+                          <span className="flex items-center justify-center">
+                            <UserPlus className="h-4 w-4 mr-2" />
+                            <span>Find Matches</span>
+                          </span>
                         )}
                       </button>
                     </form>
@@ -1160,10 +1163,11 @@ const SearchPage = () => {
                         )}
                       </div>
                       <button 
-                        className="w-full mt-4 px-5 py-2 rounded-md bg-white border border-gray-200 hover:bg-gray-50 hover:border-primary/30 hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm font-medium transition-all text-sm"
+                        className="w-full mt-4 px-5 py-2.5 rounded-full bg-white border border-gray-200 hover:bg-gray-50 hover:border-primary/30 hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm font-medium transition-all text-sm flex items-center justify-center gap-2"
                         onClick={() => setShowMatchResults(false)}
                       >
-                        Edit Criteria
+                        <span>Edit Criteria</span>
+                        <Check className="h-3.5 w-3.5" />
                       </button>
                     </div>
                   )}
@@ -1293,10 +1297,11 @@ const SearchPage = () => {
                                   />
                                 </div>
                                 <button 
-                                  className="mt-2 w-full px-4 py-1.5 rounded-md bg-primary text-white hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm font-medium transition-all text-sm"
+                                  className="mt-2 w-full px-4 py-1.5 rounded-full bg-primary text-white hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm font-medium transition-all text-sm flex items-center justify-center"
                                   onClick={() => setLocation(`/profile/${match.id}`)}
                                 >
-                                  Connect
+                                  <Plus className="h-3.5 w-3.5 mr-1" />
+                                  <span>Connect</span>
                                 </button>
                               </div>
                             </div>
