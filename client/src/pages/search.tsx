@@ -600,18 +600,21 @@ const SearchPage = () => {
                 ) : isLoading ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {[1, 2, 3, 4, 5, 6].map((i) => (
-                      <Card key={i}>
-                        <div className="bg-gradient-to-r from-gray-200 to-gray-100 h-24"></div>
-                        <div className="px-6 pb-6">
-                          <div className="flex justify-center -mt-10 mb-4">
-                            <Skeleton className="h-20 w-20 rounded-full" />
+                      <Card key={i} className="overflow-hidden rounded-xl shadow-lg border-0">
+                        <div className="bg-gradient-to-br from-gray-200 via-gray-100 to-gray-50 h-28 relative overflow-hidden">
+                          <div className="absolute bottom-0 left-0 w-20 h-20 bg-gray-200 rounded-full -mb-10 -ml-10 blur-xl"></div>
+                          <div className="absolute top-0 right-0 w-20 h-20 bg-gray-200 rounded-full -mt-10 -mr-10 blur-xl"></div>
+                        </div>
+                        <div className="px-6 pb-6 relative">
+                          <div className="flex justify-center -mt-12 mb-4">
+                            <Skeleton className="h-24 w-24 rounded-full border-4 border-white" />
                           </div>
-                          <div className="text-center space-y-2">
-                            <Skeleton className="h-4 w-32 mx-auto" />
-                            <Skeleton className="h-3 w-24 mx-auto" />
-                            <Skeleton className="h-3 w-40 mx-auto" />
-                            <div className="py-2">
-                              <Skeleton className="h-8 w-20 mx-auto rounded-md" />
+                          <div className="text-center space-y-3">
+                            <Skeleton className="h-5 w-36 mx-auto rounded-md" />
+                            <Skeleton className="h-4 w-28 mx-auto rounded-md" />
+                            <Skeleton className="h-3 w-44 mx-auto rounded-md" />
+                            <div className="py-2 mt-2">
+                              <Skeleton className="h-9 w-28 mx-auto rounded-full" />
                             </div>
                           </div>
                         </div>
@@ -628,31 +631,40 @@ const SearchPage = () => {
                       location: string | null;
                       industry: string | null;
                     }) => (
-                      <Card key={profile.id} className="overflow-hidden">
-                        <div className="bg-gradient-to-r from-primary/20 to-primary/10 h-24"></div>
-                        <div className="px-6 pb-6">
-                          <div className="flex justify-center -mt-10 mb-4">
-                            <Avatar className="h-20 w-20 border-4 border-white">
+                      <Card key={profile.id} className="overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border-0 group">
+                        <div className="bg-gradient-to-br from-primary/30 via-primary/20 to-primary/5 h-28 relative overflow-hidden">
+                          <div className="absolute inset-0 bg-white/10 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                          <div className="absolute bottom-0 left-0 w-20 h-20 bg-primary/10 rounded-full -mb-10 -ml-10 blur-xl"></div>
+                          <div className="absolute top-0 right-0 w-20 h-20 bg-primary/10 rounded-full -mt-10 -mr-10 blur-xl"></div>
+                        </div>
+                        <div className="px-6 pb-6 relative">
+                          <div className="flex justify-center -mt-12 mb-4">
+                            <Avatar className="h-24 w-24 border-4 border-white shadow-md group-hover:shadow-lg transition-all duration-300">
                               <AvatarImage src={profile.photoURL || undefined} />
-                              <AvatarFallback className="text-lg">{getInitials(profile.name)}</AvatarFallback>
+                              <AvatarFallback className="text-xl bg-gradient-to-br from-primary/60 to-primary/80 text-white">{getInitials(profile.name)}</AvatarFallback>
                             </Avatar>
                           </div>
                           <div className="text-center">
-                            <h3 className="text-xl font-semibold">{profile.name}</h3>
+                            <h3 className="text-xl font-semibold tracking-tight group-hover:text-primary transition-colors duration-300">{profile.name}</h3>
                             {profile.title && (
-                              <p className="text-gray-600 mt-1">{profile.title}</p>
+                              <p className="text-gray-600 mt-1 font-medium">{profile.title}</p>
                             )}
                             {(profile.location || profile.industry) && (
-                              <p className="text-gray-500 text-sm mt-2">
-                                {profile.location && profile.location}
-                                {profile.location && profile.industry && " • "}
+                              <p className="text-gray-500 text-sm mt-2 flex items-center justify-center gap-1">
+                                {profile.location && (
+                                  <span className="flex items-center">
+                                    <MapPin className="h-3 w-3 mr-1 text-gray-400" />
+                                    {profile.location}
+                                  </span>
+                                )}
+                                {profile.location && profile.industry && <span className="mx-1 text-gray-300">•</span>}
                                 {profile.industry && profile.industry}
                               </p>
                             )}
                             <Button 
                               variant="outline" 
                               size="sm" 
-                              className="mt-4"
+                              className="mt-5 bg-gradient-to-b from-white to-gray-50/90 border border-gray-200 hover:bg-white hover:border-primary/30 hover:text-primary transition-all duration-300 rounded-full px-5 shadow-sm hover:shadow group-hover:border-primary/40"
                               onClick={() => setLocation(`/profile/${profile.id}`)}
                             >
                               View Profile
