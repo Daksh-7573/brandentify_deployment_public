@@ -60,7 +60,7 @@ export default function AICareerPage() {
         data: {
           userId: user.id,
           content: message,
-          messageType: activeTab === "resume" ? "resume_analysis" : "career_advice",
+          messageType: "career_advice",
           sender: "user"
         }
       });
@@ -153,36 +153,16 @@ export default function AICareerPage() {
       });
       return res.json();
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       toast({
         title: "Resume analysis complete",
         description: "Your resume has been analyzed."
       });
       
       if (user?.id) {
-        // Force a refresh of the chat messages to show the analysis
         queryClient.invalidateQueries({
           queryKey: ["/api/users", user.id, "chat-messages"]
         });
-        
-        // Small delay to allow the messages to load
-        setTimeout(() => {
-          // Show chat window with initial AI message
-          setShowChatWindow(true);
-          
-          // Add AI's initial message to chat history
-          setChatHistory(prev => {
-            // Only add if it doesn't already exist
-            if (prev.length === 0 || prev[prev.length - 1].content !== "I've analyzed your resume. What questions do you have about the analysis or how to improve your resume?") {
-              return [...prev, {
-                content: "I've analyzed your resume. What questions do you have about the analysis or how to improve your resume?",
-                sender: "musk",
-                timestamp: new Date()
-              }];
-            }
-            return prev;
-          });
-        }, 1500); // Add a slight delay to ensure the analysis is loaded
       }
       
       setResumeText("");
@@ -206,8 +186,6 @@ export default function AICareerPage() {
   const getRecentAIMessages = (messageType?: string) => {
     if (!chatMessages) return [];
     
-    console.log("Getting messages for type:", messageType, "messages:", chatMessages);
-    
     let filteredMessages = chatMessages.filter((msg: any) => msg.sender === "ai");
     
     // If a specific message type is requested, filter by that type
@@ -219,8 +197,6 @@ export default function AICareerPage() {
     let sortedMessages = filteredMessages.sort((a: any, b: any) => 
       new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     );
-    
-    console.log("Filtered and sorted messages:", sortedMessages);
     
     // For resume analysis, only show the most recent one
     if (messageType === "resume_analysis") {
@@ -601,9 +577,9 @@ export default function AICareerPage() {
                   }
                   
                   // Only show card-style messages if:
-                  // 1. We're on the resume tab (without chat enabled), OR
+                  // 1. We're on the resume tab, OR
                   // 2. We're on the career tab but the chat window isn't shown
-                  if ((activeTab === "resume" && !showChatWindow) || (activeTab === "career" && !showChatWindow)) {
+                  if (activeTab === "resume" || (activeTab === "career" && !showChatWindow)) {
                     // If we're on the resume tab, only show the most recent analysis
                     const messagesToShow = activeTab === "resume" 
                       ? [filteredMessages[0]] // Only the first/most recent resume analysis
@@ -806,24 +782,14 @@ export default function AICareerPage() {
                                 size="sm" 
                                 className="ml-auto text-primary hover:text-primary hover:bg-primary/10"
                                 onClick={() => {
-                                  setShowChatWindow(true);
-                                  // Add initial Musk message if chat history is empty
-                                  if (chatHistory.length === 0) {
-                                    const initialMessage = activeTab === "resume" 
-                                      ? "I've analyzed your resume. What questions do you have about the analysis or how to improve your resume?"
-                                      : "I've analyzed your profile. What specific career questions do you have?";
-                                      
-                                    setChatHistory([{
-                                      content: initialMessage,
-                                      sender: "musk",
-                                      timestamp: new Date()
-                                    }]);
+                                  if (activeTab === "career") {
+                                    setShowChatWindow(true);
+                                    scrollToBottom();
                                   }
-                                  scrollToBottom();
                                 }}
                               >
                                 <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
-                                {activeTab === "resume" ? "Chat about your resume" : "Follow up"}
+                                Follow up
                               </Button>
                             </div>
                           </Card>
@@ -837,7 +803,7 @@ export default function AICareerPage() {
                 })()}
                 
                 {/* Chat Interface with Musk */}
-                {showChatWindow && (
+                {showChatWindow && activeTab === "career" && (
                   <div className="mt-6">
                     <div className="bg-gradient-to-b from-gray-50 to-white border rounded-lg p-4 sm:p-6 shadow-md">
                       <div className="flex items-center gap-3 mb-5 pb-3 border-b border-gray-100">
