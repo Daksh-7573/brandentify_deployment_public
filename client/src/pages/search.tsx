@@ -645,22 +645,22 @@ const SearchPage = () => {
 
         {/* Main Tabs: Search vs Smart Connect */}
         <Tabs defaultValue={activeCategory === "smart-connect" ? "smart-connect" : "search"} className="mb-6">
-          <TabsList className="w-full border-b-0">
+          <TabsList className="w-full border-b shadow-sm rounded-lg overflow-hidden">
             <TabsTrigger 
               value="search" 
-              className="flex items-center gap-2 flex-1 py-3"
+              className="flex items-center justify-center gap-2 flex-1 py-4 data-[state=active]:bg-gradient-to-b data-[state=active]:from-white data-[state=active]:to-gray-50 data-[state=active]:shadow-sm data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary transition-all"
               onClick={() => activeCategory !== "pulses" && setActiveCategory("pulses")}
             >
               <SearchIcon size={18} />
-              <span className="text-base">Search</span>
+              <span className="text-base font-medium">Search</span>
             </TabsTrigger>
             <TabsTrigger 
               value="smart-connect" 
-              className="flex items-center gap-2 flex-1 py-3"
+              className="flex items-center justify-center gap-2 flex-1 py-4 data-[state=active]:bg-gradient-to-b data-[state=active]:from-white data-[state=active]:to-gray-50 data-[state=active]:shadow-sm data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary transition-all"
               onClick={() => activeCategory !== "smart-connect" && setActiveCategory("smart-connect")}
             >
               <UserPlus size={18} />
-              <span className="text-base">Smart Connect</span>
+              <span className="text-base font-medium">Smart Connect</span>
             </TabsTrigger>
           </TabsList>
 
@@ -680,24 +680,44 @@ const SearchPage = () => {
               </div>
               <button 
                 type="submit"
-                className="px-5 py-2 rounded-md bg-primary text-white hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm font-medium transition-all"
+                className="px-5 py-2 rounded-md bg-primary text-white hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm font-medium transition-all min-w-[100px]"
+                disabled={isLoading}
               >
-                Search
+                {isLoading ? (
+                  <span className="flex items-center justify-center">
+                    <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2" />
+                    <span>Searching...</span>
+                  </span>
+                ) : (
+                  <span className="flex items-center">
+                    <SearchIcon className="h-4 w-4 mr-2" />
+                    Search
+                  </span>
+                )}
               </button>
             </form>
 
             {/* Search Category Tabs */}
             <Tabs defaultValue={activeCategory === "smart-connect" ? "pulses" : activeCategory} onValueChange={handleTabChange}>
-              <TabsList className="mb-6">
-                <TabsTrigger value="pulses" className="flex items-center gap-1">
+              <TabsList className="mb-6 bg-white rounded-full p-1 border border-gray-200 shadow-sm">
+                <TabsTrigger 
+                  value="pulses" 
+                  className="flex items-center gap-1.5 py-2 px-4 rounded-full data-[state=active]:bg-primary/5 data-[state=active]:text-primary data-[state=active]:shadow-sm data-[state=active]:border-primary/10 transition-all"
+                >
                   <MessageSquare size={16} />
                   <span>Pulses</span>
                 </TabsTrigger>
-                <TabsTrigger value="profiles" className="flex items-center gap-1">
+                <TabsTrigger 
+                  value="profiles" 
+                  className="flex items-center gap-1.5 py-2 px-4 rounded-full data-[state=active]:bg-primary/5 data-[state=active]:text-primary data-[state=active]:shadow-sm data-[state=active]:border-primary/10 transition-all"
+                >
                   <Users size={16} />
                   <span>Profiles</span>
                 </TabsTrigger>
-                <TabsTrigger value="hashtags" className="flex items-center gap-1">
+                <TabsTrigger 
+                  value="hashtags" 
+                  className="flex items-center gap-1.5 py-2 px-4 rounded-full data-[state=active]:bg-primary/5 data-[state=active]:text-primary data-[state=active]:shadow-sm data-[state=active]:border-primary/10 transition-all"
+                >
                   <Hash size={16} />
                   <span>Hashtags</span>
                 </TabsTrigger>
