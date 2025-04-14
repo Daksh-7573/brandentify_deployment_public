@@ -804,7 +804,7 @@ Your responses should feel like a professional resume coach, career expert, and 
               try {
                 // Since OpenAI doesn't directly support PDF analysis in the vision API, 
                 // we'll use GPT-4o with a prompt to extract insights from the resume
-              // without relying on the vision API
+                // without relying on the vision API
               
               const systemContent = `
               You are an AI expert in resume analysis and improvement. You provide deeply personalized resume feedback by analyzing text content and suggesting specific improvements. Your analysis is detailed, actionable, and tailored to each individual's background and career goals. Always use the person's name and reference specific sections of their resume.
