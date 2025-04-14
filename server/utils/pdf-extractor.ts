@@ -62,9 +62,9 @@ export async function extractTextFromPdf(pdfBuffer: Buffer): Promise<string> {
       console.log("Error in direct text extraction:", directError.message || "Unknown error");
     }
     
-    // Return an error instead of a fallback resume
-    console.log("Unable to extract meaningful text content from PDF");
-    throw new Error("Could not extract text from the PDF. Please upload a different PDF or paste your resume text directly.");
+    // Don't immediately throw an error - return a message indicating we'll try vision API
+    console.log("Unable to extract meaningful text content from PDF directly - will try vision API next");
+    return ""; // Return empty string to signal the OpenAI service to try the vision API
     
     /* Removed the fallback resume to prevent showing the same analysis for different uploads
     const fallbackResume = `

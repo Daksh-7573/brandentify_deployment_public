@@ -762,31 +762,33 @@ Your responses should feel like a professional resume coach, career expert, and 
           // Clean up the temporary file
           await fs.unlink(tmpFilePath);
           
-          if (extractedText && extractedText.length > 0) {
+          // If we got meaningful text from direct extraction, use it
+          if (extractedText && extractedText.length > 100) {
             console.log(`Successfully extracted text (${extractedText.length} chars)`);
             // Update resumeText with the extracted text and set isDirectTextInput to true
             resumeText = extractedText;
             isDirectTextInput = true;
             isBase64Value = false;
           } else {
-            console.log("Text extraction failed or returned empty text");
+            console.log("Direct text extraction failed or returned insufficient text");
             
-            // If text extraction failed, use Vision API to analyze the PDF
+            // Always attempt to use Vision API as a fallback
             console.log("Attempting to use Vision API to analyze the CV PDF");
             try {
+              // Improved prompt for resume extraction
               const response = await openai.chat.completions.create({
                 model: "gpt-4o",
                 messages: [
                   {
                     role: "system",
-                    content: "You are an expert system for extracting structured text content from resume images. Extract all important text information from the provided resume image, maintaining the original structure and formatting as much as possible."
+                    content: "You are an expert resume parser specializing in extracting structured content from resume documents. Your task is to extract ALL text content from the provided resume, maintaining the original structure, sections, and formatting as accurately as possible. Include everything: contact details, summary, work experience, education, skills, certifications, and any additional sections."
                   },
                   {
                     role: "user",
                     content: [
                       {
                         type: "text",
-                        text: "Below is a resume image. Please extract ALL text content from it while preserving the structure as best as possible. Include the person's name, contact information, summary, experience details (company names, job titles, dates, responsibilities), education, skills, certifications, and any other information present. Format it as plain text with clear section headers and appropriate spacing."
+                        text: "Extract the FULL TEXT content from this resume PDF. Include ALL of the following (if present):\n\n1. Name and contact information\n2. Summary/Profile section\n3. Work experience with company names, titles, dates, and ALL bullet points\n4. Education details including institutions, degrees, dates\n5. Skills section with ALL listed skills\n6. Certifications\n7. Any additional sections (projects, publications, etc.)\n\nMaintain the original structure with proper spacing between sections. Don't summarize or skip any content. Extract the text exactly as it appears."
                       },
                       {
                         type: "image_url",
@@ -797,20 +799,22 @@ Your responses should feel like a professional resume coach, career expert, and 
                     ]
                   }
                 ],
-                max_tokens: 4000
+                max_tokens: 4000,
+                temperature: 0.0 // Use temperature 0 for more accurate extraction
               });
               
               const extractedVisionText = response.choices[0].message.content;
               
-              if (extractedVisionText && extractedVisionText.length > 0) {
+              if (extractedVisionText && extractedVisionText.length > 200) {
                 console.log(`Successfully extracted text with Vision API (${extractedVisionText.length} chars)`);
+                console.log("Sample (first 100 chars):", extractedVisionText.substring(0, 100));
                 // Update resumeText with the extracted text and set isDirectTextInput to true
                 resumeText = extractedVisionText;
                 isDirectTextInput = true;
                 isBase64Value = false;
               } else {
-                console.log("Vision API extraction failed or returned empty text");
-                throw new Error("Failed to extract text from the PDF using Vision API");
+                console.log("Vision API extraction failed or returned insufficient text");
+                throw new Error("Failed to extract meaningful text from the PDF. Please try pasting the text directly.");
               }
             } catch (visionError: any) {
               console.error("Error using Vision API:", visionError);
