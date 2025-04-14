@@ -136,8 +136,8 @@ export default function AICareerPage() {
       // Show chat window with initial AI message
       setShowChatWindow(true);
       
-      // Add AI's initial message to chat history
-      setChatHistory(prev => [...prev, {
+      // Replace the loading message with the actual advice
+      setChatHistory([{
         content: data.advice || "I've analyzed your profile and career goals. What specific questions do you have?",
         sender: "musk",
         timestamp: new Date()
@@ -292,6 +292,13 @@ export default function AICareerPage() {
   useEffect(() => {
     scrollToBottom();
   }, [chatHistory]);
+  
+  // Use effect to show chat window when in resume tab and no messages yet
+  useEffect(() => {
+    if (activeTab === "resume" && getRecentAIMessages("resume_analysis").length === 0) {
+      setShowChatWindow(true);
+    }
+  }, [activeTab]);
 
   // Redirect to landing if not authenticated
   if (!isLoading && !isAuthenticated) {
@@ -406,7 +413,20 @@ export default function AICareerPage() {
                         
                         <Button 
                           className="w-full"
-                          onClick={() => careerAdviceMutation.mutate()}
+                          onClick={() => {
+                            // Show chat window immediately
+                            setShowChatWindow(true);
+                            
+                            // Add a loading message to the chat
+                            setChatHistory([{
+                              content: "I'm preparing your career advice... this will take just a moment.",
+                              sender: "musk",
+                              timestamp: new Date()
+                            }]);
+                            
+                            // Start the advice generation
+                            careerAdviceMutation.mutate();
+                          }}
                           disabled={
                             careerAdviceMutation.isPending || 
                             !careerAdviceType || 
@@ -608,41 +628,9 @@ export default function AICareerPage() {
                   
                   const filteredMessages = getRecentAIMessages(messageType);
                   
+                  // Instead of showing "No AI insights yet", return a blank view - chat window will be shown by effect
                   if (filteredMessages.length === 0) {
-                    return (
-                      <div className="text-center py-10 sm:py-14 border rounded-lg bg-muted/10 flex flex-col items-center">
-                        {activeTab === "career" ? (
-                          <div className="bg-primary/10 rounded-full p-3 mb-4">
-                            <BarChart className="h-7 w-7 text-primary" />
-                          </div>
-                        ) : (
-                          <div className="bg-primary/10 rounded-full p-3 mb-4">
-                            <BookOpen className="h-7 w-7 text-primary" />
-                          </div>
-                        )}
-                        <h3 className="text-base sm:text-lg font-medium">No AI insights yet</h3>
-                        <p className="text-sm text-muted-foreground mt-2 max-w-md mx-auto">
-                          {activeTab === "career" ? 
-                            "Choose a career advice topic from the menu on the left to start a conversation with Musk." :
-                            "Upload your resume to get AI-powered analysis and improvement suggestions."}
-                        </p>
-                        <div className="mt-6">
-                          <Button 
-                            size="sm"
-                            variant="outline"
-                            className="flex items-center gap-2"
-                            onClick={() => {
-                              if (activeTab === "resume") {
-                                document.getElementById('resume-file-input')?.click();
-                              }
-                            }}
-                          >
-                            <Sparkles className="h-4 w-4" />
-                            {activeTab === "career" ? "Select advice type above" : "Upload your resume"}
-                          </Button>
-                        </div>
-                      </div>
-                    );
+                    return null;
                   }
                   
                   // If the chat window is shown, don't display the card-style messages
