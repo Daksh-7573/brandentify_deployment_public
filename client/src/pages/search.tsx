@@ -450,7 +450,7 @@ const SearchPage = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     
     // Check if user is following this hashtag
-    useQuery<{ isFollowing: boolean }>({
+    const { data: followData } = useQuery<{ isFollowing: boolean }>({
       queryKey: [`/api/hashtags/${tag.id}/is-following`, userId],
       queryFn: async () => {
         if (!userId) return { isFollowing: false };
@@ -461,10 +461,14 @@ const SearchPage = () => {
         return response.json();
       },
       enabled: !!userId,
-      onSuccess: (data) => {
-        setIsFollowing(data.isFollowing);
-      }
     });
+    
+    // Update the following state when data changes
+    useEffect(() => {
+      if (followData) {
+        setIsFollowing(followData.isFollowing);
+      }
+    }, [followData]);
     
     // Follow hashtag mutation
     const followMutation = useMutation({
@@ -521,13 +525,19 @@ const SearchPage = () => {
         }
         
         setIsLoading(true);
-        const res = await apiRequest({
+        // Direct fetch request for DELETE since apiRequest might be having issues with it
+        const response = await fetch(`/api/hashtags/${tag.id}/follow?userId=${userId}`, {
           method: 'DELETE',
-          url: `/api/hashtags/${tag.id}/follow?userId=${userId}`,
-          data: {}
+          headers: {
+            'Content-Type': 'application/json'
+          }
         });
         
-        return res.json();
+        if (!response.ok) {
+          throw new Error('Failed to unfollow hashtag');
+        }
+        
+        return response.json();
       },
       onSuccess: () => {
         setIsFollowing(false);
@@ -585,19 +595,16 @@ const SearchPage = () => {
             </div>
             {userId ? (
               <Button
-                size="icon"
+                size="sm"
                 variant={isFollowing ? "outline" : "default"}
-                className={`h-10 w-10 rounded-full ${isFollowing ? 'text-primary border-primary/50' : 'bg-primary/10 hover:bg-primary/20'}`}
+                className={`px-4 py-2 h-auto rounded-full ${isFollowing ? 'text-primary border-primary/50' : 'bg-primary hover:bg-primary/90'}`}
                 onClick={handleFollowToggle}
                 disabled={isLoading}
               >
                 {isLoading ? (
-                  <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
-                ) : isFollowing ? (
-                  <Check className="h-5 w-5" />
-                ) : (
-                  <Plus className="h-5 w-5" />
-                )}
+                  <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full mr-2" />
+                ) : null}
+                {isFollowing ? 'Unfollow' : 'Follow'}
               </Button>
             ) : (
               <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-300">
