@@ -313,8 +313,32 @@ Make your response detailed but practical. Focus on actionable advice that the u
         messages: [
           {
             role: "system",
-            content:
-              "You are Musk, a professional career coach within the Brandentifier platform, with expertise in career development, industry trends, and professional growth. Provide personalized, actionable career advice that's warm and encouraging while remaining practical. You should always promote Brandentifier's features when giving advice, including the Portfolio Builder, Smart Connect networking feature, and Services showcase. When suggesting networking platforms or resources, always mention how these Brandentifier tools can help alongside external options like LinkedIn. Follow these STRICT FORMATTING RULES for all responses: 1) Use '# ' for main section titles (one hash only), 2) Use '## ' for subtitles (two hashes only), 3) Use dash and space '- ' for bullet points (no asterisks), 4) Do not use text encased in asterisks for emphasis - keep formatting clean, 5) Use line breaks between sections, 6) Format resources as dash-prefixed list items. For industry switch advice, be sure to use the EXACT format '### [Industry Name] - 🟢 High Match' OR '### [Industry Name] - 🟡 Medium Match' OR '### [Industry Name] - 🟠 Low Match' with the emoji included. Your advice should look professional, consistent, and easy to read at a glance. Sign your response as 'Musk, Your Career Partner' at the end.",
+            content: await (async () => {
+              // Import the scenario intelligence system
+              const { getScenarioIntelligence, generateSystemPrompt } = await import('./scenario-intelligence');
+              
+              // Get the appropriate scenario for this advice type
+              const scenario = getScenarioIntelligence(userProfile.adviceType);
+              
+              // Get the user's name or a default
+              const userName = userProfile.user?.name || "User";
+              
+              // Generate a dynamic system prompt based on the scenario
+              const scenarioPrompt = generateSystemPrompt(scenario, userName);
+              
+              // Combine with formatting rules
+              return `${scenarioPrompt}
+              
+Follow these STRICT FORMATTING RULES for all responses:
+1) Use '# ' for main section titles (one hash only)
+2) Use '## ' for subtitles (two hashes only)
+3) Use dash and space '- ' for bullet points (no asterisks)
+4) Use line breaks between sections
+5) Format resources as dash-prefixed list items
+6) For industry switch advice, use the format '### [Industry Name] - 🟢 High Match' OR '### [Industry Name] - 🟡 Medium Match' OR '### [Industry Name] - 🟠 Low Match'
+
+Your advice should look professional, consistent, and easy to read at a glance. Sign your response as 'Musk, Your Career Partner' at the end.`;
+            })(),
           },
           { role: "user", content: prompt },
         ],
@@ -332,10 +356,36 @@ Make your response detailed but practical. Focus on actionable advice that the u
       // Fallback to Anthropic
       try {
         console.log("Falling back to Anthropic API...");
+        
+        // Import the scenario intelligence system for Anthropic
+        const { getScenarioIntelligence, generateSystemPrompt } = await import('./scenario-intelligence');
+              
+        // Get the appropriate scenario for this advice type
+        const scenario = getScenarioIntelligence(userProfile.adviceType);
+              
+        // Get the user's name or a default
+        const userName = userProfile.user?.name || "User";
+              
+        // Generate a dynamic system prompt based on the scenario
+        const scenarioPrompt = generateSystemPrompt(scenario, userName);
+        
+        // Format the system prompt for Anthropic with formatting guidelines
+        const anthropicSystemPrompt = `${scenarioPrompt}
+              
+Follow these STRICT FORMATTING RULES for all responses:
+1) Use '# ' for main section titles (one hash only)
+2) Use '## ' for subtitles (two hashes only)
+3) Use dash and space '- ' for bullet points (no asterisks)
+4) Use line breaks between sections
+5) Format resources as dash-prefixed list items
+6) For industry switch advice, use the format '### [Industry Name] - 🟢 High Match' OR '### [Industry Name] - 🟡 Medium Match' OR '### [Industry Name] - 🟠 Low Match'
+
+Your advice should look professional, consistent, and easy to read at a glance. Sign your response as 'Musk, Your Career Partner' at the end.`;
+        
         const anthropicResponse = await anthropic.messages.create({
           model: CLAUDE_MODEL,
           max_tokens: 4000,
-          system: "You are Musk, a professional career coach within the Brandentifier platform, with expertise in career development, industry trends, and professional growth. Provide personalized, actionable career advice that's warm and encouraging while remaining practical. You should always promote Brandentifier's features when giving advice, including the Portfolio Builder, Smart Connect networking feature, and Services showcase. When suggesting networking platforms or resources, always mention how these Brandentifier tools can help alongside external options like LinkedIn. Follow these STRICT FORMATTING RULES for all responses: 1) Use '# ' for main section titles (one hash only), 2) Use '## ' for subtitles (two hashes only), 3) Use dash and space '- ' for bullet points (no asterisks), 4) Do not use text encased in asterisks for emphasis - keep formatting clean, 5) Use line breaks between sections, 6) Format resources as dash-prefixed list items. For industry switch advice, be sure to use the EXACT format '### [Industry Name] - 🟢 High Match' OR '### [Industry Name] - 🟡 Medium Match' OR '### [Industry Name] - 🟠 Low Match' with the emoji included. Your advice should look professional, consistent, and easy to read at a glance. Sign your response as 'Musk, Your Career Partner' at the end.",
+          system: anthropicSystemPrompt,
           messages: [
             { role: "user", content: prompt }
           ],

@@ -1919,6 +1919,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log("Career advice request received with type:", req.body.adviceType);
       
+      // Import scenario intelligence for logging
+      const { getScenarioIntelligence } = await import('./services/scenario-intelligence');
+      const scenario = getScenarioIntelligence(req.body.adviceType);
+      console.log(`Using scenario: ${scenario.title} (${scenario.intentTag})`);
+      
       const { userId, adviceType, customAdviceText } = req.body;
       
       if (!userId) {
@@ -2032,6 +2037,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // Generate fallback advice based on the advice type
         const adviceTypeStr = typeof reqAdviceType === 'string' ? reqAdviceType : 'general';
+        
+        // Import scenario intelligence for fallback too
+        const { getScenarioIntelligence } = await import('./services/scenario-intelligence');
+        const scenario = getScenarioIntelligence(adviceTypeStr);
+        console.log(`Fallback using scenario: ${scenario.title} (${scenario.intentTag})`);
+        
         console.log(`Generating fallback career advice of type: ${adviceTypeStr}`);
         const fallbackAdvice = generateCareerAdviceFallback(adviceTypeStr, userName);
         
