@@ -618,7 +618,17 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
     const { generateResumeAnalysisPrompt } = await import('./resume-intelligence');
     
     // Generate a dynamic system prompt for resume analysis
-    let systemPrompt = generateResumeAnalysisPrompt();
+    let systemPrompt = `You are Musk, an expert resume coach and career strategist within the Brandentifier platform. Your goal is not just to analyze resumes but to actively IMPROVE them with specific, actionable suggestions.
+
+As a resume improvement expert, you:
+- Focus on transforming generic content into powerful, results-driven statements
+- Help users showcase their true value with quantifiable achievements
+- Rewrite passive language into confident, leadership-focused language
+- Optimize resumes for both human readers and ATS systems
+- Provide specific rewrites, not just general advice
+- Maintain an encouraging, coach-like tone throughout
+
+Your response should feel like a professional resume coach, career expert, and AI strategist combined - focused entirely on helping this specific person elevate their resume for better career opportunities.`;
     let userPrompt = "";
     
     if (isLinkValue) {
@@ -796,39 +806,68 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
         console.error("Error processing base64 data:", error);
         systemPrompt += " I cannot directly process this resume file, but I can provide comprehensive, detailed guidance for resume improvement similar to what an expert resume coach would offer.";
         userPrompt = `
-        I couldn't properly process the resume file you uploaded. Please provide a comprehensive, detailed resume analysis and improvement guide using the following structured format with proper markdown:
+        I couldn't properly process the resume file you uploaded. Please provide a comprehensive, actionable guide to help users improve their resumes using the following structured format:
       
-        # Resume Analysis Guidelines
+        # Resume Upgrade Guidelines
         
-        ## 1. Common Resume Strengths to Verify
-        - ✅ [Quantified Achievements]: Include metrics with all accomplishments
-        - ✅ [Technical Proficiency]: Clearly list relevant technologies, tools, and platforms
-        - ✅ [Career Progression]: Show growth and increasing responsibility over time
+        ## 1. Power-Up Your Professional Profile
+        - ✅ [Add Quantifiable Achievements]: Transform "Managed project team" to "Led 7-person team delivering project 15% under budget"
+        - ✅ [Showcase Technical Expertise]: Replace vague terms with specific tools, platforms, and methodologies
+        - ✅ [Demonstrate Career Growth]: Highlight increasing responsibilities and leadership development
         
-        ## 2. Common Areas for Improvement
+        ## 2. Transform Common Weaknesses
         - 🔹 [Generic Summary Statements]:
-          - Common issue: Generic statements without specificity
-          - Improvement: Lead with specific expertise and unique value proposition
-          - Example: Before/after comparison
+          - Before: "Dedicated professional with experience in marketing"
+          - After: "Digital Marketing Strategist who increased e-commerce conversions by 37% through data-driven campaign optimization and AI-powered audience segmentation"
+          - Why it works: Specific expertise, quantifiable results, and technical skills in one statement
         
-        ## 3. Section-by-Section Optimization
-        - 📝 [Professional Summary]: Structure and example
-        - 📝 [Experience Section]: Format for bullets and example
+        - 🔹 [Duty-Focused Experience]:
+          - Before: "Responsible for customer service and handling complaints"
+          - After: "Resolved 200+ monthly customer inquiries with 98% satisfaction rate, implementing feedback system that reduced repeat issues by 42%"
+          - Why it works: Shows scale, success metrics, and strategic thinking
         
-        ## 4. Key Skills Development
-        - 🌟 [Technical Skills]: How to present them effectively
-        - 🌟 [Soft Skills]: How to demonstrate with accomplishments
+        ## 3. Bullet Point Transformation Formula
+        - 📝 [Action Verb + Specific Task + Method + Result/Impact]:
+          - Before: "Updated the company website"
+          - After: "Redesigned company e-commerce platform using React and Node.js, increasing mobile conversions by 59% and reducing bounce rate by 23%"
         
-        ## 5. Using Brandentifier to Showcase Your Expertise
-        - 📊 Portfolio Builder: How to use effectively
-        - 🤝 Smart Connect: Networking strategies
+        - 📝 [Achievement + Scale + Benefit]:
+          - Before: "Trained new employees"
+          - After: "Developed and implemented standardized onboarding program for 35+ new hires annually, reducing time-to-productivity by 40% and improving 90-day retention by 25%"
         
-        ## 6. Quick Wins (30-Day Plan)
-        1. [Action 1]: Expected outcome
-        2. [Action 2]: Expected outcome
-        3. [Action 3]: Expected outcome
+        ## 4. Headline & Summary Makeover
+        - 💼 Strong Headline Formula: [Industry/Function] + [Specialization] + [Value Proposition]
+          Example: "Full-Stack Developer Specializing in High-Performance FinTech Solutions"
+          
+        - 💼 Summary Structure: [Current Role/Expertise] + [Key Achievement] + [Core Skills] + [Professional Value]
+          Example: "Senior Product Manager with 8+ years optimizing SaaS platforms for enterprise clients. Launched 3 products generating $4.2M in first-year revenue. Combines user research, agile methodologies, and cross-functional leadership to deliver solutions that exceed KPIs while delighting users."
         
-        Use proper markdown formatting, consistent emoji bullets, and maintain this exact section structure.
+        ## 5. Resume Design & Formatting
+        - 🎯 One-Page Power: For most professionals with <10 years experience, focus on a powerful single page
+        - 🎯 White Space: Ensure 1" margins and spacing between sections for readability
+        - 🎯 Consistency: Maintain uniform formatting for dates, headings, and bullet structure
+        - 🎯 Scannable Structure: Use bold for company names, italics for job titles, plain text for descriptions
+        
+        ## 6. ATS Optimization Strategies
+        - 📊 Keyword Integration: Match 60-80% of job description keywords naturally throughout
+        - 📊 Simple Formatting: Avoid tables, columns, headers/footers, and graphics
+        - 📊 Standard Sections: Use conventional headings (Experience, Education, Skills)
+        - 📊 File Format: Submit as .docx unless PDF is specifically requested
+        
+        ## 7. Brandentifier Tools for Career Growth
+        - 📱 Portfolio Builder: Create visual showcases of your projects and achievements
+        - 📱 Smart Connect: Find mentors in your target industry for personalized advice
+        - 📱 Services Showcase: Package your skills as service offerings to attract opportunities
+        
+        ## 8. One-Week Resume Transformation Plan
+        1. [Day 1]: Select resume template and gather quantifiable achievements for each role
+        2. [Day 3]: Rewrite summary, headline, and 3-5 most important bullet points
+        3. [Day 5]: Add missing keywords and skills based on 3-5 target job descriptions
+        4. [Day 7]: Review final resume with a colleague or mentor, make refinements
+        
+        When you upload your actual resume, I can provide completely personalized recommendations specific to your career history and goals.
+        
+        Make your resume work as hard as you do!
         `;
       }
     } 
@@ -846,177 +885,235 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
           : resumeText;
       
         userPrompt = `
-      I need an EXTREMELY detailed and personalized professional analysis of this resume. This must be a comprehensive, specific analysis that directly references the actual content in the resume, not generic advice. Make your response feel like it was written specifically for this individual after carefully studying their resume.
+      I need you to help this person IMPROVE their resume - not just analyze it. Your goal is to provide actionable, specific ways to enhance their resume to stand out and advance their career. Act as a professional resume coach focused on creating career growth opportunities.
         
       RESUME TEXT:
       ${truncatedText}
       
-      Follow this EXACT formatting structure with proper markdown and emojis:
+      Follow this EXACT formatting structure:
       
-      # Resume Analysis for [Person's Name]
+      # Resume Upgrade Plan for [Person's Name]
       
-      ## 1. Strengths Overview (Score: X/100)
-      - ✅ [Strength 1]: Specific example from their resume
-      - ✅ [Strength 2]: Specific example from their resume
-      - ✅ [Strength 3]: Specific example from their resume
-      (Include 4-6 specific strengths with clear examples from their resume)
-      
-      ## 2. Areas for Improvement (Score: X/100)
-      - 🔹 [Improvement Area 1]:
-        - Current issue: What's currently in their resume
-        - Suggestion: Specific improvement recommendation
-        - Example: Before/after example
-      
-      - 🔹 [Improvement Area 2]:
-        - Current issue: What's currently in their resume
-        - Suggestion: Specific improvement recommendation
-        - Example: Before/after example
-      (Include 3-5 improvement areas with clear examples)
-      
-      ## 3. Resume Rewrite Suggestions
-      - 📝 [Section to Revise 1]:
-        ❌ Current version: "..." (use actual text from resume)
-        ✅ Improved version: "..." (your suggested revision)
-      
-      - 📝 [Section to Revise 2]:
-        ❌ Current version: "..." (use actual text from resume)
-        ✅ Improved version: "..." (your suggested revision)
-      (Include 2-3 specific sections with before/after examples)
-      
-      ## 4. Career Pattern Insights
-      - 📊 [Pattern 1]: What this pattern reveals about their career trajectory
-      - 📊 [Pattern 2]: What this pattern suggests about their professional style 
-      (Include insights on career gaps, job-hopping patterns, specialist vs. generalist trends, or leadership trajectory)
-      
-      ## 5. Market Position Assessment
-      - 🌍 Current Market Alignment: How their resume compares to industry expectations
-      - 🌍 Competitive Edge: Their unique value compared to others in similar roles
-      - 🌍 Future Positioning: How market trends affect their career opportunities
-      
-      ## 6. Upskill Opportunities
-      - 🌟 [Priority Skill 1]: Justification and specific learning resource
-      - 🌟 [Priority Skill 2]: Justification and specific learning resource
-      - 🌟 [Priority Skill 3]: Justification and specific learning resource
-      (Include 3-4 skills with specific learning resources)
-      
-      ## 7. Persona Indicators
-      - 👤 Career Style: Climber, Explorer, or Stable based on their patterns
-      - 👤 Role Direction: Specialist, Generalist, or Hybrid trajectory
-      - 👤 Work Type: Builder, Thinker, Seller, or Leader tendencies
-      
-      ## 8. Brandentifier Features to Leverage
-      - 📱 Portfolio Builder: How to showcase specific projects/skills from their resume
-      - 📱 Smart Connect: Specific networking recommendations based on their background
-      - 📱 Services Showcase: How to position their expertise as services
-      
-      ## 9. Quick Wins (30-Day Plan)
-      1. [Quick Win 1]: Specific action with expected outcome
-      2. [Quick Win 2]: Specific action with expected outcome
-      3. [Quick Win 3]: Specific action with expected outcome
-      
-      Evaluate the resume for:
-      - Career gaps and job-hopping patterns
-      - Cross-functional skill capabilities
-      - Role progression and patterns
-      - Tone and language quality (passive vs. confident)
-      - ATS compatibility and keyword optimization
-      - Industry-specific expectations match
-      - Personal brand clarity and uniqueness
-      
-      For behavioral nudging, adapt your opening tone based on resume quality:
+      Start with one of these behavioral nudges based on the resume quality:
       - For resumes with weak or no quantifiable achievements: "Let's give your CV a power-up!"
       - For resumes with passive wording: "You've done more than your resume shows. Let me fix that."
       - For resumes with solid experience but poor formatting: "Your experience is solid, but the design might be hurting you."
       - For resumes showing high impact but suggesting low compensation: "You might be undercharging based on your results."
       
-      After your analysis, suggest 1-2 appropriate follow-up questions based on what you detected in their resume (e.g., career gaps, job-hopping patterns, cross-functional skills).
+      ## 1. What's Working Well (Score: X/100)
+      - ✅ [Strength 1]: Example from resume + why it's effective
+      - ✅ [Strength 2]: Example from resume + why it's effective
+      - ✅ [Strength 3]: Example from resume + why it's effective
       
-      Make sure to use:
-      1. Proper Markdown formatting with # and ## for headings
-      2. Consistent emoji bullet points for visual distinction
-      3. Specific examples and direct quotes from their actual resume
-      4. Before/after examples for suggested improvements
-      5. A professional yet conversational tone
-      6. Exactly the section structure outlined above
+      ## 2. High-Impact Improvements (Score: X/100)
+      - 🔹 [Improvement Area 1]:
+        - Current version: What's currently in the resume
+        - Upgraded version: Specific rewrite with stronger impact
+        - Why this works: Brief explanation of the improvement
       
-      Your analysis must be EXTREMELY PERSONALIZED, using their specific name and directly referencing their exact experiences, skills, and background from their resume. Avoid generic advice - everything must be tailored to their specific situation.
+      - 🔹 [Improvement Area 2]:
+        - Current version: What's currently in the resume
+        - Upgraded version: Specific rewrite with stronger impact
+        - Why this works: Brief explanation of the improvement
+      
+      ## 3. Bullet Point Rewrites
+      - 📝 [First Weak Bullet]:
+        ❌ Current version: "..." (exact text from resume)
+        ✅ Improved version: "..." (your action-focused rewrite)
+      
+      - 📝 [Second Weak Bullet]:
+        ❌ Current version: "..." (exact text from resume)
+        ✅ Improved version: "..." (your action-focused rewrite)
+      
+      ## 4. Headline & Summary Makeover
+      ❌ Current version: "..." (their exact headline/summary or note if missing)
+      ✅ Recommended headline: "..." (punchy, keyword-rich title)
+      ✅ New summary: "..." (3-4 sentence impactful professional summary)
+      
+      ## 5. Skills & Keywords Optimization
+      - 🎯 Missing Keywords: List of 5-7 job-relevant keywords they should add
+      - 🎯 Skills to Highlight: The 3-4 skills from their experience that deserve more prominence
+      - 🎯 ATS Enhancement: Specific formatting suggestions for better ATS performance
+      
+      ## 6. Content & Structure Fixes
+      - 📊 Section Order: Recommended sequence of sections for maximum impact
+      - 📊 Missing Sections: Any critical sections they should add (Projects, Certifications, etc.)
+      - 📊 Formatting Improvements: Specific design/layout changes (spacing, fonts, margins, etc.)
+      
+      ## 7. Experience Section Improvements
+      - 🌟 Most Impressive Role: Which role should be expanded/highlighted and why
+      - 🌟 Quantifiable Results: Suggestions for adding metrics to specific achievements
+      - 🌟 Leadership Indicators: How to better showcase leadership (even in non-management roles)
+      
+      ## 8. Brandentifier Tools to Leverage
+      - 📱 Portfolio Builder: How to showcase specific projects/skills from their resume
+      - 📱 Smart Connect: Specific networking recommendations based on their background
+      - 📱 Services Showcase: How to position their expertise as services
+      
+      ## 9. Quick Wins (One-Week Action Plan)
+      1. [Day 1 Action]: Specific task with expected outcome
+      2. [Day 3 Action]: Specific task with expected outcome
+      3. [Day 7 Action]: Specific task with expected outcome
+      
+      ## 10. Follow-Up Questions
+      Based on what I've seen in your resume, would you like me to:
+      1. [Question about a specific aspect of their resume that needs clarification]
+      2. [Question about their target role or industry to better customize advice]
+      
+      Apply these evaluation criteria:
+      - Content Quality: Generic vs. strong action-based bullet points
+      - Achievements: Quantifiable, results-driven content
+      - Tone of Voice: Confident vs. passive language
+      - Structure & Layout: Length, spacing, design effectiveness
+      - ATS Optimization: Industry and role-specific keywords
+      - Skills Positioning: Strategic placement of key skills
+      - Headline & Summary: Uniqueness and focus
+      - Gaps or Redundancies: Missing or repetitive information
+      
+      Make sure to:
+      1. Use proper Markdown formatting with # and ## for headings
+      2. Use consistent emoji bullet points for visual distinction
+      3. Include specific examples directly from their resume
+      4. Provide clear before/after examples for all suggestions
+      5. Maintain a coach-like, encouraging tone
+      6. Follow the exact section structure outlined above
+      
+      Your analysis must be EXTREMELY PERSONALIZED, using their specific name and directly referencing their exact experiences. Every suggestion should be tailored to their situation, not generic advice.
       `;
       } catch (error: any) {
         console.error("Error processing text resume:", error);
         systemPrompt += " I cannot directly process this resume text, but I can provide comprehensive, detailed guidance for resume improvement similar to what an expert resume coach would offer.";
         userPrompt = `
-        I couldn't properly process the resume text you provided. Please provide a comprehensive, detailed resume analysis and improvement guide using the following structured format with proper markdown:
+        I couldn't properly process the resume text you provided. Please provide a comprehensive, actionable guide to help users improve their resumes using the following structured format:
       
-        # Resume Analysis Guidelines
+        # Resume Upgrade Guidelines
         
-        ## 1. Common Resume Strengths to Verify
-        - ✅ [Quantified Achievements]: Include metrics with all accomplishments
-        - ✅ [Technical Proficiency]: Clearly list relevant technologies, tools, and platforms
-        - ✅ [Career Progression]: Show growth and increasing responsibility over time
+        ## 1. Power-Up Your Professional Profile
+        - ✅ [Add Quantifiable Achievements]: Transform "Managed project team" to "Led 7-person team delivering project 15% under budget"
+        - ✅ [Showcase Technical Expertise]: Replace vague terms with specific tools, platforms, and methodologies
+        - ✅ [Demonstrate Career Growth]: Highlight increasing responsibilities and leadership development
         
-        ## 2. Common Areas for Improvement
+        ## 2. Transform Common Weaknesses
         - 🔹 [Generic Summary Statements]:
-          - Common issue: Generic statements without specificity
-          - Improvement: Lead with specific expertise and unique value proposition
-          - Example: Before/after comparison
+          - Before: "Dedicated professional with experience in marketing"
+          - After: "Digital Marketing Strategist who increased e-commerce conversions by 37% through data-driven campaign optimization and AI-powered audience segmentation"
+          - Why it works: Specific expertise, quantifiable results, and technical skills in one statement
         
-        ## 3. Section-by-Section Optimization
-        - 📝 [Professional Summary]: Structure and example
-        - 📝 [Experience Section]: Format for bullets and example
+        - 🔹 [Duty-Focused Experience]:
+          - Before: "Responsible for customer service and handling complaints"
+          - After: "Resolved 200+ monthly customer inquiries with 98% satisfaction rate, implementing feedback system that reduced repeat issues by 42%"
+          - Why it works: Shows scale, success metrics, and strategic thinking
         
-        ## 4. Key Skills Development
-        - 🌟 [Technical Skills]: How to present them effectively
-        - 🌟 [Soft Skills]: How to demonstrate with accomplishments
+        ## 3. Bullet Point Transformation Formula
+        - 📝 [Action Verb + Specific Task + Method + Result/Impact]:
+          - Before: "Updated the company website"
+          - After: "Redesigned company e-commerce platform using React and Node.js, increasing mobile conversions by 59% and reducing bounce rate by 23%"
         
-        ## 5. Using Brandentifier to Showcase Your Expertise
-        - 📊 Portfolio Builder: How to use effectively
-        - 🤝 Smart Connect: Networking strategies
+        - 📝 [Achievement + Scale + Benefit]:
+          - Before: "Trained new employees"
+          - After: "Developed and implemented standardized onboarding program for 35+ new hires annually, reducing time-to-productivity by 40% and improving 90-day retention by 25%"
         
-        ## 6. Quick Wins (30-Day Plan)
-        1. [Action 1]: Expected outcome
-        2. [Action 2]: Expected outcome
-        3. [Action 3]: Expected outcome
+        ## 4. Headline & Summary Makeover
+        - 💼 Strong Headline Formula: [Industry/Function] + [Specialization] + [Value Proposition]
+          Example: "Full-Stack Developer Specializing in High-Performance FinTech Solutions"
+          
+        - 💼 Summary Structure: [Current Role/Expertise] + [Key Achievement] + [Core Skills] + [Professional Value]
+          Example: "Senior Product Manager with 8+ years optimizing SaaS platforms for enterprise clients. Launched 3 products generating $4.2M in first-year revenue. Combines user research, agile methodologies, and cross-functional leadership to deliver solutions that exceed KPIs while delighting users."
         
-        Use proper markdown formatting, consistent emoji bullets, and maintain this exact section structure.
+        ## 5. Resume Design & Formatting
+        - 🎯 One-Page Power: For most professionals with <10 years experience, focus on a powerful single page
+        - 🎯 White Space: Ensure 1" margins and spacing between sections for readability
+        - 🎯 Consistency: Maintain uniform formatting for dates, headings, and bullet structure
+        - 🎯 Scannable Structure: Use bold for company names, italics for job titles, plain text for descriptions
+        
+        ## 6. ATS Optimization Strategies
+        - 📊 Keyword Integration: Match 60-80% of job description keywords naturally throughout
+        - 📊 Simple Formatting: Avoid tables, columns, headers/footers, and graphics
+        - 📊 Standard Sections: Use conventional headings (Experience, Education, Skills)
+        - 📊 File Format: Submit as .docx unless PDF is specifically requested
+        
+        ## 7. Brandentifier Tools for Career Growth
+        - 📱 Portfolio Builder: Create visual showcases of your projects and achievements
+        - 📱 Smart Connect: Find mentors in your target industry for personalized advice
+        - 📱 Services Showcase: Package your skills as service offerings to attract opportunities
+        
+        ## 8. One-Week Resume Transformation Plan
+        1. [Day 1]: Select resume template and gather quantifiable achievements for each role
+        2. [Day 3]: Rewrite summary, headline, and 3-5 most important bullet points
+        3. [Day 5]: Add missing keywords and skills based on 3-5 target job descriptions
+        4. [Day 7]: Review final resume with a colleague or mentor, make refinements
+        
+        When you upload your actual resume, I can provide completely personalized recommendations specific to your career history and goals.
+        
+        Make your resume work as hard as you do!
         `;
       }
     } else if (!userPrompt) {
       // Fallback for any other case
       systemPrompt += " I cannot directly process this resume, but I can provide comprehensive, detailed guidance for resume improvement similar to what an expert resume coach would offer.";
       userPrompt = `
-      I couldn't properly process the resume you provided. Please provide a comprehensive, detailed resume analysis and improvement guide using the following structured format with proper markdown:
+      I couldn't properly process the resume you provided. Please provide a comprehensive, actionable guide to help users improve their resumes using the following structured format:
       
-      # Resume Analysis Guidelines
+      # Resume Upgrade Guidelines
       
-      ## 1. Common Resume Strengths to Verify
-      - ✅ [Quantified Achievements]: Include metrics with all accomplishments
-      - ✅ [Technical Proficiency]: Clearly list relevant technologies, tools, and platforms
-      - ✅ [Career Progression]: Show growth and increasing responsibility over time
+      ## 1. Power-Up Your Professional Profile
+      - ✅ [Add Quantifiable Achievements]: Transform "Managed project team" to "Led 7-person team delivering project 15% under budget"
+      - ✅ [Showcase Technical Expertise]: Replace vague terms with specific tools, platforms, and methodologies
+      - ✅ [Demonstrate Career Growth]: Highlight increasing responsibilities and leadership development
       
-      ## 2. Common Areas for Improvement
+      ## 2. Transform Common Weaknesses
       - 🔹 [Generic Summary Statements]:
-        - Common issue: Generic statements without specificity
-        - Improvement: Lead with specific expertise and unique value proposition
-        - Example: Before/after comparison
+        - Before: "Dedicated professional with experience in marketing"
+        - After: "Digital Marketing Strategist who increased e-commerce conversions by 37% through data-driven campaign optimization and AI-powered audience segmentation"
+        - Why it works: Specific expertise, quantifiable results, and technical skills in one statement
       
-      ## 3. Section-by-Section Optimization
-      - 📝 [Professional Summary]: Structure and example
-      - 📝 [Experience Section]: Format for bullets and example
+      - 🔹 [Duty-Focused Experience]:
+        - Before: "Responsible for customer service and handling complaints"
+        - After: "Resolved 200+ monthly customer inquiries with 98% satisfaction rate, implementing feedback system that reduced repeat issues by 42%"
+        - Why it works: Shows scale, success metrics, and strategic thinking
       
-      ## 4. Key Skills Development
-      - 🌟 [Technical Skills]: How to present them effectively
-      - 🌟 [Soft Skills]: How to demonstrate with accomplishments
+      ## 3. Bullet Point Transformation Formula
+      - 📝 [Action Verb + Specific Task + Method + Result/Impact]:
+        - Before: "Updated the company website"
+        - After: "Redesigned company e-commerce platform using React and Node.js, increasing mobile conversions by 59% and reducing bounce rate by 23%"
       
-      ## 5. Using Brandentifier to Showcase Your Expertise
-      - 📊 Portfolio Builder: How to use effectively
-      - 🤝 Smart Connect: Networking strategies
+      - 📝 [Achievement + Scale + Benefit]:
+        - Before: "Trained new employees"
+        - After: "Developed and implemented standardized onboarding program for 35+ new hires annually, reducing time-to-productivity by 40% and improving 90-day retention by 25%"
       
-      ## 6. Quick Wins (30-Day Plan)
-      1. [Action 1]: Expected outcome
-      2. [Action 2]: Expected outcome
-      3. [Action 3]: Expected outcome
+      ## 4. Headline & Summary Makeover
+      - 💼 Strong Headline Formula: [Industry/Function] + [Specialization] + [Value Proposition]
+        Example: "Full-Stack Developer Specializing in High-Performance FinTech Solutions"
+        
+      - 💼 Summary Structure: [Current Role/Expertise] + [Key Achievement] + [Core Skills] + [Professional Value]
+        Example: "Senior Product Manager with 8+ years optimizing SaaS platforms for enterprise clients. Launched 3 products generating $4.2M in first-year revenue. Combines user research, agile methodologies, and cross-functional leadership to deliver solutions that exceed KPIs while delighting users."
       
-      Use proper markdown formatting, consistent emoji bullets, and maintain this exact section structure.
+      ## 5. Resume Design & Formatting
+      - 🎯 One-Page Power: For most professionals with <10 years experience, focus on a powerful single page
+      - 🎯 White Space: Ensure 1" margins and spacing between sections for readability
+      - 🎯 Consistency: Maintain uniform formatting for dates, headings, and bullet structure
+      - 🎯 Scannable Structure: Use bold for company names, italics for job titles, plain text for descriptions
+      
+      ## 6. ATS Optimization Strategies
+      - 📊 Keyword Integration: Match 60-80% of job description keywords naturally throughout
+      - 📊 Simple Formatting: Avoid tables, columns, headers/footers, and graphics
+      - 📊 Standard Sections: Use conventional headings (Experience, Education, Skills)
+      - 📊 File Format: Submit as .docx unless PDF is specifically requested
+      
+      ## 7. Brandentifier Tools for Career Growth
+      - 📱 Portfolio Builder: Create visual showcases of your projects and achievements
+      - 📱 Smart Connect: Find mentors in your target industry for personalized advice
+      - 📱 Services Showcase: Package your skills as service offerings to attract opportunities
+      
+      ## 8. One-Week Resume Transformation Plan
+      1. [Day 1]: Select resume template and gather quantifiable achievements for each role
+      2. [Day 3]: Rewrite summary, headline, and 3-5 most important bullet points
+      3. [Day 5]: Add missing keywords and skills based on 3-5 target job descriptions
+      4. [Day 7]: Review final resume with a colleague or mentor, make refinements
+      
+      When you upload your actual resume, I can provide completely personalized recommendations specific to your career history and goals.
+      
+      Make your resume work as hard as you do!
       `;
     }
     
