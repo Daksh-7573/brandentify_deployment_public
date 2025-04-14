@@ -358,13 +358,15 @@ Make your response detailed but practical. Focus on actionable advice that the u
         
         // Final fallback: Use our defined fallback service based on advice type
         console.log("Both APIs failed. Using structured fallback content based on advice type...");
+        console.log(`Generating fallback career advice of type: ${userProfile.adviceType}`);
         
         // Import our dedicated fallback service
         const { generateCareerAdviceFallback } = await import('./ai-fallback-service');
         
         // Return the type-specific fallback content
         const userName = userProfile.user?.name || "User";
-        return generateCareerAdviceFallback(userProfile.adviceType, userName);
+        const adviceType = userProfile.adviceType || 'general';
+        return generateCareerAdviceFallback(adviceType, userName);
         
         // This code should never execute now, keeping for historical reference
         if (false && userProfile.adviceType === 'industry-switch') {
