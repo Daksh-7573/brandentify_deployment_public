@@ -889,13 +889,13 @@ export default function AICareerPage() {
                         </div>
                         
                         {/* Chat input */}
-                        <div className="relative mt-3">
-                          <div className="border-2 rounded-xl bg-white shadow-md overflow-hidden focus-within:ring-2 focus-within:ring-primary/30 focus-within:border-primary/60 transition-all">
+                        <div className="relative mt-4">
+                          <div className="border border-gray-200/80 rounded-2xl bg-gradient-to-b from-white to-gray-50/90 shadow-lg backdrop-blur-sm overflow-hidden focus-within:shadow-xl focus-within:border-primary/40 transition-all duration-300">
                             <Textarea
                               value={chatMessage}
                               onChange={(e) => setChatMessage(e.target.value)}
                               placeholder="Ask Musk a follow-up question about your career..."
-                              className="resize-none min-h-[90px] pr-14 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none text-sm"
+                              className="resize-none min-h-[100px] pr-16 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none text-sm font-medium bg-transparent"
                               onKeyDown={(e) => {
                                 if (e.key === 'Enter' && !e.shiftKey) {
                                   e.preventDefault();
@@ -918,10 +918,10 @@ export default function AICareerPage() {
                             />
                             <Button 
                               size="icon" 
-                              className={`h-10 w-10 absolute right-3 bottom-3 rounded-full transition-all ${
+                              className={`h-12 w-12 absolute right-4 bottom-4 rounded-full transition-all duration-300 ${
                                 !chatMessage.trim() 
-                                  ? 'opacity-60 bg-muted hover:bg-muted' 
-                                  : 'bg-primary shadow-md hover:shadow-lg hover:bg-primary/90'
+                                  ? 'opacity-60 bg-gradient-to-br from-gray-200 to-gray-300 hover:bg-gray-200' 
+                                  : 'bg-gradient-to-br from-primary to-primary/90 shadow-md hover:shadow-lg hover:scale-105'
                               }`}
                               onClick={() => {
                                 if (chatMessage.trim() && !chatMessageMutation.isPending) {
@@ -942,18 +942,18 @@ export default function AICareerPage() {
                               disabled={!chatMessage.trim() || chatMessageMutation.isPending}
                             >
                               {chatMessageMutation.isPending ? (
-                                <Loader2 className="h-5 w-5 animate-spin" />
+                                <Loader2 className="h-6 w-6 animate-spin" />
                               ) : (
-                                <Send className="h-5 w-5" />
+                                <Send className="h-6 w-6 ml-0.5" />
                               )}
                             </Button>
                           </div>
-                          <div className="flex justify-between items-center mt-2">
-                            <p className="text-xs text-muted-foreground flex items-center ml-1.5">
-                              <Sparkles className="h-3 w-3 mr-1.5 text-primary/70" />
-                              Press Enter to send, Shift+Enter for new line
+                          <div className="flex justify-between items-center mt-3">
+                            <p className="text-xs text-muted-foreground flex items-center ml-1.5 bg-gray-50/50 py-1 px-2 rounded-md border border-gray-100">
+                              <Sparkles className="h-3.5 w-3.5 mr-1.5 text-primary/70" />
+                              Press <span className="font-medium mx-1 text-primary/80">Enter</span> to send, <span className="font-medium mx-1 text-primary/80">Shift+Enter</span> for new line
                             </p>
-                            <p className="text-xs text-primary/60 font-medium">Powered by AI</p>
+                            <p className="text-xs bg-primary/5 py-1 px-3 rounded-md border border-primary/10 text-primary/80 font-medium">Powered by Musk AI</p>
                           </div>
                         </div>
                       </div>
