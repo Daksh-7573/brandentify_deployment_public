@@ -312,8 +312,6 @@ export default function AICareerPage() {
                               <SelectItem value="switch_industry">Switch My Industry</SelectItem>
                               <SelectItem value="build_skills">Build Core Skills for Future Roles</SelectItem>
                               <SelectItem value="get_certifications">Get Certifications to Grow</SelectItem>
-                              <SelectItem value="expand_network">Expand My Professional Network</SelectItem>
-                              <SelectItem value="find_job">Find a Job</SelectItem>
                               <SelectItem value="prepare_interviews">Prepare for Job Interviews</SelectItem>
                               <SelectItem value="launch_startup">Launch My Own Startup</SelectItem>
                               <SelectItem value="international">Study and Work Internationally</SelectItem>
