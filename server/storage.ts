@@ -1949,50 +1949,66 @@ export class MemStorage implements IStorage {
   }
   
   async extractAndSaveHashtags(text: string, pulseId: number): Promise<Hashtag[]> {
-    if (!text) return [];
-    
-    // Regular expression to match hashtags: #word
-    // Words can include letters, numbers, underscores
-    const hashtagRegex = /#(\w+)/g;
-    const matches = text.match(hashtagRegex);
-    
-    if (!matches) return [];
-    
-    const savedHashtags: Hashtag[] = [];
-    
-    // Process each hashtag
-    for (const match of matches) {
-      // Remove the '#' character and normalize to lowercase
-      const tagText = match.substring(1).toLowerCase();
+    try {
+      if (!text) return [];
       
-      // Skip empty tags
-      if (!tagText) continue;
+      // Regular expression to match hashtags: #word
+      // Words can include letters, numbers, underscores
+      const hashtagRegex = /#(\w+)/g;
+      const matches = text.match(hashtagRegex);
       
-      // Check if this hashtag already exists
-      let hashtag = await this.getHashtagByTag(tagText);
+      if (!matches) return [];
       
-      if (hashtag) {
-        // If it exists, increment its count
-        hashtag = await this.incrementHashtagCount(hashtag.id);
-      } else {
-        // If it doesn't exist, create a new one
-        hashtag = await this.createHashtag({
-          tag: tagText
-        });
+      const savedHashtags: Hashtag[] = [];
+      
+      // Process each hashtag
+      for (const match of matches) {
+        try {
+          // Remove the '#' character and normalize to lowercase
+          const tagText = match.substring(1).toLowerCase();
+          
+          // Skip empty tags
+          if (!tagText) continue;
+          
+          // Check if this hashtag already exists
+          let hashtag = await this.getHashtagByTag(tagText);
+          
+          if (hashtag) {
+            // If it exists, increment its count
+            hashtag = await this.incrementHashtagCount(hashtag.id);
+          } else {
+            // If it doesn't exist, create a new one
+            hashtag = await this.createHashtag({
+              tag: tagText
+            });
+          }
+          
+          if (hashtag) {
+            try {
+              // Create the association between the pulse and the hashtag
+              await this.createPulseHashtag({
+                pulseId,
+                hashtagId: hashtag.id
+              });
+              
+              savedHashtags.push(hashtag);
+            } catch (error) {
+              console.error(`Error creating pulse-hashtag association for pulse ${pulseId} and hashtag ${hashtag.id}:`, error);
+              // Continue with next hashtag even if this one fails
+            }
+          }
+        } catch (error) {
+          console.error(`Error processing hashtag ${match}:`, error);
+          // Continue with next hashtag even if this one fails
+        }
       }
       
-      if (hashtag) {
-        // Create the association between the pulse and the hashtag
-        await this.createPulseHashtag({
-          pulseId,
-          hashtagId: hashtag.id
-        });
-        
-        savedHashtags.push(hashtag);
-      }
+      return savedHashtags;
+    } catch (error) {
+      console.error(`Error extracting hashtags from text for pulse ${pulseId}:`, error);
+      // Return empty array to prevent the entire pulse creation from failing
+      return [];
     }
-    
-    return savedHashtags;
   }
   
   async searchHashtagsByPrefix(prefix: string): Promise<Hashtag[]> {
