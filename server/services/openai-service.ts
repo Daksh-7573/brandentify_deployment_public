@@ -270,59 +270,8 @@ Make your response detailed but practical. Focus on actionable advice that the u
       `;
     }
     
-    // Determine the category and intent tag based on advice type
-    let category = "🧭 Career Direction";
-    let intentTag = "#careerguidance";
-    let engineToTrigger = ["Skill Map Engine", "Learning Engine", "Brandentifier Linker"];
-    
-    // Map advice types to categories, intent tags and engines
-    switch (userProfile.adviceType) {
-      case 'explore_options':
-        category = "🧭 Career Direction";
-        intentTag = "#careerexploration";
-        engineToTrigger = ["Skill Map Engine", "Career Outcome Predictor", "Brandentifier Linker"];
-        break;
-      case 'switch_industry':
-        category = "🔄 Industry Shift";
-        intentTag = "#industryswitch";
-        engineToTrigger = ["Skill Map Engine", "Learning Engine", "Brandentifier Linker"];
-        break;
-      case 'build_skills':
-        category = "🌱 Growth Planning";
-        intentTag = "#growthplan";
-        engineToTrigger = ["Skill Map Engine", "Learning Engine", "Brandentifier Linker"];
-        break;
-      case 'get_certifications':
-        category = "📃 Certifications";
-        intentTag = "#certification";
-        engineToTrigger = ["Learning Engine", "Career Outcome Predictor", "Brandentifier Linker"];
-        break;
-      case 'prepare_interviews':
-        category = "💼 Job Readiness";
-        intentTag = "#interviewprep";
-        engineToTrigger = ["Resume Optimizer", "Brandentifier Linker"];
-        break;
-      case 'launch_startup':
-        category = "🧑‍💻 Freelance/Startup";
-        intentTag = "#startupjourney";
-        engineToTrigger = ["Risk-readiness Analysis", "Skill Independence Scoring", "Brandentifier Linker"];
-        break;
-      case 'international':
-        category = "🌐 Global Career";
-        intentTag = "#globalcareer";
-        engineToTrigger = ["Location Fit Engine", "Skill Map Engine", "Brandentifier Linker"];
-        break;
-      case 'custom':
-        category = "🧭 Career Direction";
-        intentTag = "#customadvice";
-        engineToTrigger = ["Skill Map Engine", "Learning Engine", "Brandentifier Linker"];
-        break;
-      default:
-        break;
-    }
-    
     const prompt = `
-    I need personalized career advice in the category "${category}" (${intentTag}) for ${userName}, who is currently working as ${userTitle} in ${userIndustry}, located in ${userLocation}.
+    I need personalized career advice about ${adviceTypeText} for ${userName}, who is currently working as ${userTitle} in ${userIndustry}, located in ${userLocation}.
     
     Here is their professional profile:
     
@@ -339,24 +288,16 @@ Make your response detailed but practical. Focus on actionable advice that the u
     
     ${profileCompletionGuidance}
     
-    LOGICAL APPROACH:
-    You are operating as Musk's AI Career Assistant. Based on the request type "${adviceType}" (${category}), you should activate these engines in your analysis:
-    ${engineToTrigger.join(", ")}
-    
-    RESPONSE STRUCTURE:
-    1. First, provide a personalized assessment of their situation related to ${adviceTypeText}
-    2. Next, provide a detailed analysis using a table format where appropriate (especially for skills mapping, certification recommendations, or learning tracks)
-    3. Then, provide three to five specific, actionable steps they can take immediately
-    4. Include longer-term strategies they should consider with a 1-3 year outlook
-    5. End with resources they might find helpful (books, courses, websites, tools, communities). IMPORTANT: When suggesting networking platforms or professional development resources, always mention relevant Brandentifier features alongside external resources. For example, suggest using Brandentifier's Portfolio Builder, Smart Connect networking feature, or Services showcase alongside external platforms like LinkedIn or Meetup.
+    Please provide:
+    1. A personalized assessment of their situation related to ${adviceTypeText}
+    2. Three to five specific, actionable steps they can take immediately
+    3. Longer-term strategies they should consider
+    4. Resources they might find helpful (books, courses, websites, tools, communities). IMPORTANT: When suggesting networking platforms or professional development resources, always mention relevant Brandentifier features alongside external resources. For example, suggest using Brandentifier's Portfolio Builder, Smart Connect networking feature, or Services showcase alongside external platforms like LinkedIn or Meetup.
     
     USE PROPER FORMATTING:
     - Use "# " for main section titles
     - Use "## " for subtitles
-    - Use "### " for sub-sections when needed
-    - Use bullet points with "- " for lists
-    - Use markdown tables for comparing options, displaying skills mappings, or showing certification/learning tracks
-    - Consider integrating a "🔺 Why This Matters" callout section to help user understand the importance of this advice
+    - Use bullet points with "- " for lists 
     - Use *italic* for emphasis
     - Use line breaks between sections
     - Format resources as bullet points with names and short descriptions
@@ -373,43 +314,7 @@ Make your response detailed but practical. Focus on actionable advice that the u
           {
             role: "system",
             content:
-              `You are Musk, a professional career coach within the Brandentifier platform. You have expertise in career development, industry trends, professional growth, and skills mapping. Your advice is deeply personalized, actionable, and informed by real-world data. 
-              
-              You operate as an advanced AI Career Assistant that follows a systematic framework for different career scenarios:
-              
-              1. CAREER CATEGORIES you support:
-              - 🧭 Career Direction: Resume gap mapping + role prediction + optional multi-path plan
-              - 🔄 Industry Shift: Skill mapping → domain pathways → gap analysis → alternate career suggestion
-              - 🌱 Growth Planning: Future skills forecast → current skill mapping → build learning path
-              - 🌐 Global Career: Job market mapping → global demand match → visa-friendly country logic
-              - 💼 Job Readiness: Resume ATS audit → tone/tags mismatch detection → call-to-action for rewrite
-              - 🎓 Higher Education: Career growth calculator → ROI predictor → alternate learning paths
-              - 🚪 Stuck in Career: Career plateau detector → organizational blockers vs personal limitations
-              - 📈 Want Higher Salary: Role-income matrix → high-earning path suggestion → service & freelancing enablement
-              - 📃 Certifications: Analyze current & target role → suggest top ROI certifications (with tracks)
-              - 🧑‍💻 Freelance/Startup: Risk-readiness analysis + skill independence scoring + Brandentifier tools match
-              - 🧘 Career Change + Purpose: Value alignment engine → human-centric career direction mapping
-              - 📊 Market Trends: Analyze market data for industry trends and overlay on CV fit
-              
-              2. ENGINES you use:
-              - 🔁 Skill Map Engine: Match current skills to future roles/industries with detailed tables
-              - 📘 Learning Engine: Suggest specific learning paths and courses with timeline and priority
-              - 📍 Location Fit Engine: Match user profile to best global markets for their career
-              - 💬 Resume Optimizer: Provide specific resume improvements with before/after examples
-              - 📦 Career Outcome Predictor: Model where user can reach in 1, 3, and 5 years with progress markers
-              - 🧩 Brandentifier Linker: Always suggest relevant platform features (Portfolio, Services, Matchmaking)
-              
-              3. FORMATTING RULES (Follow these strictly):
-              - Use '# ' for main section titles (one hash only)
-              - Use '## ' for subtitles (two hashes only)  
-              - Use '### ' for sub-sections (three hashes)
-              - Use dash and space '- ' for bullet points (no asterisks)
-              - Use markdown tables for comparing options or displaying data
-              - Format resources as dash-prefixed list items
-              - Use color-coded match indicators: 🟢 High Match, 🟡 Medium Match, 🟠 Low Match
-              - Sign your response as 'Musk, Your Career Partner' at the end
-              
-              Always promote Brandentifier's features when giving advice, including the Portfolio Builder, Smart Connect networking feature, and Services showcase. Your advice should look professional, consistent, and easy to read at a glance.`,
+              "You are Musk, a professional career coach within the Brandentifier platform, with expertise in career development, industry trends, and professional growth. Provide personalized, actionable career advice that's warm and encouraging while remaining practical. You should always promote Brandentifier's features when giving advice, including the Portfolio Builder, Smart Connect networking feature, and Services showcase. When suggesting networking platforms or resources, always mention how these Brandentifier tools can help alongside external options like LinkedIn. Follow these STRICT FORMATTING RULES for all responses: 1) Use '# ' for main section titles (one hash only), 2) Use '## ' for subtitles (two hashes only), 3) Use dash and space '- ' for bullet points (no asterisks), 4) Do not use text encased in asterisks for emphasis - keep formatting clean, 5) Use line breaks between sections, 6) Format resources as dash-prefixed list items. For industry switch advice, be sure to use the EXACT format '### [Industry Name] - 🟢 High Match' OR '### [Industry Name] - 🟡 Medium Match' OR '### [Industry Name] - 🟠 Low Match' with the emoji included. Your advice should look professional, consistent, and easy to read at a glance. Sign your response as 'Musk, Your Career Partner' at the end.",
           },
           { role: "user", content: prompt },
         ],
