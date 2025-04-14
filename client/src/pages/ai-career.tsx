@@ -134,10 +134,10 @@ export default function AICareerPage() {
         });
       }
       
-      // Show chat window with initial AI message
+      // Now that results are ready, show the chat window
       setShowChatWindow(true);
       
-      // Replace the loading message with the actual advice
+      // Set the actual advice in the chat history
       setChatHistory([{
         content: data.advice || "I've analyzed your profile and career goals. What specific questions do you have?",
         sender: "musk",
@@ -176,7 +176,7 @@ export default function AICareerPage() {
       // Ensure the hasUploadedResume flag is set
       setHasUploadedResume(true);
       
-      // Immediately show chat window - don't wait for query refetch
+      // Now that results are ready, show the chat window
       setShowChatWindow(true);
       
       if (user?.id) {
@@ -294,18 +294,18 @@ export default function AICareerPage() {
     scrollToBottom();
   }, [chatHistory]);
   
-  // Use effect to update message type and show chat window when tab changes
+  // Use effect to update message type when tab changes
   useEffect(() => {
     // Update the active message type based on the tab
     if (activeTab === "resume") {
       setActiveMessageType("resume_analysis");
-      // Show chat window immediately if no resume messages
-      if (getRecentAIMessages("resume_analysis").length === 0) {
-        setShowChatWindow(true);
-      }
     } else {
       setActiveMessageType("career_advice");
     }
+    
+    // Don't show chat window until results are ready
+    // Instead show initial form
+    setShowChatWindow(false);
   }, [activeTab]);
 
   // Redirect to landing if not authenticated
@@ -428,15 +428,11 @@ export default function AICareerPage() {
                         <Button 
                           className="w-full"
                           onClick={() => {
-                            // Show chat window immediately
-                            setShowChatWindow(true);
+                            // Don't show chat window until results are ready
+                            setShowChatWindow(false);
                             
-                            // Add a loading message to the chat
-                            setChatHistory([{
-                              content: "I'm preparing your career advice... this will take just a moment.",
-                              sender: "musk",
-                              timestamp: new Date()
-                            }]);
+                            // Clear any previous chat history
+                            setChatHistory([]);
                             
                             // Start the advice generation
                             careerAdviceMutation.mutate();
@@ -545,16 +541,11 @@ export default function AICareerPage() {
                                       // Mark that we've uploaded a resume in this session
                                       setHasUploadedResume(true);
                                       
-                                      // Set loading state
-                                      // Set up the chat window immediately before analysis starts
-                                      setShowChatWindow(true);
+                                      // Don't show chat window until results are ready
+                                      setShowChatWindow(false);
                                       
-                                      // Add a loading message to the chat
-                                      setChatHistory([{
-                                        content: "I'm analyzing your resume... this will take just a moment.",
-                                        sender: "musk",
-                                        timestamp: new Date()
-                                      }]);
+                                      // Clear any previous chat history
+                                      setChatHistory([]);
                                       
                                       // Start the resume analysis
                                       resumeAnalysisMutation.mutate({ 
