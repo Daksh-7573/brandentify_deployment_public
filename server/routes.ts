@@ -2265,9 +2265,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           company: null,
           industry: targetIndustry,
           visitingCardType: null,
-          contactEmail: null,
-          contactPhone: null,
-          website: null,
+          // These fields removed as they don't exist in the model
           lookingFor: null,
           profileCompleted: null,
           emailVerified: false,
