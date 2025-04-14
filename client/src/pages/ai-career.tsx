@@ -888,11 +888,11 @@ export default function AICareerPage() {
                       
                       <div className="space-y-5">
                         {/* Chat messages - fixed height container */}
-                        <div className="space-y-4 h-[450px] overflow-y-auto p-5 border border-gray-200 rounded-lg bg-gray-50/20 shadow-inner" id="chat-container">
+                        <div className="space-y-4 h-[550px] overflow-y-auto p-5 border border-gray-200 rounded-lg bg-gray-50/20 shadow-inner" id="chat-container">
                           {chatHistory.map((message, index) => (
                             <div 
                               key={index} 
-                              className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"} relative mb-3 group`}
+                              className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"} relative mb-3 group w-full`}
                             >
                               {message.sender !== "user" && (
                                 <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 mr-3 shadow-sm border border-primary/5">
@@ -903,7 +903,7 @@ export default function AICareerPage() {
                                 className={`max-w-[85%] p-4 rounded-lg ${
                                   message.sender === "user" 
                                     ? "bg-primary text-primary-foreground shadow-sm" 
-                                    : "bg-white border border-gray-100 shadow-md hover:shadow-lg transition-shadow"
+                                    : "bg-white border border-gray-100 shadow-md hover:shadow-lg transition-shadow w-full"
                                 }`}
                               >
                                 {message.sender === "user" ? (
