@@ -2,6 +2,7 @@ import OpenAI from "openai";
 import Anthropic from "@anthropic-ai/sdk";
 import { WorkExperience, Education, Skill } from "@shared/schema";
 import { extractTextFromPdf } from "../utils/pdf-extractor";
+import { muskResumeIntelligence } from "../utils/advanced-pdf-processor";
 import { promises as fs } from 'fs';
 import path from 'path';
 
