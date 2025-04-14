@@ -14,7 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
-import { Search as SearchIcon, Users, MessageSquare, Hash, UserPlus, Star, MapPin, ArrowUpRight, ArrowDownRight, Plus, Check } from "lucide-react";
+import { Search as SearchIcon, Users, MessageSquare, Hash, UserPlus, Star, MapPin, ArrowUpRight, ArrowDownRight, Plus, Check, ChevronRight } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { JobTitleCombobox } from "@/components/ui/job-title-combobox";
 import DashboardLayout from "@/components/layout/dashboard-layout";
@@ -1355,9 +1355,10 @@ const SearchPage = () => {
                   <CardFooter className="flex justify-between">
                     <p className="text-sm text-gray-500">Showing top {matchMutation.data.length} matches</p>
                     <button 
-                      className="px-4 py-1.5 rounded-md bg-white border border-gray-200 hover:bg-gray-50 hover:border-primary/30 hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm font-medium transition-all text-sm"
+                      className="px-4 py-1.5 rounded-full bg-white border border-gray-200 hover:bg-gray-50 hover:border-primary/30 hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm font-medium transition-all text-sm flex items-center gap-1.5"
                     >
-                      View More
+                      <span>View More</span>
+                      <ChevronRight size={14} />
                     </button>
                   </CardFooter>
                 )}
