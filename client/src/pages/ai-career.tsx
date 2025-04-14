@@ -183,8 +183,9 @@ export default function AICareerPage() {
           queryKey: ["/api/users", user.id, "chat-messages"]
         });
         
-        // Add the analysis directly from the response data to the chat history
+        // Add the analysis directly from the response data to the chat history, replacing any loading message
         if (data.analysis) {
+          // Replace the loading message with the actual analysis
           setChatHistory([{
             content: data.analysis,
             sender: "musk",
@@ -511,6 +512,17 @@ export default function AICareerPage() {
                                       setHasUploadedResume(true);
                                       
                                       // Set loading state
+                                      // Set up the chat window immediately before analysis starts
+                                      setShowChatWindow(true);
+                                      
+                                      // Add a loading message to the chat
+                                      setChatHistory([{
+                                        content: "I'm analyzing your resume... this will take just a moment.",
+                                        sender: "musk",
+                                        timestamp: new Date()
+                                      }]);
+                                      
+                                      // Start the resume analysis
                                       resumeAnalysisMutation.mutate({ 
                                         fileData: base64Data, 
                                         userId: user?.id || 0,
