@@ -859,7 +859,7 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
       - ✅ [Strength 1]: Specific example from their resume
       - ✅ [Strength 2]: Specific example from their resume
       - ✅ [Strength 3]: Specific example from their resume
-      (Include 4-6 specific strengths with clear examples)
+      (Include 4-6 specific strengths with clear examples from their resume)
       
       ## 2. Areas for Improvement (Score: X/100)
       - 🔹 [Improvement Area 1]:
@@ -871,39 +871,65 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
         - Current issue: What's currently in their resume
         - Suggestion: Specific improvement recommendation
         - Example: Before/after example
-      (Include 3-5 improvement areas)
+      (Include 3-5 improvement areas with clear examples)
       
       ## 3. Resume Rewrite Suggestions
       - 📝 [Section to Revise 1]:
-        ❌ Current version: "..." (actual text from resume)
+        ❌ Current version: "..." (use actual text from resume)
         ✅ Improved version: "..." (your suggested revision)
       
       - 📝 [Section to Revise 2]:
-        ❌ Current version: "..." (actual text from resume)
+        ❌ Current version: "..." (use actual text from resume)
         ✅ Improved version: "..." (your suggested revision)
+      (Include 2-3 specific sections with before/after examples)
       
-      ## 4. Upskill Opportunities
-      - 🌟 [Priority Skill 1]: Why needed and specific learning resource
-      - 🌟 [Priority Skill 2]: Why needed and specific learning resource
-      - 🌟 [Priority Skill 3]: Why needed and specific learning resource
+      ## 4. Career Pattern Insights
+      - 📊 [Pattern 1]: What this pattern reveals about their career trajectory
+      - 📊 [Pattern 2]: What this pattern suggests about their professional style 
+      (Include insights on career gaps, job-hopping patterns, specialist vs. generalist trends, or leadership trajectory)
       
-      ## 5. Brandentifier Features to Leverage
-      - 📊 Portfolio Builder: How to showcase specific projects from their resume
-      - 🤝 Smart Connect: Specific networking recommendations based on their background
-      - 🛠️ Services Showcase: How to position their expertise as services
+      ## 5. Market Position Assessment
+      - 🌍 Current Market Alignment: How their resume compares to industry expectations
+      - 🌍 Competitive Edge: Their unique value compared to others in similar roles
+      - 🌍 Future Positioning: How market trends affect their career opportunities
       
-      ## 6. Quick Wins (30-Day Plan)
+      ## 6. Upskill Opportunities
+      - 🌟 [Priority Skill 1]: Justification and specific learning resource
+      - 🌟 [Priority Skill 2]: Justification and specific learning resource
+      - 🌟 [Priority Skill 3]: Justification and specific learning resource
+      (Include 3-4 skills with specific learning resources)
+      
+      ## 7. Persona Indicators
+      - 👤 Career Style: Climber, Explorer, or Stable based on their patterns
+      - 👤 Role Direction: Specialist, Generalist, or Hybrid trajectory
+      - 👤 Work Type: Builder, Thinker, Seller, or Leader tendencies
+      
+      ## 8. Brandentifier Features to Leverage
+      - 📱 Portfolio Builder: How to showcase specific projects/skills from their resume
+      - 📱 Smart Connect: Specific networking recommendations based on their background
+      - 📱 Services Showcase: How to position their expertise as services
+      
+      ## 9. Quick Wins (30-Day Plan)
       1. [Quick Win 1]: Specific action with expected outcome
       2. [Quick Win 2]: Specific action with expected outcome
       3. [Quick Win 3]: Specific action with expected outcome
       
-      Evaluate the resume using these criteria:
-      - Structure & Layout (organization, formatting, visual appeal)
-      - Content Quality (clarity, relevance, professional language)
-      - Industry Relevance (alignment with expectations, terminology)
-      - Achievements & Impact (quantified results, specific accomplishments)
-      - Skills Balance (technical and soft skills representation)
-      - ATS Compatibility (keywords, standard sections, parsable format)
+      Evaluate the resume for:
+      - Career gaps and job-hopping patterns
+      - Cross-functional skill capabilities
+      - Role progression and patterns
+      - Tone and language quality (passive vs. confident)
+      - ATS compatibility and keyword optimization
+      - Industry-specific expectations match
+      - Personal brand clarity and uniqueness
+      
+      For behavioral nudging, adapt your opening tone based on resume quality:
+      - For resumes with weak or no quantifiable achievements: "Let's give your CV a power-up!"
+      - For resumes with passive wording: "You've done more than your resume shows. Let me fix that."
+      - For resumes with solid experience but poor formatting: "Your experience is solid, but the design might be hurting you."
+      - For resumes showing high impact but suggesting low compensation: "You might be undercharging based on your results."
+      
+      After your analysis, suggest 1-2 appropriate follow-up questions based on what you detected in their resume (e.g., career gaps, job-hopping patterns, cross-functional skills).
       
       Make sure to use:
       1. Proper Markdown formatting with # and ## for headings
@@ -913,7 +939,7 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
       5. A professional yet conversational tone
       6. Exactly the section structure outlined above
       
-      Your analysis should be extremely personalized, actionable, and visually structured.
+      Your analysis must be EXTREMELY PERSONALIZED, using their specific name and directly referencing their exact experiences, skills, and background from their resume. Avoid generic advice - everything must be tailored to their specific situation.
       `;
       } catch (error: any) {
         console.error("Error processing text resume:", error);
