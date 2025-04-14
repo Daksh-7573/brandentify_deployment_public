@@ -54,13 +54,17 @@ export default function AICareerPage() {
       if (!user?.id) {
         throw new Error("User ID not found");
       }
+      
+      // Determine message type based on active tab
+      const messageType = activeTab === "career" ? "career_advice" : "resume_analysis";
+      
       const res = await apiRequest({
         method: "POST", 
         url: "/api/chat-messages",
         data: {
           userId: user.id,
           content: message,
-          messageType: "career_advice",
+          messageType: messageType,
           sender: "user"
         }
       });
@@ -69,8 +73,16 @@ export default function AICareerPage() {
     onSuccess: (data) => {
       // Add AI response to chat history
       setTimeout(() => {
+        // Create appropriate fallback message based on active tab
+        let fallbackMessage = "I'm analyzing your question...";
+        if (activeTab === "career") {
+          fallbackMessage = "I'm analyzing your question. Let me think about this based on your profile and career goals.";
+        } else {
+          fallbackMessage = "I'm analyzing your question about your resume. Let me consider the details of your profile and the resume analysis.";
+        }
+        
         setChatHistory(prev => [...prev, {
-          content: data.aiResponse || "I'm analyzing your question. Let me think about this based on your profile and career goals.",
+          content: data.aiResponse || fallbackMessage,
           sender: "musk",
           timestamp: new Date()
         }]);
