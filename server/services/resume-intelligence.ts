@@ -237,22 +237,59 @@ For ${userName}'s resume, carefully analyze the following key areas:
 
 ${FOCUS_AREAS.map(area => `- ${area.name} (${area.description}): ${area.importance}`).join('\n')}
 
-After analyzing the resume, provide a comprehensive analysis that includes:
+After analyzing the resume, provide a comprehensive analysis with VERY STRUCTURED FORMATTING as follows:
 
-1. Strengths Overview: Key hard/soft skills and domain strengths with specific examples
-2. Areas for Improvement: Gaps, inconsistencies, or outdated practices with suggestions
-3. Resume Rewrite Suggestions: Specific improvements for better market positioning
-4. Upskill Opportunities: Targeted recommendations for skills development
-5. Brandentifier Feature Recommendations: How the platform can amplify their career
+# Resume Analysis for ${userName}
 
-Your analysis must be EXTREMELY PERSONALIZED, using ${userName}'s specific name and directly referencing their exact experiences, skills, and background from their resume. Avoid generic advice - everything must be tailored to their specific situation.
+## 1. Strengths Overview (Score: X/100)
+- ✅ [Strength 1]: Specific example from their resume
+- ✅ [Strength 2]: Specific example from their resume
+- ✅ [Strength 3]: Specific example from their resume
+(Include 4-6 specific strengths with clear examples from their resume)
 
-When suggesting improvements, always mention how Brandentifier's features can help, including:
-- Portfolio Builder for showcasing projects
-- Smart Connect for strategic networking
-- Services showcase for freelancers and consultants
+## 2. Areas for Improvement (Score: X/100)
+- 🔹 [Improvement Area 1]:
+  - Current issue: What's currently in their resume
+  - Suggestion: Specific improvement recommendation
+  - Example: Before/after example
 
-Format your response with clear sections, bullet points, and emphasize key insights. Be direct but constructive in your feedback.`;
+- 🔹 [Improvement Area 2]:
+  - Current issue: What's currently in their resume
+  - Suggestion: Specific improvement recommendation
+  - Example: Before/after example
+(Include 3-5 improvement areas with clear examples)
+
+## 3. Resume Rewrite Suggestions
+- 📝 [Section to Revise 1]:
+  ❌ Current version: "..."
+  ✅ Improved version: "..."
+
+- 📝 [Section to Revise 2]:
+  ❌ Current version: "..."
+  ✅ Improved version: "..."
+(Include 2-3 specific sections with before/after examples)
+
+## 4. Upskill Opportunities
+- 🌟 [Priority Skill 1]: Justification and learning resource
+- 🌟 [Priority Skill 2]: Justification and learning resource
+- 🌟 [Priority Skill 3]: Justification and learning resource
+(Include 3-4 skills with specific learning resources)
+
+## 5. Brandentifier Features to Leverage
+- 📊 Portfolio Builder: How to showcase specific projects/skills from their resume
+- 🤝 Smart Connect: Specific networking recommendations based on their background
+- 🛠️ Services Showcase: How to position their expertise as services
+
+## 6. Quick Wins (30-Day Plan)
+1. [Quick Win 1]: Specific action with expected outcome
+2. [Quick Win 2]: Specific action with expected outcome
+3. [Quick Win 3]: Specific action with expected outcome
+
+Your analysis must be EXTREMELY PERSONALIZED, using ${userName}'s specific name and directly referencing their exact experiences, skills, and background from their resume. Avoid generic advice - everything must be tailored to their specific situation. 
+
+Use emoji bullet points (✅, 🔹, 📝, 🌟, etc.) consistently to create visual hierarchy. Create clear, visually distinct sections with proper Markdown formatting (# for main headings, ## for subheadings). Use bold for emphasis on key points.
+
+Be direct but constructive in your feedback. Format each section exactly as shown above with proper spacing and hierarchy.`;
 }
 
 /**

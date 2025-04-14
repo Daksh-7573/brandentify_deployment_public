@@ -627,42 +627,63 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
       userPrompt = `
       The user has provided a link to their resume (${resumeText}), but I cannot directly access the content of external links. 
       
-      Please provide a comprehensive, detailed resume analysis and improvement guide structured like this example:
-
-      Resume Analysis & Improvement Suggestions
+      Since I can't see the actual resume, please provide a comprehensive set of resume analysis and improvement guidelines that would be valuable for most professionals. Use this EXACT formatting with proper markdown:
       
-      Strengths (common in professional resumes):
-      ✅ List 5-6 common strengths seen in professional resumes (focus on Product Management, AI, SaaS, tech roles)
-      ✅ Include specific areas like quantifiable achievements, technical skills, career progression
-      ✅ Mention industry exposure (tech, fintech, e-commerce, etc.)
+      # Resume Analysis Guidelines
       
-      Areas for Improvement & Recommendations:
+      ## 1. Common Resume Strengths to Verify
+      - ✅ [Quantified Achievements]: Include metrics with all accomplishments (e.g., "Increased sales by 27%")
+      - ✅ [Technical Proficiency]: Clearly list relevant technologies, tools, and platforms
+      - ✅ [Career Progression]: Show growth and increasing responsibility over time
+      - ✅ [Industry Keywords]: Include terms specific to your target roles and industry
+      - ✅ [Accomplishments vs. Duties]: Focus on results, not just responsibilities
       
-      1️⃣ Improve Profile Summary
-      Show examples of weak vs. strong profile summaries:
+      ## 2. Common Areas for Improvement
+      - 🔹 [Generic Summary Statements]:
+        - Common issue: Generic statements like "Results-driven professional with 10 years of experience"
+        - Improvement: Lead with specific expertise and unique value proposition
+        - Example:
+          ❌ "Dedicated professional with experience in software development"
+          ✅ "Full-stack developer with 5+ years building scalable fintech solutions using React, Node.js, and AWS, reducing system latency by 40%"
       
-      ❌ Current (example of a generic summary)
-      ✅ Suggested Revision (example of a strong summary with specifics about AI, product management, achievements)
+      - 🔹 [Lack of Quantifiable Impact]:
+        - Common issue: Listing responsibilities without measurable results
+        - Improvement: Add metrics to achievements wherever possible
+        - Example:
+          ❌ "Managed client projects and improved satisfaction"
+          ✅ "Led 12 client projects worth $1.2M, improving satisfaction scores by 28% and securing 5 referral clients"
       
-      2️⃣ Achievements Need More Quantifiable Impact
-      Provide specific examples:
+      ## 3. Section-by-Section Optimization
+      - 📝 [Professional Summary]:
+        - Structure: expertise + experience + key achievement + unique value
+        - Example: "DevOps engineer with 7+ years orchestrating CI/CD pipelines for SaaS companies, reducing deployment times by 80% and improving system reliability to 99.99% uptime. Known for translating complex technical challenges into elegant automation solutions."
       
-      ❌ Generic achievement example
-      ✅ Achievement with metrics (e.g., "Led full-cycle product development for 5+ AI-powered products, achieving a 30% reduction in time-to-market")
+      - 📝 [Experience Section]:
+        - Structure: accomplishment + method + result format for each bullet
+        - Example: "Redesigned customer onboarding process (accomplishment) using design thinking methodology and A/B testing (method), increasing conversion rates by 34% and reducing support tickets by 27% (result)"
       
-      3️⃣ Better Formatting for Readability
-      Specific formatting tips for modern resumes
+      ## 4. Key Skills Development
+      - 🌟 [Technical Skills]: List specific technologies, not broad categories
+        - Recommendation: Group by category with proficiency levels
+        - Resource: Use skills assessments on LinkedIn or GitHub profile to validate
       
-      4️⃣ Improve "Skills" Section
-      Suggested structure with modern skills relevant to tech and product roles
+      - 🌟 [Soft Skills]: Demonstrate with accomplishments, don't just list
+        - Recommendation: Connect soft skills to results in experience section
+        - Resource: Take CliftonStrengths assessment to identify unique strengths
       
-      5️⃣ "Projects" Section Recommendations
-      Show how to structure a projects section with examples
+      ## 5. Using Brandentifier to Showcase Your Expertise
+      - 📊 Portfolio Builder: Create interactive showcases of your top projects with visual elements
+      - 🤝 Smart Connect: Find mentors and peers in your target industry for resume review
+      - 🛠️ Services Showcase: Package your key skills as specific service offerings
       
-      6️⃣ ATS Optimization Tips
-      Explain how to make resumes ATS-friendly with examples
+      ## 6. Quick Wins (30-Day Plan)
+      1. [Accomplishment Audit]: Identify top 3-5 achievements and add metrics to each
+      2. [Keyword Optimization]: Analyze 5 job descriptions and incorporate matching keywords
+      3. [Professional Summary Rewrite]: Create a tailored, impactful 3-4 sentence summary
       
-      Make this extremely actionable, detailed, and formatted with emoji bullets (like ✅, 🔹, 📅) to make sections visually distinct. Use a professional yet conversational tone.
+      When you upload your actual resume, I can provide specific, personalized feedback for your unique situation. This guide provides the framework I'll use to analyze your resume.
+      
+      Make this extremely actionable, detailed, and formatted with consistent emoji bullets. Maintain this exact formatting with proper markdown headings.
       `;
     } else if (isBase64Value) {
       console.log("Processing base64 data");
@@ -775,7 +796,39 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
         console.error("Error processing base64 data:", error);
         systemPrompt += " I cannot directly process this resume file, but I can provide comprehensive, detailed guidance for resume improvement similar to what an expert resume coach would offer.";
         userPrompt = `
-        I couldn't properly process the resume file you provided. Please provide a comprehensive, detailed resume analysis and improvement guide using standard best practices.
+        I couldn't properly process the resume file you uploaded. Please provide a comprehensive, detailed resume analysis and improvement guide using the following structured format with proper markdown:
+      
+        # Resume Analysis Guidelines
+        
+        ## 1. Common Resume Strengths to Verify
+        - ✅ [Quantified Achievements]: Include metrics with all accomplishments
+        - ✅ [Technical Proficiency]: Clearly list relevant technologies, tools, and platforms
+        - ✅ [Career Progression]: Show growth and increasing responsibility over time
+        
+        ## 2. Common Areas for Improvement
+        - 🔹 [Generic Summary Statements]:
+          - Common issue: Generic statements without specificity
+          - Improvement: Lead with specific expertise and unique value proposition
+          - Example: Before/after comparison
+        
+        ## 3. Section-by-Section Optimization
+        - 📝 [Professional Summary]: Structure and example
+        - 📝 [Experience Section]: Format for bullets and example
+        
+        ## 4. Key Skills Development
+        - 🌟 [Technical Skills]: How to present them effectively
+        - 🌟 [Soft Skills]: How to demonstrate with accomplishments
+        
+        ## 5. Using Brandentifier to Showcase Your Expertise
+        - 📊 Portfolio Builder: How to use effectively
+        - 🤝 Smart Connect: Networking strategies
+        
+        ## 6. Quick Wins (30-Day Plan)
+        1. [Action 1]: Expected outcome
+        2. [Action 2]: Expected outcome
+        3. [Action 3]: Expected outcome
+        
+        Use proper markdown formatting, consistent emoji bullets, and maintain this exact section structure.
         `;
       }
     } 
@@ -794,69 +847,150 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
       
         userPrompt = `
       I need an EXTREMELY detailed and personalized professional analysis of this resume. This must be a comprehensive, specific analysis that directly references the actual content in the resume, not generic advice. Make your response feel like it was written specifically for this individual after carefully studying their resume.
-            
-      Analyze the resume using these critical evaluation criteria, providing a score (out of 100%) for each category and an overall score:
-      
-      1. STRUCTURE & LAYOUT (20% of total score)
-      • Overall organization and visual appeal
-      • Section order and prominence
-      • Appropriate length (1-2 pages)
-      • Consistent formatting and readability
-      
-      2. CONTENT QUALITY (20% of total score)
-      • Clarity and conciseness
-      • Relevance of information included
-      • Professional language and tone
-      • Proper grammar and spelling
-      
-      3. RELEVANCE TO ROLE/INDUSTRY (15% of total score)
-      • Alignment with industry expectations
-      • Focus on relevant skills/experiences
-      • Use of appropriate industry terminology
-      • Clear career progression/trajectory
-      
-      4. ACHIEVEMENTS & METRICS (20% of total score)
-      • Quantified results and impact
-      • Specific accomplishments vs. job duties
-      • Evidence of leadership and initiative
-      • Demonstration of value added
-      
-      5. SOFT SKILLS & PERSONALITY (10% of total score)
-      • Balance of technical and interpersonal skills
-      • Evidence of teamwork and collaboration
-      • Communication and leadership qualities
-      • Unique attributes that distinguish the candidate
-      
-      6. ATS COMPATIBILITY (15% of total score)
-      • Keyword optimization for target roles
-      • Clean, parsable formatting
-      • Proper use of standard section headings
-      • Absence of graphics/tables that confuse ATS
-      
+        
       RESUME TEXT:
       ${truncatedText}
       
-      Provide the analysis in this format:
-      1. Summary of resume strengths and weaknesses
-      2. Detailed scores for each category with specific examples from the resume
-      3. Overall score with explanation
-      4. Prioritized recommendations for improvement (most impactful first)
-      5. Specific suggestions on how to use Brandentifier's Portfolio Builder to showcase projects and skills
+      Follow this EXACT formatting structure with proper markdown and emojis:
       
-      Make this extremely actionable, detailed, and formatted with emoji bullets (like ✅, 🔹, 📅) to make sections visually distinct. Use a professional yet conversational tone.
+      # Resume Analysis for [Person's Name]
+      
+      ## 1. Strengths Overview (Score: X/100)
+      - ✅ [Strength 1]: Specific example from their resume
+      - ✅ [Strength 2]: Specific example from their resume
+      - ✅ [Strength 3]: Specific example from their resume
+      (Include 4-6 specific strengths with clear examples)
+      
+      ## 2. Areas for Improvement (Score: X/100)
+      - 🔹 [Improvement Area 1]:
+        - Current issue: What's currently in their resume
+        - Suggestion: Specific improvement recommendation
+        - Example: Before/after example
+      
+      - 🔹 [Improvement Area 2]:
+        - Current issue: What's currently in their resume
+        - Suggestion: Specific improvement recommendation
+        - Example: Before/after example
+      (Include 3-5 improvement areas)
+      
+      ## 3. Resume Rewrite Suggestions
+      - 📝 [Section to Revise 1]:
+        ❌ Current version: "..." (actual text from resume)
+        ✅ Improved version: "..." (your suggested revision)
+      
+      - 📝 [Section to Revise 2]:
+        ❌ Current version: "..." (actual text from resume)
+        ✅ Improved version: "..." (your suggested revision)
+      
+      ## 4. Upskill Opportunities
+      - 🌟 [Priority Skill 1]: Why needed and specific learning resource
+      - 🌟 [Priority Skill 2]: Why needed and specific learning resource
+      - 🌟 [Priority Skill 3]: Why needed and specific learning resource
+      
+      ## 5. Brandentifier Features to Leverage
+      - 📊 Portfolio Builder: How to showcase specific projects from their resume
+      - 🤝 Smart Connect: Specific networking recommendations based on their background
+      - 🛠️ Services Showcase: How to position their expertise as services
+      
+      ## 6. Quick Wins (30-Day Plan)
+      1. [Quick Win 1]: Specific action with expected outcome
+      2. [Quick Win 2]: Specific action with expected outcome
+      3. [Quick Win 3]: Specific action with expected outcome
+      
+      Evaluate the resume using these criteria:
+      - Structure & Layout (organization, formatting, visual appeal)
+      - Content Quality (clarity, relevance, professional language)
+      - Industry Relevance (alignment with expectations, terminology)
+      - Achievements & Impact (quantified results, specific accomplishments)
+      - Skills Balance (technical and soft skills representation)
+      - ATS Compatibility (keywords, standard sections, parsable format)
+      
+      Make sure to use:
+      1. Proper Markdown formatting with # and ## for headings
+      2. Consistent emoji bullet points for visual distinction
+      3. Specific examples and direct quotes from their actual resume
+      4. Before/after examples for suggested improvements
+      5. A professional yet conversational tone
+      6. Exactly the section structure outlined above
+      
+      Your analysis should be extremely personalized, actionable, and visually structured.
       `;
       } catch (error: any) {
         console.error("Error processing text resume:", error);
         systemPrompt += " I cannot directly process this resume text, but I can provide comprehensive, detailed guidance for resume improvement similar to what an expert resume coach would offer.";
         userPrompt = `
-        I couldn't properly process the resume text you provided. Please provide a comprehensive, detailed resume analysis and improvement guide using standard best practices.
+        I couldn't properly process the resume text you provided. Please provide a comprehensive, detailed resume analysis and improvement guide using the following structured format with proper markdown:
+      
+        # Resume Analysis Guidelines
+        
+        ## 1. Common Resume Strengths to Verify
+        - ✅ [Quantified Achievements]: Include metrics with all accomplishments
+        - ✅ [Technical Proficiency]: Clearly list relevant technologies, tools, and platforms
+        - ✅ [Career Progression]: Show growth and increasing responsibility over time
+        
+        ## 2. Common Areas for Improvement
+        - 🔹 [Generic Summary Statements]:
+          - Common issue: Generic statements without specificity
+          - Improvement: Lead with specific expertise and unique value proposition
+          - Example: Before/after comparison
+        
+        ## 3. Section-by-Section Optimization
+        - 📝 [Professional Summary]: Structure and example
+        - 📝 [Experience Section]: Format for bullets and example
+        
+        ## 4. Key Skills Development
+        - 🌟 [Technical Skills]: How to present them effectively
+        - 🌟 [Soft Skills]: How to demonstrate with accomplishments
+        
+        ## 5. Using Brandentifier to Showcase Your Expertise
+        - 📊 Portfolio Builder: How to use effectively
+        - 🤝 Smart Connect: Networking strategies
+        
+        ## 6. Quick Wins (30-Day Plan)
+        1. [Action 1]: Expected outcome
+        2. [Action 2]: Expected outcome
+        3. [Action 3]: Expected outcome
+        
+        Use proper markdown formatting, consistent emoji bullets, and maintain this exact section structure.
         `;
       }
     } else if (!userPrompt) {
       // Fallback for any other case
       systemPrompt += " I cannot directly process this resume, but I can provide comprehensive, detailed guidance for resume improvement similar to what an expert resume coach would offer.";
       userPrompt = `
-      I couldn't properly process the resume you provided. Please provide a comprehensive, detailed resume analysis and improvement guide using standard best practices.
+      I couldn't properly process the resume you provided. Please provide a comprehensive, detailed resume analysis and improvement guide using the following structured format with proper markdown:
+      
+      # Resume Analysis Guidelines
+      
+      ## 1. Common Resume Strengths to Verify
+      - ✅ [Quantified Achievements]: Include metrics with all accomplishments
+      - ✅ [Technical Proficiency]: Clearly list relevant technologies, tools, and platforms
+      - ✅ [Career Progression]: Show growth and increasing responsibility over time
+      
+      ## 2. Common Areas for Improvement
+      - 🔹 [Generic Summary Statements]:
+        - Common issue: Generic statements without specificity
+        - Improvement: Lead with specific expertise and unique value proposition
+        - Example: Before/after comparison
+      
+      ## 3. Section-by-Section Optimization
+      - 📝 [Professional Summary]: Structure and example
+      - 📝 [Experience Section]: Format for bullets and example
+      
+      ## 4. Key Skills Development
+      - 🌟 [Technical Skills]: How to present them effectively
+      - 🌟 [Soft Skills]: How to demonstrate with accomplishments
+      
+      ## 5. Using Brandentifier to Showcase Your Expertise
+      - 📊 Portfolio Builder: How to use effectively
+      - 🤝 Smart Connect: Networking strategies
+      
+      ## 6. Quick Wins (30-Day Plan)
+      1. [Action 1]: Expected outcome
+      2. [Action 2]: Expected outcome
+      3. [Action 3]: Expected outcome
+      
+      Use proper markdown formatting, consistent emoji bullets, and maintain this exact section structure.
       `;
     }
     
