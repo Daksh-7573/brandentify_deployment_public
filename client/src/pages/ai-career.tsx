@@ -205,6 +205,7 @@ export default function AICareerPage() {
       });
       
       if (user?.id) {
+        // Force a refresh of the messages to make sure we have the latest
         queryClient.invalidateQueries({
           queryKey: ["/api/users", user.id, "chat-messages"]
         });
@@ -215,17 +216,25 @@ export default function AICareerPage() {
       // Switch to the resume tab to show the analysis
       setActiveTab("resume");
       
-      // Automatically initialize and show the resume chat with the analysis
+      // This ensures we correctly reference the most recent analysis
       setTimeout(() => {
-        if (data.analysis) {
+        // Get the latest messages after the invalidation
+        const messages = chatMessages || [];
+        const latestResumeAnalysis = messages
+          .filter((msg: any) => msg.sender === "ai" && msg.messageType === "resume_analysis")
+          .sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+          .slice(0, 1)[0];
+          
+        if (latestResumeAnalysis || data.analysis) {
+          const content = latestResumeAnalysis?.content || data.analysis;
           setResumeChatHistory([{
-            content: data.analysis,
+            content: content,
             sender: "musk",
             timestamp: new Date()
           }]);
           setShowResumeChatWindow(true);
         }
-      }, 500); // Small delay to ensure the tab switch completes first
+      }, 500); // Small delay to ensure the tab switch and data refresh completes first
     },
     onError: (error: Error) => {
       const isApiKeyMissing = error.message.includes("API key");
@@ -250,7 +259,11 @@ export default function AICareerPage() {
     
     // If a specific message type is requested, filter by that type
     if (messageType) {
-      filteredMessages = filteredMessages.filter((msg: any) => msg.messageType === messageType);
+      filteredMessages = filteredMessages.filter((msg: any) => {
+        // Ensure we're strict about message types - resume tab only shows resume analysis messages
+        // and career tab only shows career advice messages
+        return msg.messageType === messageType;
+      });
     }
     
     // Sort messages with most recent first
