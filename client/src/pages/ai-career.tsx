@@ -403,102 +403,156 @@ export default function AICareerPage() {
                         </div>
                       </div>
                       
-                      {/* File Upload Section */}
-                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-primary transition-colors">
-                        <div className="flex flex-col items-center">
-                          <input 
-                            id="resume-file-input"
-                            type="file" 
-                            accept=".pdf,.docx" 
-                            className="hidden" 
-                            onChange={(e) => {
-                              if (e.target.files && e.target.files.length > 0) {
-                                const selectedFile = e.target.files[0];
-                                
-                                // Validate file type
-                                if (!['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'].includes(selectedFile.type)) {
-                                  toast({
-                                    title: "Invalid file type",
-                                    description: "Please upload a PDF or DOCX file.",
-                                    variant: "destructive"
-                                  });
-                                  return;
-                                }
-                                
-                                // Validate file size (5MB limit)
-                                if (selectedFile.size > 5 * 1024 * 1024) {
-                                  toast({
-                                    title: "File too large",
-                                    description: "Please upload a file smaller than 5MB.",
-                                    variant: "destructive"
-                                  });
-                                  return;
-                                }
-                                
-                                // Handle file upload
-                                const fileReader = new FileReader();
-                                fileReader.readAsDataURL(selectedFile);
-                                
-                                fileReader.onload = async () => {
-                                  const base64Data = fileReader.result?.toString().split(',')[1];
+                      <div className="flex flex-col gap-6">
+                        {/* File Upload Section */}
+                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-primary transition-colors">
+                          <div className="flex flex-col items-center">
+                            <input 
+                              id="resume-file-input"
+                              type="file" 
+                              accept=".pdf,.docx" 
+                              className="hidden" 
+                              onChange={(e) => {
+                                if (e.target.files && e.target.files.length > 0) {
+                                  const selectedFile = e.target.files[0];
                                   
-                                  if (!base64Data) {
+                                  // Validate file type
+                                  if (!['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'].includes(selectedFile.type)) {
                                     toast({
-                                      title: "Upload failed",
-                                      description: "Failed to process file. Please try again.",
+                                      title: "Invalid file type",
+                                      description: "Please upload a PDF or DOCX file.",
                                       variant: "destructive"
                                     });
                                     return;
                                   }
                                   
-                                  try {
-                                    // Set loading state
-                                    resumeAnalysisMutation.mutate({ 
-                                      fileData: base64Data, 
-                                      userId: user?.id || 0,
-                                      targetRole: targetRole.trim() || undefined,
-                                      targetIndustry: targetIndustry.trim() || undefined
-                                    });
-                                    
+                                  // Validate file size (5MB limit)
+                                  if (selectedFile.size > 5 * 1024 * 1024) {
                                     toast({
-                                      title: "Processing resume",
-                                      description: "Your resume is being analyzed with our multi-layered improvement engine. This may take a moment."
-                                    });
-                                  } catch (error) {
-                                    console.error('Error analyzing resume file:', error);
-                                    toast({
-                                      title: "Analysis failed",
-                                      description: error instanceof Error ? error.message : "Failed to analyze resume. Please try again.",
+                                      title: "File too large",
+                                      description: "Please upload a file smaller than 5MB.",
                                       variant: "destructive"
                                     });
+                                    return;
                                   }
-                                };
-                                
-                                fileReader.onerror = () => {
+                                  
+                                  // Handle file upload
+                                  const fileReader = new FileReader();
+                                  fileReader.readAsDataURL(selectedFile);
+                                  
+                                  fileReader.onload = async () => {
+                                    const base64Data = fileReader.result?.toString().split(',')[1];
+                                    
+                                    if (!base64Data) {
+                                      toast({
+                                        title: "Upload failed",
+                                        description: "Failed to process file. Please try again.",
+                                        variant: "destructive"
+                                      });
+                                      return;
+                                    }
+                                    
+                                    try {
+                                      // Set loading state
+                                      resumeAnalysisMutation.mutate({ 
+                                        fileData: base64Data, 
+                                        userId: user?.id || 0,
+                                        targetRole: targetRole.trim() || undefined,
+                                        targetIndustry: targetIndustry.trim() || undefined
+                                      });
+                                      
+                                      toast({
+                                        title: "Processing resume",
+                                        description: "Your resume is being analyzed with our multi-layered improvement engine. This may take a moment."
+                                      });
+                                    } catch (error) {
+                                      console.error('Error analyzing resume file:', error);
+                                      toast({
+                                        title: "Analysis failed",
+                                        description: error instanceof Error ? error.message : "Failed to analyze resume. Please try again.",
+                                        variant: "destructive"
+                                      });
+                                    }
+                                  };
+                                  
+                                  fileReader.onerror = () => {
+                                    toast({
+                                      title: "Upload failed",
+                                      description: "Failed to read file. Please try again.",
+                                      variant: "destructive"
+                                    });
+                                  };
+                                }
+                              }}
+                            />
+                            <p className="text-sm text-gray-500 mb-2">Upload your resume file</p>
+                            <p className="text-xs text-gray-400 mb-3">Supported formats: PDF, DOCX (Max 5MB)</p>
+                            <Button 
+                              variant="outline" 
+                              className="cursor-pointer"
+                              disabled={resumeAnalysisMutation.isPending}
+                              onClick={() => {
+                                document.getElementById('resume-file-input')?.click();
+                              }}
+                            >
+                              {resumeAnalysisMutation.isPending && (
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              )}
+                              Upload Resume
+                            </Button>
+                          </div>
+                        </div>
+                        
+                        {/* Text Input Section */}
+                        <div className="relative">
+                          <div className="border-t my-4 flex items-center justify-center">
+                            <span className="bg-background px-2 -mt-3 text-sm text-muted-foreground">
+                              Or paste your resume text
+                            </span>
+                          </div>
+                          
+                          <div className="space-y-4">
+                            <Textarea
+                              id="resume-text-input"
+                              placeholder="Paste the content of your resume here for analysis..."
+                              className="min-h-[200px] resize-y"
+                              value={resumeText}
+                              onChange={(e) => setResumeText(e.target.value)}
+                              disabled={resumeAnalysisMutation.isPending}
+                            />
+                            
+                            <Button 
+                              className="w-full"
+                              disabled={resumeAnalysisMutation.isPending || !resumeText.trim()}
+                              onClick={() => {
+                                if (!resumeText.trim()) {
                                   toast({
-                                    title: "Upload failed",
-                                    description: "Failed to read file. Please try again.",
+                                    title: "No content",
+                                    description: "Please paste your resume text before analyzing.",
                                     variant: "destructive"
                                   });
-                                };
-                              }
-                            }}
-                          />
-                          <p className="text-sm text-gray-500 mb-2">Upload your resume file</p>
-                          <p className="text-xs text-gray-400 mb-3">Supported formats: PDF, DOCX (Max 5MB)</p>
-                          <Button 
-                            variant="outline" 
-                            className="cursor-pointer"
-                            disabled={resumeAnalysisMutation.isPending}
-                            onClick={() => {
-                              document.getElementById('resume-file-input')?.click();
-                            }}
-                          >
-                            {resumeAnalysisMutation.isPending && (
-                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            )}
-                            Upload Resume
-                          </Button>
+                                  return;
+                                }
+                                
+                                resumeAnalysisMutation.mutate({
+                                  resumeText: resumeText.trim(),
+                                  userId: user?.id || 0,
+                                  targetRole: targetRole.trim() || undefined,
+                                  targetIndustry: targetIndustry.trim() || undefined
+                                });
+                                
+                                toast({
+                                  title: "Processing resume",
+                                  description: "Your resume is being analyzed with our multi-layered improvement engine. This may take a moment."
+                                });
+                              }}
+                            >
+                              {resumeAnalysisMutation.isPending && (
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              )}
+                              Analyze Resume Text
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     </Card>
