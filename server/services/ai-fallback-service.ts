@@ -277,11 +277,11 @@ I've analyzed your professional background and prepared a comprehensive intervie
 
 Component | Current Status
 ----------|---------------
-Resume & Portfolio | Strong experience presentation but lacks achievement quantification
-Technical Skills | Solid core competencies with some gaps in emerging technologies
-Behavioral Preparation | Limited structured preparation for situation-based questions
-Industry Knowledge | Good understanding of current trends but needs competitive landscape insights
-Interview Confidence | Room for improvement in articulation and executive presence
+**Resume & Portfolio** | Strong experience presentation but lacks achievement quantification
+**Technical Skills** | Solid core competencies with some gaps in emerging technologies
+**Behavioral Preparation** | Limited structured preparation for situation-based questions
+**Industry Knowledge** | Good understanding of current trends but needs competitive landscape insights
+**Interview Confidence** | Room for improvement in articulation and executive presence
 
 ## 💼 Core Interview Components to Master
 
@@ -348,11 +348,11 @@ I've analyzed your professional background and developed a strategic roadmap to 
 
 Dimension | Your Profile
 ----------|------------
-Domain Expertise | Strong industry knowledge with 5+ years experience
-Market Understanding | Solid grasp of customer pain points
-Technical Capabilities | Core competencies with some skill gaps
-Network Strength | Moderate industry connections, needs strategic expansion
-Financial Readiness | Basic planning skills, requires funding strategy refinement
+**Domain Expertise** | Strong industry knowledge with 5+ years experience
+**Market Understanding** | Solid grasp of customer pain points
+**Technical Capabilities** | Core competencies with some skill gaps
+**Network Strength** | Moderate industry connections, needs strategic expansion
+**Financial Readiness** | Basic planning skills, requires funding strategy refinement
 
 ## 🚀 Startup Launch Roadmap
 
@@ -416,7 +416,192 @@ Your entrepreneurial journey will be challenging but rewarding. With strategic p
 Musk, Your Career Partner`;
   }
   
-  // Check for international
+  // Check for get_certifications
+  else if (adviceType === 'get_certifications') {
+    return `# Certification Growth Strategy for ${userName}
+
+## 📊 Profile Analysis
+
+**Current Position**: Senior Marketing Manager
+**Industry**: Technology/SaaS
+**Experience Level**: 6-8 years
+**Technical Toolkit**: Analytics platforms, CRM systems, content management
+**Domain Expertise**: Digital marketing, campaign management, audience segmentation
+
+## 🏆 Primary Growth Directions
+
+Based on your profile and industry trends, these certification paths offer the strongest career advancement opportunities:
+
+Growth Path | Strategic Value | Career Impact
+------------|-----------------|---------------
+**Marketing Analytics Mastery** | **High** | Positions you as data-driven decision maker
+**Marketing Technology Expertise** | **High** | Bridges marketing and technical implementation
+**Strategic Leadership Development** | **Medium** | Prepares for senior leadership roles
+**Industry-Specific Credentials** | **Medium** | Differentiates you in specialized verticals
+
+## 🎓 Top Recommended Certifications
+
+### Marketing Analytics Track
+
+Certification | Platform | Level | Relevance
+--------------|----------|-------|----------
+**Google Analytics 4 Certification** | Google | Intermediate | **★★★★★**
+**Marketing Analytics Certification** | Meta | Intermediate | **★★★★☆**
+**Professional Certificate in Data-Driven Marketing** | Cornell | Advanced | **★★★★★**
+
+Why this matters: Analytics expertise has become the #1 differentiator for senior marketing roles, with 78% of marketing leaders prioritizing these skills in hiring decisions. These certifications validate your ability to extract actionable insights and measure ROI effectively.
+
+### Marketing Technology Track
+
+Certification | Platform | Level | Relevance
+--------------|----------|-------|----------
+**Salesforce Marketing Cloud Certification** | Salesforce | Intermediate | **★★★★★**
+**HubSpot Marketing Software Certification** | HubSpot | Intermediate | **★★★★☆**
+**Marketo Certified Expert** | Adobe | Advanced | **★★★★★**
+
+Why this matters: Marketing technology skills bridge the gap between strategy and execution. These certifications demonstrate your ability to implement sophisticated marketing automation, personalization, and integration solutions—increasingly critical for senior roles.
+
+### Strategic Leadership Track
+
+Certification | Platform | Level | Relevance
+--------------|----------|-------|----------
+**Digital Marketing Leadership** | Northwestern | Advanced | **★★★★☆**
+**Strategic Marketing Management** | Harvard Business School | Advanced | **★★★★★**
+**Project Management Professional (PMP)** | PMI | Intermediate | **★★★☆☆**
+
+Why this matters: These credentials signal your readiness for strategic leadership roles by validating your ability to align marketing initiatives with broader business objectives and lead cross-functional teams effectively.
+
+## 📈 Learning Path Timeline
+
+Month | Focus | Certifications | Application
+------|-------|----------------|------------
+**1-2** | **Marketing Analytics** | Google Analytics 4 | Apply analytics to current campaigns
+**3-4** | **Technical Foundation** | HubSpot Marketing Software | Implement automation workflows
+**5-6** | **Advanced Analytics** | Cornell Data-Driven Marketing | Develop predictive models for campaigns
+**7-8** | **Marketing Technology** | Salesforce Marketing Cloud | Build integrated customer journeys
+**9-12** | **Strategic Leadership** | Harvard Marketing Management | Lead cross-functional initiative
+
+## 💼 Career Impact Analysis
+
+The certification portfolio outlined above positions you for:
+
+Role | Salary Range | Certification Impact
+-----|--------------|---------------------
+**Marketing Director** | **$125,000-$165,000** | Gives competitive edge over 60% of applicants
+**Head of Marketing Operations** | **$115,000-$150,000** | Critical qualification for technical marketing leadership
+**Chief Marketing Officer** | **$180,000-$250,000** | Builds credibility for executive consideration
+**Marketing Analytics Director** | **$130,000-$175,000** | Essential qualification for specialized leadership
+
+## 📱 How Brandentifier Showcases Your Growth
+
+- **Certification Showcase**: Display your credentials in a dedicated section of your portfolio
+- **Digital Visiting Card**: Feature your most impressive certifications on your professional card
+- **Skills Verification**: Brandentifier validates your certified skills to increase credibility
+- **Progress Tracking**: Document and share your learning journey through Brandentifier's Industry Pulse
+- **Expert Matching**: Connect with professionals who hold your target certifications through Smart Radar
+
+## 🔥 Differentiation Strategy
+
+While certifications are valuable, combine them with practical application to truly stand out:
+
+1. **Apply new skills in current role** (document results in your Brandentifier portfolio)
+2. **Lead a pilot project** leveraging your certification knowledge
+3. **Mentor colleagues** on newly acquired technical skills
+4. **Share industry insights** through Brandentifier's Industry Pulse feature
+5. **Develop case studies** demonstrating certification application to real challenges
+
+Remember that certifications are most valuable when integrated into a comprehensive career development strategy that combines credentials, experience, and strategic networking.
+
+Musk, Your Career Partner`;
+  }
+  
+  // Check for build_skills
+  else if (adviceType === 'build_skills') {
+    return `# Core Skills Analysis for ${userName}
+
+## 🔍 Current Strength Mapping
+
+Skill Category | Proficiency Level | Career Impact
+---------------|------------------|---------------
+**Technical Skills** | Advanced (Data Analysis, SQL, Tableau) | Strong foundation for data-driven decisions
+**Domain Knowledge** | Strong (Marketing, E-commerce) | Enables industry-specific strategic insights
+**Soft Skills** | Advanced (Communication, Team Leadership) | Facilitates effective collaboration and influence
+**Management** | Intermediate (Project Management, Resource Allocation) | Supports delivery of complex initiatives
+**Business Acumen** | Developing (Financial Analysis, Market Research) | Growing ability to align work with business goals
+
+## ⚡ Potential Future Roles
+
+Role | Match % | Why It Fits
+-----|---------|------------
+**Senior Marketing Analyst** | **85%** | Strong data skills + marketing domain knowledge align perfectly
+**Product Marketing Manager** | **78%** | Combines analytical abilities with strategic communication skills
+**Growth Strategist** | **75%** | Your data-driven approach suits emerging growth optimization functions
+**Customer Insights Lead** | **73%** | Leverages analytical capabilities with user-centered thinking
+**Marketing Operations Manager** | **70%** | Technical capabilities + organizational skills create strong fit
+
+## 🚀 Core Skills to Develop
+
+### Technical Track (3-6 Months)
+Skill | Why It Matters | Learning Resources
+------|----------------|-------------------
+**Python for Data Analysis** | Enables deeper data manipulation and predictive models | DataCamp Python Data Science track, Google Data Analytics Certificate
+**Marketing Automation** | Critical for scaling operations and personalization | HubSpot Academy, Marketo Certified Expert
+**A/B Testing Frameworks** | Provides rigorous approach to optimization | Optimize by Google, Experimentation & Testing courses
+
+### Strategic Track (6-12 Months) 
+Skill | Why It Matters | Learning Resources
+------|----------------|-------------------
+**Strategic Planning** | Shifts from tactical to strategic contributor | Harvard Business Essentials, PMI Strategic Planning Professional
+**Cross-functional Leadership** | Builds influence without direct authority | LinkedIn Learning Leadership courses, INSEAD Executive Education
+**Financial Modeling** | Connects marketing activities to business outcomes | Financial Modeling for Marketing Decisions, Wall Street Prep
+
+## 📈 Learning Path Structure
+
+1. **Foundation Phase (1-3 months)**
+   - Complete Python fundamentals course with marketing-specific applications
+   - Obtain basic marketing automation certification (HubSpot/Marketo)
+   - Update your Brandentifier portfolio to showcase these new skills
+
+2. **Application Phase (3-6 months)**
+   - Implement 2-3 Python-based analyses on real marketing datasets
+   - Develop automated workflows for key marketing processes
+   - Create a Brandentifier Service offering that highlights your new automation expertise
+
+3. **Integration Phase (6-12 months)**
+   - Combine technical and strategic skills in cross-functional projects
+   - Implement financial impact models for marketing initiatives
+   - Showcase your strategic case studies through Brandentifier's Industry Pulse
+
+## 📱 How Brandentifier Enhances Your Skill Development
+
+- **Portfolio Updates**: Add new skill certifications and project examples as you progress
+- **Digital Visiting Card**: Update to highlight your emerging technical + strategic skillset
+- **Services Showcase**: Offer specialized services utilizing your developing expertise
+- **Smart Radar**: Connect with professionals who have mastered your target skills
+- **Industry Pulse**: Share insights that demonstrate your growing expertise to potential employers
+
+## 💡 Applying Your Skills: Mini-Project Ideas
+
+1. **Marketing Channel Optimization Model**:
+   - Build a Python-based attribution model
+   - Visualize results in interactive dashboard
+   - Document the process on your Brandentifier portfolio
+
+2. **Automated Customer Journey Analysis**:
+   - Implement a marketing automation workflow
+   - Track key conversion points and optimize
+   - Create a case study highlighting results
+
+3. **Revenue Impact Forecast**:
+   - Develop a financial model connecting marketing KPIs to revenue
+   - Present findings in executive-friendly format
+   - Share insights through a Brandentifier Pulse
+
+By systematically developing these complementary skills, you'll create a unique professional profile that combines technical depth, domain expertise, and strategic thinking—positioning you for accelerated career advancement.
+
+Musk, Your Career Partner`;
+  }
+  
   else if (adviceType === 'international') {
     return `# Global Career Strategy for ${userName}
 
@@ -426,11 +611,11 @@ I've analyzed your professional background and created a comprehensive guide to 
 
 Factor | Your Current Status
 -------|-------------------
-Skills Transferability | Strong portable skillset in digital marketing
-Global Experience | Limited international exposure, needs development
-Language Proficiency | English (fluent), additional languages would be beneficial
-Cultural Adaptability | Some international collaboration experience
-Qualification Recognition | Core credentials recognized in major markets
+**Skills Transferability** | Strong portable skillset in digital marketing
+**Global Experience** | Limited international exposure, needs development
+**Language Proficiency** | English (fluent), additional languages would be beneficial
+**Cultural Adaptability** | Some international collaboration experience
+**Qualification Recognition** | Core credentials recognized in major markets
 
 ## 🧭 Top International Markets for Your Profile
 
@@ -498,6 +683,150 @@ Consider Sarah's journey: A marketing manager who relocated from Chicago to Berl
 - Qualification equivalency assessment services
 
 Remember that international career moves require careful planning, cultural openness, and strategic networking. By leveraging your Brandentifier presence and following this roadmap, you'll be well-positioned to pursue exciting global opportunities.
+
+Musk, Your Career Partner`;
+  }
+  
+  // Check for switch_industry
+  else if (adviceType === 'switch_industry') {
+    return `# Industry Switch Navigator for ${userName}
+
+I've analyzed your professional background and identified strategic industry transition opportunities that leverage your existing skills while opening new career paths.
+
+## 🚀 Current Position Analysis
+
+**Current Role**: Senior Marketing Manager
+**Industry**: Technology/SaaS
+**Core Transferable Skills**: Strategic planning, campaign management, team leadership, data analysis, cross-functional collaboration
+**Industry-Specific Knowledge**: B2B marketing, product messaging, technical audience targeting
+
+## 🧭 Industry Switch Options
+
+### 🟢 Healthcare Technology - **High Match (82%)**
+
+The healthcare technology sector offers a compelling transition path that values your technical marketing background while opening opportunities in a growing, mission-driven field.
+
+**Why It Fits You**: 
+- Your experience marketing complex products translates well to healthcare tech solutions
+- Technical audience expertise applies to physician and administrator demographics
+- Data-driven approach matches healthcare's evidence-based culture
+- SaaS marketing skills transfer directly to subscription-based healthcare platforms
+
+**Roles to Explore**:
+- Healthcare Marketing Director
+- Patient Engagement Solutions Manager
+- Healthcare Product Marketing Leader
+- Digital Health Strategy Director
+
+**Next Steps**:
+1. Research leading healthcare tech companies and their marketing approaches
+2. Connect with 5-7 marketing professionals in the healthcare tech space through Brandentifier
+3. Update your Brandentifier portfolio with relevant healthcare-adjacent case studies
+4. Identify 2-3 healthcare industry certifications to supplement your expertise
+
+**Brandentifier Strategy**: Create a specialized Digital Visiting Card highlighting transferable skills for healthcare technology recruiters
+
+### 🟡 Financial Services - **Medium Match (76%)**
+
+Financial services offers stability and premium compensation with growing demand for digital marketing expertise as the industry modernizes.
+
+**Why It Fits You**:
+- Data-driven approach aligns with financial industry analytics focus
+- Compliance experience in tech transfers to regulated financial environment
+- Your technical product marketing skills apply to complex financial products
+- Customer journey expertise valuable for financial onboarding and retention
+
+**Roles to Explore**:
+- Financial Products Marketing Manager
+- Wealth Management Marketing Director
+- FinTech Customer Acquisition Lead
+- Banking Digital Experience Manager
+
+**Next Steps**:
+1. Develop foundational knowledge of financial products and regulations
+2. Emphasize compliance and security aspects of your previous work
+3. Connect with 3-5 marketing professionals in financial services via Brandentifier
+4. Update your digital portfolio with case studies highlighting regulatory compliance
+
+**Brandentifier Strategy**: Update your Industry Pulse posts with insights that demonstrate understanding of financial markets and customer challenges
+
+### 🟢 Education Technology - **High Match (85%)**
+
+EdTech represents an excellent transition opportunity with strong demand for marketing professionals who understand both technology and user engagement.
+
+**Why It Fits You**:
+- SaaS marketing experience directly applies to subscription learning platforms
+- Your content marketing skills transfer to curriculum and course marketing
+- Product positioning expertise relevant for differentiated learning solutions
+- Data analysis background valuable for learning outcomes measurement
+
+**Roles to Explore**:
+- EdTech Marketing Director
+- Higher Education Solutions Marketing
+- K-12 Platform Adoption Specialist
+- Learning Experience Marketing Manager
+
+**Next Steps**:
+1. Research leading EdTech platforms and their marketing approaches
+2. Take a short course on learning science fundamentals
+3. Connect with educators to understand educational institution decision processes
+4. Create a specialized Brandentifier portfolio section highlighting relevant experience
+
+**Brandentifier Strategy**: Use Smart Radar to connect with EdTech professionals in your area for informational interviews
+
+### 🟠 Sustainability/Green Tech - **Moderate Match (68%)**
+
+While requiring some additional knowledge acquisition, the sustainability sector offers purpose-driven work with growing demand and funding.
+
+**Why It Fits You**:
+- Technology marketing experience applies to green tech innovations
+- Storytelling skills essential for communicating sustainability value propositions
+- Strategic planning transfers to developing long-term sustainability initiatives
+- Change management experience valuable in shifting organizational practices
+
+**Roles to Explore**:
+- Sustainability Communications Director
+- Green Technology Marketing Manager
+- Corporate Social Responsibility Lead
+- Environmental Solutions Strategist
+
+**Next Steps**:
+1. Develop foundational knowledge of key sustainability frameworks and metrics
+2. Highlight any environmental or social impact aspects of previous work
+3. Consider sustainability certification (e.g., LEED Green Associate)
+4. Connect with professionals in sustainability marketing via Brandentifier
+
+**Brandentifier Strategy**: Share industry insights about sustainability trends to demonstrate genuine interest and knowledge building
+
+## 📊 Transition Planning Timeline
+
+### Immediate Actions (1-3 Months)
+- Conduct in-depth research on your top 2 industry choices
+- Update your Brandentifier portfolio with relevant case studies and projects
+- Begin industry-specific networking through Brandentifier's Smart Radar
+- Identify skill gaps and begin targeted learning
+
+### Mid-Term Steps (3-6 Months)
+- Obtain 1-2 relevant certifications in your target industry
+- Create industry-specific Digital Visiting Cards for each prime target
+- Develop thought leadership content in your target industry
+- Secure informational interviews with 5+ professionals in target roles
+
+### Long-Term Strategy (6-12 Months)
+- Pursue transitional roles that bridge your current and target industries
+- Join industry associations and attend key conferences
+- Consider freelance projects in your target industry for portfolio building
+- Leverage your Brandentifier network for internal referrals
+
+## 📱 How Brandentifier Supports Your Industry Transition
+
+- **Industry-Specific Portfolio**: Create versions of your portfolio tailored to each target industry
+- **Digital Visiting Card**: Develop cards that emphasize transferable skills for each target sector
+- **Smart Radar**: Connect with professionals in your target industries who made similar transitions
+- **Industry Pulse**: Share insights demonstrating your understanding of target industry challenges
+- **Services Showcase**: Offer specialized consulting aligned with your destination industry
+
+Remember that successful industry transitions build on your existing strengths while strategically addressing knowledge gaps. By leveraging your Brandentifier presence and following this roadmap, you'll be well-positioned to make a successful career pivot.
 
 Musk, Your Career Partner`;
   }
