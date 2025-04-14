@@ -29,8 +29,10 @@ export default function AICareerPage() {
   const [customAdviceText, setCustomAdviceText] = useState<string>("");
   const [showCustomTextInput, setShowCustomTextInput] = useState<boolean>(false);
   const [showChatWindow, setShowChatWindow] = useState<boolean>(false);
+  const [showResumeChatWindow, setShowResumeChatWindow] = useState<boolean>(false);
   const [chatMessage, setChatMessage] = useState<string>("");
   const [chatHistory, setChatHistory] = useState<Array<{content: string, sender: "user" | "musk", timestamp: Date}>>([]);
+  const [resumeChatHistory, setResumeChatHistory] = useState<Array<{content: string, sender: "user" | "musk", timestamp: Date}>>([]);
   const [targetRole, setTargetRole] = useState<string>("");
   const [targetIndustry, setTargetIndustry] = useState<string>("");
   
@@ -48,7 +50,7 @@ export default function AICareerPage() {
     enabled: !!user?.id // Only run query if user is logged in
   });
 
-  // Chat message mutation
+  // Chat message mutation for career advice
   const chatMessageMutation = useMutation({
     mutationFn: async (message: string) => {
       if (!user?.id) {
@@ -71,6 +73,49 @@ export default function AICareerPage() {
       setTimeout(() => {
         setChatHistory(prev => [...prev, {
           content: data.aiResponse || "I'm analyzing your question. Let me think about this based on your profile and career goals.",
+          sender: "musk",
+          timestamp: new Date()
+        }]);
+      }, 1000); // Simulate AI thinking time
+      
+      if (user?.id) {
+        queryClient.invalidateQueries({
+          queryKey: ["/api/users", user.id, "chat-messages"]
+        });
+      }
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error sending message",
+        description: "Failed to send message. Please try again.",
+        variant: "destructive"
+      });
+    }
+  });
+  
+  // Chat message mutation for resume analysis
+  const resumeChatMessageMutation = useMutation({
+    mutationFn: async (message: string) => {
+      if (!user?.id) {
+        throw new Error("User ID not found");
+      }
+      const res = await apiRequest({
+        method: "POST", 
+        url: "/api/chat-messages",
+        data: {
+          userId: user.id,
+          content: message,
+          messageType: "resume_analysis",
+          sender: "user"
+        }
+      });
+      return res.json();
+    },
+    onSuccess: (data) => {
+      // Add AI response to resume chat history
+      setTimeout(() => {
+        setResumeChatHistory(prev => [...prev, {
+          content: data.aiResponse || "I'm analyzing your question about your resume. Let me reference my analysis to give you the best advice.",
           sender: "musk",
           timestamp: new Date()
         }]);
@@ -231,8 +276,8 @@ export default function AICareerPage() {
   };
   
   // Function to scroll chat container to bottom when new messages arrive
-  const scrollToBottom = () => {
-    const chatContainer = document.getElementById('chat-container');
+  const scrollToBottom = (containerId: string = 'chat-container') => {
+    const chatContainer = document.getElementById(containerId);
     if (chatContainer) {
       chatContainer.scrollTop = chatContainer.scrollHeight;
     }
@@ -240,8 +285,13 @@ export default function AICareerPage() {
   
   // Use effect to scroll to bottom when chat history changes
   useEffect(() => {
-    scrollToBottom();
+    scrollToBottom('chat-container');
   }, [chatHistory]);
+  
+  // Use effect to scroll resume chat to bottom when resume chat history changes
+  useEffect(() => {
+    scrollToBottom('resume-chat-container');
+  }, [resumeChatHistory]);
 
   // Redirect to landing if not authenticated
   if (!isLoading && !isAuthenticated) {
@@ -592,16 +642,41 @@ export default function AICareerPage() {
                       <div className="space-y-4 sm:space-y-6">
                         {messagesToShow.map((message: any) => (
                           <Card key={message.id} className="p-0 overflow-hidden border border-gray-100 rounded-lg shadow-lg">
-                            <div className="bg-gradient-to-r from-primary/10 to-primary/5 px-4 sm:px-6 py-3 sm:py-4 border-b flex items-center gap-3">
-                              <div className="flex items-center justify-center h-9 w-9 rounded-full bg-white shadow-sm">
-                                <Sparkles className="h-5 w-5 text-primary" />
+                            <div className="bg-gradient-to-r from-primary/10 to-primary/5 px-4 sm:px-6 py-3 sm:py-4 border-b flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div className="flex items-center justify-center h-9 w-9 rounded-full bg-white shadow-sm">
+                                  <Sparkles className="h-5 w-5 text-primary" />
+                                </div>
+                                <div>
+                                  <h4 className="font-semibold text-sm text-primary">Musk AI Assistant</h4>
+                                  <p className="text-xs text-muted-foreground">
+                                    {formatTimestamp(message.timestamp)}
+                                  </p>
+                                </div>
                               </div>
-                              <div>
-                                <h4 className="font-semibold text-sm text-primary">Musk AI Assistant</h4>
-                                <p className="text-xs text-muted-foreground">
-                                  {formatTimestamp(message.timestamp)}
-                                </p>
-                              </div>
+                              
+                              {/* Chat button for resume analysis card */}
+                              {activeTab === "resume" && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="flex items-center gap-1.5"
+                                  onClick={() => {
+                                    // Initialize resume chat with the analysis
+                                    if (resumeChatHistory.length === 0) {
+                                      setResumeChatHistory([{
+                                        content: message.content,
+                                        sender: "musk",
+                                        timestamp: new Date(message.timestamp)
+                                      }]);
+                                    }
+                                    setShowResumeChatWindow(true);
+                                  }}
+                                >
+                                  <MessageSquare className="h-4 w-4" />
+                                  <span>Chat about this analysis</span>
+                                </Button>
+                              )}
                             </div>
                             
                             <div className="p-5 sm:p-6 prose prose-sm dark:prose-invert max-w-none overflow-x-auto">
