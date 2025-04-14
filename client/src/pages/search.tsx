@@ -594,28 +594,36 @@ const SearchPage = () => {
               </p>
             </div>
             {userId ? (
-              <Button
-                size="sm"
-                variant={isFollowing ? "outline" : "default"}
-                className={`min-w-[90px] px-4 py-1.5 h-8 rounded-full transition-all duration-300 ${
+              <button
+                className={`min-w-[110px] px-4 py-1.5 rounded-full transition-all duration-300 shadow-sm font-medium text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 ${
                   isFollowing 
-                    ? 'text-primary border-primary/50 hover:bg-primary/5' 
-                    : 'bg-primary hover:bg-primary/90'
+                    ? 'text-primary bg-white border border-primary/30 hover:bg-primary/5 hover:shadow-md' 
+                    : 'bg-primary text-white hover:bg-primary/90 hover:shadow-md'
                 }`}
                 onClick={handleFollowToggle}
                 disabled={isLoading}
               >
-                <span className="relative">
-                  {isLoading && (
-                    <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                      <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
-                    </span>
+                <span className="relative flex items-center justify-center">
+                  {isLoading ? (
+                    <div className="flex items-center">
+                      <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full mr-2" />
+                      <span>{isFollowing ? 'Unfollowing...' : 'Following...'}</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center">
+                      {isFollowing ? (
+                        <span className="flex items-center">
+                          <Check className="h-3.5 w-3.5 mr-1.5" /> Unfollow
+                        </span>
+                      ) : (
+                        <span className="flex items-center">
+                          <Plus className="h-3.5 w-3.5 mr-1.5" /> Follow
+                        </span>
+                      )}
+                    </div>
                   )}
-                  <span className={`${isLoading ? 'invisible' : 'visible'}`}>
-                    {isFollowing ? 'Unfollow' : 'Follow'}
-                  </span>
                 </span>
-              </Button>
+              </button>
             ) : (
               <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-300">
                 <Hash className="h-5 w-5 text-primary" />
@@ -851,14 +859,12 @@ const SearchPage = () => {
                                 {profile.industry && profile.industry}
                               </p>
                             )}
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              className="mt-5 bg-gradient-to-b from-white to-gray-50/90 border border-gray-200 hover:bg-white hover:border-primary/30 hover:text-primary transition-all duration-300 rounded-full px-5 shadow-sm hover:shadow group-hover:border-primary/40"
+                            <button 
+                              className="mt-5 px-5 py-1.5 rounded-full bg-white border border-gray-200 hover:bg-gray-50 hover:border-primary/30 hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm font-medium text-sm transition-all group-hover:border-primary/40 group-hover:shadow"
                               onClick={() => setLocation(`/profile/${profile.id}`)}
                             >
                               View Profile
-                            </Button>
+                            </button>
                           </div>
                         </div>
                       </Card>
