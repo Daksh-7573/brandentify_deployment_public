@@ -371,7 +371,7 @@ export default function AICareerPage() {
                     <Card className="p-4 sm:p-6">
                       <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Resume Analysis</h2>
                       <p className="text-sm text-muted-foreground mb-4">
-                        Upload your resume file to get AI-powered analysis with suggestions for improvement by Musk. For more targeted recommendations, specify your desired role and industry.
+                        Upload your resume PDF file to get AI-powered analysis with suggestions for improvement by Musk. For more targeted recommendations, specify your desired role and industry.
                       </p>
                       
                       {/* Target Role and Industry Fields */}
@@ -502,58 +502,7 @@ export default function AICareerPage() {
                             </Button>
                           </div>
                         </div>
-                        
-                        {/* Text Input Section */}
-                        <div className="relative">
-                          <div className="border-t my-4 flex items-center justify-center">
-                            <span className="bg-background px-2 -mt-3 text-sm text-muted-foreground">
-                              Or paste your resume text
-                            </span>
-                          </div>
-                          
-                          <div className="space-y-4">
-                            <Textarea
-                              id="resume-text-input"
-                              placeholder="Paste the content of your resume here for analysis..."
-                              className="min-h-[200px] resize-y"
-                              value={resumeText}
-                              onChange={(e) => setResumeText(e.target.value)}
-                              disabled={resumeAnalysisMutation.isPending}
-                            />
-                            
-                            <Button 
-                              className="w-full"
-                              disabled={resumeAnalysisMutation.isPending || !resumeText.trim()}
-                              onClick={() => {
-                                if (!resumeText.trim()) {
-                                  toast({
-                                    title: "No content",
-                                    description: "Please paste your resume text before analyzing.",
-                                    variant: "destructive"
-                                  });
-                                  return;
-                                }
-                                
-                                resumeAnalysisMutation.mutate({
-                                  resumeText: resumeText.trim(),
-                                  userId: user?.id || 0,
-                                  targetRole: targetRole.trim() || undefined,
-                                  targetIndustry: targetIndustry.trim() || undefined
-                                });
-                                
-                                toast({
-                                  title: "Processing resume",
-                                  description: "Your resume is being analyzed with our multi-layered improvement engine. This may take a moment."
-                                });
-                              }}
-                            >
-                              {resumeAnalysisMutation.isPending && (
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                              )}
-                              Analyze Resume Text
-                            </Button>
-                          </div>
-                        </div>
+
                       </div>
                     </Card>
                   </TabsContent>
