@@ -153,10 +153,10 @@ export default function AICareerPage() {
       });
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast({
         title: "Resume analysis complete",
-        description: "Your resume has been analyzed."
+        description: "Your resume has been analyzed. You can now chat with Musk about your resume."
       });
       
       if (user?.id) {
@@ -166,6 +166,9 @@ export default function AICareerPage() {
       }
       
       setResumeText("");
+      
+      // Switch to the resume tab to show the analysis
+      setActiveTab("resume");
     },
     onError: (error: Error) => {
       const isApiKeyMissing = error.message.includes("API key");
