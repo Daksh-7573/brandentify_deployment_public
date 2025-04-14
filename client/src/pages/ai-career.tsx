@@ -60,7 +60,7 @@ export default function AICareerPage() {
         data: {
           userId: user.id,
           content: message,
-          messageType: "career_advice",
+          messageType: activeTab === "resume" ? "resume_analysis" : "career_advice",
           sender: "user"
         }
       });
@@ -153,7 +153,7 @@ export default function AICareerPage() {
       });
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast({
         title: "Resume analysis complete",
         description: "Your resume has been analyzed."
@@ -164,6 +164,16 @@ export default function AICareerPage() {
           queryKey: ["/api/users", user.id, "chat-messages"]
         });
       }
+      
+      // Show chat window with initial AI message
+      setShowChatWindow(true);
+      
+      // Add AI's initial message to chat history
+      setChatHistory(prev => [...prev, {
+        content: "I've analyzed your resume. What questions do you have about the analysis or how to improve your resume?",
+        sender: "musk",
+        timestamp: new Date()
+      }]);
       
       setResumeText("");
     },
@@ -577,9 +587,9 @@ export default function AICareerPage() {
                   }
                   
                   // Only show card-style messages if:
-                  // 1. We're on the resume tab, OR
+                  // 1. We're on the resume tab (without chat enabled), OR
                   // 2. We're on the career tab but the chat window isn't shown
-                  if (activeTab === "resume" || (activeTab === "career" && !showChatWindow)) {
+                  if ((activeTab === "resume" && !showChatWindow) || (activeTab === "career" && !showChatWindow)) {
                     // If we're on the resume tab, only show the most recent analysis
                     const messagesToShow = activeTab === "resume" 
                       ? [filteredMessages[0]] // Only the first/most recent resume analysis
@@ -782,14 +792,24 @@ export default function AICareerPage() {
                                 size="sm" 
                                 className="ml-auto text-primary hover:text-primary hover:bg-primary/10"
                                 onClick={() => {
-                                  if (activeTab === "career") {
-                                    setShowChatWindow(true);
-                                    scrollToBottom();
+                                  setShowChatWindow(true);
+                                  // Add initial Musk message if chat history is empty
+                                  if (chatHistory.length === 0) {
+                                    const initialMessage = activeTab === "resume" 
+                                      ? "I've analyzed your resume. What questions do you have about the analysis or how to improve your resume?"
+                                      : "I've analyzed your profile. What specific career questions do you have?";
+                                      
+                                    setChatHistory([{
+                                      content: initialMessage,
+                                      sender: "musk",
+                                      timestamp: new Date()
+                                    }]);
                                   }
+                                  scrollToBottom();
                                 }}
                               >
                                 <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
-                                Follow up
+                                {activeTab === "resume" ? "Chat about your resume" : "Follow up"}
                               </Button>
                             </div>
                           </Card>
@@ -803,7 +823,7 @@ export default function AICareerPage() {
                 })()}
                 
                 {/* Chat Interface with Musk */}
-                {showChatWindow && activeTab === "career" && (
+                {showChatWindow && (
                   <div className="mt-6">
                     <div className="bg-gradient-to-b from-gray-50 to-white border rounded-lg p-4 sm:p-6 shadow-md">
                       <div className="flex items-center gap-3 mb-5 pb-3 border-b border-gray-100">
