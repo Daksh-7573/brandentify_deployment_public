@@ -1,0 +1,47 @@
+Category	User Question	Musk Logic to Trigger
+🧭 Career Direction	“What should I do next?”	Resume gap mapping + role prediction + optional multi-path plan
+🔄 Industry Shift	“How can I switch industries?”	Skill mapping → domain pathways → gap analysis → alternate career suggestion
+🌱 Growth Planning	“What should I learn for future roles?”	Future skills forecast → current skill mapping → build learning path
+🌐 Global Career	“I want to work abroad.”	Job market mapping → global demand match → visa-friendly country logic
+💼 Job Readiness	“Why am I not getting interviews?”	Resume ATS audit → tone/tags mismatch detection → call-to-action for rewrite
+🎓 Higher Education	“Should I do an MBA?”	Career growth calculator → ROI predictor → alternate learning paths
+🚪 Stuck in Career	“Why am I not growing?”	Career plateau detector → organizational blockers vs personal limitations
+📈 Want Higher Salary	“How can I earn more?”	Role-income matrix → high-earning path suggestion → service & freelancing enablement
+📃 Certifications	“What certification should I get?”	Analyze current & target role → suggest top ROI certifications (with tracks)
+🧑‍💻 Freelance/Startup	“Should I freelance/start something?”	Risk-readiness analysis + skill independence scoring + Brandentifier tools match
+🧘 Career Change + Purpose	“I don’t like my job anymore”	Value alignment engine → human-centric career direction mapping
+📊 Market Trends	“What industries are growing?”	Musk pulls from Pulse + market data → industry trends overlay on CV fit
+🧠 Each Scenario Includes:
+🔹 1. Intent Tag
+E.g., #industryswitch, #growthplan, #careerblock
+
+🔹 2. Resume Fields Required
+Skills
+
+Titles
+
+Time-in-role
+
+Industry/domain
+
+Projects
+
+Education
+
+🔹 3. Engine(s) to Trigger
+Engine	Function
+🔁 Skill Map Engine	Match current to future roles/industries
+📘 Learning Engine	Suggest learning paths and courses
+📍 Location Fit Engine	Match user to best markets
+💬 Resume Optimizer	Rewrite or suggest improvements
+📦 Career Outcome Predictor	Model where user can reach in X years
+🧩 Brandentifier Linker	Suggest relevant platform features (Portfolio, Services, Matchmaking)
+🧠 Follow-Up Question Suggestions (If allowed)
+Each scenario comes with optional follow-ups Musk can ask to personalize deeper:
+
+“Are you open to remote work?”
+
+“What matters most to you now: growth, income, purpose, freedom?”
+
+“Do you enjoy managing people or solving problems hands-on?”
+
