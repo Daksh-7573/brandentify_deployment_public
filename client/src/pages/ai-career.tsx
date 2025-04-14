@@ -214,6 +214,18 @@ export default function AICareerPage() {
       
       // Switch to the resume tab to show the analysis
       setActiveTab("resume");
+      
+      // Automatically initialize and show the resume chat with the analysis
+      setTimeout(() => {
+        if (data.analysis) {
+          setResumeChatHistory([{
+            content: data.analysis,
+            sender: "musk",
+            timestamp: new Date()
+          }]);
+          setShowResumeChatWindow(true);
+        }
+      }, 500); // Small delay to ensure the tab switch completes first
     },
     onError: (error: Error) => {
       const isApiKeyMissing = error.message.includes("API key");
@@ -642,7 +654,7 @@ export default function AICareerPage() {
                       <div className="space-y-4 sm:space-y-6">
                         {messagesToShow.map((message: any) => (
                           <Card key={message.id} className="p-0 overflow-hidden border border-gray-100 rounded-lg shadow-lg">
-                            <div className="bg-gradient-to-r from-primary/10 to-primary/5 px-4 sm:px-6 py-3 sm:py-4 border-b flex items-center justify-between">
+                            <div className="bg-gradient-to-r from-primary/10 to-primary/5 px-4 sm:px-6 py-3 sm:py-4 border-b flex items-center">
                               <div className="flex items-center gap-3">
                                 <div className="flex items-center justify-center h-9 w-9 rounded-full bg-white shadow-sm">
                                   <Sparkles className="h-5 w-5 text-primary" />
@@ -654,29 +666,6 @@ export default function AICareerPage() {
                                   </p>
                                 </div>
                               </div>
-                              
-                              {/* Chat button for resume analysis card */}
-                              {activeTab === "resume" && (
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="flex items-center gap-1.5"
-                                  onClick={() => {
-                                    // Initialize resume chat with the analysis
-                                    if (resumeChatHistory.length === 0) {
-                                      setResumeChatHistory([{
-                                        content: message.content,
-                                        sender: "musk",
-                                        timestamp: new Date(message.timestamp)
-                                      }]);
-                                    }
-                                    setShowResumeChatWindow(true);
-                                  }}
-                                >
-                                  <MessageSquare className="h-4 w-4" />
-                                  <span>Chat about this analysis</span>
-                                </Button>
-                              )}
                             </div>
                             
                             <div className="p-5 sm:p-6 prose prose-sm dark:prose-invert max-w-none overflow-x-auto">
