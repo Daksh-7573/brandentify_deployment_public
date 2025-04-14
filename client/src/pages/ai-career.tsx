@@ -706,9 +706,9 @@ export default function AICareerPage() {
                                       );
                                     }
                                   }
-                                  // Standard tertiary heading
+                                  // Standard tertiary heading - improved styling with background
                                   return (
-                                    <div key={i} className="font-semibold text-sm text-foreground/90 mt-4 mb-2 uppercase tracking-wide">
+                                    <div key={i} className="font-semibold text-base text-primary-700 mt-5 mb-3 py-1 px-2 bg-primary-50 border-l-4 border-primary-400 rounded-r">
                                       {text}
                                     </div>
                                   );
@@ -747,10 +747,10 @@ export default function AICareerPage() {
                                 else if (line.trim().startsWith('- ')) {
                                   const text = line.replace(/^- /, '');
                                   
-                                  // Bold any text between ** markers
+                                  // Bold any text between ** markers with background highlight
                                   const parts = text.split(/\*\*(.*?)\*\*/g);
                                   const formattedText = parts.map((part, idx) => 
-                                    idx % 2 === 0 ? part : <span key={`bold-${idx}`} className="font-semibold text-primary/90">{part}</span>
+                                    idx % 2 === 0 ? part : <span key={`bold-${idx}`} className="font-semibold text-primary-600 bg-primary-50 px-1 py-0.5 rounded">{part}</span>
                                   );
                                   
                                   return (
@@ -821,7 +821,7 @@ export default function AICareerPage() {
                                   // Bold any text between ** markers
                                   const parts = line.split(/\*\*(.*?)\*\*/g);
                                   const formattedText = parts.map((part, idx) => 
-                                    idx % 2 === 0 ? part : <span key={`bold-${idx}`} className="font-semibold text-primary/90">{part}</span>
+                                    idx % 2 === 0 ? part : <span key={`bold-${idx}`} className="font-semibold text-primary-600 bg-primary-50 px-1 py-0.5 rounded">{part}</span>
                                   );
                                   
                                   return <p key={i} className="my-2 leading-relaxed">{formattedText}</p>;
@@ -935,6 +935,14 @@ export default function AICareerPage() {
                                           <div key={i} className="flex items-center gap-2 text-base font-semibold mt-4 mb-2 text-primary/90">
                                             <Lightbulb className="h-3.5 w-3.5 text-primary" />
                                             <span>{line.replace(/^## /, '')}</span>
+                                          </div>
+                                        );
+                                      }
+                                      // For tertiary headings (### Subtitle)
+                                      else if (line.startsWith('### ')) {
+                                        return (
+                                          <div key={i} className="font-semibold text-base text-primary-700 mt-5 mb-3 py-1 px-2 bg-primary-50 border-l-4 border-primary-400 rounded-r">
+                                            {line.replace(/^### /, '')}
                                           </div>
                                         );
                                       }
