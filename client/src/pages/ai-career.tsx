@@ -371,8 +371,37 @@ export default function AICareerPage() {
                     <Card className="p-4 sm:p-6">
                       <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Resume Analysis</h2>
                       <p className="text-sm text-muted-foreground mb-4">
-                        Upload your resume file to get AI-powered analysis with suggestions for improvement by Musk.
+                        Upload your resume file to get AI-powered analysis with suggestions for improvement by Musk. For more targeted recommendations, specify your desired role and industry.
                       </p>
+                      
+                      {/* Target Role and Industry Fields */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div className="space-y-2">
+                          <Label htmlFor="target-role">Target Role (Optional)</Label>
+                          <Input
+                            id="target-role"
+                            placeholder="e.g., Product Manager, UX Designer, Data Analyst"
+                            value={targetRole}
+                            onChange={(e) => setTargetRole(e.target.value)}
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            Specify the role you're targeting for more customized advice
+                          </p>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="target-industry">Target Industry (Optional)</Label>
+                          <Input
+                            id="target-industry"
+                            placeholder="e.g., Fintech, Healthcare, E-commerce"
+                            value={targetIndustry}
+                            onChange={(e) => setTargetIndustry(e.target.value)}
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            Specify the industry you're targeting for better recommendations
+                          </p>
+                        </div>
+                      </div>
                       
                       {/* File Upload Section */}
                       <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-primary transition-colors">
@@ -426,12 +455,14 @@ export default function AICareerPage() {
                                     // Set loading state
                                     resumeAnalysisMutation.mutate({ 
                                       fileData: base64Data, 
-                                      userId: user?.id || 0 
-                                    } as any);
+                                      userId: user?.id || 0,
+                                      targetRole: targetRole.trim() || undefined,
+                                      targetIndustry: targetIndustry.trim() || undefined
+                                    });
                                     
                                     toast({
                                       title: "Processing resume",
-                                      description: "Your resume is being analyzed. This may take a moment."
+                                      description: "Your resume is being analyzed with our multi-layered improvement engine. This may take a moment."
                                     });
                                   } catch (error) {
                                     console.error('Error analyzing resume file:', error);

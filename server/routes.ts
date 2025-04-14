@@ -2071,7 +2071,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // AI Resume Analysis endpoint
   apiRouter.post("/ai/analyze-resume", async (req: Request, res: Response) => {
     try {
-      const { userId, fileData, resumeText } = req.body;
+      const { userId, fileData, resumeText, targetRole, targetIndustry } = req.body;
       
       // Check if we have either file data or resume text
       if (!fileData && !resumeText) {
@@ -2135,11 +2135,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
           
           console.log("Processing resume text input with OpenAI");
+          console.log(`Target role: ${targetRole || 'Not specified'}, Target industry: ${targetIndustry || 'Not specified'}`);
           const { analyzeResume } = await import('./services/openai-service');
           analysis = await analyzeResume({ 
             resumeTextStart: resumeText,
             isBase64: false,
-            isLink: false
+            isLink: false,
+            targetRole,
+            targetIndustry
           } as any);
           
           console.log("Successfully received OpenAI analysis for direct text input");
@@ -2168,11 +2171,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
             }
             
             console.log("Processing PDF with OpenAI as fallback");
+            console.log(`Target role: ${targetRole || 'Not specified'}, Target industry: ${targetIndustry || 'Not specified'}`);
             const { analyzeResume } = await import('./services/openai-service');
             analysis = await analyzeResume({ 
               resumeTextStart: fileData,
               isBase64: true,
-              isLink: false
+              isLink: false,
+              targetRole,
+              targetIndustry
             } as any);
             console.log("Successfully received OpenAI analysis for PDF as fallback");
           }
