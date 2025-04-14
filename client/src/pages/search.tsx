@@ -661,16 +661,21 @@ const SearchPage = () => {
             {/* Search Form */}
             <form onSubmit={handleSearch} className="flex gap-2 mb-6">
               <div className="relative flex-1">
-                <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-                <Input
+                <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary/60 z-10" size={18} />
+                <input
                   type="search"
                   placeholder="Search pulses, profiles, or hashtags..."
-                  className="pl-10"
+                  className="w-full rounded-md pl-10 py-2 bg-white border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 placeholder:text-gray-400 text-gray-800 transition-all"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-              <Button type="submit">Search</Button>
+              <button 
+                type="submit"
+                className="px-5 py-2 rounded-md bg-primary text-white hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm font-medium transition-all"
+              >
+                Search
+              </button>
             </form>
 
             {/* Search Category Tabs */}
