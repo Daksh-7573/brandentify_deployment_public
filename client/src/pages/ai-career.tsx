@@ -25,6 +25,7 @@ export default function AICareerPage() {
   // Form states
   const [resumeText, setResumeText] = useState("");
   const [activeTab, setActiveTab] = useState("career");
+  const [activeMessageType, setActiveMessageType] = useState<string>("career_advice");
   const [careerAdviceType, setCareerAdviceType] = useState<string>("");
   const [customAdviceText, setCustomAdviceText] = useState<string>("");
   const [showCustomTextInput, setShowCustomTextInput] = useState<boolean>(false);
@@ -56,8 +57,8 @@ export default function AICareerPage() {
         throw new Error("User ID not found");
       }
       
-      // Determine message type based on active tab
-      const messageType = activeTab === "career" ? "career_advice" : "resume_analysis";
+      // Use the active message type to ensure messages are properly categorized
+      const messageType = activeMessageType;
       
       const res = await apiRequest({
         method: "POST", 
@@ -293,10 +294,17 @@ export default function AICareerPage() {
     scrollToBottom();
   }, [chatHistory]);
   
-  // Use effect to show chat window when in resume tab and no messages yet
+  // Use effect to update message type and show chat window when tab changes
   useEffect(() => {
-    if (activeTab === "resume" && getRecentAIMessages("resume_analysis").length === 0) {
-      setShowChatWindow(true);
+    // Update the active message type based on the tab
+    if (activeTab === "resume") {
+      setActiveMessageType("resume_analysis");
+      // Show chat window immediately if no resume messages
+      if (getRecentAIMessages("resume_analysis").length === 0) {
+        setShowChatWindow(true);
+      }
+    } else {
+      setActiveMessageType("career_advice");
     }
   }, [activeTab]);
 
@@ -336,11 +344,17 @@ export default function AICareerPage() {
                     // Update active tab and reset appropriate state
                     setActiveTab(value);
                     
+                    // Reset chat history when switching tabs to prevent cross-contamination
+                    setChatHistory([]);
+                    
                     if (value === 'resume') {
                       setResumeText("");
                       // Reset the uploaded resume flag when switching to resume tab
                       setHasUploadedResume(false);
                     }
+                    
+                    // Reset chat window to show tab-specific content
+                    setShowChatWindow(false);
                   }}>
                   <TabsList className="grid w-full grid-cols-2 mb-4">
                     <TabsTrigger value="career">Career Advice</TabsTrigger>
