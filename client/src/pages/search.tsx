@@ -534,7 +534,7 @@ const SearchPage = () => {
                       </Card>
                     ))}
                   </div>
-                ) : searchResults?.pulses?.length > 0 ? (
+                ) : searchResults && searchResults.pulses && searchResults.pulses.length > 0 ? (
                   <div className="space-y-4">
                     {searchResults.pulses.map((pulse: {
                       id: number;
@@ -621,7 +621,7 @@ const SearchPage = () => {
                       </Card>
                     ))}
                   </div>
-                ) : searchResults?.profiles?.length > 0 ? (
+                ) : searchResults && searchResults.profiles && searchResults.profiles.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {searchResults.profiles.map((profile: {
                       id: number;
@@ -706,21 +706,31 @@ const SearchPage = () => {
                       </Card>
                     ))}
                   </div>
-                ) : searchResults?.hashtags?.length > 0 ? (
+                ) : searchResults && searchResults.hashtags && searchResults.hashtags.length > 0 ? (
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {searchResults.hashtags.map((tag: {
                       id: number;
                       name: string;
                       count: number;
                     }) => (
-                      <Card key={tag.id} className="hover:border-primary/50 transition-colors cursor-pointer">
-                        <CardContent className="p-4">
+                      <Card 
+                        key={tag.id} 
+                        className="overflow-hidden rounded-xl border-0 shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer group"
+                      >
+                        <CardContent className="p-5 relative">
+                          <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -mt-12 -mr-12 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                           <div className="flex items-center justify-between">
                             <div>
-                              <h3 className="text-lg font-medium">#{tag.name}</h3>
-                              <p className="text-gray-500 text-sm">{tag.count} {tag.count === 1 ? 'post' : 'posts'}</p>
+                              <h3 className="text-lg font-medium group-hover:text-primary transition-colors">
+                                <span className="text-primary font-semibold">#</span>{tag.name}
+                              </h3>
+                              <p className="text-gray-500 text-sm mt-1">
+                                {tag.count} {tag.count === 1 ? 'post' : 'posts'}
+                              </p>
                             </div>
-                            <Hash className="h-8 w-8 text-primary/40" />
+                            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-300">
+                              <Hash className="h-5 w-5 text-primary" />
+                            </div>
                           </div>
                         </CardContent>
                       </Card>
