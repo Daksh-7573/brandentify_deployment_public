@@ -2181,7 +2181,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               targetRole,
               targetIndustry
             } as any);
-            analysis = result.analysis;
+            analysis = result.analysis || "Unable to analyze resume PDF. Please try again or provide your resume text directly.";
             console.log("Successfully received OpenAI analysis for PDF as fallback");
           }
         }
@@ -2285,6 +2285,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           company: null,
           industry: targetIndustry,
           visitingCardType: null,
+          // Geo information
+          geoLatitude: null,
+          geoLongitude: null,
+          geoVisibleNearby: false,
+          geoLastUpdated: null,
           // These fields removed as they don't exist in the model
           lookingFor: null,
           profileCompleted: null,
@@ -2299,11 +2304,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const openaiService = await import('./services/fixed-openai-service');
       
       // Generate networking recommendations
-      const recommendations = await openaiService.generateNetworkingRecommendations(
+      const rawRecommendations = await openaiService.generateNetworkingRecommendations(
         { user, workExperiences, skills, educations }, 
         targetIndustry, 
         purpose
       );
+      
+      // Ensure we have a valid string value
+      const recommendations = rawRecommendations || "Unable to generate networking recommendations. Please try again later.";
       
       // Save the recommendations as a chat message
       await storage.createChatMessage({
