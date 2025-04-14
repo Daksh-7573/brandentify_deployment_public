@@ -2023,7 +2023,7 @@ export class MemStorage implements IStorage {
         const countA = a.count || 0;
         const countB = b.count || 0;
         return countB - countA; // Sort by count (popularity) in descending order
-      })
+      });
   }
   async searchPulses(query: string): Promise<Pulse[]> {
     console.log(`[storage] searchPulses: Searching pulses with query: "${query}"`);
