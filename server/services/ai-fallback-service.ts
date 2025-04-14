@@ -831,6 +831,145 @@ Remember that successful industry transitions build on your existing strengths w
 Musk, Your Career Partner`;
   }
   
+  // Check for explore_options
+  else if (adviceType === 'explore_options') {
+    return `# Career Options Explorer for ${userName}
+
+I've analyzed your professional background and identified compelling career paths that leverage your unique skillset while offering promising growth opportunities.
+
+## 🔍 Career Foundations Analysis
+
+**Current Expertise**: Digital Marketing & Analytics
+**Core Strengths**: Data analysis, campaign strategy, content development
+**Transferable Skills**: Strategic planning, stakeholder management, results measurement
+**Work Style**: Collaborative, detail-oriented, innovation-driven
+**Advancement Priorities**: Growth potential, creative freedom, intellectual challenge
+
+## 🌟 Primary Career Directions
+
+Path | Match Level | Growth Trajectory | Salary Potential
+-----|-------------|------------------|------------------
+**Marketing Leadership** | **High (88%)** | Established progression track | **$120K-180K**
+**Product Marketing** | **High (85%)** | Strong growth sector | **$115K-170K**
+**Marketing Analytics** | **Very High (92%)** | Rapidly expanding field | **$110K-165K**
+**Customer Experience** | **Medium (76%)** | Emerging specialty | **$105K-155K**
+**Growth Marketing** | **High (84%)** | High-demand function | **$110K-175K**
+
+## 💼 Career Path Deep Dives
+
+### 1. Marketing Leadership Track
+**Progression Path**: Senior Manager → Director → VP → CMO
+**Core Function**: Strategic direction of integrated marketing operations
+
+**Why It Matches You**:
+- Your strategic vision and analytical foundation provide essential CMO pipeline skills
+- Strong campaign management experience demonstrates operational leadership
+- Cross-functional collaboration capabilities are crucial for senior marketing roles
+
+**Skills to Develop**:
+- Executive communication and board presentation expertise
+- Financial management and budgeting for complex organizations
+- Team building and leadership development competencies
+
+**Brandentifier Strategy**: Develop a leadership-focused Digital Visiting Card highlighting strategic accomplishments and team impact metrics
+
+### 2. Product Marketing Specialization
+**Progression Path**: Product Marketing Manager → Senior PMM → Director → VP Product Marketing
+**Core Function**: Bridging product development and go-to-market strategy
+
+**Why It Matches You**:
+- Your analytical background enables data-driven positioning and messaging
+- Marketing channel expertise helps optimize product launch strategies
+- Customer insights experience translates to effective value proposition development
+
+**Skills to Develop**:
+- Product lifecycle management processes
+- Cross-functional product development collaboration
+- Competitive analysis and market intelligence methodologies
+
+**Brandentifier Strategy**: Create a specialized portfolio section highlighting product-focused case studies and launch metrics
+
+### 3. Marketing Analytics Leadership
+**Progression Path**: Analytics Manager → Director of Analytics → Chief Analytics Officer
+**Core Function**: Transforming data into actionable marketing strategy and measurement
+
+**Why It Matches You**:
+- Your strong technical foundation provides immediate credibility
+- Data visualization skills enable executive-level insights communication
+- Experience connecting metrics to business outcomes demonstrates strategic value
+
+**Skills to Develop**:
+- Advanced predictive modeling and machine learning applications
+- Multi-touch attribution and marketing mix modeling
+- Marketing analytics team building and development
+
+**Brandentifier Strategy**: Use Industry Pulse to share data-driven insights that establish your analytics thought leadership
+
+### 4. Customer Experience Leadership
+**Progression Path**: CX Manager → Director of CX → Chief Experience Officer
+**Core Function**: Optimizing customer journey across all touchpoints
+
+**Why It Matches You**:
+- Campaign management experience translates to journey orchestration
+- Analytics background enables data-driven experience optimization
+- Cross-functional collaboration skills essential for CX transformation
+
+**Skills to Develop**:
+- Customer journey mapping and orchestration
+- Voice of customer program development
+- Experience design principles and methodologies
+
+**Brandentifier Strategy**: Showcase customer-centric accomplishments through tailored Services offerings in your profile
+
+### 5. Growth Marketing Leadership
+**Progression Path**: Growth Manager → Growth Director → VP of Growth
+**Core Function**: Accelerating user acquisition, activation, retention and revenue
+
+**Why It Matches You**:
+- Data-driven approach aligns perfectly with growth methodology
+- Technical understanding enables marketing automation and experimentation
+- Results focus demonstrates growth mindset essential for this specialty
+
+**Skills to Develop**:
+- Advanced A/B testing and experimentation frameworks
+- Growth modeling and forecasting methodologies
+- Cross-functional growth team leadership
+
+**Brandentifier Strategy**: Create growth-focused case studies in your portfolio highlighting key metrics and optimization processes
+
+## 🚀 Next Steps Roadmap
+
+### Immediate Actions (Next 30 Days)
+- Update your Brandentifier portfolio to emphasize experiences aligned with your top 2 paths
+- Schedule 3-5 informational interviews with professionals in your preferred tracks
+- Identify 1-2 skill development priorities based on your chosen direction
+- Create a specialized Digital Visiting Card for your primary career path
+
+### Short-Term Plan (1-3 Months)
+- Seek opportunities in your current role to develop experience in your chosen direction
+- Take an online course or certification aligned with your selected track
+- Expand your network with 10+ new connections in your target specialty
+- Use Brandentifier's Smart Radar to find mentors in your chosen field
+
+### Medium-Term Strategy (3-6 Months)
+- Develop "proof of concept" projects that demonstrate capabilities in your new direction
+- Reposition your professional brand to align with your career path through Brandentifier
+- Attend industry events specific to your chosen specialty
+- Join professional groups related to your target career track
+
+## 📱 How Brandentifier Supports Your Career Exploration
+
+- **Multi-Path Portfolio**: Create specialized sections for different potential career tracks
+- **A/B Test Digital Visiting Cards**: Develop different versions to gauge professional response
+- **Smart Radar Exploration**: Connect with professionals across various specialties to gather insights
+- **Industry Pulse Experimentation**: Share content in different domains to build varied expertise
+- **Services Showcase**: Highlight capabilities relevant to multiple potential paths
+
+Remember that career exploration is an iterative process. By systematically investigating these paths while strategically developing your skills and network, you'll make confident decisions that maximize both your impact and fulfillment.
+
+Musk, Your Career Partner`;
+  }
+  
   // Default general advice
   else {
     return `# Career Development Insights for ${userName}
