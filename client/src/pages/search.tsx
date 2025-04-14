@@ -14,10 +14,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
-import { Search as SearchIcon, Users, MessageSquare, Hash, UserPlus, Star, MapPin, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { Search as SearchIcon, Users, MessageSquare, Hash, UserPlus, Star, MapPin, ArrowUpRight, ArrowDownRight, Plus, Check } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { JobTitleCombobox } from "@/components/ui/job-title-combobox";
 import DashboardLayout from "@/components/layout/dashboard-layout";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 
 // Types for search
 type SearchCategory = "pulses" | "profiles" | "hashtags" | "smart-connect";
@@ -713,27 +714,7 @@ const SearchPage = () => {
                       name: string;
                       count: number;
                     }) => (
-                      <Card 
-                        key={tag.id} 
-                        className="overflow-hidden rounded-xl border-0 shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer group"
-                      >
-                        <CardContent className="p-5 relative">
-                          <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -mt-12 -mr-12 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <h3 className="text-lg font-medium group-hover:text-primary transition-colors">
-                                <span className="text-primary font-semibold">#</span>{tag.name}
-                              </h3>
-                              <p className="text-gray-500 text-sm mt-1">
-                                {tag.count} {tag.count === 1 ? 'post' : 'posts'}
-                              </p>
-                            </div>
-                            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-300">
-                              <Hash className="h-5 w-5 text-primary" />
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
+                      <HashtagCard key={tag.id} tag={tag} userId={user?.id} />
                     ))}
                   </div>
                 ) : (

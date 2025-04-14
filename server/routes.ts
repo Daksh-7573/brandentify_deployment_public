@@ -3615,6 +3615,36 @@ ${extractedText.substring(0, 5000)}
     }
   });
   
+  // Check if user is following a hashtag
+  apiRouter.get("/hashtags/:hashtagId/is-following", async (req: Request, res: Response) => {
+    try {
+      const hashtagId = parseInt(req.params.hashtagId);
+      const userId = parseInt(req.query.userId as string);
+      
+      console.log(`[GET /hashtags/:hashtagId/is-following] Checking if user ${userId} is following hashtag ${hashtagId}`);
+      
+      if (isNaN(hashtagId) || isNaN(userId)) {
+        return res.status(400).json({ message: "Invalid ID format" });
+      }
+      
+      // Check if the hashtag exists
+      const hashtag = await storage.getHashtagById(hashtagId);
+      if (!hashtag) {
+        console.log(`[GET /hashtags/:hashtagId/is-following] Hashtag not found: ${hashtagId}`);
+        return res.status(404).json({ message: "Hashtag not found" });
+      }
+      
+      // Check if user is following the hashtag
+      const isFollowing = await storage.isHashtagFollowedByUser(userId, hashtagId);
+      console.log(`[GET /hashtags/:hashtagId/is-following] User ${userId} is ${isFollowing ? '' : 'not '}following hashtag ${hashtagId}`);
+      
+      return res.json({ isFollowing });
+    } catch (error) {
+      console.error("[GET /hashtags/:hashtagId/is-following] Error:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
   apiRouter.get("/users/:userId/followed-hashtags", async (req: Request, res: Response) => {
     try {
       const userIdParam = req.params.userId;
