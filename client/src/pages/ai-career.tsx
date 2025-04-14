@@ -975,7 +975,7 @@ export default function AICareerPage() {
                                         // Bold any text between ** markers
                                         const parts = text.split(/\*\*(.*?)\*\*/g);
                                         const formattedText = parts.map((part, idx) => 
-                                          idx % 2 === 0 ? part : <span key={`bold-${idx}`} className="font-semibold">{part}</span>
+                                          idx % 2 === 0 ? part : <span key={`bold-${idx}`} className="font-semibold text-primary-600 bg-primary-50 px-1 py-0.5 rounded">{part}</span>
                                         );
                                         
                                         return (
@@ -1100,7 +1100,7 @@ export default function AICareerPage() {
                                         // Bold any text between ** markers
                                         const parts = line.split(/\*\*(.*?)\*\*/g);
                                         const formattedText = parts.map((part, idx) => 
-                                          idx % 2 === 0 ? part : <span key={`bold-${idx}`} className="font-semibold text-primary/90">{part}</span>
+                                          idx % 2 === 0 ? part : <span key={`bold-${idx}`} className="font-semibold text-primary-600 bg-primary-50 px-1 py-0.5 rounded">{part}</span>
                                         );
                                         
                                         return <p key={i} className="my-2 leading-relaxed">{formattedText}</p>;
