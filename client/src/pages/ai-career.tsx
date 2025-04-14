@@ -175,30 +175,41 @@ export default function AICareerPage() {
       // Ensure the hasUploadedResume flag is set
       setHasUploadedResume(true);
       
+      // Immediately show chat window - don't wait for query refetch
+      setShowChatWindow(true);
+      
       if (user?.id) {
         queryClient.invalidateQueries({
           queryKey: ["/api/users", user.id, "chat-messages"]
         });
         
-        // Wait for the query to refetch
-        setTimeout(() => {
-          // Show chat window with AI response
-          setShowChatWindow(true);
-          
-          // Add the analysis as the first message from Musk in the chat
-          const recentMessages = getRecentAIMessages("resume_analysis");
-          if (recentMessages && recentMessages.length > 0) {
-            // Get the most recent resume analysis
-            const latestAnalysis = recentMessages[0];
-            
-            // Add it to the chat history
-            setChatHistory([{
-              content: latestAnalysis.content,
-              sender: "musk",
-              timestamp: new Date(latestAnalysis.timestamp)
-            }]);
-          }
-        }, 500);
+        // Add the analysis directly from the response data to the chat history
+        if (data.analysis) {
+          setChatHistory([{
+            content: data.analysis,
+            sender: "musk",
+            timestamp: new Date()
+          }]);
+          scrollToBottom();
+        } else {
+          // If for some reason we don't have the analysis in the response,
+          // wait for the query to refetch and get it from there
+          setTimeout(() => {
+            const recentMessages = getRecentAIMessages("resume_analysis");
+            if (recentMessages && recentMessages.length > 0) {
+              // Get the most recent resume analysis
+              const latestAnalysis = recentMessages[0];
+              
+              // Add it to the chat history
+              setChatHistory([{
+                content: latestAnalysis.content,
+                sender: "musk",
+                timestamp: new Date(latestAnalysis.timestamp)
+              }]);
+              scrollToBottom();
+            }
+          }, 500);
+        }
       }
       
       setResumeText("");
@@ -622,10 +633,8 @@ export default function AICareerPage() {
                     );
                   }
                   
-                  // Only show card-style messages if:
-                  // 1. We're on the resume tab, OR
-                  // 2. We're on the career tab but the chat window isn't shown
-                  if (activeTab === "resume" || (activeTab === "career" && !showChatWindow)) {
+                  // If the chat window is shown, don't display the card-style messages
+                  if (!showChatWindow) {
                     // If we're on the resume tab, only show the most recent analysis
                     const messagesToShow = activeTab === "resume" 
                       ? [filteredMessages[0]] // Only the first/most recent resume analysis
