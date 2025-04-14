@@ -1873,6 +1873,21 @@ export class MemStorage implements IStorage {
       .find(hashtag => hashtag.tag.toLowerCase() === normalizedTag);
   }
   
+  async searchHashtagsByPrefix(prefix: string): Promise<Hashtag[]> {
+    // Remove '#' if present and convert to lowercase
+    const normalizedPrefix = prefix.startsWith('#') ? prefix.substring(1).toLowerCase() : prefix.toLowerCase();
+    
+    if (!normalizedPrefix) return [];
+    
+    return Array.from(this.hashtags.values())
+      .filter(hashtag => hashtag.tag.toLowerCase().startsWith(normalizedPrefix))
+      .sort((a, b) => {
+        const countA = a.count || 0;
+        const countB = b.count || 0;
+        return countB - countA; // Sort by count (popularity) in descending order
+      });
+  }
+  
   async createHashtag(insertHashtag: InsertHashtag): Promise<Hashtag> {
     const id = this.currentHashtagId++;
     const createdAt = new Date();
@@ -2011,20 +2026,6 @@ export class MemStorage implements IStorage {
     }
   }
   
-  async searchHashtagsByPrefix(prefix: string): Promise<Hashtag[]> {
-    // Remove '#' if present and convert to lowercase
-    const normalizedPrefix = prefix.startsWith('#') ? prefix.substring(1).toLowerCase() : prefix.toLowerCase();
-    
-    if (!normalizedPrefix) return [];
-    
-    return Array.from(this.hashtags.values())
-      .filter(hashtag => hashtag.tag.toLowerCase().startsWith(normalizedPrefix))
-      .sort((a, b) => {
-        const countA = a.count || 0;
-        const countB = b.count || 0;
-        return countB - countA; // Sort by count (popularity) in descending order
-      });
-  }
   async searchPulses(query: string): Promise<Pulse[]> {
     console.log(`[storage] searchPulses: Searching pulses with query: "${query}"`);
     const normalizedQuery = query.toLowerCase().trim();
