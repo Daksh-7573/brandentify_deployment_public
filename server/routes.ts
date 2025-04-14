@@ -1565,31 +1565,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log('[POST /pulses] Creating new pulse:', req.body);
       
-      let pulseWithUser;
-      try {
-        // Parse and validate the pulse data
-        const pulseData = insertPulseSchema.parse(req.body);
-        
-        // Create the new pulse
-        const newPulse = await storage.createPulse(pulseData);
-        
-        console.log(`[POST /pulses] Created new pulse with ID: ${newPulse.id}`);
-        
-        // Get the user data to return with the response
-        const user = await storage.getUser(newPulse.userId);
-        pulseWithUser = {
-          ...newPulse,
-          user: user ? {
-            name: user.name,
-            photoURL: user.photoURL
-          } : undefined
-        };
-      } catch (innerError) {
-        console.error('[POST /pulses] Inner error details:', innerError);
-        throw innerError; // Re-throw to be caught by the outer try-catch
-      }
+      // Parse and validate the pulse data
+      const pulseData = insertPulseSchema.parse(req.body);
       
-      res.status(201).json(pulseWithUser);
+      // Create the new pulse
+      const newPulse = await storage.createPulse(pulseData);
+      
+      console.log(`[POST /pulses] Created new pulse with ID: ${newPulse.id}`);
+      
+      // Get the user data to return with the response
+      const user = await storage.getUser(newPulse.userId);
+      const pulseWithUser = {
+        ...newPulse,
+        user: user ? {
+          name: user.name,
+          photoURL: user.photoURL
+        } : undefined
+      };
+      
+      return res.status(201).json(pulseWithUser);
     } catch (error) {
       if (error instanceof z.ZodError) {
         console.error('[POST /pulses] Validation error:', error.errors);
