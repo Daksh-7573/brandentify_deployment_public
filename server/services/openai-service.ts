@@ -905,10 +905,13 @@ Your responses should feel like a professional resume coach, career expert, and 
       
         // Apply the advanced multi-layered resume improvement engine
         userPrompt = `
-      ${generateCompleteResumeImprovementPrompt()}
+      ${generateCompleteResumeImprovementPrompt(targetRole, targetIndustry)}
       
       RESUME TEXT:
       ${truncatedText}
+      
+      ${targetRole ? `TARGET ROLE: ${targetRole}` : ''}
+      ${targetIndustry ? `TARGET INDUSTRY: ${targetIndustry}` : ''}
       
       Your analysis must be EXTREMELY PERSONALIZED, using their specific name and directly referencing their exact experiences. Every suggestion should be tailored to their situation, not generic advice.
       `;
