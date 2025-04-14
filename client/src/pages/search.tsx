@@ -442,6 +442,173 @@ const SearchPage = () => {
       .toUpperCase()
       .substring(0, 2);
   };
+  
+  // HashtagCard component for rendering hashtags with follow/unfollow functionality
+  const HashtagCard = ({ tag, userId }: { tag: { id: number, name: string, count: number }, userId?: number }) => {
+    const { toast } = useToast();
+    const [isFollowing, setIsFollowing] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    
+    // Check if user is following this hashtag
+    useQuery<{ isFollowing: boolean }>({
+      queryKey: [`/api/hashtags/${tag.id}/is-following`, userId],
+      queryFn: async () => {
+        if (!userId) return { isFollowing: false };
+        const response = await fetch(`/api/hashtags/${tag.id}/is-following?userId=${userId}`);
+        if (!response.ok) {
+          throw new Error('Failed to check follow status');
+        }
+        return response.json();
+      },
+      enabled: !!userId,
+      onSuccess: (data) => {
+        setIsFollowing(data.isFollowing);
+      }
+    });
+    
+    // Follow hashtag mutation
+    const followMutation = useMutation({
+      mutationFn: async () => {
+        if (!userId) {
+          toast({
+            title: "Error",
+            description: "You must be logged in to follow hashtags",
+            variant: "destructive"
+          });
+          return;
+        }
+        
+        setIsLoading(true);
+        const res = await apiRequest({
+          method: 'POST',
+          url: `/api/hashtags/${tag.id}/follow?userId=${userId}`,
+          data: { userId }
+        });
+        
+        return res.json();
+      },
+      onSuccess: () => {
+        setIsFollowing(true);
+        toast({
+          title: "Success",
+          description: `You are now following #${tag.name}`,
+        });
+        queryClient.invalidateQueries({ queryKey: [`/api/hashtags/${tag.id}/is-following`] });
+      },
+      onError: (error) => {
+        console.error("Error following hashtag:", error);
+        toast({
+          title: "Error",
+          description: `Failed to follow hashtag: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          variant: "destructive"
+        });
+      },
+      onSettled: () => {
+        setIsLoading(false);
+      }
+    });
+    
+    // Unfollow hashtag mutation
+    const unfollowMutation = useMutation({
+      mutationFn: async () => {
+        if (!userId) {
+          toast({
+            title: "Error",
+            description: "You must be logged in to unfollow hashtags",
+            variant: "destructive"
+          });
+          return;
+        }
+        
+        setIsLoading(true);
+        const res = await apiRequest({
+          method: 'DELETE',
+          url: `/api/hashtags/${tag.id}/follow?userId=${userId}`,
+          data: {}
+        });
+        
+        return res.json();
+      },
+      onSuccess: () => {
+        setIsFollowing(false);
+        toast({
+          title: "Success",
+          description: `You have unfollowed #${tag.name}`,
+        });
+        queryClient.invalidateQueries({ queryKey: [`/api/hashtags/${tag.id}/is-following`] });
+      },
+      onError: (error) => {
+        console.error("Error unfollowing hashtag:", error);
+        toast({
+          title: "Error",
+          description: `Failed to unfollow hashtag: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          variant: "destructive"
+        });
+      },
+      onSettled: () => {
+        setIsLoading(false);
+      }
+    });
+    
+    const handleFollowToggle = () => {
+      if (!userId) {
+        toast({
+          title: "Error",
+          description: "You must be logged in to follow hashtags",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      if (isFollowing) {
+        unfollowMutation.mutate();
+      } else {
+        followMutation.mutate();
+      }
+    };
+    
+    return (
+      <Card 
+        key={tag.id} 
+        className="overflow-hidden rounded-xl border-0 shadow-md hover:shadow-lg transition-all duration-300 group"
+      >
+        <CardContent className="p-5 relative">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -mt-12 -mr-12 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-medium group-hover:text-primary transition-colors">
+                <span className="text-primary font-semibold">#</span>{tag.name}
+              </h3>
+              <p className="text-gray-500 text-sm mt-1">
+                {tag.count} {tag.count === 1 ? 'post' : 'posts'}
+              </p>
+            </div>
+            {userId ? (
+              <Button
+                size="icon"
+                variant={isFollowing ? "outline" : "default"}
+                className={`h-10 w-10 rounded-full ${isFollowing ? 'text-primary border-primary/50' : 'bg-primary/10 hover:bg-primary/20'}`}
+                onClick={handleFollowToggle}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
+                ) : isFollowing ? (
+                  <Check className="h-5 w-5" />
+                ) : (
+                  <Plus className="h-5 w-5" />
+                )}
+              </Button>
+            ) : (
+              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-300">
+                <Hash className="h-5 w-5 text-primary" />
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
 
   return (
     <DashboardLayout hideRightSidebar={true}>
