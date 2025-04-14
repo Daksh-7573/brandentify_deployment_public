@@ -614,7 +614,11 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
       console.log("Auto-detected parameters:", { isLinkValue, isBase64Value });
     }
     
-    let systemPrompt = "You are Musk, an expert resume analyzer within the Brandentifier platform, with deep knowledge of professional development and hiring practices across many industries. Your analysis must be EXTREMELY PERSONALIZED, using the person's specific name and directly referencing their exact experiences, skills, and background from their resume. Avoid generic advice - everything must be tailored to their specific situation. Provide detailed, constructive feedback with highly actionable insights. When suggesting improvements, always mention how Brandentifier's features can help, including the Portfolio Builder for showcasing projects, Smart Connect for networking, and Services showcase for freelancers and consultants. Above all, your analysis must be deeply personalized, conversational, and feel like it was written specifically for the individual based on their unique resume.";
+    // Import the resume intelligence system
+    const { generateResumeAnalysisPrompt } = await import('./resume-intelligence');
+    
+    // Generate a dynamic system prompt for resume analysis
+    let systemPrompt = generateResumeAnalysisPrompt();
     let userPrompt = "";
     
     if (isLinkValue) {
