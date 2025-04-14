@@ -597,14 +597,24 @@ const SearchPage = () => {
               <Button
                 size="sm"
                 variant={isFollowing ? "outline" : "default"}
-                className={`px-4 py-2 h-auto rounded-full ${isFollowing ? 'text-primary border-primary/50' : 'bg-primary hover:bg-primary/90'}`}
+                className={`min-w-[90px] px-4 py-1.5 h-8 rounded-full transition-all duration-300 ${
+                  isFollowing 
+                    ? 'text-primary border-primary/50 hover:bg-primary/5' 
+                    : 'bg-primary hover:bg-primary/90'
+                }`}
                 onClick={handleFollowToggle}
                 disabled={isLoading}
               >
-                {isLoading ? (
-                  <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full mr-2" />
-                ) : null}
-                {isFollowing ? 'Unfollow' : 'Follow'}
+                <span className="relative">
+                  {isLoading && (
+                    <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                      <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
+                    </span>
+                  )}
+                  <span className={`${isLoading ? 'invisible' : 'visible'}`}>
+                    {isFollowing ? 'Unfollow' : 'Follow'}
+                  </span>
+                </span>
               </Button>
             ) : (
               <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-300">
