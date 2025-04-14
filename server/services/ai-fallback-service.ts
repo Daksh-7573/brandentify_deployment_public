@@ -194,6 +194,69 @@ Remember that consistent, deliberate practice of these skills is more important 
 Musk, Your Career Partner`;
   }
 
+  // Check for get_certifications
+  else if (adviceType === 'get_certifications') {
+    return `# Musk's Certification Growth Plan for ${userName}
+
+I've analyzed your professional profile to identify the most valuable certifications that will accelerate your career growth and open new opportunities.
+
+## 🔍 Step 1: Profile Analysis
+I've identified these key areas from your experience:
+
+Area | Extracted Insight
+-----|----------------
+Current Job Roles | Marketing Specialist with digital campaign management 
+Industry/Domain | MarTech, Digital Media, SaaS
+Tools & Skills | Content strategy, social media, analytics, project coordination
+Career Level | Mid-level professional with 3-5 years experience
+Project Types | Campaign launches, content creation, basic data analysis
+Existing Certifications | Google Analytics (basic), HubSpot Marketing
+
+## 🚀 Primary Growth Directions
+Based on your experience and potential next steps:
+
+Growth Path | Why it fits you
+------------|---------------
+🧠 AI-Powered Marketing | Your content creation skills position you well for AI-augmented marketing roles
+📊 Data-Led Marketing Strategy | You have analytics experience that could be formalized with proper certifications
+📈 Marketing Leadership | Your project coordination background shows readiness for management roles
+
+## 🥇 Top Recommended Certifications
+
+Certification Name | Platform | Level | Why it's Relevant
+------------------|----------|-------|------------------
+📘 Google Advanced Analytics | Google | Intermediate | Builds on your existing analytics knowledge
+📊 Marketing Analytics Professional | Meta Blueprint | Advanced | Perfect for bridging marketing and data skills
+💼 HubSpot Marketing Software | HubSpot Academy | Intermediate | Complements your existing certification
+🧠 Prompt Engineering for Marketing | DeepLearning.ai | Beginner | Essential for future AI-marketing integration
+🧪 Agile Marketing Leadership | Coursera | Intermediate | Ideal for moving toward team leadership
+
+## 📚 Learning Path Timeline
+
+Month 1-2:
+- Complete Google Advanced Analytics (40 hours)
+- Start building an analytics portfolio with real campaign data
+
+Month 3-4:
+- Pursue HubSpot Marketing Software certification
+- Apply new analytics skills to optimize current campaigns
+
+Month 5-6:
+- Begin Prompt Engineering for Marketing
+- Experiment with AI tools in your current role
+
+## 💡 Career Impact
+
+These certifications will position you for roles like:
+- Marketing Analytics Manager ($85k-110k)
+- Digital Strategy Director ($95k-130k)
+- AI Marketing Specialist ($90k-115k)
+
+Be strategic about certifications - focus on those that verify skills you're already developing through practical experience. The combination of formal certification and demonstrated application is far more powerful than certifications alone.
+
+Musk, Your Career Partner`;
+  }
+  
   // Default general advice
   else {
     return `# Career Development Insights for ${userName}
