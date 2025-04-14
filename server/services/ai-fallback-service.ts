@@ -302,7 +302,7 @@ Prepare for these assessment areas:
 ### 3. Behavioral Question Framework (STAR Method)
 Situation | Task | Action | Result
 ----------|------|--------|-------
-Describe the context | Explain your responsibility | Detail your specific actions | Share measurable outcomes
+**Describe the context** | **Explain your responsibility** | **Detail your specific actions** | **Share measurable outcomes**
 Keep concise (20%) | Be clear about your role (10%) | Focus on YOUR contributions (40%) | Emphasize impact (30%)
 
 ## 🛠️ Interview Preparation Action Plan
@@ -381,11 +381,11 @@ Financial Readiness | Basic planning skills, requires funding strategy refinemen
 
 Approach | Fit for You | Key Requirements
 ---------|-------------|------------------
-Bootstrapping | Good | Lean operations, paying customers early
-Angel Investment | Excellent | Compelling pitch deck, clear market opportunity
-Venture Capital | Moderate | Scalable model, significant traction metrics
-Grants/Competitions | Good | Innovative solution, social impact potential
-Strategic Partnerships | Excellent | Complementary business alignments
+**Bootstrapping** | **Good** | Lean operations, paying customers early
+**Angel Investment** | **Excellent** | Compelling pitch deck, clear market opportunity
+**Venture Capital** | **Moderate** | Scalable model, significant traction metrics
+**Grants/Competitions** | **Good** | Innovative solution, social impact potential
+**Strategic Partnerships** | **Excellent** | Complementary business alignments
 
 ## 🧩 Essential Startup Resources
 
@@ -436,11 +436,11 @@ Qualification Recognition | Core credentials recognized in major markets
 
 Country | Match Level | Opportunity Overview
 --------|-------------|---------------------
-🇨🇦 Canada | High (85%) | Strong tech sector, favorable immigration policies for skilled professionals
-🇩🇪 Germany | High (82%) | Digital marketing talent shortage, English-friendly work environments
-🇸🇬 Singapore | Medium (76%) | Regional hub for global companies, western-friendly business culture
-🇦🇺 Australia | Medium (75%) | Growing digital economy, points-based immigration system
-🇳🇱 Netherlands | High (80%) | Strong international business presence, English widely spoken
+🇨🇦 Canada | **High (85%)** | Strong tech sector, favorable immigration policies for skilled professionals
+🇩🇪 Germany | **High (82%)** | Digital marketing talent shortage, English-friendly work environments
+🇸🇬 Singapore | **Medium (76%)** | Regional hub for global companies, western-friendly business culture
+🇦🇺 Australia | **Medium (75%)** | Growing digital economy, points-based immigration system
+🇳🇱 Netherlands | **High (80%)** | Strong international business presence, English widely spoken
 
 ## 📝 International Career Preparation Roadmap
 
@@ -466,11 +466,11 @@ Country | Match Level | Opportunity Overview
 
 Country | Main Visa Path | Processing Time | Key Requirements
 --------|---------------|-----------------|------------------
-Canada | Express Entry | 6-12 months | Points system (age, education, experience, language)
-Germany | EU Blue Card | 1-3 months | Job offer above salary threshold, degree recognition
-Singapore | Employment Pass | 3-8 weeks | Salary threshold, qualifications, job offer
-Australia | Skilled Migration | 8-14 months | Points system, occupation on skills list
-Netherlands | Highly Skilled Migrant | 2-4 weeks | Salary threshold, recognized sponsor
+**Canada** | Express Entry | 6-12 months | Points system (age, education, experience, language)
+**Germany** | EU Blue Card | 1-3 months | Job offer above salary threshold, degree recognition
+**Singapore** | Employment Pass | 3-8 weeks | Salary threshold, qualifications, job offer
+**Australia** | Skilled Migration | 8-14 months | Points system, occupation on skills list
+**Netherlands** | Highly Skilled Migrant | 2-4 weeks | Salary threshold, recognized sponsor
 
 ## 📱 How Brandentifier Supports Your Global Career
 
