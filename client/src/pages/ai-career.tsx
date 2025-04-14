@@ -33,6 +33,7 @@ export default function AICareerPage() {
   const [chatHistory, setChatHistory] = useState<Array<{content: string, sender: "user" | "musk", timestamp: Date}>>([]);
   const [targetRole, setTargetRole] = useState<string>("");
   const [targetIndustry, setTargetIndustry] = useState<string>("");
+  const [hasUploadedResume, setHasUploadedResume] = useState<boolean>(false);
   
   // Fetch existing chat messages for the user
   const { data: chatMessages, isLoading: messagesLoading } = useQuery({
@@ -171,6 +172,9 @@ export default function AICareerPage() {
         description: "Your resume has been analyzed. You can now chat with Musk about your resume."
       });
       
+      // Ensure the hasUploadedResume flag is set
+      setHasUploadedResume(true);
+      
       if (user?.id) {
         queryClient.invalidateQueries({
           queryKey: ["/api/users", user.id, "chat-messages"]
@@ -230,8 +234,13 @@ export default function AICareerPage() {
       new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     );
     
-    // For resume analysis, only show the most recent one
+    // For resume analysis, only show if user has uploaded a resume in this session
     if (messageType === "resume_analysis") {
+      // If no resume has been uploaded in this session, don't show demo analysis
+      if (!hasUploadedResume) {
+        return [];
+      }
+      // Otherwise just show the most recent one
       return sortedMessages.slice(0, 1);
     }
     
@@ -310,6 +319,8 @@ export default function AICareerPage() {
                     
                     if (value === 'resume') {
                       setResumeText("");
+                      // Reset the uploaded resume flag when switching to resume tab
+                      setHasUploadedResume(false);
                     }
                   }}>
                   <TabsList className="grid w-full grid-cols-2 mb-4">
@@ -485,6 +496,9 @@ export default function AICareerPage() {
                                     }
                                     
                                     try {
+                                      // Mark that we've uploaded a resume in this session
+                                      setHasUploadedResume(true);
+                                      
                                       // Set loading state
                                       resumeAnalysisMutation.mutate({ 
                                         fileData: base64Data, 
