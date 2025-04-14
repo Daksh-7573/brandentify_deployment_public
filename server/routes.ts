@@ -2032,6 +2032,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // Generate fallback advice based on the advice type
         const adviceTypeStr = typeof reqAdviceType === 'string' ? reqAdviceType : 'general';
+        console.log(`Generating fallback career advice of type: ${adviceTypeStr}`);
         const fallbackAdvice = generateCareerAdviceFallback(adviceTypeStr, userName);
         
         // Save the fallback advice as a chat message
