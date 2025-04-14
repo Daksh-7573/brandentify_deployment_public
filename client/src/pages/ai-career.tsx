@@ -627,14 +627,18 @@ export default function AICareerPage() {
                 {/* Chat Interface with Musk - only shown after results are generated */}
                 {showChatWindow && (
                   <div className="mt-6">
-                    <div className="bg-gradient-to-b from-gray-50 to-white border rounded-lg p-4 sm:p-6 shadow-md">
-                      <div className="flex items-center gap-3 mb-5 pb-3 border-b border-gray-100">
-                        <div className="flex items-center justify-center h-9 w-9 rounded-full bg-primary/15 shadow-sm">
-                          <Sparkles className="h-5 w-5 text-primary" />
+                    <div className="bg-gradient-to-br from-white via-gray-50/80 to-blue-50/30 border-0 rounded-2xl p-5 sm:p-7 shadow-lg transition-all duration-300 hover:shadow-xl relative overflow-hidden">
+                      {/* Animated background element */}
+                      <div className="absolute -top-20 -right-20 w-40 h-40 bg-blue-100/30 rounded-full blur-3xl animate-pulse"></div>
+                      <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-indigo-100/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
+                      
+                      <div className="flex items-center gap-4 mb-6 pb-4 border-b border-gray-100/80 relative z-10">
+                        <div className="flex items-center justify-center h-12 w-12 rounded-full bg-gradient-to-br from-primary/80 to-primary/60 shadow-md shadow-primary/20">
+                          <Sparkles className="h-6 w-6 text-white" />
                         </div>
                         <div>
-                          <h3 className="text-lg font-semibold text-primary/90">Chat with Musk</h3>
-                          <p className="text-xs text-muted-foreground">
+                          <h3 className="text-xl font-semibold text-primary/90 tracking-tight">Chat with Musk</h3>
+                          <p className="text-sm text-muted-foreground mt-0.5">
                             {activeTab === "career" 
                               ? "Ask follow-up questions based on your career profile"
                               : "Ask follow-up questions about your resume analysis"
@@ -643,28 +647,28 @@ export default function AICareerPage() {
                         </div>
                       </div>
                       
-                      <div className="space-y-5">
+                      <div className="space-y-5 relative z-10">
                         {/* Chat messages - fixed height container */}
-                        <div className="space-y-4 h-[550px] overflow-y-auto p-5 border border-gray-200 rounded-lg bg-gray-50/20 shadow-inner" id="chat-container">
+                        <div className="space-y-5 h-[600px] overflow-y-auto p-6 rounded-xl bg-gradient-to-br from-white to-gray-50/80 backdrop-blur-md shadow-inner border border-white/60" id="chat-container" style={{ scrollBehavior: 'smooth' }}>
                           {chatHistory.map((message, index) => (
                             <div 
                               key={index} 
                               className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"} relative mb-3 group w-full`}
                             >
                               {message.sender !== "user" && (
-                                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 mr-3 shadow-sm border border-primary/5">
-                                  <Sparkles className="h-5 w-5 text-primary"/>
+                                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 mr-4 shadow-md border border-primary/10 transition-all duration-300 group-hover:shadow-lg group-hover:border-primary/20">
+                                  <Sparkles className="h-6 w-6 text-primary"/>
                                 </div>
                               )}
                               <div 
-                                className={`max-w-[85%] p-4 rounded-lg ${
+                                className={`max-w-[85%] p-5 rounded-xl ${
                                   message.sender === "user" 
-                                    ? "bg-primary text-primary-foreground shadow-sm" 
-                                    : "bg-white border border-gray-100 shadow-md hover:shadow-lg transition-shadow w-full"
+                                    ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-md backdrop-blur-sm" 
+                                    : "bg-gradient-to-br from-white via-white to-gray-50/90 border border-gray-100/80 shadow-lg hover:shadow-xl transition-all duration-300 w-full backdrop-blur-sm"
                                 }`}
                               >
                                 {message.sender === "user" ? (
-                                  <p className="text-sm break-words">{message.content}</p>
+                                  <p className="text-sm tracking-wide break-words font-medium">{message.content}</p>
                                 ) : (
                                   <div className="prose prose-sm dark:prose-invert max-w-none">
                                     {message.content.split('\n').map((line, i) => {
