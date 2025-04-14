@@ -153,16 +153,36 @@ export default function AICareerPage() {
       });
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast({
         title: "Resume analysis complete",
-        description: "Your resume has been analyzed."
+        description: "Your resume has been analyzed. You can now chat with Musk about your resume."
       });
       
       if (user?.id) {
         queryClient.invalidateQueries({
           queryKey: ["/api/users", user.id, "chat-messages"]
         });
+        
+        // Wait for the query to refetch
+        setTimeout(() => {
+          // Show chat window with AI response
+          setShowChatWindow(true);
+          
+          // Add the analysis as the first message from Musk in the chat
+          const recentMessages = getRecentAIMessages("resume_analysis");
+          if (recentMessages && recentMessages.length > 0) {
+            // Get the most recent resume analysis
+            const latestAnalysis = recentMessages[0];
+            
+            // Add it to the chat history
+            setChatHistory([{
+              content: latestAnalysis.content,
+              sender: "musk",
+              timestamp: new Date(latestAnalysis.timestamp)
+            }]);
+          }
+        }, 500);
       }
       
       setResumeText("");
@@ -782,10 +802,20 @@ export default function AICareerPage() {
                                 size="sm" 
                                 className="ml-auto text-primary hover:text-primary hover:bg-primary/10"
                                 onClick={() => {
-                                  if (activeTab === "career") {
-                                    setShowChatWindow(true);
-                                    scrollToBottom();
+                                  // Enable follow-up for both career and resume tabs
+                                  setShowChatWindow(true);
+                                  
+                                  // If chat history is empty and we have a message to show,
+                                  // add this message to chat history
+                                  if (chatHistory.length === 0 && message) {
+                                    setChatHistory([{
+                                      content: message.content,
+                                      sender: "musk",
+                                      timestamp: new Date(message.timestamp)
+                                    }]);
                                   }
+                                  
+                                  scrollToBottom();
                                 }}
                               >
                                 <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
@@ -803,7 +833,7 @@ export default function AICareerPage() {
                 })()}
                 
                 {/* Chat Interface with Musk */}
-                {showChatWindow && activeTab === "career" && (
+                {showChatWindow && (
                   <div className="mt-6">
                     <div className="bg-gradient-to-b from-gray-50 to-white border rounded-lg p-4 sm:p-6 shadow-md">
                       <div className="flex items-center gap-3 mb-5 pb-3 border-b border-gray-100">
@@ -812,7 +842,12 @@ export default function AICareerPage() {
                         </div>
                         <div>
                           <h3 className="text-lg font-semibold text-primary/90">Chat with Musk</h3>
-                          <p className="text-xs text-muted-foreground">Ask follow-up questions based on your career profile</p>
+                          <p className="text-xs text-muted-foreground">
+                            {activeTab === "career" 
+                              ? "Ask follow-up questions based on your career profile"
+                              : "Ask follow-up questions about your resume analysis"
+                            }
+                          </p>
                         </div>
                       </div>
                       
