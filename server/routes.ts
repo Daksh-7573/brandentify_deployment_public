@@ -2134,16 +2134,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
             });
           }
           
-          console.log("Processing resume text input with OpenAI");
+          console.log("Processing resume text input with OpenAI (using fixed service)");
           console.log(`Target role: ${targetRole || 'Not specified'}, Target industry: ${targetIndustry || 'Not specified'}`);
-          const { analyzeResume } = await import('./services/openai-service');
-          analysis = await analyzeResume({ 
+          const { analyzeResume } = await import('./services/fixed-openai-service');
+          const result = await analyzeResume({ 
             resumeTextStart: resumeText,
             isBase64: false,
             isLink: false,
             targetRole,
             targetIndustry
           } as any);
+          analysis = result.analysis;
           
           console.log("Successfully received OpenAI analysis for direct text input");
         } else {
@@ -2170,16 +2171,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
               });
             }
             
-            console.log("Processing PDF with OpenAI as fallback");
+            console.log("Processing PDF with OpenAI as fallback (using fixed service)");
             console.log(`Target role: ${targetRole || 'Not specified'}, Target industry: ${targetIndustry || 'Not specified'}`);
-            const { analyzeResume } = await import('./services/openai-service');
-            analysis = await analyzeResume({ 
+            const { analyzeResume } = await import('./services/fixed-openai-service');
+            const result = await analyzeResume({ 
               resumeTextStart: fileData,
               isBase64: true,
               isLink: false,
               targetRole,
               targetIndustry
             } as any);
+            analysis = result.analysis;
             console.log("Successfully received OpenAI analysis for PDF as fallback");
           }
         }
@@ -2293,8 +2295,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         };
       }
       
-      // Import OpenAI service
-      const openaiService = await import('./services/openai-service');
+      // Import fixed OpenAI service
+      const openaiService = await import('./services/fixed-openai-service');
       
       // Generate networking recommendations
       const recommendations = await openaiService.generateNetworkingRecommendations(

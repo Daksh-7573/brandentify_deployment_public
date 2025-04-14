@@ -554,8 +554,22 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
       
       console.log("Successfully received response from Claude API");
       
+      // Handle different types of content response from API
+      let responseText = "";
+      
+      // Check if the response content is an array and has at least one item
+      if (Array.isArray(anthropicResponse.content) && anthropicResponse.content.length > 0) {
+        // Handle different types of content blocks
+        for (const block of anthropicResponse.content) {
+          if (block.type === "text") {
+            responseText = block.text;
+            break;
+          }
+        }
+      }
+      
       return {
-        analysis: anthropicResponse.content[0].text,
+        analysis: responseText || "Unable to extract analysis from AI response",
         resumeText: resumeText,
       };
     } catch (anthropicError: any) {
