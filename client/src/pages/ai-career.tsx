@@ -160,20 +160,30 @@ export default function AICareerPage() {
       });
       
       if (user?.id) {
+        // Force a refresh of the chat messages to show the analysis
         queryClient.invalidateQueries({
           queryKey: ["/api/users", user.id, "chat-messages"]
         });
+        
+        // Small delay to allow the messages to load
+        setTimeout(() => {
+          // Show chat window with initial AI message
+          setShowChatWindow(true);
+          
+          // Add AI's initial message to chat history
+          setChatHistory(prev => {
+            // Only add if it doesn't already exist
+            if (prev.length === 0 || prev[prev.length - 1].content !== "I've analyzed your resume. What questions do you have about the analysis or how to improve your resume?") {
+              return [...prev, {
+                content: "I've analyzed your resume. What questions do you have about the analysis or how to improve your resume?",
+                sender: "musk",
+                timestamp: new Date()
+              }];
+            }
+            return prev;
+          });
+        }, 1500); // Add a slight delay to ensure the analysis is loaded
       }
-      
-      // Show chat window with initial AI message
-      setShowChatWindow(true);
-      
-      // Add AI's initial message to chat history
-      setChatHistory(prev => [...prev, {
-        content: "I've analyzed your resume. What questions do you have about the analysis or how to improve your resume?",
-        sender: "musk",
-        timestamp: new Date()
-      }]);
       
       setResumeText("");
     },
@@ -196,6 +206,8 @@ export default function AICareerPage() {
   const getRecentAIMessages = (messageType?: string) => {
     if (!chatMessages) return [];
     
+    console.log("Getting messages for type:", messageType, "messages:", chatMessages);
+    
     let filteredMessages = chatMessages.filter((msg: any) => msg.sender === "ai");
     
     // If a specific message type is requested, filter by that type
@@ -207,6 +219,8 @@ export default function AICareerPage() {
     let sortedMessages = filteredMessages.sort((a: any, b: any) => 
       new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     );
+    
+    console.log("Filtered and sorted messages:", sortedMessages);
     
     // For resume analysis, only show the most recent one
     if (messageType === "resume_analysis") {
