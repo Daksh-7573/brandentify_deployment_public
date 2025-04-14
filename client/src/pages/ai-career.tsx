@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Loader2, Send, Sparkles, Lightbulb, BookOpen, BarChart, MessageSquare, ExternalLink, User, X, LucideIcon } from "lucide-react";
+import { Loader2, Send, Sparkles, Lightbulb, BookOpen, BarChart, MessageSquare, ExternalLink, LucideIcon } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -29,10 +29,8 @@ export default function AICareerPage() {
   const [customAdviceText, setCustomAdviceText] = useState<string>("");
   const [showCustomTextInput, setShowCustomTextInput] = useState<boolean>(false);
   const [showChatWindow, setShowChatWindow] = useState<boolean>(false);
-  const [showResumeChatWindow, setShowResumeChatWindow] = useState<boolean>(false);
   const [chatMessage, setChatMessage] = useState<string>("");
   const [chatHistory, setChatHistory] = useState<Array<{content: string, sender: "user" | "musk", timestamp: Date}>>([]);
-  const [resumeChatHistory, setResumeChatHistory] = useState<Array<{content: string, sender: "user" | "musk", timestamp: Date}>>([]);
   const [targetRole, setTargetRole] = useState<string>("");
   const [targetIndustry, setTargetIndustry] = useState<string>("");
   
@@ -50,7 +48,7 @@ export default function AICareerPage() {
     enabled: !!user?.id // Only run query if user is logged in
   });
 
-  // Chat message mutation for career advice
+  // Chat message mutation
   const chatMessageMutation = useMutation({
     mutationFn: async (message: string) => {
       if (!user?.id) {
@@ -73,49 +71,6 @@ export default function AICareerPage() {
       setTimeout(() => {
         setChatHistory(prev => [...prev, {
           content: data.aiResponse || "I'm analyzing your question. Let me think about this based on your profile and career goals.",
-          sender: "musk",
-          timestamp: new Date()
-        }]);
-      }, 1000); // Simulate AI thinking time
-      
-      if (user?.id) {
-        queryClient.invalidateQueries({
-          queryKey: ["/api/users", user.id, "chat-messages"]
-        });
-      }
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error sending message",
-        description: "Failed to send message. Please try again.",
-        variant: "destructive"
-      });
-    }
-  });
-  
-  // Chat message mutation for resume analysis
-  const resumeChatMessageMutation = useMutation({
-    mutationFn: async (message: string) => {
-      if (!user?.id) {
-        throw new Error("User ID not found");
-      }
-      const res = await apiRequest({
-        method: "POST", 
-        url: "/api/chat-messages",
-        data: {
-          userId: user.id,
-          content: message,
-          messageType: "resume_analysis",
-          sender: "user"
-        }
-      });
-      return res.json();
-    },
-    onSuccess: (data) => {
-      // Add AI response to resume chat history
-      setTimeout(() => {
-        setResumeChatHistory(prev => [...prev, {
-          content: data.aiResponse || "I'm analyzing your question about your resume. Let me reference my analysis to give you the best advice.",
           sender: "musk",
           timestamp: new Date()
         }]);
@@ -198,43 +153,19 @@ export default function AICareerPage() {
       });
       return res.json();
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       toast({
         title: "Resume analysis complete",
-        description: "Your resume has been analyzed. You can now chat with Musk about your resume."
+        description: "Your resume has been analyzed."
       });
       
       if (user?.id) {
-        // Force a refresh of the messages to make sure we have the latest
         queryClient.invalidateQueries({
           queryKey: ["/api/users", user.id, "chat-messages"]
         });
       }
       
       setResumeText("");
-      
-      // Switch to the resume tab to show the analysis
-      setActiveTab("resume");
-      
-      // This ensures we correctly reference the most recent analysis
-      setTimeout(() => {
-        // Get the latest messages after the invalidation
-        const messages = chatMessages || [];
-        const latestResumeAnalysis = messages
-          .filter((msg: any) => msg.sender === "ai" && msg.messageType === "resume_analysis")
-          .sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-          .slice(0, 1)[0];
-          
-        if (latestResumeAnalysis || data.analysis) {
-          const content = latestResumeAnalysis?.content || data.analysis;
-          setResumeChatHistory([{
-            content: content,
-            sender: "musk",
-            timestamp: new Date()
-          }]);
-          setShowResumeChatWindow(true);
-        }
-      }, 500); // Small delay to ensure the tab switch and data refresh completes first
     },
     onError: (error: Error) => {
       const isApiKeyMissing = error.message.includes("API key");
@@ -259,11 +190,7 @@ export default function AICareerPage() {
     
     // If a specific message type is requested, filter by that type
     if (messageType) {
-      filteredMessages = filteredMessages.filter((msg: any) => {
-        // Ensure we're strict about message types - resume tab only shows resume analysis messages
-        // and career tab only shows career advice messages
-        return msg.messageType === messageType;
-      });
+      filteredMessages = filteredMessages.filter((msg: any) => msg.messageType === messageType);
     }
     
     // Sort messages with most recent first
@@ -301,8 +228,8 @@ export default function AICareerPage() {
   };
   
   // Function to scroll chat container to bottom when new messages arrive
-  const scrollToBottom = (containerId: string = 'chat-container') => {
-    const chatContainer = document.getElementById(containerId);
+  const scrollToBottom = () => {
+    const chatContainer = document.getElementById('chat-container');
     if (chatContainer) {
       chatContainer.scrollTop = chatContainer.scrollHeight;
     }
@@ -310,13 +237,8 @@ export default function AICareerPage() {
   
   // Use effect to scroll to bottom when chat history changes
   useEffect(() => {
-    scrollToBottom('chat-container');
+    scrollToBottom();
   }, [chatHistory]);
-  
-  // Use effect to scroll resume chat to bottom when resume chat history changes
-  useEffect(() => {
-    scrollToBottom('resume-chat-container');
-  }, [resumeChatHistory]);
 
   // Redirect to landing if not authenticated
   if (!isLoading && !isAuthenticated) {
@@ -667,17 +589,15 @@ export default function AICareerPage() {
                       <div className="space-y-4 sm:space-y-6">
                         {messagesToShow.map((message: any) => (
                           <Card key={message.id} className="p-0 overflow-hidden border border-gray-100 rounded-lg shadow-lg">
-                            <div className="bg-gradient-to-r from-primary/10 to-primary/5 px-4 sm:px-6 py-3 sm:py-4 border-b flex items-center">
-                              <div className="flex items-center gap-3">
-                                <div className="flex items-center justify-center h-9 w-9 rounded-full bg-white shadow-sm">
-                                  <Sparkles className="h-5 w-5 text-primary" />
-                                </div>
-                                <div>
-                                  <h4 className="font-semibold text-sm text-primary">Musk AI Assistant</h4>
-                                  <p className="text-xs text-muted-foreground">
-                                    {formatTimestamp(message.timestamp)}
-                                  </p>
-                                </div>
+                            <div className="bg-gradient-to-r from-primary/10 to-primary/5 px-4 sm:px-6 py-3 sm:py-4 border-b flex items-center gap-3">
+                              <div className="flex items-center justify-center h-9 w-9 rounded-full bg-white shadow-sm">
+                                <Sparkles className="h-5 w-5 text-primary" />
+                              </div>
+                              <div>
+                                <h4 className="font-semibold text-sm text-primary">Musk AI Assistant</h4>
+                                <p className="text-xs text-muted-foreground">
+                                  {formatTimestamp(message.timestamp)}
+                                </p>
                               </div>
                             </div>
                             
@@ -882,7 +802,7 @@ export default function AICareerPage() {
                   return null;
                 })()}
                 
-                {/* Chat Interface with Musk for Career Advice */}
+                {/* Chat Interface with Musk */}
                 {showChatWindow && activeTab === "career" && (
                   <div className="mt-6">
                     <div className="bg-gradient-to-b from-gray-50 to-white border rounded-lg p-4 sm:p-6 shadow-md">
@@ -1196,152 +1116,6 @@ export default function AICareerPage() {
                             </p>
                             <p className="text-xs text-primary/60 font-medium">Powered by AI</p>
                           </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                
-                {/* Chat Interface with Musk for Resume Analysis */}
-                {showResumeChatWindow && activeTab === "resume" && (
-                  <div className="mt-6">
-                    <div className="bg-gradient-to-b from-gray-50 to-white border rounded-lg p-4 sm:p-6 shadow-md">
-                      <div className="flex items-center justify-between gap-3 mb-5 pb-3 border-b border-gray-100">
-                        <div className="flex items-center gap-3">
-                          <div className="flex items-center justify-center h-9 w-9 rounded-full bg-primary/15 shadow-sm">
-                            <Sparkles className="h-5 w-5 text-primary" />
-                          </div>
-                          <div>
-                            <h3 className="text-lg font-semibold text-primary/90">Chat with Musk about your Resume</h3>
-                            <p className="text-xs text-muted-foreground">Ask specific questions about your resume analysis</p>
-                          </div>
-                        </div>
-                        
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="text-muted-foreground hover:text-foreground"
-                          onClick={() => setShowResumeChatWindow(false)}
-                        >
-                          <X className="h-4 w-4 mr-1.5" />
-                          <span>Close Chat</span>
-                        </Button>
-                      </div>
-                      
-                      <div className="space-y-5">
-                        {/* Chat messages - fixed height container */}
-                        <div className="space-y-4 h-[450px] overflow-y-auto p-5 border border-gray-200 rounded-lg bg-gray-50/20 shadow-inner" id="resume-chat-container">
-                          {resumeChatHistory.map((message, index) => (
-                            <div 
-                              key={index} 
-                              className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"} relative mb-3 group`}
-                            >
-                              {message.sender !== "user" && (
-                                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 mr-3 shadow-sm border border-primary/5">
-                                  <Sparkles className="h-5 w-5 text-primary"/>
-                                </div>
-                              )}
-                              <div 
-                                className={`max-w-[85%] p-4 rounded-lg ${
-                                  message.sender === "user" 
-                                    ? "bg-primary text-primary-foreground shadow-sm" 
-                                    : "bg-white border border-gray-100 shadow-md hover:shadow-lg transition-shadow"
-                                }`}
-                              >
-                                {message.sender === "user" ? (
-                                  <p className="text-sm break-words">{message.content}</p>
-                                ) : (
-                                  <div className="prose prose-sm dark:prose-invert max-w-none">
-                                    {message.content.split('\n').map((line, i) => {
-                                      // Detect if this is a signature line from Musk
-                                      if (line.includes("Musk, Your Career Partner")) {
-                                        return (
-                                          <div key={i} className="mt-5 pt-4 border-t border-gray-200 text-sm text-primary font-medium flex items-center">
-                                            <Sparkles className="h-4 w-4 mr-2" />
-                                            {line}
-                                          </div>
-                                        );
-                                      }
-                                      return <p key={i} className="mb-2 last:mb-0">{line}</p>;
-                                    })}
-                                  </div>
-                                )}
-                              </div>
-                              {message.sender === "user" && (
-                                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 ml-3 shadow-sm border border-primary/5">
-                                  <User className="h-5 w-5 text-primary"/>
-                                </div>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                        
-                        {/* Resume chat: Message input */}
-                        <div className="relative">
-                          <Textarea
-                            placeholder="Ask about specific aspects of your resume analysis..."
-                            className="resize-none pr-14 min-h-[100px]"
-                            value={chatMessage}
-                            onChange={(e) => setChatMessage(e.target.value)}
-                            onKeyDown={(e) => {
-                              // If Enter key is pressed without Shift, send message
-                              if (e.key === "Enter" && !e.shiftKey) {
-                                e.preventDefault();
-                                if (chatMessage.trim() && !resumeChatMessageMutation.isPending) {
-                                  // Add user message to resume chat history
-                                  setResumeChatHistory(prev => [...prev, {
-                                    content: chatMessage,
-                                    sender: "user",
-                                    timestamp: new Date()
-                                  }]);
-                                  
-                                  // Send message to AI
-                                  resumeChatMessageMutation.mutate(chatMessage);
-                                  
-                                  // Clear input
-                                  setChatMessage("");
-                                }
-                              }
-                            }}
-                          />
-                          <Button 
-                            size="icon" 
-                            className={`h-10 w-10 absolute right-3 bottom-3 rounded-full transition-all ${
-                              !chatMessage.trim() 
-                                ? 'opacity-60 bg-muted hover:bg-muted' 
-                                : 'bg-primary shadow-md hover:shadow-lg hover:bg-primary/90'
-                            }`}
-                            onClick={() => {
-                              if (chatMessage.trim() && !resumeChatMessageMutation.isPending) {
-                                // Add user message to resume chat history
-                                setResumeChatHistory(prev => [...prev, {
-                                  content: chatMessage,
-                                  sender: "user",
-                                  timestamp: new Date()
-                                }]);
-                                
-                                // Send message to AI
-                                resumeChatMessageMutation.mutate(chatMessage);
-                                
-                                // Clear input
-                                setChatMessage("");
-                              }
-                            }}
-                            disabled={!chatMessage.trim() || resumeChatMessageMutation.isPending}
-                          >
-                            {resumeChatMessageMutation.isPending ? (
-                              <Loader2 className="h-5 w-5 animate-spin" />
-                            ) : (
-                              <Send className="h-5 w-5" />
-                            )}
-                          </Button>
-                        </div>
-                        <div className="flex justify-between items-center mt-2">
-                          <p className="text-xs text-muted-foreground flex items-center ml-1.5">
-                            <Sparkles className="h-3 w-3 mr-1.5 text-primary/70" />
-                            Press Enter to send, Shift+Enter for new line
-                          </p>
-                          <p className="text-xs text-primary/60 font-medium">Powered by AI</p>
                         </div>
                       </div>
                     </div>
