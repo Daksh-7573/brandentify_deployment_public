@@ -1078,9 +1078,20 @@ const SearchPage = () => {
                         />
                       </div>
 
-                      <Button type="submit" className="w-full mt-6" disabled={matchMutation.isPending}>
-                        {matchMutation.isPending ? "Finding matches..." : "Find Matches"}
-                      </Button>
+                      <button 
+                        type="submit" 
+                        className="w-full mt-6 px-5 py-2.5 rounded-md bg-primary text-white hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm font-medium transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+                        disabled={matchMutation.isPending}
+                      >
+                        {matchMutation.isPending ? (
+                          <span className="flex items-center justify-center">
+                            <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2" />
+                            <span>Finding matches...</span>
+                          </span>
+                        ) : (
+                          "Find Matches"
+                        )}
+                      </button>
                     </form>
                   ) : (
                     <div className="space-y-4">
@@ -1122,14 +1133,12 @@ const SearchPage = () => {
                           </div>
                         )}
                       </div>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="w-full mt-4" 
+                      <button 
+                        className="w-full mt-4 px-5 py-2 rounded-md bg-white border border-gray-200 hover:bg-gray-50 hover:border-primary/30 hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm font-medium transition-all text-sm"
                         onClick={() => setShowMatchResults(false)}
                       >
                         Edit Criteria
-                      </Button>
+                      </button>
                     </div>
                   )}
                 </CardContent>
@@ -1257,13 +1266,12 @@ const SearchPage = () => {
                                     className="w-16 h-16 rounded-full [&>div]:bg-primary [&>div]:rounded-full" 
                                   />
                                 </div>
-                                <Button 
-                                  size="sm" 
-                                  className="mt-2 w-full"
+                                <button 
+                                  className="mt-2 w-full px-4 py-1.5 rounded-md bg-primary text-white hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm font-medium transition-all text-sm"
                                   onClick={() => setLocation(`/profile/${match.id}`)}
                                 >
                                   Connect
-                                </Button>
+                                </button>
                               </div>
                             </div>
                             
@@ -1320,7 +1328,11 @@ const SearchPage = () => {
                 {showMatchResults && matchMutation.isSuccess && matchMutation.data.length > 0 && (
                   <CardFooter className="flex justify-between">
                     <p className="text-sm text-gray-500">Showing top {matchMutation.data.length} matches</p>
-                    <Button variant="outline">View More</Button>
+                    <button 
+                      className="px-4 py-1.5 rounded-md bg-white border border-gray-200 hover:bg-gray-50 hover:border-primary/30 hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm font-medium transition-all text-sm"
+                    >
+                      View More
+                    </button>
                   </CardFooter>
                 )}
               </Card>
