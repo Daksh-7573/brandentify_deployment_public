@@ -552,6 +552,8 @@ export interface ResumeAnalysisOptions {
   resumeTextStart: string;
   isBase64?: boolean;
   isLink?: boolean;
+  targetRole?: string;
+  targetIndustry?: string;
 }
 
 /**
@@ -562,6 +564,8 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
   let isBase64Value: boolean = false;
   let isLinkValue: boolean = false;
   let isDirectTextInput: boolean = false;
+  let targetRole: string | undefined = undefined;
+  let targetIndustry: string | undefined = undefined;
 
   // Handle both old and new parameter formats for backward compatibility
   if (typeof options === 'string') {
@@ -571,10 +575,12 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
     isLinkValue = isLink || false;
     isDirectTextInput = !isBase64Value && !isLinkValue; // If not base64 or link, it's direct text
   } else {
-    // New format: ({ resumeTextStart, isBase64, isLink })
+    // New format: ({ resumeTextStart, isBase64, isLink, targetRole, targetIndustry })
     resumeText = options.resumeTextStart;
     isBase64Value = options.isBase64 || false;
     isLinkValue = options.isLink || false;
+    targetRole = options.targetRole;
+    targetIndustry = options.targetIndustry;
     isDirectTextInput = !isBase64Value && !isLinkValue; // If not base64 or link, it's direct text
   }
   
