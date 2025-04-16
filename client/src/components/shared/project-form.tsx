@@ -578,7 +578,7 @@ export default function ProjectForm({
                 
                 {!projectVideo ? (
                   <FormItem>
-                    <FormLabel>Project Images</FormLabel>
+                    <FormLabel>Assignment Images</FormLabel>
                     <FormControl>
                       <Input 
                         type="file" 
@@ -604,14 +604,14 @@ export default function ProjectForm({
                             <img 
                               key={index}
                               src={url} 
-                              alt={`Project media ${index + 1}`} 
+                              alt={`Assignment media ${index + 1}`} 
                               className="h-8 w-8 object-cover rounded inline-block mr-1"
                             />
                           ))}
                           <span className="text-xs text-muted-foreground ml-2">(Upload new ones to replace)</span>
                         </>
                       ) : (
-                        "Upload up to 10 images to showcase your project"
+                        "Upload up to 10 images to showcase your assignment"
                       )}
                     </FormDescription>
                     {mediaErrors?.images && <p className="text-sm font-medium text-destructive">{mediaErrors.images}</p>}
@@ -619,7 +619,7 @@ export default function ProjectForm({
                   </FormItem>
                 ) : (
                   <FormItem>
-                    <FormLabel>Project Video</FormLabel>
+                    <FormLabel>Assignment Video</FormLabel>
                     <FormControl>
                       <Input 
                         type="file" 
@@ -640,7 +640,7 @@ export default function ProjectForm({
                       />
                     </FormControl>
                     <FormDescription>
-                      Upload a short video (max 120 seconds) to demonstrate your project
+                      Upload a short video (max 120 seconds) to demonstrate your assignment
                       {existingProject?.mediaUrls && existingProject.mediaUrls.length > 0 && (
                         <span className="text-xs text-muted-foreground block mt-1">(Upload a new one to replace)</span>
                       )}
