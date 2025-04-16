@@ -114,17 +114,17 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
       
       // Parse quick responses from the AI message if available
       let quickResponses: string[] | undefined = undefined;
-      const content = response.message;
+      const content = data.message;
       
       // Check for "Quick Response Options:" format in the message
-      if (content.includes('Quick Response Options:')) {
+      if (content && content.includes('Quick Response Options:')) {
         const parts = content.split('Quick Response Options:');
         const optionsText = parts[1];
         
         // Extract options using regex to find list items
         const optionsMatch = optionsText.match(/(?:"([^"]+)"|'([^']+)'|([^,"'\n]+))/g);
         if (optionsMatch) {
-          quickResponses = optionsMatch.map(option => 
+          quickResponses = optionsMatch.map((option: string) => 
             option.replace(/^["'\s-]*(.*?)["'\s]*$/, '$1').trim()
           ).filter(Boolean);
         }
@@ -135,7 +135,7 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
         prev.map(msg => 
           msg.id === thinkingMessage.id 
             ? {
-                id: response.id || 'response-' + Date.now(),
+                id: data.id || 'response-' + Date.now(),
                 content: content,
                 sender: 'musk',
                 timestamp: new Date(),
