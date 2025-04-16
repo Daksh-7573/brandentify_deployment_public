@@ -337,6 +337,7 @@ export const pulses = pgTable("pulses", {
   category: pulseCategoryEnum("category"), // Categorization of the pulse
   title: text("title").notNull(),
   content: text("content"),
+  industry: text("industry"), // Industry related to the pulse content
   mediaType: mediaTypeEnum("media_type"),
   mediaUrls: jsonb("media_urls").default('[]'), // URLs to images or videos stored as JSON array
   mediaLocalStorageKeys: jsonb("media_local_storage_keys").default('[]'), // Keys to access images/videos in localStorage
