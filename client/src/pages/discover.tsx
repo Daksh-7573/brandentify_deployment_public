@@ -19,12 +19,12 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import PulseItem from "@/components/shared/pulse-item";
 
 function DiscoverPage() {
-  const { user, isDemo } = useAuth();
+  const { user, isDemoMode } = useAuth();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("personalized");
   const [hashtagInput, setHashtagInput] = useState("");
   
-  const userId = isDemo ? 1 : user?.uid;
+  const userId = isDemoMode ? 1 : user?.uid;
   
   // Fetch personalized feed
   const { 
@@ -33,29 +33,48 @@ function DiscoverPage() {
     error: personalizedFeedError 
   } = useQuery({
     queryKey: ["/api/personalized-feed", userId],
-    queryFn: () => apiRequest(`/api/personalized-feed/${userId}`),
+    queryFn: async () => {
+      const response = await apiRequest({
+        url: `/api/personalized-feed/${userId}`,
+        method: "GET"
+      });
+      return await response.json();
+    },
     enabled: !!userId
   });
   
   // Fetch all hashtags
   const { data: hashtags, isLoading: hashtagsLoading } = useQuery({
     queryKey: ["/api/hashtags"],
-    queryFn: () => apiRequest("/api/hashtags")
+    queryFn: async () => {
+      const response = await apiRequest({
+        url: "/api/hashtags",
+        method: "GET"
+      });
+      return await response.json();
+    }
   });
   
   // Fetch hashtags followed by user
   const { data: followedHashtags, isLoading: followedHashtagsLoading } = useQuery({
     queryKey: ["/api/users", userId, "hashtag-follows"],
-    queryFn: () => apiRequest(`/api/users/${userId}/hashtag-follows`),
+    queryFn: async () => {
+      const response = await apiRequest({
+        url: `/api/users/${userId}/hashtag-follows`,
+        method: "GET"
+      });
+      return await response.json();
+    },
     enabled: !!userId
   });
   
   // Follow a hashtag
   const followHashtagMutation = useMutation({
     mutationFn: (hashtagId: number) => 
-      apiRequest(`/api/hashtags/${hashtagId}/follow`, {
+      apiRequest({
+        url: `/api/hashtags/${hashtagId}/follow`,
         method: "POST",
-        body: JSON.stringify({ userId })
+        data: { userId }
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/users", userId, "hashtag-follows"] });
@@ -76,8 +95,9 @@ function DiscoverPage() {
   // Unfollow a hashtag
   const unfollowHashtagMutation = useMutation({
     mutationFn: (hashtagId: number) => 
-      apiRequest(`/api/hashtags/${hashtagId}/follow`, {
-        method: "DELETE",
+      apiRequest({
+        url: `/api/hashtags/${hashtagId}/follow`,
+        method: "DELETE"
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/users", userId, "hashtag-follows"] });

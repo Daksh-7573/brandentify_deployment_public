@@ -45,7 +45,7 @@ type PulseReactionType = 'insightful' | 'misinformed' | 'like';
 
 const PulseItem = ({ pulse, userId, showComments = false }: PulseItemProps) => {
   const [_, navigate] = useLocation();
-  const { isDemo: isDemoMode } = useAuth();
+  const { user, isDemoMode } = useAuth();
   const { toast } = useToast();
   const [commentText, setCommentText] = useState("");
   
@@ -175,7 +175,7 @@ const PulseItem = ({ pulse, userId, showComments = false }: PulseItemProps) => {
       if ((type === 'insightful' || type === 'misinformed') && 
           quotas && quotas[type] && quotas[type].remaining <= 0) {
         toast({
-          variant: "warning",
+          variant: "destructive",
           title: "Quota Exceeded",
           description: `You've used all your ${type} reactions for today.`,
         });

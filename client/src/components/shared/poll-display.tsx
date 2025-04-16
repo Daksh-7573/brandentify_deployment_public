@@ -14,7 +14,7 @@ interface PollDisplayProps {
 }
 
 const PollDisplay = ({ pulseId, options, userId }: PollDisplayProps) => {
-  const { isDemo: isDemoMode } = useAuth();
+  const { user, isDemoMode } = useAuth();
   const { toast } = useToast();
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   
