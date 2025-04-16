@@ -545,7 +545,7 @@ export default function CreatePulsePage() {
                             Creating Trends...
                           </>
                         ) : (
-                          "Create Poll"
+                          "Create Trends"
                         )}
                       </Button>
                     </div>
@@ -801,10 +801,10 @@ export default function CreatePulsePage() {
                         {createPulseMutation.isPending ? (
                           <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Creating Pulse...
+                            Creating Insights...
                           </>
                         ) : (
-                          "Create Media Pulse"
+                          "Create Insights"
                         )}
                       </Button>
                     </div>
@@ -812,11 +812,11 @@ export default function CreatePulsePage() {
                 )}
 
                 {pulseType === 'project' && (
-                  <div className="space-y-6" data-pulse-type="project">
+                  <div className="space-y-6" data-pulse-type="assignment">
                     <div className="space-y-2 mb-6">
                       <div className="flex items-center gap-2 mb-2">
                         <FileCode className="h-5 w-5 text-green-500" />
-                        <h3 className="font-medium text-lg">Create Project Pulse</h3>
+                        <h3 className="font-medium text-lg">Create Assignment</h3>
                       </div>
                       <p className="text-sm text-green-700/70">
                         Showcase your work and expertise with a detailed project. Add details, images and links to demonstrate your professional skills.
@@ -864,7 +864,7 @@ export default function CreatePulsePage() {
                                   });
                                 }}
                               >
-                                Publish Project Pulse
+                                Publish Assignment
                               </Button>
                             </div>
                           </div>
