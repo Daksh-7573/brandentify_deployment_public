@@ -94,14 +94,23 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
     
     try {
       // Make API request to get Musk's response
-      const response = await apiRequest('/api/musk/chat', {
+      const response = await fetch('/api/musk/chat', {
         method: 'POST',
-        data: {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
           userId,
           message: inputValue,
           context
-        }
+        })
       });
+      
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      
+      const data = await response.json() as {id: string; message: string; timestamp: Date};
       
       // Parse quick responses from the AI message if available
       let quickResponses: string[] | undefined = undefined;

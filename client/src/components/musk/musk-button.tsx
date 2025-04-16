@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { BrainCircuit } from 'lucide-react';
-import MuskChatPanel from './musk-chat-panel';
+import MuskChatPanel from '@/components/musk/musk-chat-panel';
 
 type MuskButtonProps = {
   className?: string;

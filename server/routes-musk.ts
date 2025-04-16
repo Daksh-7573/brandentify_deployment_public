@@ -57,10 +57,10 @@ async function enrichContextWithUserData(userId: number, context?: any) {
       ...context,
       userData: {
         profile: {
-          name: user.name,
-          title: user.title,
-          industry: user.industry,
-          location: user.location,
+          name: user.name || "",
+          title: user.title || "",
+          industry: user.industry || "",
+          location: user.location || "",
         },
         experiences: experiences || [],
         educations: educations || [],

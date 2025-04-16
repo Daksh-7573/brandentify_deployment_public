@@ -103,6 +103,9 @@ function Router() {
       <Route path="/radar">
         <ProtectedRoute path="/radar" component={Radar} />
       </Route>
+      <Route path="/ai-career">
+        <ProtectedRoute path="/ai-career" component={AICareer} />
+      </Route>
       <Route component={NotFound} />
     </Switch>
   );
