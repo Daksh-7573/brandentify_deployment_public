@@ -307,6 +307,16 @@ export const pulseTypeEnum = pgEnum("pulse_type", [
   "news-pulse" // Added News Pulse type for AI-generated industry news
 ]);
 
+// Pulse category enum
+export const pulseCategoryEnum = pgEnum("pulse_category", [
+  "certification",
+  "launch",
+  "award",
+  "project",
+  "announcement",
+  "highlight" // 24-hour temporary content
+]);
+
 // Media type enum for Media Pulses
 export const mediaTypeEnum = pgEnum("media_type", [
   "image",
@@ -324,6 +334,7 @@ export const pulses = pgTable("pulses", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
   type: pulseTypeEnum("type").notNull(),
+  category: pulseCategoryEnum("category"), // Categorization of the pulse
   title: text("title").notNull(),
   content: text("content"),
   mediaType: mediaTypeEnum("media_type"),
@@ -337,6 +348,7 @@ export const pulses = pgTable("pulses", {
   shareCount: integer("share_count").default(0), // Count of shares
   comments: integer("comments").default(0),
   isPublished: boolean("is_published").default(true),
+  expiresAt: timestamp("expires_at"), // When the pulse expires (for highlight category)
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
