@@ -177,9 +177,10 @@ export default function ProjectForm({
       
       if (existingProject) {
         // Update existing project
-        response = await apiRequest(`/api/projects/${existingProject.id}`, {
+        response = await apiRequest({
+          url: `/api/projects/${existingProject.id}`,
           method: 'PUT',
-          body: values,
+          data: values
         });
         projectData = await response.json();
         
@@ -246,9 +247,10 @@ export default function ProjectForm({
         };
         
         // First create the project
-        response = await apiRequest('/api/projects', {
+        response = await apiRequest({
+          url: '/api/projects',
           method: 'POST',
-          body: newProjectData,
+          data: newProjectData
         });
         projectData = await response.json();
         
