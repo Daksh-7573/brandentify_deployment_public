@@ -45,11 +45,6 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, user: Partial<User>): Promise<User | undefined>;
   
-  // Smart Radar - Geolocation operations
-  updateUserLocation(userId: number, latitude: number, longitude: number): Promise<User | undefined>;
-  getNearbyUsers(latitude: number, longitude: number, radiusInKm: number, limit?: number): Promise<User[]>;
-  getNearbyUsersByIndustry(latitude: number, longitude: number, radiusInKm: number, industry: string, limit?: number): Promise<User[]>;
-  
   // Poll Vote operations
   getPollVotesByPulseId(pulseId: number): Promise<PollVote[]>;
   getPollVoteByUserAndPulse(userId: number, pulseId: number): Promise<PollVote | undefined>;
@@ -360,127 +355,16 @@ export class MemStorage implements IStorage {
       name: "Senior Professional",
       photoURL: null,
       title: "Senior Software Engineer",
-      aboutMe: "Experienced software engineer with a passion for building scalable applications",
       location: "San Francisco, CA, USA",
-      domain: "Software Engineering",
-      company: "Tech Innovators Inc.",
       industry: "Technology",
       lookingFor: "A Career Mentor",
-      visitingCardType: "professional",
-      goals: [] as any,
-      interestVector: "",
       profileCompleted: 65,
-      // Geolocation data for Smart Radar
-      geoLatitude: 37.7749 as any, // San Francisco latitude
-      geoLongitude: -122.4194 as any, // San Francisco longitude
-      geoVisibleNearby: true,
-      geoLastUpdated: new Date(),
       emailVerified: true,
       emailVerificationToken: null,
       emailVerificationExpires: null,
       createdAt: new Date()
     };
     this.users.set(demoUser.id, demoUser);
-    this.currentUserId++;
-    
-    // Create additional nearby users for Smart Radar demo
-    // User 2 - UX Designer in San Francisco (0.5 km away)
-    const nearbyUser1: User = {
-      id: 2,
-      username: "designer1",
-      email: "designer@example.com",
-      password: null,
-      phoneNumber: null,
-      name: "Alex Designer",
-      photoURL: null,
-      title: "Senior UX Designer",
-      aboutMe: "Creative UX/UI designer with 8+ years of experience creating intuitive interfaces",
-      location: "San Francisco, CA, USA",
-      domain: "User Experience Design",
-      company: "Creative Design Co.",
-      industry: "Design",
-      lookingFor: "Collaboration opportunities",
-      visitingCardType: "creative",
-      goals: [] as any,
-      interestVector: "",
-      profileCompleted: 80,
-      // Slightly different coordinates (about 0.5 km away)
-      geoLatitude: 37.7799 as any,
-      geoLongitude: -122.4194 as any,
-      geoVisibleNearby: true,
-      geoLastUpdated: new Date(),
-      emailVerified: true,
-      emailVerificationToken: null,
-      emailVerificationExpires: null,
-      createdAt: new Date()
-    };
-    this.users.set(nearbyUser1.id, nearbyUser1);
-    this.currentUserId++;
-    
-    // User 3 - Product Manager in San Francisco (1 km away)
-    const nearbyUser2: User = {
-      id: 3,
-      username: "pmgr1",
-      email: "pm@example.com",
-      password: null,
-      phoneNumber: null,
-      name: "Taylor Manager",
-      photoURL: null,
-      title: "Product Manager",
-      aboutMe: "Strategic product manager with a background in tech and business",
-      location: "San Francisco, CA, USA",
-      domain: "Product Management",
-      company: "Tech Products Inc",
-      industry: "Technology",
-      lookingFor: "Industry Networking",
-      visitingCardType: "professional",
-      goals: [] as any,
-      interestVector: "",
-      profileCompleted: 75,
-      // Different coordinates (about 1 km away)
-      geoLatitude: 37.7849 as any,
-      geoLongitude: -122.4294 as any,
-      geoVisibleNearby: true,
-      geoLastUpdated: new Date(),
-      emailVerified: true,
-      emailVerificationToken: null,
-      emailVerificationExpires: null,
-      createdAt: new Date()
-    };
-    this.users.set(nearbyUser2.id, nearbyUser2);
-    this.currentUserId++;
-    
-    // User 4 - Marketing Specialist in San Francisco (2 km away)
-    const nearbyUser3: User = {
-      id: 4,
-      username: "marketing1",
-      email: "marketing@example.com",
-      password: null,
-      phoneNumber: null,
-      name: "Jordan Marketing",
-      photoURL: null,
-      title: "Digital Marketing Lead",
-      aboutMe: "Expert in digital marketing strategies and growth hacking",
-      location: "San Francisco, CA, USA",
-      domain: "Digital Marketing",
-      company: "Growth Metrics",
-      industry: "Marketing",
-      lookingFor: "Client Opportunities",
-      visitingCardType: "creative",
-      goals: [] as any,
-      interestVector: "",
-      profileCompleted: 70,
-      // Different coordinates (about 2 km away)
-      geoLatitude: 37.7649 as any,
-      geoLongitude: -122.4394 as any,
-      geoVisibleNearby: true,
-      geoLastUpdated: new Date(),
-      emailVerified: true,
-      emailVerificationToken: null,
-      emailVerificationExpires: null,
-      createdAt: new Date()
-    };
-    this.users.set(nearbyUser3.id, nearbyUser3);
     this.currentUserId++;
     
     // Clear any existing work experiences, education, and skills for the demo user
@@ -2702,93 +2586,6 @@ export class MemStorage implements IStorage {
     });
     
     return { title, content, hashtags: uniqueHashtags.slice(0, 5) };
-  }
-
-  // Smart Radar - Geolocation operations
-  async updateUserLocation(userId: number, latitude: number, longitude: number): Promise<User | undefined> {
-    const user = this.users.get(userId);
-    if (!user) return undefined;
-
-    const updatedUser: User = {
-      ...user,
-      geoLatitude: latitude as any, // Type coercion due to decimal type
-      geoLongitude: longitude as any, // Type coercion due to decimal type
-      geoLastUpdated: new Date()
-    };
-
-    this.users.set(userId, updatedUser);
-    return updatedUser;
-  }
-
-  // Calculate distance between two points using the Haversine formula (in kilometers)
-  private calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
-    const R = 6371; // Radius of the earth in km
-    const dLat = this.deg2rad(lat2 - lat1);
-    const dLon = this.deg2rad(lon2 - lon1);
-    const a = 
-      Math.sin(dLat/2) * Math.sin(dLat/2) +
-      Math.cos(this.deg2rad(lat1)) * Math.cos(this.deg2rad(lat2)) * 
-      Math.sin(dLon/2) * Math.sin(dLon/2); 
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-    const distance = R * c; // Distance in km
-    return distance;
-  }
-  
-  private deg2rad(deg: number): number {
-    return deg * (Math.PI/180);
-  }
-
-  async getNearbyUsers(latitude: number, longitude: number, radiusInKm: number, limit: number = 20): Promise<User[]> {
-    const nearbyUsers: User[] = [];
-    
-    // Iterate through users and calculate distance
-    for (const user of this.users.values()) {
-      // Skip users without geolocation or those who opted out
-      if (!user.geoLatitude || !user.geoLongitude || user.geoVisibleNearby === false) {
-        continue;
-      }
-      
-      const distance = this.calculateDistance(
-        Number(latitude), 
-        Number(longitude), 
-        Number(user.geoLatitude), 
-        Number(user.geoLongitude)
-      );
-      
-      // If within radius, add to results
-      if (distance <= radiusInKm) {
-        nearbyUsers.push({
-          ...user,
-          // Add distance property to user object for UI display
-          distance: distance as any
-        });
-      }
-    }
-    
-    // Sort by distance (closest first) and limit results
-    return nearbyUsers
-      .sort((a: any, b: any) => a.distance - b.distance)
-      .slice(0, limit);
-  }
-
-  async getNearbyUsersByIndustry(
-    latitude: number, 
-    longitude: number, 
-    radiusInKm: number, 
-    industry: string, 
-    limit: number = 20
-  ): Promise<User[]> {
-    // First get all nearby users
-    const nearbyUsers = await this.getNearbyUsers(latitude, longitude, radiusInKm, 100);
-    
-    // Then filter by industry (case insensitive)
-    const industryLower = industry.toLowerCase();
-    const filteredUsers = nearbyUsers.filter(user => 
-      user.industry && user.industry.toLowerCase().includes(industryLower)
-    );
-    
-    // Return limited results
-    return filteredUsers.slice(0, limit);
   }
 }
 

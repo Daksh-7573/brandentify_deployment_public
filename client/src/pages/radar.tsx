@@ -87,15 +87,6 @@ interface NearbyUser {
   distance: number;
 }
 
-// Type definition for useQuery userData result
-interface UserDataResult extends UserData {
-  id: number;
-  geoLatitude?: number | null;
-  geoLongitude?: number | null;
-  geoVisibleNearby?: boolean | null;
-  geoLastUpdated?: string | Date | null;
-}
-
 // Placeholder component for when location access is still pending
 const LocationPending = () => (
   <div className="flex flex-col items-center justify-center py-10 space-y-4">
@@ -236,7 +227,7 @@ const Radar = () => {
   const { user: currentUser } = useAuth();
   
   // Get current user data
-  const { data: userData } = useQuery<UserDataResult>({
+  const { data: userData } = useQuery({
     queryKey: ['/api/users', currentUser?.uid],
     enabled: !!currentUser?.uid,
   });
@@ -250,67 +241,28 @@ const Radar = () => {
     refetch: refetchNearby,
     data: nearbyUsersResult
   } = useQuery({
-    queryKey: ['/api/nearby-users', coordinates, radius, userData?.id],
+    queryKey: ['/api/nearby-users', coordinates, radius],
     queryFn: async () => {
-      if (!coordinates) return [];
-      
-      // Use real API endpoint with geolocation parameters
-      const params = new URLSearchParams({
-        latitude: coordinates.lat.toString(),
-        longitude: coordinates.lng.toString(),
-        radius: radius
-      });
-      
-      // Add userId if available
-      if (userData && 'id' in userData && userData.id) {
-        params.append('userId', userData.id.toString());
-      }
-      
-      const response = await fetch(`/api/nearby-users?${params.toString()}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch nearby users');
-      }
-      return await response.json();
+      // In a production app, this would fetch real data
+      // For demo purposes, we'll just use the demo data
+      return DEMO_NEARBY_USERS;
     },
-    // Fallback to demo data when in development or demo mode
-    enabled: !!coordinates && locationStatus === 'granted',
-    // Don't auto-refetch too often since geolocation doesn't change that much
-    refetchInterval: 5 * 60 * 1000 // 5 minutes
+    enabled: !!coordinates && locationStatus === 'granted'
   });
   
   // Update nearby users data when the query result changes
   useEffect(() => {
     if (nearbyUsersResult) {
-      // If we got results, use them; otherwise fall back to demo data in development
-      if (nearbyUsersResult.length > 0) {
-        setNearbyUsersData(nearbyUsersResult);
-      } else if (process.env.NODE_ENV === 'development' || !userData) {
-        // Fall back to demo data only in development or when not logged in
-        setNearbyUsersData(DEMO_NEARBY_USERS);
-      } else {
-        // In production with no results, show empty state
-        setNearbyUsersData([]);
-      }
+      setNearbyUsersData(nearbyUsersResult);
     }
-  }, [nearbyUsersResult, userData]);
+  }, [nearbyUsersResult]);
   
   // Mutation to update user's geo-visibility
   const updateVisibilityMutation = useMutation({
     mutationFn: async (visible: boolean) => {
-      if (!userData || !('id' in userData) || !userData.id) {
-        throw new Error('User not logged in');
-      }
-      
-      const response = await apiRequest(`/api/users/${userData.id}/radar-visibility`, 'POST', {
-        userId: userData.id,
-        visible: visible
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to update visibility');
-      }
-      
-      return await response.json();
+      // This would update the user's visibility on the server in production
+      console.log('Setting visibility to:', visible);
+      return { success: true };
     },
     onSuccess: () => {
       toast({
@@ -319,9 +271,6 @@ const Radar = () => {
           ? "Other professionals can now discover you based on your location." 
           : "You won't appear in other users' nearby professionals list.",
       });
-      
-      // Invalidate the user data query to refresh the visibility state
-      queryClient.invalidateQueries({ queryKey: ['/api/users', currentUser?.uid] });
     },
     onError: () => {
       setVisibleInRadar(!visibleInRadar); // Revert switch state on error
@@ -336,34 +285,15 @@ const Radar = () => {
   // Mutation to update user's geolocation
   const updateGeoLocationMutation = useMutation({
     mutationFn: async (coords: {lat: number, lng: number}) => {
-      if (!userData || !('id' in userData) || !userData.id) {
-        throw new Error('User not logged in');
-      }
-      
-      const response = await apiRequest(`/api/users/${userData.id}/geolocation`, 'POST', {
-        userId: userData.id,
-        latitude: coords.lat,
-        longitude: coords.lng,
-        geoVisibleNearby: visibleInRadar
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to update location');
-      }
-      
-      return await response.json();
+      // This would update the user's location on the server in production
+      console.log('Setting coordinates to:', coords);
+      return { success: true };
     },
     onSuccess: () => {
       toast({
         title: "Location updated",
         description: "Your location has been updated successfully.",
       });
-      
-      // Refresh the nearby users after updating location
-      refetchNearby();
-      
-      // Invalidate the user data query to get the updated location
-      queryClient.invalidateQueries({ queryKey: ['/api/users', currentUser?.uid] });
     },
     onError: () => {
       toast({
@@ -383,8 +313,9 @@ const Radar = () => {
   // Handle radius change
   const handleRadiusChange = (value: string) => {
     setRadius(value);
-    // Trigger a refetch with the new radius
-    refetchNearby();
+    // In a real app, this would trigger a refetch with the new radius
+    // For demo purposes, let's shuffle the order of the users to simulate a change
+    setNearbyUsersData([...DEMO_NEARBY_USERS].sort(() => Math.random() - 0.5));
   };
   
   // Handle user card click
@@ -393,102 +324,31 @@ const Radar = () => {
     setCardOpen(true);
   };
   
-  // Get the user's current location
-  const getUserLocation = () => {
-    if (!navigator.geolocation) {
-      setLocationError("Geolocation is not supported by your browser");
-      setLocationStatus('denied');
-      return;
-    }
-    
-    // Show loading state
-    const geoLoading = toast({
-      title: "Getting your location...",
-      description: "Please wait while we access your location.",
-    });
-    
-    navigator.geolocation.getCurrentPosition(
-      // Success callback
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        // Update UI with the current location
-        setCoordinates({ lat: latitude, lng: longitude });
-        setLocationStatus('granted');
-        setLocationError(null);
-        
-        // Update toast to success
-        toast({
-          title: "Location detected",
-          description: `Your location has been detected at coordinates: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`,
-        });
-        
-        // Update the server with the new coordinates if user is logged in
-        if (userData?.id) {
-          updateGeoLocationMutation.mutate({ lat: latitude, lng: longitude });
-        }
-      },
-      // Error callback
-      (error) => {
-        console.error("Error getting location", error);
-        // Set appropriate error message based on the error code
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            setLocationError("You denied the request for geolocation");
-            break;
-          case error.POSITION_UNAVAILABLE:
-            setLocationError("Location information is unavailable");
-            break;
-          case error.TIMEOUT:
-            setLocationError("The request to get your location timed out");
-            break;
-          default:
-            setLocationError("An unknown error occurred while getting your location");
-        }
-        setLocationStatus('denied');
-        
-        // Update toast to error
-        toast({
-          title: "Location error",
-          description: "Failed to get your location. Please check your browser permissions.",
-          variant: "destructive"
-        });
-      },
-      // Options
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0
-      }
-    );
-  };
-  
   // Handle manual location refresh
   const handleRefreshLocation = () => {
-    getUserLocation();
+    // In a real app, this would get the user's current location
+    // For demo purposes, let's just simulate by shuffling the demo data
+    setNearbyUsersData([...DEMO_NEARBY_USERS].sort(() => Math.random() - 0.5));
+    toast({
+      title: "Location refreshed",
+      description: "Found " + DEMO_NEARBY_USERS.length + " professionals nearby.",
+    });
   };
   
   // Initialize geolocation on component mount
   useEffect(() => {
-    // Get real geolocation if supported
-    if (navigator.geolocation) {
-      // Try to get user's location
-      getUserLocation();
-    } else {
-      // Fallback to demo coordinates if geolocation not supported
-      setLocationStatus('denied');
-      setLocationError("Geolocation is not supported by your browser");
-      // Use demo coordinates as fallback
-      setCoordinates({
-        lat: 37.7749,  // San Francisco coordinates
-        lng: -122.4194
-      });
-    }
+    // For demo purposes, always set to granted
+    setLocationStatus('granted');
     
-    // Set visibility status based on user data if available
-    if (userData) {
-      setVisibleInRadar(userData.geoVisibleNearby !== false);
-    }
-  }, [userData]);
+    // Set demo coordinates
+    setCoordinates({
+      lat: 37.7749,
+      lng: -122.4194
+    });
+    
+    // In a real app, this would get the user's geolocation
+    // and update the state with the result
+  }, []);
   
   // Render the quantum card for the selected user
   const renderUserQuantumCard = () => {

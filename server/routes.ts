@@ -11,7 +11,6 @@ import { projectThumbnailUpload, getFileUrl } from "./utils/upload";
 import { handleParseResume } from "./routes-parse-resume";
 import { handleCreateDemoProfiles } from "./routes-demo-profiles";
 import { updateUserGeolocation, updateUserRadarVisibility, getNearbyUsers } from "./routes-radar";
-import { generatePersonalizedFeed, processAndAssignHashtags } from "./services/pulse-algorithm";
 import { 
   insertUserSchema, 
   insertResumeSchema, 
@@ -1466,46 +1465,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // GET /api/personalized-feed/:userId - Get personalized feed for a user
-  apiRouter.get("/personalized-feed/:userId", async (req: Request, res: Response) => {
-    try {
-      const userIdParam = req.params.userId;
-      const limitParam = req.query.limit as string | undefined;
-      const limit = limitParam ? parseInt(limitParam) : 20;
-      
-      let userId: number;
-      
-      // Handle Firebase UID if provided
-      if (userIdParam.length > 20 && /[^0-9]/.test(userIdParam)) {
-        console.log(`[GET /personalized-feed/:userId] Received Firebase UID: ${userIdParam}`);
-        
-        const user = await storage.getUserByUsername(userIdParam);
-        if (!user) {
-          console.log(`[GET /personalized-feed/:userId] No user found for Firebase UID: ${userIdParam}`);
-          return res.status(404).json({ message: "User not found" });
-        }
-        
-        userId = user.id;
-        console.log(`[GET /personalized-feed/:userId] Found matching user with ID: ${userId}`);
-      } else {
-        userId = parseInt(userIdParam);
-        if (isNaN(userId)) {
-          console.log(`[GET /personalized-feed/:userId] Invalid user ID format: ${userIdParam}`);
-          return res.status(400).json({ message: "Invalid user ID format" });
-        }
-      }
-      
-      console.log(`[GET /personalized-feed/:userId] Generating personalized feed for user ${userId}`);
-      const personalizedPulses = await generatePersonalizedFeed(userId, limit);
-      
-      console.log(`[GET /personalized-feed/:userId] Found ${personalizedPulses.length} relevant pulses for user ${userId}`);
-      return res.json(personalizedPulses);
-    } catch (error) {
-      console.error('[GET /personalized-feed/:userId] Error generating personalized feed:', error);
-      return res.status(500).json({ message: "Error generating personalized feed" });
-    }
-  });
-  
   // POST /api/pulses/upload-media - Upload media files for pulses
   apiRouter.post("/pulses/upload-media", async (req: Request, res: Response) => {
     try {
@@ -1613,12 +1572,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const newPulse = await storage.createPulse(pulseData);
       
       console.log(`[POST /pulses] Created new pulse with ID: ${newPulse.id}`);
-      
-      // Extract and process hashtags from content
-      if (pulseData.content) {
-        console.log(`[POST /pulses] Processing hashtags for pulse ${newPulse.id}`);
-        await processAndAssignHashtags(newPulse.id, pulseData.content);
-      }
       
       // Get the user data to return with the response
       const user = await storage.getUser(newPulse.userId);
@@ -3663,24 +3616,6 @@ ${extractedText.substring(0, 5000)}
   });
   
   // Check if user is following a hashtag
-  apiRouter.get("/users/:userId/hashtag-follows", async (req: Request, res: Response) => {
-    try {
-      const userId = parseInt(req.params.userId);
-      
-      if (isNaN(userId)) {
-        return res.status(400).json({ message: "Invalid user ID" });
-      }
-      
-      console.log(`[GET /users/:userId/hashtag-follows] Fetching hashtags followed by user ${userId}`);
-      const follows = await storage.getHashtagFollowsByUserId(userId);
-      console.log(`[GET /users/:userId/hashtag-follows] Found ${follows.length} hashtag follows`);
-      
-      return res.json(follows);
-    } catch (error) {
-      console.error("[GET /users/:userId/hashtag-follows] Error:", error);
-      return res.status(500).json({ message: "Error fetching hashtag follows" });
-    }
-  });
   apiRouter.get("/hashtags/:hashtagId/is-following", async (req: Request, res: Response) => {
     try {
       const hashtagId = parseInt(req.params.hashtagId);
