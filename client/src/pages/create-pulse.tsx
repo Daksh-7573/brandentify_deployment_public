@@ -394,7 +394,7 @@ export default function CreatePulsePage() {
               >
                 <CardContent className="p-4 flex flex-col items-center justify-center text-center">
                   <BarChart className={`h-10 w-10 mb-2 ${pulseType === 'poll' ? 'text-primary' : 'text-gray-500'}`} />
-                  <h3 className="font-medium">Poll</h3>
+                  <h3 className="font-medium">Trends</h3>
                   <p className="text-xs text-gray-500 mt-1">Ask questions with options</p>
                 </CardContent>
               </Card>
@@ -409,7 +409,7 @@ export default function CreatePulsePage() {
                   ) : (
                     <Image className={`h-10 w-10 mb-2 ${pulseType === 'media-pulse' ? 'text-primary' : 'text-gray-500'}`} />
                   )}
-                  <h3 className="font-medium">Media Pulse</h3>
+                  <h3 className="font-medium">Insights</h3>
                   <p className="text-xs text-gray-500 mt-1">Images or video for your branding</p>
                 </CardContent>
               </Card>
@@ -420,7 +420,7 @@ export default function CreatePulsePage() {
               >
                 <CardContent className="p-4 flex flex-col items-center justify-center text-center">
                   <FileCode className={`h-10 w-10 mb-2 ${pulseType === 'project' ? 'text-primary' : 'text-gray-500'}`} />
-                  <h3 className="font-medium">Project</h3>
+                  <h3 className="font-medium">Assignments</h3>
                   <p className="text-xs text-gray-500 mt-1">Showcase your work and skills</p>
                 </CardContent>
               </Card>
@@ -431,7 +431,7 @@ export default function CreatePulsePage() {
                 {pulseType === 'poll' && (
                   <Alert className="mb-6 bg-purple-50 border-purple-200">
                     <BarChart className="h-4 w-4 text-purple-500" />
-                    <AlertTitle className="text-purple-700">Poll Pulse</AlertTitle>
+                    <AlertTitle className="text-purple-700">Trends</AlertTitle>
                     <AlertDescription className="text-purple-600">
                       Ask your network questions with custom options. Results update live as people vote.
                     </AlertDescription>
@@ -445,7 +445,7 @@ export default function CreatePulsePage() {
                     ) : (
                       <Image className="h-4 w-4 text-blue-500" />
                     )}
-                    <AlertTitle className="text-blue-700">Media Pulse</AlertTitle>
+                    <AlertTitle className="text-blue-700">Insights</AlertTitle>
                     <AlertDescription className="text-blue-600">
                       Share branding visuals through images (max 5) or a video (max 120 seconds).
                     </AlertDescription>
@@ -455,7 +455,7 @@ export default function CreatePulsePage() {
                 {pulseType === 'project' && (
                   <Alert className="mb-6 bg-green-50 border-green-200">
                     <FileCode className="h-4 w-4 text-green-500" />
-                    <AlertTitle className="text-green-700">Project</AlertTitle>
+                    <AlertTitle className="text-green-700">Assignments</AlertTitle>
                     <AlertDescription className="text-green-600">
                       Showcase your work and achievements with projects. Add images, videos, and details about your contribution.
                     </AlertDescription>
@@ -542,7 +542,7 @@ export default function CreatePulsePage() {
                         {createPulseMutation.isPending ? (
                           <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Creating Poll...
+                            Creating Trends...
                           </>
                         ) : (
                           "Create Poll"
