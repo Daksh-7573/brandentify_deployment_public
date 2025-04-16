@@ -1,195 +1,115 @@
-import express, { Request, Response } from "express";
+import { Request, Response } from "express";
 import { storage } from "./storage";
-import { z } from "zod";
-import OpenAI from "openai";
 
-// Initialize OpenAI client
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-// Define the Musk chat message schema
-const chatMessageSchema = z.object({
-  userId: z.number(),
-  message: z.string(),
-  context: z.object({
-    page: z.string().optional(),
-    userId: z.number().optional(),
-    section: z.string().optional(),
-    data: z.any().optional(),
-  }).optional(),
-});
-
-// Process chat messages with Musk AI
+// Handle Musk AI assistant chat requests
 export const handleMuskChat = async (req: Request, res: Response) => {
   try {
-    const { userId, message, context } = chatMessageSchema.parse(req.body);
+    const { userId, message, context } = req.body;
     
-    // Get the user
-    const user = await storage.getUser(userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    if (!message) {
+      return res.status(400).json({ error: "Message is required" });
     }
     
-    // Log the incoming message for debugging
-    console.log(`[Musk] Received message from user ${userId}: ${message.substring(0, 100)}${message.length > 100 ? '...' : ''}`);
-    console.log(`[Musk] Context:`, context);
+    // Enrich context with user data if userId is provided
+    let enrichedContext = context || {};
+    if (userId) {
+      enrichedContext = await enrichContextWithUserData(userId, enrichedContext);
+    }
     
-    // Store the user message
-    const chatMessage = await storage.createChatMessage({
-      userId,
-      content: message,
-      messageType: "musk_chat",
-      sender: "user"
-    });
+    // Generate response using the appropriate AI model
+    const response = await generateMuskResponse(message, enrichedContext);
     
-    // Enhance context with user profile data
-    const enhancedContext = await enrichContextWithUserData(userId, context);
-    
-    // Generate AI response using the Musk persona
-    const aiResponse = await generateMuskResponse(message, enhancedContext);
-    
-    // Store the AI response
-    const aiMessage = await storage.createChatMessage({
-      userId,
-      content: aiResponse,
-      messageType: "musk_chat",
-      sender: "ai"
-    });
-    
+    // Return the response
     return res.status(200).json({
-      id: aiMessage.id,
-      message: aiResponse
+      id: 'response-' + Date.now(),
+      message: response,
+      timestamp: new Date()
     });
   } catch (error) {
     console.error("Error in Musk chat handler:", error);
-    return res.status(500).json({ message: "Error processing Musk chat request", error: String(error) });
+    return res.status(500).json({ error: "Failed to process chat request" });
   }
 };
 
-// Enrich context with user data for more personalized responses
+// Enhance context with user data for personalized responses
 async function enrichContextWithUserData(userId: number, context?: any) {
   try {
-    // Get basic user data
-    const user = await storage.getUser(userId);
-    if (!user) return context;
+    // Get user profile data
+    const user = await storage.users.findById(userId);
+    if (!user) {
+      return context;
+    }
     
-    // Get the user's work experiences
-    const workExperiences = await storage.getWorkExperiencesByUserId(userId);
+    // Get user's experiences
+    const experiences = await storage.workExperiences.findByUserId(userId);
     
-    // Get the user's education
-    const education = await storage.getEducationsByUserId(userId);
+    // Get user's educations
+    const educations = await storage.educations.findByUserId(userId);
     
-    // Get the user's skills
-    const skills = await storage.getSkillsByUserId(userId);
+    // Get user's skills
+    const skills = await storage.skills.findByUserId(userId);
     
-    // Get the user's projects
-    const projects = await storage.getProjectsByUserId(userId);
+    // Get user's projects/assignments
+    const projects = await storage.projects.findByUserId(userId);
     
-    // Get the user's latest pulses
-    const pulses = await storage.getPulsesByUserId(userId);
-    
-    // Get hashtags the user follows
-    const followedHashtags = await storage.getFollowedHashtagsByUserId(userId);
-    
-    return {
+    // Create enriched context with user data
+    const enrichedContext = {
       ...context,
-      user: {
-        name: user.name,
-        title: user.title,
-        industry: user.industry,
-        location: user.location,
-        lookingFor: user.lookingFor,
-        profileCompleted: user.profileCompleted
-      },
-      workExperiences: workExperiences.map(exp => ({
-        company: exp.company,
-        title: exp.title,
-        startDate: exp.startDate,
-        endDate: exp.endDate,
-        description: exp.description,
-        industry: exp.industry
-      })),
-      education: education.map(edu => ({
-        institution: edu.institution,
-        degree: edu.degree,
-        startDate: edu.startDate,
-        endDate: edu.endDate
-      })),
-      skills: skills.map(skill => ({
-        name: skill.name,
-        level: skill.level
-      })),
-      projects: projects.map(project => ({
-        title: project.title,
-        description: project.description,
-        startDate: project.startDate,
-        projectUrl: project.projectUrl,
-        category: project.category
-      })),
-      pulses: pulses.slice(0, 5).map(pulse => ({
-        type: pulse.type,
-        title: pulse.title,
-        content: pulse.content,
-        createdAt: pulse.createdAt
-      })),
-      interests: followedHashtags.map(tag => tag.tag)
+      userData: {
+        profile: {
+          name: user.name,
+          title: user.title,
+          industry: user.industry,
+          location: user.location,
+        },
+        experiences: experiences || [],
+        educations: educations || [],
+        skills: skills || [],
+        projects: projects || []
+      }
     };
+    
+    return enrichedContext;
   } catch (error) {
     console.error("Error enriching context with user data:", error);
     return context;
   }
 }
 
-// Generate AI response using the Musk persona
+// Generate AI response based on message and context
 async function generateMuskResponse(message: string, context: any) {
-  try {
-    // Define the system prompt for Musk's persona
-    const systemPrompt = `You are Musk, an AI career strategist and personal brand coach on the Brandentifier platform. 
+  // Sample responses based on message context
+  // In a production environment, this would be integrated with a real AI model
+  const demoResponses: Record<string, string> = {
+    default: `I've analyzed your profile data and can help with your professional development journey. Let's focus on actionable steps to help you advance.\n\nWhat specific area would you like guidance on today?\n\nQuick Response Options: "Career advancement", "Skills to learn", "Networking tips", "Resume improvement"`,
     
-Your primary goals:
-1. Help users build a strong professional brand
-2. Provide personalized career advice based on their profile data
-3. Guide users on how to use the platform effectively
-4. Suggest career growth opportunities based on industry trends
-
-Personality traits:
-- Professional but friendly tone
-- Data-driven insights
-- Future-oriented thinking
-- Growth mindset
-- Empathetic to career challenges
-
-When responding:
-- Always personalize responses based on the user's profile data
-- Include specific references to their skills, experience, or interests
-- Provide actionable advice that they can implement
-- Include "Quick Response Options:" at the end with 3-4 suggested follow-up questions
-- Keep responses concise but valuable (200-300 words max)
-- Highlight relevant Brandentifier features that could help them
-
-User profile data: ${JSON.stringify(context)}`;
-
-    // Use the AI service to generate a response
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: message }
-      ],
-      temperature: 0.7,
-      max_tokens: 800
-    });
-
-    const response = completion.choices[0]?.message?.content || 
-      "I'm sorry, I couldn't generate a response at the moment. Please try again.";
+    career: `Based on your ${context.userData?.profile?.industry || "industry"} experience, I see several career growth opportunities. Your strength in ${context.userData?.skills?.[0]?.name || "your primary skill"} could be leveraged for senior roles.\n\nI recommend focusing on leadership experience and considering industry certifications to stand out.\n\nQuick Response Options: "What certifications?", "Leadership opportunities", "Salary expectations", "Timeline for advancement"`,
     
-    // Log a snippet of the response for debugging
-    console.log(`[Musk] Generated response (first 100 chars): ${response.substring(0, 100)}...`);
+    resume: `I've analyzed your resume and found some opportunities for improvement:\n\n1. Quantify your achievements with metrics\n2. Highlight your expertise in ${context.userData?.skills?.[0]?.name || "your key skills"}\n3. Tailor your summary to target roles\n\nWould you like specific recommendations for a particular section?\n\nQuick Response Options: "Experience section", "Skills section", "Education section", "Summary section"`,
     
-    return response;
-  } catch (error) {
-    console.error("Error generating Musk response:", error);
-    return "I'm having trouble connecting to my knowledge base right now. Please try again in a moment.";
+    networking: `Effective networking in ${context.userData?.profile?.industry || "your industry"} requires a strategic approach. Based on your profile, I recommend:\n\n1. Connecting with peers at ${context.userData?.experiences?.[0]?.company || "similar companies"}\n2. Joining industry groups focused on ${context.userData?.skills?.[0]?.name || "your specialization"}\n3. Creating thought leadership content\n\nQuick Response Options: "Online networking", "In-person events", "Follow-up strategies", "LinkedIn optimization"`,
+    
+    skills: `To stay competitive in ${context.userData?.profile?.industry || "your industry"}, consider developing these skills:\n\n1. Data analysis\n2. Strategic leadership\n3. Project management\n\nThese align well with your background in ${context.userData?.experiences?.[0]?.title || "your current role"}.\n\nQuick Response Options: "Learning resources", "Certification paths", "Implementation timeline", "ROI on skills"`,
+    
+    interview: `For interview preparation, focus on highlighting your experience at ${context.userData?.experiences?.[0]?.company || "your recent companies"} and how you've developed expertise in ${context.userData?.skills?.[0]?.name || "your key skills"}.\n\nPrepare stories that demonstrate leadership, problem-solving, and adaptability.\n\nQuick Response Options: "Common questions", "Salary negotiation", "Case study practice", "Remote interview tips"`
+  };
+
+  // Basic logic to determine which response to use
+  let responseKey = 'default';
+  const lowerMessage = message.toLowerCase();
+  
+  if (lowerMessage.includes('career') || lowerMessage.includes('advance') || lowerMessage.includes('promotion') || context?.section === 'career-advice') {
+    responseKey = 'career';
+  } else if (lowerMessage.includes('resume') || lowerMessage.includes('cv') || context?.section === 'resume-analysis') {
+    responseKey = 'resume';
+  } else if (lowerMessage.includes('network') || lowerMessage.includes('connect') || lowerMessage.includes('contact') || context?.section === 'networking') {
+    responseKey = 'networking';
+  } else if (lowerMessage.includes('skill') || lowerMessage.includes('learn') || lowerMessage.includes('improve') || context?.section === 'industry-insights') {
+    responseKey = 'skills';
+  } else if (lowerMessage.includes('interview') || lowerMessage.includes('job search') || lowerMessage.includes('application') || context?.section === 'job-hunting') {
+    responseKey = 'interview';
   }
+  
+  // Return the appropriate response
+  return demoResponses[responseKey];
 }

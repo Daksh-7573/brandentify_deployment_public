@@ -4553,6 +4553,11 @@ ${extractedText.substring(0, 5000)}
   apiRouter.post("/users/:id/geolocation", updateUserGeolocation);
   apiRouter.post("/users/:id/radar-visibility", updateUserRadarVisibility);
   apiRouter.get("/nearby-users", getNearbyUsers);
+  
+  // Musk AI assistant routes
+  apiRouter.post("/musk/chat", async (req: Request, res: Response) => {
+    await handleMuskChat(req, res);
+  });
 
   app.use("/api", apiRouter);
 
