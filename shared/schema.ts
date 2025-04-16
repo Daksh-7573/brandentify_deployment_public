@@ -20,6 +20,8 @@ export const users = pgTable("users", {
   company: text("company"), // User's company name
   lookingFor: text("looking_for"), // What the user is looking for (networking type)
   visitingCardType: text("visiting_card_type"), // Type of digital visiting card
+  goals: jsonb("goals").default('[]'), // Array of user goals (e.g., "Looking for Clients", "Grow Personal Brand")
+  interestVector: text("interest_vector"), // AI-generated embedding representing user interests
   profileCompleted: integer("profile_completed").default(0), // Percentage
   // Smart Radar geolocation data
   geoLatitude: decimal("geo_latitude", { precision: 10, scale: 7 }), // Latitude for geo search
