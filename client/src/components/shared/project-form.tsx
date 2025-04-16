@@ -355,11 +355,15 @@ export default function ProjectForm({
     <div className="space-y-6">
       <Tabs defaultValue="details" value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid grid-cols-2">
-          <TabsTrigger value="details">Project Details</TabsTrigger>
-          <TabsTrigger value="media">Project Media</TabsTrigger>
+          <TabsTrigger value="details">Assignment Details</TabsTrigger>
+          <TabsTrigger value="media">Assignment Media</TabsTrigger>
         </TabsList>
         
         <TabsContent value="details" className="space-y-4 pt-4">
+          <div className="mb-4 p-4 bg-muted/40 rounded-lg border border-muted">
+            <h3 className="text-base font-medium mb-1">Showcase your work and expertise</h3>
+            <p className="text-sm text-muted-foreground">Add details, images and links to demonstrate your professional skills. Assignments highlight your best work to potential employers and collaborators.</p>
+          </div>
           <Form {...projectForm}>
             <form onSubmit={projectForm.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
@@ -367,7 +371,7 @@ export default function ProjectForm({
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Project Title*</FormLabel>
+                    <FormLabel>Assignment Title*</FormLabel>
                     <FormControl>
                       <Input placeholder="My Amazing Project" {...field} />
                     </FormControl>
@@ -432,7 +436,7 @@ export default function ProjectForm({
                 name="startDate"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Project Date*</FormLabel>
+                    <FormLabel>Assignment Date*</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -472,12 +476,12 @@ export default function ProjectForm({
                 name="projectUrl"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Project URL</FormLabel>
+                    <FormLabel>Assignment URL</FormLabel>
                     <FormControl>
                       <Input type="url" placeholder="https://example.com" {...field} value={field.value || ''} />
                     </FormControl>
                     <FormDescription>
-                      Link to your project (GitHub, website, etc.)
+                      Link to your work (GitHub, website, portfolio, etc.)
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -499,11 +503,15 @@ export default function ProjectForm({
         </TabsContent>
         
         <TabsContent value="media" className="space-y-4 pt-4">
+          <div className="mb-4 p-4 bg-muted/40 rounded-lg border border-muted">
+            <h3 className="text-base font-medium mb-1">Enhance with visuals</h3>
+            <p className="text-sm text-muted-foreground">A compelling thumbnail image is required. You can also add up to 10 additional images or a short video to better demonstrate your work.</p>
+          </div>
           <Form {...projectForm}>
             <form onSubmit={projectForm.handleSubmit(onSubmit)} className="space-y-4">
               <div className="space-y-6">
                 <FormItem className="mb-6 pb-4 border-b">
-                  <FormLabel>Project Thumbnail*</FormLabel>
+                  <FormLabel>Assignment Thumbnail*</FormLabel>
                   <FormControl>
                     <Input 
                       type="file" 
@@ -519,14 +527,14 @@ export default function ProjectForm({
                     />
                   </FormControl>
                   <FormDescription>
-                    Upload a thumbnail image for your project (required)
+                    Upload a thumbnail image for your assignment (required)
                   </FormDescription>
                   {thumbnailError && <p className="text-sm font-medium text-destructive">{thumbnailError}</p>}
                   <FormMessage />
                 </FormItem>
                 
-                <h3 className="text-base font-medium">Additional Project Media (Optional)</h3>
-                <p className="text-sm text-muted-foreground mb-4">Choose one of the following media types to enhance your project showcase</p>
+                <h3 className="text-base font-medium">Additional Assignment Media (Optional)</h3>
+                <p className="text-sm text-muted-foreground mb-4">Choose one of the following media types to enhance your assignment showcase</p>
 
                 <div className="flex space-x-4">
                   <div className="flex-1">
@@ -654,7 +662,7 @@ export default function ProjectForm({
                     </Button>
                   )}
                   <Button type="submit">
-                    {existingProject ? 'Update Project' : 'Create Project'}
+                    {existingProject ? 'Update Assignment' : 'Create Assignment'}
                   </Button>
                 </div>
               </div>
