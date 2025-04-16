@@ -1,0 +1,143 @@
+import { useState, useEffect } from "react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { cn } from "@/lib/utils";
+
+// Main industries list
+const INDUSTRIES = [
+  "Technology",
+  "Healthcare",
+  "Finance",
+  "Education",
+  "Manufacturing",
+  "Retail",
+  "Media & Entertainment",
+  "Construction",
+  "Transportation",
+  "Energy",
+  "Hospitality",
+  "Agriculture",
+  "Telecommunications",
+  "Real Estate",
+  "Consulting",
+  "Pharmaceuticals",
+  "Legal Services",
+  "Marketing & Advertising",
+  "Aerospace",
+  "Automotive",
+  "Biotechnology",
+  "Nonprofit",
+  "Government",
+  "Food & Beverage",
+  "Fashion",
+  "Arts & Design",
+];
+
+export interface IndustryComboboxProps {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  className?: string;
+  disabled?: boolean;
+  width?: string;
+}
+
+export function IndustryCombobox({
+  value,
+  onChange,
+  placeholder = "Select an industry",
+  className,
+  disabled = false,
+  width = "w-full"
+}: IndustryComboboxProps) {
+  const [open, setOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+  const [filteredIndustries, setFilteredIndustries] = useState<string[]>(INDUSTRIES);
+
+  useEffect(() => {
+    if (!searchValue) {
+      setFilteredIndustries(INDUSTRIES);
+      return;
+    }
+
+    const filtered = INDUSTRIES.filter(industry => 
+      industry.toLowerCase().includes(searchValue.toLowerCase())
+    );
+    setFilteredIndustries(filtered);
+  }, [searchValue]);
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className={cn(
+            "justify-between", 
+            width, 
+            className,
+            "border-blue-100 focus:border-blue-300 focus-visible:ring-blue-500"
+          )}
+          disabled={disabled}
+        >
+          {value 
+            ? INDUSTRIES.find(industry => industry === value) || value
+            : <span className="text-muted-foreground">{placeholder}</span>
+          }
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className={cn("p-0", width)}>
+        <Command shouldFilter={false}>
+          <CommandInput 
+            placeholder="Search industries..." 
+            onValueChange={setSearchValue}
+            value={searchValue}
+            className="h-9 border-blue-100 focus-visible:ring-blue-500"
+          />
+          {filteredIndustries.length === 0 && (
+            <CommandEmpty>
+              No industries found
+              {searchValue && (
+                <Button
+                  variant="ghost"
+                  className="mt-2 w-full justify-start text-left text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+                  onClick={() => {
+                    onChange(searchValue);
+                    setOpen(false);
+                  }}
+                >
+                  Use "{searchValue}"
+                </Button>
+              )}
+            </CommandEmpty>
+          )}
+          <CommandGroup className="max-h-60 overflow-auto">
+            {filteredIndustries.map(industry => (
+              <CommandItem
+                key={industry}
+                value={industry}
+                onSelect={() => {
+                  onChange(industry);
+                  setOpen(false);
+                }}
+                className="cursor-pointer hover:bg-blue-50"
+              >
+                <Check
+                  className={cn(
+                    "mr-2 h-4 w-4",
+                    value === industry ? "opacity-100 text-blue-600" : "opacity-0"
+                  )}
+                />
+                {industry}
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}

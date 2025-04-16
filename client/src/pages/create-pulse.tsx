@@ -9,13 +9,14 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AlertCircle, BarChart, Video, Image, FileCode, Loader2, X, Award, Rocket, BadgeCheck, Wrench, Bell, Zap } from "lucide-react";
+import { AlertCircle, BarChart, Video, Image, FileCode, Loader2, X, Award, Rocket, BadgeCheck, Wrench, Bell, Zap, Briefcase } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProjectForm, { Project } from "@/components/shared/project-form";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { InsertPulse } from "@shared/schema";
+import { IndustryCombobox } from "@/components/ui/industry-combobox";
 
 export default function CreatePulsePage() {
   const { user } = useAuth();
@@ -25,6 +26,7 @@ export default function CreatePulsePage() {
   const [pulseType, setPulseType] = useState("poll"); // Options: 'poll' (Trends), 'media-pulse' (Insights), 'assignment' (Assignments)
   const [mediaType, setMediaType] = useState("image");
   const [pulseCategory, setPulseCategory] = useState("highlight");
+  const [pulseIndustry, setPulseIndustry] = useState("");
   const [pollOptions, setPollOptions] = useState(["", ""]);
   // Project tab state
   const [activeProjectTab, setActiveProjectTab] = useState('details');
