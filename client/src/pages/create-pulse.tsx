@@ -879,8 +879,8 @@ export default function CreatePulsePage() {
                                 setPulseContent(project.description || "");
                                 
                                 toast({
-                                  title: "Project created",
-                                  description: "Your project has been created successfully and added to your profile. You can now publish it as a pulse.",
+                                  title: "Assignment created",
+                                  description: "Your assignment has been created successfully and added to your profile. You can now publish it as a pulse.",
                                 });
                               }
                             }}
@@ -905,7 +905,7 @@ export default function CreatePulsePage() {
                           </div>
                           {!selectedProject && (
                             <p className="text-sm text-amber-600">
-                              You need to create a project first before adding team members
+                              You need to create an assignment first before adding team members
                             </p>
                           )}
                         </div>
@@ -915,7 +915,7 @@ export default function CreatePulsePage() {
                         <div className="space-y-4">
                           <h3 className="text-sm font-medium">Add Client</h3>
                           <p className="text-sm text-muted-foreground">
-                            Add a client's profile link to invite them to endorse your project.
+                            Add a client's profile link to invite them to endorse your assignment.
                           </p>
                           <div className="space-y-4 border rounded-lg p-4">
                             <div className="space-y-2">
@@ -935,7 +935,7 @@ export default function CreatePulsePage() {
                           </div>
                           {!selectedProject && (
                             <p className="text-xs text-amber-600 italic">
-                              You need to create a project first before requesting client endorsements.
+                              You need to create an assignment first before requesting client endorsements.
                             </p>
                           )}
                         </div>
