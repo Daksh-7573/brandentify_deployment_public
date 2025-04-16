@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, KeyboardEvent } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Check, ChevronsUpDown } from "lucide-react";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 
 // Main industries list
@@ -68,6 +68,15 @@ export function IndustryCombobox({
     setFilteredIndustries(filtered);
   }, [searchValue]);
 
+  // Handle Enter key to add custom industry
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && searchValue.trim() !== '') {
+      e.preventDefault();
+      onChange(searchValue.trim());
+      setOpen(false);
+    }
+  };
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -82,6 +91,7 @@ export function IndustryCombobox({
             "border-blue-100 focus:border-blue-300 focus-visible:ring-blue-500"
           )}
           disabled={disabled}
+          onClick={() => setOpen(true)}
         >
           {value 
             ? INDUSTRIES.find(industry => industry === value) || value
@@ -93,49 +103,52 @@ export function IndustryCombobox({
       <PopoverContent className={cn("p-0", width)}>
         <Command shouldFilter={false}>
           <CommandInput 
-            placeholder="Search industries..." 
+            placeholder="Search industries or type to add new..." 
             onValueChange={setSearchValue}
             value={searchValue}
             className="h-9 border-blue-100 focus-visible:ring-blue-500"
+            onKeyDown={handleKeyDown}
           />
-          {filteredIndustries.length === 0 && (
-            <CommandEmpty>
-              No industries found
-              {searchValue && (
-                <Button
-                  variant="ghost"
-                  className="mt-2 w-full justify-start text-left text-blue-600 hover:text-blue-800 hover:bg-blue-50"
-                  onClick={() => {
-                    onChange(searchValue);
+          <CommandList>
+            {filteredIndustries.length === 0 && (
+              <CommandEmpty>
+                No industries found
+                {searchValue && (
+                  <Button
+                    variant="ghost"
+                    className="mt-2 w-full justify-start text-left text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+                    onClick={() => {
+                      onChange(searchValue);
+                      setOpen(false);
+                    }}
+                  >
+                    Use "{searchValue}"
+                  </Button>
+                )}
+              </CommandEmpty>
+            )}
+            <CommandGroup className="max-h-60 overflow-auto">
+              {filteredIndustries.map(industry => (
+                <CommandItem
+                  key={industry}
+                  value={industry}
+                  onSelect={() => {
+                    onChange(industry);
                     setOpen(false);
                   }}
+                  className="cursor-pointer hover:bg-blue-50"
                 >
-                  Use "{searchValue}"
-                </Button>
-              )}
-            </CommandEmpty>
-          )}
-          <CommandGroup className="max-h-60 overflow-auto">
-            {filteredIndustries.map(industry => (
-              <CommandItem
-                key={industry}
-                value={industry}
-                onSelect={() => {
-                  onChange(industry);
-                  setOpen(false);
-                }}
-                className="cursor-pointer hover:bg-blue-50"
-              >
-                <Check
-                  className={cn(
-                    "mr-2 h-4 w-4",
-                    value === industry ? "opacity-100 text-blue-600" : "opacity-0"
-                  )}
-                />
-                {industry}
-              </CommandItem>
-            ))}
-          </CommandGroup>
+                  <Check
+                    className={cn(
+                      "mr-2 h-4 w-4",
+                      value === industry ? "opacity-100 text-blue-600" : "opacity-0"
+                    )}
+                  />
+                  {industry}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
         </Command>
       </PopoverContent>
     </Popover>
