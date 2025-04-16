@@ -424,7 +424,7 @@ export default function CreatePulsePage() {
                 <CardContent className="p-4 flex flex-col items-center justify-center text-center">
                   <FileCode className={`h-10 w-10 mb-2 ${pulseType === 'project' ? 'text-primary' : 'text-gray-500'}`} />
                   <h3 className="font-medium">Assignments</h3>
-                  <p className="text-xs text-gray-500 mt-1">Showcase your work and skills</p>
+                  <p className="text-xs text-gray-500 mt-1">Showcase your work and expertise with a detailed assignment. Add details, images and links to demonstrate your professional skills.</p>
                 </CardContent>
               </Card>
             </div>
@@ -460,7 +460,7 @@ export default function CreatePulsePage() {
                     <FileCode className="h-4 w-4 text-green-500" />
                     <AlertTitle className="text-green-700">Assignments</AlertTitle>
                     <AlertDescription className="text-green-600">
-                      
+                      Showcase your work and expertise with a detailed project. Add details, images and links to demonstrate your professional skills.
                     </AlertDescription>
                   </Alert>
                 )}
@@ -856,13 +856,13 @@ export default function CreatePulsePage() {
                         <h3 className="font-medium text-lg">Create Assignment</h3>
                       </div>
                       <p className="text-sm text-green-700/70">
-                        Showcase your work and expertise with a detailed project. Add details, images and links to demonstrate your professional skills.
+                        Showcase your work and expertise with a detailed assignment. Add details, images and links to demonstrate your professional skills.
                       </p>
                     </div>
                     
                     {/* Industry Selection */}
                     <div className="space-y-2 mb-6">
-                      <Label htmlFor="project-industry" className="flex items-center gap-2">
+                      <Label htmlFor="assignment-industry" className="flex items-center gap-2">
                         <Briefcase className="h-4 w-4 text-green-500" />
                         <span>Industry</span>
                       </Label>
