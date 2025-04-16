@@ -115,7 +115,6 @@ export const projects = pgTable("projects", {
   startDate: text("start_date"),
   projectUrl: text("project_url"),
   category: text("category"), // Web Development, Mobile App, Design, etc.
-  industry: text("industry"), // Technology, Healthcare, Finance, etc.
   thumbnailUrl: text("thumbnail_url"), // URL to the main thumbnail image for the project
   thumbnailFile: text("thumbnail_file"), // Filename for uploaded image
   mediaUrls: jsonb("media_urls").default('[]'), // URLs to images, videos, or documents stored as JSON array

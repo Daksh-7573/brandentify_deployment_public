@@ -24,6 +24,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
+import { IndustryCombobox } from "@/components/ui/industry-combobox";
 
 // Define schema
 const projectSchema = z.object({
@@ -89,7 +90,7 @@ export default function ProjectForm({
       title: existingProject?.title || '',
       description: existingProject?.description || null,
       category: existingProject?.category || null,
-      industry: (existingProject as any)?.industry || null,
+      industry: existingProject?.industry || null,
       startDate: existingProject?.startDate || format(new Date(), 'yyyy-MM-dd'),
       projectUrl: existingProject?.projectUrl || null,
       mediaUrls: existingProject?.mediaUrls || null,
@@ -102,7 +103,7 @@ export default function ProjectForm({
       title: existingProject?.title || '',
       description: existingProject?.description || null,
       category: existingProject?.category || null,
-      industry: (existingProject as any)?.industry || null,
+      industry: existingProject?.industry || null,
       startDate: existingProject?.startDate || format(new Date(), 'yyyy-MM-dd'),
       projectUrl: existingProject?.projectUrl || null,
       mediaUrls: existingProject?.mediaUrls || null,
@@ -178,8 +179,8 @@ export default function ProjectForm({
       if (existingProject) {
         // Update existing project
         response = await apiRequest({
-          url: `/api/projects/${existingProject.id}`,
-          method: 'PUT',
+          method: 'PUT', 
+          url: `/api/projects/${existingProject.id}`, 
           data: values
         });
         projectData = await response.json();
@@ -248,8 +249,8 @@ export default function ProjectForm({
         
         // First create the project
         response = await apiRequest({
-          url: '/api/projects',
-          method: 'POST',
+          method: 'POST', 
+          url: '/api/projects', 
           data: newProjectData
         });
         projectData = await response.json();
@@ -396,7 +397,11 @@ export default function ProjectForm({
                   <FormItem>
                     <FormLabel>Industry</FormLabel>
                     <FormControl>
-                      <Input placeholder="Technology, Healthcare, Finance, etc." {...field} value={field.value || ''} />
+                      <IndustryCombobox 
+                        value={field.value || ''} 
+                        onChange={field.onChange}
+                        placeholder="Select or type an industry"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
