@@ -30,6 +30,7 @@ const projectSchema = z.object({
   title: z.string().min(1, { message: "Title is required" }),
   description: z.string().nullable().optional(),
   category: z.string().nullable().optional(),
+  industry: z.string().nullable().optional(),
   startDate: z.string().min(1, { message: "Start date is required" }),
   projectUrl: z.string().url().nullable().optional().or(z.literal('')),
   mediaUrls: z.array(z.string()).nullable().optional(),
@@ -43,6 +44,7 @@ export interface Project {
   title: string;
   description: string | null;
   category: string | null;
+  industry: string | null;
   startDate: string;
   projectUrl: string | null;
   thumbnailUrl: string | null;
@@ -87,6 +89,7 @@ export default function ProjectForm({
       title: existingProject?.title || '',
       description: existingProject?.description || null,
       category: existingProject?.category || null,
+      industry: (existingProject as any)?.industry || null,
       startDate: existingProject?.startDate || format(new Date(), 'yyyy-MM-dd'),
       projectUrl: existingProject?.projectUrl || null,
       mediaUrls: existingProject?.mediaUrls || null,
@@ -99,6 +102,7 @@ export default function ProjectForm({
       title: existingProject?.title || '',
       description: existingProject?.description || null,
       category: existingProject?.category || null,
+      industry: (existingProject as any)?.industry || null,
       startDate: existingProject?.startDate || format(new Date(), 'yyyy-MM-dd'),
       projectUrl: existingProject?.projectUrl || null,
       mediaUrls: existingProject?.mediaUrls || null,
@@ -173,7 +177,10 @@ export default function ProjectForm({
       
       if (existingProject) {
         // Update existing project
-        response = await apiRequest('PUT', `/api/projects/${existingProject.id}`, values);
+        response = await apiRequest(`/api/projects/${existingProject.id}`, {
+          method: 'PUT',
+          body: values,
+        });
         projectData = await response.json();
         
         // If we have a thumbnail file, upload it
@@ -239,7 +246,10 @@ export default function ProjectForm({
         };
         
         // First create the project
-        response = await apiRequest('POST', '/api/projects', newProjectData);
+        response = await apiRequest('/api/projects', {
+          method: 'POST',
+          body: newProjectData,
+        });
         projectData = await response.json();
         
         // If we have a thumbnail file, upload it
@@ -371,6 +381,20 @@ export default function ProjectForm({
                     <FormLabel>Category</FormLabel>
                     <FormControl>
                       <Input placeholder="Web Development, Design, etc." {...field} value={field.value || ''} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={projectForm.control}
+                name="industry"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Industry</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Technology, Healthcare, Finance, etc." {...field} value={field.value || ''} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
