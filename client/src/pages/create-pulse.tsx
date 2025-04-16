@@ -22,7 +22,7 @@ export default function CreatePulsePage() {
   const { toast } = useToast();
   const [pulseTitle, setPulseTitle] = useState("");
   const [pulseContent, setPulseContent] = useState("");
-  const [pulseType, setPulseType] = useState("poll");
+  const [pulseType, setPulseType] = useState("poll"); // Options: 'poll' (Trends), 'media-pulse' (Insights), 'assignment' (Assignments)
   const [mediaType, setMediaType] = useState("image");
   const [pulseCategory, setPulseCategory] = useState("highlight");
   const [pollOptions, setPollOptions] = useState(["", ""]);
@@ -161,7 +161,7 @@ export default function CreatePulsePage() {
       if (!selectedProject) {
         toast({
           title: "Error",
-          description: "Please select a project to share",
+          description: "Please select an assignment to share",
           variant: "destructive",
         });
         return;
@@ -416,7 +416,7 @@ export default function CreatePulsePage() {
 
               <Card 
                 className={`cursor-pointer transition-all hover:shadow-md ${pulseType === 'project' ? 'ring-2 ring-primary' : ''}`}
-                onClick={() => setPulseType('project')}
+                onClick={() => setPulseType('project')} // Note: value remains 'project' for backward compatibility
               >
                 <CardContent className="p-4 flex flex-col items-center justify-center text-center">
                   <FileCode className={`h-10 w-10 mb-2 ${pulseType === 'project' ? 'text-primary' : 'text-gray-500'}`} />
@@ -834,9 +834,9 @@ export default function CreatePulsePage() {
                         {selectedProject ? (
                           <div className="space-y-6">
                             <div className="p-4 bg-green-50 border border-green-100 rounded-md">
-                              <h3 className="font-medium text-green-800">Project ready to publish!</h3>
+                              <h3 className="font-medium text-green-800">Assignment ready to publish!</h3>
                               <p className="text-sm text-green-700 mt-1">
-                                Your project has been created and is ready to be published as a pulse.
+                                Your assignment has been created and is ready to be published as a pulse.
                               </p>
                             </div>
                             
