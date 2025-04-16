@@ -460,7 +460,7 @@ export default function CreatePulsePage() {
                     <FileCode className="h-4 w-4 text-green-500" />
                     <AlertTitle className="text-green-700">Assignments</AlertTitle>
                     <AlertDescription className="text-green-600">
-                      Showcase your work and expertise with a detailed project. Add details, images and links to demonstrate your professional skills.
+                      
                     </AlertDescription>
                   </Alert>
                 )}
