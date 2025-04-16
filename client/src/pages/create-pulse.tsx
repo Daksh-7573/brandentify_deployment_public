@@ -460,7 +460,7 @@ export default function CreatePulsePage() {
                     <FileCode className="h-4 w-4 text-green-500" />
                     <AlertTitle className="text-green-700">Assignments</AlertTitle>
                     <AlertDescription className="text-green-600">
-                      Showcase your work and expertise with a detailed project. Add details, images and links to demonstrate your professional skills.
+                      Showcase your work and expertise with a detailed assignment. Add details, images and links to demonstrate your professional skills.
                     </AlertDescription>
                   </Alert>
                 )}
@@ -850,32 +850,6 @@ export default function CreatePulsePage() {
 
                 {pulseType === 'project' && (
                   <div className="space-y-6" data-pulse-type="assignment">
-                    <div className="space-y-2 mb-6">
-                      <div className="flex items-center gap-2 mb-2">
-                        <FileCode className="h-5 w-5 text-green-500" />
-                        <h3 className="font-medium text-lg">Create Assignment</h3>
-                      </div>
-                      <p className="text-sm text-green-700/70">
-                        Showcase your work and expertise with a detailed assignment. Add details, images and links to demonstrate your professional skills.
-                      </p>
-                    </div>
-                    
-                    {/* Industry Selection */}
-                    <div className="space-y-2 mb-6">
-                      <Label htmlFor="assignment-industry" className="flex items-center gap-2">
-                        <Briefcase className="h-4 w-4 text-green-500" />
-                        <span>Industry</span>
-                      </Label>
-                      <IndustryCombobox
-                        value={pulseIndustry}
-                        onChange={setPulseIndustry}
-                        placeholder="Select or type an industry (e.g., Technology, Healthcare)"
-                        className="w-full"
-                      />
-                      <p className="text-xs text-muted-foreground">
-                        Select the industry related to this assignment
-                      </p>
-                    </div>
                     
                     <Tabs value={activeProjectTab} onValueChange={setActiveProjectTab} className="mt-4">
                       <TabsList className="grid w-full grid-cols-3 bg-green-50">
@@ -929,9 +903,10 @@ export default function CreatePulsePage() {
                               if (project && project.id) {
                                 setSelectedProject(project.id);
                                 
-                                // Auto-populate the pulse title and content
+                                // Auto-populate the pulse title, content, and industry
                                 setPulseTitle(project.title || "");
                                 setPulseContent(project.description || "");
+                                setPulseIndustry(project.industry || "");
                                 
                                 toast({
                                   title: "Assignment created",
