@@ -424,7 +424,7 @@ export default function CreatePulsePage() {
                 <CardContent className="p-4 flex flex-col items-center justify-center text-center">
                   <FileCode className={`h-10 w-10 mb-2 ${pulseType === 'project' ? 'text-primary' : 'text-gray-500'}`} />
                   <h3 className="font-medium">Assignments</h3>
-                  <p className="text-xs text-gray-500 mt-1">Showcase your work and expertise with a detailed project</p>
+                  <p className="text-xs text-gray-500 mt-1">Showcase your work and skills</p>
                 </CardContent>
               </Card>
             </div>
@@ -853,7 +853,7 @@ export default function CreatePulsePage() {
                     <div className="space-y-2 mb-6">
                       <div className="flex items-center gap-2 mb-2">
                         <FileCode className="h-5 w-5 text-green-500" />
-                        <h3 className="font-medium text-lg">Assignments</h3>
+                        <h3 className="font-medium text-lg">Create Assignment</h3>
                       </div>
                       <p className="text-sm text-green-700/70">
                         Showcase your work and expertise with a detailed project. Add details, images and links to demonstrate your professional skills.

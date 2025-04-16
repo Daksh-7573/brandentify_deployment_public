@@ -24,14 +24,12 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
-import { IndustryCombobox } from "@/components/ui/industry-combobox";
 
 // Define schema
 const projectSchema = z.object({
   title: z.string().min(1, { message: "Title is required" }),
   description: z.string().nullable().optional(),
   category: z.string().nullable().optional(),
-  industry: z.string().nullable().optional(),
   startDate: z.string().min(1, { message: "Start date is required" }),
   projectUrl: z.string().url().nullable().optional().or(z.literal('')),
   mediaUrls: z.array(z.string()).nullable().optional(),
@@ -45,7 +43,6 @@ export interface Project {
   title: string;
   description: string | null;
   category: string | null;
-  industry: string | null;
   startDate: string;
   projectUrl: string | null;
   thumbnailUrl: string | null;
@@ -90,7 +87,6 @@ export default function ProjectForm({
       title: existingProject?.title || '',
       description: existingProject?.description || null,
       category: existingProject?.category || null,
-      industry: existingProject?.industry || null,
       startDate: existingProject?.startDate || format(new Date(), 'yyyy-MM-dd'),
       projectUrl: existingProject?.projectUrl || null,
       mediaUrls: existingProject?.mediaUrls || null,
@@ -103,7 +99,6 @@ export default function ProjectForm({
       title: existingProject?.title || '',
       description: existingProject?.description || null,
       category: existingProject?.category || null,
-      industry: existingProject?.industry || null,
       startDate: existingProject?.startDate || format(new Date(), 'yyyy-MM-dd'),
       projectUrl: existingProject?.projectUrl || null,
       mediaUrls: existingProject?.mediaUrls || null,
@@ -178,11 +173,7 @@ export default function ProjectForm({
       
       if (existingProject) {
         // Update existing project
-        response = await apiRequest({
-          method: 'PUT', 
-          url: `/api/projects/${existingProject.id}`, 
-          data: values
-        });
+        response = await apiRequest('PUT', `/api/projects/${existingProject.id}`, values);
         projectData = await response.json();
         
         // If we have a thumbnail file, upload it
@@ -248,11 +239,7 @@ export default function ProjectForm({
         };
         
         // First create the project
-        response = await apiRequest({
-          method: 'POST', 
-          url: '/api/projects', 
-          data: newProjectData
-        });
+        response = await apiRequest('POST', '/api/projects', newProjectData);
         projectData = await response.json();
         
         // If we have a thumbnail file, upload it
@@ -384,24 +371,6 @@ export default function ProjectForm({
                     <FormLabel>Category</FormLabel>
                     <FormControl>
                       <Input placeholder="Web Development, Design, etc." {...field} value={field.value || ''} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={projectForm.control}
-                name="industry"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Industry</FormLabel>
-                    <FormControl>
-                      <IndustryCombobox 
-                        value={field.value || ''} 
-                        onChange={field.onChange}
-                        placeholder="Select or type an industry"
-                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
