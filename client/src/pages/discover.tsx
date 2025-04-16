@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Check, Hash, Plus, Search, Sparkles, Star, Trending, Users } from "lucide-react";
+import { Check, Hash, Plus, Search, Sparkles, Star, TrendingUp, Users } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import DashboardLayout from "@/components/layout/dashboard-layout";
 import { apiRequest, queryClient } from "@/lib/queryClient";
