@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modern UI Preview</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    .from-primary { --tw-gradient-from: #3b82f6; }
+    .to-primary\/90 { --tw-gradient-to: rgba(59, 130, 246, 0.9); }
+    .text-primary { color: #3b82f6; }
+    .bg-primary { background-color: #3b82f6; }
+    .border-primary\/30 { border-color: rgba(59, 130, 246, 0.3); }
+    .hover\:text-primary:hover { color: #3b82f6; }
+    .hover\:border-primary\/30:hover { border-color: rgba(59, 130, 246, 0.3); }
+    .hover\:from-primary\/95:hover { --tw-gradient-from: rgba(59, 130, 246, 0.95); }
+    .hover\:to-primary\/85:hover { --tw-gradient-to: rgba(59, 130, 246, 0.85); }
+    
+    /* Animation */
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .animate-spin { animation: spin 1s linear infinite; }
+    
+    /* Tab styling */
+    .tab-active {
+      background-color: rgba(59, 130, 246, 0.05);
+      color: #3b82f6;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Select styling */
+    .select-wrapper {
+      position: relative;
+    }
+    .select-wrapper::after {
+      content: '';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 5px solid #3b82f6;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 p-6 font-sans">
+  <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6">
+    <h1 class="text-2xl font-bold mb-8 text-center">Modern UI Components Preview</h1>
+    
+    <!-- Main Tabs -->
+    <div class="mb-8">
+      <h2 class="text-lg font-semibold mb-3">Main Tabs</h2>
+      <div class="w-full border-b shadow-sm rounded-lg overflow-hidden flex">
+        <button class="flex items-center justify-center gap-2 flex-1 py-4 bg-gradient-to-b from-white to-gray-50 shadow-sm border-b-2 border-primary text-primary transition-all">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <span class="text-base font-medium">Search</span>
+        </button>
+        <button class="flex items-center justify-center gap-2 flex-1 py-4 transition-all">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="8.5" cy="7" r="4"></circle>
+            <line x1="20" y1="8" x2="20" y2="14"></line>
+            <line x1="23" y1="11" x2="17" y2="11"></line>
+          </svg>
+          <span class="text-base font-medium">Smart Connect</span>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Secondary Tabs -->
+    <div class="mb-8">
+      <h2 class="text-lg font-semibold mb-3">Secondary Tabs</h2>
+      <div class="mb-6 bg-white rounded-full p-1 border border-gray-200 shadow-sm inline-flex">
+        <button class="flex items-center gap-1.5 py-2 px-4 rounded-full tab-active">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+          <span>Pulses</span>
+        </button>
+        <button class="flex items-center gap-1.5 py-2 px-4 rounded-full">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          <span>Profiles</span>
+        </button>
+        <button class="flex items-center gap-1.5 py-2 px-4 rounded-full">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="4" y1="9" x2="20" y2="9"></line>
+            <line x1="4" y1="15" x2="20" y2="15"></line>
+            <line x1="10" y1="3" x2="8" y2="21"></line>
+            <line x1="16" y1="3" x2="14" y2="21"></line>
+          </svg>
+          <span>Hashtags</span>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Search Button -->
+    <div class="mb-8">
+      <h2 class="text-lg font-semibold mb-3">Search Button</h2>
+      <div class="flex gap-4">
+        <button class="px-5 py-2 rounded-md bg-primary text-white hover:bg-opacity-90 shadow-sm font-medium transition-all min-w-[100px] flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <span>Search</span>
+        </button>
+        
+        <button class="px-5 py-2 rounded-md bg-primary text-white shadow-sm font-medium transition-all min-w-[100px] opacity-70 cursor-not-allowed">
+          <span class="flex items-center justify-center">
+            <div class="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
+            <span>Searching...</span>
+          </span>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Main Action Button -->
+    <div class="mb-8">
+      <h2 class="text-lg font-semibold mb-3">Action Button - Gradient Style</h2>
+      <button class="w-full px-5 py-2.5 rounded-full bg-gradient-to-r from-primary to-primary/90 text-white hover:from-primary/95 hover:to-primary/85 hover:shadow-md shadow-sm font-medium transition-all flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="8.5" cy="7" r="4"></circle>
+          <line x1="20" y1="8" x2="20" y2="14"></line>
+          <line x1="23" y1="11" x2="17" y2="11"></line>
+        </svg>
+        <span>Find Matches</span>
+      </button>
+    </div>
+    
+    <!-- Secondary Action Button -->
+    <div class="mb-8">
+      <h2 class="text-lg font-semibold mb-3">Secondary Action Button</h2>
+      <button class="w-full px-5 py-2.5 rounded-full bg-white border border-gray-200 hover:bg-gray-50 hover:border-primary/30 hover:text-primary shadow-sm font-medium transition-all text-sm flex items-center justify-center gap-2">
+        <span>Edit Criteria</span>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Connect Button -->
+    <div class="mb-8">
+      <h2 class="text-lg font-semibold mb-3">Connect Button</h2>
+      <button class="w-32 px-4 py-1.5 rounded-full bg-primary text-white hover:bg-opacity-90 shadow-sm font-medium transition-all text-sm flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        <span>Connect</span>
+      </button>
+    </div>
+    
+    <!-- View More Button -->
+    <div class="mb-8">
+      <h2 class="text-lg font-semibold mb-3">View More Button</h2>
+      <button class="px-4 py-1.5 rounded-full bg-white border border-gray-200 hover:bg-gray-50 hover:border-primary/30 hover:text-primary shadow-sm font-medium transition-all text-sm flex items-center gap-1.5">
+        <span>View More</span>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Select Dropdown -->
+    <div class="mb-8">
+      <h2 class="text-lg font-semibold mb-3">Select Dropdown</h2>
+      <div class="select-wrapper">
+        <select class="flex h-10 w-full items-center justify-between rounded-md border border-gray-200 bg-white px-3 py-2 text-gray-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 hover:border-primary/30 hover:bg-gray-50/50 appearance-none pl-3 pr-8">
+          <option value="" disabled selected>Select an option</option>
+          <option value="option1">Option 1</option>
+          <option value="option2">Option 2</option>
+          <option value="option3">Option 3</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
