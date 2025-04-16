@@ -21,6 +21,7 @@ import AuthPage from "@/pages/auth-page";
 import EmailVerification from "@/pages/email-verification";
 import NewsSourcesPage from "@/pages/news-sources";
 import Radar from "@/pages/radar";
+import DiscoverPage from "@/pages/discover";
 
 // Redirect component to handle page redirects
 const Redirect = ({ to }: { to: string }) => {
@@ -102,6 +103,9 @@ function Router() {
       </Route>
       <Route path="/radar">
         <ProtectedRoute path="/radar" component={Radar} />
+      </Route>
+      <Route path="/discover">
+        <ProtectedRoute path="/discover" component={DiscoverPage} />
       </Route>
       <Route component={NotFound} />
     </Switch>

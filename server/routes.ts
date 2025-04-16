@@ -3663,6 +3663,24 @@ ${extractedText.substring(0, 5000)}
   });
   
   // Check if user is following a hashtag
+  apiRouter.get("/users/:userId/hashtag-follows", async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+      }
+      
+      console.log(`[GET /users/:userId/hashtag-follows] Fetching hashtags followed by user ${userId}`);
+      const follows = await storage.getHashtagFollowsByUserId(userId);
+      console.log(`[GET /users/:userId/hashtag-follows] Found ${follows.length} hashtag follows`);
+      
+      return res.json(follows);
+    } catch (error) {
+      console.error("[GET /users/:userId/hashtag-follows] Error:", error);
+      return res.status(500).json({ message: "Error fetching hashtag follows" });
+    }
+  });
   apiRouter.get("/hashtags/:hashtagId/is-following", async (req: Request, res: Response) => {
     try {
       const hashtagId = parseInt(req.params.hashtagId);
