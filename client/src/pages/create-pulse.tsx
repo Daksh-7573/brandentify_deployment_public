@@ -24,7 +24,7 @@ export default function CreatePulsePage() {
   const [pulseContent, setPulseContent] = useState("");
   const [pulseType, setPulseType] = useState("poll");
   const [mediaType, setMediaType] = useState("image");
-  const [pulseCategory, setPulseCategory] = useState("certification");
+  const [pulseCategory, setPulseCategory] = useState("highlight");
   const [pollOptions, setPollOptions] = useState(["", ""]);
   // Project tab state
   const [activeProjectTab, setActiveProjectTab] = useState('details');
