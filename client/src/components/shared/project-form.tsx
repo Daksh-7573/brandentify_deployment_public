@@ -361,7 +361,8 @@ export default function ProjectForm({
         
         <TabsContent value="details" className="space-y-4 pt-4">
           <div className="mb-4 p-4 bg-muted/40 rounded-lg border border-muted">
-            <p className="text-sm text-muted-foreground">Showcase your work and expertise with a detailed assignment. Add details, images and links to demonstrate your professional skills.</p>
+            <h3 className="text-base font-medium mb-1">Showcase your work and expertise</h3>
+            <p className="text-sm text-muted-foreground">Add details, images and links to demonstrate your professional skills. Assignments highlight your best work to potential employers and collaborators.</p>
           </div>
           <Form {...projectForm}>
             <form onSubmit={projectForm.handleSubmit(onSubmit)} className="space-y-4">
@@ -372,7 +373,7 @@ export default function ProjectForm({
                   <FormItem>
                     <FormLabel>Assignment Title*</FormLabel>
                     <FormControl>
-                      <Input placeholder="My Professional Assignment" {...field} />
+                      <Input placeholder="My Amazing Project" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -406,9 +407,6 @@ export default function ProjectForm({
                         placeholder="Select or type an industry"
                       />
                     </FormControl>
-                    <FormDescription>
-                      Select the industry related to this assignment
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -422,7 +420,7 @@ export default function ProjectForm({
                     <FormLabel>Description</FormLabel>
                     <FormControl>
                       <Textarea 
-                        placeholder="Describe your work, its goals, and your specific contributions" 
+                        placeholder="Describe your project, its goals, and your contributions" 
                         className="resize-none" 
                         {...field}
                         value={field.value || ''} 
