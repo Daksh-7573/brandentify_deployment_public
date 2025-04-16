@@ -1,8 +1,12 @@
 import express, { Request, Response } from "express";
 import { storage } from "./storage";
 import { z } from "zod";
-import { openai } from "./services/fixed-openai-service";
-import { generateResponse } from "./services/ai-service";
+import OpenAI from "openai";
+
+// Initialize OpenAI client
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 // Define the Musk chat message schema
 const chatMessageSchema = z.object({
@@ -36,8 +40,7 @@ export const handleMuskChat = async (req: Request, res: Response) => {
       userId,
       content: message,
       messageType: "musk_chat",
-      sender: "user",
-      timestamp: new Date()
+      sender: "user"
     });
     
     // Enhance context with user profile data
@@ -51,8 +54,7 @@ export const handleMuskChat = async (req: Request, res: Response) => {
       userId,
       content: aiResponse,
       messageType: "musk_chat",
-      sender: "ai",
-      timestamp: new Date()
+      sender: "ai"
     });
     
     return res.status(200).json({
@@ -106,16 +108,13 @@ async function enrichContextWithUserData(userId: number, context?: any) {
         startDate: exp.startDate,
         endDate: exp.endDate,
         description: exp.description,
-        industry: exp.industry,
-        skills: exp.skills
+        industry: exp.industry
       })),
       education: education.map(edu => ({
         institution: edu.institution,
         degree: edu.degree,
-        field: edu.field,
         startDate: edu.startDate,
-        endDate: edu.endDate,
-        description: edu.description
+        endDate: edu.endDate
       })),
       skills: skills.map(skill => ({
         name: skill.name,
@@ -125,10 +124,8 @@ async function enrichContextWithUserData(userId: number, context?: any) {
         title: project.title,
         description: project.description,
         startDate: project.startDate,
-        endDate: project.endDate,
-        skills: project.skills,
-        url: project.url,
-        industry: project.industry
+        projectUrl: project.projectUrl,
+        category: project.category
       })),
       pulses: pulses.slice(0, 5).map(pulse => ({
         type: pulse.type,
