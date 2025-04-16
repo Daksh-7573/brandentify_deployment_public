@@ -110,7 +110,8 @@ export default function CreatePulsePage() {
       type: pulseType as any, // Type assertion to match enum
       title: pulseTitle,
       content: pulseContent,
-      isPublished: true
+      isPublished: true,
+      industry: pulseIndustry.trim() !== "" ? pulseIndustry : undefined
     };
     
     // Add type-specific data
@@ -496,6 +497,23 @@ export default function CreatePulsePage() {
                         rows={3}
                       />
                     </div>
+                    {/* Industry Selection */}
+                    <div className="space-y-2 mb-6">
+                      <Label htmlFor="poll-industry" className="flex items-center gap-2">
+                        <Briefcase className="h-4 w-4 text-purple-500" />
+                        <span>Industry</span>
+                      </Label>
+                      <IndustryCombobox
+                        value={pulseIndustry}
+                        onChange={setPulseIndustry}
+                        placeholder="Select or type an industry (e.g., Technology, Healthcare)"
+                        className="w-full border-purple-100"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Select your industry to help others find your trends
+                      </p>
+                    </div>
+
                     <div className="space-y-4">
                       <Label className="flex items-center gap-2">
                         <BarChart className="h-4 w-4 text-purple-500" />
@@ -655,6 +673,23 @@ export default function CreatePulsePage() {
                           </SelectContent>
                         </Select>
                       </div>
+                    </div>
+                    
+                    {/* Industry Selection */}
+                    <div className="space-y-2 mb-6">
+                      <Label htmlFor="pulse-industry" className="flex items-center gap-2">
+                        <Briefcase className="h-4 w-4 text-blue-500" />
+                        <span>Industry</span>
+                      </Label>
+                      <IndustryCombobox
+                        value={pulseIndustry}
+                        onChange={setPulseIndustry}
+                        placeholder="Select or type an industry (e.g., Technology, Healthcare)"
+                        className="w-full"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Select your industry to help others find your content
+                      </p>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="media-title" className="flex items-center gap-2">
@@ -825,6 +860,23 @@ export default function CreatePulsePage() {
                       </p>
                     </div>
                     
+                    {/* Industry Selection */}
+                    <div className="space-y-2 mb-6">
+                      <Label htmlFor="project-industry" className="flex items-center gap-2">
+                        <Briefcase className="h-4 w-4 text-green-500" />
+                        <span>Industry</span>
+                      </Label>
+                      <IndustryCombobox
+                        value={pulseIndustry}
+                        onChange={setPulseIndustry}
+                        placeholder="Select or type an industry (e.g., Technology, Healthcare)"
+                        className="w-full"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Select the industry related to this assignment
+                      </p>
+                    </div>
+                    
                     <Tabs value={activeProjectTab} onValueChange={setActiveProjectTab} className="mt-4">
                       <TabsList className="grid w-full grid-cols-3 bg-green-50">
                         <TabsTrigger value="details" className="data-[state=active]:bg-white data-[state=active]:text-green-700">Details</TabsTrigger>
@@ -862,7 +914,8 @@ export default function CreatePulsePage() {
                                     title: pulseTitle,
                                     content: pulseContent,
                                     isPublished: true,
-                                    projectId: selectedProject
+                                    projectId: selectedProject,
+                                    industry: pulseIndustry.trim() !== "" ? pulseIndustry : undefined
                                   });
                                 }}
                               >
