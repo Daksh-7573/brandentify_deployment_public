@@ -11,6 +11,7 @@ import { projectThumbnailUpload, getFileUrl } from "./utils/upload";
 import { handleParseResume } from "./routes-parse-resume";
 import { handleCreateDemoProfiles } from "./routes-demo-profiles";
 import { updateUserGeolocation, updateUserRadarVisibility, getNearbyUsers } from "./routes-radar";
+import { handleMuskChat } from "./routes-musk";
 import { 
   insertUserSchema, 
   insertResumeSchema, 
