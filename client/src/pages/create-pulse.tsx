@@ -8,7 +8,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { AlertCircle, BarChart, Video, Image, FileCode, Loader2, X } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AlertCircle, BarChart, Video, Image, FileCode, Loader2, X, Award, Rocket, BadgeCheck, Wrench, Bell, Zap } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProjectForm, { Project } from "@/components/shared/project-form";
@@ -23,6 +24,7 @@ export default function CreatePulsePage() {
   const [pulseContent, setPulseContent] = useState("");
   const [pulseType, setPulseType] = useState("poll");
   const [mediaType, setMediaType] = useState("image");
+  const [pulseCategory, setPulseCategory] = useState("certification");
   const [pollOptions, setPollOptions] = useState(["", ""]);
   // Project tab state
   const [activeProjectTab, setActiveProjectTab] = useState('details');
@@ -136,6 +138,16 @@ export default function CreatePulsePage() {
       
       // Set the proper media type
       pulseData.mediaType = mediaType as any; // Type assertion to match enum
+      
+      // Set the pulse category
+      pulseData.category = pulseCategory as any; // Type assertion to match enum
+      
+      // Calculate expires date for highlight category (24 hours from now)
+      if (pulseCategory === 'highlight') {
+        const expirationDate = new Date();
+        expirationDate.setHours(expirationDate.getHours() + 24);
+        pulseData.expiresAt = expirationDate;
+      }
       
       // Use the mediaUrls that have been updated from server upload
       pulseData.mediaUrls = mediaUrls;
@@ -542,42 +554,104 @@ export default function CreatePulsePage() {
 
                 {pulseType === 'media-pulse' && (
                   <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="media-type" className="flex items-center gap-2">
-                        {mediaType === 'video' ? (
-                          <Video className="h-4 w-4 text-blue-500" />
-                        ) : (
-                          <Image className="h-4 w-4 text-blue-500" />
-                        )}
-                        <span>Media Type</span>
-                      </Label>
-                      <div className="flex flex-wrap gap-4">
-                        <button
-                          type="button"
-                          onClick={() => setMediaType('image')}
-                          className={`flex items-center gap-2 px-4 py-2 rounded-md ${
-                            mediaType === 'image'
-                              ? 'bg-blue-100 text-blue-700 font-medium'
-                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                          }`}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                      {/* Media Type Selection */}
+                      <div className="space-y-2">
+                        <Label htmlFor="media-type" className="flex items-center gap-2">
+                          {mediaType === 'video' ? (
+                            <Video className="h-4 w-4 text-blue-500" />
+                          ) : (
+                            <Image className="h-4 w-4 text-blue-500" />
+                          )}
+                          <span>Media Type</span>
+                        </Label>
+                        <div className="flex flex-wrap gap-4">
+                          <button
+                            type="button"
+                            onClick={() => setMediaType('image')}
+                            className={`flex items-center gap-2 px-4 py-2 rounded-md ${
+                              mediaType === 'image'
+                                ? 'bg-blue-100 text-blue-700 font-medium'
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            }`}
+                          >
+                            <Image className="h-4 w-4" />
+                            <span>Images</span>
+                            <span className="text-xs ml-1">(max 5)</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setMediaType('video')}
+                            className={`flex items-center gap-2 px-4 py-2 rounded-md ${
+                              mediaType === 'video'
+                                ? 'bg-blue-100 text-blue-700 font-medium'
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            }`}
+                          >
+                            <Video className="h-4 w-4" />
+                            <span>Video</span>
+                            <span className="text-xs ml-1">(max 2 min)</span>
+                          </button>
+                        </div>
+                      </div>
+                      
+                      {/* Pulse Category Selection */}
+                      <div className="space-y-2">
+                        <Label htmlFor="pulse-category" className="flex items-center gap-2">
+                          {pulseCategory === 'certification' && <BadgeCheck className="h-4 w-4 text-blue-500" />}
+                          {pulseCategory === 'launch' && <Rocket className="h-4 w-4 text-blue-500" />}
+                          {pulseCategory === 'award' && <Award className="h-4 w-4 text-blue-500" />}
+                          {pulseCategory === 'project' && <Wrench className="h-4 w-4 text-blue-500" />}
+                          {pulseCategory === 'announcement' && <Bell className="h-4 w-4 text-blue-500" />}
+                          {pulseCategory === 'highlight' && <Zap className="h-4 w-4 text-blue-500" />}
+                          <span>Pulse Category</span>
+                        </Label>
+                        <Select
+                          value={pulseCategory}
+                          onValueChange={(value) => setPulseCategory(value)}
                         >
-                          <Image className="h-4 w-4" />
-                          <span>Images</span>
-                          <span className="text-xs ml-1">(max 5)</span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setMediaType('video')}
-                          className={`flex items-center gap-2 px-4 py-2 rounded-md ${
-                            mediaType === 'video'
-                              ? 'bg-blue-100 text-blue-700 font-medium'
-                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                          }`}
-                        >
-                          <Video className="h-4 w-4" />
-                          <span>Video</span>
-                          <span className="text-xs ml-1">(max 2 min)</span>
-                        </button>
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select a category" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="certification">
+                              <div className="flex items-center gap-2">
+                                <BadgeCheck className="h-4 w-4" />
+                                <span>Certification</span>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="launch">
+                              <div className="flex items-center gap-2">
+                                <Rocket className="h-4 w-4" />
+                                <span>Launch</span>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="award">
+                              <div className="flex items-center gap-2">
+                                <Award className="h-4 w-4" />
+                                <span>Award</span>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="project">
+                              <div className="flex items-center gap-2">
+                                <Wrench className="h-4 w-4" />
+                                <span>Project</span>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="announcement">
+                              <div className="flex items-center gap-2">
+                                <Bell className="h-4 w-4" />
+                                <span>Announcement</span>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="highlight">
+                              <div className="flex items-center gap-2">
+                                <Zap className="h-4 w-4" />
+                                <span>Highlight (expires in 24h)</span>
+                              </div>
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                     </div>
                     <div className="space-y-2">
