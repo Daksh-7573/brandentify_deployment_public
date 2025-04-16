@@ -25,13 +25,38 @@ async function throwIfResNotOk(res: Response) {
 /**
  * Enhanced API request function with better error handling and retries
  */
-export async function apiRequest(options: {
-  url: string;
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
-  data?: unknown;
-  retries?: number;
-}): Promise<Response> {
-  const { url, method, data, retries = 2 } = options;
+export async function apiRequest(
+  methodOrOptions: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | {
+    url: string;
+    method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+    data?: unknown;
+    retries?: number;
+  },
+  urlOrUndefined?: string,
+  dataOrUndefined?: unknown,
+  retriesOrUndefined?: number
+): Promise<Response> {
+  // Handle the overloaded function signatures
+  let url: string;
+  let method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+  let data: unknown;
+  let retries: number = 2;
+
+  // Check if first argument is an options object or a method string
+  if (typeof methodOrOptions === 'object') {
+    // Object style: apiRequest({ url, method, data, retries })
+    const options = methodOrOptions;
+    url = options.url;
+    method = options.method;
+    data = options.data;
+    retries = options.retries ?? 2;
+  } else {
+    // Positional params style: apiRequest(method, url, data, retries)
+    method = methodOrOptions;
+    url = urlOrUndefined as string;
+    data = dataOrUndefined;
+    retries = retriesOrUndefined ?? 2;
+  }
   
   try {
     // Support for passing FormData objects
@@ -41,7 +66,9 @@ export async function apiRequest(options: {
     const requestOptions: RequestInit = {
       method: method,
       headers: !isFormData && data ? { "Content-Type": "application/json" } : {},
-      body: isFormData ? data : data ? JSON.stringify(data) : undefined,
+      // Cast the unknown data to an appropriate type for the body
+      body: isFormData ? (data as BodyInit) : 
+            data ? JSON.stringify(data) : undefined,
       credentials: "include",
     };
     
@@ -71,7 +98,13 @@ export async function apiRequest(options: {
       // For network errors or server errors (5xx), retry a few times
       if ((res.status >= 500 || res.status === 0) && retries > 0) {
         console.log(`Retrying request (${retries} attempts left)...`);
-        return apiRequest({ url, method, data, retries: retries - 1 });
+        // Use the object parameter style for recursion to avoid ambiguity
+        return apiRequest({ 
+          url, 
+          method, 
+          data, 
+          retries: retries - 1 
+        });
       }
     }
     
