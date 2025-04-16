@@ -87,6 +87,15 @@ interface NearbyUser {
   distance: number;
 }
 
+// Type definition for useQuery userData result
+interface UserDataResult extends UserData {
+  id: number;
+  geoLatitude?: number | null;
+  geoLongitude?: number | null;
+  geoVisibleNearby?: boolean | null;
+  geoLastUpdated?: string | Date | null;
+}
+
 // Placeholder component for when location access is still pending
 const LocationPending = () => (
   <div className="flex flex-col items-center justify-center py-10 space-y-4">
@@ -227,7 +236,7 @@ const Radar = () => {
   const { user: currentUser } = useAuth();
   
   // Get current user data
-  const { data: userData } = useQuery({
+  const { data: userData } = useQuery<UserDataResult>({
     queryKey: ['/api/users', currentUser?.uid],
     enabled: !!currentUser?.uid,
   });
@@ -249,9 +258,13 @@ const Radar = () => {
       const params = new URLSearchParams({
         latitude: coordinates.lat.toString(),
         longitude: coordinates.lng.toString(),
-        radius: radius,
-        ...(userData?.id && { userId: userData.id.toString() })
+        radius: radius
       });
+      
+      // Add userId if available
+      if (userData && 'id' in userData && userData.id) {
+        params.append('userId', userData.id.toString());
+      }
       
       const response = await fetch(`/api/nearby-users?${params.toString()}`);
       if (!response.ok) {
@@ -284,16 +297,13 @@ const Radar = () => {
   // Mutation to update user's geo-visibility
   const updateVisibilityMutation = useMutation({
     mutationFn: async (visible: boolean) => {
-      if (!userData?.id) {
+      if (!userData || !('id' in userData) || !userData.id) {
         throw new Error('User not logged in');
       }
       
-      const response = await apiRequest(`/api/users/${userData.id}/radar-visibility`, {
-        method: 'POST',
-        body: JSON.stringify({
-          userId: userData.id,
-          visible: visible
-        }),
+      const response = await apiRequest(`/api/users/${userData.id}/radar-visibility`, 'POST', {
+        userId: userData.id,
+        visible: visible
       });
       
       if (!response.ok) {
@@ -326,18 +336,15 @@ const Radar = () => {
   // Mutation to update user's geolocation
   const updateGeoLocationMutation = useMutation({
     mutationFn: async (coords: {lat: number, lng: number}) => {
-      if (!userData?.id) {
+      if (!userData || !('id' in userData) || !userData.id) {
         throw new Error('User not logged in');
       }
       
-      const response = await apiRequest(`/api/users/${userData.id}/geolocation`, {
-        method: 'POST',
-        body: JSON.stringify({
-          userId: userData.id,
-          latitude: coords.lat,
-          longitude: coords.lng,
-          geoVisibleNearby: visibleInRadar
-        }),
+      const response = await apiRequest(`/api/users/${userData.id}/geolocation`, 'POST', {
+        userId: userData.id,
+        latitude: coords.lat,
+        longitude: coords.lng,
+        geoVisibleNearby: visibleInRadar
       });
       
       if (!response.ok) {
