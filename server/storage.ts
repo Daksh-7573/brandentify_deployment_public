@@ -44,6 +44,7 @@ export interface IStorage {
   getUserByPhoneNumber(phoneNumber: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, user: Partial<User>): Promise<User | undefined>;
+  getAllUsers(): Promise<User[]>;
   
   // Poll Vote operations
   getPollVotesByPulseId(pulseId: number): Promise<PollVote[]>;
