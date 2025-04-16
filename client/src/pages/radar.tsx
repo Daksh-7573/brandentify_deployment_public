@@ -4,6 +4,7 @@ import { Link } from 'wouter';
 import { UserData } from '@/types/user';
 import { apiRequest } from '@/lib/queryClient';
 import { useAuth } from '@/hooks/use-auth';
+import DashboardLayout from "@/components/layout/dashboard-layout";
 import { 
   MapPin, 
   Users, 
