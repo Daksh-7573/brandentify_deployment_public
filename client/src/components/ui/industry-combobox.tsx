@@ -129,14 +129,13 @@ export function IndustryCombobox({
             )}
             <CommandGroup className="max-h-60 overflow-auto">
               {filteredIndustries.map(industry => (
-                <CommandItem
+                <div 
                   key={industry}
-                  value={industry}
-                  onSelect={() => {
+                  className="px-2 py-1.5 text-sm cursor-pointer hover:bg-blue-50 flex items-center"
+                  onClick={() => {
                     onChange(industry);
                     setOpen(false);
                   }}
-                  className="cursor-pointer hover:bg-blue-50"
                 >
                   <Check
                     className={cn(
@@ -145,7 +144,7 @@ export function IndustryCombobox({
                     )}
                   />
                   {industry}
-                </CommandItem>
+                </div>
               ))}
             </CommandGroup>
           </CommandList>
