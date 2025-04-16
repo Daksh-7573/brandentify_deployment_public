@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon, Video, Image } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,6 +25,9 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 import { IndustryCombobox } from "@/components/ui/industry-combobox";
+import { Card, CardContent } from "@/components/ui/card";
+import { FileCode, Video, Image } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 // Define schema
 const projectSchema = z.object({
@@ -353,315 +356,327 @@ export default function ProjectForm({
   
   return (
     <div className="space-y-6">
-      <Tabs defaultValue="details" value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-2">
-          <TabsTrigger value="details">Project Details</TabsTrigger>
-          <TabsTrigger value="media">Project Media</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="details" className="space-y-4 pt-4">
-          <Form {...projectForm}>
-            <form onSubmit={projectForm.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={projectForm.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Project Title*</FormLabel>
-                    <FormControl>
-                      <Input placeholder="My Amazing Project" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={projectForm.control}
-                name="category"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Category</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Web Development, Design, etc." {...field} value={field.value || ''} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={projectForm.control}
-                name="industry"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Industry</FormLabel>
-                    <FormControl>
-                      <IndustryCombobox 
-                        value={field.value || ''} 
-                        onChange={field.onChange}
-                        placeholder="Select or type an industry"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={projectForm.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Description</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder="Describe your project, its goals, and your contributions" 
-                        className="resize-none" 
-                        {...field}
-                        value={field.value || ''} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={projectForm.control}
-                name="startDate"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Project Date*</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
+      <Card className="mb-6">
+        <CardContent className="p-6">
+          <Alert className="mb-6 bg-green-50 border-green-200">
+            <FileCode className="h-4 w-4 text-green-500" />
+            <AlertTitle className="text-green-700">Assignments</AlertTitle>
+            <AlertDescription className="text-green-600">
+              Showcase your work experiences and projects. Add details, media, and industry information.
+            </AlertDescription>
+          </Alert>
+          
+          <Tabs defaultValue="details" value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="grid grid-cols-2">
+              <TabsTrigger value="details">Project Details</TabsTrigger>
+              <TabsTrigger value="media">Project Media</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="details" className="space-y-4 pt-4">
+              <Form {...projectForm}>
+                <form onSubmit={projectForm.handleSubmit(onSubmit)} className="space-y-4">
+                  <FormField
+                    control={projectForm.control}
+                    name="title"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Project Title*</FormLabel>
                         <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              format(new Date(field.value), "PPP")
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
+                          <Input placeholder="My Amazing Project" {...field} />
                         </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={new Date(field.value)}
-                          onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
-                          disabled={(date) => date > new Date()}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={projectForm.control}
-                name="projectUrl"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Project URL</FormLabel>
-                    <FormControl>
-                      <Input type="url" placeholder="https://example.com" {...field} value={field.value || ''} />
-                    </FormControl>
-                    <FormDescription>
-                      Link to your project (GitHub, website, etc.)
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <div className="flex justify-end gap-2">
-                {onCancel && (
-                  <Button type="button" variant="outline" onClick={onCancel}>
-                    Cancel
-                  </Button>
-                )}
-                <Button type="button" onClick={() => setActiveTab('media')}>
-                  Next: Add Media
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </TabsContent>
-        
-        <TabsContent value="media" className="space-y-4 pt-4">
-          <Form {...projectForm}>
-            <form onSubmit={projectForm.handleSubmit(onSubmit)} className="space-y-4">
-              <div className="space-y-6">
-                <FormItem className="mb-6 pb-4 border-b">
-                  <FormLabel>Project Thumbnail*</FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="file" 
-                      ref={fileInputRef}
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          setThumbnailFile(file);
-                          setThumbnailError(null);
-                        }
-                      }} 
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Upload a thumbnail image for your project (required)
-                  </FormDescription>
-                  {thumbnailError && <p className="text-sm font-medium text-destructive">{thumbnailError}</p>}
-                  <FormMessage />
-                </FormItem>
-                
-                <h3 className="text-base font-medium">Additional Project Media (Optional)</h3>
-                <p className="text-sm text-muted-foreground mb-4">Choose one of the following media types to enhance your project showcase</p>
-
-                <div className="flex space-x-4">
-                  <div className="flex-1">
-                    <Label className="block mb-2">Media Type</Label>
-                    <div className="flex gap-4 items-start">
-                      <div className="flex items-center space-x-2">
-                        <input 
-                          type="radio" 
-                          id="media-images" 
-                          name="media-type"
-                          checked={!projectVideo}
-                          onChange={() => {
-                            setProjectVideo(null);
-                            if (videoInputRef.current) {
-                              videoInputRef.current.value = '';
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={projectForm.control}
+                    name="category"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Category</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Web Development, Design, etc." {...field} value={field.value || ''} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={projectForm.control}
+                    name="industry"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Industry</FormLabel>
+                        <FormControl>
+                          <IndustryCombobox 
+                            value={field.value || ''} 
+                            onChange={field.onChange}
+                            placeholder="Select or type an industry"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={projectForm.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Description</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            placeholder="Describe your project, its goals, and your contributions" 
+                            className="resize-none" 
+                            {...field}
+                            value={field.value || ''} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={projectForm.control}
+                    name="startDate"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Project Date*</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant={"outline"}
+                                className={cn(
+                                  "pl-3 text-left font-normal",
+                                  !field.value && "text-muted-foreground"
+                                )}
+                              >
+                                {field.value ? (
+                                  format(new Date(field.value), "PPP")
+                                ) : (
+                                  <span>Pick a date</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={new Date(field.value)}
+                              onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
+                              disabled={(date) => date > new Date()}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={projectForm.control}
+                    name="projectUrl"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Project URL</FormLabel>
+                        <FormControl>
+                          <Input type="url" placeholder="https://example.com" {...field} value={field.value || ''} />
+                        </FormControl>
+                        <FormDescription>
+                          Link to your project (GitHub, website, etc.)
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <div className="flex justify-end gap-2">
+                    {onCancel && (
+                      <Button type="button" variant="outline" onClick={onCancel}>
+                        Cancel
+                      </Button>
+                    )}
+                    <Button type="button" onClick={() => setActiveTab('media')}>
+                      Next: Add Media
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            </TabsContent>
+            
+            <TabsContent value="media" className="space-y-4 pt-4">
+              <Form {...projectForm}>
+                <form onSubmit={projectForm.handleSubmit(onSubmit)} className="space-y-4">
+                  <div className="space-y-6">
+                    <FormItem className="mb-6 pb-4 border-b">
+                      <FormLabel>Project Thumbnail*</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="file" 
+                          ref={fileInputRef}
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              setThumbnailFile(file);
+                              setThumbnailError(null);
                             }
-                          }}
-                          className="h-4 w-4" 
+                          }} 
                         />
-                        <Label htmlFor="media-images" className="font-normal">Images (Max 10)</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <input 
-                          type="radio" 
-                          id="media-video" 
-                          name="media-type"
-                          checked={!!projectVideo}
-                          onChange={() => {
-                            setProjectImages([]);
-                            if (multipleImagesInputRef.current) {
-                              multipleImagesInputRef.current.value = '';
-                            }
-                          }}
-                          className="h-4 w-4" 
-                        />
-                        <Label htmlFor="media-video" className="font-normal">Video (Max 120 sec)</Label>
+                      </FormControl>
+                      <FormDescription>
+                        Upload a thumbnail image for your project (required)
+                      </FormDescription>
+                      {thumbnailError && <p className="text-sm font-medium text-destructive">{thumbnailError}</p>}
+                      <FormMessage />
+                    </FormItem>
+                    
+                    <h3 className="text-base font-medium">Additional Project Media (Optional)</h3>
+                    <p className="text-sm text-muted-foreground mb-4">Choose one of the following media types to enhance your project showcase</p>
+  
+                    <div className="flex space-x-4">
+                      <div className="flex-1">
+                        <Label className="block mb-2">Media Type</Label>
+                        <div className="flex gap-4 items-start">
+                          <div className="flex items-center space-x-2">
+                            <input 
+                              type="radio" 
+                              id="media-images" 
+                              name="media-type"
+                              checked={!projectVideo}
+                              onChange={() => {
+                                setProjectVideo(null);
+                                if (videoInputRef.current) {
+                                  videoInputRef.current.value = '';
+                                }
+                              }}
+                              className="h-4 w-4" 
+                            />
+                            <Label htmlFor="media-images" className="font-normal">Images (Max 10)</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input 
+                              type="radio" 
+                              id="media-video" 
+                              name="media-type"
+                              checked={!!projectVideo}
+                              onChange={() => {
+                                setProjectImages([]);
+                                if (multipleImagesInputRef.current) {
+                                  multipleImagesInputRef.current.value = '';
+                                }
+                              }}
+                              className="h-4 w-4" 
+                            />
+                            <Label htmlFor="media-video" className="font-normal">Video (Max 120 sec)</Label>
+                          </div>
+                        </div>
                       </div>
                     </div>
+                    
+                    {!projectVideo ? (
+                      <FormItem>
+                        <FormLabel>Project Images</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="file" 
+                            ref={multipleImagesInputRef}
+                            accept="image/*"
+                            multiple
+                            onChange={(e) => {
+                              const files = Array.from(e.target.files || []);
+                              if (files.length > 10) {
+                                setMediaErrors(prev => ({...prev, images: "Maximum 10 images allowed"}));
+                                return;
+                              }
+                              setProjectImages(files);
+                              setMediaErrors(prev => ({...prev, images: undefined}));
+                            }} 
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          {existingProject?.mediaUrls && existingProject.mediaUrls.length > 0 ? (
+                            <>
+                              <span>Current media:</span>
+                              {existingProject.mediaUrls.map((url, index) => (
+                                <img 
+                                  key={index}
+                                  src={url} 
+                                  alt={`Project media ${index + 1}`} 
+                                  className="h-8 w-8 object-cover rounded inline-block mr-1"
+                                />
+                              ))}
+                              <span className="text-xs text-muted-foreground ml-2">(Upload new ones to replace)</span>
+                            </>
+                          ) : (
+                            "Upload up to 10 images to showcase your project"
+                          )}
+                        </FormDescription>
+                        {mediaErrors?.images && <p className="text-sm font-medium text-destructive">{mediaErrors.images}</p>}
+                        <FormMessage />
+                      </FormItem>
+                    ) : (
+                      <FormItem>
+                        <FormLabel>Project Video</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="file" 
+                            ref={videoInputRef}
+                            accept="video/*"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                // Check approximate video size (2MB/min is a rough estimate for decent quality)
+                                if (file.size > 4 * 1024 * 1024) {
+                                  setMediaErrors(prev => ({...prev, video: "Video exceeds maximum size (max ~120 seconds)"}));
+                                  return;
+                                }
+                                setProjectVideo(file);
+                                setMediaErrors(prev => ({...prev, video: undefined}));
+                              }
+                            }} 
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Upload a short video (max 120 seconds) to demonstrate your project
+                          {existingProject?.mediaUrls && existingProject.mediaUrls.length > 0 && (
+                            <span className="text-xs text-muted-foreground block mt-1">(Upload a new one to replace)</span>
+                          )}
+                        </FormDescription>
+                        {mediaErrors?.video && <p className="text-sm font-medium text-destructive">{mediaErrors.video}</p>}
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   </div>
-                </div>
-                
-                {!projectVideo ? (
-                  <FormItem>
-                    <FormLabel>Project Images</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="file" 
-                        ref={multipleImagesInputRef}
-                        accept="image/*"
-                        multiple
-                        onChange={(e) => {
-                          const files = Array.from(e.target.files || []);
-                          if (files.length > 10) {
-                            setMediaErrors(prev => ({...prev, images: "Maximum 10 images allowed"}));
-                            return;
-                          }
-                          setProjectImages(files);
-                          setMediaErrors(prev => ({...prev, images: undefined}));
-                        }} 
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      {existingProject?.mediaUrls && existingProject.mediaUrls.length > 0 ? (
-                        <>
-                          <span>Current media:</span>
-                          {existingProject.mediaUrls.map((url, index) => (
-                            <img 
-                              key={index}
-                              src={url} 
-                              alt={`Project media ${index + 1}`} 
-                              className="h-8 w-8 object-cover rounded inline-block mr-1"
-                            />
-                          ))}
-                          <span className="text-xs text-muted-foreground ml-2">(Upload new ones to replace)</span>
-                        </>
-                      ) : (
-                        "Upload up to 10 images to showcase your project"
-                      )}
-                    </FormDescription>
-                    {mediaErrors?.images && <p className="text-sm font-medium text-destructive">{mediaErrors.images}</p>}
-                    <FormMessage />
-                  </FormItem>
-                ) : (
-                  <FormItem>
-                    <FormLabel>Project Video</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="file" 
-                        ref={videoInputRef}
-                        accept="video/*"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            // Check approximate video size (2MB/min is a rough estimate for decent quality)
-                            if (file.size > 4 * 1024 * 1024) {
-                              setMediaErrors(prev => ({...prev, video: "Video exceeds maximum size (max ~120 seconds)"}));
-                              return;
-                            }
-                            setProjectVideo(file);
-                            setMediaErrors(prev => ({...prev, video: undefined}));
-                          }
-                        }} 
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Upload a short video (max 120 seconds) to demonstrate your project
-                      {existingProject?.mediaUrls && existingProject.mediaUrls.length > 0 && (
-                        <span className="text-xs text-muted-foreground block mt-1">(Upload a new one to replace)</span>
-                      )}
-                    </FormDescription>
-                    {mediaErrors?.video && <p className="text-sm font-medium text-destructive">{mediaErrors.video}</p>}
-                    <FormMessage />
-                  </FormItem>
-                )}
-              </div>
-              
-              <div className="flex justify-between gap-2 pt-4">
-                <Button type="button" variant="outline" onClick={() => setActiveTab('details')}>
-                  Back to Details
-                </Button>
-                <div className="space-x-2">
-                  {onCancel && (
-                    <Button type="button" variant="outline" onClick={onCancel}>
-                      Cancel
+                  
+                  <div className="flex justify-between gap-2 pt-4">
+                    <Button type="button" variant="outline" onClick={() => setActiveTab('details')}>
+                      Back to Details
                     </Button>
-                  )}
-                  <Button type="submit">
-                    {existingProject ? 'Update Project' : 'Create Project'}
-                  </Button>
-                </div>
-              </div>
-            </form>
-          </Form>
-        </TabsContent>
-      </Tabs>
+                    <div className="space-x-2">
+                      {onCancel && (
+                        <Button type="button" variant="outline" onClick={onCancel}>
+                          Cancel
+                        </Button>
+                      )}
+                      <Button type="submit">
+                        {existingProject ? 'Update Project' : 'Create Project'}
+                      </Button>
+                    </div>
+                  </div>
+                </form>
+              </Form>
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
     </div>
   );
 }
