@@ -238,7 +238,8 @@ const Radar = () => {
   // Query to get nearby users
   const { 
     isLoading: isLoadingNearby,
-    refetch: refetchNearby
+    refetch: refetchNearby,
+    data: nearbyUsersResult
   } = useQuery({
     queryKey: ['/api/nearby-users', coordinates, radius],
     queryFn: async () => {
@@ -246,12 +247,15 @@ const Radar = () => {
       // For demo purposes, we'll just use the demo data
       return DEMO_NEARBY_USERS;
     },
-    enabled: !!coordinates && locationStatus === 'granted',
-    onSuccess: () => {
-      // Update our demo data state
-      setNearbyUsersData(DEMO_NEARBY_USERS);
-    }
+    enabled: !!coordinates && locationStatus === 'granted'
   });
+  
+  // Update nearby users data when the query result changes
+  useEffect(() => {
+    if (nearbyUsersResult) {
+      setNearbyUsersData(nearbyUsersResult);
+    }
+  }, [nearbyUsersResult]);
   
   // Mutation to update user's geo-visibility
   const updateVisibilityMutation = useMutation({
@@ -362,7 +366,8 @@ const Radar = () => {
       location: selectedUser.location,
       industry: null,
       lookingFor: null,
-      phoneNumber: null
+      phoneNumber: null,
+      aboutMe: ''
     };
     
     return (
@@ -376,211 +381,213 @@ const Radar = () => {
   };
   
   return (
-    <div className="container max-w-5xl mx-auto py-8 px-4">
-      <PageTitle>Smart Radar</PageTitle>
-      
-      {/* Location error alert */}
-      {locationError && (
-        <Alert variant="destructive" className="mb-6">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Location Error</AlertTitle>
-          <AlertDescription>{locationError}</AlertDescription>
-        </Alert>
-      )}
-      
-      {/* Settings card */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <MapPin className="mr-2 h-5 w-5" />
-            <span>Smart Radar Settings</span>
-          </CardTitle>
-          <CardDescription>
-            Connect with professionals near your current location.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col md:flex-row gap-6">
-            <div className="flex-1 space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="visible">Show me in nearby list</Label>
-                  <p className="text-xs text-gray-500">
-                    Other professionals can discover your profile based on proximity
-                  </p>
-                </div>
-                <Switch
-                  id="visible"
-                  checked={visibleInRadar}
-                  onCheckedChange={handleVisibilityToggle}
-                  disabled={updateVisibilityMutation.isPending}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="radius">Search radius</Label>
-                <Select value={radius} onValueChange={handleRadiusChange}>
-                  <SelectTrigger id="radius">
-                    <SelectValue placeholder="Select radius" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1">1 km</SelectItem>
-                    <SelectItem value="5">5 km</SelectItem>
-                    <SelectItem value="10">10 km</SelectItem>
-                    <SelectItem value="25">25 km</SelectItem>
-                    <SelectItem value="50">50 km</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            
-            <div className="flex-1 space-y-4">
-              <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <h4 className="text-sm font-medium mb-2">Your Location Status</h4>
-                <div className="flex items-center">
-                  <div className={`h-2.5 w-2.5 rounded-full mr-2 ${
-                    locationStatus === 'granted' ? 'bg-green-500' : 
-                    locationStatus === 'denied' ? 'bg-red-500' : 'bg-amber-500'
-                  }`} />
-                  <span className="text-sm text-gray-500">
-                    {locationStatus === 'granted' ? 'Location access granted' : 
-                     locationStatus === 'denied' ? 'Location access denied' : 'Pending location access'}
-                  </span>
-                </div>
-                {coordinates && (
-                  <p className="text-xs text-gray-500 mt-2">
-                    Current coordinates: {coordinates.lat.toFixed(6)}, {coordinates.lng.toFixed(6)}
-                  </p>
-                )}
-              </div>
-              
-              <Button 
-                variant="outline" 
-                className="w-full"
-                onClick={handleRefreshLocation}
-                disabled={locationStatus !== 'granted' || updateGeoLocationMutation.isPending}
-              >
-                {updateGeoLocationMutation.isPending ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <RefreshCw className="mr-2 h-4 w-4" />
-                )}
-                Refresh Location
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-      
-      {/* Nearby users section */}
-      <div className="mt-8">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">Nearby Professionals</h2>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => refetchNearby()}
-            disabled={isLoadingNearby}
-          >
-            {isLoadingNearby ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <RefreshCw className="h-4 w-4" />
-            )}
-          </Button>
-        </div>
+    <DashboardLayout hideRightSidebar={true}>
+      <div className="container max-w-5xl mx-auto py-8 px-4">
+        <PageTitle>Smart Radar</PageTitle>
         
-        {locationStatus === 'pending' && <LocationPending />}
-        
-        {locationStatus === 'granted' && (
-          <>
-            {isLoadingNearby ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[...Array(4)].map((_, i) => (
-                  <UserCardSkeleton key={i} />
-                ))}
-              </div>
-            ) : nearbyUsersData && nearbyUsersData.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {nearbyUsersData.map((user: NearbyUser) => (
-                  <UserCard 
-                    key={user.id} 
-                    user={user} 
-                    onClick={() => handleUserCardClick(user)} 
-                  />
-                ))}
-              </div>
-            ) : (
-              <NoNearbyUsers />
-            )}
-          </>
+        {/* Location error alert */}
+        {locationError && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Location Error</AlertTitle>
+            <AlertDescription>{locationError}</AlertDescription>
+          </Alert>
         )}
-      </div>
-      
-      {/* User Quantum Card dialog */}
-      <Dialog open={cardOpen} onOpenChange={setCardOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>
-              {selectedUser?.name || 'Professional'}'s Quantum Card
-            </DialogTitle>
-            <DialogDescription>
-              Connect with this professional to grow your network.
-            </DialogDescription>
-          </DialogHeader>
-          
-          {selectedUser && (
-            <Tabs defaultValue="card" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="card">Quantum Card</TabsTrigger>
-                <TabsTrigger value="actions">Actions</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="card" className="flex justify-center p-2">
-                {renderUserQuantumCard()}
-              </TabsContent>
-              
-              <TabsContent value="actions" className="space-y-4 py-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <Button variant="outline" asChild>
-                    <Link to={`/profile/${selectedUser.username}`}>
-                      <UserCheck className="mr-2 h-4 w-4" />
-                      View Profile
-                    </Link>
-                  </Button>
-                  
-                  <Button variant="outline">
-                    <MessageSquare className="mr-2 h-4 w-4" />
-                    Message
-                  </Button>
-                  
-                  <Button variant="outline">
-                    <UserPlus className="mr-2 h-4 w-4" />
-                    Connect
-                  </Button>
+        
+        {/* Settings card */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <MapPin className="mr-2 h-5 w-5" />
+              <span>Smart Radar Settings</span>
+            </CardTitle>
+            <CardDescription>
+              Connect with professionals near your current location.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col md:flex-row gap-6">
+              <div className="flex-1 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label htmlFor="visible">Show me in nearby list</Label>
+                    <p className="text-xs text-gray-500">
+                      Other professionals can discover your profile based on proximity
+                    </p>
+                  </div>
+                  <Switch
+                    id="visible"
+                    checked={visibleInRadar}
+                    onCheckedChange={handleVisibilityToggle}
+                    disabled={updateVisibilityMutation.isPending}
+                  />
                 </div>
                 
-                <div className="text-xs text-gray-500 flex items-center mt-4">
-                  <MapPin className="h-3 w-3 mr-1" />
-                  {selectedUser.distance.toFixed(1)} km away
+                <div className="space-y-2">
+                  <Label htmlFor="radius">Search radius</Label>
+                  <Select value={radius} onValueChange={handleRadiusChange}>
+                    <SelectTrigger id="radius">
+                      <SelectValue placeholder="Select radius" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">1 km</SelectItem>
+                      <SelectItem value="5">5 km</SelectItem>
+                      <SelectItem value="10">10 km</SelectItem>
+                      <SelectItem value="25">25 km</SelectItem>
+                      <SelectItem value="50">50 km</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-              </TabsContent>
-            </Tabs>
-          )}
-          
-          <DialogFooter className="flex flex-col sm:flex-row sm:justify-between sm:space-x-2">
+              </div>
+              
+              <div className="flex-1 space-y-4">
+                <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                  <h4 className="text-sm font-medium mb-2">Your Location Status</h4>
+                  <div className="flex items-center">
+                    <div className={`h-2.5 w-2.5 rounded-full mr-2 ${
+                      locationStatus === 'granted' ? 'bg-green-500' : 
+                      locationStatus === 'denied' ? 'bg-red-500' : 'bg-amber-500'
+                    }`} />
+                    <span className="text-sm text-gray-500">
+                      {locationStatus === 'granted' ? 'Location access granted' : 
+                       locationStatus === 'denied' ? 'Location access denied' : 'Pending location access'}
+                    </span>
+                  </div>
+                  {coordinates && (
+                    <p className="text-xs text-gray-500 mt-2">
+                      Current coordinates: {coordinates.lat.toFixed(6)}, {coordinates.lng.toFixed(6)}
+                    </p>
+                  )}
+                </div>
+                
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={handleRefreshLocation}
+                  disabled={locationStatus !== 'granted' || updateGeoLocationMutation.isPending}
+                >
+                  {updateGeoLocationMutation.isPending ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <RefreshCw className="mr-2 h-4 w-4" />
+                  )}
+                  Refresh Location
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        {/* Nearby users section */}
+        <div className="mt-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold">Nearby Professionals</h2>
             <Button 
-              type="button" 
               variant="ghost" 
-              size="sm"
-              onClick={() => setCardOpen(false)}
+              size="sm" 
+              onClick={() => refetchNearby()}
+              disabled={isLoadingNearby}
             >
-              Close
+              {isLoadingNearby ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4" />
+              )}
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </div>
+          
+          {locationStatus === 'pending' && <LocationPending />}
+          
+          {locationStatus === 'granted' && (
+            <>
+              {isLoadingNearby ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {[...Array(4)].map((_, i) => (
+                    <UserCardSkeleton key={i} />
+                  ))}
+                </div>
+              ) : nearbyUsersData && nearbyUsersData.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {nearbyUsersData.map((user: NearbyUser) => (
+                    <UserCard 
+                      key={user.id} 
+                      user={user} 
+                      onClick={() => handleUserCardClick(user)} 
+                    />
+                  ))}
+                </div>
+              ) : (
+                <NoNearbyUsers />
+              )}
+            </>
+          )}
+        </div>
+        
+        {/* User Quantum Card dialog */}
+        <Dialog open={cardOpen} onOpenChange={setCardOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>
+                {selectedUser?.name || 'Professional'}'s Quantum Card
+              </DialogTitle>
+              <DialogDescription>
+                Connect with this professional to grow your network.
+              </DialogDescription>
+            </DialogHeader>
+            
+            {selectedUser && (
+              <Tabs defaultValue="card" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="card">Quantum Card</TabsTrigger>
+                  <TabsTrigger value="actions">Actions</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="card" className="flex justify-center p-2">
+                  {renderUserQuantumCard()}
+                </TabsContent>
+                
+                <TabsContent value="actions" className="space-y-4 py-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <Button variant="outline" asChild>
+                      <Link to={`/profile/${selectedUser.username}`}>
+                        <UserCheck className="mr-2 h-4 w-4" />
+                        View Profile
+                      </Link>
+                    </Button>
+                    
+                    <Button variant="outline">
+                      <MessageSquare className="mr-2 h-4 w-4" />
+                      Message
+                    </Button>
+                    
+                    <Button variant="outline">
+                      <UserPlus className="mr-2 h-4 w-4" />
+                      Connect
+                    </Button>
+                  </div>
+                  
+                  <div className="text-xs text-gray-500 flex items-center mt-4">
+                    <MapPin className="h-3 w-3 mr-1" />
+                    {selectedUser.distance.toFixed(1)} km away
+                  </div>
+                </TabsContent>
+              </Tabs>
+            )}
+            
+            <DialogFooter className="flex flex-col sm:flex-row sm:justify-between sm:space-x-2">
+              <Button 
+                type="button" 
+                variant="ghost" 
+                size="sm"
+                onClick={() => setCardOpen(false)}
+              >
+                Close
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
     </div>
+    </DashboardLayout>
   );
 };
 
