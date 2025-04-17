@@ -505,42 +505,45 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
         />
 
         {/* Input */}
-        <form onSubmit={handleSubmit} className="p-4 flex gap-2">
+        {/* File upload buttons */}
+        <div className="flex items-center justify-center gap-2 px-4 py-2 border-t border-border/50">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="flex-1 flex items-center justify-center gap-2"
+            disabled={isTyping || isUploading}
+            title="Upload Resume"
+            onClick={triggerResumeUpload}
+          >
+            <FileText className="h-4 w-4" />
+            <span>Upload Resume</span>
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="flex-1 flex items-center justify-center gap-2"
+            disabled={isTyping || isUploading}
+            title="Upload Pitch Deck"
+            onClick={triggerPitchDeckUpload}
+          >
+            <PresentationIcon className="h-4 w-4" />
+            <span>Upload Pitch Deck</span>
+          </Button>
+        </div>
+        
+        {/* Input form */}
+        <form onSubmit={handleSubmit} className="p-4 pt-2 flex gap-2">
           <div className="flex-1 flex gap-2 relative">
             <Input
               ref={inputRef}
               placeholder="Type your message..."
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              className="w-full pr-20"
+              className="w-full"
               disabled={isTyping || isUploading}
             />
-            <div className="flex items-center gap-1 absolute right-1 top-1/2 -translate-y-1/2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="h-8 flex items-center gap-1 px-2"
-                disabled={isTyping || isUploading}
-                title="Upload Resume"
-                onClick={triggerResumeUpload}
-              >
-                <FileText className="h-4 w-4" />
-                <span className="hidden sm:inline text-xs">Resume</span>
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="h-8 flex items-center gap-1 px-2"
-                disabled={isTyping || isUploading}
-                title="Upload Pitch Deck"
-                onClick={triggerPitchDeckUpload}
-              >
-                <PresentationIcon className="h-4 w-4" />
-                <span className="hidden sm:inline text-xs">Pitch</span>
-              </Button>
-            </div>
           </div>
           <Button 
             type="submit" 
