@@ -226,4 +226,31 @@ router.post('/user/:userId/generate', async (req, res) => {
   }
 });
 
+/**
+ * Generate demo Musk Matches
+ * POST /api/musk-matches/generate-demo
+ */
+router.post('/generate-demo', async (req, res) => {
+  try {
+    // Import here to avoid circular dependencies
+    const { createDemoProfiles } = await import('./demo-profiles');
+    
+    // Create demo profiles and matches
+    const profiles = await createDemoProfiles(storage);
+    
+    // Return created profiles
+    res.status(201).json({
+      message: 'Demo Musk Match suggestions created successfully',
+      profiles: Object.keys(profiles).map(key => ({
+        id: profiles[key].id,
+        name: profiles[key].name,
+        title: profiles[key].title
+      }))
+    });
+  } catch (error) {
+    console.error('[POST /musk-matches/generate-demo]', error);
+    res.status(500).json({ message: 'Failed to create demo Musk match suggestions' });
+  }
+});
+
 export default router;
