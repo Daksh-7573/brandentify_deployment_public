@@ -1,6 +1,11 @@
 import { Request, Response } from "express";
 import { storage } from "./storage";
 import OpenAI from "openai";
+import { extractTextFromPdf } from "./utils/pdf-extractor";
+import { analyzeResume } from "../openai-service-fix";
+import path from "path";
+import fs from "fs";
+import crypto from "crypto";
 
 // Handle Musk AI assistant chat requests
 export const handleMuskChat = async (req: Request, res: Response) => {
@@ -140,6 +145,89 @@ ${JSON.stringify(context.userData || {}, null, 2)}
     return generateFallbackResponse(message, context);
   }
 }
+
+// Handle CV/Resume uploads for analysis by Musk
+export const handleResumeUpload = async (req: Request, res: Response) => {
+  try {
+    const userId = parseInt(req.body.userId) || 1; // Use 1 as default for demo
+    
+    // Check if file was uploaded
+    if (!req.files || Object.keys(req.files).length === 0) {
+      return res.status(400).json({ error: "No resume file was uploaded" });
+    }
+    
+    const resumeFile = req.files.resume as any;
+    
+    // Check file type - only accept PDF and Microsoft Word documents
+    const fileExt = path.extname(resumeFile.name).toLowerCase();
+    if (!['.pdf', '.doc', '.docx'].includes(fileExt)) {
+      return res.status(400).json({
+        error: "Invalid file type. Only PDF, DOC, and DOCX files are accepted."
+      });
+    }
+    
+    // Create uploads directory if it doesn't exist
+    const uploadsDir = path.join(process.cwd(), 'public', 'uploads', 'resumes');
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+    
+    // Generate unique filename with original extension
+    const uniqueId = crypto.randomBytes(16).toString('hex');
+    const uniqueFilename = `${uniqueId}${fileExt}`;
+    const uploadPath = path.join(uploadsDir, uniqueFilename);
+    
+    // Move the file to the uploads directory
+    await new Promise<void>((resolve, reject) => {
+      resumeFile.mv(uploadPath, (err: any) => {
+        if (err) {
+          console.error("Error saving resume file:", err);
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+    
+    console.log(`Resume file saved to: ${uploadPath}`);
+    
+    // Extract text from PDF file
+    let resumeText = '';
+    if (fileExt === '.pdf') {
+      // Read the uploaded file
+      const pdfBuffer = fs.readFileSync(uploadPath);
+      
+      // Extract text from PDF
+      resumeText = await extractTextFromPdf(pdfBuffer);
+    } else {
+      // For now, handle non-PDF files with a placeholder
+      // In a production app, you would use a docx parser like mammoth
+      resumeText = "This resume is in Microsoft Word format and requires a Word document parser.";
+    }
+    
+    // Analyze the resume using OpenAI
+    const analysisResult = await analyzeResume({
+      resumeTextStart: resumeText,
+      isBase64: false,
+      isLink: false
+    });
+    
+    // Return the analysis
+    return res.status(200).json({
+      id: 'resume-analysis-' + Date.now(),
+      message: analysisResult,
+      timestamp: new Date(),
+      filename: uniqueFilename
+    });
+    
+  } catch (error) {
+    console.error("Error processing resume upload:", error);
+    return res.status(500).json({
+      error: "Failed to process resume upload",
+      message: error instanceof Error ? error.message : "Unknown error occurred"
+    });
+  }
+};
 
 // Fallback response generator if OpenAI is unavailable
 function generateFallbackResponse(message: string, context: any) {

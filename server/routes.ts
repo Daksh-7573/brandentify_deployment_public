@@ -11,7 +11,7 @@ import { projectThumbnailUpload, getFileUrl } from "./utils/upload";
 import { handleParseResume } from "./routes-parse-resume";
 import { handleCreateDemoProfiles } from "./routes-demo-profiles";
 import { updateUserGeolocation, updateUserRadarVisibility, getNearbyUsers } from "./routes-radar";
-import { handleMuskChat } from "./routes-musk";
+import { handleMuskChat, handleResumeUpload } from "./routes-musk";
 import muskSuggestionRoutes from "./routes-musk-suggestions";
 import { registerSmartConnectRoutes } from "./routes-smart-connect";
 import { 
@@ -4567,6 +4567,11 @@ ${extractedText.substring(0, 5000)}
   // Musk AI assistant routes
   apiRouter.post("/musk/chat", async (req: Request, res: Response) => {
     await handleMuskChat(req, res);
+  });
+
+  // Route for handling resume uploads for Musk AI analysis
+  apiRouter.post("/musk/resume-upload", async (req: Request, res: Response) => {
+    await handleResumeUpload(req, res);
   });
 
   // Decision Engine routes for Smart Connect feature
