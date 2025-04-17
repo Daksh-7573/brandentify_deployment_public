@@ -347,6 +347,13 @@ export class MemStorage implements IStorage {
   // Musk suggestion IDs
   private currentMuskSuggestionId: number;
   private currentMuskBehaviorTrackingId: number;
+  // Enhanced Musk intelligence IDs
+  private currentUserProfileIntelligenceId: number;
+  private currentBehaviorHeatmapId: number;
+  private currentContentScoringId: number;
+  private currentIndustryTrendsMonitorId: number;
+  private currentUserMilestonesId: number;
+  private currentSmartPostSuggestionsId: number;
 
   constructor() {
     this.users = new Map();
@@ -419,6 +426,13 @@ export class MemStorage implements IStorage {
     // Initialize Musk suggestion IDs
     this.currentMuskSuggestionId = 1;
     this.currentMuskBehaviorTrackingId = 1;
+    // Initialize enhanced Musk intelligence IDs
+    this.currentUserProfileIntelligenceId = 1;
+    this.currentBehaviorHeatmapId = 1;
+    this.currentContentScoringId = 1;
+    this.currentIndustryTrendsMonitorId = 1;
+    this.currentUserMilestonesId = 1;
+    this.currentSmartPostSuggestionsId = 1;
     
     // Initialize with a default user for development/demo
     this.initializeDemoData();
@@ -517,6 +531,13 @@ export class MemStorage implements IStorage {
     // Reset Musk suggestion IDs
     this.currentMuskSuggestionId = 1;
     this.currentMuskBehaviorTrackingId = 1;
+    // Reset enhanced Musk intelligence IDs
+    this.currentUserProfileIntelligenceId = 1;
+    this.currentBehaviorHeatmapId = 1;
+    this.currentContentScoringId = 1;
+    this.currentIndustryTrendsMonitorId = 1;
+    this.currentUserMilestonesId = 1;
+    this.currentSmartPostSuggestionsId = 1;
     
     // No pre-created skills
     
