@@ -83,9 +83,9 @@ export class MuskSuggestionService {
     
     return {
       userId,
-      industry: user.industry || undefined,
-      title: user.title || undefined,
-      location: user.location || undefined,
+      industry: user?.industry || undefined,
+      title: user?.title || undefined,
+      location: user?.location || undefined,
       lastLoginTime,
       profileCompleteness,
       hasRecentPulses,
