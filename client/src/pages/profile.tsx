@@ -455,11 +455,8 @@ export default function Profile() {
     queryKey: [`/api/users/${userNumericId}/skills`],
     queryFn: async () => {
       if (!userNumericId) return [];
-      const response = await apiRequest({
-        method: 'GET',
-        url: `/api/users/${userNumericId}/skills`
-      });
-      return await response.json();
+      const response = await apiRequest('GET', `/api/users/${userNumericId}/skills`);
+      return response;
     },
     enabled: !!userNumericId && isAuthenticated,
     staleTime: 1000, // Consider data stale after 1 second to force refresh
@@ -472,11 +469,8 @@ export default function Profile() {
     queryKey: [`/api/users/${userNumericId}/experiences`],
     queryFn: async () => {
       if (!userNumericId) return [];
-      const response = await apiRequest({
-        method: 'GET',
-        url: `/api/users/${userNumericId}/experiences`
-      });
-      return await response.json();
+      const response = await apiRequest('GET', `/api/users/${userNumericId}/experiences`);
+      return response;
     },
     enabled: !!userNumericId && isAuthenticated,
     staleTime: 1000,
@@ -489,11 +483,8 @@ export default function Profile() {
     queryKey: [`/api/users/${userNumericId}/educations`],
     queryFn: async () => {
       if (!userNumericId) return [];
-      const response = await apiRequest({
-        method: 'GET',
-        url: `/api/users/${userNumericId}/educations`
-      });
-      return await response.json();
+      const response = await apiRequest('GET', `/api/users/${userNumericId}/educations`);
+      return response;
     },
     enabled: !!userNumericId && isAuthenticated,
     staleTime: 1000,
@@ -506,11 +497,8 @@ export default function Profile() {
     queryKey: [`/api/users/${userNumericId}/projects`],
     queryFn: async () => {
       if (!userNumericId) return [];
-      const response = await apiRequest({
-        method: 'GET',
-        url: `/api/users/${userNumericId}/projects`
-      });
-      return await response.json();
+      const response = await apiRequest('GET', `/api/users/${userNumericId}/projects`);
+      return response;
     },
     enabled: !!userNumericId && isAuthenticated,
     staleTime: 1000,
@@ -523,11 +511,8 @@ export default function Profile() {
     queryKey: ['/api/users', userNumericId, 'services'],
     queryFn: async () => {
       if (!userNumericId) return [];
-      const response = await apiRequest({
-        method: 'GET',
-        url: `/api/users/${userNumericId}/services`
-      });
-      return await response.json();
+      const response = await apiRequest('GET', `/api/users/${userNumericId}/services`);
+      return response;
     },
     enabled: !!userNumericId && isAuthenticated,
     staleTime: 1000,
@@ -538,12 +523,8 @@ export default function Profile() {
   // Mutation for updating user basic info
   const updateUserMutation = useMutation({
     mutationFn: async (data: any) => {
-      const res = await apiRequest({
-        method: 'PUT',
-        url: `/api/users/${userId}`,
-        data: data
-      });
-      return await res.json();
+      const res = await apiRequest('PUT', `/api/users/${userId}`, data);
+      return res;
     },
     onSuccess: () => {
       // Invalidate and refetch
@@ -1950,6 +1931,22 @@ export default function Profile() {
           </div>
         </div>
       </div>
+      
+      {/* Musk AI Button - Floating at bottom right */}
+      <MuskButton 
+        context={{
+          page: 'profile',
+          userId: userNumericId,
+          data: {
+            userData,
+            experiences,
+            educations,
+            skills,
+            projects
+          }
+        }} 
+        initialOpen={false} 
+      />
     </div>
   );
 }
