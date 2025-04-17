@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,7 @@ import { apiRequest } from '@/lib/queryClient';
 import { X, Send, MessageSquare, Loader2, FileUp, Paperclip, FileText, PresentationIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { getRandomSuggestedQuestions } from '@/services/musk-suggestions';
 
 interface MuskChatPanelProps {
   context?: {
@@ -36,18 +37,37 @@ type Message = {
 };
 
 export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) {
+  // Get user profile from context to personalize suggestions
+  const userLookingFor = context?.data?.userData?.lookingFor || null;
+  
+  // Get personalized quick responses based on user's "Looking For" profile field
+  const personalizedResponses = useMemo(() => {
+    const defaultResponses = [
+      'What career advice can you offer?',
+      'Analyze my resume',
+      'Evaluate my pitch deck',
+      'Help me network better'
+    ];
+    
+    // If we have user data with lookingFor field, get personalized suggestions
+    if (userLookingFor) {
+      // Get random personalized questions based on lookingFor value
+      const suggestedQuestions = getRandomSuggestedQuestions(userLookingFor, 4);
+      
+      // Return suggestions if we got some, otherwise return defaults
+      return suggestedQuestions.length > 0 ? suggestedQuestions : defaultResponses;
+    }
+    
+    return defaultResponses;
+  }, [userLookingFor]);
+  
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'welcome',
       content: "Hi there! I'm Musk, your AI career assistant. I can analyze your resume or pitch deck, and provide personalized professional guidance. How can I help with your career development today?",
       sender: 'musk',
       timestamp: new Date(),
-      quickResponses: [
-        'What career advice can you offer?',
-        'Analyze my resume',
-        'Evaluate my pitch deck',
-        'Help me network better'
-      ]
+      quickResponses: personalizedResponses
     }
   ]);
   
