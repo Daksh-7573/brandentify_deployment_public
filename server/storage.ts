@@ -31,7 +31,13 @@ import {
 // Import Musk suggestion models
 import { 
   muskSuggestions, MuskSuggestion, InsertMuskSuggestion,
-  muskBehaviorTracking, MuskBehaviorTracking, InsertMuskBehaviorTracking
+  muskBehaviorTracking, MuskBehaviorTracking, InsertMuskBehaviorTracking,
+  userProfileIntelligence, UserProfileIntelligence, InsertUserProfileIntelligence,
+  behaviorHeatmap, BehaviorHeatmap, InsertBehaviorHeatmap,
+  contentScoring, ContentScoring, InsertContentScoring,
+  industryTrendsMonitor, IndustryTrendsMonitor, InsertIndustryTrendsMonitor,
+  userMilestones, UserMilestones, InsertUserMilestones,
+  smartPostSuggestions, SmartPostSuggestions, InsertSmartPostSuggestions
 } from "@shared/schema-musk-suggestions";
 
 // Interface for all storage operations
@@ -240,7 +246,34 @@ export interface IStorage {
   getLatestNewsPulses(userId: number, limit?: number): Promise<Pulse[]>;
   generateNewsContent(article: NewsArticle): Promise<{ title: string, content: string, hashtags: string[] }>;
   
-
+  // User Profile Intelligence operations
+  getUserProfileIntelligence(userId: number): Promise<UserProfileIntelligence | undefined>;
+  createUserProfileIntelligence(intelligence: InsertUserProfileIntelligence): Promise<UserProfileIntelligence>;
+  updateUserProfileIntelligence(id: number, intelligence: Partial<UserProfileIntelligence>): Promise<UserProfileIntelligence | undefined>;
+  
+  // Behavior Heatmap operations
+  getBehaviorHeatmapForUser(userId: number): Promise<BehaviorHeatmap[]>;
+  createBehaviorHeatmap(heatmap: InsertBehaviorHeatmap): Promise<BehaviorHeatmap>;
+  
+  // Content Scoring operations
+  getContentScoringByContentId(contentId: number): Promise<ContentScoring | undefined>;
+  createContentScoring(scoring: InsertContentScoring): Promise<ContentScoring>;
+  updateContentScoring(id: number, scoring: Partial<ContentScoring>): Promise<ContentScoring | undefined>;
+  
+  // Industry Trends Monitor operations
+  getIndustryTrends(): Promise<IndustryTrendsMonitor[]>;
+  getIndustryTrendsByIndustry(industry: string): Promise<IndustryTrendsMonitor[]>;
+  createIndustryTrend(trend: InsertIndustryTrendsMonitor): Promise<IndustryTrendsMonitor>;
+  
+  // User Milestones operations
+  getUserMilestones(userId: number): Promise<UserMilestones[]>;
+  createUserMilestone(milestone: InsertUserMilestones): Promise<UserMilestones>;
+  markUserMilestoneAcknowledged(id: number): Promise<UserMilestones | undefined>;
+  
+  // Smart Post Suggestions operations
+  getSmartPostSuggestionsForUser(userId: number): Promise<SmartPostSuggestions[]>;
+  createSmartPostSuggestion(suggestion: InsertSmartPostSuggestions): Promise<SmartPostSuggestions>;
+  markSmartPostSuggestionUsed(id: number): Promise<SmartPostSuggestions | undefined>;
 }
 
 // In-memory implementation of the storage
@@ -276,6 +309,13 @@ export class MemStorage implements IStorage {
   // Musk suggestion models
   private muskSuggestions: Map<number, MuskSuggestion>;
   private muskBehaviorTracking: Map<number, MuskBehaviorTracking>;
+  // Enhanced Musk intelligence models
+  private userProfileIntelligence: Map<number, UserProfileIntelligence>;
+  private behaviorHeatmap: Map<number, BehaviorHeatmap>;
+  private contentScoring: Map<number, ContentScoring>;
+  private industryTrendsMonitor: Map<number, IndustryTrendsMonitor>;
+  private userMilestones: Map<number, UserMilestones>;
+  private smartPostSuggestions: Map<number, SmartPostSuggestions>;
   
   private currentUserId: number;
   private currentResumeId: number;
@@ -340,6 +380,14 @@ export class MemStorage implements IStorage {
     // Initialize Musk suggestion maps
     this.muskSuggestions = new Map();
     this.muskBehaviorTracking = new Map();
+    
+    // Initialize enhanced Musk intelligence maps
+    this.userProfileIntelligence = new Map();
+    this.behaviorHeatmap = new Map();
+    this.contentScoring = new Map();
+    this.industryTrendsMonitor = new Map();
+    this.userMilestones = new Map();
+    this.smartPostSuggestions = new Map();
     
     this.currentUserId = 1;
     this.currentResumeId = 1;

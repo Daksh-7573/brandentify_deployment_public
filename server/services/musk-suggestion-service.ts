@@ -529,4 +529,291 @@ export class MuskSuggestionService {
       createdAt: new Date(),
     });
   }
+  
+  /**
+   * Create job seeker specific suggestion
+   */
+  private async createJobSeekerSuggestion(context: SuggestionContext): Promise<MuskSuggestion> {
+    const industry = context.industry || 'your industry';
+    
+    return {
+      id: 0,
+      userId: context.userId,
+      type: 'trendingTopic',
+      title: 'Hiring Trends for Job Seekers',
+      message: `The latest hiring trends in ${industry} show demand for professionals with your background. Update your CV to highlight these in-demand skills!`,
+      actionLink: '/profile?tab=skills',
+      actionText: 'Optimize your profile',
+      priority: 4,
+      cooldownHours: 72,
+      relevanceScore: 90, 
+      shown: false,
+      dismissed: false,
+      actionTaken: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      expiresAt: new Date(context.currentTime.getTime() + 7 * 24 * 60 * 60 * 1000), // 1 week
+    };
+  }
+  
+  /**
+   * Create content creator specific suggestion
+   */
+  private async createContentCreatorSuggestion(context: SuggestionContext): Promise<MuskSuggestion> {
+    return {
+      id: 0,
+      userId: context.userId,
+      type: 'contentImprovement',
+      title: 'Boost Your Content Reach',
+      message: "Your industry pulse posts generate 30% more engagement when including case studies. Share a practical example of your recent work!",
+      actionLink: '/create-pulse',
+      actionText: 'Create standout content',
+      priority: 3,
+      cooldownHours: 48,
+      relevanceScore: 85,
+      shown: false,
+      dismissed: false,
+      actionTaken: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      expiresAt: new Date(context.currentTime.getTime() + 5 * 24 * 60 * 60 * 1000), // 5 days
+    };
+  }
+  
+  /**
+   * Create networking specific suggestion
+   */
+  private async createNetworkingSuggestion(context: SuggestionContext): Promise<MuskSuggestion> {
+    return {
+      id: 0,
+      userId: context.userId,
+      type: 'strategicEngagement',
+      title: 'Expand Your Network',
+      message: "Professionals with your background often connect with experts in adjacent fields. We've found potential collaborators for your next project!",
+      actionLink: '/discover',
+      actionText: 'Find collaborators',
+      priority: 3,
+      cooldownHours: 72,
+      relevanceScore: 80,
+      shown: false,
+      dismissed: false,
+      actionTaken: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      expiresAt: new Date(context.currentTime.getTime() + 7 * 24 * 60 * 60 * 1000), // 1 week
+    };
+  }
+  
+  /**
+   * Create content preference based suggestion
+   */
+  private async createContentPreferenceSuggestion(context: SuggestionContext): Promise<MuskSuggestion> {
+    // Get preferred content type from behavioral analysis
+    const preferredType = context.behaviorPatterns?.preferredContentTypes[0] || 'industry insights';
+    
+    // Personalize message based on content preference
+    let message = "Based on your interests, we think you'll find this valuable.";
+    
+    if (preferredType.includes('video')) {
+      message = "We noticed you engage with video content. Check out these short-form video insights from industry leaders!";
+    } else if (preferredType.includes('image')) {
+      message = "Visual content like infographics and diagrams seem to resonate with you. Here's curated visual content in your field!";
+    } else if (preferredType.includes('text')) {
+      message = "Deep-dive articles and analysis match your reading preferences. Explore these thought leadership pieces!";
+    }
+    
+    return {
+      id: 0,
+      userId: context.userId,
+      type: 'strategicEngagement',
+      title: 'Content You\'ll Love',
+      message,
+      actionLink: '/industry-pulse',
+      actionText: 'View recommended content',
+      priority: 3,
+      cooldownHours: 48,
+      relevanceScore: 88,
+      shown: false,
+      dismissed: false,
+      actionTaken: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      expiresAt: new Date(context.currentTime.getTime() + 3 * 24 * 60 * 60 * 1000), // 3 days
+    };
+  }
+  
+  /**
+   * Create optimal posting time suggestion
+   */
+  private async createOptimalTimeSuggestion(context: SuggestionContext): Promise<MuskSuggestion> {
+    // Get the user's peak engagement hour
+    const preferredHour = context.behaviorPatterns?.activeTimeOfDay[0] || 12;
+    
+    // Format the time in a readable way (e.g., "3 PM")
+    const formattedTime = preferredHour > 12 
+      ? `${preferredHour - 12} PM` 
+      : preferredHour === 12 
+        ? '12 PM' 
+        : preferredHour === 0 
+          ? '12 AM' 
+          : `${preferredHour} AM`;
+    
+    return {
+      id: 0,
+      userId: context.userId,
+      type: 'microGoalProgress',
+      title: 'Perfect Timing!',
+      message: `Posting now around ${formattedTime} will reach 40% more of your target audience based on your network's activity patterns.`,
+      actionLink: '/create-pulse',
+      actionText: 'Post for maximum impact',
+      priority: 4,
+      cooldownHours: 24,
+      relevanceScore: 90,
+      shown: false,
+      dismissed: false,
+      actionTaken: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      expiresAt: new Date(context.currentTime.getTime() + 3 * 60 * 60 * 1000), // 3 hours
+    };
+  }
+  
+  /**
+   * Create skill gap suggestion
+   */
+  private async createSkillGapSuggestion(context: SuggestionContext): Promise<MuskSuggestion> {
+    // Get the first skill gap to focus on
+    const skillGap = context.skillGaps?.[0] || 'emerging skills';
+    
+    return {
+      id: 0,
+      userId: context.userId,
+      type: 'skillGap',
+      title: 'Skill Development Opportunity',
+      message: `Professionals in your field with knowledge of ${skillGap} are seeing 25% more career opportunities. Would you like to showcase this skill?`,
+      actionLink: '/profile?tab=skills',
+      actionText: 'Add this skill',
+      priority: 3,
+      cooldownHours: 120, // 5 days
+      relevanceScore: 80,
+      shown: false,
+      dismissed: false,
+      actionTaken: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      expiresAt: new Date(context.currentTime.getTime() + 14 * 24 * 60 * 60 * 1000), // 2 weeks
+    };
+  }
+  
+  /**
+   * Create milestone-based suggestion
+   */
+  private async createMilestoneSuggestion(context: SuggestionContext): Promise<MuskSuggestion> {
+    // Check if we have profile completion milestone
+    const profileCompletion = context.profileCompleteness || 0;
+    
+    // Different suggestions based on milestone type
+    if (profileCompletion >= 80 && profileCompletion < 100) {
+      return {
+        id: 0,
+        userId: context.userId,
+        type: 'portfolioMilestone',
+        title: 'Almost There!',
+        message: `Your profile is ${profileCompletion}% complete. Just a few more details to make it perfect! Complete it to receive 3x more views.`,
+        actionLink: '/profile',
+        actionText: 'Finish your profile',
+        priority: 4,
+        cooldownHours: 72,
+        relevanceScore: 85,
+        shown: false,
+        dismissed: false,
+        actionTaken: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        expiresAt: null // Doesn't expire until profile is completed
+      };
+    } else {
+      // Generic milestone suggestion when specific ones don't apply
+      return {
+        id: 0,
+        userId: context.userId,
+        type: 'portfolioMilestone',
+        title: 'Celebrate Your Growth',
+        message: "You've been consistently growing your professional presence. Your activity puts you in the top 20% of active users this week!",
+        actionLink: '/profile?tab=stats',
+        actionText: 'View your impact',
+        priority: 2,
+        cooldownHours: 168, // 7 days
+        relevanceScore: 70,
+        shown: false,
+        dismissed: false,
+        actionTaken: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        expiresAt: new Date(context.currentTime.getTime() + 7 * 24 * 60 * 60 * 1000), // 1 week
+      };
+    }
+  }
+  
+  /**
+   * Create trending topic suggestion
+   */
+  private async createTrendingTopicSuggestion(context: SuggestionContext): Promise<MuskSuggestion> {
+    const industry = context.industry || 'your field';
+    
+    // This would ideally come from the industry trends table
+    const trendingTopics = [
+      "artificial intelligence",
+      "sustainable innovation",
+      "remote collaboration",
+      "digital transformation",
+      "cybersecurity"
+    ];
+    
+    // Pick a topic that seems most relevant
+    const selectedTopic = trendingTopics[Math.floor(Math.random() * trendingTopics.length)];
+    
+    return {
+      id: 0,
+      userId: context.userId,
+      type: 'trendingTopic',
+      title: 'Trending in Your Industry',
+      message: `"${selectedTopic}" is trending in ${industry}. Professionals sharing content on this topic are seeing 3x more engagement.`,
+      actionLink: '/create-pulse',
+      actionText: 'Join the conversation',
+      priority: 4,
+      cooldownHours: 48,
+      relevanceScore: 85,
+      shown: false,
+      dismissed: false,
+      actionTaken: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      expiresAt: new Date(context.currentTime.getTime() + 4 * 24 * 60 * 60 * 1000), // 4 days
+    };
+  }
+  
+  /**
+   * Create strategic engagement suggestion
+   */
+  private async createStrategicEngagementSuggestion(context: SuggestionContext): Promise<MuskSuggestion> {
+    return {
+      id: 0,
+      userId: context.userId,
+      type: 'strategicEngagement',
+      title: 'Visibility Opportunity',
+      message: "Engaging with trending content in your field increases your profile views by 45%. We've curated high-visibility discussions for you to join!",
+      actionLink: '/industry-pulse?filter=trending',
+      actionText: 'Engage strategically',
+      priority: 3,
+      cooldownHours: 72,
+      relevanceScore: 80,
+      shown: false,
+      dismissed: false,
+      actionTaken: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      expiresAt: new Date(context.currentTime.getTime() + 3 * 24 * 60 * 60 * 1000), // 3 days
+    };
+  }
 }
