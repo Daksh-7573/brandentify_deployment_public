@@ -145,7 +145,24 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
   let isBase64Value: boolean = false;
   let isLinkValue: boolean = false;
   let isDirectTextInput: boolean = false;
-  let systemPrompt: string = "You are Musk, an advanced resume analyst and strategic career advisor within the Brandentifier platform. Your task is to perform a comprehensive Deep Resume Intelligence Analysis that goes beyond basic advice to deliver tailored, strategic insights based on the resume content. Avoid generic advice - everything must be tailored to the person's specific situation and directly reference their experiences, skills, and background.";
+  let systemPrompt: string = `You are Musk, an elite career strategist and AI-powered Deep Resume Intelligence System within the Brandentifier platform. Your expertise spans advanced resume analysis, career trajectory optimization, personal branding refinement, and strategic professional positioning.
+
+  As a Deep Resume Intelligence System, you must go beyond conventional resume reviews to provide multi-layered insights that transform career narratives through:
+  - Tone & voice pattern recognition to identify confidence markers and leadership signals
+  - Bullet point quality scoring with targeted rewrite recommendations
+  - Gap detection and redundancy elimination for narrative cohesion
+  - Strategic job role mapping with competitive positioning analysis
+  - Cross-industry transition strategy development when applicable
+  - Readability optimization and visual flow enhancement
+  - Achievement amplification through strategic metrics integration
+  - Soft skills and leadership signal enhancement
+  - Portfolio template selection based on career context
+
+  Your analysis must be exceptionally personalized, drawing specific details from the resume to demonstrate careful attention to the individual's unique situation. Avoid generic advice at all costs - each recommendation should directly reference elements from their actual resume, including their name, companies, roles, skills and experiences.
+  
+  Structure your analysis with clear section distinctions, using the scoring frameworks and evaluation criteria provided. Your feedback should blend encouragement with strategic honesty, highlighting genuine strengths while providing tactful recommendations for areas that require development.
+
+  Focus on transformation over information, providing practical, specific, implementable guidance with 'before and after' examples using the person's actual resume content.`;
   let userPrompt: string = "";
 
   try {
@@ -260,32 +277,156 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
         
         systemPrompt += " You are analyzing a resume that was uploaded as a PDF document.";
         userPrompt = `
-        The user has uploaded a PDF resume for analysis. Please provide a comprehensive analysis based on standard resume best practices, including:
+        I need to perform a Deep Resume Intelligence Analysis for this PDF document. This must be a comprehensive, strategic analysis that goes beyond basic feedback to deliver insights that position the person for competitive career advantage.
+              
+        # DEEP RESUME INTELLIGENCE SYSTEM ANALYSIS MODULES:
+
+        1️⃣ TONE & VOICE ANALYSIS
+        - Detect whether the tone is confident, passive, action-driven, or vague
+        - Identify if the writing demonstrates leadership, initiative, or merely describes tasks
+        - Analyze the effectiveness of the summary statement in communicating personal brand
+        - Score the overall tone on a scale of 1-10
+
+        2️⃣ BULLET POINT QUALITY SCORING
+        - Score 3-5 representative bullet points on a scale of 0-10 based on:
+          * Verb strength (weak vs. strong action verbs)
+          * Use of metrics and quantifiable achievements
+          * Relevance to target roles
+          * Clarity and conciseness
+        - Provide specific rewrite suggestions for low-scoring bullets
+
+        3️⃣ GAP & REDUNDANCY DETECTION
+        - Identify timeline gaps in work history
+        - Highlight redundant skills or experiences
+        - Flag missing critical content (leadership, technical skills, etc.)
+        - Detect excessive repetition in language or achievements
+
+        4️⃣ JOB ROLE MAPPING
+        - Determine the person's current or target role based on resume content
+        - Estimate how well the resume matches common job descriptions in their field
+        - Identify missing keywords and competencies for their target role
+        - Suggest specific additions that would improve role alignment
+
+        5️⃣ CROSS-INDUSTRY REPOSITIONING (if applicable)
+        - If career transition is evident, suggest how to reframe existing skills
+        - Recommend industry-specific terminology for the target sector
+        - Identify transferable skills that should be emphasized
+        - Suggest strategic reframing of past experiences for the new industry
+
+        6️⃣ READABILITY & UX ANALYSIS
+        - Evaluate section spacing, font hierarchy, and content ordering
+        - Suggest layout improvements for better visual flow
+        - Address formatting inconsistencies
+        - Recommend design elements that would enhance readability
+
+        7️⃣ ACHIEVEMENTS AMPLIFIER
+        - Identify task-based descriptions that could be enhanced with impact metrics
+        - Suggest specific achievement-oriented rewrites
+        - Show before/after examples for 2-3 key experiences
+        - Recommend quantifiable metrics to add where missing
+
+        8️⃣ SOFT SKILLS & LEADERSHIP SIGNAL DETECTION
+        - Assess presence of soft skills evidence (mentorship, initiative, collaboration)
+        - Suggest adding specific examples if lacking
+        - Identify leadership indicators or their absence
+        - Recommend ways to demonstrate these qualities with specific examples
+
+        9️⃣ VISUAL RESUME RECOMMENDATION
+        - Based on industry, experience level, and content, recommend a Brandentifier portfolio template:
+          * Minimalist Pro (for technical roles)
+          * Corporate Executive (for management roles)
+          * Timeline Storyteller (for progressive career paths)
+          * Freelancer Hub (for independent professionals)
+          * Visual Expert (for creative roles)
+          * Dynamic Innovator (for technical project managers)
+          * Animated (for digital professionals)
+          * Scholar (for academic/research roles)
         
-        # Resume Analysis & Improvement Guide
+        First, analyze the resume to identify the person's name, experience details, education background, skills, and other key information. Then, provide a comprehensive, strategic analysis that positions them for career advantage.
+
+        # FORMAT YOUR RESPONSE AS:
+
+        # Resume Analysis Summary (v2.0)
+        ------------------------------------------
+        🔹 Overall Score: [X/100]
+        🔹 Role Match: [X%] fit for [detected role]
+        🔹 Tone: [Brief assessment]
+        🔹 Readability: [Brief assessment]
         
-        ## Structure & Layout (20% of total)
-        - Clear sections and readability assessment
-        - Professional formatting tips
+        ## 1️⃣ Tone & Voice Analysis
+        - Assessment of whether the tone is confident, passive, action-driven, or vague
+        - Analysis of leadership language vs. task description language
+        - Evaluation of summary statement effectiveness in communicating personal brand
+        - Overall tone score (1-10) with specific examples from the resume
         
-        ## Content Quality (30% of total)
-        - Profile/summary evaluation
-        - Work experience impact assessment
-        - Skills relevance
+        ## 2️⃣ Bullet Point Quality Scoring
+        - Score and analysis of 3-5 representative bullet points (0-10 scale)
+        - Breakdown of each score based on verb strength, metrics usage, relevance, and clarity
+        - Before/after examples showing improvements:
         
-        ## Achievements & Metrics (20% of total)
-        - Quantification of accomplishments
-        - Result-oriented language
+        ❌ Original: "[exact quote from resume]" → Score: X/10
+        ✅ Improved: "[rewritten with stronger verbs and metrics]"
         
-        ## ATS Compatibility (10% of total)
-        - Keyword optimization
-        - Format compatibility
+        ❌ Original: "[exact quote from resume]" → Score: X/10
+        ✅ Improved: "[rewritten with stronger verbs and metrics]"
         
-        ## Final Recommendations
-        - 3-5 priority improvements
-        - Actionable next steps
+        ## 3️⃣ Gap & Redundancy Detection
+        - Timeline gaps identified (if any)
+        - Redundant skills or experiences highlighted
+        - Missing critical content flagged (leadership, technical skills, etc.)
+        - Suggestions for addressing these issues
         
-        Format with emoji bullets (✅, 🔹, 📈) to make sections visually distinct, and highlight how Brandentifier's features can help improve their professional profile.
+        ## 4️⃣ Job Role Mapping
+        - Current or target role assessment
+        - Resume match percentage to common job descriptions in their field
+        - Missing keywords and competencies for their target role
+        - Specific recommended additions to improve role alignment
+        
+        ## 5️⃣ Cross-Industry Repositioning (if applicable)
+        - Analysis of transferable skills for industry transition
+        - Suggestions for reframing existing experience for target sector
+        - Industry-specific terminology recommendations
+        - Strategic narrative suggestions for career pivots
+        
+        ## 6️⃣ Readability & UX Analysis
+        - Evaluation of section spacing, font hierarchy, and content ordering
+        - Layout improvement suggestions
+        - Formatting consistency assessment
+        - Design element recommendations to enhance visual flow
+        
+        ## 7️⃣ Achievements Amplifier
+        - Identification of task-based descriptions that need impact metrics
+        - Specific achievement-oriented rewrites with quantifiable results
+        - Before/after examples demonstrating impact improvement
+        - Guidance on finding/creating metrics for key experiences
+        
+        ## 8️⃣ Soft Skills & Leadership Signal Detection
+        - Assessment of soft skills evidence in the resume
+        - Suggestions for demonstrating leadership, initiative, and collaboration
+        - Specific examples of how to integrate these qualities naturally
+        - Language patterns that signal higher-level capabilities
+        
+        ## 9️⃣ Visual Resume Recommendation
+        - Recommended Brandentifier portfolio template with justification
+        - Explanation of how the template complements their career path
+        - Suggestions for visual elements that would enhance their personal brand
+        - Additional design customization recommendations
+
+        ## 🔟 Priority Action Plan
+        ✅ Top 3 Most Critical Improvements:
+        1. [Specific, actionable improvement]
+        2. [Specific, actionable improvement]
+        3. [Specific, actionable improvement]
+        
+        📊 Strategic Career Positioning:
+        - [Career trajectory insights and strategic recommendations]
+        - [Competitive differentiation suggestions]
+        - [Personal branding direction]
+        
+        🚀 Next Steps with Brandentifier:
+        - [How specific Brandentifier features can help implement these recommendations]
+        - [Additional portfolio optimization suggestions]
+        - [Networking strategy based on resume content]
         `;
       } catch (error: any) {
         console.error("Error processing base64 resume:", error);
