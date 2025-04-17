@@ -667,6 +667,14 @@ export class MemStorage implements IStorage {
     
     // Clear all Musk behavior tracking
     this.muskBehaviorTracking.clear();
+    
+    // Clear all enhanced Musk intelligence data
+    this.userProfileIntelligence.clear();
+    this.behaviorHeatmap.clear();
+    this.contentScoring.clear();
+    this.industryTrendsMonitor.clear();
+    this.userMilestones.clear();
+    this.smartPostSuggestions.clear();
   }
   
   /**
@@ -2660,6 +2668,272 @@ export class MemStorage implements IStorage {
     
     this.muskBehaviorTracking.set(id, behaviorTracking);
     return behaviorTracking;
+  }
+
+  // User Profile Intelligence operations
+  async getUserProfileIntelligence(userId: number): Promise<UserProfileIntelligence | undefined> {
+    return Array.from(this.userProfileIntelligence.values())
+      .find(profile => profile.userId === userId);
+  }
+
+  async createUserProfileIntelligence(intelligence: InsertUserProfileIntelligence): Promise<UserProfileIntelligence> {
+    // Check if already exists for this user
+    const existing = await this.getUserProfileIntelligence(intelligence.userId);
+    if (existing) {
+      return this.updateUserProfileIntelligence(existing.id, intelligence) as Promise<UserProfileIntelligence>;
+    }
+    
+    const id = existing?.id || Math.max(1, ...Array.from(this.userProfileIntelligence.keys())) + 1;
+    const createdAt = new Date();
+    const updatedAt = new Date();
+    
+    const profileIntelligence: UserProfileIntelligence = {
+      ...intelligence,
+      id,
+      createdAt,
+      updatedAt,
+      careerLevel: intelligence.careerLevel || null,
+      userGoal: intelligence.userGoal || null,
+      careerIntention: intelligence.careerIntention || null,
+      primaryIndustry: intelligence.primaryIndustry || null,
+      secondaryIndustry: intelligence.secondaryIndustry || null,
+      skillsGaps: intelligence.skillsGaps || [],
+      relevantCertifications: intelligence.relevantCertifications || [],
+      suggestedCertifications: intelligence.suggestedCertifications || [],
+      learningStyle: intelligence.learningStyle || null,
+      contentPreferences: intelligence.contentPreferences || [],
+      careerTrajectory: intelligence.careerTrajectory || null,
+      personalBrand: intelligence.personalBrand || null
+    };
+    
+    this.userProfileIntelligence.set(id, profileIntelligence);
+    return profileIntelligence;
+  }
+
+  async updateUserProfileIntelligence(id: number, intelligence: Partial<UserProfileIntelligence>): Promise<UserProfileIntelligence | undefined> {
+    const existing = this.userProfileIntelligence.get(id);
+    if (!existing) return undefined;
+    
+    const updatedIntelligence = { 
+      ...existing, 
+      ...intelligence,
+      updatedAt: new Date() 
+    };
+    
+    this.userProfileIntelligence.set(id, updatedIntelligence);
+    return updatedIntelligence;
+  }
+  
+  // Behavior Heatmap operations
+  async getBehaviorHeatmapForUser(userId: number): Promise<BehaviorHeatmap[]> {
+    return Array.from(this.behaviorHeatmap.values())
+      .filter(heatmap => heatmap.userId === userId)
+      .sort((a, b) => {
+        const timeA = a.timestamp ? a.timestamp.getTime() : 0;
+        const timeB = b.timestamp ? b.timestamp.getTime() : 0;
+        return timeB - timeA; // Sort newest first
+      });
+  }
+
+  async createBehaviorHeatmap(heatmap: InsertBehaviorHeatmap): Promise<BehaviorHeatmap> {
+    const id = Math.max(1, ...Array.from(this.behaviorHeatmap.keys())) + 1;
+    const timestamp = new Date();
+    
+    const newHeatmap: BehaviorHeatmap = {
+      ...heatmap,
+      id,
+      timestamp: heatmap.timestamp || timestamp,
+      dayOfWeek: heatmap.dayOfWeek || timestamp.getDay(),
+      hourOfDay: heatmap.hourOfDay || timestamp.getHours(),
+      engagementScore: heatmap.engagementScore || 0,
+      actionType: heatmap.actionType || 'view',
+      contentCategory: heatmap.contentCategory || null,
+      durationSeconds: heatmap.durationSeconds || 0
+    };
+    
+    this.behaviorHeatmap.set(id, newHeatmap);
+    return newHeatmap;
+  }
+  
+  // Content Scoring operations
+  async getContentScoringByContentId(contentId: number): Promise<ContentScoring | undefined> {
+    return Array.from(this.contentScoring.values())
+      .find(scoring => scoring.contentId === contentId);
+  }
+
+  async createContentScoring(scoring: InsertContentScoring): Promise<ContentScoring> {
+    // Check if already exists for this content
+    const existing = await this.getContentScoringByContentId(scoring.contentId);
+    if (existing) {
+      return this.updateContentScoring(existing.id, scoring) as Promise<ContentScoring>;
+    }
+    
+    const id = Math.max(1, ...Array.from(this.contentScoring.keys())) + 1;
+    const createdAt = new Date();
+    const updatedAt = new Date();
+    
+    const newScoring: ContentScoring = {
+      ...scoring,
+      id,
+      createdAt,
+      updatedAt,
+      overallScore: scoring.overallScore || 0,
+      clarityScore: scoring.clarityScore || 0,
+      engagementScore: scoring.engagementScore || 0,
+      relevanceScore: scoring.relevanceScore || 0,
+      improvementSuggestions: scoring.improvementSuggestions || [],
+      keywordEffectiveness: scoring.keywordEffectiveness || 0,
+      sentimentAnalysis: scoring.sentimentAnalysis || 'neutral'
+    };
+    
+    this.contentScoring.set(id, newScoring);
+    return newScoring;
+  }
+
+  async updateContentScoring(id: number, scoring: Partial<ContentScoring>): Promise<ContentScoring | undefined> {
+    const existing = this.contentScoring.get(id);
+    if (!existing) return undefined;
+    
+    const updatedScoring = { 
+      ...existing, 
+      ...scoring,
+      updatedAt: new Date() 
+    };
+    
+    this.contentScoring.set(id, updatedScoring);
+    return updatedScoring;
+  }
+  
+  // Industry Trends Monitor operations
+  async getIndustryTrends(): Promise<IndustryTrendsMonitor[]> {
+    return Array.from(this.industryTrendsMonitor.values())
+      .sort((a, b) => {
+        const timeA = a.lastUpdated ? a.lastUpdated.getTime() : 0;
+        const timeB = b.lastUpdated ? b.lastUpdated.getTime() : 0;
+        return timeB - timeA; // Sort newest first
+      });
+  }
+
+  async getIndustryTrendsByIndustry(industry: string): Promise<IndustryTrendsMonitor[]> {
+    return Array.from(this.industryTrendsMonitor.values())
+      .filter(trend => trend.industry === industry)
+      .sort((a, b) => {
+        const timeA = a.lastUpdated ? a.lastUpdated.getTime() : 0;
+        const timeB = b.lastUpdated ? b.lastUpdated.getTime() : 0;
+        return timeB - timeA; // Sort newest first
+      });
+  }
+
+  async createIndustryTrend(trend: InsertIndustryTrendsMonitor): Promise<IndustryTrendsMonitor> {
+    const id = Math.max(1, ...Array.from(this.industryTrendsMonitor.keys())) + 1;
+    const createdAt = new Date();
+    const lastUpdated = new Date();
+    
+    const newTrend: IndustryTrendsMonitor = {
+      ...trend,
+      id,
+      createdAt,
+      lastUpdated,
+      trendingKeywords: trend.trendingKeywords || [],
+      growthRate: trend.growthRate || 0,
+      emergingRoles: trend.emergingRoles || [],
+      decliningRoles: trend.decliningRoles || [],
+      skillsInDemand: trend.skillsInDemand || []
+    };
+    
+    this.industryTrendsMonitor.set(id, newTrend);
+    return newTrend;
+  }
+  
+  // User Milestones operations
+  async getUserMilestones(userId: number): Promise<UserMilestones[]> {
+    return Array.from(this.userMilestones.values())
+      .filter(milestone => milestone.userId === userId)
+      .sort((a, b) => {
+        const timeA = a.achievedAt ? a.achievedAt.getTime() : 0;
+        const timeB = b.achievedAt ? b.achievedAt.getTime() : 0;
+        return timeB - timeA; // Sort newest first
+      });
+  }
+
+  async createUserMilestone(milestone: InsertUserMilestones): Promise<UserMilestones> {
+    const id = Math.max(1, ...Array.from(this.userMilestones.keys())) + 1;
+    const createdAt = new Date();
+    const achievedAt = milestone.achievedAt || new Date();
+    
+    const newMilestone: UserMilestones = {
+      ...milestone,
+      id,
+      createdAt,
+      achievedAt,
+      acknowledged: milestone.acknowledged || false,
+      milestoneType: milestone.milestoneType || 'achievement',
+      description: milestone.description || null,
+      rewardPoints: milestone.rewardPoints || 0
+    };
+    
+    this.userMilestones.set(id, newMilestone);
+    return newMilestone;
+  }
+
+  async markUserMilestoneAcknowledged(id: number): Promise<UserMilestones | undefined> {
+    const milestone = this.userMilestones.get(id);
+    if (!milestone) return undefined;
+    
+    const updatedMilestone = { 
+      ...milestone, 
+      acknowledged: true 
+    };
+    
+    this.userMilestones.set(id, updatedMilestone);
+    return updatedMilestone;
+  }
+  
+  // Smart Post Suggestions operations
+  async getSmartPostSuggestionsForUser(userId: number): Promise<SmartPostSuggestions[]> {
+    return Array.from(this.smartPostSuggestions.values())
+      .filter(suggestion => suggestion.userId === userId)
+      .sort((a, b) => {
+        const timeA = a.createdAt ? a.createdAt.getTime() : 0;
+        const timeB = b.createdAt ? b.createdAt.getTime() : 0;
+        return timeB - timeA; // Sort newest first
+      });
+  }
+
+  async createSmartPostSuggestion(suggestion: InsertSmartPostSuggestions): Promise<SmartPostSuggestions> {
+    const id = Math.max(1, ...Array.from(this.smartPostSuggestions.keys())) + 1;
+    const createdAt = new Date();
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7); // Default expiry of 7 days
+    
+    const newSuggestion: SmartPostSuggestions = {
+      ...suggestion,
+      id,
+      createdAt,
+      expiresAt: suggestion.expiresAt || expiresAt,
+      isUsed: suggestion.isUsed || false,
+      relevanceScore: suggestion.relevanceScore || 0,
+      suggestedHashtags: suggestion.suggestedHashtags || [],
+      suggestedTime: suggestion.suggestedTime || null,
+      mediaType: suggestion.mediaType || null,
+      mediaPrompt: suggestion.mediaPrompt || null
+    };
+    
+    this.smartPostSuggestions.set(id, newSuggestion);
+    return newSuggestion;
+  }
+
+  async markSmartPostSuggestionUsed(id: number): Promise<SmartPostSuggestions | undefined> {
+    const suggestion = this.smartPostSuggestions.get(id);
+    if (!suggestion) return undefined;
+    
+    const updatedSuggestion = { 
+      ...suggestion, 
+      isUsed: true 
+    };
+    
+    this.smartPostSuggestions.set(id, updatedSuggestion);
+    return updatedSuggestion;
   }
 
   // News Pulse operations
