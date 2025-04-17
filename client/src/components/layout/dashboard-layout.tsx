@@ -3,6 +3,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import Header from "@/components/layout/header";
 import RightSidebar from "@/components/layout/right-sidebar";
+import MuskButton from "@/components/musk/musk-button";
 
 type DashboardLayoutProps = {
   children: ReactNode;
@@ -67,6 +68,14 @@ const DashboardLayout = ({ children, hideRightSidebar = false }: DashboardLayout
         {/* Right sidebar */}
         {!hideRightSidebar && <RightSidebar />}
       </div>
+      
+      {/* Musk AI Button - Floating on all pages */}
+      <MuskButton 
+        context={{
+          userId: isAuthenticated ? 1 : undefined, // Use authenticated user ID when available
+          page: location
+        }} 
+      />
     </div>
   );
 };
