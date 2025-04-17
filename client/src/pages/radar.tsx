@@ -85,6 +85,8 @@ interface NearbyUser {
   location: string | null;
   visitingCardType: string | null;
   distance: number;
+  industry: string | null;
+  lookingFor: string | null;
 }
 
 // Placeholder component for when location access is still pending
@@ -136,6 +138,18 @@ const UserCard = ({ user, onClick }: { user: NearbyUser, onClick: () => void }) 
           {user.company && (
             <p className="text-xs text-gray-500 truncate">{user.company}</p>
           )}
+          <div className="flex items-center gap-2 mt-1">
+            {user.industry && (
+              <Badge variant="secondary" className="text-xs px-1.5 py-0">
+                {user.industry}
+              </Badge>
+            )}
+            {user.lookingFor && (
+              <Badge variant="outline" className="text-xs px-1.5 py-0">
+                Looking for: {user.lookingFor}
+              </Badge>
+            )}
+          </div>
         </div>
         <div className="text-right">
           <Badge variant="outline" className="flex items-center space-x-1 text-xs">
@@ -175,7 +189,9 @@ const DEMO_NEARBY_USERS: NearbyUser[] = [
     company: "DesignHub",
     location: "San Francisco, CA",
     visitingCardType: "professional",
-    distance: 0.8
+    distance: 0.8,
+    industry: "Design",
+    lookingFor: "Project Collaboration"
   },
   {
     id: 102,
@@ -186,7 +202,9 @@ const DEMO_NEARBY_USERS: NearbyUser[] = [
     company: "TechWave",
     location: "Palo Alto, CA",
     visitingCardType: "holographic",
-    distance: 1.3
+    distance: 1.3,
+    industry: "Technology",
+    lookingFor: "Job Opportunities"
   },
   {
     id: 103,
@@ -197,7 +215,9 @@ const DEMO_NEARBY_USERS: NearbyUser[] = [
     company: "InnovateTech",
     location: "Menlo Park, CA",
     visitingCardType: "clay-paper",
-    distance: 2.6
+    distance: 2.6,
+    industry: "Product Management",
+    lookingFor: "Mentoring"
   },
   {
     id: 104,
@@ -208,7 +228,9 @@ const DEMO_NEARBY_USERS: NearbyUser[] = [
     company: "AI Solutions",
     location: "Mountain View, CA",
     visitingCardType: "creative",
-    distance: 3.1
+    distance: 3.1,
+    industry: "Artificial Intelligence",
+    lookingFor: "Networking"
   }
 ];
 
