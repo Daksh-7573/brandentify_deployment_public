@@ -472,10 +472,11 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt }
         ],
-        temperature: 0.8,  // Increased for more creative responses
-        max_tokens: 4000,
-        top_p: 0.95,       // Diverse token selection for more varied responses
-        presence_penalty: 0.3,  // Encourage including new topics
+        temperature: 0.7,  // Balanced for accuracy and creativity
+        max_tokens: 4500,  // Increased for more comprehensive analysis
+        top_p: 0.9,        // Slightly more focused token selection
+        presence_penalty: 0.4,  // Enhanced encouragement for diverse content coverage
+        frequency_penalty: 0.3,  // Reduce repetition in longer responses
       });
       console.log("Received response from OpenAI API");
       return response.choices[0].message.content || "Unable to analyze resume";
@@ -593,10 +594,11 @@ export async function generateNetworkingRecommendations(
         },
         { role: "user", content: prompt },
       ],
-      temperature: 0.8,  // Increased for more creative responses
-      max_tokens: 4000,
-      top_p: 0.95,       // Diverse token selection for more varied responses
-      presence_penalty: 0.3,  // Encourage including new topics
+      temperature: 0.7,  // Balanced for accuracy and creativity
+      max_tokens: 4500,  // Increased for more comprehensive analysis
+      top_p: 0.9,        // Slightly more focused token selection
+      presence_penalty: 0.4,  // Enhanced encouragement for diverse content coverage
+      frequency_penalty: 0.3,  // Reduce repetition in longer responses
     });
 
     return response.choices[0].message.content || "Unable to generate networking recommendations";
