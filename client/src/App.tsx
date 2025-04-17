@@ -22,6 +22,7 @@ import EmailVerification from "@/pages/email-verification";
 import NewsSourcesPage from "@/pages/news-sources";
 import Radar from "@/pages/radar";
 import SmartConnectPage from "@/pages/smart-connect";
+import ProfileCoach from "@/pages/profile-coach";
 
 // Redirect component to handle page redirects
 const Redirect = ({ to }: { to: string }) => {
