@@ -3,7 +3,7 @@
  * Intelligent algorithm to provide contextual question suggestions based on user profile
  */
 
-import { User } from '@/types/user';
+import { UserData } from '@/types/user';
 
 // Define types for suggested questions
 export interface SuggestedQuestion {
@@ -290,7 +290,7 @@ function selectFinalQuestions(
  * Main function to get suggested questions based on user data
  */
 export function getSuggestedQuestions(
-  userData: User | null, 
+  userData: UserData | null, 
   engagementHistory: Record<string, number> = {},
   count: number = 5
 ): SuggestedQuestion[] {
@@ -312,7 +312,11 @@ export function getSuggestedQuestions(
   questionPool = applyCareerStageContext(questionPool, careerStage);
   
   // Apply profile completion filter
-  questionPool = addProfileCompletionQuestions(questionPool, profileCompleted);
+  // Ensure profileCompleted is treated as a number
+  const profileCompletionPercentage = typeof profileCompleted === 'number' 
+    ? profileCompleted 
+    : (profileCompleted ? 50 : 0); // default to 50 if truthy but not a number, 0 if falsy
+  questionPool = addProfileCompletionQuestions(questionPool, profileCompletionPercentage);
   
   // Select final questions with weighted probability
   return selectFinalQuestions(questionPool, engagementHistory, count);

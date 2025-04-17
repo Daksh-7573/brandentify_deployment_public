@@ -3,11 +3,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { SparklesIcon, LightbulbIcon, RefreshCwIcon } from 'lucide-react';
-import { User } from '@/types/user';
+import { UserData } from '@/types/user';
 import { getSuggestedQuestions, SuggestedQuestion } from './suggested-questions';
 
 interface SuggestedQuestionsDisplayProps {
-  user: User | null;
+  user: UserData | null;
   onSelectQuestion: (question: string) => void;
   className?: string;
 }

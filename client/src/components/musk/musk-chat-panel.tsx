@@ -16,7 +16,7 @@ import { X, Send, MessageSquare, Loader2, FileUp, Paperclip, FileText, Presentat
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import SuggestedQuestionsDisplay from './suggested-questions-display';
-import { User } from '@/types/user';
+import { UserData } from '@/types/user';
 
 interface MuskChatPanelProps {
   context?: {
@@ -58,11 +58,31 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadType, setUploadType] = useState<'resume' | 'pitchdeck'>('resume');
+  const [userData, setUserData] = useState<UserData | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const pitchDeckFileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Fetch user data when component mounts
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (context?.userId) {
+        try {
+          const response = await fetch(`/api/users/${context.userId}`);
+          if (response.ok) {
+            const data = await response.json();
+            setUserData(data);
+          }
+        } catch (error) {
+          console.error('Failed to fetch user data for Musk suggestions:', error);
+        }
+      }
+    };
+    
+    fetchUserData();
+  }, [context?.userId]);
   
   // Auto-scroll to bottom when messages change
   useEffect(() => {
@@ -506,7 +526,17 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
           className="hidden"
         />
 
-        {/* Input */}
+        {/* Suggested Questions Section */}
+        {userData && (
+          <div className="border-t border-border/50 px-4 py-3">
+            <SuggestedQuestionsDisplay 
+              user={userData} 
+              onSelectQuestion={(question) => setInputValue(question)}
+              className="mb-2"
+            />
+          </div>
+        )}
+        
         {/* File upload buttons */}
         <div className="flex items-center justify-center gap-2 px-4 py-2 border-t border-border/50">
           <Button
