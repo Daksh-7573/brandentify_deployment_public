@@ -39,14 +39,14 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'welcome',
-      content: "Hi there! I'm Musk, your AI career assistant. How can I help with your professional development today?",
+      content: "Hi there! I'm Musk, your AI career assistant. I can analyze your resume or pitch deck, and provide personalized professional guidance. How can I help with your career development today?",
       sender: 'musk',
       timestamp: new Date(),
       quickResponses: [
         'What career advice can you offer?',
-        'Help me improve my profile',
-        'How can I network better?',
-        'Tell me about industry trends'
+        'Analyze my resume',
+        'Evaluate my pitch deck',
+        'Help me network better'
       ]
     }
   ]);
@@ -566,7 +566,7 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
         {isUploading && (
           <div className="px-4 py-2 bg-primary/10 border-t">
             <div className="text-xs mb-1 flex justify-between">
-              <span>Uploading resume...</span>
+              <span>Uploading {uploadType === 'resume' ? 'resume' : 'pitch deck'}...</span>
               <span>{uploadProgress}%</span>
             </div>
             <div className="h-1 bg-muted rounded-full overflow-hidden">

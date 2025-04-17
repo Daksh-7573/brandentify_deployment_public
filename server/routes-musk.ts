@@ -534,7 +534,9 @@ function generateFallbackResponse(message: string, context: any) {
     
     interview: `For interview preparation, focus on highlighting your experience at ${context.userData?.experiences?.[0]?.company || "your recent companies"} and how you've developed expertise in ${context.userData?.skills?.[0]?.name || "your key skills"}.\n\nPrepare stories that demonstrate leadership, problem-solving, and adaptability.\n\nQuick Response Options: "Common questions", "Salary negotiation", "Case study practice", "Remote interview tips"`,
     
-    pitchdeck: `I can analyze your pitch deck to help make it more compelling for investors. Upload your pitch deck PDF, and I'll provide a comprehensive analysis including slide-by-slide feedback, overall scoring, and specific improvement suggestions.\n\nQuick Response Options: "What makes a good pitch deck?", "Key slides to include", "Common pitch deck mistakes", "Upload my pitch deck"`
+    pitchdeck: `I can analyze your pitch deck to help make it more compelling for investors. Upload your pitch deck PDF and I'll provide:\n\n1. Comprehensive slide-by-slide analysis\n2. Overall scoring across key dimensions\n3. Specific improvement suggestions for each section\n4. Investor readiness assessment\n\nQuick Response Options: "What makes a good pitch deck?", "Key slides to include", "Common pitch deck mistakes", "Upload my pitch deck"`,
+    
+    pitchdecktips: `A strong pitch deck should include these essential slides:\n\n1. Problem - Clear pain point with market validation\n2. Solution - Your unique approach\n3. Market Size - TAM/SAM/SOM breakdown\n4. Business Model - Revenue streams and unit economics\n5. Traction - Growth metrics and milestones\n6. Competition - Differentiation strategy\n7. Team - Relevant expertise\n8. Financials - Projections and funding needs\n\nQuick Response Options: "Upload my pitch deck", "Problem slide tips", "Financial slide tips", "Traction slide tips"`
   };
 
   // Basic logic to determine which response to use
@@ -553,6 +555,12 @@ function generateFallbackResponse(message: string, context: any) {
     responseKey = 'interview';
   } else if (lowerMessage.includes('pitch') || lowerMessage.includes('deck') || lowerMessage.includes('investor') || lowerMessage.includes('startup') || context?.section === 'pitch-deck') {
     responseKey = 'pitchdeck';
+    
+    // If they are specifically asking about tips or best practices for pitch decks
+    if (lowerMessage.includes('tip') || lowerMessage.includes('best practice') || lowerMessage.includes('slide') || 
+        lowerMessage.includes('how to') || lowerMessage.includes('structure') || lowerMessage.includes('content')) {
+      responseKey = 'pitchdecktips';
+    }
   }
   
   // Return the appropriate response
