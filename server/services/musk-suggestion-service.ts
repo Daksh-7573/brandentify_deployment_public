@@ -101,26 +101,55 @@ export class MuskSuggestionService {
   private async generateSuggestions(context: SuggestionContext): Promise<MuskSuggestion[]> {
     const suggestions: MuskSuggestion[] = [];
     
-    // Add daily industry suggestion if it's morning (between 8am and 11am)
+    // Add daily industry suggestion if it's morning or early afternoon (between 8am and 2pm)
     const hour = context.currentTime.getHours();
-    if (hour >= 8 && hour <= 11) {
+    if (hour >= 8 && hour <= 14) {
       suggestions.push(await this.createDailyIndustrySuggestion(context));
     }
     
-    // Add inactivity suggestion if user hasn't logged in for 72+ hours
+    // Optimized timing for inactivity suggestions based on user activity level
     const hoursSinceLastLogin = (context.currentTime.getTime() - (context.lastLoginTime?.getTime() || 0)) / (1000 * 60 * 60);
-    if (hoursSinceLastLogin >= 72) {
+    
+    // Determine user activity level
+    const isHighlyActive = (context.recentPageViews || []).length > 10; // User viewed many pages recently
+    const isModeratelyActive = (context.recentPageViews || []).length > 3; // Some recent activity
+    const isNewUser = hoursSinceLastLogin < 48 && (context.profileCompleteness || 0) < 40; // New user with incomplete profile
+    const isDormant = hoursSinceLastLogin > 120; // No activity for 5+ days
+    
+    // Apply optimal trigger windows based on activity level
+    if (isHighlyActive && hoursSinceLastLogin >= 36) {
+      // For highly active users, suggest after 36 hours
       suggestions.push(await this.createInactivitySuggestion(context));
+    } else if (isModeratelyActive && hoursSinceLastLogin >= 48) {
+      // For moderately active users, suggest after 48 hours
+      suggestions.push(await this.createInactivitySuggestion(context));
+    } else if (isNewUser && hoursSinceLastLogin >= 24) {
+      // For new users, re-engage after just 24 hours
+      suggestions.push(await this.createInactivitySuggestion(context));
+    } else if (isDormant) {
+      // For dormant users, create a soft re-engagement
+      suggestions.push(await this.createDormantUserSuggestion(context));
     }
     
     // Add profile completion suggestion if profile is <80% complete
+    // Adjust frequency based on completion level
     if (context.profileCompleteness !== undefined && context.profileCompleteness < 80) {
-      suggestions.push(await this.createProfileCompletionSuggestion(context));
+      // For very incomplete profiles, show more frequently
+      if (context.profileCompleteness < 40) {
+        suggestions.push(await this.createProfileCompletionSuggestion(context, 48)); // Every 2 days
+      } else {
+        suggestions.push(await this.createProfileCompletionSuggestion(context, 72)); // Every 3 days
+      }
     }
     
     // Add project suggestion if user has no projects
     if (!context.hasProjects) {
       suggestions.push(await this.createProjectSuggestion(context));
+    }
+    
+    // Add pulse engagement suggestion if we have new content that matches user's industry
+    if (context.hasRecentPulses) {
+      suggestions.push(await this.createEngagePulseSuggestion(context));
     }
     
     return suggestions.filter(Boolean) as MuskSuggestion[];
@@ -201,7 +230,7 @@ export class MuskSuggestionService {
   /**
    * Create a profile completion suggestion
    */
-  private async createProfileCompletionSuggestion(context: SuggestionContext): Promise<MuskSuggestion> {
+  private async createProfileCompletionSuggestion(context: SuggestionContext, cooldownHours: number = 72): Promise<MuskSuggestion> {
     const remainingPercent = 100 - (context.profileCompleteness || 0);
     
     return {
@@ -213,7 +242,7 @@ export class MuskSuggestionService {
       actionLink: '/profile',
       actionText: 'Finish your profile',
       priority: 4,
-      cooldownHours: 72, // Don't show again for 3 days
+      cooldownHours: cooldownHours, // Configurable cooldown
       relevanceScore: 80,
       shown: false,
       dismissed: false,
@@ -221,6 +250,56 @@ export class MuskSuggestionService {
       createdAt: new Date(),
       updatedAt: new Date(),
       expiresAt: null // Doesn't expire until profile is completed
+    };
+  }
+  
+  /**
+   * Create a dormant user suggestion - softer re-engagement for users away 5+ days
+   */
+  private async createDormantUserSuggestion(context: SuggestionContext): Promise<MuskSuggestion> {
+    return {
+      id: 0, // Will be assigned by DB
+      userId: context.userId,
+      type: 'inactivity',
+      title: 'Welcome Back!',
+      message: "We've missed you! The community has been growing while you were away. Your expertise would be valuable in ongoing discussions.",
+      actionLink: '/discover',
+      actionText: 'See what\'s happening',
+      priority: 5, // High priority for dormant users
+      cooldownHours: 72, // Longer cooldown for dormant users
+      relevanceScore: 95, // Very relevant for dormant users
+      shown: false,
+      dismissed: false,
+      actionTaken: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      expiresAt: new Date(context.currentTime.getTime() + 48 * 60 * 60 * 1000), // Expires in 48 hours
+    };
+  }
+  
+  /**
+   * Create a suggestion to engage with relevant pulse content
+   */
+  private async createEngagePulseSuggestion(context: SuggestionContext): Promise<MuskSuggestion> {
+    const industry = context.industry || 'your industry';
+    
+    return {
+      id: 0, // Will be assigned by DB
+      userId: context.userId,
+      type: 'newPulse',
+      title: 'New Content for You',
+      message: `There's new content in ${industry} that matches your interests. Join the conversation and share your insights!`,
+      actionLink: '/industry-pulse',
+      actionText: 'View relevant content',
+      priority: 3,
+      cooldownHours: 24, // Daily recommendation if available
+      relevanceScore: 85,
+      shown: false,
+      dismissed: false,
+      actionTaken: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      expiresAt: new Date(context.currentTime.getTime() + 12 * 60 * 60 * 1000), // Expires in 12 hours
     };
   }
 

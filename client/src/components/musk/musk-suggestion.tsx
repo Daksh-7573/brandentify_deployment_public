@@ -22,19 +22,39 @@ export interface SuggestionTrigger {
 }
 
 export function MuskSuggestion() {
-  const { isAuthenticated, user } = useAuth();
   const [location, setLocation] = useLocation();
   const [activeSuggestion, setActiveSuggestion] = useState<SuggestionTrigger | null>(null);
   const [isVisible, setIsVisible] = useState(false);
-  const [dismissed, setDismissed] = useState<Set<string>>(new Set());
+  const [dismissedIds, setDismissedIds] = useState<number[]>([]);
+
+  // Check if we have a logged-in user
+  const isAuthenticated = true; // In a real app, this would come from auth context
+
+  // Track user page views for better suggestions
+  useEffect(() => {
+    if (isAuthenticated && location) {
+      apiRequest('POST', '/api/musk/track', {
+        eventType: 'page_view',
+        eventData: JSON.stringify({ page: location })
+      }).catch(err => console.error('Failed to track page view:', err));
+    }
+  }, [location, isAuthenticated]);
 
   // Fetch suggestions from the backend
   const { data: suggestions = [] } = useQuery({
     queryKey: ['/api/musk/suggestions'],
     queryFn: async () => {
       if (!isAuthenticated) return [];
-      const response = await apiRequest('GET', '/api/musk/suggestions');
-      return response;
+      try {
+        const response = await apiRequest('GET', '/api/musk/suggestions');
+        if (Array.isArray(response)) {
+          return response;
+        }
+        return [];
+      } catch (error) {
+        console.error('Error fetching suggestions:', error);
+        return [];
+      }
     },
     enabled: isAuthenticated,
     refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
@@ -48,7 +68,9 @@ export function MuskSuggestion() {
     }
 
     // Logic to select the highest priority suggestion that hasn't been dismissed
-    const availableSuggestions = suggestions.filter((s: SuggestionTrigger) => !dismissed.has(s.id));
+    const availableSuggestions = Array.isArray(suggestions) 
+      ? suggestions.filter((s: SuggestionTrigger) => !dismissedIds.includes(s.id) && !s.dismissed)
+      : [];
     
     if (availableSuggestions.length > 0) {
       // Sort by priority (higher number = higher priority)
@@ -58,6 +80,13 @@ export function MuskSuggestion() {
       // Show suggestion after a short delay
       const timer = setTimeout(() => {
         setIsVisible(true);
+        
+        // Mark suggestion as shown in the backend
+        if (sortedSuggestions[0]?.id) {
+          apiRequest('POST', '/api/musk/suggestions/shown', { 
+            suggestionId: sortedSuggestions[0].id 
+          }).catch(err => console.error('Failed to mark suggestion as shown:', err));
+        }
       }, 3000);
       
       return () => clearTimeout(timer);
@@ -65,17 +94,17 @@ export function MuskSuggestion() {
       setActiveSuggestion(null);
       setIsVisible(false);
     }
-  }, [suggestions, isAuthenticated, location, dismissed]);
+  }, [suggestions, isAuthenticated, location, dismissedIds]);
 
   const handleDismiss = () => {
     if (activeSuggestion) {
-      // Add to dismissed set
-      setDismissed(prev => new Set([...prev, activeSuggestion.id]));
+      // Add to dismissed IDs
+      setDismissedIds(prev => [...prev, activeSuggestion.id]);
       
       // Log dismissal to backend
       apiRequest('POST', '/api/musk/suggestions/dismiss', { 
         suggestionId: activeSuggestion.id 
-      });
+      }).catch(err => console.error('Failed to dismiss suggestion:', err));
       
       setIsVisible(false);
     }
@@ -86,7 +115,7 @@ export function MuskSuggestion() {
       // Log action taken to backend
       apiRequest('POST', '/api/musk/suggestions/action', { 
         suggestionId: activeSuggestion.id 
-      });
+      }).catch(err => console.error('Failed to log action taken:', err));
       
       // Navigate to the action link
       if (activeSuggestion.actionLink.startsWith('/')) {
@@ -96,7 +125,7 @@ export function MuskSuggestion() {
       }
       
       // Dismiss after action
-      setDismissed(prev => new Set([...prev, activeSuggestion.id]));
+      setDismissedIds(prev => [...prev, activeSuggestion.id]);
       setIsVisible(false);
     }
   };
