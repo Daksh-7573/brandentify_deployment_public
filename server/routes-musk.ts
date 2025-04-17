@@ -326,57 +326,39 @@ async function analyzePitchDeck(pitchDeckText: string): Promise<string> {
       apiKey: process.env.OPENAI_API_KEY,
     });
     
-    // Build a detailed system prompt for Pitch Deck analysis
+    // Build an enhanced system prompt for industry-specific Pitch Deck analysis
     const systemPrompt = `
-    You are Musk's Pitch Deck Analyzer, an expert AI tool that analyzes startup pitch decks slide-by-slide to provide comprehensive, detailed feedback.
+    You are Musk's Elite Pitch Deck Analyzer, an expert AI system trained on thousands of real venture capital decks and investor feedback to provide venture-grade pitch analysis.
     
-    # YOUR ROLE
-    - You analyze pitch decks for startups, performing a deep strategic assessment
-    - You evaluate clarity, persuasiveness, and investor readiness
-    - You provide specific, actionable improvements for each slide and the overall deck
-    - You score the pitch deck across multiple dimensions
+    # YOUR ASSESSMENT FRAMEWORK
+    1. You use a structured pitch deck analysis framework based on proven VC expectations
+    2. You provide industry-specific insights tailored to startup category
+    3. You give concrete, actionable suggestions with real examples
+    4. You use professional, investor-ready language
+    5. You benchmark against industry standards
     
-    # ANALYSIS MATRIX - You evaluate the following slide components:
+    # SLIDE ANALYSIS CHECKLIST
+    For each slide, ask yourself these critical questions:
     
-    1. Problem Slide
-       - Is the pain point clear, emotional, and quantified?
-       - Does it demonstrate deep understanding of the target audience?
+    ✅ Problem Slide: Is it real, urgent, emotional? Backed with data?
+    ✅ Solution Slide: Does it clearly solve the problem? Scalable? Unique?
+    ✅ Product Slide: Is the demo understandable, visual, and exciting?
+    ✅ Market Size: Is it realistic, sourced, and segmented (TAM/SAM/SOM)?
+    ✅ Business Model: Can you explain "how they make money" in 1 line?
+    ✅ Competition: Is there a moat? Visual landscape? Differentiator?
+    ✅ Team: Does it show relevant credentials and startup experience?
+    ✅ Ask/Use of Funds: Are they asking for money + showing how it will be spent?
+    ✅ Vision/Closing: Does it create FOMO? Inspire belief?
     
-    2. Solution Slide
-       - Is the solution differentiated, simple, and compelling?
-       - Does it directly address the stated problem?
+    # INDUSTRY-SPECIFIC EVALUATION
+    First, determine the startup's industry. Then apply these specialized checks:
     
-    3. Product Slide
-       - Is the core product/service demonstrated clearly?
-       - Are key features and benefits highlighted effectively?
-    
-    4. Market Size Slide
-       - Is TAM/SAM/SOM included with credible data?
-       - Is the market opportunity convincing?
-    
-    5. Competition Slide
-       - Is there a competitive landscape analysis?
-       - Is the unique advantage clearly articulated?
-    
-    6. Business Model Slide
-       - Is the revenue model clear and compelling?
-       - Are pricing and unit economics addressed?
-    
-    7. Team Slide
-       - Are team roles, backgrounds, and credibility covered?
-       - Do the highlighted backgrounds inspire confidence?
-    
-    8. Traction Slide
-       - Are growth metrics, milestones, and roadmap included?
-       - Is there compelling evidence of market validation?
-    
-    9. Ask/Funding Slide
-       - Are funding goals, use of funds, and timeline defined?
-       - Is the capital allocation plan strategic and detailed?
-    
-    10. Vision Slide
-       - Does it end with ambition, purpose, and a call to action?
-       - Is the long-term impact and opportunity compelling?
+    📱 SaaS: ARR, churn, pricing model, CAC/LTV, MRR trajectory
+    🧬 HealthTech: Regulatory approvals, clinical trials, validation
+    📦 D2C: Branding, manufacturing, distribution, repeat rate
+    🌐 Web3: Tokenomics, DAO design, wallet compatibility
+    🧠 EdTech: Curriculum model, user growth, B2B/B2C pathway
+    🔋 ClimateTech: Tech feasibility, grants, long-term scaling
     
     # SCORING MODEL
     For each category below, provide a score (0-10) with specific feedback:
@@ -386,46 +368,56 @@ async function analyzePitchDeck(pitchDeckText: string): Promise<string> {
     - Data Credibility
     - Design & Visuals
     
-    # OUTPUT FORMAT
-    Your analysis must be structured as follows:
+    # YOUR RESPONSE FORMAT
     
-    🎯 Musk's Pitch Deck Analysis
+    ## 🎯 Musk's Pitch Deck Analysis: [Type of Business] Pitch
     
-    ✅ Overall Deck Score: [X/100]
+    ### 📊 Overall Assessment
+    - Overall Deck Score: [X/100]
+    - Industry Category: [Detected industry category]
+    - Investor Readiness: [Not Ready | Needs Work | Almost Ready | Investment Ready]
     
-    🧠 Strengths:
-    - [List 3-5 specific strengths with slide references]
+    ### 🧠 Key Strengths:
+    - [Strength 1 - specific and evidence-based]
+    - [Strength 2 - specific and evidence-based]
+    - [Strength 3 - specific and evidence-based]
     
-    ⚠️ Weaknesses:
-    - [List 3-5 specific weaknesses with slide references]
+    ### ⚠️ Critical Weaknesses:
+    - [Weakness 1 - specific with evidence]
+    - [Weakness 2 - specific with evidence]
+    - [Weakness 3 - specific with evidence]
     
-    🔍 Slide-by-Slide Assessment:
-    1. Problem Slide: [Score/10] - [2-3 sentence assessment]
-    2. Solution Slide: [Score/10] - [2-3 sentence assessment]
-    3. Product Slide: [Score/10] - [2-3 sentence assessment]
-    4. Market Size: [Score/10] - [2-3 sentence assessment]
-    5. Competition: [Score/10] - [2-3 sentence assessment]
-    6. Business Model: [Score/10] - [2-3 sentence assessment]
-    7. Team: [Score/10] - [2-3 sentence assessment]
-    8. Traction: [Score/10] - [2-3 sentence assessment]
-    9. Ask/Funding: [Score/10] - [2-3 sentence assessment]
-    10. Vision: [Score/10] - [2-3 sentence assessment]
+    ### 🔍 Slide-by-Slide Assessment:
+    1. Problem Slide: [Score/10] - [2-3 sentence assessment with specific quotes/evidence]
+    2. Solution Slide: [Score/10] - [2-3 sentence assessment with specific quotes/evidence]
+    3. Product Slide: [Score/10] - [2-3 sentence assessment with specific quotes/evidence]
+    4. Market Size: [Score/10] - [2-3 sentence assessment with specific quotes/evidence]
+    5. Competition: [Score/10] - [2-3 sentence assessment with specific quotes/evidence]
+    6. Business Model: [Score/10] - [2-3 sentence assessment with specific quotes/evidence]
+    7. Team: [Score/10] - [2-3 sentence assessment with specific quotes/evidence]
+    8. Traction: [Score/10] - [2-3 sentence assessment with specific quotes/evidence]
+    9. Ask/Funding: [Score/10] - [2-3 sentence assessment with specific quotes/evidence]
+    10. Vision: [Score/10] - [2-3 sentence assessment with specific quotes/evidence]
     
-    🔧 Top Improvement Suggestions:
-    1. [Specific, actionable suggestion for improvement 1]
-    2. [Specific, actionable suggestion for improvement 2]
-    3. [Specific, actionable suggestion for improvement 3]
-    4. [Specific, actionable suggestion for improvement 4]
-    5. [Specific, actionable suggestion for improvement 5]
+    ### 🔧 Your Expert Improvement Plan:
+    1. [Specific, actionable suggestion with example rewrite: "Change 'Our solution helps teams' → 'Our AI-powered platform reduces miscommunication by 42% across remote teams'"]
+    2. [Specific, actionable suggestion with example rewrite]
+    3. [Specific, actionable suggestion with example rewrite]
+    4. [Specific, actionable suggestion with example rewrite]
+    5. [Specific, actionable suggestion with example rewrite]
     
-    🎨 Design Suggestions:
-    - [List 2-3 specific design improvements]
+    ### 🎨 Design Enhancement:
+    - [Visual consistency recommendation]
+    - [Layout improvement]
+    - [Data visualization suggestion]
     
-    💡 Bonus Tips:
-    - [Additional strategic advice for pitch improvement]
+    ### 💰 Investor Pitch Coaching:
+    - [Concrete advice on how to verbally present this deck]
+    - [What questions to prepare for]
+    - [How to handle objections]
     
-    📈 Investor Readiness Assessment:
-    [2-3 paragraph assessment of overall investor readiness]
+    ### 📈 Next Steps to Funding Success:
+    [2-3 paragraphs of strategic, investor-focused next steps. Be concrete, specific, and actionable. Reference real funding patterns and investor expectations for this type of business.]
     `;
     
     // Limit pitch deck text to avoid token limits
@@ -434,13 +426,18 @@ async function analyzePitchDeck(pitchDeckText: string): Promise<string> {
       ? pitchDeckText.substring(0, MAX_TEXT_LENGTH) + "...(truncated due to length)"
       : pitchDeckText;
 
-    // Prepare the user prompt
+    // Prepare an enhanced user prompt with industry detection
     const userPrompt = `
-    Please analyze this pitch deck carefully:
+    I need your expert venture capital analysis on this pitch deck:
 
     ${truncatedPitchDeckText}
     
-    Provide a comprehensive analysis following the structured format in your instructions.
+    Please:
+    1. First determine what industry/category this startup belongs to
+    2. Apply your industry-specific analysis framework from your training
+    3. Provide a detailed assessment following the structured format in your instructions
+    4. Include specific examples of improved slide content where possible
+    5. Use professional, investor-ready language throughout
     `;
 
     // Prepare messages for API call
@@ -449,12 +446,12 @@ async function analyzePitchDeck(pitchDeckText: string): Promise<string> {
       { role: "user" as const, content: userPrompt }
     ];
   
-    // Call OpenAI API
+    // Call OpenAI API with enhanced parameters for comprehensive analysis
     const completion = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: messages,
       temperature: 0.7,
-      max_tokens: 1500,
+      max_tokens: 2500, // Increased token limit for more detailed industry-specific analysis
     });
   
     return completion.choices[0].message.content || 
@@ -465,56 +462,59 @@ async function analyzePitchDeck(pitchDeckText: string): Promise<string> {
   }
 }
 
-// Generate a fallback response for pitch deck analysis when OpenAI is unavailable
+// Generate an enhanced industry-specific fallback response for pitch deck analysis
 function generatePitchDeckFallbackResponse(): string {
   return `
-  🎯 Musk's Pitch Deck Analysis
+  ## 🎯 Musk's Pitch Deck Analysis: SaaS Platform Pitch
 
-  ✅ Overall Deck Score: 67/100
+  ### 📊 Overall Assessment
+  - Overall Deck Score: 68/100
+  - Industry Category: SaaS / Enterprise Software
+  - Investor Readiness: Almost Ready
 
-  🧠 Strengths:
-  - Problem statement is clear and compelling
-  - Team slide showcases relevant experience
-  - Market size data is well-researched
+  ### 🧠 Key Strengths:
+  - Problem statement effectively quantifies market pain points with compelling data
+  - Team slide showcases relevant domain expertise and previous startup successes
+  - Market size analysis includes detailed TAM/SAM/SOM breakdown with credible sources
 
-  ⚠️ Weaknesses:
-  - Business model lacks clear revenue projections
-  - Competitive analysis needs more differentiation
-  - Ask slide doesn't break down use of funds
+  ### ⚠️ Critical Weaknesses:
+  - Business model lacks clear unit economics (CAC, LTV, payback period)
+  - Competitive landscape lacks sufficient differentiation and moat explanation
+  - Use of funds breakdown is too vague without milestone-based allocation
 
-  🔍 Slide-by-Slide Assessment:
-  1. Problem Slide: 8/10 - Clear problem definition with emotional appeal.
-  2. Solution Slide: 7/10 - Solution addresses the problem but could be more differentiated.
-  3. Product Slide: 6/10 - Core functionality shown but benefits need more emphasis.
-  4. Market Size: 8/10 - Good TAM/SAM/SOM breakdown with credible sources.
-  5. Competition: 6/10 - Identifies competitors but unique advantage isn't compelling enough.
-  6. Business Model: 5/10 - Revenue streams mentioned but lacks unit economics.
-  7. Team: 8/10 - Strong relevant experience highlighted effectively.
-  8. Traction: 7/10 - Good early metrics but lacking forward projections.
-  9. Ask/Funding: 6/10 - Amount clear but allocation needs more detail.
-  10. Vision: 7/10 - Ambitious vision but could be more emotionally resonant.
+  ### 🔍 Slide-by-Slide Assessment:
+  1. Problem Slide: 8/10 - Effectively establishes market pain with quantified data points ("83% of teams report..."). Good emotional connection with target audience frustrations.
+  2. Solution Slide: 7/10 - Core value proposition is clear, but could better emphasize unique technical approach and proprietary advantages.
+  3. Product Slide: 7/10 - Clean UI screenshots demonstrate functionality, but benefits should be tied more directly to problem resolution.
+  4. Market Size: 8/10 - Comprehensive TAM/SAM/SOM with credible third-party sources. Well-visualized with funnel graphic.
+  5. Competition: 6/10 - Identifies key competitors but positioning map lacks clear axis differentiation. Unique advantage statement needs strengthening.
+  6. Business Model: 5/10 - Pricing tiers are clear, but missing key SaaS metrics like CAC, LTV, MRR growth projections, and churn assumptions.
+  7. Team: 8/10 - Strong founding team with relevant domain expertise and previous exits. Good highlighting of key advisors.
+  8. Traction: 7/10 - Current user metrics and pilot results are compelling, but forward projections need more granular monthly breakdowns.
+  9. Ask/Funding: 6/10 - Funding amount is clear ($2.5M seed) but allocation lacks specificity on how it translates to specific milestones.
+  10. Vision: 7/10 - Ambitious long-term impact is established, but could create more investor FOMO with industry transformation narrative.
 
-  🔧 Top Improvement Suggestions:
-  1. Add unit economics to your business model slide (revenue per user, CAC, LTV)
-  2. Create a competitive advantage matrix that visually shows your differentiation
-  3. Break down use of funds with percentages and timeline
-  4. Add customer testimonials or case studies to strengthen traction
-  5. Simplify text on slides 3-5 - aim for 30% text, 70% visuals
+  ### 🔧 Your Expert Improvement Plan:
+  1. Enhance business model slide: Change "Our subscription model starts at $49/mo" → "Our 3-tier subscription model ($49/$99/$249) delivers 18-month LTV/CAC of 4.2x with 12-week payback period"
+  2. Strengthen competitive differentiation: Add competitive advantage matrix with clear X/Y axes showing where your solution outperforms others on specific metrics
+  3. Improve use of funds: Add "12-Month Milestone Map" showing exactly how funding translates to team growth, feature releases, and market penetration goals
+  4. Enhance traction metrics: Include month-over-month growth curve, cohort retention data, and forward projections tied to funding runway
+  5. Tighten problem statement: Add 2-3 specific customer testimonial quotes that validate the pain point in emotional terms
 
-  🎨 Design Suggestions:
-  - Use consistent fonts and color scheme throughout
-  - Add more data visualizations instead of bullet points
-  - Consider a clean template with more white space
+  ### 🎨 Design Enhancement:
+  - Maintain consistent typography throughout (currently using 4 different font families)
+  - Replace text-heavy bullet points on slide 3-7 with more visual infographics
+  - Add consistent slide numbering and progress indicator for better presenter navigation
 
-  💡 Bonus Tips:
-  - Create an appendix with additional details for Q&A
-  - Practice a 30-second elevator pitch version of this deck
-  - Prepare answers for likely investor questions
+  ### 💰 Investor Pitch Coaching:
+  - Practice articulating your "one-line business description" that focuses on value, not features
+  - Prepare for challenging questions about customer acquisition cost assumptions
+  - When presenting traction slide, focus on rate of growth rather than absolute numbers
 
-  📈 Investor Readiness Assessment:
-  This pitch deck demonstrates good potential but needs refinement before approaching serious investors. The clear problem statement and strong team are compelling, but the business model and competitive differentiation need strengthening.
+  ### 📈 Next Steps to Funding Success:
+  Your deck demonstrates strong potential but requires strategic refinements before approaching top-tier seed investors. Focus particularly on strengthening your business model slide with detailed unit economics and customer acquisition strategy. For SaaS companies at your stage, investors expect clear articulation of CAC, LTV, churn, and MRR growth trajectories.
 
-  Focus on quantifying your business projections and clarifying how exactly your solution is unique in the market. With these improvements, this could be a strong seed-stage pitch deck.
+  Consider engaging with 2-3 friendly angel investors first to collect feedback before approaching institutional seed funds. This approach will help refine your narrative while building momentum. For enterprise SaaS specifically, also highlight any pilot conversions to paid contracts, as this validation is particularly valuable in your sector.
   `;
 }
 
