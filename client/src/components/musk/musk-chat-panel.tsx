@@ -16,6 +16,7 @@ import { X, Send, MessageSquare, Loader2, FileUp, Paperclip, FileText, Presentat
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import SuggestedQuestionsDisplay from './suggested-questions-display';
+import { getSuggestedQuestions } from './suggested-questions';
 import { UserData } from '@/types/user';
 
 interface MuskChatPanelProps {
@@ -52,6 +53,32 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
       ]
     }
   ]);
+  
+  // Update initial message quick responses with dynamic suggested questions
+  useEffect(() => {
+    if (userData) {
+      // Get suggested questions based on user profile
+      const suggestedQuestions = getSuggestedQuestions(userData, {}, 4);
+      
+      // If we have suggestions, update the initial message
+      if (suggestedQuestions.length > 0) {
+        setMessages(prevMessages => {
+          // Clone the messages array
+          const updatedMessages = [...prevMessages];
+          
+          // If we have a welcome message, update its quick responses
+          if (updatedMessages.length > 0 && updatedMessages[0].id === 'welcome') {
+            updatedMessages[0] = {
+              ...updatedMessages[0],
+              quickResponses: suggestedQuestions.map(q => q.text)
+            };
+          }
+          
+          return updatedMessages;
+        });
+      }
+    }
+  }, [userData]);
   
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
