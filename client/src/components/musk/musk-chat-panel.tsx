@@ -555,10 +555,12 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
           <Button 
             type="submit" 
             variant="default" 
-            size="icon"
+            className="px-3 gap-2"
             disabled={!inputValue.trim() || isTyping || isUploading}
+            title="Send message"
           >
             <Send className="h-4 w-4" />
+            <span>Send</span>
           </Button>
         </form>
         
