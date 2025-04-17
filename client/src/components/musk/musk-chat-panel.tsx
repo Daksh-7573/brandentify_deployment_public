@@ -6,8 +6,13 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { 
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { apiRequest } from '@/lib/queryClient';
-import { X, Send, MessageSquare, Loader2, FileUp, Paperclip } from 'lucide-react';
+import { X, Send, MessageSquare, Loader2, FileUp, Paperclip, FileText, PresentationIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
@@ -50,10 +55,12 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
   const [isTyping, setIsTyping] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadType, setUploadType] = useState<'resume' | 'pitchdeck'>('resume');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const pitchDeckFileInputRef = useRef<HTMLInputElement>(null);
   
   // Auto-scroll to bottom when messages change
   useEffect(() => {
@@ -183,19 +190,38 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
     if (!e.target.files || e.target.files.length === 0) return;
     
     const file = e.target.files[0];
-    const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-    const maxSize = 5 * 1024 * 1024; // 5MB
+    const isResume = e.target === fileInputRef.current;
+    const isPitchDeck = e.target === pitchDeckFileInputRef.current;
     
-    // Validate file type and size
-    if (!allowedTypes.includes(file.type)) {
-      toast({
-        title: 'Invalid file type',
-        description: 'Please upload a PDF or Word document (.pdf, .doc, .docx)',
-        variant: 'destructive',
-      });
-      return;
+    // Set the upload type based on which input triggered the event
+    setUploadType(isResume ? 'resume' : 'pitchdeck');
+    
+    // Different validation for resume vs pitch deck
+    if (isResume) {
+      const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+      
+      // Validate file type for resume
+      if (!allowedTypes.includes(file.type)) {
+        toast({
+          title: 'Invalid file type',
+          description: 'Please upload a PDF or Word document (.pdf, .doc, .docx)',
+          variant: 'destructive',
+        });
+        return;
+      }
+    } else if (isPitchDeck) {
+      // For pitch deck, only allow PDF
+      if (file.type !== 'application/pdf') {
+        toast({
+          title: 'Invalid file type',
+          description: 'Please upload a PDF file for your pitch deck',
+          variant: 'destructive',
+        });
+        return;
+      }
     }
     
+    const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
       toast({
         title: 'File too large',
@@ -208,10 +234,12 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
     // Get current user ID from context or fallback to demo user
     const userId = context?.userId || 1;
     
-    // Add user message about uploading resume
+    // Add user message about uploading file
     const userMessage: Message = {
       id: Date.now().toString(),
-      content: `I'm uploading my resume (${file.name}) for analysis`,
+      content: isResume 
+        ? `I'm uploading my resume (${file.name}) for analysis`
+        : `I'm uploading my pitch deck (${file.name}) for analysis`,
       sender: 'user',
       timestamp: new Date(),
     };
@@ -239,7 +267,9 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
       const xhr = new XMLHttpRequest();
       
       const uploadPromise = new Promise<any>((resolve, reject) => {
-        xhr.open('POST', '/api/musk/resume-upload');
+        // Determine the endpoint based on the file type
+        const endpoint = isResume ? '/api/musk/resume-upload' : '/api/musk/pitchdeck-upload';
+        xhr.open('POST', endpoint);
         
         xhr.upload.onprogress = (event) => {
           if (event.lengthComputable) {
@@ -272,14 +302,26 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
       const uploadResult = await uploadPromise;
       
       if (!uploadResult) {
-        throw new Error('Failed to upload file');
+        throw new Error(`Failed to upload ${isResume ? 'resume' : 'pitch deck'}`);
       }
       
-      // The server's handleResumeUpload method already performs the analysis
       // The result includes the analysis message directly
       const analyzeResult = {
         analysis: uploadResult.message
       };
+      
+      // Different quick responses based on file type
+      const quickResponses = isResume 
+        ? [
+            'How can I improve my skills section?',
+            'What about my work experiences?',
+            'Can you help me tailor it for a specific role?'
+          ]
+        : [
+            'How can I improve my problem statement?',
+            'Is my business model compelling enough?',
+            'What should I focus on for investor readiness?'
+          ];
       
       // Replace the thinking message with the analysis result
       setMessages(prev => 
@@ -290,11 +332,7 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
                 content: analyzeResult.analysis,
                 sender: 'musk',
                 timestamp: new Date(),
-                quickResponses: [
-                  'How can I improve my skills section?',
-                  'What about my work experiences?',
-                  'Can you help me tailor it for a specific role?'
-                ]
+                quickResponses
               }
             : msg
         )
@@ -302,11 +340,11 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
       
       toast({
         title: 'Analysis complete',
-        description: 'Your resume has been analyzed successfully',
+        description: `Your ${isResume ? 'resume' : 'pitch deck'} has been analyzed successfully`,
       });
       
     } catch (error) {
-      console.error('Error processing resume:', error);
+      console.error(`Error processing ${isResume ? 'resume' : 'pitch deck'}:`, error);
       
       // Replace the thinking message with an error message
       setMessages(prev => 
@@ -314,7 +352,9 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
           msg.id === thinkingMessage.id 
             ? {
                 id: 'error-' + Date.now(),
-                content: "I'm sorry, I had trouble processing your resume. Please try again or upload a different file format.",
+                content: isResume
+                  ? "I'm sorry, I had trouble processing your resume. Please try again or upload a different file format."
+                  : "I'm sorry, I had trouble analyzing your pitch deck. Please make sure it's a valid PDF and try again.",
                 sender: 'musk',
                 timestamp: new Date()
               }
@@ -324,7 +364,7 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
       
       toast({
         title: 'Processing Error',
-        description: 'Failed to analyze your resume. Please try again.',
+        description: `Failed to analyze your ${isResume ? 'resume' : 'pitch deck'}. Please try again.`,
         variant: 'destructive',
       });
     } finally {
@@ -332,14 +372,20 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
       setUploadProgress(0);
       
       // Reset file input
-      if (fileInputRef.current) {
+      if (isResume && fileInputRef.current) {
         fileInputRef.current.value = '';
+      } else if (isPitchDeck && pitchDeckFileInputRef.current) {
+        pitchDeckFileInputRef.current.value = '';
       }
     }
   };
   
-  const triggerFileUpload = () => {
+  const triggerResumeUpload = () => {
     fileInputRef.current?.click();
+  };
+  
+  const triggerPitchDeckUpload = () => {
+    pitchDeckFileInputRef.current?.click();
   };
   
   const panelVariants = {
@@ -441,12 +487,20 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
         
         <Separator />
         
-        {/* Hidden file input */}
+        {/* Hidden file inputs */}
         <input
           type="file"
           ref={fileInputRef}
           onChange={handleFileUpload}
           accept=".pdf,.doc,.docx"
+          className="hidden"
+        />
+        
+        <input
+          type="file"
+          ref={pitchDeckFileInputRef}
+          onChange={handleFileUpload}
+          accept=".pdf"
           className="hidden"
         />
 
@@ -461,17 +515,42 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
               className="w-full pr-10"
               disabled={isTyping || isUploading}
             />
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
-              onClick={triggerFileUpload}
-              disabled={isTyping || isUploading}
-              title="Upload Resume/CV"
-            >
-              <Paperclip className="h-4 w-4" />
-            </Button>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
+                  disabled={isTyping || isUploading}
+                  title="Upload Files"
+                >
+                  <Paperclip className="h-4 w-4" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-48 p-0" align="end" alignOffset={-20}>
+                <div className="flex flex-col rounded-md overflow-hidden">
+                  <Button
+                    variant="ghost"
+                    className="flex justify-start items-center gap-2 px-3 py-2 rounded-none"
+                    onClick={triggerResumeUpload}
+                    disabled={isTyping || isUploading}
+                  >
+                    <FileText className="h-4 w-4" />
+                    <span>Upload Resume</span>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="flex justify-start items-center gap-2 px-3 py-2 rounded-none"
+                    onClick={triggerPitchDeckUpload}
+                    disabled={isTyping || isUploading}
+                  >
+                    <PresentationIcon className="h-4 w-4" />
+                    <span>Upload Pitch Deck</span>
+                  </Button>
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
           <Button 
             type="submit" 
