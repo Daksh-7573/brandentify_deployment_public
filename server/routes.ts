@@ -13,6 +13,7 @@ import { handleCreateDemoProfiles } from "./routes-demo-profiles";
 import { updateUserGeolocation, updateUserRadarVisibility, getNearbyUsers } from "./routes-radar";
 import { handleMuskChat } from "./routes-musk";
 import { registerSmartConnectRoutes } from "./routes-smart-connect";
+import { registerProfileCoachRoutes } from "./routes-profile-coach";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -65,6 +66,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register Smart Connect routes directly
   registerSmartConnectRoutes(app, storage);
+  
+  // Register Profile Coach routes directly
+  registerProfileCoachRoutes(app, storage);
   
   // Initialize the email service
   await initEmailService();
