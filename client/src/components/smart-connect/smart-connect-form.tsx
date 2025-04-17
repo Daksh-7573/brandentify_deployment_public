@@ -60,7 +60,7 @@ export function SmartConnectForm({ userId }: { userId: number }) {
   // Smart Connect mutation
   const smartConnectMutation = useMutation({
     mutationFn: async (values: SmartConnectFormValues) => {
-      return apiRequest("POST", "/api/smart-connect", {
+      return apiRequest('POST', `/api/smart-connect`, {
         userId,
         ...values,
       });
@@ -219,7 +219,7 @@ export function SmartConnectForm({ userId }: { userId: number }) {
                   <FormLabel className="text-base">Industry</FormLabel>
                   <FormControl>
                     <IndustryCombobox
-                      value={field.value}
+                      value={field.value || ""}
                       onChange={field.onChange}
                       placeholder="Select or enter an industry"
                     />
