@@ -4587,6 +4587,9 @@ ${extractedText.substring(0, 5000)}
 
   // Apply musk suggestion routes
   app.use(muskSuggestionRoutes);
+  
+  // Apply musk match routes
+  app.use("/api/musk-matches", muskMatchRoutes);
 
   app.use("/api", apiRouter);
 
