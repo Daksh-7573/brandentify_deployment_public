@@ -35,37 +35,69 @@ export const handleMuskChat = async (req: Request, res: Response) => {
 async function enrichContextWithUserData(userId: number, context?: any) {
   try {
     // Get user profile data
-    const user = await storage.users.findById(userId);
+    const user = await storage.getUser(userId);
     if (!user) {
       return context;
     }
     
     // Get user's experiences
-    const experiences = await storage.workExperiences.findByUserId(userId);
+    const experiences = await storage.getWorkExperiencesByUserId(userId);
     
     // Get user's educations
-    const educations = await storage.educations.findByUserId(userId);
+    const educations = await storage.getEducationsByUserId(userId);
     
     // Get user's skills
-    const skills = await storage.skills.findByUserId(userId);
+    const skills = await storage.getSkillsByUserId(userId);
     
     // Get user's projects/assignments
-    const projects = await storage.projects.findByUserId(userId);
+    const projects = await storage.getProjectsByUserId(userId);
+    
+    // Calculate profile completeness score for more tailored guidance
+    const profileCompleteness = calculateProfileCompleteness({
+      user, experiences, educations, skills, projects
+    });
+    
+    // Determine primary domain expertise and professional identity
+    const domainExpertise = determineDomainExpertise({
+      industry: user.industry,
+      skills, 
+      experiences
+    });
+
+    // Analyze career trajectory and growth opportunities
+    const careerTrajectory = analyzeCareerTrajectory({
+      experiences,
+      skills,
+      industry: user.industry
+    });
     
     // Create enriched context with user data
     const enrichedContext = {
       ...context,
       userData: {
         profile: {
+          id: user.id,
           name: user.name || "",
           title: user.title || "",
           industry: user.industry || "",
           location: user.location || "",
+          lookingFor: user.lookingFor || "",
+          domain: domainExpertise.primaryDomain || "",
+          profileCompleted: user.profileCompleted || 0
         },
         experiences: experiences || [],
         educations: educations || [],
         skills: skills || [],
-        projects: projects || []
+        projects: projects || [],
+        insights: {
+          profileCompleteness,
+          domainExpertise,
+          careerTrajectory,
+          recommendedPortfolioTemplate: getRecommendedTemplate({
+            industry: user.industry,
+            careerStage: careerTrajectory.careerStage
+          })
+        }
       }
     };
     
@@ -74,6 +106,260 @@ async function enrichContextWithUserData(userId: number, context?: any) {
     console.error("Error enriching context with user data:", error);
     return context;
   }
+}
+
+// Helper function to calculate profile completeness with detailed feedback
+function calculateProfileCompleteness({ user, experiences, educations, skills, projects }: any) {
+  // Base completeness checks
+  const checks = {
+    hasName: !!user.name,
+    hasPhoto: !!user.photoURL,
+    hasTitle: !!user.title,
+    hasIndustry: !!user.industry,
+    hasLocation: !!user.location,
+    hasExperiences: experiences && experiences.length > 0,
+    hasDetailedExperiences: experiences && experiences.some((exp: any) => 
+      exp.description && exp.description.length > 20),
+    hasEducation: educations && educations.length > 0,
+    hasSkills: skills && skills.length > 0,
+    hasProjects: projects && projects.length > 0
+  };
+  
+  // Calculate score based on importance of fields
+  const weights = {
+    hasName: 10,
+    hasPhoto: 5,
+    hasTitle: 10,
+    hasIndustry: 15,
+    hasLocation: 10,
+    hasExperiences: 15,
+    hasDetailedExperiences: 10,
+    hasEducation: 10,
+    hasSkills: 15,
+    hasProjects: 10
+  };
+  
+  // Calculate weighted score
+  let totalScore = 0;
+  let maxScore = 0;
+  
+  for (const [key, value] of Object.entries(checks)) {
+    const weight = weights[key as keyof typeof weights] || 0;
+    maxScore += weight;
+    if (value) totalScore += weight;
+  }
+  
+  // Normalize to percentage
+  const percentComplete = Math.round((totalScore / maxScore) * 100);
+  
+  // Determine missing critical elements
+  const missingElements = Object.entries(checks)
+    .filter(([_, value]) => !value)
+    .map(([key, _]) => key.replace(/^has/, ''));
+  
+  return {
+    score: percentComplete,
+    isComplete: percentComplete > 80,
+    missingElements,
+    checks
+  };
+}
+
+// Helper function to determine domain expertise from user data
+function determineDomainExpertise({ industry, skills, experiences }: any) {
+  // Default domains if no data available
+  if (!industry) {
+    return {
+      primaryDomain: null,
+      secondaryDomains: [],
+      relevantSkills: []
+    };
+  }
+  
+  // Industry to domain mappings
+  const industryDomains: Record<string, string[]> = {
+    'Technology': ['Software Development', 'Data Science', 'Cybersecurity', 'Cloud Architecture', 'DevOps'],
+    'Finance': ['Investment Banking', 'Financial Analysis', 'Risk Management', 'FinTech', 'Wealth Management'],
+    'Healthcare': ['Healthcare Administration', 'Clinical Practice', 'Health Informatics', 'Biotechnology', 'Public Health'],
+    'Marketing': ['Digital Marketing', 'Brand Management', 'Content Strategy', 'Market Research', 'Growth Marketing'],
+    'Design': ['UX/UI Design', 'Graphic Design', 'Product Design', 'Design Systems', 'Visual Communication'],
+    'Consulting': ['Management Consulting', 'Strategy Consulting', 'Technology Consulting', 'Operations Consulting', 'HR Consulting'],
+    'Education': ['K-12 Education', 'Higher Education', 'EdTech', 'Educational Leadership', 'Curriculum Development'],
+    'Manufacturing': ['Supply Chain Management', 'Lean Manufacturing', 'Quality Control', 'Industrial Engineering', 'Production Management'],
+    'Legal': ['Corporate Law', 'Intellectual Property', 'Legal Compliance', 'Contract Law', 'Legal Tech']
+  };
+  
+  // Get potential domains based on industry
+  const potentialDomains = industryDomains[industry] || [];
+  
+  // Extract skills names for analysis
+  const skillNames = skills ? skills.map((skill) => skill.name.toLowerCase()) : [];
+  
+  // Domain-specific skill keywords
+  const domainSkillKeywords: Record<string, string[]> = {
+    'Software Development': ['programming', 'javascript', 'python', 'java', 'react', 'angular', 'node', 'fullstack', 'backend', 'frontend'],
+    'Data Science': ['data', 'analytics', 'machine learning', 'ai', 'statistics', 'python', 'r', 'sql', 'tableau', 'visualization'],
+    'Cybersecurity': ['security', 'infosec', 'penetration testing', 'encryption', 'compliance', 'audit', 'forensics'],
+    'UX/UI Design': ['ux', 'ui', 'user', 'interface', 'experience', 'wireframe', 'prototype', 'usability', 'figma', 'sketch'],
+    'Product Management': ['product', 'roadmap', 'agile', 'scrum', 'sprint', 'backlog', 'feature', 'requirements'],
+    'Marketing': ['marketing', 'seo', 'content', 'social media', 'campaign', 'analytics', 'branding', 'advertising'],
+    'Project Management': ['project', 'pmp', 'agile', 'scrum', 'kanban', 'sprint', 'delivery', 'timeline', 'budget']
+  };
+  
+  // Score domains based on skill match
+  const domainScores: Record<string, number> = {};
+  
+  // Initialize domains with base scores from industry match
+  potentialDomains.forEach(domain => {
+    domainScores[domain] = 1; // Base score for industry match
+  });
+  
+  // Add scores based on skill matches
+  for (const [domain, keywords] of Object.entries(domainSkillKeywords)) {
+    if (!domainScores[domain]) domainScores[domain] = 0;
+    
+    keywords.forEach(keyword => {
+      if (skillNames.some(skill => skill.includes(keyword))) {
+        domainScores[domain] += 1;
+      }
+    });
+  }
+  
+  // Score experience titles for domain relevance
+  if (experiences && experiences.length > 0) {
+    experiences.forEach((exp: any) => {
+      if (!exp.title) return;
+      
+      const titleLower = exp.title.toLowerCase();
+      
+      for (const [domain, keywords] of Object.entries(domainSkillKeywords)) {
+        keywords.forEach(keyword => {
+          if (titleLower.includes(keyword)) {
+            domainScores[domain] = (domainScores[domain] || 0) + 0.5;
+          }
+        });
+      }
+    });
+  }
+  
+  // Sort domains by score
+  const sortedDomains = Object.entries(domainScores)
+    .sort(([, scoreA], [, scoreB]) => scoreB - scoreA)
+    .map(([domain]) => domain);
+  
+  // Get relevant skills based on primary domain
+  const primaryDomain = sortedDomains[0] || null;
+  const relevantSkills = primaryDomain ? 
+    skillNames.filter(skill => 
+      domainSkillKeywords[primaryDomain]?.some(keyword => 
+        skill.includes(keyword))
+    ) : [];
+  
+  return {
+    primaryDomain,
+    secondaryDomains: sortedDomains.slice(1, 3),
+    relevantSkills
+  };
+}
+
+// Helper function to analyze career trajectory from experience
+function analyzeCareerTrajectory({ experiences, skills, industry }: any) {
+  // Default if no experiences
+  if (!experiences || experiences.length === 0) {
+    return {
+      careerStage: 'entry_level',
+      totalYearsExperience: 0,
+      growthRate: 'unknown',
+      nextLevelRoles: []
+    };
+  }
+  
+  // Calculate total years of experience
+  const totalYearsExperience = experiences.reduce((total: number, exp: any) => {
+    const startDate = exp.startDate ? new Date(exp.startDate) : new Date();
+    const endDate = exp.endDate ? new Date(exp.endDate) : new Date();
+    
+    const years = (endDate.getFullYear() - startDate.getFullYear()) +
+                 (endDate.getMonth() - startDate.getMonth()) / 12;
+    
+    return total + Math.max(0, years);
+  }, 0);
+  
+  // Determine career stage based on experience
+  let careerStage = 'entry_level';
+  if (totalYearsExperience >= 15) careerStage = 'executive_level';
+  else if (totalYearsExperience >= 8) careerStage = 'senior_level';
+  else if (totalYearsExperience >= 3) careerStage = 'mid_level';
+  
+  // Calculate growth rate based on title progression
+  let growthRate = 'steady';
+  if (experiences.length >= 2) {
+    const titleProgression = experiences
+      .slice(0, 3) // Look at most recent 3 positions
+      .map((exp: any) => exp.title?.toLowerCase())
+      .filter(Boolean);
+    
+    // Simple keyword-based progression check
+    const seniorKeywords = ['senior', 'lead', 'manager', 'head', 'director', 'chief', 'vp', 'president'];
+    const juniorKeywords = ['junior', 'associate', 'assistant', 'intern', 'trainee'];
+    
+    const seniorCount = titleProgression.filter(title => 
+      seniorKeywords.some(keyword => title.includes(keyword))
+    ).length;
+    
+    const juniorCount = titleProgression.filter(title => 
+      juniorKeywords.some(keyword => title.includes(keyword))
+    ).length;
+    
+    if (seniorCount > juniorCount) growthRate = 'accelerated';
+    else if (seniorCount === 0 && juniorCount > 0) growthRate = 'early_stage';
+  }
+  
+  // Recommend next level roles based on industry and career stage
+  const nextLevelRoles: string[] = [];
+  
+  const industryRoleProgressions: Record<string, Record<string, string[]>> = {
+    'Technology': {
+      'entry_level': ['Senior Developer', 'Team Lead', 'Product Owner'],
+      'mid_level': ['Engineering Manager', 'Technical Architect', 'Senior Product Manager'],
+      'senior_level': ['Director of Engineering', 'CTO', 'VP of Product'],
+      'executive_level': ['Chief Innovation Officer', 'CEO', 'Board Advisor']
+    },
+    'Finance': {
+      'entry_level': ['Senior Analyst', 'Associate Manager', 'Financial Advisor'],
+      'mid_level': ['Finance Manager', 'Investment Advisor', 'Financial Controller'],
+      'senior_level': ['Director of Finance', 'CFO', 'Investment Director'],
+      'executive_level': ['Chief Investment Officer', 'CEO', 'Board Member']
+    },
+    'Marketing': {
+      'entry_level': ['Marketing Specialist', 'Digital Marketing Manager', 'Brand Strategist'],
+      'mid_level': ['Marketing Manager', 'Brand Manager', 'Content Director'],
+      'senior_level': ['Marketing Director', 'VP of Marketing', 'Chief Brand Officer'],
+      'executive_level': ['CMO', 'CEO', 'Brand Consultant']
+    }
+  };
+  
+  // Get role progression for the industry and career stage
+  if (industry && industryRoleProgressions[industry]?.[careerStage]) {
+    nextLevelRoles.push(...industryRoleProgressions[industry][careerStage]);
+  } else {
+    // Generic progression if industry not found
+    const genericProgression: Record<string, string[]> = {
+      'entry_level': ['Senior Specialist', 'Team Lead', 'Project Manager'],
+      'mid_level': ['Department Manager', 'Senior Project Manager', 'Associate Director'],
+      'senior_level': ['Director', 'VP', 'Head of Department'],
+      'executive_level': ['C-Suite Executive', 'Consultant', 'Board Member']
+    };
+    
+    nextLevelRoles.push(...(genericProgression[careerStage] || []));
+  }
+  
+  return {
+    careerStage,
+    totalYearsExperience,
+    growthRate,
+    nextLevelRoles
+  };
 }
 
 // Generate AI response based on message and context
