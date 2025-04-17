@@ -5,6 +5,7 @@ import { UserData } from '@/types/user';
 import { apiRequest } from '@/lib/queryClient';
 import { useAuth } from '@/hooks/use-auth';
 import DashboardLayout from "@/components/layout/dashboard-layout";
+import { User as UserIcon } from 'lucide-react';
 import { 
   MapPin, 
   Users, 
@@ -252,10 +253,20 @@ const Radar = () => {
   const { user: currentUser } = useAuth();
   
   // Get current user data
-  const { data: userData } = useQuery({
+  const { data: userData } = useQuery<any>({
     queryKey: ['/api/users', currentUser?.uid],
     enabled: !!currentUser?.uid,
   });
+  
+  // Initialize filter values from user profile when data is loaded
+  useEffect(() => {
+    if (userData) {
+      // Set initial filter values based on user profile data
+      if (userData.title) setJobTitleFilter(userData.title);
+      if (userData.industry) setIndustryFilter(userData.industry);
+      if (userData.lookingFor) setLookingForFilter(userData.lookingFor);
+    }
+  }, [userData]);
   
   // This is our demo data state
   const [nearbyUsersData, setNearbyUsersData] = useState<NearbyUser[]>(DEMO_NEARBY_USERS);
@@ -476,6 +487,28 @@ const Radar = () => {
                       <SelectItem value="50">50 km</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+                
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-sm font-medium">Filter Professionals</h4>
+                  {userData && (
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        if (userData.title) setJobTitleFilter(userData.title);
+                        if (userData.industry) setIndustryFilter(userData.industry);
+                        if (userData.lookingFor) setLookingForFilter(userData.lookingFor);
+                        toast({
+                          title: "Filters set from your profile",
+                          description: "Now showing professionals matching your profile criteria.",
+                        });
+                      }}
+                    >
+                      <UserIcon className="mr-2 h-3 w-3" />
+                      Use My Profile
+                    </Button>
+                  )}
                 </div>
                 
                 <div className="space-y-2">
