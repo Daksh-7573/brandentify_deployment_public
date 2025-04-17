@@ -109,19 +109,7 @@ export default function Header() {
                 <span>Discover & Connect</span>
               </Button>
               
-              <Button
-                variant="ghost"
-                size="sm" 
-                className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
-                  isActive('/ai-career') 
-                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
-                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
-                }`}
-                onClick={() => setLocation('/ai-career')}
-              >
-                <Bot className="h-4 w-4" />
-                <span>AI Career Booster</span>
-              </Button>
+
               
               <Button
                 variant="ghost"
@@ -251,22 +239,7 @@ export default function Header() {
               <span>Discover & Connect</span>
             </Button>
             
-            <Button
-              variant="ghost"
-              size="sm"
-              className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
-                isActive('/ai-career') 
-                  ? 'text-primary bg-primary/5' 
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
-              }`}
-              onClick={() => {
-                setLocation('/ai-career');
-                setIsMobileMenuOpen(false);
-              }}
-            >
-              <Bot className="h-4 w-4 mr-3 ml-0.5" />
-              <span>AI Career Booster</span>
-            </Button>
+
             
             <Button
               variant="ghost"

@@ -13,7 +13,6 @@ import Dashboard from "@/pages/dashboard";
 import Profile from "@/pages/profile";
 import PublicProfile from "@/pages/public-profile";
 import PersonalDetailsPage from "@/pages/personal-details";
-import AICareer from "@/pages/ai-career";
 import PortfolioBuilder from "@/pages/portfolio-builder";
 import CreatePulsePage from "@/pages/create-pulse";
 import IndustryPulsePage from "@/pages/industry-pulse-new";
@@ -77,7 +76,7 @@ function Router() {
         {(params) => <PublicProfile username={params.username} />}
       </Route>
       <Route path="/ai-career">
-        <ProtectedRoute path="/ai-career" component={AICareer} />
+        <ProtectedRoute path="/ai-career" component={Dashboard} />
       </Route>
       <Route path="/smart-connect">
         <ProtectedRoute path="/smart-connect" component={SmartConnectPage} />
@@ -103,9 +102,6 @@ function Router() {
       </Route>
       <Route path="/radar">
         <ProtectedRoute path="/radar" component={Radar} />
-      </Route>
-      <Route path="/ai-career">
-        <ProtectedRoute path="/ai-career" component={AICareer} />
       </Route>
       <Route component={NotFound} />
     </Switch>

@@ -10,7 +10,6 @@ export default function Sidebar({ activePage }: SidebarProps) {
   const menuItems = [
     { id: "industry-pulse", icon: "fas fa-home", label: "Industry Pulse", path: "/industry-pulse" },
     { id: "search", icon: "fas fa-search", label: "Discover & Connect", path: "/search" },
-    { id: "ai-career", icon: "fas fa-robot", label: "AI Career Booster", path: "/ai-career" },
     { id: "services", icon: "fas fa-concierge-bell", label: "Services", path: "/services" },
   ];
 
