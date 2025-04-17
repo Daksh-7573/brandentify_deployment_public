@@ -11,7 +11,7 @@ import { projectThumbnailUpload, getFileUrl } from "./utils/upload";
 import { handleParseResume } from "./routes-parse-resume";
 import { handleCreateDemoProfiles } from "./routes-demo-profiles";
 import { updateUserGeolocation, updateUserRadarVisibility, getNearbyUsers } from "./routes-radar";
-import { handleMuskChat, handleResumeUpload } from "./routes-musk";
+import { handleMuskChat, handleResumeUpload, handlePitchDeckUpload } from "./routes-musk";
 import muskSuggestionRoutes from "./routes-musk-suggestions";
 import { registerSmartConnectRoutes } from "./routes-smart-connect";
 import { 
@@ -4572,6 +4572,11 @@ ${extractedText.substring(0, 5000)}
   // Route for handling resume uploads for Musk AI analysis
   apiRouter.post("/musk/resume-upload", async (req: Request, res: Response) => {
     await handleResumeUpload(req, res);
+  });
+  
+  // Route for handling pitch deck uploads for Musk AI analysis
+  apiRouter.post("/musk/pitchdeck-upload", async (req: Request, res: Response) => {
+    await handlePitchDeckUpload(req, res);
   });
 
   // Decision Engine routes for Smart Connect feature
