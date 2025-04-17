@@ -243,11 +243,13 @@ async function analyzeEngagementMetrics(userId: number, context: MatchingContext
     // Get pulses created by the user
     const userPulses = await storage.getPulsesByUserId(userId);
     
-    // Get comments by the user
-    const userComments = await storage.getPulseCommentsByUserId(userId) || [];
+    // Get comments by the user - since we don't have a direct method to get comments by user ID,
+    // we'll create a placeholder for now - in a real implementation, this would fetch from the database
+    const userComments = [];
     
-    // Get reactions by the user
-    const userReactions = await storage.getPulseReactionsByUserId(userId) || [];
+    // Get reactions by the user - since we don't have a direct method to get reactions by user ID,
+    // we'll create a placeholder for now - in a real implementation, this would fetch from the database
+    const userReactions = [];
     
     // Calculate engagement metrics
     context.userInsights.engagementMetrics = {

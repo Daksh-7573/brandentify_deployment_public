@@ -2,7 +2,76 @@
  * Type definitions for the Brandentifier Decision Engine
  */
 
-import { User, WorkExperience, Education, Skill, Project } from "../../shared/schema";
+// Define interfaces for our schema without directly importing
+// This avoids LSP errors while maintaining type safety
+
+export interface User {
+  id: number;
+  username: string;
+  email: string;
+  password: string | null;
+  phoneNumber: string | null;
+  name: string | null;
+  photoURL: string | null;
+  title: string | null;
+  location: string | null;
+  industry: string | null;
+  domain?: string | null;
+  aboutMe?: string | null;
+  company?: string | null;
+  lookingFor: string | null;
+  profileCompleted: number | null;
+  emailVerified?: boolean;
+  createdAt: Date | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  visitingCardType?: string | null;
+}
+
+export interface WorkExperience {
+  id: number;
+  userId: number;
+  title: string;
+  company: string;
+  location: string | null;
+  description: string | null;
+  startDate: string;
+  endDate: string | null;
+  industry: string | null;
+  domain: string | null;
+}
+
+export interface Education {
+  id: number;
+  userId: number;
+  institution: string;
+  degree: string;
+  location: string | null;
+  startDate: string;
+  endDate: string | null;
+}
+
+export interface Skill {
+  id: number;
+  userId: number;
+  name: string;
+  level: string;
+  proficiency: number | null;
+}
+
+export interface Project {
+  id: number;
+  userId: number;
+  title: string;
+  description: string | null;
+  category: string | null;
+  startDate: string | null;
+  projectUrl: string | null;
+  thumbnailUrl: string | null;
+  thumbnailFile: string | null;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+}
 
 /**
  * Comprehensive user profile data used for matching

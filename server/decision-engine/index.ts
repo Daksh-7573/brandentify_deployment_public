@@ -227,9 +227,9 @@ export class DecisionEngine {
     const reasons: string[] = [];
     
     // Check for complementary skills
-    const userSkillNames = userProfile.skills.map(s => s.name.toLowerCase());
-    const matchSkillNames = matchProfile.skills.map(s => s.name.toLowerCase());
-    const complementarySkills = matchSkillNames.filter(skill => !userSkillNames.includes(skill));
+    const userSkillNames = userProfile.skills.map((s: { name: string }) => s.name.toLowerCase());
+    const matchSkillNames = matchProfile.skills.map((s: { name: string }) => s.name.toLowerCase());
+    const complementarySkills = matchSkillNames.filter((skill: string) => !userSkillNames.includes(skill));
     
     if (complementarySkills.length > 0) {
       reasons.push(`Has skills you might want to learn: ${complementarySkills.slice(0, 3).join(', ')}`);
