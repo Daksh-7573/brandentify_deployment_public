@@ -13,6 +13,11 @@ import { handleCreateDemoProfiles } from "./routes-demo-profiles";
 import { updateUserGeolocation, updateUserRadarVisibility, getNearbyUsers } from "./routes-radar";
 import { handleMuskChat } from "./routes-musk";
 import { 
+  handleSmartConnect, 
+  handleCareerRecommendations, 
+  handleNearbyProfessionals 
+} from "./routes-decision-engine";
+import { 
   insertUserSchema, 
   insertResumeSchema, 
   insertWorkExperienceSchema,
@@ -4558,6 +4563,11 @@ ${extractedText.substring(0, 5000)}
   apiRouter.post("/musk/chat", async (req: Request, res: Response) => {
     await handleMuskChat(req, res);
   });
+
+  // Decision Engine routes for Smart Connect feature
+  apiRouter.post("/smart-connect", handleSmartConnect);
+  apiRouter.get("/users/:userId/career-recommendations", handleCareerRecommendations);
+  apiRouter.get("/users/:userId/nearby-professionals", handleNearbyProfessionals);
 
   app.use("/api", apiRouter);
 

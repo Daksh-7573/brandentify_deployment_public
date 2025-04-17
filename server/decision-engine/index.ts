@@ -33,7 +33,7 @@ export class DecisionEngine {
       const context = await enrichContextWithUserInsights(userProfile, validatedCriteria);
       
       // Get all potential matches (excluding the searching user)
-      const allUsers = await storage.findAllUsers();
+      const allUsers = await storage.getAllUsers();
       const potentialMatches = allUsers.filter(user => user.id !== userId);
       
       // Score and rank all potential matches
@@ -71,16 +71,16 @@ export class DecisionEngine {
    * work experiences, education, skills, projects, and activity data
    */
   private async getUserProfileData(userId: number): Promise<UserProfileData> {
-    const user = await storage.findUserById(userId);
+    const user = await storage.getUser(userId);
     
     if (!user) {
       throw new Error(`User with ID ${userId} not found`);
     }
     
-    const workExperiences = await storage.findWorkExperiencesByUserId(userId);
-    const educations = await storage.findEducationsByUserId(userId);
-    const skills = await storage.findSkillsByUserId(userId);
-    const projects = await storage.findProjectsByUserId(userId);
+    const workExperiences = await storage.getWorkExperiencesByUserId(userId);
+    const educations = await storage.getEducationsByUserId(userId);
+    const skills = await storage.getSkillsByUserId(userId);
+    const projects = await storage.getProjectsByUserId(userId);
     
     // Get additional profile data like activity patterns, content engagement, etc.
     // This is valuable for more nuanced matching algorithms
