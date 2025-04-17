@@ -1932,26 +1932,10 @@ export default function Profile() {
         </div>
       </div>
       
-      {/* Debug element to confirm rendering */}
-      <div className="fixed bottom-6 right-6 z-[10000] h-16 w-16 rounded-full bg-red-500 flex items-center justify-center text-white font-bold">
-        MUSK
-      </div>
-      
-      {/* Musk AI Button - Floating at bottom right */}
-      <MuskButton 
-        context={{
-          page: 'profile',
-          userId: userNumericId,
-          data: {
-            userData,
-            experiences,
-            educations,
-            skills,
-            projects
-          }
-        }} 
-        initialOpen={false} 
-      />
+      {/* 
+        No individual MuskButton needed here - using global MuskButton from App.tsx instead 
+        that appears on all pages
+      */}
     </div>
   );
 }
