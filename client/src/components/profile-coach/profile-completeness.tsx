@@ -1,104 +1,64 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import React from "react";
 import { Progress } from "@/components/ui/progress";
-import { cn } from "@/lib/utils";
-import { FileCheck } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { AlertCircle } from "lucide-react";
 
 interface ProfileCompletenessProps {
   score: number;
+  priorities: string[];
   className?: string;
 }
 
-export default function ProfileCompleteness({ score, className }: ProfileCompletenessProps) {
-  // Determine progress color based on score
-  const getProgressColor = (score: number) => {
-    if (score < 40) return "bg-destructive";
-    if (score < 70) return "bg-amber-500";
-    return "bg-emerald-500";
+export default function ProfileCompleteness({ score, priorities, className = "" }: ProfileCompletenessProps) {
+  // Determine color based on score
+  const getScoreColor = () => {
+    if (score >= 80) return "text-green-500";
+    if (score >= 50) return "text-amber-500";
+    return "text-red-500";
   };
-  
-  // Get completion level label
-  const getCompletionLevel = (score: number) => {
-    if (score < 30) return "Starting Out";
-    if (score < 50) return "Basic";
-    if (score < 70) return "Intermediate";
-    if (score < 90) return "Advanced";
-    return "Expert";
+
+  // Determine progress bar color
+  const getProgressColor = () => {
+    if (score >= 80) return "bg-green-500";
+    if (score >= 50) return "bg-amber-500";
+    return "bg-red-500";
   };
-  
-  // Get recommendations based on score
-  const getRecommendations = (score: number) => {
-    if (score < 30) {
-      return [
-        "Fill in your basic profile information",
-        "Add at least one work experience entry",
-        "Add your education history"
-      ];
-    }
-    
-    if (score < 50) {
-      return [
-        "Add more detail to your work descriptions",
-        "List at least 5 skills relevant to your field",
-        "Add a project to showcase your work"
-      ];
-    }
-    
-    if (score < 70) {
-      return [
-        "Enhance work descriptions with measurable achievements",
-        "Add more skills with proficiency levels",
-        "Include more details in your projects"
-      ];
-    }
-    
-    if (score < 90) {
-      return [
-        "Refine your profile with targeted keywords",
-        "Add certifications and special achievements",
-        "Include quantifiable results in your work history"
-      ];
-    }
-    
-    return [
-      "Keep your profile up to date with new accomplishments",
-      "Regularly refresh your skills with emerging trends",
-      "Review and update project outcomes periodically"
-    ];
+
+  // Get message based on score
+  const getMessage = () => {
+    if (score >= 80) return "Excellent! Your profile is well-optimized.";
+    if (score >= 50) return "Good progress! Keep improving your profile.";
+    return "Your profile needs work to stand out.";
   };
-  
+
   return (
-    <Card className={cn("h-full", className)}>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-xl">Profile Completeness</CardTitle>
-        <CardDescription>
-          How complete and effective your profile is
-        </CardDescription>
+    <Card className={className}>
+      <CardHeader>
+        <CardTitle className="flex items-center justify-between">
+          <span>Profile Completeness</span>
+          <span className={`text-2xl font-bold ${getScoreColor()}`}>{score}%</span>
+        </CardTitle>
+        <CardDescription>{getMessage()}</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">
-              {getCompletionLevel(score)} Level
-            </span>
-            <span className="font-medium">{score}%</span>
+      <CardContent className="space-y-4">
+        <Progress value={score} className={`h-2 ${getProgressColor()}`} />
+
+        {priorities && priorities.length > 0 && (
+          <div className="mt-4">
+            <h3 className="text-sm font-medium mb-2 flex items-center gap-1">
+              <AlertCircle className="h-4 w-4 text-amber-500" />
+              <span>Improvement Priorities</span>
+            </h3>
+            <ul className="space-y-1 text-sm">
+              {priorities.map((priority, index) => (
+                <li key={index} className="flex items-start gap-2">
+                  <span className="text-muted-foreground">•</span>
+                  <span className="text-muted-foreground">{priority}</span>
+                </li>
+              ))}
+            </ul>
           </div>
-          <Progress
-            value={score}
-            className={cn("h-2", getProgressColor(score))}
-          />
-        </div>
-        
-        <div>
-          <h4 className="text-sm font-medium mb-2">Next Steps to Improve</h4>
-          <ul className="space-y-1.5">
-            {getRecommendations(score).map((recommendation, index) => (
-              <li key={index} className="flex items-start gap-2 text-sm">
-                <FileCheck className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                <span className="text-muted-foreground">{recommendation}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        )}
       </CardContent>
     </Card>
   );

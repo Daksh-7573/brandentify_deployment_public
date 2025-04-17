@@ -21,14 +21,14 @@ export function registerProfileCoachRoutes(router: Router, storage: IStorage) {
       }
       
       // Get user profile data
-      const user = await storage.getUserById(userId);
+      const user = await storage.getUser(userId);
       if (!user) {
         return res.status(404).json({ error: "User not found" });
       }
       
       // Get user experiences, education, skills, and projects
-      const experiences = await storage.getWorkExperienceByUserId(userId);
-      const educations = await storage.getEducationByUserId(userId);
+      const experiences = await storage.getWorkExperiencesByUserId(userId);
+      const educations = await storage.getEducationsByUserId(userId);
       const skills = await storage.getSkillsByUserId(userId);
       const projects = await storage.getProjectsByUserId(userId);
       
@@ -149,7 +149,7 @@ export function registerProfileCoachRoutes(router: Router, storage: IStorage) {
       }
       
       // Get user to provide context for the suggestions
-      const user = await storage.getUserById(userId);
+      const user = await storage.getUser(userId);
       if (!user) {
         return res.status(404).json({ error: "User not found" });
       }

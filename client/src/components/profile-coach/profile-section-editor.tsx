@@ -1,21 +1,38 @@
-import { useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "@/hooks/use-toast";
-import { Separator } from "@/components/ui/separator";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
-import { Loader2, Save, X, Lightbulb, MessageSquare, CheckCircle2 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { IndustryCombobox } from "@/components/ui/industry-combobox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
+import { X } from "lucide-react";
 
 interface ProfileSectionEditorProps {
   section: string;
@@ -25,202 +42,175 @@ interface ProfileSectionEditorProps {
 }
 
 export default function ProfileSectionEditor({ section, content, userId, onClose }: ProfileSectionEditorProps) {
-  const [currentContent, setCurrentContent] = useState(content);
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [suggestions, setSuggestions] = useState<{
+    suggestions: string[];
+    keywords: string[];
+    improvedVersion: string | null;
+  } | null>(null);
   
-  // States for suggestions
-  const [showingSuggestions, setShowingSuggestions] = useState(false);
-  const [selectedSuggestion, setSelectedSuggestion] = useState<string | null>(null);
-  
-  // Create schema based on section type
-  const getSchemaForSection = (section: string) => {
-    switch (section) {
-      case "basic":
-        return z.object({
-          name: z.string().min(2, "Name must be at least 2 characters"),
-          title: z.string().min(2, "Job title must be at least 2 characters"),
-          industry: z.string().min(2, "Industry must be at least 2 characters"),
-          location: z.string().min(2, "Location must be at least 2 characters"),
-          email: z.string().email("Please enter a valid email address"),
-          phoneNumber: z.string().nullable().optional(),
-          lookingFor: z.string().nullable().optional(),
+  // Fetch suggestions when component mounts
+  React.useEffect(() => {
+    const fetchSuggestions = async () => {
+      try {
+        const response = await apiRequest("/api/profile-coach/suggestions", {
+          method: "POST",
+          body: JSON.stringify({
+            userId,
+            section,
+            currentContent: content,
+          }),
         });
-      case "experience":
-        return z.object({
-          title: z.string().min(2, "Job title is required"),
-          company: z.string().min(2, "Company name is required"),
-          location: z.string().nullable().optional(),
-          startDate: z.string().min(2, "Start date is required"),
-          endDate: z.string().nullable().optional(),
-          description: z.string().min(10, "Please provide at least a brief description"),
-          current: z.boolean().optional(),
-        });
-      case "education":
-        return z.object({
-          institution: z.string().min(2, "Institution name is required"),
-          degree: z.string().min(2, "Degree is required"),
-          fieldOfStudy: z.string().min(2, "Field of study is required"),
-          startDate: z.string().min(2, "Start date is required"),
-          endDate: z.string().nullable().optional(),
-          description: z.string().nullable().optional(),
-        });
-      case "skills":
-        return z.object({
-          name: z.string().min(2, "Skill name is required"),
-          proficiency: z.string().min(2, "Proficiency level is required"),
-          yearsOfExperience: z.number().optional(),
-          description: z.string().nullable().optional(),
-        });
-      case "projects":
-        return z.object({
-          title: z.string().min(2, "Project title is required"),
-          description: z.string().min(10, "Please provide a project description"),
-          url: z.string().nullable().optional(),
-          startDate: z.string().min(2, "Start date is required"),
-          endDate: z.string().nullable().optional(),
-          status: z.string().nullable().optional(),
-        });
-      default:
-        return z.object({});
-    }
-  };
-  
-  // Initialize form with the schema for this section
-  const form = useForm({
-    resolver: zodResolver(getSchemaForSection(section)),
-    defaultValues: content || {},
-  });
-  
-  // Get suggestions from the API
-  const { data: suggestions, isLoading: suggestionsLoading, error: suggestionsError } = useQuery({
-    queryKey: ["/api/profile-coach/suggestions", section, userId],
-    queryFn: async () => {
-      if (!userId) throw new Error("User not authenticated");
-      
-      const response = await fetch("/api/profile-coach/suggestions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId,
-          section,
-          currentContent: content || {},
-        }),
-      });
-      
-      if (!response.ok) {
-        throw new Error("Failed to fetch suggestions");
+        
+        setSuggestions(response);
+      } catch (error) {
+        console.error("Error fetching suggestions:", error);
       }
-      
-      return response.json();
-    },
-    enabled: !!userId,
-  });
-  
-  // Apply the improved version from suggestions
-  const applySuggestion = () => {
-    if (suggestions?.improvedVersion) {
-      form.reset(suggestions.improvedVersion);
-      toast({
-        title: "Suggestion Applied",
-        description: "The AI-improved version has been applied to your form.",
-      });
-    }
-  };
-  
-  // Apply a specific suggestion (for keyword insertion)
-  const applySpecificSuggestion = (suggestion: string) => {
-    setSelectedSuggestion(suggestion);
+    };
     
-    // This would depend on the section, but for example, for description fields:
-    if (section === "experience" || section === "education" || section === "projects") {
-      const currentDescription = form.getValues("description") || "";
-      form.setValue("description", `${currentDescription} ${suggestion}`.trim());
-    }
-  };
+    fetchSuggestions();
+  }, [userId, section, content]);
   
-  // Save the updated content
-  const saveContentMutation = useMutation({
-    mutationFn: async (updatedContent: any) => {
-      if (!userId) throw new Error("User not authenticated");
+  // Define form validation schema based on section type
+  let formSchema: any;
+  
+  switch (section) {
+    case "basic":
+      formSchema = z.object({
+        id: z.number(),
+        name: z.string().min(2, "Name must be at least 2 characters"),
+        title: z.string().min(2, "Job title must be at least 2 characters"),
+        industry: z.string().min(2, "Industry must be at least 2 characters"),
+        location: z.string().min(2, "Location must be at least 2 characters"),
+        email: z.string().email("Please enter a valid email address"),
+        phoneNumber: z.string().nullable().optional(),
+        lookingFor: z.string().nullable().optional(),
+      });
+      break;
       
-      const response = await fetch("/api/profile-coach/save-improvements", {
+    case "experience":
+      formSchema = z.object({
+        id: z.number().optional(),
+        userId: z.number(),
+        title: z.string().min(2, "Job title is required"),
+        company: z.string().min(2, "Company name is required"),
+        location: z.string().nullable().optional(),
+        startDate: z.string().min(2, "Start date is required"),
+        endDate: z.string().nullable().optional(),
+        description: z.string().min(10, "Please provide at least a brief description"),
+        current: z.boolean().optional(),
+      });
+      break;
+      
+    case "education":
+      formSchema = z.object({
+        id: z.number().optional(),
+        userId: z.number(),
+        institution: z.string().min(2, "Institution name is required"),
+        degree: z.string().min(2, "Degree is required"),
+        fieldOfStudy: z.string().min(2, "Field of study is required"),
+        startDate: z.string().min(2, "Start date is required"),
+        endDate: z.string().nullable().optional(),
+        description: z.string().nullable().optional(),
+      });
+      break;
+      
+    case "skills":
+      formSchema = z.object({
+        id: z.number().optional(),
+        userId: z.number(),
+        name: z.string().min(2, "Skill name is required"),
+        proficiency: z.string().min(2, "Proficiency level is required"),
+        yearsOfExperience: z.number().or(z.string()).optional(),
+        description: z.string().nullable().optional(),
+      });
+      break;
+      
+    case "projects":
+      formSchema = z.object({
+        id: z.number().optional(),
+        userId: z.number(),
+        title: z.string().min(2, "Project title is required"),
+        description: z.string().min(10, "Please provide a project description"),
+        url: z.string().nullable().optional(),
+        startDate: z.string().min(2, "Start date is required"),
+        endDate: z.string().nullable().optional(),
+        status: z.string().nullable().optional(),
+      });
+      break;
+      
+    default:
+      formSchema = z.object({});
+  }
+  
+  // Set up form with react-hook-form
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      ...content,
+      // Convert any null values to empty strings for form inputs
+      ...Object.entries(content).reduce(
+        (acc, [key, value]) => ({
+          ...acc,
+          [key]: value === null ? "" : value,
+        }),
+        {}
+      ),
+    },
+  });
+  
+  // Handle form submission
+  const onSubmit = async (data: any) => {
+    setIsLoading(true);
+    
+    try {
+      await apiRequest("/api/profile-coach/save-improvements", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({
           userId,
           section,
-          updatedContent,
+          updatedContent: data,
         }),
       });
       
-      if (!response.ok) {
-        throw new Error("Failed to save improvements");
-      }
-      
-      return response.json();
-    },
-    onSuccess: () => {
       toast({
-        title: "Changes Saved",
-        description: "Your profile improvements have been successfully saved.",
+        title: "Success",
+        description: "Your profile has been updated successfully.",
       });
+      
       onClose();
-    },
-    onError: (error) => {
-      console.error("Error saving improvements:", error);
+    } catch (error: any) {
+      console.error("Error saving profile updates:", error);
       toast({
-        title: "Error Saving Changes",
-        description: "There was a problem saving your changes. Please try again.",
+        title: "Error",
+        description: error.message || "Failed to save profile updates. Please try again.",
         variant: "destructive",
       });
-    },
-  });
-  
-  // Submit handler
-  const onSubmit = (data: any) => {
-    saveContentMutation.mutate({ id: content?.id, ...data, userId });
-  };
-  
-  // Get section title and description
-  const getSectionInfo = () => {
-    switch (section) {
-      case "basic":
-        return {
-          title: "Basic Information",
-          description: "Edit your personal and professional details",
-        };
-      case "experience":
-        return {
-          title: "Work Experience",
-          description: "Add or edit your professional experience",
-        };
-      case "education":
-        return {
-          title: "Education",
-          description: "Add or edit your academic background",
-        };
-      case "skills":
-        return {
-          title: "Skills",
-          description: "Add or edit your professional skills",
-        };
-      case "projects":
-        return {
-          title: "Projects",
-          description: "Add or edit your showcase projects",
-        };
-      default:
-        return {
-          title: "Edit Profile Section",
-          description: "Update your profile information",
-        };
+    } finally {
+      setIsLoading(false);
     }
   };
   
-  // Render form fields based on section
+  // Get section title based on section type
+  const getSectionTitle = () => {
+    switch (section) {
+      case "basic":
+        return "Basic Information";
+      case "experience":
+        return content.id ? "Edit Work Experience" : "Add Work Experience";
+      case "education":
+        return content.id ? "Edit Education" : "Add Education";
+      case "skills":
+        return content.id ? "Edit Skill" : "Add Skill";
+      case "projects":
+        return content.id ? "Edit Project" : "Add Project";
+      default:
+        return "Edit Profile";
+    }
+  };
+  
+  // Render appropriate form fields based on section type
   const renderFormFields = () => {
     switch (section) {
       case "basic":
@@ -231,9 +221,9 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Full Name</FormLabel>
+                  <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Your name" {...field} value={field.value || ""} />
+                    <Input placeholder="Your name" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -247,7 +237,7 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
                 <FormItem>
                   <FormLabel>Job Title</FormLabel>
                   <FormControl>
-                    <Input placeholder="Your professional title" {...field} value={field.value || ""} />
+                    <Input placeholder="Your job title" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -261,11 +251,7 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
                 <FormItem>
                   <FormLabel>Industry</FormLabel>
                   <FormControl>
-                    <IndustryCombobox
-                      value={field.value || ""}
-                      onChange={field.onChange}
-                      placeholder="Select or type your industry"
-                    />
+                    <Input placeholder="Your industry" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -279,35 +265,7 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
                 <FormItem>
                   <FormLabel>Location</FormLabel>
                   <FormControl>
-                    <Input placeholder="City, State, Country" {...field} value={field.value || ""} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="your.email@example.com" {...field} value={field.value || ""} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="phoneNumber"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Phone Number</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Optional" {...field} value={field.value || ""} />
+                    <Input placeholder="Your location" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -319,25 +277,10 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
               name="lookingFor"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>What are you looking for?</FormLabel>
-                  <Select 
-                    onValueChange={field.onChange} 
-                    defaultValue={field.value || ""}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select what you're looking for" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="Career Opportunities">Career Opportunities</SelectItem>
-                      <SelectItem value="A New Job">A New Job</SelectItem>
-                      <SelectItem value="Networking">Networking</SelectItem>
-                      <SelectItem value="A Career Mentor">A Career Mentor</SelectItem>
-                      <SelectItem value="Hiring Talent">Hiring Talent</SelectItem>
-                      <SelectItem value="Business Partnerships">Business Partnerships</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <FormLabel>Looking For</FormLabel>
+                  <FormControl>
+                    <Input placeholder="What you're looking for (e.g., New opportunities, Mentorship)" {...field} value={field.value || ""} />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -355,7 +298,7 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
                 <FormItem>
                   <FormLabel>Job Title</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g. Senior Software Engineer" {...field} value={field.value || ""} />
+                    <Input placeholder="Your job title" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -369,7 +312,7 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
                 <FormItem>
                   <FormLabel>Company</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g. Acme Corporation" {...field} value={field.value || ""} />
+                    <Input placeholder="Company name" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -383,7 +326,7 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
                 <FormItem>
                   <FormLabel>Location</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g. San Francisco, CA" {...field} value={field.value || ""} />
+                    <Input placeholder="Job location" {...field} value={field.value || ""} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -398,8 +341,9 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
                   <FormItem>
                     <FormLabel>Start Date</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g. Jan 2020" {...field} value={field.value || ""} />
+                      <Input placeholder="YYYY-MM" {...field} />
                     </FormControl>
+                    <FormDescription>Format: YYYY-MM</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -412,8 +356,9 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
                   <FormItem>
                     <FormLabel>End Date</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g. Present" {...field} value={field.value || ""} disabled={form.watch("current")} />
+                      <Input placeholder="YYYY-MM or leave empty if current" {...field} value={field.value || ""} />
                     </FormControl>
+                    <FormDescription>Format: YYYY-MM</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -424,27 +369,17 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
               control={form.control}
               name="current"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                  <div className="space-y-0.5">
-                    <FormLabel>Current Position</FormLabel>
-                    <FormDescription>
-                      Check if this is your current job
-                    </FormDescription>
-                  </div>
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 mt-2">
                   <FormControl>
-                    <Switch
+                    <Checkbox
                       checked={field.value}
-                      onCheckedChange={(checked) => {
-                        field.onChange(checked);
-                        if (checked) {
-                          form.setValue("endDate", "Present");
-                        } else {
-                          form.setValue("endDate", "");
-                        }
-                      }}
+                      onCheckedChange={field.onChange}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>Current Position</FormLabel>
+                    <FormDescription>Check if you currently work here</FormDescription>
+                  </div>
                 </FormItem>
               )}
             />
@@ -456,16 +391,13 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea 
-                      placeholder="Describe your responsibilities, achievements, and the impact of your work" 
-                      className="min-h-[120px]" 
-                      {...field} 
-                      value={field.value || ""} 
+                    <Textarea
+                      placeholder="Describe your responsibilities, achievements, and skills used"
+                      className="min-h-[150px]"
+                      {...field}
+                      value={field.value || ""}
                     />
                   </FormControl>
-                  <FormDescription>
-                    Include measurable achievements and specific skills used
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -483,7 +415,7 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
                 <FormItem>
                   <FormLabel>Institution</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g. Stanford University" {...field} value={field.value || ""} />
+                    <Input placeholder="School or university name" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -497,7 +429,7 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
                 <FormItem>
                   <FormLabel>Degree</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g. Bachelor of Science" {...field} value={field.value || ""} />
+                    <Input placeholder="Degree type (e.g., Bachelor's, Master's)" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -511,7 +443,7 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
                 <FormItem>
                   <FormLabel>Field of Study</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g. Computer Science" {...field} value={field.value || ""} />
+                    <Input placeholder="Major or field of study" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -526,8 +458,9 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
                   <FormItem>
                     <FormLabel>Start Date</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g. Sep 2016" {...field} value={field.value || ""} />
+                      <Input placeholder="YYYY-MM" {...field} />
                     </FormControl>
+                    <FormDescription>Format: YYYY-MM</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -540,8 +473,9 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
                   <FormItem>
                     <FormLabel>End Date</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g. Jun 2020" {...field} value={field.value || ""} />
+                      <Input placeholder="YYYY-MM or leave empty if current" {...field} value={field.value || ""} />
                     </FormControl>
+                    <FormDescription>Format: YYYY-MM</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -555,11 +489,11 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea 
-                      placeholder="Add details about your coursework, achievements, activities, etc." 
-                      className="min-h-[100px]" 
-                      {...field} 
-                      value={field.value || ""} 
+                    <Textarea
+                      placeholder="Additional details about your education"
+                      className="min-h-[100px]"
+                      {...field}
+                      value={field.value || ""}
                     />
                   </FormControl>
                   <FormMessage />
@@ -579,7 +513,7 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
                 <FormItem>
                   <FormLabel>Skill Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g. JavaScript" {...field} value={field.value || ""} />
+                    <Input placeholder="Skill name" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -592,13 +526,13 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Proficiency Level</FormLabel>
-                  <Select 
-                    onValueChange={field.onChange} 
-                    defaultValue={field.value || ""}
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select your proficiency level" />
+                        <SelectValue placeholder="Select proficiency level" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -620,12 +554,12 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
                 <FormItem>
                   <FormLabel>Years of Experience</FormLabel>
                   <FormControl>
-                    <Input 
-                      type="number" 
-                      placeholder="e.g. 3" 
+                    <Input
+                      type="number"
+                      placeholder="Years of experience"
                       {...field}
-                      value={field.value?.toString() || ""}
-                      onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                      value={field.value || ""}
+                      onChange={(e) => field.onChange(Number(e.target.value) || 0)}
                     />
                   </FormControl>
                   <FormMessage />
@@ -640,11 +574,11 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea 
-                      placeholder="Describe how you've used this skill in your professional experience" 
-                      className="min-h-[100px]" 
-                      {...field} 
-                      value={field.value || ""} 
+                    <Textarea
+                      placeholder="Additional details about your skill"
+                      className="min-h-[100px]"
+                      {...field}
+                      value={field.value || ""}
                     />
                   </FormControl>
                   <FormMessage />
@@ -664,21 +598,7 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
                 <FormItem>
                   <FormLabel>Project Title</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g. E-commerce Platform Redesign" {...field} value={field.value || ""} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="url"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Project URL</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g. https://example.com/project" {...field} value={field.value || ""} />
+                    <Input placeholder="Project title" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -693,8 +613,9 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
                   <FormItem>
                     <FormLabel>Start Date</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g. Jan 2022" {...field} value={field.value || ""} />
+                      <Input placeholder="YYYY-MM" {...field} value={field.value || ""} />
                     </FormControl>
+                    <FormDescription>Format: YYYY-MM</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -707,8 +628,9 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
                   <FormItem>
                     <FormLabel>End Date</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g. Mar 2022 or Ongoing" {...field} value={field.value || ""} />
+                      <Input placeholder="YYYY-MM or leave empty if ongoing" {...field} value={field.value || ""} />
                     </FormControl>
+                    <FormDescription>Format: YYYY-MM</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -717,12 +639,26 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
             
             <FormField
               control={form.control}
+              name="url"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Project URL</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Link to your project" {...field} value={field.value || ""} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
               name="status"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Project Status</FormLabel>
-                  <Select 
-                    onValueChange={field.onChange} 
+                  <FormLabel>Status</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
                     defaultValue={field.value || ""}
                   >
                     <FormControl>
@@ -734,7 +670,6 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
                       <SelectItem value="In Progress">In Progress</SelectItem>
                       <SelectItem value="Completed">Completed</SelectItem>
                       <SelectItem value="On Hold">On Hold</SelectItem>
-                      <SelectItem value="Planning">Planning</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -749,11 +684,11 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea 
-                      placeholder="Describe the project, your role, technologies used, and outcomes" 
-                      className="min-h-[120px]" 
-                      {...field} 
-                      value={field.value || ""} 
+                    <Textarea
+                      placeholder="Describe your project, technologies used, and outcomes"
+                      className="min-h-[150px]"
+                      {...field}
+                      value={field.value || ""}
                     />
                   </FormControl>
                   <FormMessage />
@@ -764,123 +699,107 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
         );
         
       default:
-        return <p>Unknown section type</p>;
+        return null;
     }
   };
   
-  // Section-specific info for the UI
-  const sectionInfo = getSectionInfo();
-  
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className="space-y-8">
       <Card>
-        <CardHeader>
-          <div className="flex justify-between items-start">
-            <div>
-              <CardTitle className="text-xl">{sectionInfo.title}</CardTitle>
-              <CardDescription>{sectionInfo.description}</CardDescription>
-            </div>
-            <Button variant="ghost" size="icon" onClick={onClose}>
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
+        <CardHeader className="relative">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute right-2 top-2"
+            onClick={onClose}
+          >
+            <X className="h-4 w-4" />
+          </Button>
+          <CardTitle>{getSectionTitle()}</CardTitle>
+          <CardDescription>
+            Update your {section} information to enhance your professional profile
+          </CardDescription>
         </CardHeader>
-        
         <CardContent>
-          <div className="flex flex-col md:flex-row gap-8">
-            {/* Main form */}
-            <div className={cn("space-y-6", suggestions ? "md:w-2/3" : "w-full")}>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                  {renderFormFields()}
-                  
-                  <div className="flex justify-end gap-3 pt-2">
-                    <Button type="button" variant="outline" onClick={onClose}>
-                      Cancel
-                    </Button>
-                    <Button 
-                      type="submit" 
-                      disabled={saveContentMutation.isPending}
-                    >
-                      {saveContentMutation.isPending && (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      )}
-                      Save Changes
-                    </Button>
-                  </div>
-                </form>
-              </Form>
-            </div>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {renderFormFields()}
+              
+              <div className="flex justify-end space-x-2">
+                <Button variant="outline" type="button" onClick={onClose}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={isLoading}>
+                  {isLoading ? "Saving..." : "Save Changes"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+      
+      {suggestions && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Improvement Suggestions</CardTitle>
+            <CardDescription>
+              AI-powered suggestions to enhance your profile
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {suggestions.suggestions.length > 0 && (
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Tips</h3>
+                <ul className="list-disc pl-6 space-y-1">
+                  {suggestions.suggestions.map((suggestion, index) => (
+                    <li key={index} className="text-muted-foreground">
+                      {suggestion}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
             
-            {/* Suggestions panel (if available) */}
-            {suggestions && (
-              <div className="md:w-1/3 space-y-4">
-                <div className="rounded-lg border bg-card p-4">
-                  <h3 className="text-sm font-medium flex items-center mb-3">
-                    <Lightbulb className="h-4 w-4 mr-2 text-primary" />
-                    AI Recommendations
-                  </h3>
-                  
-                  {suggestionsLoading ? (
-                    <div className="flex items-center justify-center p-4">
-                      <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                    </div>
-                  ) : (
-                    <>
-                      <div className="space-y-2">
-                        <p className="text-xs text-muted-foreground">Suggested improvements:</p>
-                        <ul className="space-y-2">
-                          {suggestions?.suggestions?.map((suggestion: string, index: number) => (
-                            <li key={index} className="flex items-start gap-2 text-sm">
-                              <span className="bg-primary/10 text-primary rounded-full h-5 w-5 flex-shrink-0 flex items-center justify-center text-xs font-medium">
-                                {index + 1}
-                              </span>
-                              <span className="text-muted-foreground">{suggestion}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      
-                      {suggestions?.keywords && (
-                        <div className="mt-4 pt-4 border-t">
-                          <p className="text-xs text-muted-foreground mb-2">Recommended keywords:</p>
-                          <div className="flex flex-wrap gap-1">
-                            {suggestions.keywords.map((keyword: string, index: number) => (
-                              <Badge 
-                                key={index} 
-                                variant="outline" 
-                                className={cn(
-                                  "cursor-pointer hover:bg-primary/10",
-                                  selectedSuggestion === keyword && "bg-primary/20 border-primary"
-                                )}
-                                onClick={() => applySpecificSuggestion(keyword)}
-                              >
-                                {keyword}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                      
-                      <div className="mt-4 pt-4 border-t">
-                        <Button 
-                          variant="secondary" 
-                          className="w-full"
-                          onClick={applySuggestion}
-                          size="sm"
-                        >
-                          <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" />
-                          Apply All Suggestions
-                        </Button>
-                      </div>
-                    </>
-                  )}
+            {suggestions.keywords.length > 0 && (
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Recommended Keywords</h3>
+                <div className="flex flex-wrap gap-2">
+                  {suggestions.keywords.map((keyword, index) => (
+                    <span
+                      key={index}
+                      className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm"
+                    >
+                      {keyword}
+                    </span>
+                  ))}
                 </div>
               </div>
             )}
-          </div>
-        </CardContent>
-      </Card>
+            
+            {suggestions.improvedVersion && (
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Suggested Content</h3>
+                <p className="bg-muted p-3 rounded text-sm">
+                  {suggestions.improvedVersion}
+                </p>
+                <CardFooter className="px-0 pt-4">
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => {
+                      if (section === "experience" || section === "projects" || section === "education") {
+                        form.setValue("description", suggestions.improvedVersion || "");
+                      }
+                    }}
+                  >
+                    Use Suggested Content
+                  </Button>
+                </CardFooter>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
