@@ -11,13 +11,6 @@ import { projectThumbnailUpload, getFileUrl } from "./utils/upload";
 import { handleParseResume } from "./routes-parse-resume";
 import { handleCreateDemoProfiles } from "./routes-demo-profiles";
 import { updateUserGeolocation, updateUserRadarVisibility, getNearbyUsers } from "./routes-radar";
-import { handleMuskChat } from "./routes-musk";
-import { registerSmartConnectRoutes } from "./routes-smart-connect";
-import { 
-  handleSmartConnect, 
-  handleCareerRecommendations, 
-  handleNearbyProfessionals 
-} from "./routes-decision-engine";
 import { 
   insertUserSchema, 
   insertResumeSchema, 
@@ -62,9 +55,6 @@ import * as xaiService from "./services/xai-service";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const apiRouter = express.Router();
-  
-  // Register Smart Connect routes directly
-  registerSmartConnectRoutes(app, storage);
   
   // Initialize the email service
   await initEmailService();
@@ -4562,16 +4552,6 @@ ${extractedText.substring(0, 5000)}
   apiRouter.post("/users/:id/geolocation", updateUserGeolocation);
   apiRouter.post("/users/:id/radar-visibility", updateUserRadarVisibility);
   apiRouter.get("/nearby-users", getNearbyUsers);
-  
-  // Musk AI assistant routes
-  apiRouter.post("/musk/chat", async (req: Request, res: Response) => {
-    await handleMuskChat(req, res);
-  });
-
-  // Decision Engine routes for Smart Connect feature
-  apiRouter.post("/smart-connect", handleSmartConnect);
-  apiRouter.get("/users/:userId/career-recommendations", handleCareerRecommendations);
-  apiRouter.get("/users/:userId/nearby-professionals", handleNearbyProfessionals);
 
   app.use("/api", apiRouter);
 

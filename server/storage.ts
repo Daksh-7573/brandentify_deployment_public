@@ -665,10 +665,6 @@ export class MemStorage implements IStorage {
     return updatedUser;
   }
 
-  async getAllUsers(): Promise<User[]> {
-    return Array.from(this.users.values());
-  }
-
   // Resume operations
   async getResumeByUserId(userId: number): Promise<Resume | undefined> {
     return Array.from(this.resumes.values()).find(resume => resume.userId === userId);
