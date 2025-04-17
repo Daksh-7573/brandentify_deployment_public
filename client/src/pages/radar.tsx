@@ -6,6 +6,66 @@ import { apiRequest } from '@/lib/queryClient';
 import { useAuth } from '@/hooks/use-auth';
 import DashboardLayout from "@/components/layout/dashboard-layout";
 import { User as UserIcon } from 'lucide-react';
+
+// Define industry and looking for categories constants
+// Get list of main industries
+const INDUSTRIES = [
+  "Technology",
+  "Healthcare",
+  "Finance",
+  "Education",
+  "Manufacturing",
+  "Retail",
+  "Media & Entertainment",
+  "Construction",
+  "Transportation",
+  "Energy",
+  "Hospitality",
+  "Agriculture",
+  "Telecommunications",
+  "Real Estate",
+  "Consulting",
+  "Pharmaceuticals",
+  "Legal Services",
+  "Marketing & Advertising",
+  "Aerospace",
+  "Automotive",
+  "Biotechnology",
+  "Nonprofit",
+  "Government"
+];
+
+// Define lookingFor categories for consistent use across the app
+const LOOKING_FOR_CATEGORIES = [
+  // Career & Job Seeking category
+  { value: "job_opportunities", label: "💼 Job Opportunities" },
+  { value: "job_seekers", label: "💼 Job Seekers / Candidates" },
+  { value: "internships", label: "💼 Internships" },
+  { value: "interns", label: "💼 Interns" },
+  { value: "mentors", label: "💼 Career Mentors" },
+  { value: "mentees", label: "💼 Career Mentees" },
+  
+  // Business & Investment category  
+  { value: "investors", label: "🚀 Investors" },
+  { value: "startups", label: "🚀 Startups" },
+  { value: "co_founders", label: "🚀 Co-Founders" },
+  { value: "business_partners", label: "🚀 Business Partners" },
+  { value: "advisors", label: "🚀 Legal/Financial Advisors" },
+  { value: "tech_partners", label: "🚀 Technical Partners" },
+  
+  // Learning & Upskilling category
+  { value: "skill_trainers", label: "🎓 Skill Trainers" },
+  { value: "learners", label: "🎓 Students/Learners" },
+  { value: "study_groups", label: "🎓 Study Groups" },
+  
+  // Networking & Collaborations category
+  { value: "industry_experts", label: "🤝 Industry Experts" },
+  { value: "share_expertise", label: "🤝 Sharing My Expertise" },
+  
+  // Freelance & Side Hustle category
+  { value: "freelance_gigs", label: "💰 Freelance Gigs" },
+  { value: "hiring_freelancers", label: "💰 Hiring Freelancers" }
+];
 import { 
   MapPin, 
   Users, 
@@ -147,7 +207,12 @@ const UserCard = ({ user, onClick }: { user: NearbyUser, onClick: () => void }) 
             )}
             {user.lookingFor && (
               <Badge variant="outline" className="text-xs px-1.5 py-0">
-                Looking for: {user.lookingFor}
+                Looking for: {
+                  // Display the human-readable label instead of the value
+                  (typeof user.lookingFor === 'string' && 
+                   LOOKING_FOR_CATEGORIES.find(cat => cat.value === user.lookingFor)?.label?.replace(/^[^ ]+ /, '')) || 
+                  user.lookingFor
+                }
               </Badge>
             )}
           </div>
@@ -298,11 +363,23 @@ const Radar = () => {
     const matchesJobTitle = !jobTitleFilter || 
       (user.title && user.title.toLowerCase().includes(jobTitleFilter.toLowerCase()));
     
+    // For industry, we need an exact match since we're using a dropdown
     const matchesIndustry = !industryFilter || 
-      (user.industry && user.industry.toLowerCase().includes(industryFilter.toLowerCase()));
+      (user.industry && user.industry === industryFilter);
     
+    // For lookingFor, we need an exact match or match the displayed label
     const matchesLookingFor = !lookingForFilter || 
-      (user.lookingFor && user.lookingFor.toLowerCase().includes(lookingForFilter.toLowerCase()));
+      (user.lookingFor && (
+        // Check if the value matches directly
+        user.lookingFor === lookingForFilter ||
+        // Or if the display label contains the filter text (for backward compatibility)
+        LOOKING_FOR_CATEGORIES.some(cat => 
+          cat.value === lookingForFilter && 
+          // Make sure user.lookingFor is not null before calling toLowerCase
+          typeof user.lookingFor === 'string' &&
+          user.lookingFor.toLowerCase().includes(cat.label.toLowerCase().replace(/^[^ ]+ /, ''))
+        )
+      ));
     
     return matchesJobTitle && matchesIndustry && matchesLookingFor;
   });
@@ -526,28 +603,42 @@ const Radar = () => {
                 
                 <div className="space-y-2">
                   <Label htmlFor="industry">Industry</Label>
-                  <div className="relative">
-                    <input
-                      id="industry"
-                      className="w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                      placeholder="e.g. Technology, Design"
-                      value={industryFilter}
-                      onChange={(e) => setIndustryFilter(e.target.value)}
-                    />
-                  </div>
+                  <Select
+                    value={industryFilter}
+                    onValueChange={setIndustryFilter}
+                  >
+                    <SelectTrigger id="industry" className="w-full">
+                      <SelectValue placeholder="Select an industry" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-80">
+                      <SelectItem value="">All Industries</SelectItem>
+                      {INDUSTRIES.map((industry) => (
+                        <SelectItem key={industry} value={industry}>
+                          {industry}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 
                 <div className="space-y-2">
                   <Label htmlFor="looking-for">Looking For</Label>
-                  <div className="relative">
-                    <input
-                      id="looking-for"
-                      className="w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                      placeholder="e.g. Mentoring, Job Opportunities"
-                      value={lookingForFilter}
-                      onChange={(e) => setLookingForFilter(e.target.value)}
-                    />
-                  </div>
+                  <Select
+                    value={lookingForFilter}
+                    onValueChange={setLookingForFilter}
+                  >
+                    <SelectTrigger id="looking-for" className="w-full">
+                      <SelectValue placeholder="Select what you're looking for" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-80">
+                      <SelectItem value="">All Categories</SelectItem>
+                      {LOOKING_FOR_CATEGORIES.map((category) => (
+                        <SelectItem key={category.value} value={category.value}>
+                          {category.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               
