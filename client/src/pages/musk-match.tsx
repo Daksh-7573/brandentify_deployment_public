@@ -10,30 +10,36 @@ import MuskMatchContainer from '@/components/musk/musk-match-container';
 import { PageLayout } from '@/components/layout/page-layout';
 import { queryClient } from '@/lib/queryClient';
 import { useAuth } from '@/hooks/use-auth';
+import { useToast } from '@/hooks/use-toast';
 
 export default function MuskMatchPage() {
   const { user, isAuthenticated, isDemoMode } = useAuth();
+  const { toast } = useToast();
   const userId = isDemoMode ? 1 : (user?.id || 0);
   
-  // Create a match for demo purposes
+  // Create demo matches
   const createDemoMatch = async () => {
     try {
-      // Create a new match for testing
-      await apiRequest('POST', '/api/musk-matches', {
-        userId: 1,
-        suggestedUserId: 2,
-        matchType: "Career Mentor",
-        matchScore: 92,
-        matchReason: "Both have complementary skills and are in similar industries",
-        industry: "Technology",
-        domain: "Software Development",
-        skills: ["React", "TypeScript", "Node.js", "UI/UX", "Career Planning"]
+      // Use the dedicated demo match generation endpoint
+      const response = await apiRequest('POST', '/api/musk-matches/generate-demo', {});
+      const result = await response.json();
+      
+      // Show success message with created profiles
+      toast({
+        title: "Demo matches created",
+        description: `Created demo profiles and matches for the Musk Match feature`,
+        duration: 5000
       });
       
       // Invalidate queries to refresh the data
       queryClient.invalidateQueries({ queryKey: ['/api/musk-matches/user', userId] });
     } catch (error) {
-      console.error("Error creating demo match:", error);
+      console.error("Error creating demo matches:", error);
+      toast({
+        title: "Error creating demo matches",
+        description: "There was an error generating demo matches. Please try again.",
+        variant: "destructive"
+      });
     }
   };
   
