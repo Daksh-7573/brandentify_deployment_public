@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { storage } from "./storage";
+import OpenAI from "openai";
 
 // Handle Musk AI assistant chat requests
 export const handleMuskChat = async (req: Request, res: Response) => {
@@ -85,7 +86,6 @@ async function generateMuskResponse(message: string, context: any) {
       return generateFallbackResponse(message, context);
     }
     
-    const OpenAI = require('openai');
     const openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
@@ -121,8 +121,8 @@ ${JSON.stringify(context.userData || {}, null, 2)}
 
     // Prepare messages for API call
     const messages = [
-      { role: 'system', content: systemPrompt },
-      { role: 'user', content: message }
+      { role: "system" as const, content: systemPrompt },
+      { role: "user" as const, content: message }
     ];
 
     // Call OpenAI API
