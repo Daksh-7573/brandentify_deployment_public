@@ -7,7 +7,7 @@ import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { apiRequest } from '@/lib/queryClient';
-import { X, Send, MessageSquare, Loader2 } from 'lucide-react';
+import { X, Send, MessageSquare, Loader2, FileUp, Paperclip } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
@@ -48,9 +48,12 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
   
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const inputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Auto-scroll to bottom when messages change
   useEffect(() => {
@@ -176,6 +179,153 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
     inputRef.current?.focus();
   };
   
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    
+    const file = e.target.files[0];
+    const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    
+    // Validate file type and size
+    if (!allowedTypes.includes(file.type)) {
+      toast({
+        title: 'Invalid file type',
+        description: 'Please upload a PDF or Word document (.pdf, .doc, .docx)',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    if (file.size > maxSize) {
+      toast({
+        title: 'File too large',
+        description: 'Please upload a file smaller than 5MB',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    // Get current user ID from context or fallback to demo user
+    const userId = context?.userId || 1;
+    
+    // Add user message about uploading resume
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      content: `I'm uploading my resume (${file.name}) for analysis`,
+      sender: 'user',
+      timestamp: new Date(),
+    };
+    
+    // Add a "processing" message placeholder
+    const thinkingMessage: Message = {
+      id: 'thinking-' + Date.now().toString(),
+      content: '',
+      sender: 'musk',
+      timestamp: new Date(),
+      thinking: true
+    };
+    
+    setMessages(prev => [...prev, userMessage, thinkingMessage]);
+    setIsUploading(true);
+    setUploadProgress(0);
+    
+    try {
+      // Create form data for file upload
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('userId', userId.toString());
+      
+      // Upload the file
+      const uploadResponse = await fetch('/api/musk/resume-upload', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!uploadResponse.ok) {
+        throw new Error('Failed to upload file');
+      }
+      
+      const uploadResult = await uploadResponse.json();
+      
+      // Make request to analyze the resume
+      const analyzeResponse = await fetch('/api/musk/analyze-resume', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId,
+          fileId: uploadResult.fileId
+        })
+      });
+      
+      if (!analyzeResponse.ok) {
+        throw new Error('Failed to analyze resume');
+      }
+      
+      const analyzeResult = await analyzeResponse.json();
+      
+      // Replace the thinking message with the analysis result
+      setMessages(prev => 
+        prev.map(msg => 
+          msg.id === thinkingMessage.id 
+            ? {
+                id: 'analysis-' + Date.now(),
+                content: analyzeResult.analysis,
+                sender: 'musk',
+                timestamp: new Date(),
+                quickResponses: [
+                  'How can I improve my skills section?',
+                  'What about my work experiences?',
+                  'Can you help me tailor it for a specific role?'
+                ]
+              }
+            : msg
+        )
+      );
+      
+      toast({
+        title: 'Analysis complete',
+        description: 'Your resume has been analyzed successfully',
+      });
+      
+    } catch (error) {
+      console.error('Error processing resume:', error);
+      
+      // Replace the thinking message with an error message
+      setMessages(prev => 
+        prev.map(msg => 
+          msg.id === thinkingMessage.id 
+            ? {
+                id: 'error-' + Date.now(),
+                content: "I'm sorry, I had trouble processing your resume. Please try again or upload a different file format.",
+                sender: 'musk',
+                timestamp: new Date()
+              }
+            : msg
+        )
+      );
+      
+      toast({
+        title: 'Processing Error',
+        description: 'Failed to analyze your resume. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsUploading(false);
+      setUploadProgress(0);
+      
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+  
+  const triggerFileUpload = () => {
+    fileInputRef.current?.click();
+  };
+  
   const panelVariants = {
     hidden: { opacity: 0, y: 20, scale: 0.95 },
     visible: { 
@@ -275,25 +425,63 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
         
         <Separator />
         
+        {/* Hidden file input */}
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileUpload}
+          accept=".pdf,.doc,.docx"
+          className="hidden"
+        />
+
         {/* Input */}
         <form onSubmit={handleSubmit} className="p-4 flex gap-2">
-          <Input
-            ref={inputRef}
-            placeholder="Type your message..."
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            className="flex-1"
-            disabled={isTyping}
-          />
+          <div className="flex-1 flex gap-2 relative">
+            <Input
+              ref={inputRef}
+              placeholder="Type your message..."
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              className="w-full pr-10"
+              disabled={isTyping || isUploading}
+            />
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
+              onClick={triggerFileUpload}
+              disabled={isTyping || isUploading}
+              title="Upload Resume/CV"
+            >
+              <Paperclip className="h-4 w-4" />
+            </Button>
+          </div>
           <Button 
             type="submit" 
             variant="default" 
             size="icon"
-            disabled={!inputValue.trim() || isTyping}
+            disabled={!inputValue.trim() || isTyping || isUploading}
           >
             <Send className="h-4 w-4" />
           </Button>
         </form>
+        
+        {/* Upload progress indicator */}
+        {isUploading && (
+          <div className="px-4 py-2 bg-primary/10 border-t">
+            <div className="text-xs mb-1 flex justify-between">
+              <span>Uploading resume...</span>
+              <span>{uploadProgress}%</span>
+            </div>
+            <div className="h-1 bg-muted rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-primary rounded-full transition-all duration-300 ease-in-out" 
+                style={{ width: `${uploadProgress}%` }}
+              ></div>
+            </div>
+          </div>
+        )}
       </motion.div>
     </Card>
   );
