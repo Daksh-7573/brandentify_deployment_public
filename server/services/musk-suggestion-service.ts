@@ -69,7 +69,7 @@ export class MuskSuggestionService {
     const hasProjects = projects.length > 0;
     
     // Get recent page views from behavior tracking
-    const recentBehavior = await this.storage.getMuskBehaviorTrackingForUser(userId, 10);
+    const recentBehavior = await this.storage.getMuskBehaviorTrackingByUser(userId);
     const recentPageViews = recentBehavior
       .filter(b => b.eventType === 'page_view')
       .map(b => {
@@ -220,7 +220,7 @@ export class MuskSuggestionService {
       actionTaken: false,
       createdAt: new Date(),
       updatedAt: new Date(),
-      expiresAt: undefined, // Doesn't expire until profile is completed
+      expiresAt: null // Doesn't expire until profile is completed
     };
   }
 

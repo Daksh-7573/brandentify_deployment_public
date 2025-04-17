@@ -2529,6 +2529,90 @@ export class MemStorage implements IStorage {
   async deleteNewsUserPreference(id: number): Promise<boolean> {
     return this.newsUserPreferences.delete(id);
   }
+  
+  // Musk Suggestion operations
+  async getMuskSuggestionsForUser(userId: number): Promise<MuskSuggestion[]> {
+    return Array.from(this.muskSuggestions.values())
+      .filter(suggestion => suggestion.userId === userId);
+  }
+  
+  async createMuskSuggestion(suggestion: InsertMuskSuggestion): Promise<MuskSuggestion> {
+    const id = this.currentMuskSuggestionId++;
+    const createdAt = new Date();
+    
+    const muskSuggestion: MuskSuggestion = {
+      ...suggestion,
+      id,
+      createdAt,
+      updatedAt: createdAt,
+      dismissed: false,
+      actionTaken: false
+    };
+    
+    this.muskSuggestions.set(id, muskSuggestion);
+    return muskSuggestion;
+  }
+  
+  async updateMuskSuggestion(id: number, suggestionData: Partial<MuskSuggestion>): Promise<MuskSuggestion | undefined> {
+    const suggestion = this.muskSuggestions.get(id);
+    if (!suggestion) return undefined;
+    
+    const updatedSuggestion = { 
+      ...suggestion, 
+      ...suggestionData,
+      updatedAt: new Date()
+    };
+    
+    this.muskSuggestions.set(id, updatedSuggestion);
+    return updatedSuggestion;
+  }
+  
+  async deleteMuskSuggestion(id: number): Promise<boolean> {
+    return this.muskSuggestions.delete(id);
+  }
+  
+  async dismissMuskSuggestion(id: number): Promise<void> {
+    const suggestion = this.muskSuggestions.get(id);
+    if (suggestion) {
+      suggestion.dismissed = true;
+      suggestion.updatedAt = new Date();
+      this.muskSuggestions.set(id, suggestion);
+    }
+  }
+  
+  async markMuskSuggestionActionTaken(id: number): Promise<void> {
+    const suggestion = this.muskSuggestions.get(id);
+    if (suggestion) {
+      suggestion.actionTaken = true;
+      suggestion.updatedAt = new Date();
+      this.muskSuggestions.set(id, suggestion);
+    }
+  }
+  
+  // Musk Behavior Tracking operations
+  async getMuskBehaviorTrackingByUser(userId: number): Promise<MuskBehaviorTracking[]> {
+    return Array.from(this.muskBehaviorTracking.values())
+      .filter(tracking => tracking.userId === userId)
+      .sort((a, b) => {
+        const timeA = a.createdAt ? a.createdAt.getTime() : 0;
+        const timeB = b.createdAt ? b.createdAt.getTime() : 0;
+        return timeB - timeA; // Sort newest first
+      });
+  }
+  
+  async createMuskBehaviorTracking(tracking: InsertMuskBehaviorTracking): Promise<MuskBehaviorTracking> {
+    const id = this.currentMuskBehaviorTrackingId++;
+    const createdAt = new Date();
+    
+    const behaviorTracking: MuskBehaviorTracking = {
+      ...tracking,
+      id,
+      createdAt: tracking.createdAt || createdAt
+    };
+    
+    this.muskBehaviorTracking.set(id, behaviorTracking);
+    return behaviorTracking;
+  }
 
   // News Pulse operations
   async createNewsPulse(article: NewsArticle, userId: number): Promise<Pulse> {
