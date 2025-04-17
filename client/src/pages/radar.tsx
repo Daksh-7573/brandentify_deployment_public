@@ -364,11 +364,11 @@ const Radar = () => {
       (user.title && user.title.toLowerCase().includes(jobTitleFilter.toLowerCase()));
     
     // For industry, we need an exact match since we're using a dropdown
-    const matchesIndustry = !industryFilter || 
+    const matchesIndustry = !industryFilter || industryFilter === 'all' || 
       (user.industry && user.industry === industryFilter);
     
     // For lookingFor, we need an exact match or match the displayed label
-    const matchesLookingFor = !lookingForFilter || 
+    const matchesLookingFor = !lookingForFilter || lookingForFilter === 'all' || 
       (user.lookingFor && (
         // Check if the value matches directly
         user.lookingFor === lookingForFilter ||
@@ -611,7 +611,7 @@ const Radar = () => {
                       <SelectValue placeholder="Select an industry" />
                     </SelectTrigger>
                     <SelectContent className="max-h-80">
-                      <SelectItem value="">All Industries</SelectItem>
+                      <SelectItem value="all">All Industries</SelectItem>
                       {INDUSTRIES.map((industry) => (
                         <SelectItem key={industry} value={industry}>
                           {industry}
@@ -631,7 +631,7 @@ const Radar = () => {
                       <SelectValue placeholder="Select what you're looking for" />
                     </SelectTrigger>
                     <SelectContent className="max-h-80">
-                      <SelectItem value="">All Categories</SelectItem>
+                      <SelectItem value="all">All Categories</SelectItem>
                       {LOOKING_FOR_CATEGORIES.map((category) => (
                         <SelectItem key={category.value} value={category.value}>
                           {category.label}
