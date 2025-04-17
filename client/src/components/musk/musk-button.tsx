@@ -46,10 +46,10 @@ export default function MuskButton({
   
   const pulseAnimation = {
     pulse: {
-      scale: [1, 1.05, 1],
-      opacity: [0.7, 1, 0.7],
+      scale: [1, 1.15, 1],
+      opacity: [0.5, 1, 0.5],
       transition: {
-        duration: 2,
+        duration: 1.5,
         repeat: Infinity,
         ease: 'easeInOut'
       }
@@ -59,7 +59,7 @@ export default function MuskButton({
   return (
     <>
       <motion.div
-        className={`fixed bottom-4 right-4 z-50 ${className}`}
+        className={`fixed bottom-6 right-6 z-[9999] ${className}`}
         initial="initial"
         animate="animate"
         variants={buttonVariants}
@@ -71,10 +71,10 @@ export default function MuskButton({
         >
           <Button
             size="lg"
-            className="h-14 w-14 rounded-full shadow-lg bg-primary text-primary-foreground"
+            className="h-16 w-16 rounded-full shadow-xl border-4 border-white/80 bg-gradient-to-r from-primary to-purple-600 text-white"
             onClick={() => setIsOpen(true)}
           >
-            <BrainCircuit className="h-6 w-6" />
+            <BrainCircuit className="h-8 w-8" />
             <motion.span
               className="absolute inset-0 rounded-full bg-primary/20"
               variants={pulseAnimation}
