@@ -55,7 +55,14 @@ export function MatchResults({ userId }: { userId: number }) {
   
   // Fetch match results
   const { data, isLoading, error } = useQuery<SmartConnectResponse>({
-    queryKey: ["/api/smart-connect"],
+    queryKey: ["/api/smart-connect", userId],
+    queryFn: async () => {
+      const response = await fetch(`/api/smart-connect?userId=${userId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch matches');
+      }
+      return response.json();
+    },
   });
   
   const toggleExpand = (matchId: number) => {
