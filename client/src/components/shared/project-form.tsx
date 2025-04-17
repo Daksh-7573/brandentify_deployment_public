@@ -639,8 +639,8 @@ export default function ProjectForm({
                                   window.URL.revokeObjectURL(video.src);
                                   const duration = video.duration;
                                   
-                                  if (duration > 150) { // 150 seconds limit for Assignments
-                                    setMediaErrors(prev => ({...prev, video: `Video must be shorter than 150 seconds. Current length: ${Math.round(duration)} seconds.`}));
+                                  if (duration > 80) { // 80 seconds limit for all videos
+                                    setMediaErrors(prev => ({...prev, video: `Video must be shorter than 80 seconds. Current length: ${Math.round(duration)} seconds.`}));
                                     resolve(false);
                                   } else {
                                     resolve(true);
