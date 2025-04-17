@@ -13,6 +13,7 @@ import { handleCreateDemoProfiles } from "./routes-demo-profiles";
 import { updateUserGeolocation, updateUserRadarVisibility, getNearbyUsers } from "./routes-radar";
 import { handleMuskChat, handleResumeUpload, handlePitchDeckUpload } from "./routes-musk";
 import muskSuggestionRoutes from "./routes-musk-suggestions";
+import muskMatchRoutes from "./routes-musk-match";
 import { registerSmartConnectRoutes } from "./routes-smart-connect";
 import { 
   handleSmartConnect, 
