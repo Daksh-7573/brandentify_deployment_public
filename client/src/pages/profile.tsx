@@ -12,6 +12,7 @@ import Projects from "@/components/profile/projects";
 import Services from "@/components/profile/services";
 import PersonalInfoSection from "@/components/profile/personal-info-section";
 import EditPersonalInfo from "@/components/profile/edit-personal-info";
+import MuskButton from "@/components/musk/musk-button";
 // Removed Resume and LinkedIn import components
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
