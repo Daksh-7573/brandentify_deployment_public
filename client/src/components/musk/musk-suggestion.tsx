@@ -3,12 +3,11 @@ import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { BrainCircuit, X, ArrowRight } from 'lucide-react';
 import { Card } from '@/components/ui/card';
-import { useAuth } from '@/lib/auth';
 import { apiRequest } from '@/lib/queryClient';
 import { useQuery } from '@tanstack/react-query';
 
 export interface SuggestionTrigger {
-  id: string;
+  id: number;
   type: 'daily' | 'inactivity' | 'newPulse' | 'newFeature' | 'lowEngagement' | 'projectCompletion' | 'resumeUpdate' | 'goalChange';
   title: string;
   message: string;
@@ -18,6 +17,8 @@ export interface SuggestionTrigger {
   cooldownHours: number;
   relevanceScore?: number;
   expiresAt?: Date;
+  dismissed?: boolean;
+  actionTaken?: boolean;
 }
 
 export function MuskSuggestion() {
