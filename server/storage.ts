@@ -25,7 +25,9 @@ import {
   // New models for News Pulse feature
   newsSources, NewsSource, InsertNewsSource,
   newsArticles, NewsArticle, InsertNewsArticle,
-  newsUserPreferences, NewsUserPreference, InsertNewsUserPreference
+  newsUserPreferences, NewsUserPreference, InsertNewsUserPreference,
+  // Musk Match models
+  muskMatches, MuskMatch, InsertMuskMatch
 } from "@shared/schema";
 
 // Import Musk suggestion models
@@ -274,6 +276,17 @@ export interface IStorage {
   getSmartPostSuggestionsForUser(userId: number): Promise<SmartPostSuggestions[]>;
   createSmartPostSuggestion(suggestion: InsertSmartPostSuggestions): Promise<SmartPostSuggestions>;
   markSmartPostSuggestionUsed(id: number): Promise<SmartPostSuggestions | undefined>;
+  
+  // Musk Match operations
+  getMuskMatchesByUserId(userId: number): Promise<MuskMatch[]>;
+  getMuskMatchById(id: number): Promise<MuskMatch | undefined>;
+  createMuskMatch(match: InsertMuskMatch): Promise<MuskMatch>;
+  updateMuskMatch(id: number, match: Partial<MuskMatch>): Promise<MuskMatch | undefined>;
+  deleteMuskMatch(id: number): Promise<boolean>;
+  markMuskMatchAsRead(id: number): Promise<MuskMatch | undefined>;
+  markMuskMatchAsDismissed(id: number): Promise<MuskMatch | undefined>;
+  markMuskMatchAsConnected(id: number): Promise<MuskMatch | undefined>;
+  getPendingMuskMatches(userId: number): Promise<MuskMatch[]>;
 }
 
 // In-memory implementation of the storage
@@ -305,6 +318,8 @@ export class MemStorage implements IStorage {
   private newsSources: Map<number, NewsSource>;
   private newsArticles: Map<number, NewsArticle>;
   private newsUserPreferences: Map<number, NewsUserPreference>;
+  // Musk Match feature
+  private muskMatches: Map<number, MuskMatch>;
   
   // Musk suggestion models
   private muskSuggestions: Map<number, MuskSuggestion>;
@@ -344,6 +359,8 @@ export class MemStorage implements IStorage {
   private currentNewsSourceId: number;
   private currentNewsArticleId: number;
   private currentNewsUserPreferenceId: number;
+  // Musk Match ID
+  private currentMuskMatchId: number;
   // Musk suggestion IDs
   private currentMuskSuggestionId: number;
   private currentMuskBehaviorTrackingId: number;
@@ -384,6 +401,9 @@ export class MemStorage implements IStorage {
     this.newsArticles = new Map();
     this.newsUserPreferences = new Map();
     
+    // Initialize Musk Match map
+    this.muskMatches = new Map();
+    
     // Initialize Musk suggestion maps
     this.muskSuggestions = new Map();
     this.muskBehaviorTracking = new Map();
@@ -423,6 +443,8 @@ export class MemStorage implements IStorage {
     this.currentNewsSourceId = 1;
     this.currentNewsArticleId = 1;
     this.currentNewsUserPreferenceId = 1;
+    // Initialize Musk Match ID
+    this.currentMuskMatchId = 1;
     // Initialize Musk suggestion IDs
     this.currentMuskSuggestionId = 1;
     this.currentMuskBehaviorTrackingId = 1;
@@ -528,6 +550,8 @@ export class MemStorage implements IStorage {
     this.currentNewsSourceId = 1;
     this.currentNewsArticleId = 1;
     this.currentNewsUserPreferenceId = 1;
+    // Reset Musk Match ID
+    this.currentMuskMatchId = 1;
     // Reset Musk suggestion IDs
     this.currentMuskSuggestionId = 1;
     this.currentMuskBehaviorTrackingId = 1;
@@ -682,6 +706,9 @@ export class MemStorage implements IStorage {
     
     // Clear all news user preferences
     this.newsUserPreferences.clear();
+    
+    // Clear all Musk matches
+    this.muskMatches.clear();
     
     // Clear all Musk suggestions
     this.muskSuggestions.clear();
