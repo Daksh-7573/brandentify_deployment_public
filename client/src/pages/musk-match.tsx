@@ -10,9 +10,11 @@ import MuskMatchContainer from '@/components/musk/musk-match-container';
 import { PageLayout } from '@/components/layout/page-layout';
 import { queryClient } from '@/lib/queryClient';
 import { useAuth } from '@/hooks/use-auth';
+import { useToast } from '@/hooks/use-toast';
 
 export default function MuskMatchPage() {
   const { user, isAuthenticated, isDemoMode } = useAuth();
+  const { toast } = useToast();
   const userId = isDemoMode ? 1 : (user?.id || 0);
   
   // Create demo matches
