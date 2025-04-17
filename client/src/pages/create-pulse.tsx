@@ -211,6 +211,38 @@ export default function CreatePulsePage() {
     }
   };
   
+  // Function to validate video duration
+  const validateVideoLength = (file: File, maxSeconds: number): Promise<boolean> => {
+    return new Promise((resolve) => {
+      // Create a temporary video element to check duration
+      const video = document.createElement('video');
+      video.preload = 'metadata';
+      
+      video.onloadedmetadata = () => {
+        window.URL.revokeObjectURL(video.src);
+        const duration = video.duration;
+        
+        if (duration > maxSeconds) {
+          toast({
+            title: "Video too long",
+            description: `Video must be shorter than ${maxSeconds} seconds. Current length: ${Math.round(duration)} seconds.`,
+            variant: "destructive",
+          });
+          resolve(false);
+        } else {
+          resolve(true);
+        }
+      };
+      
+      video.onerror = () => {
+        // If we can't determine length, we'll allow it and server can validate
+        resolve(true);
+      };
+      
+      video.src = URL.createObjectURL(file);
+    });
+  };
+
   const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
@@ -224,6 +256,18 @@ export default function CreatePulsePage() {
         description: "Video file must be less than 100MB",
         variant: "destructive",
       });
+      return;
+    }
+    
+    // Check video length based on pulse type
+    const maxSeconds = pulseType === 'media-pulse' ? 80 : 150; // 80s for Insights, 150s for Assignments
+    const isValidLength = await validateVideoLength(file, maxSeconds);
+    
+    if (!isValidLength) {
+      // Reset the file input
+      if (videoInputRef.current) {
+        videoInputRef.current.value = '';
+      }
       return;
     }
     
@@ -450,7 +494,7 @@ export default function CreatePulsePage() {
                     )}
                     <AlertTitle className="text-blue-700">Insights</AlertTitle>
                     <AlertDescription className="text-blue-600">
-                      Share branding visuals through images (max 5) or a video (max 120 seconds).
+                      Share branding visuals through images (max 5) or a video (max 80 seconds).
                     </AlertDescription>
                   </Alert>
                 )}
@@ -610,7 +654,7 @@ export default function CreatePulsePage() {
                           >
                             <Video className="h-4 w-4" />
                             <span>Video</span>
-                            <span className="text-xs ml-1">(max 2 min)</span>
+                            <span className="text-xs ml-1">(max 80 sec)</span>
                           </button>
                         </div>
                       </div>
@@ -752,7 +796,7 @@ export default function CreatePulsePage() {
                             >
                               <Video className="h-10 w-10 text-blue-400 mx-auto mb-2" />
                               <p className="text-blue-600 font-medium">Upload Video</p>
-                              <p className="text-xs text-gray-500 mt-1">Maximum 100MB, MP4 format recommended</p>
+                              <p className="text-xs text-gray-500 mt-1">Maximum 80 seconds, MP4 format recommended</p>
                             </div>
                           ) : (
                             <div className="border rounded-lg overflow-hidden">
