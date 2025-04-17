@@ -512,45 +512,35 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
               placeholder="Type your message..."
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              className="w-full pr-10"
+              className="w-full pr-20"
               disabled={isTyping || isUploading}
             />
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
-                  disabled={isTyping || isUploading}
-                  title="Upload Files"
-                >
-                  <Paperclip className="h-4 w-4" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-48 p-0" align="end" alignOffset={-20}>
-                <div className="flex flex-col rounded-md overflow-hidden">
-                  <Button
-                    variant="ghost"
-                    className="flex justify-start items-center gap-2 px-3 py-2 rounded-none"
-                    onClick={triggerResumeUpload}
-                    disabled={isTyping || isUploading}
-                  >
-                    <FileText className="h-4 w-4" />
-                    <span>Upload Resume</span>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    className="flex justify-start items-center gap-2 px-3 py-2 rounded-none"
-                    onClick={triggerPitchDeckUpload}
-                    disabled={isTyping || isUploading}
-                  >
-                    <PresentationIcon className="h-4 w-4" />
-                    <span>Upload Pitch Deck</span>
-                  </Button>
-                </div>
-              </PopoverContent>
-            </Popover>
+            <div className="flex items-center gap-1 absolute right-1 top-1/2 -translate-y-1/2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-8 flex items-center gap-1 px-2"
+                disabled={isTyping || isUploading}
+                title="Upload Resume"
+                onClick={triggerResumeUpload}
+              >
+                <FileText className="h-4 w-4" />
+                <span className="hidden sm:inline text-xs">Resume</span>
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-8 flex items-center gap-1 px-2"
+                disabled={isTyping || isUploading}
+                title="Upload Pitch Deck"
+                onClick={triggerPitchDeckUpload}
+              >
+                <PresentationIcon className="h-4 w-4" />
+                <span className="hidden sm:inline text-xs">Pitch</span>
+              </Button>
+            </div>
           </div>
           <Button 
             type="submit" 
