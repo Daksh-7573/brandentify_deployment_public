@@ -58,31 +58,33 @@ export default function MuskButton({
   
   return (
     <>
-      <motion.div
-        className={`fixed bottom-6 right-6 z-[9999] ${className}`}
-        initial="initial"
-        animate="animate"
-        variants={buttonVariants}
-      >
+      {!isOpen && (
         <motion.div
-          whileHover="hover"
-          whileTap="tap"
+          className={`fixed bottom-6 right-6 z-[9999] ${className}`}
+          initial="initial"
+          animate="animate"
           variants={buttonVariants}
         >
-          <Button
-            size="lg"
-            className="h-16 w-16 rounded-full shadow-xl border-4 border-white/80 bg-gradient-to-r from-primary to-purple-600 text-white"
-            onClick={() => setIsOpen(true)}
+          <motion.div
+            whileHover="hover"
+            whileTap="tap"
+            variants={buttonVariants}
           >
-            <BrainCircuit className="h-8 w-8" />
-            <motion.span
-              className="absolute inset-0 rounded-full bg-primary/20"
-              variants={pulseAnimation}
-              animate="pulse"
-            />
-          </Button>
+            <Button
+              size="lg"
+              className="h-16 w-16 rounded-full shadow-xl border-4 border-white/80 bg-gradient-to-r from-primary to-purple-600 text-white"
+              onClick={() => setIsOpen(true)}
+            >
+              <BrainCircuit className="h-8 w-8" />
+              <motion.span
+                className="absolute inset-0 rounded-full bg-primary/20"
+                variants={pulseAnimation}
+                animate="pulse"
+              />
+            </Button>
+          </motion.div>
         </motion.div>
-      </motion.div>
+      )}
       
       <AnimatePresence>
         {isOpen && (
