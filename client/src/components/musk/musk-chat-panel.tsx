@@ -11,14 +11,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { apiRequest } from '@/lib/queryClient';
-import { X, Send, MessageSquare, Loader2, FileUp, Paperclip, FileText, PresentationIcon, Settings, UserPlus } from 'lucide-react';
+import { X, Send, MessageSquare, Loader2, FileUp, Paperclip, FileText, PresentationIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
@@ -60,7 +54,6 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [isCreatingDemos, setIsCreatingDemos] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadType, setUploadType] = useState<'resume' | 'pitchdeck'>('resume');
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -395,53 +388,6 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
     pitchDeckFileInputRef.current?.click();
   };
   
-  const handleCreateDemoProfiles = async () => {
-    if (isCreatingDemos) return;
-    
-    setIsCreatingDemos(true);
-    
-    try {
-      const response = await fetch('/api/musk/create-demo-profiles', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({})
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to create demo profiles');
-      }
-      
-      const data = await response.json();
-      
-      // Add a system message to the chat about the created profiles
-      const profileMessage: Message = {
-        id: 'demo-profiles-' + Date.now().toString(),
-        content: `Demo profiles created successfully:\n\n- ${data.profiles.techProfile.name} (Tech Profile)\n- ${data.profiles.designerProfile.name} (Designer Profile)\n- ${data.profiles.dataScientistProfile.name} (Data Scientist Profile)\n\nThese profiles can now be used to test Musk AI features with realistic data.`,
-        sender: 'musk',
-        timestamp: new Date()
-      };
-      
-      setMessages(prev => [...prev, profileMessage]);
-      
-      toast({
-        title: 'Demo Profiles Created',
-        description: 'Created 3 demo profiles for testing Musk AI features',
-      });
-    } catch (error) {
-      console.error('Error creating demo profiles:', error);
-      
-      toast({
-        title: 'Error Creating Demo Profiles',
-        description: 'Failed to create demo profiles. Please try again.',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsCreatingDemos(false);
-    }
-  };
-  
   const panelVariants = {
     hidden: { opacity: 0, y: 20, scale: 0.95 },
     visible: { 
@@ -484,50 +430,14 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
               <p className="text-xs text-muted-foreground">AI Career Assistant</p>
             </div>
           </div>
-          
-          <div className="flex items-center gap-2">
-            {/* Settings menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="h-8 w-8 rounded-full hover:bg-accent"
-                >
-                  <Settings className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem 
-                  className="flex items-center gap-2 cursor-pointer"
-                  onClick={handleCreateDemoProfiles}
-                  disabled={isCreatingDemos}
-                >
-                  {isCreatingDemos ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      <span>Creating demo profiles...</span>
-                    </>
-                  ) : (
-                    <>
-                      <UserPlus className="h-4 w-4" />
-                      <span>Create Demo Profiles</span>
-                    </>
-                  )}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            
-            {/* Close button */}
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={onClose}
-              className="h-8 w-8 rounded-full hover:bg-accent"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={onClose}
+            className="h-8 w-8 rounded-full hover:bg-accent"
+          >
+            <X className="h-4 w-4" />
+          </Button>
         </div>
         
         {/* Messages */}
