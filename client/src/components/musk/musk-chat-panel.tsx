@@ -12,9 +12,11 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { apiRequest } from '@/lib/queryClient';
-import { X, Send, MessageSquare, Loader2, FileUp, Paperclip, FileText, PresentationIcon } from 'lucide-react';
+import { X, Send, MessageSquare, Loader2, FileUp, Paperclip, FileText, PresentationIcon, LightbulbIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import SuggestedQuestionsDisplay from './suggested-questions-display';
+import { User } from '@/types/user';
 
 interface MuskChatPanelProps {
   context?: {
