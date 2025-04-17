@@ -84,8 +84,7 @@ export default function ProfileCompleteness({ score, className }: ProfileComplet
           </div>
           <Progress
             value={score}
-            className="h-2"
-            indicatorClassName={getProgressColor(score)}
+            className={cn("h-2", getProgressColor(score))}
           />
         </div>
         

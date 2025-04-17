@@ -82,6 +82,9 @@ function Router() {
       <Route path="/smart-connect">
         <ProtectedRoute path="/smart-connect" component={SmartConnectPage} />
       </Route>
+      <Route path="/profile-coach">
+        <ProtectedRoute path="/profile-coach" component={ProfileCoach} />
+      </Route>
       <Route path="/portfolio-builder">
         <ProtectedRoute path="/portfolio-builder" component={PortfolioBuilder} />
       </Route>
