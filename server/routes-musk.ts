@@ -156,7 +156,12 @@ export const handleResumeUpload = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "No resume file was uploaded" });
     }
     
-    const resumeFile = req.files.resume as any;
+    // Get the uploaded file (named "file" in the form data or fallback to "resume")
+    const resumeFile = (req.files.file || req.files.resume) as any;
+    
+    if (!resumeFile) {
+      return res.status(400).json({ error: "Resume file not found in the request" });
+    }
     
     // Check file type - only accept PDF and Microsoft Word documents
     const fileExt = path.extname(resumeFile.name).toLowerCase();

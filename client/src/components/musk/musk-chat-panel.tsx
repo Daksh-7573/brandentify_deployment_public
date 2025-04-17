@@ -235,35 +235,51 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
       formData.append('file', file);
       formData.append('userId', userId.toString());
       
-      // Upload the file
-      const uploadResponse = await fetch('/api/musk/resume-upload', {
-        method: 'POST',
-        body: formData,
+      // Use XMLHttpRequest to track upload progress
+      const xhr = new XMLHttpRequest();
+      
+      const uploadPromise = new Promise<any>((resolve, reject) => {
+        xhr.open('POST', '/api/musk/resume-upload');
+        
+        xhr.upload.onprogress = (event) => {
+          if (event.lengthComputable) {
+            const percentComplete = Math.round((event.loaded / event.total) * 100);
+            setUploadProgress(percentComplete);
+          }
+        };
+        
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            try {
+              const response = JSON.parse(xhr.responseText);
+              resolve(response);
+            } catch (e) {
+              reject(new Error('Invalid JSON response'));
+            }
+          } else {
+            reject(new Error(`HTTP error ${xhr.status}: ${xhr.statusText}`));
+          }
+        };
+        
+        xhr.onerror = () => {
+          reject(new Error('Network error occurred'));
+        };
+        
+        xhr.send(formData);
       });
       
-      if (!uploadResponse.ok) {
+      // Wait for upload to complete
+      const uploadResult = await uploadPromise;
+      
+      if (!uploadResult) {
         throw new Error('Failed to upload file');
       }
       
-      const uploadResult = await uploadResponse.json();
-      
-      // Make request to analyze the resume
-      const analyzeResponse = await fetch('/api/musk/analyze-resume', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId,
-          fileId: uploadResult.fileId
-        })
-      });
-      
-      if (!analyzeResponse.ok) {
-        throw new Error('Failed to analyze resume');
-      }
-      
-      const analyzeResult = await analyzeResponse.json();
+      // The server's handleResumeUpload method already performs the analysis
+      // The result includes the analysis message directly
+      const analyzeResult = {
+        analysis: uploadResult.message
+      };
       
       // Replace the thinking message with the analysis result
       setMessages(prev => 
