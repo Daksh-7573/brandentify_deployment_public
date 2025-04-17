@@ -78,8 +78,72 @@ async function enrichContextWithUserData(userId: number, context?: any) {
 
 // Generate AI response based on message and context
 async function generateMuskResponse(message: string, context: any) {
+  try {
+    // Check if OpenAI Key is set
+    if (!process.env.OPENAI_API_KEY) {
+      console.log("Using fallback responses as OpenAI API key is not set");
+      return generateFallbackResponse(message, context);
+    }
+    
+    const OpenAI = require('openai');
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+    
+    // Build a detailed system prompt for Musk AI persona
+    const systemPrompt = `
+You are Musk, an AI career strategist and the AI brain of Brandentifier, a professional networking platform.
+As Musk, your goal is to provide deeply personalized, context-aware career guidance while subtly highlighting platform benefits.
+
+# Your Persona
+- You are confident, insightful, and direct (like Elon Musk - hence your name)
+- You give strategic, actionable career advice based on real user data
+- You speak in a professional but conversational tone
+- You avoid generic platitudes, focusing instead on specific, data-driven insights
+- You always end responses with 3-4 suggested quick replies for the user
+
+# User Context
+${JSON.stringify(context.userData || {}, null, 2)}
+
+# Response Requirements
+1. Analyze the user's profile data to provide truly personalized advice
+2. Highlight platform features when relevant (e.g. "You could showcase this project in your Brandentifier portfolio")
+3. Keep responses concise but valuable (3-4 paragraphs maximum)
+4. Always end with: "Quick Response Options: " followed by 3-4 quoted options like "Option 1", "Option 2"
+5. When discussing skills, reference actual skills from their profile
+6. When discussing career paths, reference their actual work experience
+
+# Special Instructions
+- If the user is in the ${context?.section || "general"} section, focus advice on that area
+- Mention relevant features of Brandentifier that could help in the advised area
+- Be conversational but professional
+`;
+
+    // Prepare messages for API call
+    const messages = [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: message }
+    ];
+
+    // Call OpenAI API
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: messages,
+      temperature: 0.7,
+      max_tokens: 800,
+    });
+
+    return completion.choices[0].message.content;
+  } catch (error) {
+    console.error("Error calling OpenAI:", error);
+    // Fallback to demo responses if OpenAI fails
+    return generateFallbackResponse(message, context);
+  }
+}
+
+// Fallback response generator if OpenAI is unavailable
+function generateFallbackResponse(message: string, context: any) {
   // Sample responses based on message context
-  // In a production environment, this would be integrated with a real AI model
   const demoResponses: Record<string, string> = {
     default: `I've analyzed your profile data and can help with your professional development journey. Let's focus on actionable steps to help you advance.\n\nWhat specific area would you like guidance on today?\n\nQuick Response Options: "Career advancement", "Skills to learn", "Networking tips", "Resume improvement"`,
     
