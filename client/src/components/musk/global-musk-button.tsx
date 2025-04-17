@@ -20,14 +20,22 @@ export default function GlobalMuskButton() {
   // Fetch user profile data
   const { data: userData } = useQuery({
     queryKey: ['/api/users', userId],
-    queryFn: () => apiRequest(`/api/users/${userId}`),
+    queryFn: async () => {
+      if (!userId) return null;
+      const response = await apiRequest('GET', `/api/users/${userId}`);
+      return response;
+    },
     enabled: !!userId && isAuthenticated
   });
 
   // Fetch work experiences
   const { data: experiences = [] } = useQuery({
     queryKey: ['/api/users', userId, 'experiences'],
-    queryFn: async () => await apiRequest(`/api/users/${userId}/experiences`),
+    queryFn: async () => {
+      if (!userId) return [];
+      const response = await apiRequest('GET', `/api/users/${userId}/experiences`);
+      return response;
+    },
     enabled: !!userId && isAuthenticated,
     staleTime: 30000,
   });
@@ -35,7 +43,11 @@ export default function GlobalMuskButton() {
   // Fetch education
   const { data: educations = [] } = useQuery({
     queryKey: ['/api/users', userId, 'educations'],
-    queryFn: async () => await apiRequest(`/api/users/${userId}/educations`),
+    queryFn: async () => {
+      if (!userId) return [];
+      const response = await apiRequest('GET', `/api/users/${userId}/educations`);
+      return response;
+    },
     enabled: !!userId && isAuthenticated,
     staleTime: 30000,
   });
@@ -43,7 +55,11 @@ export default function GlobalMuskButton() {
   // Fetch skills
   const { data: skills = [] } = useQuery({
     queryKey: ['/api/users', userId, 'skills'],
-    queryFn: async () => await apiRequest(`/api/users/${userId}/skills`),
+    queryFn: async () => {
+      if (!userId) return [];
+      const response = await apiRequest('GET', `/api/users/${userId}/skills`);
+      return response;
+    },
     enabled: !!userId && isAuthenticated,
     staleTime: 30000,
   });
@@ -51,7 +67,11 @@ export default function GlobalMuskButton() {
   // Fetch projects
   const { data: projects = [] } = useQuery({
     queryKey: ['/api/users', userId, 'projects'],
-    queryFn: async () => await apiRequest(`/api/users/${userId}/projects`),
+    queryFn: async () => {
+      if (!userId) return [];
+      const response = await apiRequest('GET', `/api/users/${userId}/projects`);
+      return response;
+    },
     enabled: !!userId && isAuthenticated,
     staleTime: 30000,
   });
