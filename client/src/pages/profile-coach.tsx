@@ -35,7 +35,7 @@ export default function ProfileCoach() {
   } = useQuery({
     queryKey: ["/api/profile-coach/analyze", userId],
     queryFn: async () => {
-      const response = await apiRequest(`/api/profile-coach/analyze?userId=${userId}`);
+      const response = await apiRequest("GET", `/api/profile-coach/analyze?userId=${userId}`);
       return response;
     },
   });
@@ -57,8 +57,7 @@ export default function ProfileCoach() {
   // Handle refresh analysis
   const handleRefreshAnalysis = async () => {
     try {
-      await apiRequest("/api/profile-coach/refresh-analysis", {
-        method: "POST",
+      await apiRequest("POST", "/api/profile-coach/refresh-analysis", {
         body: JSON.stringify({ userId }),
       });
       
@@ -130,11 +129,13 @@ export default function ProfileCoach() {
             </Button>
           </div>
           
-          <ProfileCompleteness
-            score={profileData.completenessScore}
-            priorities={profileData.improvementPriorities}
-            className="mb-8"
-          />
+          {profileData && profileData.completenessScore !== undefined && (
+            <ProfileCompleteness
+              score={profileData.completenessScore}
+              priorities={profileData.improvementPriorities || []}
+              className="mb-8"
+            />
+          )}
           
           <Tabs
             defaultValue="overview"
@@ -160,81 +161,95 @@ export default function ProfileCoach() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="mb-6">
-                    <h3 className="text-xl font-semibold mb-2">Recommended Keywords</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {profileData.recommendedKeywords.map((keyword: string, index: number) => (
-                        <span
-                          key={index}
-                          className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm"
-                        >
-                          {keyword}
-                        </span>
-                      ))}
+                  {profileData?.recommendedKeywords && profileData.recommendedKeywords.length > 0 && (
+                    <div className="mb-6">
+                      <h3 className="text-xl font-semibold mb-2">Recommended Keywords</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {profileData.recommendedKeywords.map((keyword: string, index: number) => (
+                          <span
+                            key={index}
+                            className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm"
+                          >
+                            {keyword}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                  )}
                   
-                  <div>
-                    <h3 className="text-xl font-semibold mb-2">Overall Analysis</h3>
-                    <div className="whitespace-pre-line text-muted-foreground">
-                      {profileData.overallAnalysis}
+                  {profileData?.overallAnalysis && (
+                    <div>
+                      <h3 className="text-xl font-semibold mb-2">Overall Analysis</h3>
+                      <div className="whitespace-pre-line text-muted-foreground">
+                        {profileData.overallAnalysis}
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>
             
             <TabsContent value="basic">
-              <ProfileImprovement
-                title="Basic Information"
-                data={profileData.basicInfo}
-                feedback={profileData.basicFeedback}
-                onEdit={() => handleEditSection("basic", profileData.basicInfo)}
-              />
+              {profileData && (
+                <ProfileImprovement
+                  title="Basic Information"
+                  data={profileData.basicInfo || {}}
+                  feedback={profileData.basicFeedback || {}}
+                  onEdit={() => handleEditSection("basic", profileData.basicInfo || {})}
+                />
+              )}
             </TabsContent>
             
             <TabsContent value="experience">
-              <ProfileImprovement
-                title="Work Experience"
-                data={profileData.experiences}
-                feedback={profileData.experienceFeedback}
-                onEdit={(item) => handleEditSection("experience", item)}
-                onAdd={() => handleEditSection("experience", { userId })}
-                isCollection
-              />
+              {profileData && (
+                <ProfileImprovement
+                  title="Work Experience"
+                  data={profileData.experiences || []}
+                  feedback={profileData.experienceFeedback || {}}
+                  onEdit={(item) => handleEditSection("experience", item)}
+                  onAdd={() => handleEditSection("experience", { userId })}
+                  isCollection
+                />
+              )}
             </TabsContent>
             
             <TabsContent value="education">
-              <ProfileImprovement
-                title="Education"
-                data={profileData.educations}
-                feedback={profileData.educationFeedback}
-                onEdit={(item) => handleEditSection("education", item)}
-                onAdd={() => handleEditSection("education", { userId })}
-                isCollection
-              />
+              {profileData && (
+                <ProfileImprovement
+                  title="Education"
+                  data={profileData.educations || []}
+                  feedback={profileData.educationFeedback || {}}
+                  onEdit={(item) => handleEditSection("education", item)}
+                  onAdd={() => handleEditSection("education", { userId })}
+                  isCollection
+                />
+              )}
             </TabsContent>
             
             <TabsContent value="skills">
-              <ProfileImprovement
-                title="Skills"
-                data={profileData.skills}
-                feedback={profileData.skillsFeedback}
-                onEdit={(item) => handleEditSection("skills", item)}
-                onAdd={() => handleEditSection("skills", { userId })}
-                isCollection
-              />
+              {profileData && (
+                <ProfileImprovement
+                  title="Skills"
+                  data={profileData.skills || []}
+                  feedback={profileData.skillsFeedback || {}}
+                  onEdit={(item) => handleEditSection("skills", item)}
+                  onAdd={() => handleEditSection("skills", { userId })}
+                  isCollection
+                />
+              )}
             </TabsContent>
             
             <TabsContent value="projects">
-              <ProfileImprovement
-                title="Projects"
-                data={profileData.projects}
-                feedback={profileData.projectsFeedback}
-                onEdit={(item) => handleEditSection("projects", item)}
-                onAdd={() => handleEditSection("projects", { userId })}
-                isCollection
-              />
+              {profileData && (
+                <ProfileImprovement
+                  title="Projects"
+                  data={profileData.projects || []}
+                  feedback={profileData.projectsFeedback || {}}
+                  onEdit={(item) => handleEditSection("projects", item)}
+                  onAdd={() => handleEditSection("projects", { userId })}
+                  isCollection
+                />
+              )}
             </TabsContent>
           </Tabs>
         </>

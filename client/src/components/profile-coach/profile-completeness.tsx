@@ -1,7 +1,7 @@
 import React from "react";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertCircle } from "lucide-react";
+import { AlertTriangle, CheckCircle } from "lucide-react";
 
 interface ProfileCompletenessProps {
   score: number;
@@ -10,53 +10,50 @@ interface ProfileCompletenessProps {
 }
 
 export default function ProfileCompleteness({ score, priorities, className = "" }: ProfileCompletenessProps) {
-  // Determine color based on score
-  const getScoreColor = () => {
-    if (score >= 80) return "text-green-500";
-    if (score >= 50) return "text-amber-500";
-    return "text-red-500";
-  };
-
-  // Determine progress bar color
-  const getProgressColor = () => {
-    if (score >= 80) return "bg-green-500";
-    if (score >= 50) return "bg-amber-500";
-    return "bg-red-500";
-  };
-
-  // Get message based on score
-  const getMessage = () => {
-    if (score >= 80) return "Excellent! Your profile is well-optimized.";
-    if (score >= 50) return "Good progress! Keep improving your profile.";
-    return "Your profile needs work to stand out.";
+  // Determine the color based on score
+  const getColorClass = () => {
+    if (score < 30) return "text-destructive";
+    if (score < 70) return "text-yellow-500";
+    return "text-green-500";
   };
 
   return (
     <Card className={className}>
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <span>Profile Completeness</span>
-          <span className={`text-2xl font-bold ${getScoreColor()}`}>{score}%</span>
-        </CardTitle>
-        <CardDescription>{getMessage()}</CardDescription>
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xl font-semibold">Profile Completeness</h3>
+          <span className={`text-lg font-bold ${getColorClass()}`}>{score}%</span>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          A complete profile helps you stand out to potential connections and recruiters
+        </p>
       </CardHeader>
       <CardContent className="space-y-4">
-        <Progress value={score} className={`h-2 ${getProgressColor()}`} />
+        <Progress value={score} className="h-2" />
 
-        {priorities && priorities.length > 0 && (
-          <div className="mt-4">
-            <h3 className="text-sm font-medium mb-2 flex items-center gap-1">
-              <AlertCircle className="h-4 w-4 text-amber-500" />
-              <span>Improvement Priorities</span>
-            </h3>
-            <ul className="space-y-1 text-sm">
+        {priorities.length > 0 && (
+          <div className="space-y-2">
+            <h4 className="text-sm font-medium flex items-center gap-1">
+              <AlertTriangle size={16} className="text-yellow-500" />
+              Focus on these areas to improve your profile:
+            </h4>
+            <ul className="space-y-2">
               {priorities.map((priority, index) => (
-                <li key={index} className="flex items-start gap-2">
+                <li key={index} className="text-sm flex gap-2">
                   <span className="text-muted-foreground">•</span>
-                  <span className="text-muted-foreground">{priority}</span>
+                  {priority}
                 </li>
               ))}
             </ul>
+          </div>
+        )}
+
+        {priorities.length === 0 && score === 100 && (
+          <div className="flex items-center gap-2 text-green-500">
+            <CheckCircle size={16} />
+            <span className="text-sm font-medium">
+              Your profile is complete! Great job keeping all your information up to date.
+            </span>
           </div>
         )}
       </CardContent>

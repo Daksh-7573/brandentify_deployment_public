@@ -54,8 +54,7 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
   React.useEffect(() => {
     const fetchSuggestions = async () => {
       try {
-        const response = await apiRequest("/api/profile-coach/suggestions", {
-          method: "POST",
+        const response = await apiRequest("POST", "/api/profile-coach/suggestions", {
           body: JSON.stringify({
             userId,
             section,
@@ -63,7 +62,9 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
           }),
         });
         
-        setSuggestions(response);
+        if (response) {
+          setSuggestions(response);
+        }
       } catch (error) {
         console.error("Error fetching suggestions:", error);
       }
@@ -165,8 +166,7 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
     setIsLoading(true);
     
     try {
-      await apiRequest("/api/profile-coach/save-improvements", {
-        method: "POST",
+      await apiRequest("POST", "/api/profile-coach/save-improvements", {
         body: JSON.stringify({
           userId,
           section,
