@@ -12,6 +12,7 @@ import { handleParseResume } from "./routes-parse-resume";
 import { handleCreateDemoProfiles } from "./routes-demo-profiles";
 import { updateUserGeolocation, updateUserRadarVisibility, getNearbyUsers } from "./routes-radar";
 import { handleMuskChat } from "./routes-musk";
+import { registerSmartConnectRoutes } from "./routes-smart-connect";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 

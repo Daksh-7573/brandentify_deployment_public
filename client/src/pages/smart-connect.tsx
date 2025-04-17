@@ -13,7 +13,7 @@ export function SmartConnectPage() {
   const [activeStep, setActiveStep] = useState<"form" | "results">("form");
   
   // Get current user ID (in demo mode, use 1)
-  const { data: userData } = useQuery({
+  const { data: userData, isLoading: isUserLoading } = useQuery<{ id: number }>({
     queryKey: ["/api/users", 1],
   });
 
