@@ -15,7 +15,7 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { IndustryCombobox } from "../ui/industry-combobox";
+import { IndustryCombobox } from "@/components/ui/industry-combobox";
 import { Badge } from "@/components/ui/badge";
 
 // Define the schema for Smart Connect criteria
@@ -60,12 +60,9 @@ export function SmartConnectForm({ userId }: { userId: number }) {
   // Smart Connect mutation
   const smartConnectMutation = useMutation({
     mutationFn: async (values: SmartConnectFormValues) => {
-      return apiRequest("/api/smart-connect", {
-        method: "POST",
-        body: JSON.stringify({
-          userId,
-          ...values,
-        }),
+      return apiRequest("POST", "/api/smart-connect", {
+        userId,
+        ...values,
       });
     },
     onSuccess: () => {

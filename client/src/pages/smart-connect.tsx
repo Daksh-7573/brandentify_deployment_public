@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { NavHeader } from "@/components/nav/nav-header";
+import Header from "@/components/layout/header";
 import { SmartConnectForm } from "@/components/smart-connect/smart-connect-form";
 import { MatchResults } from "@/components/smart-connect/match-results";
 import { Button } from "@/components/ui/button";
@@ -21,7 +21,7 @@ export function SmartConnectPage() {
   
   return (
     <div className="flex flex-col min-h-screen">
-      <NavHeader />
+      <Header />
       
       <main className="flex-1 container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
