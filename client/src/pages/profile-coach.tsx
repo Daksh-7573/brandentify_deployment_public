@@ -132,7 +132,7 @@ export default function ProfileCoach() {
   // Render main profile coach view
   return (
     <>
-      <SiteHeader />
+      <Header />
       <div className="container py-8 px-4">
         <div className="flex flex-col md:flex-row justify-between items-start mb-6 gap-4">
           <div>
