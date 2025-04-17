@@ -1363,7 +1363,7 @@ export default function Profile() {
   };
   
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex h-screen flex-col relative">
       {/* Profile Picture Dialog */}
       <ProfilePictureDialog 
         open={showProfilePictureDialog}
