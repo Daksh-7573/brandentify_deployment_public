@@ -223,21 +223,24 @@ export interface IStorage {
   updateNewsUserPreference(id: number, preference: Partial<NewsUserPreference>): Promise<NewsUserPreference | undefined>;
   deleteNewsUserPreference(id: number): Promise<boolean>;
   
+  // Musk Suggestion operations
+  getMuskSuggestionsForUser(userId: number): Promise<MuskSuggestion[]>;
+  createMuskSuggestion(suggestion: InsertMuskSuggestion): Promise<MuskSuggestion>;
+  updateMuskSuggestion(id: number, suggestion: Partial<MuskSuggestion>): Promise<MuskSuggestion | undefined>;
+  deleteMuskSuggestion(id: number): Promise<boolean>;
+  dismissMuskSuggestion(id: number): Promise<void>;
+  markMuskSuggestionActionTaken(id: number): Promise<void>;
+  
+  // Musk Behavior Tracking operations
+  createMuskBehaviorTracking(tracking: InsertMuskBehaviorTracking): Promise<MuskBehaviorTracking>;
+  getMuskBehaviorTrackingByUser(userId: number): Promise<MuskBehaviorTracking[]>;
+  
   // News Pulse operations
   createNewsPulse(article: NewsArticle, userId: number): Promise<Pulse>;
   getLatestNewsPulses(userId: number, limit?: number): Promise<Pulse[]>;
   generateNewsContent(article: NewsArticle): Promise<{ title: string, content: string, hashtags: string[] }>;
   
-  // Musk Suggestions operations
-  getMuskSuggestionsForUser(userId: number): Promise<MuskSuggestion[]>;
-  createMuskSuggestion(suggestion: InsertMuskSuggestion): Promise<MuskSuggestion>;
-  updateMuskSuggestion(id: number, suggestion: Partial<MuskSuggestion>): Promise<MuskSuggestion | undefined>;
-  deleteMuskSuggestion(id: number): Promise<boolean>;
-  
-  // Musk Behavior Tracking operations
-  getMuskBehaviorTrackingForUser(userId: number, limit?: number): Promise<MuskBehaviorTracking[]>;
-  createMuskBehaviorTracking(tracking: InsertMuskBehaviorTracking): Promise<MuskBehaviorTracking>;
-  deleteMuskBehaviorTrackingForUser(userId: number): Promise<number>;
+
 }
 
 // In-memory implementation of the storage
