@@ -63,6 +63,9 @@ import * as xaiService from "./services/xai-service";
 export async function registerRoutes(app: Express): Promise<Server> {
   const apiRouter = express.Router();
   
+  // Register Smart Connect routes directly
+  registerSmartConnectRoutes(app, storage);
+  
   // Initialize the email service
   await initEmailService();
   
