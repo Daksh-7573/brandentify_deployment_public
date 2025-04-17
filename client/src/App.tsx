@@ -22,6 +22,7 @@ import EmailVerification from "@/pages/email-verification";
 import NewsSourcesPage from "@/pages/news-sources";
 import Radar from "@/pages/radar";
 import SmartConnectPage from "@/pages/smart-connect";
+import MuskMatchPage from "@/pages/musk-match";
 
 // Redirect component to handle page redirects
 const Redirect = ({ to }: { to: string }) => {
@@ -102,6 +103,9 @@ function Router() {
       </Route>
       <Route path="/radar">
         <ProtectedRoute path="/radar" component={Radar} />
+      </Route>
+      <Route path="/musk-match">
+        <ProtectedRoute path="/musk-match" component={MuskMatchPage} />
       </Route>
       <Route component={NotFound} />
     </Switch>
