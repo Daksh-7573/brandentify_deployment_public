@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { SparklesIcon, LightbulbIcon, RefreshCwIcon } from 'lucide-react';
+import { SparklesIcon, LightbulbIcon, RefreshCwIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 import { UserData } from '@/types/user';
 import { getSuggestedQuestions, SuggestedQuestion } from './suggested-questions';
 
@@ -99,22 +99,22 @@ export default function SuggestedQuestionsDisplay({
     <div className={`w-full space-y-3 ${className}`}>
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center">
-          <LightbulbIcon className="h-4 w-4 text-amber-500 mr-1" />
-          <span className="text-sm font-medium">Suggested Questions</span>
+          <LightbulbIcon className="h-3.5 w-3.5 text-amber-400 mr-1" />
+          <span className="text-xs text-muted-foreground">Try asking</span>
         </div>
         <Button 
           variant="ghost" 
           size="sm" 
-          className="h-8 w-8 p-0 rounded-full" 
+          className="h-6 w-6 p-0 rounded-full" 
           onClick={handleRefresh}
         >
-          <RefreshCwIcon className="h-3.5 w-3.5 text-muted-foreground" />
+          <RefreshCwIcon className="h-3 w-3 text-muted-foreground/70" />
           <span className="sr-only">Refresh questions</span>
         </Button>
       </div>
       
-      <div className="grid gap-2">
-        <AnimatePresence mode="wait">
+      <div className="grid gap-0.5">
+        <AnimatePresence mode="sync">
           {questions.slice(currentIndex, currentIndex + questionsPerView).map((question) => (
             <motion.div
               key={question.id}
@@ -125,15 +125,15 @@ export default function SuggestedQuestionsDisplay({
               className="w-full"
             >
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
-                className="w-full justify-start text-left h-auto py-2 px-3 font-normal text-sm border border-border/50 bg-card/50 hover:bg-primary/5"
+                className="w-full justify-start text-left h-auto py-1 px-2 font-normal text-xs hover:bg-primary/5 rounded-md"
                 onClick={() => handleSelectQuestion(question)}
               >
                 {question.isNew && (
-                  <SparklesIcon className="h-3.5 w-3.5 text-amber-500 mr-1.5 flex-shrink-0" />
+                  <SparklesIcon className="h-3 w-3 text-amber-400 mr-1.5 flex-shrink-0" />
                 )}
-                <span className="text-foreground line-clamp-2">{question.text}</span>
+                <span className="text-muted-foreground hover:text-foreground line-clamp-2">{question.text}</span>
               </Button>
             </motion.div>
           ))}
@@ -141,25 +141,29 @@ export default function SuggestedQuestionsDisplay({
       </div>
       
       {hasMultiplePages && (
-        <div className="flex items-center justify-center gap-1 mt-2">
+        <div className="flex items-center justify-center gap-1 mt-1">
           <Button 
             variant="ghost" 
             size="sm" 
-            className="h-7 px-2 text-xs" 
+            className="h-5 w-5 p-0 rounded-full" 
             onClick={goPrev}
+            title="Previous questions"
           >
-            Prev
+            <ChevronLeft className="h-3 w-3 text-muted-foreground" />
+            <span className="sr-only">Previous</span>
           </Button>
-          <span className="text-xs text-muted-foreground">
-            {currentPage} / {totalPages}
+          <span className="text-[10px] text-muted-foreground/70 mx-1">
+            {currentPage}/{totalPages}
           </span>
           <Button 
             variant="ghost" 
             size="sm" 
-            className="h-7 px-2 text-xs" 
+            className="h-5 w-5 p-0 rounded-full" 
             onClick={goNext}
+            title="More questions"
           >
-            Next
+            <ChevronRight className="h-3 w-3 text-muted-foreground" />
+            <span className="sr-only">Next</span>
           </Button>
         </div>
       )}

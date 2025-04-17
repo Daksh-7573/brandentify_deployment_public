@@ -528,11 +528,11 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
 
         {/* Suggested Questions Section */}
         {userData && (
-          <div className="border-t border-border/50 px-4 py-3">
+          <div className="border-t border-border/20 px-4 pt-2 pb-0">
             <SuggestedQuestionsDisplay 
               user={userData} 
               onSelectQuestion={(question) => setInputValue(question)}
-              className="mb-2"
+              className=""
             />
           </div>
         )}
