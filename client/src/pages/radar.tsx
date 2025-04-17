@@ -243,6 +243,9 @@ const Radar = () => {
   const [coordinates, setCoordinates] = useState<{lat: number, lng: number} | null>(null);
   const [locationError, setLocationError] = useState<string | null>(null);
   const [locationStatus, setLocationStatus] = useState<'pending' | 'granted' | 'denied'>('pending');
+  const [jobTitleFilter, setJobTitleFilter] = useState<string>('');
+  const [industryFilter, setIndustryFilter] = useState<string>('');
+  const [lookingForFilter, setLookingForFilter] = useState<string>('');
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -278,6 +281,20 @@ const Radar = () => {
       setNearbyUsersData(nearbyUsersResult);
     }
   }, [nearbyUsersResult]);
+  
+  // Filter nearby users based on job title, industry, and lookingFor
+  const filteredNearbyUsers = nearbyUsersData.filter(user => {
+    const matchesJobTitle = !jobTitleFilter || 
+      (user.title && user.title.toLowerCase().includes(jobTitleFilter.toLowerCase()));
+    
+    const matchesIndustry = !industryFilter || 
+      (user.industry && user.industry.toLowerCase().includes(industryFilter.toLowerCase()));
+    
+    const matchesLookingFor = !lookingForFilter || 
+      (user.lookingFor && user.lookingFor.toLowerCase().includes(lookingForFilter.toLowerCase()));
+    
+    return matchesJobTitle && matchesIndustry && matchesLookingFor;
+  });
   
   // Mutation to update user's geo-visibility
   const updateVisibilityMutation = useMutation({
@@ -386,8 +403,8 @@ const Radar = () => {
       title: selectedUser.title,
       company: selectedUser.company,
       location: selectedUser.location,
-      industry: null,
-      lookingFor: null,
+      industry: selectedUser.industry,
+      lookingFor: selectedUser.lookingFor,
       phoneNumber: null,
       aboutMe: ''
     };
@@ -460,6 +477,45 @@ const Radar = () => {
                     </SelectContent>
                   </Select>
                 </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="job-title">Job Title</Label>
+                  <div className="relative">
+                    <input
+                      id="job-title"
+                      className="w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                      placeholder="e.g. Software Engineer"
+                      value={jobTitleFilter}
+                      onChange={(e) => setJobTitleFilter(e.target.value)}
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="industry">Industry</Label>
+                  <div className="relative">
+                    <input
+                      id="industry"
+                      className="w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                      placeholder="e.g. Technology, Design"
+                      value={industryFilter}
+                      onChange={(e) => setIndustryFilter(e.target.value)}
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="looking-for">Looking For</Label>
+                  <div className="relative">
+                    <input
+                      id="looking-for"
+                      className="w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                      placeholder="e.g. Mentoring, Job Opportunities"
+                      value={lookingForFilter}
+                      onChange={(e) => setLookingForFilter(e.target.value)}
+                    />
+                  </div>
+                </div>
               </div>
               
               <div className="flex-1 space-y-4">
@@ -528,9 +584,15 @@ const Radar = () => {
                     <UserCardSkeleton key={i} />
                   ))}
                 </div>
-              ) : nearbyUsersData && nearbyUsersData.length > 0 ? (
+              ) : filteredNearbyUsers && filteredNearbyUsers.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {nearbyUsersData.map((user: NearbyUser) => (
+                  <div className="col-span-2 mb-2">
+                    <p className="text-sm text-gray-500">
+                      Showing {filteredNearbyUsers.length} of {nearbyUsersData.length} nearby professionals
+                      {(jobTitleFilter || industryFilter || lookingForFilter) && ' with your filters'}
+                    </p>
+                  </div>
+                  {filteredNearbyUsers.map((user: NearbyUser) => (
                     <UserCard 
                       key={user.id} 
                       user={user} 
