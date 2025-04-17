@@ -3089,6 +3089,201 @@ export class MemStorage implements IStorage {
     
     return { title, content, hashtags: uniqueHashtags.slice(0, 5) };
   }
+
+  // Musk Match operations
+  async getMuskMatchesByUserId(userId: number): Promise<MuskMatch[]> {
+    return Array.from(this.muskMatches.values())
+      .filter(match => match.userId === userId)
+      .sort((a, b) => {
+        const timeA = a.shownAt ? a.shownAt.getTime() : 0;
+        const timeB = b.shownAt ? b.shownAt.getTime() : 0;
+        return timeB - timeA; // Sort newest first
+      });
+  }
+
+  async getMuskMatchById(id: number): Promise<MuskMatch | undefined> {
+    return this.muskMatches.get(id);
+  }
+
+  async createMuskMatch(match: InsertMuskMatch): Promise<MuskMatch> {
+    const id = this.currentMuskMatchId++;
+    const shownAt = new Date();
+    
+    const muskMatch: MuskMatch = {
+      ...match,
+      id,
+      isRead: false,
+      isDismissed: false,
+      isConnected: false,
+      shownAt,
+      skills: match.skills || [],
+      industry: match.industry || null,
+      domain: match.domain || null,
+      expiresAt: match.expiresAt || null
+    };
+    
+    this.muskMatches.set(id, muskMatch);
+    return muskMatch;
+  }
+
+  async updateMuskMatch(id: number, matchData: Partial<MuskMatch>): Promise<MuskMatch | undefined> {
+    const match = this.muskMatches.get(id);
+    if (!match) return undefined;
+    
+    const updatedMatch = { ...match, ...matchData };
+    this.muskMatches.set(id, updatedMatch);
+    return updatedMatch;
+  }
+
+  async deleteMuskMatch(id: number): Promise<boolean> {
+    return this.muskMatches.delete(id);
+  }
+
+  async markMuskMatchAsRead(id: number): Promise<MuskMatch | undefined> {
+    const match = this.muskMatches.get(id);
+    if (!match) return undefined;
+    
+    const updatedMatch = { ...match, isRead: true };
+    this.muskMatches.set(id, updatedMatch);
+    return updatedMatch;
+  }
+
+  async markMuskMatchAsDismissed(id: number): Promise<MuskMatch | undefined> {
+    const match = this.muskMatches.get(id);
+    if (!match) return undefined;
+    
+    const updatedMatch = { ...match, isDismissed: true };
+    this.muskMatches.set(id, updatedMatch);
+    return updatedMatch;
+  }
+
+  async markMuskMatchAsConnected(id: number): Promise<MuskMatch | undefined> {
+    const match = this.muskMatches.get(id);
+    if (!match) return undefined;
+    
+    const updatedMatch = { ...match, isConnected: true };
+    this.muskMatches.set(id, updatedMatch);
+    return updatedMatch;
+  }
+
+  async getPendingMuskMatches(userId: number): Promise<MuskMatch[]> {
+    return Array.from(this.muskMatches.values())
+      .filter(match => match.userId === userId && !match.isRead && !match.isDismissed)
+      .sort((a, b) => {
+        // Sort by match score (highest first)
+        return (b.matchScore || 0) - (a.matchScore || 0);
+      });
+  }
+  
+  async getCompatibleMuskMatches(userId: number, limit: number = 5): Promise<MuskMatch[]> {
+    // Get the user
+    const user = await this.getUser(userId);
+    if (!user) return [];
+    
+    // Create an array to hold potential matches
+    const potentialMatches: { match: MuskMatch; score: number }[] = [];
+    
+    // Get all users except the current user
+    const allUsers = await this.getAllUsers();
+    const otherUsers = allUsers.filter(u => u.id !== userId);
+    
+    // For each potential match user
+    for (const otherUser of otherUsers) {
+      // Skip users without industry or lookingFor data
+      if (!otherUser.industry || !otherUser.lookingFor) continue;
+      
+      // Compatibility logic
+      let matchScore = 0;
+      let matchReason = '';
+      
+      // 1. Check industry match (30%)
+      if (user.industry && user.industry === otherUser.industry) {
+        matchScore += 30;
+        matchReason += `Same industry (${user.industry}). `;
+      }
+      
+      // 2. Check domain match (20%) - if available
+      if (user.domain && otherUser.domain && user.domain === otherUser.domain) {
+        matchScore += 20;
+        matchReason += `Same domain (${user.domain}). `;
+      }
+      
+      // 3. Check looking for compatibility (30%)
+      if (user.lookingFor && otherUser.lookingFor) {
+        // Complementary lookingFor matches
+        const complementaryPairs: {[key: string]: string[]} = {
+          "A Career Mentor": ["To Mentor Others"],
+          "To Mentor Others": ["A Career Mentor"],
+          "Freelance Work": ["Hiring Freelancers"],
+          "Hiring Freelancers": ["Freelance Work"],
+          "Project Collaborators": ["Project Collaborators", "New Projects"],
+          "New Projects": ["Project Collaborators"],
+          "Industry Insights": ["To Share Knowledge"],
+          "To Share Knowledge": ["Industry Insights"]
+        };
+        
+        if (complementaryPairs[user.lookingFor]?.includes(otherUser.lookingFor)) {
+          matchScore += 30;
+          matchReason += `Complementary needs: You're looking for "${user.lookingFor}" and they're looking for "${otherUser.lookingFor}". `;
+        }
+      }
+      
+      // 4. Check for shared skills (20%) - if available
+      const userSkills = await this.getSkillsByUserId(userId);
+      const otherUserSkills = await this.getSkillsByUserId(otherUser.id);
+      
+      if (userSkills.length > 0 && otherUserSkills.length > 0) {
+        const userSkillNames = userSkills.map(s => s.name.toLowerCase());
+        const otherUserSkillNames = otherUserSkills.map(s => s.name.toLowerCase());
+        
+        // Count shared skills
+        let sharedSkillCount = 0;
+        const sharedSkills: string[] = [];
+        
+        userSkillNames.forEach(skill => {
+          if (otherUserSkillNames.includes(skill)) {
+            sharedSkillCount++;
+            sharedSkills.push(skill);
+          }
+        });
+        
+        // Calculate skill match percentage (20% max)
+        const skillMatchScore = Math.min(20, Math.floor((sharedSkillCount / Math.max(userSkillNames.length, 1)) * 20));
+        matchScore += skillMatchScore;
+        
+        if (sharedSkills.length > 0) {
+          matchReason += `${sharedSkills.length} shared skills: ${sharedSkills.slice(0, 3).join(', ')}${sharedSkills.length > 3 ? '...' : ''}. `;
+        }
+      }
+      
+      // Final score - minimum threshold of 40
+      if (matchScore >= 40) {
+        // Create a match object
+        const match: InsertMuskMatch = {
+          userId: userId,
+          suggestedUserId: otherUser.id,
+          matchType: user.lookingFor || 'general',
+          matchScore: matchScore,
+          matchReason: matchReason.trim(),
+          industry: user.industry,
+          domain: user.domain || null,
+          skills: userSkills.slice(0, 5).map(s => s.name)
+        };
+        
+        // Create the match
+        const createdMatch = await this.createMuskMatch(match);
+        
+        // Add to potential matches array
+        potentialMatches.push({ match: createdMatch, score: matchScore });
+      }
+    }
+    
+    // Sort by match score (highest first) and return limited results
+    return potentialMatches
+      .sort((a, b) => b.score - a.score)
+      .slice(0, limit)
+      .map(item => item.match);
+  }
 }
 
 export const storage = new MemStorage();
