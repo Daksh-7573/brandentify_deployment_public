@@ -602,3 +602,34 @@ export type InsertUserReactionQuota = z.infer<typeof insertUserReactionQuotaSche
 
 export type PulseShare = typeof pulseShares.$inferSelect;
 export type InsertPulseShare = z.infer<typeof insertPulseShareSchema>;
+
+// MuskMatch model - tracks AI suggestions for user connections
+export const muskMatches = pgTable("musk_matches", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(), // User receiving the suggestion
+  suggestedUserId: integer("suggested_user_id").references(() => users.id).notNull(), // User being suggested
+  matchType: text("match_type").notNull(), // Based on lookingFor value pairs
+  matchScore: integer("match_score").default(0), // AI-calculated match score (0-100)
+  matchReason: text("match_reason"), // AI-generated reason for the match
+  industry: text("industry"), // Matched industry
+  domain: text("domain"), // Matched domain
+  skills: jsonb("skills").default('[]'), // Matched skills as array
+  isRead: boolean("is_read").default(false), // Whether the user has seen this suggestion
+  isDismissed: boolean("is_dismissed").default(false), // Whether the user has dismissed this suggestion
+  isConnected: boolean("is_connected").default(false), // Whether the users have connected
+  shownAt: timestamp("shown_at").defaultNow(), // When the match was shown to the user
+  expiresAt: timestamp("expires_at"), // When the match suggestion expires
+});
+
+// Insert schema for MuskMatch
+export const insertMuskMatchSchema = createInsertSchema(muskMatches).omit({
+  id: true,
+  isRead: true,
+  isDismissed: true,
+  isConnected: true,
+  shownAt: true
+});
+
+// Export types for MuskMatch
+export type MuskMatch = typeof muskMatches.$inferSelect;
+export type InsertMuskMatch = z.infer<typeof insertMuskMatchSchema>;
