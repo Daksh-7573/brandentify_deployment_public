@@ -32,10 +32,14 @@ router.get('/api/musk/suggestions', async (req: Request, res: Response) => {
 /**
  * Dismiss a Musk suggestion
  */
-router.post('/api/musk/suggestions/:id/dismiss', async (req: Request, res: Response) => {
+router.post('/api/musk/suggestions/dismiss', async (req: Request, res: Response) => {
   try {
-    // Extract suggestion ID
-    const suggestionId = parseInt(req.params.id);
+    // Extract suggestion ID from request body
+    const { suggestionId } = req.body;
+    
+    if (!suggestionId) {
+      return res.status(400).json({ error: 'suggestionId is required' });
+    }
     
     // Dismiss suggestion
     await muskSuggestionService.dismissSuggestion(suggestionId);
@@ -51,10 +55,14 @@ router.post('/api/musk/suggestions/:id/dismiss', async (req: Request, res: Respo
 /**
  * Mark a Musk suggestion as having action taken
  */
-router.post('/api/musk/suggestions/:id/action-taken', async (req: Request, res: Response) => {
+router.post('/api/musk/suggestions/action', async (req: Request, res: Response) => {
   try {
-    // Extract suggestion ID
-    const suggestionId = parseInt(req.params.id);
+    // Extract suggestion ID from request body
+    const { suggestionId } = req.body;
+    
+    if (!suggestionId) {
+      return res.status(400).json({ error: 'suggestionId is required' });
+    }
     
     // Mark action taken
     await muskSuggestionService.markSuggestionActionTaken(suggestionId);
@@ -68,9 +76,33 @@ router.post('/api/musk/suggestions/:id/action-taken', async (req: Request, res: 
 });
 
 /**
+ * Mark a suggestion as shown to the user
+ */
+router.post('/api/musk/suggestions/shown', async (req: Request, res: Response) => {
+  try {
+    // Extract suggestion ID from request body
+    const { suggestionId } = req.body;
+    
+    if (!suggestionId) {
+      return res.status(400).json({ error: 'suggestionId is required' });
+    }
+    
+    // In a real implementation, we would update a 'shown' flag in the database
+    // For now, we'll just log it
+    console.log(`Suggestion ${suggestionId} shown to user`);
+    
+    // Return success
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error marking Musk suggestion as shown:', error);
+    res.status(500).json({ error: 'Failed to mark Musk suggestion as shown' });
+  }
+});
+
+/**
  * Track user behavior for Musk AI
  */
-router.post('/api/musk/track-behavior', async (req: Request, res: Response) => {
+router.post('/api/musk/track', async (req: Request, res: Response) => {
   try {
     // Extract user ID from request body (for demo purposes)
     // In a real app, this would come from authentication/session
