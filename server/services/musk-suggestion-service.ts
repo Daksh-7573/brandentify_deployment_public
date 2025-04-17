@@ -1,5 +1,12 @@
 import { IStorage } from "../storage";
-import { MuskSuggestion } from "../../shared/schema-musk-suggestions";
+import { 
+  MuskSuggestion, 
+  UserProfileIntelligence, 
+  BehaviorHeatmap,
+  userProfileSegments,
+  careerLevels,
+  userGoalTypes
+} from "../../shared/schema-musk-suggestions";
 
 export interface SuggestionContext {
   userId: number;
@@ -12,6 +19,19 @@ export interface SuggestionContext {
   hasProjects?: boolean;
   currentTime: Date;
   recentPageViews?: string[];
+  // Enhanced context information
+  profileIntelligence?: UserProfileIntelligence;
+  behaviorPatterns?: {
+    preferredContentTypes: string[];
+    activeTimeOfDay: number[];
+    topEngagementCategories: string[];
+    averageSessionDuration: number;
+  };
+  careerLevel?: string;
+  userSegment?: string;
+  primaryGoal?: string;
+  skillGaps?: string[];
+  learningStyle?: string;
 }
 
 /**
@@ -81,6 +101,98 @@ export class MuskSuggestionService {
       })
       .filter(Boolean);
     
+    // Get advanced profile intelligence if available
+    let profileIntelligence;
+    try {
+      profileIntelligence = await this.storage.getUserProfileIntelligence(userId);
+    } catch (error) {
+      console.log('No profile intelligence data found for user');
+    }
+    
+    // Analyze behavior patterns from heatmap data
+    let behaviorPatterns;
+    try {
+      const behaviorHeatmap = await this.storage.getBehaviorHeatmapForUser(userId);
+      
+      if (behaviorHeatmap && behaviorHeatmap.length > 0) {
+        // Find preferred content types
+        const contentTypeMap = new Map<string, number>();
+        behaviorHeatmap.forEach(entry => {
+          const current = contentTypeMap.get(entry.contentType) || 0;
+          contentTypeMap.set(entry.contentType, current + 1);
+        });
+        
+        const preferredContentTypes = Array.from(contentTypeMap.entries())
+          .sort((a, b) => b[1] - a[1])
+          .map(([type]) => type);
+          
+        // Find active hours of day
+        const timeMap = new Map<number, number>();
+        behaviorHeatmap.forEach(entry => {
+          if (entry.timeOfDay !== null) {
+            const current = timeMap.get(entry.timeOfDay) || 0;
+            timeMap.set(entry.timeOfDay, current + 1);
+          }
+        });
+        
+        const activeTimeOfDay = Array.from(timeMap.entries())
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 3)
+          .map(([hour]) => hour);
+        
+        // Calculate average session duration
+        const durations = behaviorHeatmap
+          .filter(entry => entry.timeSpent)
+          .map(entry => entry.timeSpent || 0);
+          
+        const averageSessionDuration = durations.length > 0
+          ? durations.reduce((sum, val) => sum + val, 0) / durations.length
+          : 0;
+          
+        // Find top engagement categories
+        const categoriesMap = new Map<string, number>();
+        behaviorHeatmap.forEach(entry => {
+          const engagementStrength = entry.engagementStrength || 1;
+          
+          if (entry.contentType.includes('_')) {
+            const category = entry.contentType.split('_')[0];
+            const current = categoriesMap.get(category) || 0;
+            categoriesMap.set(category, current + engagementStrength);
+          }
+        });
+        
+        const topEngagementCategories = Array.from(categoriesMap.entries())
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 5)
+          .map(([category]) => category);
+          
+        behaviorPatterns = {
+          preferredContentTypes,
+          activeTimeOfDay,
+          topEngagementCategories,
+          averageSessionDuration
+        };
+      }
+    } catch (error) {
+      console.log('No behavior heatmap data found for user');
+    }
+    
+    // Extract values from profile intelligence
+    const userSegment = profileIntelligence?.segment;
+    const careerLevel = profileIntelligence?.careerLevel;
+    const primaryGoal = profileIntelligence?.primaryGoal;
+    const learningStyle = profileIntelligence?.learningStyle;
+    
+    // Parse JSON arrays from profile intelligence
+    let skillGaps: string[] = [];
+    if (profileIntelligence?.skillGaps) {
+      try {
+        skillGaps = JSON.parse(profileIntelligence.skillGaps);
+      } catch (error) {
+        console.log('Invalid skill gaps JSON data');
+      }
+    }
+    
     return {
       userId,
       industry: user?.industry || undefined,
@@ -92,6 +204,14 @@ export class MuskSuggestionService {
       hasProjects,
       currentTime: new Date(),
       recentPageViews: recentPageViews || [],
+      // Enhanced context information
+      profileIntelligence,
+      behaviorPatterns,
+      careerLevel,
+      userSegment,
+      primaryGoal,
+      skillGaps,
+      learningStyle
     };
   }
 
@@ -100,6 +220,8 @@ export class MuskSuggestionService {
    */
   private async generateSuggestions(context: SuggestionContext): Promise<MuskSuggestion[]> {
     const suggestions: MuskSuggestion[] = [];
+    
+    // --- ORIGINAL SUGGESTION TYPES ---
     
     // Add daily industry suggestion if it's morning or early afternoon (between 8am and 2pm)
     const hour = context.currentTime.getHours();
@@ -152,6 +274,54 @@ export class MuskSuggestionService {
       suggestions.push(await this.createEngagePulseSuggestion(context));
     }
     
+    // --- ENHANCED SUGGESTION TYPES ---
+    
+    // 1. Deep Profile Intelligence based suggestions
+    if (context.userSegment) {
+      // Different suggestions based on user segment
+      if (context.userSegment === 'jobSeeker') {
+        suggestions.push(await this.createJobSeekerSuggestion(context));
+      } else if (context.userSegment === 'creator') {
+        suggestions.push(await this.createContentCreatorSuggestion(context));
+      } else if (context.userSegment === 'networker') {
+        suggestions.push(await this.createNetworkingSuggestion(context));
+      }
+    }
+    
+    // 2. Behavioral Pattern-based suggestions
+    if (context.behaviorPatterns) {
+      // Suggest content based on user's preferred content types
+      if (context.behaviorPatterns.preferredContentTypes.length > 0) {
+        suggestions.push(await this.createContentPreferenceSuggestion(context));
+      }
+      
+      // Optimal time suggestion based on user's active hours
+      if (context.behaviorPatterns.activeTimeOfDay.length > 0) {
+        const preferredHour = context.behaviorPatterns.activeTimeOfDay[0];
+        const currentHour = context.currentTime.getHours();
+        
+        // If we're close to the user's preferred engagement time, suggest posting
+        if (Math.abs(currentHour - preferredHour) <= 2) {
+          suggestions.push(await this.createOptimalTimeSuggestion(context));
+        }
+      }
+    }
+    
+    // 3. Check for skill gaps if available
+    if (context.skillGaps && context.skillGaps.length > 0) {
+      suggestions.push(await this.createSkillGapSuggestion(context));
+    }
+    
+    // 4. Create milestone-based suggestions
+    suggestions.push(await this.createMilestoneSuggestion(context));
+    
+    // 5. Create trending topic suggestion based on user's industry
+    suggestions.push(await this.createTrendingTopicSuggestion(context));
+    
+    // 6. Strategic engagement suggestion for visibility
+    suggestions.push(await this.createStrategicEngagementSuggestion(context));
+    
+    // Filter out any null suggestions
     return suggestions.filter(Boolean) as MuskSuggestion[];
   }
 
