@@ -270,6 +270,10 @@ export class MemStorage implements IStorage {
   private newsArticles: Map<number, NewsArticle>;
   private newsUserPreferences: Map<number, NewsUserPreference>;
   
+  // Musk suggestion models
+  private muskSuggestions: Map<number, MuskSuggestion>;
+  private muskBehaviorTracking: Map<number, MuskBehaviorTracking>;
+  
   private currentUserId: number;
   private currentResumeId: number;
   private currentWorkExperienceId: number;
@@ -297,6 +301,9 @@ export class MemStorage implements IStorage {
   private currentNewsSourceId: number;
   private currentNewsArticleId: number;
   private currentNewsUserPreferenceId: number;
+  // Musk suggestion IDs
+  private currentMuskSuggestionId: number;
+  private currentMuskBehaviorTrackingId: number;
 
   constructor() {
     this.users = new Map();
@@ -327,6 +334,10 @@ export class MemStorage implements IStorage {
     this.newsArticles = new Map();
     this.newsUserPreferences = new Map();
     
+    // Initialize Musk suggestion maps
+    this.muskSuggestions = new Map();
+    this.muskBehaviorTracking = new Map();
+    
     this.currentUserId = 1;
     this.currentResumeId = 1;
     this.currentWorkExperienceId = 1;
@@ -354,6 +365,9 @@ export class MemStorage implements IStorage {
     this.currentNewsSourceId = 1;
     this.currentNewsArticleId = 1;
     this.currentNewsUserPreferenceId = 1;
+    // Initialize Musk suggestion IDs
+    this.currentMuskSuggestionId = 1;
+    this.currentMuskBehaviorTrackingId = 1;
     
     // Initialize with a default user for development/demo
     this.initializeDemoData();
@@ -449,6 +463,9 @@ export class MemStorage implements IStorage {
     this.currentNewsSourceId = 1;
     this.currentNewsArticleId = 1;
     this.currentNewsUserPreferenceId = 1;
+    // Reset Musk suggestion IDs
+    this.currentMuskSuggestionId = 1;
+    this.currentMuskBehaviorTrackingId = 1;
     
     // No pre-created skills
     
@@ -593,6 +610,12 @@ export class MemStorage implements IStorage {
     
     // Clear all news user preferences
     this.newsUserPreferences.clear();
+    
+    // Clear all Musk suggestions
+    this.muskSuggestions.clear();
+    
+    // Clear all Musk behavior tracking
+    this.muskBehaviorTracking.clear();
   }
   
   /**
