@@ -12,21 +12,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { apiRequest } from '@/lib/queryClient';
-import { 
-  X, 
-  Send, 
-  MessageSquare, 
-  Loader2, 
-  FileUp, 
-  Paperclip, 
-  FileText, 
-  PresentationIcon,
-  LightbulbIcon
-} from 'lucide-react';
+import { X, Send, MessageSquare, Loader2, FileUp, Paperclip, FileText, PresentationIcon, LightbulbIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import SuggestedQuestionsDisplay from './suggested-questions-display';
-import { getSuggestedQuestions } from './suggested-questions';
 import { UserData } from '@/types/user';
 
 interface MuskChatPanelProps {
@@ -49,13 +38,6 @@ type Message = {
 };
 
 export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) {
-  // State declarations
-  const [userData, setUserData] = useState<UserData | null>(null);
-  const [inputValue, setInputValue] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [uploadType, setUploadType] = useState<'resume' | 'pitchdeck'>('resume');
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'welcome',
@@ -71,12 +53,17 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
     }
   ]);
   
-  // References
+  const [inputValue, setInputValue] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadType, setUploadType] = useState<'resume' | 'pitchdeck'>('resume');
+  const [userData, setUserData] = useState<UserData | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const pitchDeckFileInputRef = useRef<HTMLInputElement>(null);
-  const { toast } = useToast();
   
   // Fetch user data when component mounts
   useEffect(() => {
@@ -96,36 +83,6 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
     
     fetchUserData();
   }, [context?.userId]);
-  
-  // Update initial message quick responses with dynamic suggested questions
-  useEffect(() => {
-    if (userData) {
-      try {
-        // Get suggested questions based on user profile
-        const suggestedQuestions = getSuggestedQuestions(userData, {}, 4);
-        
-        // If we have suggestions, update the initial message
-        if (suggestedQuestions.length > 0) {
-          setMessages(prevMessages => {
-            // Clone the messages array
-            const updatedMessages = [...prevMessages];
-            
-            // If we have a welcome message, update its quick responses
-            if (updatedMessages.length > 0 && updatedMessages[0].id === 'welcome') {
-              updatedMessages[0] = {
-                ...updatedMessages[0],
-                quickResponses: suggestedQuestions.map(q => q.text)
-              };
-            }
-            
-            return updatedMessages;
-          });
-        }
-      } catch (error) {
-        console.error('Error generating suggested questions:', error);
-      }
-    }
-  }, [userData]);
   
   // Auto-scroll to bottom when messages change
   useEffect(() => {
@@ -453,14 +410,9 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
     pitchDeckFileInputRef.current?.click();
   };
   
-  // Animation variants for the panel
-  const panelAnimation = {
-    initial: { 
-      opacity: 0, 
-      y: 20, 
-      scale: 0.95 
-    },
-    animate: { 
+  const panelVariants = {
+    hidden: { opacity: 0, y: 20, scale: 0.95 },
+    visible: { 
       opacity: 1, 
       y: 0, 
       scale: 1,
@@ -475,91 +427,73 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
   };
   
   return (
-    <Card className="fixed inset-0 sm:relative sm:inset-auto sm:w-[450px] sm:shadow-xl bg-card rounded-lg border border-border/50 flex flex-col overflow-hidden">
+    <Card className="fixed bottom-4 right-4 w-96 h-[80vh] max-h-[700px] shadow-xl bg-background border rounded-xl overflow-hidden z-50">
       <motion.div
-        className="flex flex-col h-[600px] max-h-screen w-full"
-        initial="initial"
-        animate="animate"
+        className="flex flex-col h-full"
+        variants={panelVariants}
+        initial="hidden"
+        animate="visible"
         exit="exit"
-        variants={panelAnimation}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-2 border-b border-border/50">
-          <div className="flex items-center gap-2">
-            <Avatar className="h-7 w-7 bg-primary/10">
-              <MessageSquare className="h-4 w-4 text-primary" />
+        <div className="flex items-center justify-between p-4 border-b">
+          <div className="flex items-center gap-3">
+            <Avatar className="h-10 w-10 bg-primary/10">
+              <img 
+                src="/images/musk-ai-avatar.png" 
+                alt="Musk AI"
+                onError={(e) => {
+                  e.currentTarget.src = "https://ui-avatars.com/api/?name=Musk&background=6366f1&color=fff";
+                }}
+              />
             </Avatar>
             <div>
-              <h3 className="text-sm font-medium">Musk AI</h3>
-              <p className="text-xs text-muted-foreground">Your Career Assistant</p>
+              <h3 className="font-semibold text-lg">Musk</h3>
+              <p className="text-xs text-muted-foreground">AI Career Assistant</p>
             </div>
           </div>
-          {onClose && (
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="h-8 w-8 p-0 rounded-full" 
-              onClick={onClose}
-              title="Close Musk chat"
-            >
-              <X className="h-4 w-4" />
-              <span className="sr-only">Close</span>
-            </Button>
-          )}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={onClose}
+            className="h-8 w-8 rounded-full hover:bg-accent"
+          >
+            <X className="h-4 w-4" />
+          </Button>
         </div>
         
         {/* Messages */}
         <ScrollArea className="flex-1 p-4">
-          <div className="space-y-4">
+          <div className="flex flex-col gap-4">
             {messages.map((message) => (
               <div 
-                key={message.id} 
+                key={message.id}
                 className={cn(
-                  "flex flex-col gap-2",
-                  message.sender === 'user' ? "items-end" : "items-start"
+                  "flex flex-col max-w-[85%] rounded-lg p-3 animate-in fade-in-0 zoom-in-95 duration-300",
+                  message.sender === 'user' 
+                    ? "ml-auto bg-primary text-primary-foreground rounded-br-none" 
+                    : "mr-auto bg-muted rounded-bl-none"
                 )}
               >
-                <div className="flex items-start gap-2 max-w-[85%]">
-                  {message.sender === 'musk' && (
-                    <Avatar className="h-8 w-8 mt-0.5 bg-primary/10">
-                      <MessageSquare className="h-4 w-4 text-primary" />
-                    </Avatar>
-                  )}
-                  
-                  <div
-                    className={cn(
-                      "rounded-lg py-2 px-3 text-sm",
-                      message.sender === 'user' 
-                        ? "bg-primary text-primary-foreground" 
-                        : "bg-muted"
-                    )}
-                  >
-                    {message.thinking ? (
-                      <div className="flex items-center gap-1.5 h-5">
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                        <span className="text-xs text-muted-foreground">Thinking...</span>
-                      </div>
-                    ) : (
-                      <div className="whitespace-pre-wrap">{message.content}</div>
-                    )}
+                {/* Show thinking indicator */}
+                {message.thinking ? (
+                  <div className="flex items-center space-x-2">
+                    <div className="text-sm">Thinking</div>
+                    <Loader2 className="h-4 w-4 animate-spin" />
                   </div>
-                  
-                  {message.sender === 'user' && (
-                    <Avatar className="h-8 w-8 mt-0.5 bg-primary">
-                      <div className="text-xs font-medium text-primary-foreground">You</div>
-                    </Avatar>
-                  )}
-                </div>
+                ) : (
+                  <div className="text-sm whitespace-pre-wrap">{message.content}</div>
+                )}
                 
                 {/* Quick responses */}
-                {message.quickResponses && message.quickResponses.length > 0 && (
-                  <div className="flex flex-wrap gap-2 pl-10 max-w-[90%]">
-                    {message.quickResponses.map((response, index) => (
-                      <Button
-                        key={index}
-                        variant="outline"
+                {message.sender === 'musk' && message.quickResponses && message.quickResponses.length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {message.quickResponses.map((response, i) => (
+                      <Button 
+                        key={i}
+                        variant="secondary"
                         size="sm"
-                        className="h-auto py-1 px-2 text-xs bg-card/80 hover:bg-muted/80"
+                        className="text-xs py-1 h-auto bg-background/80 hover:bg-background"
                         onClick={() => handleQuickResponse(response)}
                       >
                         {response}
@@ -573,19 +507,21 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
           </div>
         </ScrollArea>
         
+        <Separator />
+        
         {/* Hidden file inputs */}
-        <input 
-          ref={fileInputRef} 
-          type="file" 
-          onChange={handleFileUpload} 
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileUpload}
           accept=".pdf,.doc,.docx"
           className="hidden"
         />
         
-        <input 
-          ref={pitchDeckFileInputRef} 
-          type="file" 
-          onChange={handleFileUpload} 
+        <input
+          type="file"
+          ref={pitchDeckFileInputRef}
+          onChange={handleFileUpload}
           accept=".pdf"
           className="hidden"
         />

@@ -23,7 +23,6 @@ import NewsSourcesPage from "@/pages/news-sources";
 import Radar from "@/pages/radar";
 import SmartConnectPage from "@/pages/smart-connect";
 import MuskMatchPage from "@/pages/musk-match";
-import MuskTestPage from "@/pages/musk-test";
 
 // Redirect component to handle page redirects
 const Redirect = ({ to }: { to: string }) => {
@@ -108,7 +107,6 @@ function Router() {
       <Route path="/musk-match">
         <ProtectedRoute path="/musk-match" component={MuskMatchPage} />
       </Route>
-      <Route path="/musk-test" component={MuskTestPage} />
       <Route component={NotFound} />
     </Switch>
   );
