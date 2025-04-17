@@ -59,17 +59,16 @@ export default function ResumePage() {
   };
 
   return (
-    <PageLayout>
-      <PageHeader
-        title="Resume & CV"
-        description="View and manage your professional resume"
-        actions={
-          <Button onClick={handleUploadResume} className="gap-2">
-            <Upload className="h-4 w-4" />
-            <span>Upload Resume</span>
-          </Button>
-        }
-      />
+    <PageLayout
+      title="Resume & CV"
+      description="View and manage your professional resume"
+      actions={
+        <Button onClick={handleUploadResume} className="gap-2">
+          <Upload className="h-4 w-4" />
+          <span>Upload Resume</span>
+        </Button>
+      }
+    >
 
       <Tabs defaultValue="shadow-resume" value={activeTab} onValueChange={setActiveTab} className="mt-6">
         <TabsList className="grid w-full grid-cols-2 mb-6">

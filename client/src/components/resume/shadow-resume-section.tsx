@@ -1,14 +1,6 @@
 import React, { useState } from 'react';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle 
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -17,23 +9,25 @@ import {
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
+
 import { 
-  Clock, 
-  Download, 
-  Eye, 
-  Pencil, 
-  Zap, 
+  Zap,
+  Download,
+  Eye,
   Calendar,
-  FileText 
+  FileText,
+  Pencil
 } from 'lucide-react';
+
 import { formatDistanceToNow } from 'date-fns';
 import { UserData } from '@/types/user';
 import { Resume, ResumeTheme } from '@/types/resume';
 
 interface ShadowResumeProps {
-  user: UserData;
+  user: UserData | any; // Using any for demo purposes to handle potential null or partial data
   resume?: Resume;
   isCurrentUser: boolean;
 }
