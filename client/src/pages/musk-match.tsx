@@ -19,7 +19,7 @@ export default function MuskMatchPage() {
   const createDemoMatch = async () => {
     try {
       // Create a new match for testing
-      await apiRequest('/api/musk-matches', 'POST', {
+      await apiRequest('POST', '/api/musk-matches', {
         userId: 1,
         suggestedUserId: 2,
         matchType: "Career Mentor",

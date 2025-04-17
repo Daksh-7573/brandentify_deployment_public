@@ -46,8 +46,8 @@ export default function MuskMatchContainer({ userId, limit = 5 }: MuskMatchConta
   // Mutation for generating new matches
   const generateMutation = useMutation({
     mutationFn: async () => {
-      const response = await apiRequest('/api/musk-matches/generate', 'POST', { userId, limit });
-      return response as MuskMatch[];
+      const response = await apiRequest('POST', '/api/musk-matches/generate', { userId, limit });
+      return await response.json() as MuskMatch[];
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/musk-matches/user', userId] });
