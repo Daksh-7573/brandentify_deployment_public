@@ -70,11 +70,108 @@ export async function createDemoProfiles(storage: IStorage) {
   
   console.log(`Successfully created 3 demo profiles with IDs: ${techProfile.id}, ${designerProfile.id}, ${dataScientistProfile.id}`);
   
+  // Create demo Musk Matches between these profiles
+  await createDemoMuskMatches(storage, techProfile.id, designerProfile.id, dataScientistProfile.id);
+  
   return {
     techProfile,
     designerProfile,
     dataScientistProfile
   };
+}
+
+/**
+ * Creates demo Musk Match suggestions between the demo user profiles
+ */
+async function createDemoMuskMatches(storage: IStorage, techId: number, designerId: number, dataScientistId: number) {
+  console.log("Creating demo Musk Match suggestions...");
+  
+  // Create matches for Tech Executive (techId)
+  const techMatches = [
+    {
+      userId: techId,
+      suggestedUserId: dataScientistId,
+      matchType: "Strategic Partnership",
+      matchScore: 89,
+      matchReason: "Alex's leadership experience in tech complements David's data science expertise. A potential collaboration could lead to innovative AI-driven solutions.",
+      industry: "Technology",
+      domain: "Artificial Intelligence",
+      skills: ["Leadership", "AI Strategy", "Product Development"],
+      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // Expires in 30 days
+    },
+    {
+      userId: techId,
+      suggestedUserId: designerId,
+      matchType: "Mentorship",
+      matchScore: 76,
+      matchReason: "Alex can provide valuable industry insights to Maya, while benefiting from her creative UX perspective on product development.",
+      industry: "Technology",
+      domain: "Product Design",
+      skills: ["UX Strategy", "Product Management", "Design Thinking"],
+      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // Expires in 30 days
+    }
+  ];
+  
+  // Create matches for UX Designer (designerId)
+  const designerMatches = [
+    {
+      userId: designerId,
+      suggestedUserId: techId,
+      matchType: "Career Advice",
+      matchScore: 82,
+      matchReason: "Maya could gain valuable insights from Alex on scaling design systems for enterprise applications and career growth in tech leadership.",
+      industry: "Design",
+      domain: "Enterprise UX",
+      skills: ["Leadership", "Design Systems", "Enterprise Software"],
+      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // Expires in 30 days
+    },
+    {
+      userId: designerId,
+      suggestedUserId: dataScientistId,
+      matchType: "Collaboration",
+      matchScore: 91,
+      matchReason: "Maya's UX expertise combined with David's data visualization skills could create more intuitive interfaces for complex data analytics.",
+      industry: "Data Visualization",
+      domain: "Interactive Analytics",
+      skills: ["Data Visualization", "User Research", "Interface Design"],
+      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // Expires in 30 days
+    }
+  ];
+  
+  // Create matches for Data Scientist (dataScientistId)
+  const dataScientistMatches = [
+    {
+      userId: dataScientistId,
+      suggestedUserId: techId,
+      matchType: "Industry Connection",
+      matchScore: 88,
+      matchReason: "David's ML models could find commercial applications through Alex's network and product development expertise.",
+      industry: "Artificial Intelligence",
+      domain: "Commercial AI Applications",
+      skills: ["Product Strategy", "ML Implementation", "Go-to-Market"],
+      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // Expires in 30 days
+    },
+    {
+      userId: dataScientistId,
+      suggestedUserId: designerId,
+      matchType: "Project Collaboration",
+      matchScore: 85,
+      matchReason: "David's healthcare analytics could benefit from Maya's expertise in creating accessible user interfaces for complex medical data.",
+      industry: "Healthcare Technology",
+      domain: "Medical Interfaces",
+      skills: ["Healthcare UX", "Data Visualization", "Accessibility"],
+      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // Expires in 30 days
+    }
+  ];
+  
+  // Insert all matches into database
+  const allMatches = [...techMatches, ...designerMatches, ...dataScientistMatches];
+  
+  for (const match of allMatches) {
+    await storage.createMuskMatch(match);
+  }
+  
+  console.log(`Successfully created ${allMatches.length} demo Musk Match suggestions`);
 }
 
 async function createTechExecutiveProfile(storage: IStorage) {
