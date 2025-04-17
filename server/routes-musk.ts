@@ -8,6 +8,34 @@ import fs from "fs";
 import crypto from "crypto";
 import { createDemoProfiles } from "./demo-profiles";
 
+/**
+ * Handler for creating demo profiles for the Musk AI career assistant feature
+ */
+export const handleCreateMuskDemoProfiles = async (req: Request, res: Response) => {
+  try {
+    console.log("[handleCreateMuskDemoProfiles] Creating demo profiles for Musk AI");
+    
+    // Create demo profiles using the existing createDemoProfiles function
+    const result = await createDemoProfiles(storage);
+    
+    // Return success message with the created profiles
+    res.status(200).json({
+      message: "Demo profiles created successfully for Musk AI",
+      profiles: {
+        techProfile: { id: result.techProfile.id, name: result.techProfile.name },
+        designerProfile: { id: result.designerProfile.id, name: result.designerProfile.name },
+        dataScientistProfile: { id: result.dataScientistProfile.id, name: result.dataScientistProfile.name }
+      }
+    });
+  } catch (error) {
+    console.error("[handleCreateMuskDemoProfiles] Error creating Musk AI demo profiles:", error);
+    res.status(500).json({ 
+      error: "Failed to create Musk AI demo profiles",
+      message: error instanceof Error ? error.message : "Unknown error"
+    });
+  }
+};
+
 // Handle Musk AI assistant chat requests
 export const handleMuskChat = async (req: Request, res: Response) => {
   try {
