@@ -1,0 +1,83 @@
+🤖🚀 Feature Name: Musk Match Suggest
+“Based on what you’re looking for, here’s someone you should discover today…”
+
+✅ 1. 📥 Input Trigger Logic (Passive, Auto)
+Musk automatically checks:
+
+✅ lookingFor field → Value selected by user
+
+✅ All other core profile fields: industry, domain, skills, location, title, projects, education
+
+✅ Matchmaking pair (see Section 2 below)
+
+✅ Cooldown timer to avoid repetition (e.g. once per day or every 48 hrs)
+
+🔁 2. 🎯 Matchmaking Pair Logic (Auto-Opposite)
+
+If User is Looking For…	Musk Will Show Profiles Of…
+A Career Mentor	Career Mentees
+Career Mentees	Career Mentors
+Job Opportunities	Job Seekers / Candidates
+Job Seekers / Candidates	Job Opportunities
+Freelance Gigs	Hiring Freelancers
+Hiring Freelancers	Freelance Gigs
+Co-Founders	Co-Founders
+Investors	Startups
+Startups	Investors
+Study Groups	Students/Learners
+Skill Trainers	Students/Learners
+Students/Learners	Skill Trainers
+Share My Expertise	Industry Experts
+Industry Experts	Users looking to “Share My Expertise”
+Musk uses this mirrored intent map to build a potential match pool.
+
+🧠 3. 🧩 Profile Match Logic
+Once mirrored match type is identified, Musk runs deep profile match scoring based on:
+
+
+Field	Match Weight
+industry	30%
+domain	20%
+location (optional / proximity match)	10%
+skills overlap (min 3 matched)	20%
+title similarity or seniority complement	10%
+profileCompleted > 70%	Must
+emailVerified	Must
+projects/portfolio match	Bonus
+recently active (last 7 days)	Bonus
+💡 Optional: Add Musk’s own "Smart Match Score" shown in a subtle tag (e.g., “89% synergy with your profile”).
+
+💬 4. 📦 Delivery Behavior (Non-intrusive, Auto-Smart)
+
+Timing	Behavior
+🔁 Once daily	Only when the user is active (not idle/inactive)
+📬 Notification style	Like a Pulse card or in-chat prompt
+🕓 Optional time-based	Suggests match when user scrolls Wall for more than 60 seconds
+Example from Musk:
+
+“You’re looking for a Career Mentor. Here’s someone who’s mentoring 3 mentees in your industry. Want to connect?”
+🔗 View Profile
+💬 Message Now
+
+🔄 5. 📱 UI Integration Options
+
+Place	Suggestion
+🧠 Musk Chat Assistant	Shows smart match in chat window, with short description & link
+🧑 Suggested People Panel	Dynamic block in Dashboard / Wall: “Today’s Match by Musk”
+🔔 Notification Pulse	“Musk has a suggested profile for your ‘Looking For’ match.”
+📇 Quantum Card Preview	Mini-card with Connect, Message, Save buttons
+🧩 6. 🔐 Safeguards & Anti-Spam
+
+Rule	Logic
+❌ Never show same person twice in 7 days	
+❌ Don’t suggest profiles with < 70% profile completion	
+❌ Only suggest users who opted in for “Discoverable”	
+✅ Log match suggestions per user for Musk memory	
+✅ Suggest based on timezone & behavior pattern (e.g. when user most likely to engage)	
+✨ Example Musk Messages
+“A top-rated career mentor from your domain just joined Brandentifier. You may want to connect.”
+
+“Looking for freelance gigs? This startup just posted their first project — and your skills match.”
+
+“This founder is seeking a co-founder with design experience. Your portfolio is a perfect fit.”
+
