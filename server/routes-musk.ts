@@ -6,6 +6,7 @@ import { analyzeResume } from "../openai-service-fix";
 import path from "path";
 import fs from "fs";
 import crypto from "crypto";
+import { createDemoProfiles } from "./demo-profiles";
 
 // Handle Musk AI assistant chat requests
 export const handleMuskChat = async (req: Request, res: Response) => {
