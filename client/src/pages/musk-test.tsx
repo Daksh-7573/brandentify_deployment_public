@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import MuskChatPanel from '@/components/musk/musk-chat-panel';
-import { useUser } from '@/hooks/use-user';
+import { useAuth } from '@/hooks/use-auth';
 
 export default function MuskTestPage() {
   const [isOpen, setIsOpen] = useState(false);
-  const { user } = useUser();
+  const { currentUser } = useAuth();
 
   return (
     <div className="container mx-auto py-8">
@@ -23,7 +23,10 @@ export default function MuskTestPage() {
         
         {isOpen && (
           <MuskChatPanel
-            context={{ page: 'musk-test' }}
+            context={{ 
+              page: 'musk-test',
+              userId: currentUser?.id || 1 // Use demo user ID if not logged in
+            }}
             onClose={() => setIsOpen(false)}
           />
         )}
