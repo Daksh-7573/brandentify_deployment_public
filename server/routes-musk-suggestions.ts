@@ -1,127 +1,108 @@
-import { Router } from 'express';
-import { IStorage } from './storage';
-import { z } from 'zod';
+import { Router, Request, Response } from 'express';
+import { storage } from './storage';
 import { MuskSuggestionService } from './services/musk-suggestion-service';
+import { insertMuskBehaviorTrackingSchema } from '@shared/schema-musk-suggestions';
+
+// Create a router instance
+const router = Router();
+
+// Create the Musk suggestion service
+const muskSuggestionService = new MuskSuggestionService(storage);
 
 /**
- * Routes for handling Musk AI suggestion features
+ * Get Musk suggestions for the current user
  */
-export function createMuskSuggestionRoutes(storage: IStorage) {
-  const router = Router();
-  const suggestionService = new MuskSuggestionService(storage);
+router.get('/api/musk/suggestions', async (req: Request, res: Response) => {
+  try {
+    // Extract user ID from query parameter (for demo purposes)
+    // In a real app, this would come from authentication/session
+    const userId = req.query.userId ? parseInt(req.query.userId as string) : 1;
+    
+    // Get suggestions
+    const suggestions = await muskSuggestionService.getSuggestionsForUser(userId);
+    
+    // Return suggestions
+    res.json(suggestions);
+  } catch (error) {
+    console.error('Error getting Musk suggestions:', error);
+    res.status(500).json({ error: 'Failed to get Musk suggestions' });
+  }
+});
 
-  /**
-   * Get active suggestions for the current user
-   */
-  router.get('/suggestions', async (req, res) => {
-    try {
-      // Get user ID from session
-      const userId = req.session.userId;
-      if (!userId) {
-        return res.status(401).json({ message: 'Unauthorized' });
-      }
+/**
+ * Dismiss a Musk suggestion
+ */
+router.post('/api/musk/suggestions/:id/dismiss', async (req: Request, res: Response) => {
+  try {
+    // Extract suggestion ID
+    const suggestionId = parseInt(req.params.id);
+    
+    // Dismiss suggestion
+    await muskSuggestionService.dismissSuggestion(suggestionId);
+    
+    // Return success
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error dismissing Musk suggestion:', error);
+    res.status(500).json({ error: 'Failed to dismiss Musk suggestion' });
+  }
+});
 
-      // Get suggestions
-      const suggestions = await suggestionService.getSuggestionsForUser(Number(userId));
-      
-      return res.json(suggestions);
-    } catch (error) {
-      console.error('Error fetching suggestions:', error);
-      return res.status(500).json({ message: 'Failed to fetch suggestions' });
+/**
+ * Mark a Musk suggestion as having action taken
+ */
+router.post('/api/musk/suggestions/:id/action-taken', async (req: Request, res: Response) => {
+  try {
+    // Extract suggestion ID
+    const suggestionId = parseInt(req.params.id);
+    
+    // Mark action taken
+    await muskSuggestionService.markSuggestionActionTaken(suggestionId);
+    
+    // Return success
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error marking Musk suggestion as actioned:', error);
+    res.status(500).json({ error: 'Failed to mark Musk suggestion as actioned' });
+  }
+});
+
+/**
+ * Track user behavior for Musk AI
+ */
+router.post('/api/musk/track-behavior', async (req: Request, res: Response) => {
+  try {
+    // Extract user ID from request body (for demo purposes)
+    // In a real app, this would come from authentication/session
+    const userId = req.body.userId || 1;
+    
+    // Validate the tracking data
+    const trackingData = {
+      userId,
+      eventType: req.body.eventType,
+      eventData: req.body.eventData
+    };
+    
+    // Parse with the schema
+    const parsed = insertMuskBehaviorTrackingSchema.safeParse(trackingData);
+    
+    if (!parsed.success) {
+      return res.status(400).json({ error: parsed.error });
     }
-  });
+    
+    // Track behavior
+    await muskSuggestionService.trackUserBehavior(
+      userId, 
+      req.body.eventType, 
+      req.body.eventData
+    );
+    
+    // Return success
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error tracking Musk behavior:', error);
+    res.status(500).json({ error: 'Failed to track Musk behavior' });
+  }
+});
 
-  /**
-   * Mark a suggestion as dismissed
-   */
-  router.post('/suggestions/dismiss', async (req, res) => {
-    try {
-      const userId = req.session.userId;
-      if (!userId) {
-        return res.status(401).json({ message: 'Unauthorized' });
-      }
-
-      const schema = z.object({
-        suggestionId: z.number(),
-      });
-
-      const result = schema.safeParse(req.body);
-      if (!result.success) {
-        return res.status(400).json({ message: 'Invalid request', errors: result.error.format() });
-      }
-
-      // Mark as dismissed
-      await suggestionService.dismissSuggestion(result.data.suggestionId);
-      
-      return res.json({ success: true });
-    } catch (error) {
-      console.error('Error dismissing suggestion:', error);
-      return res.status(500).json({ message: 'Failed to dismiss suggestion' });
-    }
-  });
-
-  /**
-   * Record that a user has acted on a suggestion
-   */
-  router.post('/suggestions/action', async (req, res) => {
-    try {
-      const userId = req.session.userId;
-      if (!userId) {
-        return res.status(401).json({ message: 'Unauthorized' });
-      }
-
-      const schema = z.object({
-        suggestionId: z.number(),
-      });
-
-      const result = schema.safeParse(req.body);
-      if (!result.success) {
-        return res.status(400).json({ message: 'Invalid request', errors: result.error.format() });
-      }
-
-      // Mark action taken
-      await suggestionService.markSuggestionActionTaken(result.data.suggestionId);
-      
-      return res.json({ success: true });
-    } catch (error) {
-      console.error('Error recording suggestion action:', error);
-      return res.status(500).json({ message: 'Failed to record suggestion action' });
-    }
-  });
-
-  /**
-   * Track user behavior (page views, interactions, etc.)
-   */
-  router.post('/behavior/track', async (req, res) => {
-    try {
-      const userId = req.session.userId;
-      if (!userId) {
-        return res.status(401).json({ message: 'Unauthorized' });
-      }
-
-      const schema = z.object({
-        eventType: z.string(),
-        eventData: z.record(z.any())
-      });
-
-      const result = schema.safeParse(req.body);
-      if (!result.success) {
-        return res.status(400).json({ message: 'Invalid request', errors: result.error.format() });
-      }
-
-      // Track behavior
-      await suggestionService.trackUserBehavior(
-        Number(userId), 
-        result.data.eventType, 
-        result.data.eventData
-      );
-      
-      return res.json({ success: true });
-    } catch (error) {
-      console.error('Error tracking behavior:', error);
-      return res.status(500).json({ message: 'Failed to track behavior' });
-    }
-  });
-
-  return router;
-}
+export default router;
