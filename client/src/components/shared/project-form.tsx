@@ -570,7 +570,7 @@ export default function ProjectForm({
                           }}
                           className="h-4 w-4" 
                         />
-                        <Label htmlFor="media-video" className="font-normal">Video (Max 120 sec)</Label>
+                        <Label htmlFor="media-video" className="font-normal">Video (Max 150 sec)</Label>
                       </div>
                     </div>
                   </div>
@@ -628,19 +628,55 @@ export default function ProjectForm({
                         onChange={(e) => {
                           const file = e.target.files?.[0];
                           if (file) {
-                            // Check approximate video size (2MB/min is a rough estimate for decent quality)
-                            if (file.size > 4 * 1024 * 1024) {
-                              setMediaErrors(prev => ({...prev, video: "Video exceeds maximum size (max ~120 seconds)"}));
-                              return;
-                            }
-                            setProjectVideo(file);
-                            setMediaErrors(prev => ({...prev, video: undefined}));
+                            // Create a temporary video element to check duration
+                            const validateVideoLength = (file: File): Promise<boolean> => {
+                              return new Promise((resolve) => {
+                                // Create a temporary video element to check duration
+                                const video = document.createElement('video');
+                                video.preload = 'metadata';
+                                
+                                video.onloadedmetadata = () => {
+                                  window.URL.revokeObjectURL(video.src);
+                                  const duration = video.duration;
+                                  
+                                  if (duration > 150) { // 150 seconds limit for Assignments
+                                    setMediaErrors(prev => ({...prev, video: `Video must be shorter than 150 seconds. Current length: ${Math.round(duration)} seconds.`}));
+                                    resolve(false);
+                                  } else {
+                                    resolve(true);
+                                  }
+                                };
+                                
+                                video.onerror = () => {
+                                  // If we can't determine length, we'll use file size as a fallback
+                                  if (file.size > 6 * 1024 * 1024) { // ~150 seconds at 320kbps
+                                    setMediaErrors(prev => ({...prev, video: "Video might exceed maximum size (max 150 seconds)"}));
+                                    resolve(false);
+                                  } else {
+                                    resolve(true);
+                                  }
+                                };
+                                
+                                video.src = URL.createObjectURL(file);
+                              });
+                            };
+                            
+                            // Check video length and only proceed if it's valid
+                            validateVideoLength(file).then(isValid => {
+                              if (isValid) {
+                                setProjectVideo(file);
+                                setMediaErrors(prev => ({...prev, video: undefined}));
+                              } else if (videoInputRef.current) {
+                                videoInputRef.current.value = '';
+                              }
+                            });
+                            return;
                           }
                         }} 
                       />
                     </FormControl>
                     <FormDescription>
-                      Upload a short video (max 120 seconds) to demonstrate your assignment
+                      Upload a short video (max 150 seconds) to demonstrate your assignment
                       {existingProject?.mediaUrls && existingProject.mediaUrls.length > 0 && (
                         <span className="text-xs text-muted-foreground block mt-1">(Upload a new one to replace)</span>
                       )}
