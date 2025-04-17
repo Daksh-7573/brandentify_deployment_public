@@ -54,11 +54,11 @@ export class MuskSuggestionService {
    */
   private async buildUserContext(userId: number): Promise<SuggestionContext> {
     // Get user data
-    const user = await this.storage.getUserById(userId);
+    const user = await this.storage.getUser(userId);
     
     // Get user activity data
     const lastLoginTime = new Date(); // Replace with actual last login time
-    const profileCompleteness = user.profileCompleted || 0;
+    const profileCompleteness = user?.profileCompleted || 0;
     
     // Check if user has recent pulses
     const pulses = await this.storage.getPulsesByUserId(userId);
@@ -244,7 +244,7 @@ export class MuskSuggestionService {
       actionTaken: false,
       createdAt: new Date(),
       updatedAt: new Date(),
-      expiresAt: undefined, // Doesn't expire until a project is added
+      expiresAt: null // Doesn't expire until a project is added
     };
   }
 
