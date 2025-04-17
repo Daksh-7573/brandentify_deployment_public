@@ -32,7 +32,7 @@ export default function MuskMatchCard({ match, onAction }: MuskMatchCardProps) {
   const handleConnect = async (e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      await apiRequest('/api/musk-matches/connect', 'PATCH', { matchId: match.id });
+      await apiRequest('PATCH', '/api/musk-matches/connect', { matchId: match.id });
       toast({
         title: "Connection request sent!",
         description: "You've connected with this professional."
@@ -51,7 +51,7 @@ export default function MuskMatchCard({ match, onAction }: MuskMatchCardProps) {
   const handleDismiss = async (e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      await apiRequest('/api/musk-matches/dismiss', 'PATCH', { matchId: match.id });
+      await apiRequest('PATCH', '/api/musk-matches/dismiss', { matchId: match.id });
       toast({
         title: "Match dismissed",
         description: "This match has been removed from your suggestions."
@@ -70,7 +70,7 @@ export default function MuskMatchCard({ match, onAction }: MuskMatchCardProps) {
   const markAsRead = async () => {
     if (!match.isRead) {
       try {
-        await apiRequest('/api/musk-matches/read', 'PATCH', { matchId: match.id });
+        await apiRequest('PATCH', '/api/musk-matches/read', { matchId: match.id });
         queryClient.invalidateQueries({ queryKey: ['/api/musk-matches'] });
       } catch (error) {
         console.error("Error marking match as read:", error);

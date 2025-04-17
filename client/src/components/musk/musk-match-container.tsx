@@ -38,8 +38,8 @@ export default function MuskMatchContainer({ userId, limit = 5 }: MuskMatchConta
   } = useQuery({
     queryKey: ['/api/musk-matches/user', userId],
     queryFn: async () => {
-      const response = await apiRequest('/api/musk-matches/user', 'GET', { userId });
-      return response as MuskMatch[];
+      const response = await apiRequest('GET', '/api/musk-matches/user', { userId });
+      return await response.json() as MuskMatch[];
     },
   });
   
