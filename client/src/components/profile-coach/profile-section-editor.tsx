@@ -1,16 +1,17 @@
-import React, { useState } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
+  CardDescription,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -21,6 +22,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -29,10 +32,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
-import { X } from "lucide-react";
+import { ArrowLeft, Check, X, RefreshCw, Sparkles } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 interface ProfileSectionEditorProps {
   section: string;
@@ -43,8 +44,11 @@ interface ProfileSectionEditorProps {
 
 export default function ProfileSectionEditor({ section, content, userId, onClose }: ProfileSectionEditorProps) {
   const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
-  const [suggestions, setSuggestions] = useState<{
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [isGeneratingImprovements, setIsGeneratingImprovements] = React.useState(false);
+  
+  // State for AI-generated suggestions
+  const [suggestions, setSuggestions] = React.useState<{
     suggestions: string[];
     keywords: string[];
     improvedVersion: string | null;
@@ -134,10 +138,10 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
         userId: z.number(),
         title: z.string().min(2, "Project title is required"),
         description: z.string().min(10, "Please provide a project description"),
-        url: z.string().nullable().optional(),
+        projectUrl: z.string().nullable().optional(),
         startDate: z.string().min(2, "Start date is required"),
         endDate: z.string().nullable().optional(),
-        status: z.string().nullable().optional(),
+        category: z.string().nullable().optional(),
       });
       break;
       
@@ -443,7 +447,7 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
                 <FormItem>
                   <FormLabel>Field of Study</FormLabel>
                   <FormControl>
-                    <Input placeholder="Major or field of study" {...field} />
+                    <Input placeholder="Major or field of study" {...field} value={field.value || ""} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -639,12 +643,12 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
             
             <FormField
               control={form.control}
-              name="url"
+              name="projectUrl"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Project URL</FormLabel>
                   <FormControl>
-                    <Input placeholder="Link to your project" {...field} value={field.value || ""} />
+                    <Input placeholder="https://..." {...field} value={field.value || ""} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -653,23 +657,27 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
             
             <FormField
               control={form.control}
-              name="status"
+              name="category"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Status</FormLabel>
+                  <FormLabel>Category</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value || ""}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select project status" />
+                        <SelectValue placeholder="Select a category" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="In Progress">In Progress</SelectItem>
-                      <SelectItem value="Completed">Completed</SelectItem>
-                      <SelectItem value="On Hold">On Hold</SelectItem>
+                      <SelectItem value="Web Development">Web Development</SelectItem>
+                      <SelectItem value="Mobile App">Mobile App</SelectItem>
+                      <SelectItem value="Design">Design</SelectItem>
+                      <SelectItem value="Data Science">Data Science</SelectItem>
+                      <SelectItem value="Machine Learning">Machine Learning</SelectItem>
+                      <SelectItem value="Research">Research</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -703,103 +711,163 @@ export default function ProfileSectionEditor({ section, content, userId, onClose
     }
   };
   
+  // Apply AI suggestions to the appropriate field
+  const applyAiSuggestion = () => {
+    if (!suggestions || !suggestions.improvedVersion) return;
+    
+    // Different fields based on section type
+    switch (section) {
+      case "basic":
+        // Likely no direct field match
+        break;
+        
+      case "experience":
+      case "education":
+      case "projects":
+      case "skills":
+        form.setValue(
+          "description",
+          suggestions.improvedVersion,
+          { shouldValidate: true, shouldDirty: true }
+        );
+        break;
+        
+      default:
+        break;
+    }
+    
+    toast({
+      title: "AI Suggestion Applied",
+      description: "The improved content has been applied to your form.",
+    });
+  };
+  
   return (
-    <div className="space-y-8">
-      <Card>
-        <CardHeader className="relative">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute right-2 top-2"
-            onClick={onClose}
-          >
+    <Card className="w-full">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" onClick={onClose}>
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <CardTitle>{getSectionTitle()}</CardTitle>
+          </div>
+          <Button variant="ghost" size="icon" onClick={onClose}>
             <X className="h-4 w-4" />
           </Button>
-          <CardTitle>{getSectionTitle()}</CardTitle>
-          <CardDescription>
-            Update your {section} information to enhance your professional profile
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {renderFormFields()}
-              
-              <div className="flex justify-end space-x-2">
-                <Button variant="outline" type="button" onClick={onClose}>
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={isLoading}>
-                  {isLoading ? "Saving..." : "Save Changes"}
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+        </div>
+        <CardDescription>
+          Complete the form below to update your profile. Required fields are marked with an asterisk.
+        </CardDescription>
+      </CardHeader>
       
-      {suggestions && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Improvement Suggestions</CardTitle>
-            <CardDescription>
-              AI-powered suggestions to enhance your profile
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {suggestions.suggestions.length > 0 && (
-              <div>
-                <h3 className="text-lg font-semibold mb-2">Tips</h3>
-                <ul className="list-disc pl-6 space-y-1">
-                  {suggestions.suggestions.map((suggestion, index) => (
-                    <li key={index} className="text-muted-foreground">
-                      {suggestion}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            
-            {suggestions.keywords.length > 0 && (
-              <div>
-                <h3 className="text-lg font-semibold mb-2">Recommended Keywords</h3>
-                <div className="flex flex-wrap gap-2">
-                  {suggestions.keywords.map((keyword, index) => (
-                    <span
-                      key={index}
-                      className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm"
-                    >
-                      {keyword}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {suggestions.improvedVersion && (
-              <div>
-                <h3 className="text-lg font-semibold mb-2">Suggested Content</h3>
-                <p className="bg-muted p-3 rounded text-sm">
-                  {suggestions.improvedVersion}
-                </p>
-                <CardFooter className="px-0 pt-4">
+      <CardContent>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="md:col-span-2 space-y-4">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                {/* Dynamic form fields based on section */}
+                {renderFormFields()}
+                
+                {/* Form buttons */}
+                <div className="flex justify-end gap-2 pt-4">
                   <Button
+                    type="button"
                     variant="outline"
-                    className="w-full"
-                    onClick={() => {
-                      if (section === "experience" || section === "projects" || section === "education") {
-                        form.setValue("description", suggestions.improvedVersion || "");
-                      }
-                    }}
+                    onClick={onClose}
+                    disabled={isLoading}
                   >
-                    Use Suggested Content
+                    Cancel
                   </Button>
-                </CardFooter>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
-    </div>
+                  <Button type="submit" disabled={isLoading}>
+                    {isLoading ? (
+                      <>
+                        <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Check className="mr-2 h-4 w-4" />
+                        Save Changes
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </div>
+          
+          {/* Right sidebar with AI suggestions */}
+          <div className="space-y-4">
+            <div className="rounded-lg border bg-card p-4">
+              <h3 className="text-sm font-medium flex items-center gap-1 mb-2">
+                <Sparkles className="h-4 w-4 text-yellow-500" />
+                AI Suggestions
+              </h3>
+              
+              {suggestions ? (
+                <>
+                  {suggestions.keywords.length > 0 && (
+                    <div className="mb-4">
+                      <h4 className="text-xs font-medium text-muted-foreground mb-1">
+                        Recommended Keywords
+                      </h4>
+                      <div className="flex flex-wrap gap-1">
+                        {suggestions.keywords.map((keyword, index) => (
+                          <Badge key={index} variant="secondary" className="text-xs">
+                            {keyword}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {suggestions.suggestions.length > 0 && (
+                    <div className="mb-4">
+                      <h4 className="text-xs font-medium text-muted-foreground mb-1">
+                        Improvement Tips
+                      </h4>
+                      <ul className="text-xs space-y-1">
+                        {suggestions.suggestions.map((suggestion, index) => (
+                          <li key={index} className="flex gap-1">
+                            <span className="text-muted-foreground">•</span>
+                            <span>{suggestion}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  
+                  {suggestions.improvedVersion && (
+                    <div>
+                      <div className="flex justify-between items-center mb-1">
+                        <h4 className="text-xs font-medium text-muted-foreground">
+                          AI-Improved Version
+                        </h4>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 text-xs"
+                          onClick={applyAiSuggestion}
+                        >
+                          Apply
+                        </Button>
+                      </div>
+                      <div className="text-xs bg-muted/50 p-2 rounded-md max-h-[200px] overflow-y-auto">
+                        {suggestions.improvedVersion}
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="flex justify-center items-center h-32">
+                  <RefreshCw className="h-5 w-5 animate-spin text-muted-foreground" />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
