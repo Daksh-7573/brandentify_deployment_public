@@ -21,6 +21,7 @@ import AuthPage from "@/pages/auth-page";
 import EmailVerification from "@/pages/email-verification";
 import NewsSourcesPage from "@/pages/news-sources";
 import Radar from "@/pages/radar";
+import SmartConnectPage from "@/pages/smart-connect";
 
 // Redirect component to handle page redirects
 const Redirect = ({ to }: { to: string }) => {
@@ -78,8 +79,7 @@ function Router() {
         <ProtectedRoute path="/ai-career" component={AICareer} />
       </Route>
       <Route path="/smart-connect">
-        {/* Redirect SmartConnect to the integrated Search page with smart-connect tab active */}
-        <Redirect to="/search?category=smart-connect" />
+        <ProtectedRoute path="/smart-connect" component={SmartConnectPage} />
       </Route>
       <Route path="/portfolio-builder">
         <ProtectedRoute path="/portfolio-builder" component={PortfolioBuilder} />
@@ -102,6 +102,9 @@ function Router() {
       </Route>
       <Route path="/radar">
         <ProtectedRoute path="/radar" component={Radar} />
+      </Route>
+      <Route path="/ai-career">
+        <ProtectedRoute path="/ai-career" component={AICareer} />
       </Route>
       <Route component={NotFound} />
     </Switch>

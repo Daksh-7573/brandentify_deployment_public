@@ -23,15 +23,41 @@ async function throwIfResNotOk(res: Response) {
 }
 
 /**
+ * Enhanced API request function (legacy version for backward compatibility)
+ * @deprecated Use the options-based version instead
+ */
+export async function apiRequest(
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH',
+  url: string,
+  data?: unknown,
+  retries: number = 2
+): Promise<Response>;
+
+/**
  * Enhanced API request function with better error handling and retries
  */
-export async function apiRequest(options: {
-  url: string;
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
-  data?: unknown;
-  retries?: number;
-}): Promise<Response> {
-  const { url, method, data, retries = 2 } = options;
+export async function apiRequest(
+  optionsOrMethod: string | { url: string; method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'; data?: unknown; retries?: number },
+  urlOrNothing?: string,
+  dataOrNothing?: unknown,
+  retriesOrNothing?: number
+): Promise<Response> {
+  // Handle both function signatures
+  let url: string;
+  let method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+  let data: unknown;
+  let retries: number = 2;
+
+  if (typeof optionsOrMethod === 'string') {
+    // Old signature: apiRequest(method, url, data?, retries?)
+    method = optionsOrMethod as 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+    url = urlOrNothing as string;
+    data = dataOrNothing;
+    if (typeof retriesOrNothing === 'number') retries = retriesOrNothing;
+  } else {
+    // New signature: apiRequest({ url, method, data?, retries? })
+    ({ url, method, data, retries = 2 } = optionsOrMethod);
+  }
   
   try {
     // Support for passing FormData objects
