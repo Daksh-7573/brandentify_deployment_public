@@ -28,6 +28,12 @@ import {
   newsUserPreferences, NewsUserPreference, InsertNewsUserPreference
 } from "@shared/schema";
 
+// Import Musk suggestion models
+import { 
+  muskSuggestions, MuskSuggestion, InsertMuskSuggestion,
+  muskBehaviorTracking, MuskBehaviorTracking, InsertMuskBehaviorTracking
+} from "@shared/schema-musk-suggestions";
+
 // Interface for all storage operations
 export interface IStorage {
   // User Hashtag Follow operations
@@ -221,6 +227,17 @@ export interface IStorage {
   createNewsPulse(article: NewsArticle, userId: number): Promise<Pulse>;
   getLatestNewsPulses(userId: number, limit?: number): Promise<Pulse[]>;
   generateNewsContent(article: NewsArticle): Promise<{ title: string, content: string, hashtags: string[] }>;
+  
+  // Musk Suggestions operations
+  getMuskSuggestionsForUser(userId: number): Promise<MuskSuggestion[]>;
+  createMuskSuggestion(suggestion: InsertMuskSuggestion): Promise<MuskSuggestion>;
+  updateMuskSuggestion(id: number, suggestion: Partial<MuskSuggestion>): Promise<MuskSuggestion | undefined>;
+  deleteMuskSuggestion(id: number): Promise<boolean>;
+  
+  // Musk Behavior Tracking operations
+  getMuskBehaviorTrackingForUser(userId: number, limit?: number): Promise<MuskBehaviorTracking[]>;
+  createMuskBehaviorTracking(tracking: InsertMuskBehaviorTracking): Promise<MuskBehaviorTracking>;
+  deleteMuskBehaviorTrackingForUser(userId: number): Promise<number>;
 }
 
 // In-memory implementation of the storage
