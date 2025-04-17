@@ -32,6 +32,22 @@ export const users = pgTable("users", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Resume theme enum
+export const resumeThemeEnum = pgEnum("resume_theme", [
+  "professional",
+  "creative", 
+  "minimal", 
+  "technical",
+  "executive",
+  "minimalist_pro",
+  "timeline",
+  "visual_expert",
+  "freelancer_hub",
+  "scholar",
+  "animated",
+  "dynamic_innovator"
+]);
+
 // Resume model
 export const resumes = pgTable("resumes", {
   id: serial("id").primaryKey(),
@@ -40,6 +56,23 @@ export const resumes = pgTable("resumes", {
   fileData: text("file_data").notNull(), // Base64 encoded data
   score: integer("score").default(0), // AI-generated score
   uploadedAt: timestamp("uploaded_at").defaultNow(),
+  isShadowResume: boolean("is_shadow_resume").default(false), // Whether this is a Musk-generated shadow resume
+  themeStyle: resumeThemeEnum("theme_style").default("professional"), // Theme style for the resume
+  isDownloadable: boolean("is_downloadable").default(false), // Whether others can download this resume
+  lastUpdatedByMusk: timestamp("last_updated_by_musk"), // When Musk last updated this resume
+  visibility: text("visibility").default("private"), // private, connections, public
+});
+
+// Shadow Resume model - stores automatically generated resume content by Musk
+export const shadowResumes = pgTable("shadow_resumes", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  resumeId: integer("resume_id").references(() => resumes.id), // Link to the generated resume when published
+  content: jsonb("content").notNull(), // Structured JSON data containing all resume sections and content
+  suggestions: jsonb("suggestions").default('[]'), // New content suggestions from Musk
+  history: jsonb("history").default('[]'), // History of changes made to the resume
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // Work Experience model
@@ -156,7 +189,7 @@ export const projectEndorsements = pgTable("project_endorsements", {
 
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true, emailVerified: true, emailVerificationToken: true, emailVerificationExpires: true });
-export const insertResumeSchema = createInsertSchema(resumes).omit({ id: true, uploadedAt: true });
+export const insertResumeSchema = createInsertSchema(resumes).omit({ id: true, uploadedAt: true, lastUpdatedByMusk: true });
 export const insertWorkExperienceSchema = createInsertSchema(workExperiences).omit({ id: true });
 export const insertEducationSchema = createInsertSchema(educations).omit({ id: true });
 export const insertSkillSchema = createInsertSchema(skills).omit({ id: true });
@@ -185,12 +218,22 @@ export const insertProjectEndorsementSchema = createInsertSchema(projectEndorsem
   verificationExpires: true 
 });
 
+// Insert schema for ShadowResume
+export const insertShadowResumeSchema = createInsertSchema(shadowResumes).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
 // Export types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 
 export type Resume = typeof resumes.$inferSelect;
 export type InsertResume = z.infer<typeof insertResumeSchema>;
+
+export type ShadowResume = typeof shadowResumes.$inferSelect;
+export type InsertShadowResume = z.infer<typeof insertShadowResumeSchema>;
 
 export type WorkExperience = typeof workExperiences.$inferSelect;
 export type InsertWorkExperience = z.infer<typeof insertWorkExperienceSchema>;
