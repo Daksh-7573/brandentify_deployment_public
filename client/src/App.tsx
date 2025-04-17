@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "./context/auth-context";
 import { useAuth } from "./hooks/use-auth";
 import { useEffect } from "react";
+import FloatingMusk from "@/components/musk/floating-musk";
 
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
@@ -116,6 +117,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <Router />
+        <FloatingMusk />
         <Toaster />
       </AuthProvider>
     </QueryClientProvider>
