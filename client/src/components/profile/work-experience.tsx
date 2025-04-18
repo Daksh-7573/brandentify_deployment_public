@@ -935,15 +935,7 @@ export default function WorkExperience() {
           <CardTitle className="text-xl font-bold">Career Path</CardTitle>
           <CardDescription>Add your professional experience</CardDescription>
         </div>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="h-8 gap-1" 
-          onClick={openAddDialog}
-        >
-          <Plus className="h-3.5 w-3.5" />
-          <span>Add Career Path</span>
-        </Button>
+        {/* Add button removed - using central Edit Profile functionality */}
       </CardHeader>
       <CardContent>
         {isLoading ? (
