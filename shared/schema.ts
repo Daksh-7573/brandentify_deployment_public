@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb, varchar, decimal } from "drizzle-orm/pg-core"; 
+import { pgTable, text, serial, integer, boolean, timestamp, jsonb, varchar, decimal, relations, unique } from "drizzle-orm/pg-core"; 
 import { pgEnum } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -676,3 +676,50 @@ export const insertMuskMatchSchema = createInsertSchema(muskMatches).omit({
 // Export types for MuskMatch
 export type MuskMatch = typeof muskMatches.$inferSelect;
 export type InsertMuskMatch = z.infer<typeof insertMuskMatchSchema>;
+
+// Nowboard - For storing micro-actions professionals are taking
+export const nowboardCategoryEnum = pgEnum("nowboard_category", [
+  "growth",
+  "learning",
+  "launch",
+  "planning",
+  "collaboration",
+  "visibility"
+]);
+
+export const nowboardItems = pgTable("nowboard_items", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  content: varchar("content", { length: 150 }).notNull(),
+  category: nowboardCategoryEnum("category").notNull(),
+  visibility: varchar("visibility", { length: 20 }).notNull().default("public").$type<"public" | "connections-only">(),
+  inspiredCount: integer("inspired_count").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// Nowboard inspired-by tracking
+export const nowboardInspiredBy = pgTable("nowboard_inspired_by", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  nowboardItemId: integer("nowboard_item_id").notNull().references(() => nowboardItems.id),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// Insert schemas for Nowboard
+export const insertNowboardItemSchema = createInsertSchema(nowboardItems).omit({
+  id: true,
+  inspiredCount: true,
+  createdAt: true
+});
+
+export const insertNowboardInspiredBySchema = createInsertSchema(nowboardInspiredBy).omit({
+  id: true,
+  createdAt: true
+});
+
+// Export types for Nowboard
+export type NowboardItem = typeof nowboardItems.$inferSelect;
+export type InsertNowboardItem = z.infer<typeof insertNowboardItemSchema>;
+
+export type NowboardInspiredBy = typeof nowboardInspiredBy.$inferSelect;
+export type InsertNowboardInspiredBy = z.infer<typeof insertNowboardInspiredBySchema>;
