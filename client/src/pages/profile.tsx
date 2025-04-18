@@ -1645,6 +1645,15 @@ export default function Profile() {
               <h1 className="text-2xl font-semibold text-gray-900">Profile</h1>
               <div className="flex items-center gap-4">
                 <Button 
+                  onClick={() => setLocation('/edit-profile')}
+                  id="edit-profile-btn"
+                  className="flex items-center gap-2 bg-primary/90 hover:bg-primary"
+                >
+                  <i className="fas fa-user-edit"></i>
+                  Edit Profile
+                </Button>
+                
+                <Button 
                   onClick={() => {
                     // Create a loading state in the button
                     const btn = document.getElementById('portfolio-btn');
@@ -1671,7 +1680,8 @@ export default function Profile() {
                     setTimeout(() => setLocation('/portfolio-builder'), 200);
                   }}
                   id="portfolio-btn"
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 bg-white border border-gray-200 hover:bg-gray-50"
+                  variant="outline"
                 >
                   <i className="fas fa-id-card"></i>
                   Portfolio Builder
@@ -1777,12 +1787,7 @@ export default function Profile() {
                     <h2 className="text-xl text-gray-900">
                       Hey there! <span className="font-bold text-2xl text-primary">{userData?.name || user?.name || 'User'}</span> here,
                     </h2>
-                    <button 
-                      onClick={() => setShowEditBasicInfo(true)}
-                      className="text-sm text-primary opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      Edit
-                    </button>
+                    {/* Edit button removed, using single Edit Profile button instead */}
                   </div>
                   <p className="text-sm text-gray-500 mt-1">
                     <span className="font-medium">I am:</span> {userData?.title || user?.title || 'Professional'}
