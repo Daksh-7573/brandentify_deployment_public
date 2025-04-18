@@ -23,6 +23,9 @@ import { useToast } from "@/hooks/use-toast";
 import MuskAvatar from "@/components/musk/musk-avatar";
 import confetti from "canvas-confetti";
 
+// Add a type declaration for canvas-confetti
+declare module 'canvas-confetti';
+
 interface BrandStoryBuilderProps {
   user: User | null;
   userData: any;

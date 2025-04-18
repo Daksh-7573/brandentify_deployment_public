@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import { Sparkles } from 'lucide-react';
 
 interface MuskAvatarProps {
@@ -10,52 +10,59 @@ interface MuskAvatarProps {
  * Musk Avatar component - displays the Musk AI assistant avatar
  * with optional decoration/effects
  */
-const MuskAvatar: React.FC<MuskAvatarProps> = ({ 
-  size = 'md',
-  withSparks = true
-}) => {
-  // Size classes
+const MuskAvatar = ({ size = 'md', withSparks = false }: MuskAvatarProps) => {
+  const [pulsing, setPulsing] = useState(false);
+
+  // Determine size classes based on size prop
   const sizeClasses = {
-    sm: 'h-8 w-8',
-    md: 'h-12 w-12',
-    lg: 'h-20 w-20',
-    xl: 'h-28 w-28'
+    sm: 'w-8 h-8', 
+    md: 'w-12 h-12',
+    lg: 'w-16 h-16',
+    xl: 'w-20 h-20'
   };
 
+  // Add periodic pulsing effect
+  useEffect(() => {
+    if (withSparks) {
+      // Start pulsing every few seconds
+      const interval = setInterval(() => {
+        setPulsing(true);
+        setTimeout(() => setPulsing(false), 1000);
+      }, 5000);
+      
+      return () => clearInterval(interval);
+    }
+  }, [withSparks]);
+
   return (
-    <div className="relative inline-flex items-center justify-center">
-      {/* Main avatar */}
+    <div className="relative inline-block">
+      {/* Main Avatar */}
       <div 
-        className={`bg-gradient-to-br from-primary/80 to-primary rounded-full ${sizeClasses[size]} flex items-center justify-center relative overflow-hidden ring-4 ring-primary/20`}
+        className={`${sizeClasses[size]} bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center ${
+          pulsing ? 'animate-pulse' : ''
+        }`}
       >
-        {/* Use Musk image if available, otherwise show first letter */}
-        <img 
-          src="/images/musk-avatar.png" 
-          alt="Musk AI Assistant"
-          className="h-full w-full object-cover"
-          onError={(e) => {
-            // If image fails to load, show a fallback
-            const target = e.target as HTMLElement;
-            target.style.display = 'none';
-            const parent = target.parentElement;
-            if (parent) {
-              parent.innerHTML += '<span class="text-white font-bold text-xl">M</span>';
-            }
-          }}
-        />
-        
-        {/* Lightning bolt effect if withSparks is true */}
-        {withSparks && (
-          <div className="absolute top-1 right-1">
-            <Sparkles className="h-4 w-4 text-yellow-300" />
-          </div>
-        )}
+        {/* "M" letter for Musk */}
+        <span className="text-white font-bold" style={{ 
+          fontSize: size === 'sm' ? '16px' : 
+                   size === 'md' ? '20px' : 
+                   size === 'lg' ? '28px' : '36px' 
+        }}>
+          M
+        </span>
       </div>
       
-      {/* Pulsing effect */}
-      <div 
-        className={`absolute inset-0 rounded-full bg-primary animate-ping opacity-20 ${sizeClasses[size]}`}
-      ></div>
+      {/* Sparks decoration */}
+      {withSparks && (
+        <div className="absolute -top-2 -right-1">
+          <Sparkles className={`
+            text-yellow-400 
+            ${size === 'sm' ? 'w-4 h-4' : 
+              size === 'md' ? 'w-5 h-5' : 
+              size === 'lg' ? 'w-6 h-6' : 'w-8 h-8'}
+          `} />
+        </div>
+      )}
     </div>
   );
 };
