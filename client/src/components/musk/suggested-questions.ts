@@ -292,7 +292,7 @@ function selectFinalQuestions(
 export function getSuggestedQuestions(
   userData: UserData | null, 
   engagementHistory: Record<string, number> = {},
-  count: number = 5
+  count: number = 4
 ): SuggestedQuestion[] {
   if (!userData) {
     return questionPools['default'].slice(0, count);

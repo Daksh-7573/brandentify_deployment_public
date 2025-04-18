@@ -20,7 +20,7 @@ export default function SuggestedQuestionsDisplay({
   const [questions, setQuestions] = useState<SuggestedQuestion[]>([]);
   const [engagementHistory, setEngagementHistory] = useState<Record<string, number>>({});
   const [currentIndex, setCurrentIndex] = useState(0);
-  const questionsPerView = 3;
+  const questionsPerView = 4;
   
   // Load engagement history from localStorage if available
   useEffect(() => {

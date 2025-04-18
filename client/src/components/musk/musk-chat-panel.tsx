@@ -38,6 +38,7 @@ type Message = {
 };
 
 export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) {
+  // Initialize with a welcome message that includes suggested quick responses
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'welcome',
@@ -526,16 +527,8 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
           className="hidden"
         />
 
-        {/* Suggested Questions Section */}
-        {userData && (
-          <div className="border-t border-border/20 px-4 pt-2 pb-0">
-            <SuggestedQuestionsDisplay 
-              user={userData} 
-              onSelectQuestion={(question) => setInputValue(question)}
-              className=""
-            />
-          </div>
-        )}
+        {/* We're removing the separate Suggested Questions section 
+            and will instead show suggested questions directly in the chat */}
         
         {/* File upload buttons */}
         <div className="flex items-center justify-center gap-2 px-4 py-2 border-t border-border/50">
