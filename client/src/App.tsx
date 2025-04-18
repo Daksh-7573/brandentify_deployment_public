@@ -116,6 +116,9 @@ function Router() {
       <Route path="/feed-test">
         <ProtectedRoute path="/feed-test" component={FeedTestPage} />
       </Route>
+      <Route path="/career-quests">
+        <ProtectedRoute path="/career-quests" component={CareerQuestsPage} />
+      </Route>
       <Route component={NotFound} />
     </Switch>
   );
