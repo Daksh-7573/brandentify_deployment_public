@@ -18,7 +18,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { calculateOverallProfileCompletion } from "@/lib/profile-utils";
 import { useState, useEffect } from "react";
-import { Camera } from "lucide-react";
+import { Camera, FileText } from "lucide-react";
 import PersonalInfoIcon from "@/components/icons/personal-info-icon";
 import { useProfilePicture } from "@/hooks/use-profile-picture";
 import { ProfilePictureDialog } from "@/components/profile/profile-picture-dialog";
@@ -1675,6 +1675,16 @@ export default function Profile() {
                 >
                   <i className="fas fa-id-card"></i>
                   Portfolio Builder
+                </Button>
+                
+                <Button 
+                  onClick={() => setLocation('/resume')}
+                  id="resume-btn"
+                  className="flex items-center gap-2 bg-white border border-gray-200 hover:bg-gray-50"
+                  variant="outline"
+                >
+                  <FileText className="h-4 w-4" />
+                  Resume & CV
                 </Button>
                 <div className="text-right">
                   <p className="text-sm text-gray-500">Profile Completion</p>
