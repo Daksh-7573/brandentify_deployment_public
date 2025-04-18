@@ -1383,19 +1383,9 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
   
   // Step 5: Experiences
   const renderExperiencesStep = () => {
-    const [experience, setExperience] = useState({
-      company: '',
-      title: '',
-      startDate: '',
-      endDate: '',
-      current: false,
-      location: '',
-      description: ''
-    });
-    
     // Add new experience
     const addExperience = () => {
-      if (!experience.company || !experience.title) {
+      if (!experienceFormData.company || !experienceFormData.title) {
         toast({
           title: "Missing information",
           description: "Please enter both company name and job title",
@@ -1406,11 +1396,11 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
       
       setFormData(prev => ({
         ...prev,
-        experiences: [...prev.experiences, experience]
+        experiences: [...prev.experiences, experienceFormData]
       }));
       
       // Reset form
-      setExperience({
+      setExperienceFormData({
         company: '',
         title: '',
         startDate: '',
@@ -1432,7 +1422,7 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
     // Handle current job checkbox
     const handleCurrentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const checked = e.target.checked;
-      setExperience(prev => ({ 
+      setExperienceFormData(prev => ({ 
         ...prev, 
         current: checked,
         endDate: checked ? '' : prev.endDate
@@ -1461,8 +1451,8 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
               <Input
                 id="companyName"
                 placeholder="Company or Organization Name"
-                value={experience.company}
-                onChange={(e) => setExperience(prev => ({ ...prev, company: e.target.value }))}
+                value={experienceFormData.company}
+                onChange={(e) => setExperienceFormData(prev => ({ ...prev, company: e.target.value }))}
               />
             </div>
             
@@ -1471,8 +1461,8 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
               <Input
                 id="jobTitle"
                 placeholder="Your role or position"
-                value={experience.title}
-                onChange={(e) => setExperience(prev => ({ ...prev, title: e.target.value }))}
+                value={experienceFormData.title}
+                onChange={(e) => setExperienceFormData(prev => ({ ...prev, title: e.target.value }))}
               />
             </div>
             
@@ -1482,24 +1472,24 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
                 <Input
                   id="startDate"
                   type="month"
-                  value={experience.startDate}
-                  onChange={(e) => setExperience(prev => ({ ...prev, startDate: e.target.value }))}
+                  value={experienceFormData.startDate}
+                  onChange={(e) => setExperienceFormData(prev => ({ ...prev, startDate: e.target.value }))}
                 />
               </div>
               
               <div className="grid gap-2">
                 <Label 
                   htmlFor="endDate" 
-                  className={experience.current ? "text-gray-400" : ""}
+                  className={experienceFormData.current ? "text-gray-400" : ""}
                 >
                   End Date
                 </Label>
                 <Input
                   id="endDate"
                   type="month"
-                  value={experience.endDate}
-                  onChange={(e) => setExperience(prev => ({ ...prev, endDate: e.target.value }))}
-                  disabled={experience.current}
+                  value={experienceFormData.endDate}
+                  onChange={(e) => setExperienceFormData(prev => ({ ...prev, endDate: e.target.value }))}
+                  disabled={experienceFormData.current}
                 />
               </div>
             </div>
@@ -1508,7 +1498,7 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
               <input
                 type="checkbox"
                 id="currentPosition"
-                checked={experience.current}
+                checked={experienceFormData.current}
                 onChange={handleCurrentChange}
                 className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
               />
@@ -1525,8 +1515,8 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
               <Input
                 id="jobLocation"
                 placeholder="City, Country"
-                value={experience.location}
-                onChange={(e) => setExperience(prev => ({ ...prev, location: e.target.value }))}
+                value={experienceFormData.location}
+                onChange={(e) => setExperienceFormData(prev => ({ ...prev, location: e.target.value }))}
               />
             </div>
             
@@ -1535,8 +1525,8 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
               <Textarea
                 id="jobDescription"
                 placeholder="Describe your responsibilities and achievements"
-                value={experience.description}
-                onChange={(e) => setExperience(prev => ({ ...prev, description: e.target.value }))}
+                value={experienceFormData.description}
+                onChange={(e) => setExperienceFormData(prev => ({ ...prev, description: e.target.value }))}
                 rows={3}
               />
             </div>
