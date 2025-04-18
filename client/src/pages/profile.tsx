@@ -1684,7 +1684,7 @@ export default function Profile() {
                   variant="outline"
                 >
                   <FileText className="h-4 w-4" />
-                  Resume & CV
+                  Resume Builder
                 </Button>
                 <div className="text-right">
                   <p className="text-sm text-gray-500">Profile Completion</p>
