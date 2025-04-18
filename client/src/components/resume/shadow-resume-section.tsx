@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import { apiRequest, queryClient } from '@/lib/queryClient';
+import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
   Select,
@@ -33,11 +36,86 @@ interface ShadowResumeProps {
 }
 
 export default function ShadowResumeSection({ user, resume, isCurrentUser }: ShadowResumeProps) {
+  const { toast } = useToast();
   const [resumeTheme, setResumeTheme] = useState<ResumeTheme>(
     (resume?.themeStyle as ResumeTheme) || 'professional'
   );
   const [isDownloadable, setIsDownloadable] = useState(resume?.isDownloadable || false);
   const [historyVersion, setHistoryVersion] = useState(100); // Percentage representing the latest version
+  
+  // Update resume mutation
+  const updateResumeMutation = useMutation<any, Error, {themeStyle?: ResumeTheme, isDownloadable?: boolean}>({
+    mutationFn: async (updates) => {
+      if (!resume) return null;
+      
+      return await fetch(`/api/resumes/${resume.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updates),
+      }).then(res => {
+        if (!res.ok) throw new Error('Failed to update resume');
+        return res.json();
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: 'Resume Updated',
+        description: 'Your resume settings have been updated.',
+      });
+      
+      // Invalidate queries to refresh data
+      queryClient.invalidateQueries({
+        queryKey: ['/api/users', user?.id, 'shadow-resume']
+      });
+    },
+    onError: (error) => {
+      console.error('Error updating resume:', error);
+      toast({
+        title: 'Update Failed',
+        description: 'There was a problem updating your resume.',
+        variant: 'destructive',
+      });
+    }
+  });
+  
+  // Generate content mutation
+  const generateContentMutation = useMutation<any, Error, {section: string, prompt: string}>({
+    mutationFn: async ({section, prompt}) => {
+      if (!resume) return null;
+      
+      return await fetch('/api/resume/generate-content', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          resumeId: resume.id,
+          userId: user.id,
+          section,
+          prompt
+        }),
+      }).then(res => {
+        if (!res.ok) throw new Error('Failed to generate content');
+        return res.json();
+      });
+    },
+    onSuccess: (data) => {
+      toast({
+        title: 'Content Generated',
+        description: `Musk has generated content for your resume.`,
+      });
+    },
+    onError: (error) => {
+      console.error('Error generating content:', error);
+      toast({
+        title: 'Generation Failed',
+        description: 'There was a problem generating content.',
+        variant: 'destructive',
+      });
+    }
+  });
 
   // Mock resume history items (in a real app, these would come from the backend)
   const mockHistoryItems = [
@@ -66,16 +144,34 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser }: Sha
     { value: 'dynamic_innovator', label: 'Dynamic Innovator' },
   ];
 
+  // Effect to sync component state with server updates
+  useEffect(() => {
+    if (resume) {
+      setResumeTheme((resume.themeStyle as ResumeTheme) || 'professional');
+      setIsDownloadable(resume.isDownloadable || false);
+    }
+  }, [resume]);
+
   // Handle theme change
   const handleThemeChange = (value: string) => {
     setResumeTheme(value as ResumeTheme);
-    // In a real app, you would save this to the backend
+    
+    if (resume) {
+      updateResumeMutation.mutate({
+        themeStyle: value as ResumeTheme
+      });
+    }
   };
 
   // Handle download permission change
   const handleDownloadableChange = (checked: boolean) => {
     setIsDownloadable(checked);
-    // In a real app, you would save this to the backend
+    
+    if (resume) {
+      updateResumeMutation.mutate({
+        isDownloadable: checked
+      });
+    }
   };
 
   // Handle history slider change
@@ -86,8 +182,38 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser }: Sha
 
   // Handle download click
   const handleDownload = () => {
-    // In a real app, you would download the resume file
-    alert('Downloading resume...');
+    if (resume && resume.fileData) {
+      // Convert base64 to blob for download
+      const byteCharacters = atob(resume.fileData);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'application/pdf' });
+      
+      // Create a URL for the blob
+      const url = URL.createObjectURL(blob);
+      
+      // Create a temporary anchor element to trigger download
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = resume.fileName || 'resume.pdf';
+      document.body.appendChild(a);
+      a.click();
+      
+      // Clean up
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 100);
+    } else {
+      toast({
+        title: 'No Resume Available',
+        description: 'There is no resume content to download yet.',
+        variant: 'destructive',
+      });
+    }
   };
 
   // Get the current history item based on slider value
@@ -222,12 +348,40 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser }: Sha
       {resume && (
         <CardFooter className="flex justify-between border-t pt-4">
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" className="gap-1">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="gap-1"
+              onClick={() => {
+                // Open resume in a new tab
+                if (resume.fileData) {
+                  const dataUrl = `data:application/pdf;base64,${resume.fileData}`;
+                  window.open(dataUrl, '_blank');
+                } else {
+                  toast({
+                    title: 'No Preview Available',
+                    description: 'This resume has no content to preview yet.',
+                    variant: 'destructive',
+                  });
+                }
+              }}
+            >
               <Eye className="h-4 w-4" />
               <span>View</span>
             </Button>
             {isOwner && (
-              <Button variant="outline" size="sm" className="gap-1">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="gap-1"
+                onClick={() => {
+                  // Navigate to edit page or open edit modal
+                  toast({
+                    title: 'Edit Resume',
+                    description: 'Resume editing is accessed through the Resume Writer tab.',
+                  });
+                }}
+              >
                 <Pencil className="h-4 w-4" />
                 <span>Edit</span>
               </Button>
@@ -238,10 +392,16 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser }: Sha
             size="sm" 
             className="gap-1"
             onClick={handleDownload}
-            disabled={!isOwner && !resume.isDownloadable}
+            disabled={(!isOwner && !resume.isDownloadable) || updateResumeMutation.isPending}
           >
-            <Download className="h-4 w-4" />
-            <span>Download</span>
+            {updateResumeMutation.isPending ? (
+              <span>Saving...</span>
+            ) : (
+              <>
+                <Download className="h-4 w-4" />
+                <span>Download</span>
+              </>
+            )}
           </Button>
         </CardFooter>
       )}
