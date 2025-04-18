@@ -306,6 +306,53 @@ export interface IStorage {
   markMuskMatchAsDismissed(id: number): Promise<MuskMatch | undefined>;
   markMuskMatchAsConnected(id: number): Promise<MuskMatch | undefined>;
   getPendingMuskMatches(userId: number): Promise<MuskMatch[]>;
+  
+  // Career Quests operations
+  // Quest Definition operations
+  getQuestDefinitions(): Promise<QuestDefinition[]>;
+  getQuestDefinitionById(id: number): Promise<QuestDefinition | undefined>;
+  getActiveQuestDefinitions(): Promise<QuestDefinition[]>;
+  getQuestDefinitionsByType(type: string): Promise<QuestDefinition[]>;
+  createQuestDefinition(quest: InsertQuestDefinition): Promise<QuestDefinition>;
+  updateQuestDefinition(id: number, quest: Partial<QuestDefinition>): Promise<QuestDefinition | undefined>;
+  deleteQuestDefinition(id: number): Promise<boolean>;
+  
+  // User Quest operations
+  getUserQuestsByUserId(userId: number): Promise<UserQuest[]>;
+  getUserQuestById(id: number): Promise<UserQuest | undefined>;
+  getActiveUserQuests(userId: number): Promise<UserQuest[]>;
+  getCompletedUserQuests(userId: number): Promise<UserQuest[]>;
+  getCurrentWeekUserQuests(userId: number): Promise<UserQuest[]>;
+  createUserQuest(quest: InsertUserQuest): Promise<UserQuest>;
+  updateUserQuest(id: number, quest: Partial<UserQuest>): Promise<UserQuest | undefined>;
+  completeUserQuest(id: number, earnedXp?: number): Promise<UserQuest | undefined>;
+  dismissUserQuest(id: number, reason?: string): Promise<UserQuest | undefined>;
+  incrementQuestProgress(id: number): Promise<UserQuest | undefined>;
+  assignWeeklyQuestsToUser(userId: number): Promise<UserQuest[]>;
+  
+  // User XP operations
+  getUserXp(userId: number): Promise<UserXp | undefined>;
+  createUserXp(userXp: InsertUserXp): Promise<UserXp>;
+  updateUserXp(id: number, userXp: Partial<UserXp>): Promise<UserXp | undefined>;
+  incrementUserXp(userId: number, amount: number, source: string, sourceId?: number): Promise<{ 
+    userXp: UserXp, 
+    transaction: XpTransaction 
+  }>;
+  resetMonthlyXp(userId: number): Promise<UserXp | undefined>;
+  
+  // User Badge operations
+  getUserBadges(userId: number): Promise<UserBadge[]>;
+  getUserBadgeById(id: number): Promise<UserBadge | undefined>;
+  getUserBadgesByType(userId: number, badgeType: string): Promise<UserBadge[]>;
+  createUserBadge(badge: InsertUserBadge): Promise<UserBadge>;
+  updateUserBadge(id: number, badge: Partial<UserBadge>): Promise<UserBadge | undefined>;
+  toggleBadgeDisplay(id: number, displayOnProfile: boolean, displayOnResume: boolean): Promise<UserBadge | undefined>;
+  
+  // XP Transaction operations
+  getXpTransactions(userId: number): Promise<XpTransaction[]>;
+  getXpTransactionById(id: number): Promise<XpTransaction | undefined>;
+  getXpTransactionsBySource(userId: number, source: string): Promise<XpTransaction[]>;
+  createXpTransaction(transaction: InsertXpTransaction): Promise<XpTransaction>;
 }
 
 // In-memory implementation of the storage
@@ -355,6 +402,13 @@ export class MemStorage implements IStorage {
   private nowboardItems: Map<number, NowboardItem>;
   private nowboardInspiredBy: Map<number, NowboardInspiredBy>;
   
+  // Career Quests models
+  private questDefinitions: Map<number, QuestDefinition>;
+  private userQuests: Map<number, UserQuest>;
+  private userXp: Map<number, UserXp>;
+  private userBadges: Map<number, UserBadge>;
+  private xpTransactions: Map<number, XpTransaction>;
+  
   private currentUserId: number;
   private currentResumeId: number;
   private currentWorkExperienceId: number;
@@ -398,6 +452,13 @@ export class MemStorage implements IStorage {
   // Nowboard IDs
   private currentNowboardItemId: number;
   private currentNowboardInspiredById: number;
+  
+  // Career Quests IDs
+  private currentQuestDefinitionId: number;
+  private currentUserQuestId: number;
+  private currentUserXpId: number;
+  private currentUserBadgeId: number;
+  private currentXpTransactionId: number;
 
   constructor() {
     this.users = new Map();
@@ -434,6 +495,13 @@ export class MemStorage implements IStorage {
     
     // Initialize Musk Match map
     this.muskMatches = new Map();
+    
+    // Initialize Career Quests maps
+    this.questDefinitions = new Map();
+    this.userQuests = new Map();
+    this.userXp = new Map();
+    this.userBadges = new Map();
+    this.xpTransactions = new Map();
     
     // Initialize Musk suggestion maps
     this.muskSuggestions = new Map();
@@ -490,6 +558,13 @@ export class MemStorage implements IStorage {
     // Initialize Nowboard IDs
     this.currentNowboardItemId = 1;
     this.currentNowboardInspiredById = 1;
+    
+    // Initialize Career Quests IDs
+    this.currentQuestDefinitionId = 1;
+    this.currentUserQuestId = 1;
+    this.currentUserXpId = 1;
+    this.currentUserBadgeId = 1;
+    this.currentXpTransactionId = 1;
     
     // Initialize with a default user for development/demo
     this.initializeDemoData();
@@ -601,6 +676,13 @@ export class MemStorage implements IStorage {
     // Reset Nowboard IDs
     this.currentNowboardItemId = 1;
     this.currentNowboardInspiredById = 1;
+    
+    // Reset Career Quests IDs
+    this.currentQuestDefinitionId = 1;
+    this.currentUserQuestId = 1;
+    this.currentUserXpId = 1;
+    this.currentUserBadgeId = 1;
+    this.currentXpTransactionId = 1;
     
     // No pre-created skills
     
@@ -766,6 +848,13 @@ export class MemStorage implements IStorage {
     // Clear all Nowboard data
     this.nowboardItems.clear();
     this.nowboardInspiredBy.clear();
+    
+    // Clear all Career Quests data
+    this.questDefinitions.clear();
+    this.userQuests.clear();
+    this.userXp.clear();
+    this.userBadges.clear();
+    this.xpTransactions.clear();
   }
   
   /**
