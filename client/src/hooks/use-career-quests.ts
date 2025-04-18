@@ -97,12 +97,14 @@ export const useUpdateQuestProgress = () => {
   return useMutation({
     mutationFn: async ({ 
       questId, 
-      progress 
+      progress,
+      userId 
     }: { 
       questId: number; 
-      progress: number 
+      progress: number;
+      userId: number
     }) => {
-      const res = await fetch(`/api/user-quests/${questId}/progress`, {
+      const res = await fetch(`/api/users/${userId}/quests/${questId}/progress`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -114,9 +116,9 @@ export const useUpdateQuestProgress = () => {
       return res.json() as Promise<UserQuest>;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['/api/users/:userId/quests', data.userId] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${data.userId}/quests`] });
       queryClient.invalidateQueries({ 
-        queryKey: ['/api/users/:userId/quests/current-week', data.userId] 
+        queryKey: [`/api/users/${data.userId}/quests/current-week`] 
       });
       queryClient.invalidateQueries({ 
         queryKey: ['/api/user-quests-with-definitions', data.userId] 
@@ -124,9 +126,9 @@ export const useUpdateQuestProgress = () => {
       
       // If quest was completed, also invalidate XP and badges
       if (data.status === 'completed') {
-        queryClient.invalidateQueries({ queryKey: ['/api/users/:userId/xp', data.userId] });
-        queryClient.invalidateQueries({ queryKey: ['/api/users/:userId/badges', data.userId] });
-        queryClient.invalidateQueries({ queryKey: ['/api/users/:userId/xp-transactions', data.userId] });
+        queryClient.invalidateQueries({ queryKey: [`/api/users/${data.userId}/xp`] });
+        queryClient.invalidateQueries({ queryKey: [`/api/users/${data.userId}/badges`] });
+        queryClient.invalidateQueries({ queryKey: [`/api/users/${data.userId}/xp-transactions`] });
       }
     }
   });
@@ -191,9 +193,9 @@ export const useDismissQuest = () => {
       return res.json() as Promise<UserQuest>;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['/api/users/:userId/quests', data.userId] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${data.userId}/quests`] });
       queryClient.invalidateQueries({ 
-        queryKey: ['/api/users/:userId/quests/current-week', data.userId] 
+        queryKey: [`/api/users/${data.userId}/quests/current-week`] 
       });
       queryClient.invalidateQueries({ 
         queryKey: ['/api/user-quests-with-definitions', data.userId] 
