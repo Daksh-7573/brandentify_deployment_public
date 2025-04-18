@@ -18,6 +18,8 @@ import {
   hashtags, Hashtag, InsertHashtag,
   pulseHashtags, PulseHashtag, InsertPulseHashtag,
   userHashtagFollows, UserHashtagFollow, InsertUserHashtagFollow,
+  nowboardItems, NowboardItem, InsertNowboardItem,
+  nowboardInspiredBy, NowboardInspiredBy, InsertNowboardInspiredBy,
   // Pulse Interaction System models
   pulseReactions, PulseReaction, InsertPulseReaction,
   userReactionQuotas, UserReactionQuota, InsertUserReactionQuota,
