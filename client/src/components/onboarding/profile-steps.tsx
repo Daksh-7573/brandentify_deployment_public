@@ -147,7 +147,7 @@ type FormData = {
   skills: Array<{name: string, level: string, category: string, proficiency: number}>;
   
   // Step 3: Services
-  services: Array<{title: string, description: string, rate: string, rateUnit: string}>;
+  services: Array<{title: string, description: string, currency: string, rate: string, rateUnit: string}>;
   
   // Step 4: Projects
   projects: Array<{
@@ -215,6 +215,7 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
   const [serviceFormData, setServiceFormData] = useState({
     title: '',
     description: '',
+    currency: 'USD', // Default currency is USD
     rate: '',
     rateUnit: 'hr' // Default rate unit is per hour
   });
@@ -1040,6 +1041,7 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
       setServiceFormData({
         title: '',
         description: '',
+        currency: 'USD',
         rate: '',
         rateUnit: 'hr'
       });
@@ -1063,6 +1065,19 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
       { value: 'week', label: 'Per Week' },
       { value: 'month', label: 'Per Month' },
       { value: 'project', label: 'Per Project' },
+    ];
+    
+    const currencies = [
+      { value: 'USD', label: 'USD ($)' },
+      { value: 'EUR', label: 'EUR (€)' },
+      { value: 'GBP', label: 'GBP (£)' },
+      { value: 'CAD', label: 'CAD (C$)' },
+      { value: 'AUD', label: 'AUD (A$)' },
+      { value: 'JPY', label: 'JPY (¥)' },
+      { value: 'INR', label: 'INR (₹)' },
+      { value: 'BRL', label: 'BRL (R$)' },
+      { value: 'CNY', label: 'CNY (¥)' },
+      { value: 'RUB', label: 'RUB (₽)' },
     ];
     
     return (
@@ -1090,6 +1105,25 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
                 onChange={(e) => setServiceFormData(prev => ({ ...prev, description: e.target.value }))}
                 rows={3}
               />
+            </div>
+            
+            <div className="grid gap-2">
+              <Label htmlFor="serviceCurrency">Currency</Label>
+              <Select
+                value={serviceFormData.currency}
+                onValueChange={(value) => setServiceFormData(prev => ({ ...prev, currency: value }))}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select currency" />
+                </SelectTrigger>
+                <SelectContent>
+                  {currencies.map((currency) => (
+                    <SelectItem key={currency.value} value={currency.value}>
+                      {currency.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             
             <div className="grid grid-cols-2 gap-4">
@@ -1162,7 +1196,7 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
                   {service.rate && (
                     <div className="mt-2">
                       <span className="inline-block text-sm font-medium text-primary">
-                        ${service.rate} {getRateUnitLabel(service.rateUnit)}
+                        {getCurrencySymbol(service.currency)}{service.rate} {getRateUnitLabel(service.rateUnit)}
                       </span>
                     </div>
                   )}
@@ -1190,6 +1224,23 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
       case 'month': return 'per month';
       case 'project': return 'per project';
       default: return '';
+    }
+  };
+  
+  // Helper function to get currency symbol
+  const getCurrencySymbol = (currency: string) => {
+    switch (currency) {
+      case 'USD': return '$';
+      case 'EUR': return '€';
+      case 'GBP': return '£';
+      case 'CAD': return 'C$';
+      case 'AUD': return 'A$';
+      case 'JPY': return '¥';
+      case 'INR': return '₹';
+      case 'BRL': return 'R$';
+      case 'CNY': return '¥';
+      case 'RUB': return '₽';
+      default: return '$'; // Default to USD symbol
     }
   };
   
