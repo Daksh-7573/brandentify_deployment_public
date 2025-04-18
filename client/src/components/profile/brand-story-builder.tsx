@@ -532,16 +532,14 @@ const AllAboutMeStep = ({ nextStep, prevStep, user, updateFormData, formData }: 
           <MuskAvatar size="sm" withSparks={true} />
         </div>
         <div className="bg-gray-50 rounded-lg p-4 rounded-tl-none">
-          <h3 className="font-medium text-lg text-gray-900">Tell me all about you</h3>
+          <h3 className="font-medium text-lg text-gray-900">All About Me</h3>
           <p className="text-gray-600 mt-2">
             Let's build your complete professional profile. These details help people understand who you are and what you're looking for.
           </p>
         </div>
       </div>
       
-      {/* Personal Information Section */}
-      <div>
-        <h3 className="font-medium text-gray-900 mb-4">Personal Information</h3>
+      <div className="space-y-6">
         <div className="space-y-4">
           <div className="grid gap-2">
             <Label htmlFor="name">Full Name</Label>
@@ -574,13 +572,7 @@ const AllAboutMeStep = ({ nextStep, prevStep, user, updateFormData, formData }: 
             />
             <p className="text-xs text-gray-500">City, State/Province, Country</p>
           </div>
-        </div>
-      </div>
-      
-      {/* Professional Identity Section */}
-      <div>
-        <h3 className="font-medium text-gray-900 mb-4">Professional Identity</h3>
-        <div className="space-y-4">
+        
           <div className="grid gap-2">
             <Label htmlFor="industry">Industry</Label>
             <Select 
