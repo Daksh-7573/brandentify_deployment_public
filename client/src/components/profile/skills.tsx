@@ -111,7 +111,14 @@ export default function Skills() {
   };
   
   const handleLevelChange = (value: string) => {
-    setNewSkill(prev => ({ ...prev, level: value }));
+    // Automatically set a matching proficiency value based on level
+    let proficiency = 50;
+    if (value === 'Beginner') proficiency = 25;
+    else if (value === 'Intermediate') proficiency = 50;
+    else if (value === 'Advanced') proficiency = 100;
+    
+    setSliderValue(proficiency);
+    setNewSkill(prev => ({ ...prev, level: value, proficiency }));
   };
   
   const handleEditSkill = (skill: SkillItem) => {
@@ -254,7 +261,7 @@ export default function Skills() {
                     </span>
                     <div className="mt-2">
                       <div className="flex items-center justify-between text-xs mb-1">
-                        <span className="text-muted-foreground">Proficiency</span>
+                        <span className="text-muted-foreground">Proficiency Percentage</span>
                         <span>{skill.proficiency}%</span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-1.5">
@@ -314,7 +321,7 @@ export default function Skills() {
             
             <div className="grid grid-cols-4 items-center gap-4">
               <Label className="text-right">
-                Proficiency
+                Proficiency Percentage <span className="text-xs text-gray-500">(auto-set based on level)</span>
               </Label>
               <div className="col-span-3 px-2">
                 <div className="mb-2 flex justify-between">
