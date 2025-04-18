@@ -834,7 +834,7 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
       
       setFormData(prev => ({
         ...prev,
-        skills: [...prev.skills, newSkill]
+        skills: [...(prev.skills || []), newSkill]
       }));
       
       // Reset form
@@ -1400,7 +1400,7 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
       
       setFormData(prev => ({
         ...prev,
-        experiences: [...prev.experiences, experienceFormData]
+        experiences: [...(prev.experiences || []), experienceFormData]
       }));
       
       // Reset form
@@ -1419,7 +1419,7 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
     const removeExperience = (index: number) => {
       setFormData(prev => ({
         ...prev,
-        experiences: prev.experiences.filter((_, i) => i !== index)
+        experiences: (prev.experiences || []).filter((_, i) => i !== index)
       }));
     };
     
@@ -1606,7 +1606,7 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
       
       setFormData(prev => ({
         ...prev,
-        educations: [...prev.educations, educationFormData]
+        educations: [...(prev.educations || []), educationFormData]
       }));
       
       // Reset form
@@ -1625,7 +1625,7 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
     const removeEducation = (index: number) => {
       setFormData(prev => ({
         ...prev,
-        educations: prev.educations.filter((_, i) => i !== index)
+        educations: (prev.educations || []).filter((_, i) => i !== index)
       }));
     };
     
