@@ -784,15 +784,7 @@ export default function Projects() {
             <CardTitle className="text-xl font-bold">Showcase</CardTitle>
             <CardDescription>Showcase your professional projects and collaborations</CardDescription>
           </div>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="h-8 gap-1" 
-            onClick={handleAdd}
-          >
-            <Plus className="h-3.5 w-3.5" />
-            <span>Add Showcase</span>
-          </Button>
+          {/* Add button removed - using central Edit Profile functionality */}
         </CardHeader>
         
         <CardContent>
