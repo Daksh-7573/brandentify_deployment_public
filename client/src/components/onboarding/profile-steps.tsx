@@ -891,7 +891,7 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="skillCategory">Category</Label>
+                <Label htmlFor="skillCategory">Category <span className="text-xs text-gray-500">(optional)</span></Label>
                 <Select
                   value={newSkillCategory}
                   onValueChange={setNewSkillCategory}
@@ -910,10 +910,17 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
               </div>
               
               <div className="grid gap-2">
-                <Label htmlFor="skillLevel">Level</Label>
+                <Label htmlFor="skillLevel">Proficiency Level <span className="text-red-500">*</span></Label>
                 <Select
                   value={newSkillLevel}
-                  onValueChange={setNewSkillLevel}
+                  onValueChange={(value) => {
+                    setNewSkillLevel(value);
+                    // Automatically set a matching proficiency value based on level
+                    if (value === 'Beginner') setProficiencyValue(25);
+                    else if (value === 'Intermediate') setProficiencyValue(50);
+                    else if (value === 'Advanced') setProficiencyValue(75);
+                    else if (value === 'Expert') setProficiencyValue(100);
+                  }}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a level" />
@@ -931,7 +938,7 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
             
             <div className="grid gap-2">
               <div className="flex justify-between">
-                <Label htmlFor="proficiency">Proficiency</Label>
+                <Label htmlFor="proficiency">Proficiency Percentage <span className="text-xs text-gray-500">(auto-set based on level)</span></Label>
                 <span className="text-sm text-gray-500">{proficiencyValue}%</span>
               </div>
               <Slider
