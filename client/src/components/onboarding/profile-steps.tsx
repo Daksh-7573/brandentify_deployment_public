@@ -1027,10 +1027,14 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
         return;
       }
       
-      setFormData(prev => ({
-        ...prev,
-        services: [...(prev.services || []), serviceFormData]
-      }));
+      setFormData(prev => {
+        // Make sure prev.services is an array before spreading
+        const currentServices = Array.isArray(prev.services) ? prev.services : [];
+        return {
+          ...prev,
+          services: [...currentServices, serviceFormData]
+        };
+      });
       
       // Reset form
       setServiceFormData({
@@ -1043,10 +1047,14 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
     
     // Remove service
     const removeService = (index: number) => {
-      setFormData(prev => ({
-        ...prev,
-        services: (prev.services || []).filter((_, i) => i !== index)
-      }));
+      setFormData(prev => {
+        // Make sure prev.services is an array before filtering
+        const currentServices = Array.isArray(prev.services) ? prev.services : [];
+        return {
+          ...prev,
+          services: currentServices.filter((_, i) => i !== index)
+        };
+      });
     };
     
     const rateUnits = [
@@ -1198,10 +1206,14 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
         return;
       }
       
-      setFormData(prev => ({
-        ...prev,
-        projects: [...(prev.projects || []), projectFormData]
-      }));
+      setFormData(prev => {
+        // Make sure prev.projects is an array before spreading
+        const currentProjects = Array.isArray(prev.projects) ? prev.projects : [];
+        return {
+          ...prev,
+          projects: [...currentProjects, projectFormData]
+        };
+      });
       
       // Reset form
       setProjectFormData({
@@ -1216,10 +1228,14 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
     
     // Remove project
     const removeProject = (index: number) => {
-      setFormData(prev => ({
-        ...prev,
-        projects: (prev.projects || []).filter((_, i) => i !== index)
-      }));
+      setFormData(prev => {
+        // Make sure prev.projects is an array before filtering
+        const currentProjects = Array.isArray(prev.projects) ? prev.projects : [];
+        return {
+          ...prev,
+          projects: currentProjects.filter((_, i) => i !== index)
+        };
+      });
     };
     
     const projectCategories = [
@@ -1398,10 +1414,14 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
         return;
       }
       
-      setFormData(prev => ({
-        ...prev,
-        experiences: [...(prev.experiences || []), experienceFormData]
-      }));
+      setFormData(prev => {
+        // Make sure prev.experiences is an array before spreading
+        const currentExperiences = Array.isArray(prev.experiences) ? prev.experiences : [];
+        return {
+          ...prev,
+          experiences: [...currentExperiences, experienceFormData]
+        };
+      });
       
       // Reset form
       setExperienceFormData({
@@ -1417,10 +1437,14 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
     
     // Remove experience
     const removeExperience = (index: number) => {
-      setFormData(prev => ({
-        ...prev,
-        experiences: (prev.experiences || []).filter((_, i) => i !== index)
-      }));
+      setFormData(prev => {
+        // Make sure prev.experiences is an array before filtering
+        const currentExperiences = Array.isArray(prev.experiences) ? prev.experiences : [];
+        return {
+          ...prev,
+          experiences: currentExperiences.filter((_, i) => i !== index)
+        };
+      });
     };
     
     // Handle current job checkbox
@@ -1604,10 +1628,14 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
         return;
       }
       
-      setFormData(prev => ({
-        ...prev,
-        educations: [...(prev.educations || []), educationFormData]
-      }));
+      setFormData(prev => {
+        // Make sure prev.educations is an array before spreading
+        const currentEducations = Array.isArray(prev.educations) ? prev.educations : [];
+        return {
+          ...prev,
+          educations: [...currentEducations, educationFormData]
+        };
+      });
       
       // Reset form
       setEducationFormData({
@@ -1623,10 +1651,14 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
     
     // Remove education
     const removeEducation = (index: number) => {
-      setFormData(prev => ({
-        ...prev,
-        educations: (prev.educations || []).filter((_, i) => i !== index)
-      }));
+      setFormData(prev => {
+        // Make sure prev.educations is an array before filtering
+        const currentEducations = Array.isArray(prev.educations) ? prev.educations : [];
+        return {
+          ...prev,
+          educations: currentEducations.filter((_, i) => i !== index)
+        };
+      });
     };
     
     // Handle current education checkbox
