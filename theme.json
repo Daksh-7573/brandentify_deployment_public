@@ -1,6 +1,37 @@
 {
   "variant": "professional",
-  "primary": "hsl(222, 85%, 45%)",
+  "primary": "hsl(220, 70%, 50%)",
   "appearance": "system",
-  "radius": 0.75
+  "radius": 0.75,
+  "colors": {
+    "primary-light": "hsl(220, 70%, 60%)",
+    "primary-dark": "hsl(220, 70%, 40%)",
+    "accent": "hsl(190, 90%, 50%)",
+    "success": "hsl(150, 80%, 45%)",
+    "warning": "hsl(40, 90%, 55%)",
+    "error": "hsl(0, 90%, 60%)",
+    "gray-50": "hsl(210, 20%, 98%)",
+    "gray-100": "hsl(210, 15%, 95%)",
+    "gray-200": "hsl(210, 15%, 90%)",
+    "gray-300": "hsl(210, 10%, 80%)",
+    "gray-400": "hsl(210, 10%, 70%)",
+    "gray-500": "hsl(210, 10%, 50%)",
+    "gray-600": "hsl(210, 10%, 40%)",
+    "gray-700": "hsl(210, 15%, 30%)",
+    "gray-800": "hsl(210, 20%, 20%)",
+    "gray-900": "hsl(210, 25%, 10%)"
+  },
+  "fonts": {
+    "sans": "Inter, system-ui, sans-serif",
+    "heading": "Manrope, sans-serif",
+    "mono": "JetBrains Mono, monospace"
+  },
+  "shadows": {
+    "sm": "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+    "md": "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+    "lg": "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+    "xl": "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+    "2xl": "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+    "inner": "inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)"
+  }
 }
