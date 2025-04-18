@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Zap, Settings, Menu, X, Home, Search, Bot, User, MapPin } from "lucide-react";
+import { Zap, Settings, Menu, X, Home, Search, Bot, User, MapPin, FileText } from "lucide-react";
 
 export default function Header() {
   const { user, isDemoMode, signOut, refreshUserData } = useAuth();
@@ -123,6 +123,20 @@ export default function Header() {
               >
                 <MapPin className="h-4 w-4" />
                 <span>Smart Radar</span>
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="sm" 
+                className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
+                  isActive('/resume') 
+                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
+                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
+                }`}
+                onClick={() => setLocation('/resume')}
+              >
+                <FileText className="h-4 w-4" />
+                <span>Resume & CV</span>
               </Button>
             </div>
           </div>
@@ -256,6 +270,23 @@ export default function Header() {
             >
               <MapPin className="h-4 w-4 mr-3 ml-0.5" />
               <span>Smart Radar</span>
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
+                isActive('/resume') 
+                  ? 'text-primary bg-primary/5' 
+                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+              }`}
+              onClick={() => {
+                setLocation('/resume');
+                setIsMobileMenuOpen(false);
+              }}
+            >
+              <FileText className="h-4 w-4 mr-3 ml-0.5" />
+              <span>Resume & CV</span>
             </Button>
             
 
