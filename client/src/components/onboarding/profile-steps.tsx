@@ -220,22 +220,6 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
     rateUnit: 'hr' // Default rate unit is per hour
   });
   
-  // Additional state for project media URLs
-  const [projectMediaUrl, setProjectMediaUrl] = useState('');
-  
-  // State for team members
-  const [teamMember, setTeamMember] = useState({
-    name: '',
-    role: ''
-  });
-  
-  // State for endorsements/testimonials
-  const [endorsement, setEndorsement] = useState({
-    text: '',
-    author: '',
-    title: ''
-  });
-  
   // State for Projects step
   const [projectFormData, setProjectFormData] = useState({
     title: '',
@@ -244,9 +228,6 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
     projectUrl: '',
     category: 'Web Development',
     thumbnailUrl: '',
-    mediaUrls: [], // For multiple project images/videos
-    teamMembers: [], // For team members/collaborators
-    endorsements: [], // For project endorsements/testimonials
   });
   
   // State for Experiences step
@@ -1263,80 +1244,6 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
     }
   };
   
-  // Functions for project media URLs
-  const addProjectMediaUrl = () => {
-    if (!projectMediaUrl.trim()) return;
-    
-    setProjectFormData(prev => ({
-      ...prev,
-      mediaUrls: [...prev.mediaUrls, projectMediaUrl.trim()]
-    }));
-    
-    // Reset input
-    setProjectMediaUrl('');
-  };
-  
-  const removeProjectMediaUrl = (index: number) => {
-    setProjectFormData(prev => ({
-      ...prev,
-      mediaUrls: prev.mediaUrls.filter((_, i) => i !== index)
-    }));
-  };
-  
-  // Functions for team members
-  const addTeamMember = () => {
-    if (!teamMember.name.trim()) {
-      toast({
-        title: "Team member name required",
-        description: "Please enter a name for the team member",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    setProjectFormData(prev => ({
-      ...prev,
-      teamMembers: [...prev.teamMembers, { ...teamMember }]
-    }));
-    
-    // Reset input
-    setTeamMember({ name: '', role: '' });
-  };
-  
-  const removeTeamMember = (index: number) => {
-    setProjectFormData(prev => ({
-      ...prev,
-      teamMembers: prev.teamMembers.filter((_, i) => i !== index)
-    }));
-  };
-  
-  // Functions for endorsements
-  const addEndorsement = () => {
-    if (!endorsement.text.trim() || !endorsement.author.trim()) {
-      toast({
-        title: "Endorsement incomplete",
-        description: "Please enter both testimonial text and author name",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    setProjectFormData(prev => ({
-      ...prev,
-      endorsements: [...prev.endorsements, { ...endorsement }]
-    }));
-    
-    // Reset input
-    setEndorsement({ text: '', author: '', title: '' });
-  };
-  
-  const removeEndorsement = (index: number) => {
-    setProjectFormData(prev => ({
-      ...prev,
-      endorsements: prev.endorsements.filter((_, i) => i !== index)
-    }));
-  };
-  
   // Step 4: Projects
   const renderProjectsStep = () => {
     // Add new project
@@ -1367,9 +1274,6 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
         projectUrl: '',
         category: 'Web Development',
         thumbnailUrl: '',
-        mediaUrls: [],
-        teamMembers: [],
-        endorsements: [],
       });
     };
     
@@ -1476,148 +1380,7 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
               <p className="text-xs text-gray-500">Add a URL for a project thumbnail image</p>
             </div>
             
-            {/* Project Media URLs */}
-            <div className="grid gap-2">
-              <Label htmlFor="mediaUrls">Additional Media URLs</Label>
-              <Input
-                id="mediaUrl"
-                placeholder="https://example.com/media1.jpg"
-                value={projectMediaUrl}
-                onChange={(e) => setProjectMediaUrl(e.target.value)}
-              />
-              <Button 
-                type="button" 
-                variant="outline" 
-                size="sm" 
-                onClick={addProjectMediaUrl}
-                className="w-full mt-1"
-              >
-                Add Media URL
-              </Button>
-              {projectFormData.mediaUrls.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {projectFormData.mediaUrls.map((url, index) => (
-                    <div key={index} className="bg-gray-100 rounded-md p-2 flex items-center gap-2 text-xs">
-                      <span className="truncate max-w-[150px]">{url}</span>
-                      <button 
-                        onClick={() => removeProjectMediaUrl(index)} 
-                        className="text-gray-500 hover:text-red-500"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <line x1="18" y1="6" x2="6" y2="18"></line>
-                          <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-            
-            {/* Team Members */}
-            <div className="grid gap-2">
-              <Label htmlFor="teamMembers">Team Members</Label>
-              <Input
-                id="teamMember"
-                placeholder="Team member name"
-                value={teamMember.name}
-                onChange={(e) => setTeamMember({...teamMember, name: e.target.value})}
-              />
-              <Input
-                id="teamMemberRole"
-                placeholder="Role or contribution"
-                value={teamMember.role}
-                onChange={(e) => setTeamMember({...teamMember, role: e.target.value})}
-                className="mt-1"
-              />
-              <Button 
-                type="button" 
-                variant="outline" 
-                size="sm" 
-                onClick={addTeamMember}
-                className="w-full mt-1"
-              >
-                Add Team Member
-              </Button>
-              {projectFormData.teamMembers.length > 0 && (
-                <div className="grid gap-2 mt-2">
-                  {projectFormData.teamMembers.map((member, index) => (
-                    <div key={index} className="bg-gray-100 rounded-md p-2 flex justify-between items-center">
-                      <div>
-                        <p className="font-medium text-sm">{member.name}</p>
-                        <p className="text-xs text-gray-600">{member.role}</p>
-                      </div>
-                      <button 
-                        onClick={() => removeTeamMember(index)} 
-                        className="text-gray-500 hover:text-red-500"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <line x1="18" y1="6" x2="6" y2="18"></line>
-                          <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-            
-            {/* Endorsements */}
-            <div className="grid gap-2">
-              <Label htmlFor="endorsements">Endorsements/Testimonials</Label>
-              <Textarea
-                id="endorsementText"
-                placeholder="Testimonial text"
-                value={endorsement.text}
-                onChange={(e) => setEndorsement({...endorsement, text: e.target.value})}
-                rows={2}
-              />
-              <Input
-                id="endorsementAuthor"
-                placeholder="Author name"
-                value={endorsement.author}
-                onChange={(e) => setEndorsement({...endorsement, author: e.target.value})}
-                className="mt-1"
-              />
-              <Input
-                id="endorsementTitle"
-                placeholder="Author title/company"
-                value={endorsement.title}
-                onChange={(e) => setEndorsement({...endorsement, title: e.target.value})}
-                className="mt-1"
-              />
-              <Button 
-                type="button" 
-                variant="outline" 
-                size="sm" 
-                onClick={addEndorsement}
-                className="w-full mt-1"
-              >
-                Add Endorsement
-              </Button>
-              {projectFormData.endorsements.length > 0 && (
-                <div className="grid gap-2 mt-2">
-                  {projectFormData.endorsements.map((item, index) => (
-                    <div key={index} className="bg-gray-100 rounded-md p-3 flex flex-col relative">
-                      <p className="text-sm italic mb-2">"{item.text}"</p>
-                      <p className="text-xs font-medium">{item.author}</p>
-                      <p className="text-xs text-gray-600">{item.title}</p>
-                      <button 
-                        onClick={() => removeEndorsement(index)} 
-                        className="absolute top-2 right-2 text-gray-500 hover:text-red-500"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <line x1="18" y1="6" x2="6" y2="18"></line>
-                          <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-            
-            <Button type="button" onClick={addProject} className="w-full mt-6">
+            <Button type="button" onClick={addProject} className="w-full">
               Add Project
             </Button>
           </div>
@@ -1673,55 +1436,6 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
                     >
                       View Project
                     </a>
-                  )}
-                  
-                  {/* Show team members if any */}
-                  {project.teamMembers && project.teamMembers.length > 0 && (
-                    <div className="mt-3">
-                      <h4 className="text-xs font-medium text-gray-700 mb-1">Team Members</h4>
-                      <div className="flex flex-wrap gap-1">
-                        {project.teamMembers.map((member, idx) => (
-                          <span key={idx} className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-50 text-blue-700">
-                            {member.name} {member.role ? `(${member.role})` : ''}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  
-                  {/* Show endorsements if any */}
-                  {project.endorsements && project.endorsements.length > 0 && (
-                    <div className="mt-3">
-                      <h4 className="text-xs font-medium text-gray-700 mb-1">Testimonials</h4>
-                      <div className="space-y-2">
-                        {project.endorsements.map((item, idx) => (
-                          <div key={idx} className="bg-gray-50 p-2 rounded text-xs">
-                            <p className="italic">"{item.text}"</p>
-                            <p className="text-gray-700 font-medium mt-1">— {item.author} {item.title ? `, ${item.title}` : ''}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  
-                  {/* Show additional media if any */}
-                  {project.mediaUrls && project.mediaUrls.length > 0 && (
-                    <div className="mt-3">
-                      <h4 className="text-xs font-medium text-gray-700 mb-1">Additional Media</h4>
-                      <div className="flex gap-1 flex-wrap">
-                        {project.mediaUrls.map((url, idx) => (
-                          <a 
-                            key={idx} 
-                            href={url} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded-md inline-block"
-                          >
-                            Media {idx + 1}
-                          </a>
-                        ))}
-                      </div>
-                    </div>
                   )}
                 </div>
               ))}
