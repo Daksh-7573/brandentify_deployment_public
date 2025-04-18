@@ -1588,19 +1588,10 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
   
   // Step 6: Educations
   const renderEducationsStep = () => {
-    const [education, setEducation] = useState({
-      institution: '',
-      degree: '',
-      field: '',
-      startDate: '',
-      endDate: '',
-      current: false,
-      description: ''
-    });
     
     // Add new education
     const addEducation = () => {
-      if (!education.institution || !education.degree) {
+      if (!educationFormData.institution || !educationFormData.degree) {
         toast({
           title: "Missing information",
           description: "Please enter both institution name and degree",
@@ -1611,11 +1602,11 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
       
       setFormData(prev => ({
         ...prev,
-        educations: [...prev.educations, education]
+        educations: [...prev.educations, educationFormData]
       }));
       
       // Reset form
-      setEducation({
+      setEducationFormData({
         institution: '',
         degree: '',
         field: '',
@@ -1637,7 +1628,7 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
     // Handle current education checkbox
     const handleCurrentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const checked = e.target.checked;
-      setEducation(prev => ({ 
+      setEducationFormData(prev => ({ 
         ...prev, 
         current: checked,
         endDate: checked ? '' : prev.endDate
@@ -1681,8 +1672,8 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
               <Input
                 id="institution"
                 placeholder="School, College or University Name"
-                value={education.institution}
-                onChange={(e) => setEducation(prev => ({ ...prev, institution: e.target.value }))}
+                value={educationFormData.institution}
+                onChange={(e) => setEducationFormData(prev => ({ ...prev, institution: e.target.value }))}
               />
             </div>
             
@@ -1690,8 +1681,8 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
               <div className="grid gap-2">
                 <Label htmlFor="degree">Degree</Label>
                 <Select
-                  value={education.degree}
-                  onValueChange={(value) => setEducation(prev => ({ ...prev, degree: value }))}
+                  value={educationFormData.degree}
+                  onValueChange={(value) => setEducationFormData(prev => ({ ...prev, degree: value }))}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select degree type" />
@@ -1711,8 +1702,8 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
                 <Input
                   id="field"
                   placeholder="e.g. Computer Science, Business"
-                  value={education.field}
-                  onChange={(e) => setEducation(prev => ({ ...prev, field: e.target.value }))}
+                  value={educationFormData.field}
+                  onChange={(e) => setEducationFormData(prev => ({ ...prev, field: e.target.value }))}
                 />
               </div>
             </div>
@@ -1723,24 +1714,24 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
                 <Input
                   id="eduStartDate"
                   type="month"
-                  value={education.startDate}
-                  onChange={(e) => setEducation(prev => ({ ...prev, startDate: e.target.value }))}
+                  value={educationFormData.startDate}
+                  onChange={(e) => setEducationFormData(prev => ({ ...prev, startDate: e.target.value }))}
                 />
               </div>
               
               <div className="grid gap-2">
                 <Label 
                   htmlFor="eduEndDate" 
-                  className={education.current ? "text-gray-400" : ""}
+                  className={educationFormData.current ? "text-gray-400" : ""}
                 >
                   End Date
                 </Label>
                 <Input
                   id="eduEndDate"
                   type="month"
-                  value={education.endDate}
-                  onChange={(e) => setEducation(prev => ({ ...prev, endDate: e.target.value }))}
-                  disabled={education.current}
+                  value={educationFormData.endDate}
+                  onChange={(e) => setEducationFormData(prev => ({ ...prev, endDate: e.target.value }))}
+                  disabled={educationFormData.current}
                 />
               </div>
             </div>
