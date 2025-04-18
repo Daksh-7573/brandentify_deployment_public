@@ -55,7 +55,6 @@ const BrandStoryBuilder = ({ user, userData, onClose, isOpen }: BrandStoryBuilde
 
   // Steps in the brand story building process
   const steps = [
-    "Introduction",
     "Basic Info",
     "Professional Identity",
     "Skills",
@@ -236,20 +235,6 @@ const BrandStoryBuilder = ({ user, userData, onClose, isOpen }: BrandStoryBuilde
         {/* Step Content */}
         <div className="py-4">
           {currentStep === 0 && (
-            <IntroductionStep
-              currentStep={currentStep}
-              setCurrentStep={setCurrentStep}
-              user={user}
-              userData={userData}
-              updateFormData={updateFormData}
-              formData={formData}
-              nextStep={nextStep}
-              prevStep={prevStep}
-              complete={completeStoryBuilder}
-            />
-          )}
-          
-          {currentStep === 1 && (
             <BasicInfoStep
               currentStep={currentStep}
               setCurrentStep={setCurrentStep}
@@ -263,7 +248,7 @@ const BrandStoryBuilder = ({ user, userData, onClose, isOpen }: BrandStoryBuilde
             />
           )}
           
-          {currentStep === 2 && (
+          {currentStep === 1 && (
             <ProfessionalIdentityStep
               currentStep={currentStep}
               setCurrentStep={setCurrentStep}
@@ -277,7 +262,7 @@ const BrandStoryBuilder = ({ user, userData, onClose, isOpen }: BrandStoryBuilde
             />
           )}
           
-          {currentStep === 3 && (
+          {currentStep === 2 && (
             <SkillsStep
               currentStep={currentStep}
               setCurrentStep={setCurrentStep}
@@ -291,7 +276,7 @@ const BrandStoryBuilder = ({ user, userData, onClose, isOpen }: BrandStoryBuilde
             />
           )}
           
-          {currentStep === 4 && (
+          {currentStep === 3 && (
             <ServicesStep
               currentStep={currentStep}
               setCurrentStep={setCurrentStep}
@@ -305,7 +290,7 @@ const BrandStoryBuilder = ({ user, userData, onClose, isOpen }: BrandStoryBuilde
             />
           )}
           
-          {currentStep === 5 && (
+          {currentStep === 4 && (
             <WorkExperienceStep
               currentStep={currentStep}
               setCurrentStep={setCurrentStep}
@@ -319,7 +304,7 @@ const BrandStoryBuilder = ({ user, userData, onClose, isOpen }: BrandStoryBuilde
             />
           )}
           
-          {currentStep === 6 && (
+          {currentStep === 5 && (
             <EducationStep
               currentStep={currentStep}
               setCurrentStep={setCurrentStep}
@@ -333,7 +318,7 @@ const BrandStoryBuilder = ({ user, userData, onClose, isOpen }: BrandStoryBuilde
             />
           )}
           
-          {currentStep === 7 && (
+          {currentStep === 6 && (
             <ProjectsStep
               currentStep={currentStep}
               setCurrentStep={setCurrentStep}
@@ -347,7 +332,7 @@ const BrandStoryBuilder = ({ user, userData, onClose, isOpen }: BrandStoryBuilde
             />
           )}
           
-          {currentStep === 8 && (
+          {currentStep === 7 && (
             <ReviewStep
               currentStep={currentStep}
               setCurrentStep={setCurrentStep}
