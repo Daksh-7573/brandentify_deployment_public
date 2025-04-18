@@ -205,6 +205,52 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
   const [selectedIndustry, setSelectedIndustry] = useState<string>('');
   const [selectedDomain, setSelectedDomain] = useState<string>('');
   
+  // State for Skills step
+  const [newSkillName, setNewSkillName] = useState<string>('');
+  const [newSkillLevel, setNewSkillLevel] = useState<string>('Intermediate');
+  const [newSkillCategory, setNewSkillCategory] = useState<string>('Technical');
+  const [proficiencyValue, setProficiencyValue] = useState<number>(50);
+  
+  // State for Services step
+  const [serviceFormData, setServiceFormData] = useState({
+    title: '',
+    description: '',
+    rate: '',
+    rateUnit: 'hr' // Default rate unit is per hour
+  });
+  
+  // State for Projects step
+  const [projectFormData, setProjectFormData] = useState({
+    title: '',
+    description: '',
+    startDate: '',
+    projectUrl: '',
+    category: 'Web Development',
+    thumbnailUrl: '',
+  });
+  
+  // State for Experiences step
+  const [experienceFormData, setExperienceFormData] = useState({
+    company: '',
+    title: '',
+    startDate: '',
+    endDate: '',
+    current: false,
+    location: '',
+    description: ''
+  });
+  
+  // State for Education step
+  const [educationFormData, setEducationFormData] = useState({
+    institution: '',
+    degree: '',
+    field: '',
+    startDate: '',
+    endDate: '',
+    current: false,
+    description: ''
+  });
+  
   // Form data state
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -768,11 +814,6 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
   
   // Step 2: Skills
   const renderSkillsStep = () => {
-    const [newSkillName, setNewSkillName] = useState<string>('');
-    const [newSkillLevel, setNewSkillLevel] = useState<string>('Intermediate');
-    const [newSkillCategory, setNewSkillCategory] = useState<string>('Technical');
-    const [proficiencyValue, setProficiencyValue] = useState<number>(50);
-    
     // Add new skill
     const addSkill = () => {
       if (!newSkillName) {
@@ -971,16 +1012,9 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
   
   // Step 3: Services
   const renderServicesStep = () => {
-    const [service, setService] = useState({
-      title: '',
-      description: '',
-      rate: '',
-      rateUnit: 'hr' // Default rate unit is per hour
-    });
-    
     // Add new service
     const addService = () => {
-      if (!service.title) {
+      if (!serviceFormData.title) {
         toast({
           title: "Service title required",
           description: "Please enter a title for your service",
@@ -991,11 +1025,11 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
       
       setFormData(prev => ({
         ...prev,
-        services: [...prev.services, service]
+        services: [...prev.services, serviceFormData]
       }));
       
       // Reset form
-      setService({
+      setServiceFormData({
         title: '',
         description: '',
         rate: '',
@@ -1030,8 +1064,8 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
               <Input
                 id="serviceTitle"
                 placeholder="e.g. Website Development, UI/UX Design, Marketing Consultation"
-                value={service.title}
-                onChange={(e) => setService(prev => ({ ...prev, title: e.target.value }))}
+                value={serviceFormData.title}
+                onChange={(e) => setServiceFormData(prev => ({ ...prev, title: e.target.value }))}
               />
             </div>
             
@@ -1040,8 +1074,8 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
               <Textarea
                 id="serviceDescription"
                 placeholder="Describe what your service includes and what clients can expect"
-                value={service.description}
-                onChange={(e) => setService(prev => ({ ...prev, description: e.target.value }))}
+                value={serviceFormData.description}
+                onChange={(e) => setServiceFormData(prev => ({ ...prev, description: e.target.value }))}
                 rows={3}
               />
             </div>
@@ -1052,8 +1086,8 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
                 <Input
                   id="serviceRate"
                   placeholder="e.g. 50"
-                  value={service.rate}
-                  onChange={(e) => setService(prev => ({ ...prev, rate: e.target.value }))}
+                  value={serviceFormData.rate}
+                  onChange={(e) => setServiceFormData(prev => ({ ...prev, rate: e.target.value }))}
                   type="text"
                   inputMode="decimal"
                 />
@@ -1062,8 +1096,8 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
               <div className="grid gap-2">
                 <Label htmlFor="serviceRateUnit">Rate Unit</Label>
                 <Select
-                  value={service.rateUnit}
-                  onValueChange={(value) => setService(prev => ({ ...prev, rateUnit: value }))}
+                  value={serviceFormData.rateUnit}
+                  onValueChange={(value) => setServiceFormData(prev => ({ ...prev, rateUnit: value }))}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a rate unit" />
@@ -1149,15 +1183,6 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
   
   // Step 4: Projects
   const renderProjectsStep = () => {
-    const [project, setProject] = useState({
-      title: '',
-      description: '',
-      startDate: '',
-      projectUrl: '',
-      category: 'Web Development',
-      thumbnailUrl: '',
-    });
-    
     // Add new project
     const addProject = () => {
       if (!project.title) {
