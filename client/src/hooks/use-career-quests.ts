@@ -136,11 +136,13 @@ export const useUpdateQuestProgress = () => {
 export const useCompleteQuest = () => {
   return useMutation({
     mutationFn: async ({ 
-      questId 
+      questId,
+      userId
     }: { 
-      questId: number 
+      questId: number,
+      userId: number
     }) => {
-      const res = await fetch(`/api/user-quests/${questId}/complete`, {
+      const res = await fetch(`/api/users/${userId}/quests/${questId}/complete`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -151,16 +153,16 @@ export const useCompleteQuest = () => {
       return res.json() as Promise<UserQuest>;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['/api/user-quests', data.userId] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${data.userId}/quests`] });
       queryClient.invalidateQueries({ 
-        queryKey: ['/api/user-quests/weekly', data.userId, data.weekNumber, data.year] 
+        queryKey: [`/api/users/${data.userId}/quests/current-week`] 
       });
       queryClient.invalidateQueries({ 
         queryKey: ['/api/user-quests-with-definitions', data.userId] 
       });
-      queryClient.invalidateQueries({ queryKey: ['/api/users/:userId/xp', data.userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/users/:userId/badges', data.userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/users/:userId/xp-transactions', data.userId] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${data.userId}/xp`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${data.userId}/badges`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${data.userId}/xp-transactions`] });
     }
   });
 };
@@ -170,12 +172,14 @@ export const useDismissQuest = () => {
   return useMutation({
     mutationFn: async ({ 
       questId, 
-      reason 
+      reason,
+      userId
     }: { 
       questId: number; 
-      reason?: string 
+      reason?: string;
+      userId: number
     }) => {
-      const res = await fetch(`/api/user-quests/${questId}/dismiss`, {
+      const res = await fetch(`/api/users/${userId}/quests/${questId}/dismiss`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -187,9 +191,9 @@ export const useDismissQuest = () => {
       return res.json() as Promise<UserQuest>;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['/api/user-quests', data.userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users/:userId/quests', data.userId] });
       queryClient.invalidateQueries({ 
-        queryKey: ['/api/user-quests/weekly', data.userId, data.weekNumber, data.year] 
+        queryKey: ['/api/users/:userId/quests/current-week', data.userId] 
       });
       queryClient.invalidateQueries({ 
         queryKey: ['/api/user-quests-with-definitions', data.userId] 
