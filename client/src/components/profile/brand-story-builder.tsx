@@ -13,7 +13,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue,
+  SelectGroup
+} from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -25,6 +32,127 @@ import confetti from "canvas-confetti";
 
 // Add a type declaration for canvas-confetti
 declare module 'canvas-confetti';
+
+// Common constants for industry, domains and lookingFor options
+const INDUSTRIES = [
+  "Technology",
+  "Healthcare",
+  "Finance",
+  "Education",
+  "Manufacturing",
+  "Retail",
+  "Media & Entertainment",
+  "Construction",
+  "Transportation",
+  "Energy",
+  "Hospitality",
+  "Agriculture",
+  "Telecommunications",
+  "Real Estate",
+  "Consulting",
+  "Pharmaceuticals",
+  "Legal Services",
+  "Marketing & Advertising",
+  "Aerospace",
+  "Automotive",
+  "Biotechnology",
+  "Nonprofit",
+  "Government",
+  "Food & Beverage",
+  "Fashion",
+  "Arts & Design",
+];
+
+// Domains based on industry selection
+const INDUSTRY_DOMAINS: {[key: string]: string[]} = {
+  "Technology": [
+    "Artificial Intelligence & Machine Learning",
+    "Blockchain & Cryptocurrency",
+    "Cloud Computing & SaaS",
+    "Cybersecurity",
+    "Data Science & Analytics",
+    "DevOps & Infrastructure",
+    "E-commerce Technology",
+    "Enterprise Software",
+    "Gaming & Entertainment",
+    "Hardware & IoT",
+    "Mobile Development",
+    "Quantum Computing",
+    "Robotics & Automation",
+    "Software Development",
+    "Web3 & Decentralized Tech",
+  ],
+  "Healthcare": [
+    "Biotechnology",
+    "Digital Health",
+    "Healthcare IT",
+    "Medical Devices",
+    "Pharmaceuticals",
+    "Research & Development",
+    "Telemedicine",
+    "Healthcare Services",
+    "Mental Health",
+    "Public Health",
+  ],
+  "Finance": [
+    "Banking",
+    "Financial Services",
+    "FinTech",
+    "Investment Management",
+    "Insurance",
+    "Wealth Management",
+    "Payments & Transactions",
+    "Cryptocurrency & DeFi",
+    "Lending & Credit",
+    "Regulatory Compliance",
+  ],
+  "Education": [
+    "EdTech",
+    "Higher Education",
+    "K-12 Education",
+    "Professional Development",
+    "Online Learning",
+    "Educational Content",
+    "Tutoring & Coaching",
+    "Educational Administration",
+    "Research & Development",
+  ],
+  // We can add more domains as needed
+};
+
+// Looking for categories
+const LOOKING_FOR = [
+  // Career & Job Seeking category
+  { value: "job_opportunities", label: "💼 Job Opportunities" },
+  { value: "job_seekers", label: "💼 Job Seekers / Candidates" },
+  { value: "internships", label: "💼 Internships" },
+  { value: "interns", label: "💼 Interns" },
+  { value: "mentors", label: "💼 Career Mentors" },
+  { value: "mentees", label: "💼 Career Mentees" },
+  
+  // Business & Investment category
+  { value: "business_partners", label: "🤝 Business Partners" },
+  { value: "investors", label: "💰 Investors" },
+  { value: "startup_funding", label: "🚀 Startup Funding" },
+  { value: "accelerators", label: "🚀 Accelerators/Incubators" },
+  
+  // Service-based category
+  { value: "clients", label: "🎯 Clients for My Services" },
+  { value: "service_providers", label: "🛠️ Service Providers" },
+  { value: "vendors", label: "📦 Vendors/Suppliers" },
+  
+  // Knowledge & Growth category
+  { value: "networking", label: "🌐 Professional Networking" },
+  { value: "communities", label: "👥 Communities" },
+  { value: "industry_insights", label: "📊 Industry Insights" },
+  { value: "learning_opportunities", label: "📚 Learning Opportunities" },
+  
+  // Collaboration category
+  { value: "freelancers", label: "🔄 Freelancers" },
+  { value: "co_founders", label: "👯 Co-Founders" },
+  { value: "project_collaborators", label: "🤲 Project Collaborators" },
+  { value: "remote_workers", label: "🏠 Remote Workers" },
+];
 
 interface BrandStoryBuilderProps {
   user: User | null;
@@ -55,8 +183,7 @@ const BrandStoryBuilder = ({ user, userData, onClose, isOpen }: BrandStoryBuilde
 
   // Steps in the brand story building process
   const steps = [
-    "Basic Info",
-    "Professional Identity",
+    "All About Me",
     "Skills",
     "Services",
     "Work Experience",
@@ -235,7 +362,7 @@ const BrandStoryBuilder = ({ user, userData, onClose, isOpen }: BrandStoryBuilde
         {/* Step Content */}
         <div className="py-4">
           {currentStep === 0 && (
-            <BasicInfoStep
+            <AllAboutMeStep
               currentStep={currentStep}
               setCurrentStep={setCurrentStep}
               user={user}
@@ -249,20 +376,6 @@ const BrandStoryBuilder = ({ user, userData, onClose, isOpen }: BrandStoryBuilde
           )}
           
           {currentStep === 1 && (
-            <ProfessionalIdentityStep
-              currentStep={currentStep}
-              setCurrentStep={setCurrentStep}
-              user={user}
-              userData={userData}
-              updateFormData={updateFormData}
-              formData={formData}
-              nextStep={nextStep}
-              prevStep={prevStep}
-              complete={completeStoryBuilder}
-            />
-          )}
-          
-          {currentStep === 2 && (
             <SkillsStep
               currentStep={currentStep}
               setCurrentStep={setCurrentStep}
@@ -276,7 +389,7 @@ const BrandStoryBuilder = ({ user, userData, onClose, isOpen }: BrandStoryBuilde
             />
           )}
           
-          {currentStep === 3 && (
+          {currentStep === 2 && (
             <ServicesStep
               currentStep={currentStep}
               setCurrentStep={setCurrentStep}
@@ -290,7 +403,7 @@ const BrandStoryBuilder = ({ user, userData, onClose, isOpen }: BrandStoryBuilde
             />
           )}
           
-          {currentStep === 4 && (
+          {currentStep === 3 && (
             <WorkExperienceStep
               currentStep={currentStep}
               setCurrentStep={setCurrentStep}
@@ -304,7 +417,7 @@ const BrandStoryBuilder = ({ user, userData, onClose, isOpen }: BrandStoryBuilde
             />
           )}
           
-          {currentStep === 5 && (
+          {currentStep === 4 && (
             <EducationStep
               currentStep={currentStep}
               setCurrentStep={setCurrentStep}
@@ -318,7 +431,7 @@ const BrandStoryBuilder = ({ user, userData, onClose, isOpen }: BrandStoryBuilde
             />
           )}
           
-          {currentStep === 6 && (
+          {currentStep === 5 && (
             <ProjectsStep
               currentStep={currentStep}
               setCurrentStep={setCurrentStep}
@@ -332,7 +445,7 @@ const BrandStoryBuilder = ({ user, userData, onClose, isOpen }: BrandStoryBuilde
             />
           )}
           
-          {currentStep === 7 && (
+          {currentStep === 6 && (
             <ReviewStep
               currentStep={currentStep}
               setCurrentStep={setCurrentStep}
@@ -389,243 +502,26 @@ const BrandStoryBuilder = ({ user, userData, onClose, isOpen }: BrandStoryBuilde
   );
 };
 
-// Introduction Step
-const IntroductionStep = ({ nextStep, user, formData }: StepProps) => {
-  return (
-    <div className="space-y-6">
-      <div className="flex items-start gap-4">
-        <div className="mt-1">
-          <MuskAvatar size="sm" withSparks={true} />
-        </div>
-        <div className="bg-gray-50 rounded-lg p-4 rounded-tl-none">
-          <h3 className="font-medium text-lg text-gray-900">Hi {user?.name || "there"}!</h3>
-          <p className="text-gray-600 mt-2">
-            I'm Musk, your AI career assistant. Together, we're going to craft your professional brand story step by step.
-          </p>
-          <p className="text-gray-600 mt-2">
-            This guided experience will help you complete your profile and present yourself in the best possible light to potential 
-            connections, employers, and clients.
-          </p>
-        </div>
-      </div>
-      
-      <div className="flex items-start gap-4">
-        <div className="mt-1">
-          <MuskAvatar size="sm" withSparks={true} />
-        </div>
-        <div className="bg-gray-50 rounded-lg p-4 rounded-tl-none">
-          <h3 className="font-medium text-lg text-gray-900">Here's what we'll cover:</h3>
-          <ul className="list-disc pl-5 mt-2 space-y-2 text-gray-600">
-            <li>Your basic information and professional identity</li>
-            <li>Your skills and expertise</li>
-            <li>Services you offer (if applicable)</li>
-            <li>Your work experience and education</li>
-            <li>Projects you've worked on</li>
-          </ul>
-          <p className="text-gray-600 mt-3">
-            You can navigate between steps using the indicators at the top, and your progress will be 
-            saved automatically. Ready to get started?
-          </p>
-        </div>
-      </div>
-      
-      <div className="flex justify-end">
-        <Button onClick={nextStep} className="mt-4 px-6">Let's Begin</Button>
-      </div>
-    </div>
-  );
-};
-
-// Basic Info Step
-const BasicInfoStep = ({ nextStep, prevStep, user, updateFormData, formData }: StepProps) => {
+// All About Me Step (combines Personal and Professional Identity)
+const AllAboutMeStep = ({ nextStep, prevStep, user, updateFormData, formData }: StepProps) => {
   const [name, setName] = useState(formData.name || "");
   const [title, setTitle] = useState(formData.title || "");
   const [location, setLocation] = useState(formData.location || "");
-  
-  const handleNext = () => {
-    updateFormData({ name, title, location });
-    nextStep();
-  };
-  
-  return (
-    <div className="space-y-6">
-      <div className="flex items-start gap-4">
-        <div className="mt-1">
-          <MuskAvatar size="sm" withSparks={true} />
-        </div>
-        <div className="bg-gray-50 rounded-lg p-4 rounded-tl-none">
-          <h3 className="font-medium text-lg text-gray-900">Let's start with the basics</h3>
-          <p className="text-gray-600 mt-2">
-            These fundamental details help people identify you and understand your role at a glance.
-          </p>
-        </div>
-      </div>
-      
-      <div className="space-y-4">
-        <div className="grid gap-2">
-          <Label htmlFor="name">Full Name</Label>
-          <Input 
-            id="name" 
-            value={name} 
-            onChange={(e) => setName(e.target.value)} 
-            placeholder="John Doe"
-          />
-        </div>
-        
-        <div className="grid gap-2">
-          <Label htmlFor="title">Professional Title</Label>
-          <Input 
-            id="title" 
-            value={title} 
-            onChange={(e) => setTitle(e.target.value)} 
-            placeholder="Senior Software Engineer"
-          />
-          <p className="text-xs text-gray-500">Your current job title or professional role</p>
-        </div>
-        
-        <div className="grid gap-2">
-          <Label htmlFor="location">Location</Label>
-          <Input 
-            id="location" 
-            value={location} 
-            onChange={(e) => setLocation(e.target.value)} 
-            placeholder="San Francisco, CA, USA"
-          />
-          <p className="text-xs text-gray-500">City, State/Province, Country</p>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// Professional Identity Step
-const ProfessionalIdentityStep = ({ nextStep, prevStep, updateFormData, formData }: StepProps) => {
   const [industry, setIndustry] = useState(formData.industry || "");
   const [domain, setDomain] = useState(formData.domain || "");
   const [lookingFor, setLookingFor] = useState(formData.lookingFor || "");
   const [aboutMe, setAboutMe] = useState(formData.aboutMe || "");
   
-  // Import the industry domains and categories from the same constants used in the Profile page
-  const INDUSTRIES = [
-    "Technology",
-    "Healthcare",
-    "Finance",
-    "Education",
-    "Manufacturing",
-    "Retail",
-    "Media & Entertainment",
-    "Construction",
-    "Transportation",
-    "Energy",
-    "Hospitality",
-    "Agriculture",
-    "Telecommunications",
-    "Real Estate",
-    "Consulting",
-    "Pharmaceuticals",
-    "Legal Services",
-    "Marketing & Advertising",
-    "Aerospace",
-    "Automotive",
-    "Biotechnology",
-    "Nonprofit",
-    "Government",
-    "Food & Beverage",
-    "Fashion",
-    "Arts & Design",
-  ];
-  
-  // Domains based on industry selection
-  const INDUSTRY_DOMAINS: {[key: string]: string[]} = {
-    "Technology": [
-      "Artificial Intelligence & Machine Learning",
-      "Blockchain & Cryptocurrency",
-      "Cloud Computing & SaaS",
-      "Cybersecurity",
-      "Data Science & Analytics",
-      "DevOps & Infrastructure",
-      "E-commerce Technology",
-      "Enterprise Software",
-      "Gaming & Entertainment",
-      "Hardware & IoT",
-      "Mobile Development",
-      "Quantum Computing",
-      "Robotics & Automation",
-      "Software Development",
-      "Web3 & Decentralized Tech",
-    ],
-    "Healthcare": [
-      "Biotechnology",
-      "Digital Health",
-      "Healthcare IT",
-      "Medical Devices",
-      "Pharmaceuticals",
-      "Research & Development",
-      "Telemedicine",
-      "Healthcare Services",
-      "Mental Health",
-      "Public Health",
-    ],
-    "Finance": [
-      "Banking",
-      "Financial Services",
-      "FinTech",
-      "Investment Management",
-      "Insurance",
-      "Wealth Management",
-      "Payments & Transactions",
-      "Cryptocurrency & DeFi",
-      "Lending & Credit",
-      "Regulatory Compliance",
-    ],
-    "Education": [
-      "EdTech",
-      "Higher Education",
-      "K-12 Education",
-      "Professional Development",
-      "Online Learning",
-      "Educational Content",
-      "Tutoring & Coaching",
-      "Educational Administration",
-      "Research & Development",
-    ],
-    // We can add more domains as needed
-  };
-  
-  // Looking for categories
-  const LOOKING_FOR = [
-    // Career & Job Seeking category
-    { value: "job_opportunities", label: "💼 Job Opportunities" },
-    { value: "job_seekers", label: "💼 Job Seekers / Candidates" },
-    { value: "internships", label: "💼 Internships" },
-    { value: "interns", label: "💼 Interns" },
-    { value: "mentors", label: "💼 Career Mentors" },
-    { value: "mentees", label: "💼 Career Mentees" },
-    
-    // Business & Investment category  
-    { value: "investors", label: "🚀 Investors" },
-    { value: "startups", label: "🚀 Startups" },
-    { value: "co_founders", label: "🚀 Co-Founders" },
-    { value: "business_partners", label: "🚀 Business Partners" },
-    { value: "advisors", label: "🚀 Legal/Financial Advisors" },
-    { value: "tech_partners", label: "🚀 Technical Partners" },
-    
-    // Learning & Upskilling category
-    { value: "skill_trainers", label: "🎓 Skill Trainers" },
-    { value: "learners", label: "🎓 Students/Learners" },
-    { value: "study_groups", label: "🎓 Study Groups" },
-    
-    // Networking & Collaborations category
-    { value: "industry_experts", label: "🤝 Industry Experts" },
-    { value: "share_expertise", label: "🤝 Sharing My Expertise" },
-    
-    // Freelance & Side Hustle category
-    { value: "freelance_gigs", label: "💰 Freelance Gigs" },
-    { value: "hiring_freelancers", label: "💰 Hiring Freelancers" },
-  ];
-  
   const handleNext = () => {
-    updateFormData({ industry, domain, lookingFor, aboutMe });
+    updateFormData({ 
+      name, 
+      title, 
+      location,
+      industry,
+      domain,
+      lookingFor,
+      aboutMe
+    });
     nextStep();
   };
   
@@ -636,77 +532,133 @@ const ProfessionalIdentityStep = ({ nextStep, prevStep, updateFormData, formData
           <MuskAvatar size="sm" withSparks={true} />
         </div>
         <div className="bg-gray-50 rounded-lg p-4 rounded-tl-none">
-          <h3 className="font-medium text-lg text-gray-900">Tell me about your professional identity</h3>
+          <h3 className="font-medium text-lg text-gray-900">Tell me all about you</h3>
           <p className="text-gray-600 mt-2">
-            This helps us connect you with the right people and opportunities in your field.
+            Let's build your complete professional profile. These details help people understand who you are and what you're looking for.
           </p>
         </div>
       </div>
       
-      <div className="space-y-4">
-        <div className="grid gap-2">
-          <Label htmlFor="industry">Industry</Label>
-          <Select 
-            value={industry} 
-            onValueChange={setIndustry}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select your industry" />
-            </SelectTrigger>
-            <SelectContent>
-              {INDUSTRIES.map((ind) => (
-                <SelectItem key={ind} value={ind}>{ind}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      {/* Personal Information Section */}
+      <div>
+        <h3 className="font-medium text-gray-900 mb-4">Personal Information</h3>
+        <div className="space-y-4">
+          <div className="grid gap-2">
+            <Label htmlFor="name">Full Name</Label>
+            <Input 
+              id="name" 
+              value={name} 
+              onChange={(e) => setName(e.target.value)} 
+              placeholder="John Doe"
+            />
+          </div>
+          
+          <div className="grid gap-2">
+            <Label htmlFor="title">Professional Title</Label>
+            <Input 
+              id="title" 
+              value={title} 
+              onChange={(e) => setTitle(e.target.value)} 
+              placeholder="Senior Software Engineer"
+            />
+            <p className="text-xs text-gray-500">Your current job title or professional role</p>
+          </div>
+          
+          <div className="grid gap-2">
+            <Label htmlFor="location">Location</Label>
+            <Input 
+              id="location" 
+              value={location} 
+              onChange={(e) => setLocation(e.target.value)} 
+              placeholder="San Francisco, CA, USA"
+            />
+            <p className="text-xs text-gray-500">City, State/Province, Country</p>
+          </div>
         </div>
-        
-        <div className="grid gap-2">
-          <Label htmlFor="domain">Domain/Specialization</Label>
-          <Select 
-            value={domain} 
-            onValueChange={setDomain}
-            disabled={!industry}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder={industry ? "Select your domain" : "Select an industry first"} />
-            </SelectTrigger>
-            <SelectContent>
-              {industry && INDUSTRY_DOMAINS[industry as keyof typeof INDUSTRY_DOMAINS]?.map((dom) => (
-                <SelectItem key={dom} value={dom}>{dom}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      </div>
+      
+      {/* Professional Identity Section */}
+      <div>
+        <h3 className="font-medium text-gray-900 mb-4">Professional Identity</h3>
+        <div className="space-y-4">
+          <div className="grid gap-2">
+            <Label htmlFor="industry">Industry</Label>
+            <Select 
+              value={industry} 
+              onValueChange={(value) => {
+                setIndustry(value);
+                // Reset domain when industry changes
+                setDomain("");
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select your industry" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {INDUSTRIES.map((ind) => (
+                    <SelectItem key={ind} value={ind}>{ind}</SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-gray-500">The general sector you work in</p>
+          </div>
+          
+          <div className="grid gap-2">
+            <Label htmlFor="domain">Domain Specialty</Label>
+            <Select 
+              value={domain} 
+              onValueChange={setDomain}
+              disabled={!industry || !INDUSTRY_DOMAINS[industry]}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder={industry ? "Select your domain specialty" : "Select an industry first"} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {industry && INDUSTRY_DOMAINS[industry]?.map((dom) => (
+                    <SelectItem key={dom} value={dom}>{dom}</SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-gray-500">Your specific area of expertise within your industry</p>
+          </div>
+          
+          <div className="grid gap-2">
+            <Label htmlFor="lookingFor">Looking For</Label>
+            <Select value={lookingFor} onValueChange={setLookingFor}>
+              <SelectTrigger>
+                <SelectValue placeholder="What are you looking for?" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {LOOKING_FOR.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-gray-500">What you're primarily seeking on the platform</p>
+          </div>
+          
+          <div className="grid gap-2">
+            <Label htmlFor="aboutMe">About Me</Label>
+            <Textarea 
+              id="aboutMe" 
+              value={aboutMe} 
+              onChange={(e) => setAboutMe(e.target.value)} 
+              placeholder="Share a brief summary of your professional background, interests, and goals"
+              className="min-h-[120px]"
+            />
+            <p className="text-xs text-gray-500">A brief overview of your professional background, expertise, and goals</p>
+          </div>
         </div>
-        
-        <div className="grid gap-2">
-          <Label htmlFor="lookingFor">What are you looking for?</Label>
-          <Select 
-            value={lookingFor} 
-            onValueChange={setLookingFor}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select what you're looking for" />
-            </SelectTrigger>
-            <SelectContent>
-              {LOOKING_FOR.map((option) => (
-                <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        
-        <div className="grid gap-2">
-          <Label htmlFor="aboutMe">About Me</Label>
-          <Textarea 
-            id="aboutMe" 
-            value={aboutMe} 
-            onChange={(e) => setAboutMe(e.target.value)} 
-            placeholder="Tell others a bit about yourself, your background, and what drives you professionally..."
-            rows={5}
-          />
-          <p className="text-xs text-gray-500">A brief professional bio (350 words max)</p>
-        </div>
+      </div>
+      
+      <div className="flex justify-end">
+        <Button onClick={handleNext} className="mt-4">Continue</Button>
       </div>
     </div>
   );
@@ -714,37 +666,19 @@ const ProfessionalIdentityStep = ({ nextStep, prevStep, updateFormData, formData
 
 // Skills Step
 const SkillsStep = ({ nextStep, prevStep, userData, updateFormData, formData }: StepProps) => {
-  const [skills, setSkills] = useState<any[]>(formData.skills || []);
+  const [skills, setSkills] = useState<string[]>(formData.skills || []);
   const [newSkill, setNewSkill] = useState("");
-  const [skillLevel, setSkillLevel] = useState("Intermediate");
   
-  const addSkill = () => {
-    if (!newSkill.trim()) return;
-    
-    const skillExists = skills.some(skill => 
-      skill.name.toLowerCase() === newSkill.toLowerCase()
-    );
-    
-    if (skillExists) {
-      // Could show a toast here
-      return;
+  const handleAddSkill = () => {
+    if (newSkill.trim() && !skills.includes(newSkill.trim())) {
+      const updatedSkills = [...skills, newSkill.trim()];
+      setSkills(updatedSkills);
+      setNewSkill("");
     }
-    
-    setSkills(prev => [
-      ...prev, 
-      { 
-        id: Date.now(), // Temporary ID
-        name: newSkill.trim(),
-        level: skillLevel,
-        proficiency: skillLevel === "Beginner" ? 25 : skillLevel === "Intermediate" ? 50 : 75
-      }
-    ]);
-    
-    setNewSkill("");
   };
   
-  const removeSkill = (skillId: number) => {
-    setSkills(prev => prev.filter(skill => skill.id !== skillId));
+  const handleRemoveSkill = (skillToRemove: string) => {
+    setSkills(skills.filter(skill => skill !== skillToRemove));
   };
   
   const handleNext = () => {
@@ -759,75 +693,45 @@ const SkillsStep = ({ nextStep, prevStep, userData, updateFormData, formData }: 
           <MuskAvatar size="sm" withSparks={true} />
         </div>
         <div className="bg-gray-50 rounded-lg p-4 rounded-tl-none">
-          <h3 className="font-medium text-lg text-gray-900">What skills do you bring to the table?</h3>
+          <h3 className="font-medium text-lg text-gray-900">What are your key skills?</h3>
           <p className="text-gray-600 mt-2">
-            Add your professional skills and expertise. These help others understand your capabilities
-            and are essential for being discovered.
+            Add the skills that showcase your expertise. These will help potential connections, clients, 
+            and employers understand your capabilities.
           </p>
         </div>
       </div>
       
       <div className="space-y-4">
         <div className="flex gap-2">
-          <div className="flex-1">
-            <Input 
-              value={newSkill} 
-              onChange={(e) => setNewSkill(e.target.value)} 
-              placeholder="Add a skill (e.g. JavaScript, Project Management)"
-              onKeyDown={(e) => e.key === 'Enter' && addSkill()}
-            />
-          </div>
-          
-          <Select value={skillLevel} onValueChange={setSkillLevel}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Beginner">Beginner</SelectItem>
-              <SelectItem value="Intermediate">Intermediate</SelectItem>
-              <SelectItem value="Advanced">Advanced</SelectItem>
-            </SelectContent>
-          </Select>
-          
-          <Button onClick={addSkill}>Add</Button>
+          <Input 
+            value={newSkill} 
+            onChange={(e) => setNewSkill(e.target.value)}
+            placeholder="Add a skill (e.g., JavaScript, Project Management, Content Writing)"
+            onKeyDown={(e) => e.key === 'Enter' && handleAddSkill()}
+          />
+          <Button onClick={handleAddSkill} type="button">Add</Button>
         </div>
         
-        <div className="mt-4">
-          <Label className="mb-2 block">Your Skills</Label>
-          
-          {skills.length === 0 ? (
-            <div className="text-center p-6 border border-dashed rounded-md text-gray-500">
-              You haven't added any skills yet. Add your skills to complete your profile.
-            </div>
-          ) : (
-            <div className="flex flex-wrap gap-2">
-              {skills.map(skill => (
-                <Badge 
-                  key={skill.id} 
-                  variant="outline" 
-                  className="px-3 py-1 flex items-center gap-2 group"
-                >
-                  <span>{skill.name}</span>
-                  <span className={`text-xs px-1.5 py-0.5 rounded-full ${
-                    skill.level === "Beginner" 
-                      ? "bg-blue-100 text-blue-800" 
-                      : skill.level === "Intermediate" 
-                        ? "bg-green-100 text-green-800"
-                        : "bg-purple-100 text-purple-800"
-                  }`}>
-                    {skill.level}
-                  </span>
-                  <button 
-                    onClick={() => removeSkill(skill.id)}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity ml-1 text-gray-400 hover:text-red-500"
-                  >
-                    ×
-                  </button>
-                </Badge>
-              ))}
-            </div>
+        <div className="flex flex-wrap gap-2 mt-4">
+          {skills.map((skill, index) => (
+            <Badge key={index} variant="secondary" className="px-3 py-1 text-sm">
+              {skill}
+              <button 
+                onClick={() => handleRemoveSkill(skill)} 
+                className="ml-2 text-gray-400 hover:text-gray-600"
+              >
+                ×
+              </button>
+            </Badge>
+          ))}
+          {skills.length === 0 && (
+            <p className="text-gray-500 text-sm">No skills added yet. Add some skills to showcase your expertise.</p>
           )}
         </div>
+      </div>
+      
+      <div className="flex justify-end">
+        <Button onClick={handleNext} className="mt-4">Continue</Button>
       </div>
     </div>
   );
@@ -835,11 +739,23 @@ const SkillsStep = ({ nextStep, prevStep, userData, updateFormData, formData }: 
 
 // Services Step
 const ServicesStep = ({ nextStep, prevStep, updateFormData, formData }: StepProps) => {
-  // Initialize with empty array as a fallback if services is undefined or not an array
-  const [servicesList, setServicesList] = useState<any[]>(Array.isArray(formData.services) ? formData.services : []);
+  const [services, setServices] = useState<string[]>(formData.services || []);
+  const [newService, setNewService] = useState("");
+  
+  const handleAddService = () => {
+    if (newService.trim() && !services.includes(newService.trim())) {
+      const updatedServices = [...services, newService.trim()];
+      setServices(updatedServices);
+      setNewService("");
+    }
+  };
+  
+  const handleRemoveService = (serviceToRemove: string) => {
+    setServices(services.filter(service => service !== serviceToRemove));
+  };
   
   const handleNext = () => {
-    updateFormData({ services: servicesList });
+    updateFormData({ services });
     nextStep();
   };
   
@@ -850,47 +766,45 @@ const ServicesStep = ({ nextStep, prevStep, updateFormData, formData }: StepProp
           <MuskAvatar size="sm" withSparks={true} />
         </div>
         <div className="bg-gray-50 rounded-lg p-4 rounded-tl-none">
-          <h3 className="font-medium text-lg text-gray-900">Do you offer any professional services?</h3>
+          <h3 className="font-medium text-lg text-gray-900">What services do you offer?</h3>
           <p className="text-gray-600 mt-2">
-            If you're a freelancer, consultant, or offer any professional services, showcase them here.
-            This is optional - you can skip this step if it doesn't apply to you.
+            If you provide services, list them here. This helps potential clients understand what they can hire you for.
+            (Skip this section if not applicable)
           </p>
         </div>
       </div>
       
       <div className="space-y-4">
-        {servicesList.length === 0 ? (
-          <div className="text-center p-6 border border-dashed rounded-md text-gray-500">
-            You haven't added any services yet. You can add services from your profile page later.
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-4">
-            {servicesList.map(service => (
-              <div 
-                key={service.id} 
-                className="border rounded-lg p-4 hover:border-primary transition-colors"
-              >
-                <h3 className="font-medium">{service.title}</h3>
-                <p className="text-sm text-gray-600 mt-1">{service.description}</p>
-                <div className="flex justify-between items-center mt-2">
-                  <Badge variant="outline" className="bg-primary-50">
-                    {service.category}
-                  </Badge>
-                  <p className="text-sm font-medium">
-                    {service.priceUsd && `$${service.priceUsd}`} 
-                    {service.isHourly ? '/hr' : ''}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-        
-        <div className="mt-4 text-center">
-          <Button variant="outline" onClick={nextStep}>
-            {servicesList.length === 0 ? "Skip this step" : "Continue"}
-          </Button>
+        <div className="flex gap-2">
+          <Input 
+            value={newService} 
+            onChange={(e) => setNewService(e.target.value)}
+            placeholder="Add a service (e.g., Web Development, Consulting, Copywriting)"
+            onKeyDown={(e) => e.key === 'Enter' && handleAddService()}
+          />
+          <Button onClick={handleAddService} type="button">Add</Button>
         </div>
+        
+        <div className="flex flex-wrap gap-2 mt-4">
+          {services.map((service, index) => (
+            <Badge key={index} variant="secondary" className="px-3 py-1 text-sm">
+              {service}
+              <button 
+                onClick={() => handleRemoveService(service)} 
+                className="ml-2 text-gray-400 hover:text-gray-600"
+              >
+                ×
+              </button>
+            </Badge>
+          ))}
+          {services.length === 0 && (
+            <p className="text-gray-500 text-sm">No services added yet. Add services if you're offering any professional services.</p>
+          )}
+        </div>
+      </div>
+      
+      <div className="flex justify-end">
+        <Button onClick={handleNext} className="mt-4">Continue</Button>
       </div>
     </div>
   );
@@ -898,11 +812,47 @@ const ServicesStep = ({ nextStep, prevStep, updateFormData, formData }: StepProp
 
 // Work Experience Step
 const WorkExperienceStep = ({ nextStep, prevStep, updateFormData, formData }: StepProps) => {
-  // Initialize with empty array as a fallback if experiences is undefined or not an array
-  const [experienceList, setExperienceList] = useState<any[]>(Array.isArray(formData.experiences) ? formData.experiences : []);
+  const [experiences, setExperiences] = useState<any[]>(formData.experiences || []);
+  
+  // Fields for new experience
+  const [company, setCompany] = useState("");
+  const [title, setTitle] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [description, setDescription] = useState("");
+  const [currentlyWorking, setCurrentlyWorking] = useState(false);
+  
+  const handleAddExperience = () => {
+    if (company && title && startDate) {
+      const newExperience = {
+        company,
+        title,
+        startDate,
+        endDate: currentlyWorking ? "Present" : endDate,
+        currentlyWorking,
+        description
+      };
+      
+      setExperiences([...experiences, newExperience]);
+      
+      // Reset form
+      setCompany("");
+      setTitle("");
+      setStartDate("");
+      setEndDate("");
+      setDescription("");
+      setCurrentlyWorking(false);
+    }
+  };
+  
+  const handleRemoveExperience = (index: number) => {
+    const updatedExperiences = [...experiences];
+    updatedExperiences.splice(index, 1);
+    setExperiences(updatedExperiences);
+  };
   
   const handleNext = () => {
-    updateFormData({ experiences: experienceList });
+    updateFormData({ experiences });
     nextStep();
   };
   
@@ -913,45 +863,115 @@ const WorkExperienceStep = ({ nextStep, prevStep, updateFormData, formData }: St
           <MuskAvatar size="sm" withSparks={true} />
         </div>
         <div className="bg-gray-50 rounded-lg p-4 rounded-tl-none">
-          <h3 className="font-medium text-lg text-gray-900">Tell me about your work experience</h3>
+          <h3 className="font-medium text-lg text-gray-900">Tell us about your work experience</h3>
           <p className="text-gray-600 mt-2">
-            Add your professional experience to showcase your career journey. This helps connections
-            understand your background and expertise.
+            Add your relevant work experiences. Start with your most recent position and work backwards.
           </p>
         </div>
       </div>
       
-      <div className="space-y-4">
-        {experienceList.length === 0 ? (
-          <div className="text-center p-6 border border-dashed rounded-md text-gray-500">
-            You haven't added any work experiences yet. You can add them from your profile page later.
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {experienceList.map(exp => (
-              <div 
-                key={exp.id} 
-                className="border rounded-lg p-4 hover:border-primary transition-colors"
+      {/* List of existing experiences */}
+      {experiences.length > 0 && (
+        <div className="space-y-4">
+          <h4 className="font-medium text-gray-800">Your Experiences</h4>
+          {experiences.map((exp, index) => (
+            <div key={index} className="border rounded-lg p-4 relative">
+              <button 
+                onClick={() => handleRemoveExperience(index)}
+                className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
               >
-                <div className="flex justify-between">
-                  <h3 className="font-medium">{exp.title}</h3>
-                  <p className="text-sm text-gray-500">
-                    {exp.startDate} - {exp.endDate || 'Present'}
-                  </p>
-                </div>
-                <p className="text-sm font-medium text-gray-700 mt-1">{exp.company}</p>
-                <p className="text-sm text-gray-600 mt-1">{exp.location}</p>
-                <p className="text-sm text-gray-600 mt-2">{exp.description}</p>
+                ×
+              </button>
+              <div className="space-y-1">
+                <h5 className="font-medium">{exp.title}</h5>
+                <p className="text-gray-600">{exp.company}</p>
+                <p className="text-sm text-gray-500">
+                  {exp.startDate} - {exp.currentlyWorking ? "Present" : exp.endDate}
+                </p>
+                <p className="text-sm mt-2">{exp.description}</p>
               </div>
-            ))}
+            </div>
+          ))}
+        </div>
+      )}
+      
+      {/* Form to add new experience */}
+      <div className="border rounded-lg p-4">
+        <h4 className="font-medium text-gray-800 mb-4">Add Work Experience</h4>
+        <div className="space-y-4">
+          <div className="grid gap-2">
+            <Label htmlFor="company">Company</Label>
+            <Input 
+              id="company" 
+              value={company} 
+              onChange={(e) => setCompany(e.target.value)} 
+              placeholder="Company or Organization"
+            />
           </div>
-        )}
-        
-        <div className="mt-4 text-center">
-          <Button variant="outline" onClick={nextStep}>
-            {experienceList.length === 0 ? "Skip this step" : "Continue"}
+          
+          <div className="grid gap-2">
+            <Label htmlFor="title">Job Title</Label>
+            <Input 
+              id="title" 
+              value={title} 
+              onChange={(e) => setTitle(e.target.value)} 
+              placeholder="Your role or position"
+            />
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-2">
+              <Label htmlFor="startDate">Start Date</Label>
+              <Input 
+                id="startDate" 
+                type="month"
+                value={startDate} 
+                onChange={(e) => setStartDate(e.target.value)} 
+              />
+            </div>
+            
+            <div className="grid gap-2">
+              <Label htmlFor="endDate">End Date</Label>
+              <Input 
+                id="endDate" 
+                type="month"
+                value={endDate} 
+                onChange={(e) => setEndDate(e.target.value)}
+                disabled={currentlyWorking} 
+              />
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <input 
+              type="checkbox" 
+              id="currentlyWorking" 
+              checked={currentlyWorking}
+              onChange={(e) => setCurrentlyWorking(e.target.checked)}
+              className="rounded border-gray-300"
+            />
+            <Label htmlFor="currentlyWorking" className="cursor-pointer">I currently work here</Label>
+          </div>
+          
+          <div className="grid gap-2">
+            <Label htmlFor="description">Description</Label>
+            <Textarea 
+              id="description" 
+              value={description} 
+              onChange={(e) => setDescription(e.target.value)} 
+              placeholder="Describe your responsibilities, achievements, and the skills you developed"
+              className="min-h-[120px]"
+            />
+          </div>
+          
+          <Button onClick={handleAddExperience} type="button" className="w-full">
+            Add Experience
           </Button>
         </div>
+      </div>
+      
+      <div className="flex justify-end">
+        <Button onClick={handleNext} className="mt-4">Continue</Button>
       </div>
     </div>
   );
@@ -959,11 +979,50 @@ const WorkExperienceStep = ({ nextStep, prevStep, updateFormData, formData }: St
 
 // Education Step
 const EducationStep = ({ nextStep, prevStep, updateFormData, formData }: StepProps) => {
-  // Initialize with empty array as a fallback if educations is undefined or not an array
-  const [educationList, setEducationList] = useState<any[]>(Array.isArray(formData.educations) ? formData.educations : []);
+  const [educations, setEducations] = useState<any[]>(Array.isArray(formData.educations) ? formData.educations : []);
+  
+  // Fields for new education
+  const [institution, setInstitution] = useState("");
+  const [degree, setDegree] = useState("");
+  const [field, setField] = useState("");
+  const [startYear, setStartYear] = useState("");
+  const [endYear, setEndYear] = useState("");
+  const [description, setDescription] = useState("");
+  const [currentlyStudying, setCurrentlyStudying] = useState(false);
+  
+  const handleAddEducation = () => {
+    if (institution && degree && startYear) {
+      const newEducation = {
+        institution,
+        degree,
+        field,
+        startYear,
+        endYear: currentlyStudying ? "Present" : endYear,
+        currentlyStudying,
+        description
+      };
+      
+      setEducations([...educations, newEducation]);
+      
+      // Reset form
+      setInstitution("");
+      setDegree("");
+      setField("");
+      setStartYear("");
+      setEndYear("");
+      setDescription("");
+      setCurrentlyStudying(false);
+    }
+  };
+  
+  const handleRemoveEducation = (index: number) => {
+    const updatedEducations = [...educations];
+    updatedEducations.splice(index, 1);
+    setEducations(updatedEducations);
+  };
   
   const handleNext = () => {
-    updateFormData({ educations: educationList });
+    updateFormData({ educations });
     nextStep();
   };
   
@@ -976,42 +1035,129 @@ const EducationStep = ({ nextStep, prevStep, updateFormData, formData }: StepPro
         <div className="bg-gray-50 rounded-lg p-4 rounded-tl-none">
           <h3 className="font-medium text-lg text-gray-900">What's your educational background?</h3>
           <p className="text-gray-600 mt-2">
-            Add your education history to complete your professional profile. This helps establish
-            your academic credentials and areas of study.
+            Add your academic qualifications, certifications, and other educational experiences.
           </p>
         </div>
       </div>
       
-      <div className="space-y-4">
-        {educationList.length === 0 ? (
-          <div className="text-center p-6 border border-dashed rounded-md text-gray-500">
-            You haven't added any education entries yet. You can add them from your profile page later.
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {educationList.map(edu => (
-              <div 
-                key={edu.id} 
-                className="border rounded-lg p-4 hover:border-primary transition-colors"
+      {/* List of existing educations */}
+      {educations.length > 0 && (
+        <div className="space-y-4">
+          <h4 className="font-medium text-gray-800">Your Education</h4>
+          {educations.map((edu, index) => (
+            <div key={index} className="border rounded-lg p-4 relative">
+              <button 
+                onClick={() => handleRemoveEducation(index)}
+                className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
               >
-                <div className="flex justify-between">
-                  <h3 className="font-medium">{edu.degree}</h3>
-                  <p className="text-sm text-gray-500">
-                    {edu.startDate} - {edu.endDate || 'Present'}
-                  </p>
-                </div>
-                <p className="text-sm font-medium text-gray-700 mt-1">{edu.institution}</p>
-                <p className="text-sm text-gray-600 mt-1">{edu.location}</p>
+                ×
+              </button>
+              <div className="space-y-1">
+                <h5 className="font-medium">{edu.degree} {edu.field && `in ${edu.field}`}</h5>
+                <p className="text-gray-600">{edu.institution}</p>
+                <p className="text-sm text-gray-500">
+                  {edu.startYear} - {edu.currentlyStudying ? "Present" : edu.endYear}
+                </p>
+                <p className="text-sm mt-2">{edu.description}</p>
               </div>
-            ))}
+            </div>
+          ))}
+        </div>
+      )}
+      
+      {/* Form to add new education */}
+      <div className="border rounded-lg p-4">
+        <h4 className="font-medium text-gray-800 mb-4">Add Education</h4>
+        <div className="space-y-4">
+          <div className="grid gap-2">
+            <Label htmlFor="institution">Institution</Label>
+            <Input 
+              id="institution" 
+              value={institution} 
+              onChange={(e) => setInstitution(e.target.value)} 
+              placeholder="University, College, or School"
+            />
           </div>
-        )}
-        
-        <div className="mt-4 text-center">
-          <Button variant="outline" onClick={nextStep}>
-            {educationList.length === 0 ? "Skip this step" : "Continue"}
+          
+          <div className="grid gap-2">
+            <Label htmlFor="degree">Degree</Label>
+            <Input 
+              id="degree" 
+              value={degree} 
+              onChange={(e) => setDegree(e.target.value)} 
+              placeholder="Bachelor's, Master's, PhD, Certificate, etc."
+            />
+          </div>
+          
+          <div className="grid gap-2">
+            <Label htmlFor="field">Field of Study</Label>
+            <Input 
+              id="field" 
+              value={field} 
+              onChange={(e) => setField(e.target.value)} 
+              placeholder="Computer Science, Business, etc."
+            />
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-2">
+              <Label htmlFor="startYear">Start Year</Label>
+              <Input 
+                id="startYear" 
+                type="number"
+                value={startYear} 
+                onChange={(e) => setStartYear(e.target.value)} 
+                placeholder="YYYY"
+                min="1900"
+                max="2099"
+              />
+            </div>
+            
+            <div className="grid gap-2">
+              <Label htmlFor="endYear">End Year</Label>
+              <Input 
+                id="endYear" 
+                type="number"
+                value={endYear} 
+                onChange={(e) => setEndYear(e.target.value)}
+                disabled={currentlyStudying}
+                placeholder="YYYY"
+                min="1900"
+                max="2099"
+              />
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <input 
+              type="checkbox" 
+              id="currentlyStudying" 
+              checked={currentlyStudying}
+              onChange={(e) => setCurrentlyStudying(e.target.checked)}
+              className="rounded border-gray-300"
+            />
+            <Label htmlFor="currentlyStudying" className="cursor-pointer">I'm currently studying here</Label>
+          </div>
+          
+          <div className="grid gap-2">
+            <Label htmlFor="eduDescription">Description (Optional)</Label>
+            <Textarea 
+              id="eduDescription" 
+              value={description} 
+              onChange={(e) => setDescription(e.target.value)} 
+              placeholder="Add details about your coursework, achievements, thesis, etc."
+              className="min-h-[80px]"
+            />
+          </div>
+          
+          <Button onClick={handleAddEducation} type="button" className="w-full">
+            Add Education
           </Button>
         </div>
+      </div>
+      
+      <div className="flex justify-end">
+        <Button onClick={handleNext} className="mt-4">Continue</Button>
       </div>
     </div>
   );
@@ -1019,13 +1165,64 @@ const EducationStep = ({ nextStep, prevStep, updateFormData, formData }: StepPro
 
 // Projects Step
 const ProjectsStep = ({ nextStep, prevStep, updateFormData, formData }: StepProps) => {
-  // Initialize with empty array as a fallback if projects is undefined or not an array
-  const [projectList, setProjectList] = useState<any[]>(Array.isArray(formData.projects) ? formData.projects : []);
+  const [projects, setProjects] = useState<any[]>(Array.isArray(formData.projects) ? formData.projects : []);
+  
+  // Fields for new project
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [projectUrl, setProjectUrl] = useState("");
+  const [category, setCategory] = useState("");
+  
+  const handleAddProject = () => {
+    if (title && description) {
+      const newProject = {
+        title,
+        description,
+        startDate,
+        projectUrl,
+        category
+      };
+      
+      setProjects([...projects, newProject]);
+      
+      // Reset form
+      setTitle("");
+      setDescription("");
+      setStartDate("");
+      setProjectUrl("");
+      setCategory("");
+    }
+  };
+  
+  const handleRemoveProject = (index: number) => {
+    const updatedProjects = [...projects];
+    updatedProjects.splice(index, 1);
+    setProjects(updatedProjects);
+  };
   
   const handleNext = () => {
-    updateFormData({ projects: projectList });
+    updateFormData({ projects });
     nextStep();
   };
+  
+  // Project categories
+  const PROJECT_CATEGORIES = [
+    "Web Development",
+    "Mobile App",
+    "UI/UX Design",
+    "Data Science",
+    "Machine Learning",
+    "Research",
+    "Writing",
+    "Marketing",
+    "Business",
+    "Art & Design",
+    "Open Source",
+    "Personal",
+    "Client Work",
+    "Other"
+  ];
   
   return (
     <div className="space-y-6">
@@ -1034,50 +1231,120 @@ const ProjectsStep = ({ nextStep, prevStep, updateFormData, formData }: StepProp
           <MuskAvatar size="sm" withSparks={true} />
         </div>
         <div className="bg-gray-50 rounded-lg p-4 rounded-tl-none">
-          <h3 className="font-medium text-lg text-gray-900">Tell me about your projects</h3>
+          <h3 className="font-medium text-lg text-gray-900">Showcase your projects</h3>
           <p className="text-gray-600 mt-2">
-            Showcase the projects you've worked on to demonstrate your capabilities and achievements.
-            These provide tangible examples of your skills in action.
+            Add projects you've worked on to showcase your skills and achievements.
           </p>
         </div>
       </div>
       
-      <div className="space-y-4">
-        {projectList.length === 0 ? (
-          <div className="text-center p-6 border border-dashed rounded-md text-gray-500">
-            You haven't added any projects yet. You can add them from your profile page later.
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {projectList.map(project => (
-              <div 
-                key={project.id} 
-                className="border rounded-lg overflow-hidden hover:border-primary transition-colors"
+      {/* List of existing projects */}
+      {projects.length > 0 && (
+        <div className="space-y-4">
+          <h4 className="font-medium text-gray-800">Your Projects</h4>
+          {projects.map((project, index) => (
+            <div key={index} className="border rounded-lg p-4 relative">
+              <button 
+                onClick={() => handleRemoveProject(index)}
+                className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
               >
-                {project.thumbnailUrl && (
-                  <div className="h-40 overflow-hidden">
-                    <img 
-                      src={project.thumbnailUrl} 
-                      alt={project.title}
-                      className="w-full h-full object-cover" 
-                    />
-                  </div>
-                )}
-                <div className="p-4">
-                  <h3 className="font-medium">{project.title}</h3>
-                  <p className="text-sm text-gray-500 mt-1">{project.category}</p>
-                  <p className="text-sm text-gray-600 mt-2 line-clamp-2">{project.description}</p>
+                ×
+              </button>
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <h5 className="font-medium">{project.title}</h5>
+                  {project.category && (
+                    <Badge variant="outline" className="ml-2">{project.category}</Badge>
+                  )}
                 </div>
+                <p className="text-sm text-gray-500">{project.startDate}</p>
+                <p className="text-sm mt-2">{project.description}</p>
+                {project.projectUrl && (
+                  <a 
+                    href={project.projectUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-sm text-primary hover:underline block mt-2"
+                  >
+                    {project.projectUrl}
+                  </a>
+                )}
               </div>
-            ))}
+            </div>
+          ))}
+        </div>
+      )}
+      
+      {/* Form to add new project */}
+      <div className="border rounded-lg p-4">
+        <h4 className="font-medium text-gray-800 mb-4">Add Project</h4>
+        <div className="space-y-4">
+          <div className="grid gap-2">
+            <Label htmlFor="title">Project Title</Label>
+            <Input 
+              id="title" 
+              value={title} 
+              onChange={(e) => setTitle(e.target.value)} 
+              placeholder="Name of your project"
+            />
           </div>
-        )}
-        
-        <div className="mt-4 text-center">
-          <Button variant="outline" onClick={nextStep}>
-            {projectList.length === 0 ? "Skip this step" : "Continue"}
+          
+          <div className="grid gap-2">
+            <Label htmlFor="category">Category</Label>
+            <Select value={category} onValueChange={setCategory}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select project category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {PROJECT_CATEGORIES.map((cat) => (
+                    <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="grid gap-2">
+            <Label htmlFor="startDate">Date</Label>
+            <Input 
+              id="startDate" 
+              type="month"
+              value={startDate} 
+              onChange={(e) => setStartDate(e.target.value)} 
+            />
+            <p className="text-xs text-gray-500">When was this project completed or started?</p>
+          </div>
+          
+          <div className="grid gap-2">
+            <Label htmlFor="projectUrl">Project URL (Optional)</Label>
+            <Input 
+              id="projectUrl" 
+              value={projectUrl} 
+              onChange={(e) => setProjectUrl(e.target.value)} 
+              placeholder="https://example.com/my-project"
+            />
+          </div>
+          
+          <div className="grid gap-2">
+            <Label htmlFor="description">Description</Label>
+            <Textarea 
+              id="description" 
+              value={description} 
+              onChange={(e) => setDescription(e.target.value)} 
+              placeholder="Describe the project, your role, technologies used, and outcomes"
+              className="min-h-[120px]"
+            />
+          </div>
+          
+          <Button onClick={handleAddProject} type="button" className="w-full">
+            Add Project
           </Button>
         </div>
+      </div>
+      
+      <div className="flex justify-end">
+        <Button onClick={handleNext} className="mt-4">Continue</Button>
       </div>
     </div>
   );
@@ -1092,129 +1359,164 @@ const ReviewStep = ({ complete, prevStep, formData }: StepProps) => {
           <MuskAvatar size="sm" withSparks={true} />
         </div>
         <div className="bg-gray-50 rounded-lg p-4 rounded-tl-none">
-          <h3 className="font-medium text-lg text-gray-900">Great job! Let's review your brand story</h3>
+          <h3 className="font-medium text-lg text-gray-900">Almost there!</h3>
           <p className="text-gray-600 mt-2">
-            Review the information you've provided before finalizing your profile. You can always come back
-            and make changes later.
+            Let's review what you've shared before completing your brand story.
           </p>
         </div>
       </div>
       
-      <div className="space-y-4">
-        <Tabs defaultValue="basic" className="w-full">
-          <TabsList className="grid grid-cols-3 gap-2">
-            <TabsTrigger value="basic">Basic Info</TabsTrigger>
-            <TabsTrigger value="professional">Professional Identity</TabsTrigger>
-            <TabsTrigger value="skills">Skills & Experience</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="basic" className="space-y-4 pt-4">
-            <div className="grid grid-cols-2 gap-x-6 gap-y-3">
-              <div>
-                <h4 className="text-sm font-medium text-gray-500">Name</h4>
-                <p className="text-gray-900">{formData.name || "Not provided"}</p>
-              </div>
-              <div>
-                <h4 className="text-sm font-medium text-gray-500">Title</h4>
-                <p className="text-gray-900">{formData.title || "Not provided"}</p>
-              </div>
-              <div>
-                <h4 className="text-sm font-medium text-gray-500">Location</h4>
-                <p className="text-gray-900">{formData.location || "Not provided"}</p>
-              </div>
+      <div className="space-y-6">
+        {/* Personal Info Review */}
+        <div className="border rounded-lg p-4">
+          <h4 className="font-medium text-gray-800 mb-3">Personal Information</h4>
+          <div className="space-y-2">
+            <div className="grid grid-cols-[100px_1fr] gap-2">
+              <span className="text-gray-500">Name:</span>
+              <span>{formData.name}</span>
             </div>
-          </TabsContent>
-          
-          <TabsContent value="professional" className="space-y-4 pt-4">
-            <div className="grid grid-cols-2 gap-x-6 gap-y-3">
-              <div>
-                <h4 className="text-sm font-medium text-gray-500">Industry</h4>
-                <p className="text-gray-900">{formData.industry || "Not provided"}</p>
-              </div>
-              <div>
-                <h4 className="text-sm font-medium text-gray-500">Domain</h4>
-                <p className="text-gray-900">{formData.domain || "Not provided"}</p>
-              </div>
-              <div>
-                <h4 className="text-sm font-medium text-gray-500">Looking For</h4>
-                <p className="text-gray-900">{formData.lookingFor || "Not provided"}</p>
-              </div>
+            <div className="grid grid-cols-[100px_1fr] gap-2">
+              <span className="text-gray-500">Title:</span>
+              <span>{formData.title}</span>
             </div>
-            
-            <div>
-              <h4 className="text-sm font-medium text-gray-500">About Me</h4>
-              <p className="text-gray-900 whitespace-pre-line mt-1">
-                {formData.aboutMe || "Not provided"}
-              </p>
+            <div className="grid grid-cols-[100px_1fr] gap-2">
+              <span className="text-gray-500">Location:</span>
+              <span>{formData.location}</span>
             </div>
-          </TabsContent>
-          
-          <TabsContent value="skills" className="space-y-4 pt-4">
-            <div>
-              <h4 className="text-sm font-medium text-gray-500">Skills</h4>
-              {formData.skills?.length > 0 ? (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {formData.skills.map((skill: any) => (
-                    <Badge 
-                      key={skill.id} 
-                      variant="outline" 
-                      className="px-3 py-1"
+            <div className="grid grid-cols-[100px_1fr] gap-2">
+              <span className="text-gray-500">Industry:</span>
+              <span>{formData.industry}</span>
+            </div>
+            <div className="grid grid-cols-[100px_1fr] gap-2">
+              <span className="text-gray-500">Domain:</span>
+              <span>{formData.domain}</span>
+            </div>
+            <div className="grid grid-cols-[100px_1fr] gap-2">
+              <span className="text-gray-500">Looking For:</span>
+              <span>
+                {LOOKING_FOR.find(item => item.value === formData.lookingFor)?.label || formData.lookingFor}
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        {/* About Me Review */}
+        <div className="border rounded-lg p-4">
+          <h4 className="font-medium text-gray-800 mb-3">About Me</h4>
+          <p className="text-gray-700">{formData.aboutMe}</p>
+        </div>
+        
+        {/* Skills Review */}
+        <div className="border rounded-lg p-4">
+          <h4 className="font-medium text-gray-800 mb-3">Skills</h4>
+          <div className="flex flex-wrap gap-2">
+            {Array.isArray(formData.skills) && formData.skills.length > 0 ? (
+              formData.skills.map((skill: string, index: number) => (
+                <Badge key={index} variant="secondary">{skill}</Badge>
+              ))
+            ) : (
+              <p className="text-gray-500">No skills added</p>
+            )}
+          </div>
+        </div>
+        
+        {/* Services Review */}
+        <div className="border rounded-lg p-4">
+          <h4 className="font-medium text-gray-800 mb-3">Services</h4>
+          <div className="flex flex-wrap gap-2">
+            {Array.isArray(formData.services) && formData.services.length > 0 ? (
+              formData.services.map((service: string, index: number) => (
+                <Badge key={index} variant="secondary">{service}</Badge>
+              ))
+            ) : (
+              <p className="text-gray-500">No services added</p>
+            )}
+          </div>
+        </div>
+        
+        {/* Work Experience Review */}
+        <div className="border rounded-lg p-4">
+          <h4 className="font-medium text-gray-800 mb-3">Work Experience</h4>
+          {Array.isArray(formData.experiences) && formData.experiences.length > 0 ? (
+            <div className="space-y-4">
+              {formData.experiences.map((exp: any, index: number) => (
+                <div key={index} className="border-b pb-3 last:border-b-0 last:pb-0">
+                  <h5 className="font-medium">{exp.title}</h5>
+                  <p className="text-gray-600">{exp.company}</p>
+                  <p className="text-sm text-gray-500">
+                    {exp.startDate} - {exp.currentlyWorking ? "Present" : exp.endDate}
+                  </p>
+                  <p className="text-sm mt-2">{exp.description}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500">No work experience added</p>
+          )}
+        </div>
+        
+        {/* Education Review */}
+        <div className="border rounded-lg p-4">
+          <h4 className="font-medium text-gray-800 mb-3">Education</h4>
+          {Array.isArray(formData.educations) && formData.educations.length > 0 ? (
+            <div className="space-y-4">
+              {formData.educations.map((edu: any, index: number) => (
+                <div key={index} className="border-b pb-3 last:border-b-0 last:pb-0">
+                  <h5 className="font-medium">{edu.degree} {edu.field && `in ${edu.field}`}</h5>
+                  <p className="text-gray-600">{edu.institution}</p>
+                  <p className="text-sm text-gray-500">
+                    {edu.startYear} - {edu.currentlyStudying ? "Present" : edu.endYear}
+                  </p>
+                  <p className="text-sm mt-2">{edu.description}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500">No education added</p>
+          )}
+        </div>
+        
+        {/* Projects Review */}
+        <div className="border rounded-lg p-4">
+          <h4 className="font-medium text-gray-800 mb-3">Projects</h4>
+          {Array.isArray(formData.projects) && formData.projects.length > 0 ? (
+            <div className="space-y-4">
+              {formData.projects.map((project: any, index: number) => (
+                <div key={index} className="border-b pb-3 last:border-b-0 last:pb-0">
+                  <div className="flex items-center justify-between">
+                    <h5 className="font-medium">{project.title}</h5>
+                    {project.category && (
+                      <Badge variant="outline" className="ml-2">{project.category}</Badge>
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-500">{project.startDate}</p>
+                  <p className="text-sm mt-2">{project.description}</p>
+                  {project.projectUrl && (
+                    <a 
+                      href={project.projectUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-sm text-primary hover:underline block mt-2"
                     >
-                      {skill.name} · {skill.level}
-                    </Badge>
-                  ))}
+                      {project.projectUrl}
+                    </a>
+                  )}
                 </div>
-              ) : (
-                <p className="text-gray-500 italic mt-1">No skills added</p>
-              )}
+              ))}
             </div>
-            
-            <div>
-              <h4 className="text-sm font-medium text-gray-500">Work Experience</h4>
-              {formData.experiences?.length > 0 ? (
-                <div className="space-y-2 mt-2">
-                  {formData.experiences.map((exp: any) => (
-                    <div key={exp.id} className="text-sm">
-                      <p className="font-medium">{exp.title} at {exp.company}</p>
-                      <p className="text-gray-500">{exp.startDate} - {exp.endDate || 'Present'}</p>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-gray-500 italic mt-1">No experience added</p>
-              )}
-            </div>
-            
-            <div>
-              <h4 className="text-sm font-medium text-gray-500">Education</h4>
-              {formData.educations?.length > 0 ? (
-                <div className="space-y-2 mt-2">
-                  {formData.educations.map((edu: any) => (
-                    <div key={edu.id} className="text-sm">
-                      <p className="font-medium">{edu.degree} at {edu.institution}</p>
-                      <p className="text-gray-500">{edu.startDate} - {edu.endDate || 'Present'}</p>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-gray-500 italic mt-1">No education added</p>
-              )}
-            </div>
-          </TabsContent>
-        </Tabs>
+          ) : (
+            <p className="text-gray-500">No projects added</p>
+          )}
+        </div>
       </div>
       
-      <div className="flex items-start gap-4">
-        <div className="mt-1">
-          <MuskAvatar size="sm" withSparks={true} />
-        </div>
-        <div className="bg-green-50 rounded-lg p-4 rounded-tl-none border border-green-100">
-          <h3 className="font-medium text-green-800">Ready to save your brand story?</h3>
-          <p className="text-green-700 mt-2">
-            Click "Complete Your Story" to save your profile. I'll help you keep your profile
-            updated and optimized over time!
-          </p>
-        </div>
+      <div className="flex justify-end">
+        <Button 
+          onClick={complete} 
+          className="mt-4 bg-green-600 hover:bg-green-700"
+        >
+          Complete Your Story
+        </Button>
       </div>
     </div>
   );
