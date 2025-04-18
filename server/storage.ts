@@ -46,6 +46,23 @@ import {
 
 // Interface for all storage operations
 export interface IStorage {
+  // Nowboard Item operations
+  getNowboardItems(): Promise<NowboardItem[]>;
+  getNowboardItemsByUserId(userId: number): Promise<NowboardItem[]>;
+  getNowboardItemById(id: number): Promise<NowboardItem | undefined>;
+  getNowboardItemsByCategory(category: "growth" | "learning" | "launch" | "planning" | "collaboration" | "visibility"): Promise<NowboardItem[]>;
+  createNowboardItem(item: InsertNowboardItem): Promise<NowboardItem>;
+  updateNowboardItem(id: number, item: Partial<NowboardItem>): Promise<NowboardItem | undefined>;
+  deleteNowboardItem(id: number): Promise<boolean>;
+  
+  // Nowboard Inspired By operations
+  getInspiredByForNowboardItem(nowboardItemId: number): Promise<NowboardInspiredBy[]>;
+  markInspiredByNowboardItem(userId: number, nowboardItemId: number): Promise<NowboardInspiredBy>;
+  unmarkInspiredByNowboardItem(userId: number, nowboardItemId: number): Promise<boolean>;
+  isNowboardItemInspiredByUser(userId: number, nowboardItemId: number): Promise<boolean>;
+  incrementInspiredCount(nowboardItemId: number): Promise<NowboardItem | undefined>;
+  decrementInspiredCount(nowboardItemId: number): Promise<NowboardItem | undefined>;
+  
   // User Hashtag Follow operations
   followHashtag(userId: number, hashtagId: number): Promise<UserHashtagFollow>;
   unfollowHashtag(userId: number, hashtagId: number): Promise<boolean>;
@@ -232,23 +249,6 @@ export interface IStorage {
   createNewsUserPreference(preference: InsertNewsUserPreference): Promise<NewsUserPreference>;
   updateNewsUserPreference(id: number, preference: Partial<NewsUserPreference>): Promise<NewsUserPreference | undefined>;
   deleteNewsUserPreference(id: number): Promise<boolean>;
-  
-  // Nowboard Item operations
-  getNowboardItems(): Promise<NowboardItem[]>;
-  getNowboardItemsByUserId(userId: number): Promise<NowboardItem[]>;
-  getNowboardItemById(id: number): Promise<NowboardItem | undefined>;
-  getNowboardItemsByCategory(category: "growth" | "learning" | "launch" | "planning" | "collaboration" | "visibility"): Promise<NowboardItem[]>;
-  createNowboardItem(item: InsertNowboardItem): Promise<NowboardItem>;
-  updateNowboardItem(id: number, item: Partial<NowboardItem>): Promise<NowboardItem | undefined>;
-  deleteNowboardItem(id: number): Promise<boolean>;
-  
-  // Nowboard Inspired By operations
-  getInspiredByForNowboardItem(nowboardItemId: number): Promise<NowboardInspiredBy[]>;
-  markInspiredByNowboardItem(userId: number, nowboardItemId: number): Promise<NowboardInspiredBy>;
-  unmarkInspiredByNowboardItem(userId: number, nowboardItemId: number): Promise<boolean>;
-  isNowboardItemInspiredByUser(userId: number, nowboardItemId: number): Promise<boolean>;
-  incrementInspiredCount(nowboardItemId: number): Promise<NowboardItem | undefined>;
-  decrementInspiredCount(nowboardItemId: number): Promise<NowboardItem | undefined>;
   
   // Musk Suggestion operations
   getMuskSuggestionsForUser(userId: number): Promise<MuskSuggestion[]>;
