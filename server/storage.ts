@@ -29,7 +29,13 @@ import {
   newsArticles, NewsArticle, InsertNewsArticle,
   newsUserPreferences, NewsUserPreference, InsertNewsUserPreference,
   // Musk Match models
-  muskMatches, MuskMatch, InsertMuskMatch
+  muskMatches, MuskMatch, InsertMuskMatch,
+  // Career Quests models
+  questDefinitions, QuestDefinition, InsertQuestDefinition,
+  userQuests, UserQuest, InsertUserQuest,
+  userXp, UserXp, InsertUserXp,
+  userBadges, UserBadge, InsertUserBadge,
+  xpTransactions, XpTransaction, InsertXpTransaction
 } from "@shared/schema";
 
 // Import Musk suggestion models
