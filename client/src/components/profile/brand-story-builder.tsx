@@ -520,40 +520,123 @@ const ProfessionalIdentityStep = ({ nextStep, prevStep, updateFormData, formData
   const [lookingFor, setLookingFor] = useState(formData.lookingFor || "");
   const [aboutMe, setAboutMe] = useState(formData.aboutMe || "");
   
-  // For demo - use the INDUSTRY_DOMAINS and LOOKING_FOR_CATEGORIES from Profile page
-  // In a real implementation, these would be imported or fetched
+  // Import the industry domains and categories from the same constants used in the Profile page
   const INDUSTRIES = [
     "Technology",
     "Healthcare",
     "Finance",
     "Education",
-    "Marketing",
-    "Design",
+    "Manufacturing",
+    "Retail",
+    "Media & Entertainment",
+    "Construction",
+    "Transportation",
+    "Energy",
+    "Hospitality",
+    "Agriculture",
+    "Telecommunications",
+    "Real Estate",
+    "Consulting",
+    "Pharmaceuticals",
+    "Legal Services",
+    "Marketing & Advertising",
+    "Aerospace",
+    "Automotive",
+    "Biotechnology",
+    "Nonprofit",
+    "Government",
+    "Food & Beverage",
+    "Fashion",
+    "Arts & Design",
   ];
   
-  const DOMAINS = {
+  // Domains based on industry selection
+  const INDUSTRY_DOMAINS: {[key: string]: string[]} = {
     "Technology": [
-      "Software Development",
-      "Data Science",
+      "Artificial Intelligence & Machine Learning",
+      "Blockchain & Cryptocurrency",
+      "Cloud Computing & SaaS",
       "Cybersecurity",
-      "Cloud Computing",
-      "AI & Machine Learning",
+      "Data Science & Analytics",
+      "DevOps & Infrastructure",
+      "E-commerce Technology",
+      "Enterprise Software",
+      "Gaming & Entertainment",
+      "Hardware & IoT",
+      "Mobile Development",
+      "Quantum Computing",
+      "Robotics & Automation",
+      "Software Development",
+      "Web3 & Decentralized Tech",
     ],
     "Healthcare": [
-      "Medical Practice",
+      "Biotechnology",
+      "Digital Health",
       "Healthcare IT",
-      "Biotech",
+      "Medical Devices",
       "Pharmaceuticals",
+      "Research & Development",
+      "Telemedicine",
+      "Healthcare Services",
+      "Mental Health",
       "Public Health",
     ],
+    "Finance": [
+      "Banking",
+      "Financial Services",
+      "FinTech",
+      "Investment Management",
+      "Insurance",
+      "Wealth Management",
+      "Payments & Transactions",
+      "Cryptocurrency & DeFi",
+      "Lending & Credit",
+      "Regulatory Compliance",
+    ],
+    "Education": [
+      "EdTech",
+      "Higher Education",
+      "K-12 Education",
+      "Professional Development",
+      "Online Learning",
+      "Educational Content",
+      "Tutoring & Coaching",
+      "Educational Administration",
+      "Research & Development",
+    ],
+    // We can add more domains as needed
   };
   
+  // Looking for categories
   const LOOKING_FOR = [
-    { value: "job_opportunities", label: "Job Opportunities" },
-    { value: "mentors", label: "Career Mentors" },
-    { value: "industry_experts", label: "Industry Experts" },
-    { value: "share_expertise", label: "Sharing My Expertise" },
-    { value: "business_partners", label: "Business Partners" },
+    // Career & Job Seeking category
+    { value: "job_opportunities", label: "💼 Job Opportunities" },
+    { value: "job_seekers", label: "💼 Job Seekers / Candidates" },
+    { value: "internships", label: "💼 Internships" },
+    { value: "interns", label: "💼 Interns" },
+    { value: "mentors", label: "💼 Career Mentors" },
+    { value: "mentees", label: "💼 Career Mentees" },
+    
+    // Business & Investment category  
+    { value: "investors", label: "🚀 Investors" },
+    { value: "startups", label: "🚀 Startups" },
+    { value: "co_founders", label: "🚀 Co-Founders" },
+    { value: "business_partners", label: "🚀 Business Partners" },
+    { value: "advisors", label: "🚀 Legal/Financial Advisors" },
+    { value: "tech_partners", label: "🚀 Technical Partners" },
+    
+    // Learning & Upskilling category
+    { value: "skill_trainers", label: "🎓 Skill Trainers" },
+    { value: "learners", label: "🎓 Students/Learners" },
+    { value: "study_groups", label: "🎓 Study Groups" },
+    
+    // Networking & Collaborations category
+    { value: "industry_experts", label: "🤝 Industry Experts" },
+    { value: "share_expertise", label: "🤝 Sharing My Expertise" },
+    
+    // Freelance & Side Hustle category
+    { value: "freelance_gigs", label: "💰 Freelance Gigs" },
+    { value: "hiring_freelancers", label: "💰 Hiring Freelancers" },
   ];
   
   const handleNext = () => {
@@ -604,7 +687,7 @@ const ProfessionalIdentityStep = ({ nextStep, prevStep, updateFormData, formData
               <SelectValue placeholder={industry ? "Select your domain" : "Select an industry first"} />
             </SelectTrigger>
             <SelectContent>
-              {industry && DOMAINS[industry as keyof typeof DOMAINS]?.map((dom) => (
+              {industry && INDUSTRY_DOMAINS[industry as keyof typeof INDUSTRY_DOMAINS]?.map((dom) => (
                 <SelectItem key={dom} value={dom}>{dom}</SelectItem>
               ))}
             </SelectContent>
