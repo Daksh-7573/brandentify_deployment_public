@@ -233,6 +233,23 @@ export interface IStorage {
   updateNewsUserPreference(id: number, preference: Partial<NewsUserPreference>): Promise<NewsUserPreference | undefined>;
   deleteNewsUserPreference(id: number): Promise<boolean>;
   
+  // Nowboard Item operations
+  getNowboardItems(): Promise<NowboardItem[]>;
+  getNowboardItemsByUserId(userId: number): Promise<NowboardItem[]>;
+  getNowboardItemById(id: number): Promise<NowboardItem | undefined>;
+  getNowboardItemsByCategory(category: "growth" | "learning" | "launch" | "planning" | "collaboration" | "visibility"): Promise<NowboardItem[]>;
+  createNowboardItem(item: InsertNowboardItem): Promise<NowboardItem>;
+  updateNowboardItem(id: number, item: Partial<NowboardItem>): Promise<NowboardItem | undefined>;
+  deleteNowboardItem(id: number): Promise<boolean>;
+  
+  // Nowboard Inspired By operations
+  getInspiredByForNowboardItem(nowboardItemId: number): Promise<NowboardInspiredBy[]>;
+  markInspiredByNowboardItem(userId: number, nowboardItemId: number): Promise<NowboardInspiredBy>;
+  unmarkInspiredByNowboardItem(userId: number, nowboardItemId: number): Promise<boolean>;
+  isNowboardItemInspiredByUser(userId: number, nowboardItemId: number): Promise<boolean>;
+  incrementInspiredCount(nowboardItemId: number): Promise<NowboardItem | undefined>;
+  decrementInspiredCount(nowboardItemId: number): Promise<NowboardItem | undefined>;
+  
   // Musk Suggestion operations
   getMuskSuggestionsForUser(userId: number): Promise<MuskSuggestion[]>;
   createMuskSuggestion(suggestion: InsertMuskSuggestion): Promise<MuskSuggestion>;
@@ -334,6 +351,10 @@ export class MemStorage implements IStorage {
   private userMilestones: Map<number, UserMilestones>;
   private smartPostSuggestions: Map<number, SmartPostSuggestions>;
   
+  // Nowboard models
+  private nowboardItems: Map<number, NowboardItem>;
+  private nowboardInspiredBy: Map<number, NowboardInspiredBy>;
+  
   private currentUserId: number;
   private currentResumeId: number;
   private currentWorkExperienceId: number;
@@ -373,6 +394,10 @@ export class MemStorage implements IStorage {
   private currentIndustryTrendsMonitorId: number;
   private currentUserMilestonesId: number;
   private currentSmartPostSuggestionsId: number;
+  
+  // Nowboard IDs
+  private currentNowboardItemId: number;
+  private currentNowboardInspiredById: number;
 
   constructor() {
     this.users = new Map();
@@ -402,6 +427,10 @@ export class MemStorage implements IStorage {
     this.newsSources = new Map();
     this.newsArticles = new Map();
     this.newsUserPreferences = new Map();
+    
+    // Initialize Nowboard maps
+    this.nowboardItems = new Map();
+    this.nowboardInspiredBy = new Map();
     
     // Initialize Musk Match map
     this.muskMatches = new Map();
@@ -457,6 +486,10 @@ export class MemStorage implements IStorage {
     this.currentIndustryTrendsMonitorId = 1;
     this.currentUserMilestonesId = 1;
     this.currentSmartPostSuggestionsId = 1;
+    
+    // Initialize Nowboard IDs
+    this.currentNowboardItemId = 1;
+    this.currentNowboardInspiredById = 1;
     
     // Initialize with a default user for development/demo
     this.initializeDemoData();
@@ -564,6 +597,10 @@ export class MemStorage implements IStorage {
     this.currentIndustryTrendsMonitorId = 1;
     this.currentUserMilestonesId = 1;
     this.currentSmartPostSuggestionsId = 1;
+    
+    // Reset Nowboard IDs
+    this.currentNowboardItemId = 1;
+    this.currentNowboardInspiredById = 1;
     
     // No pre-created skills
     
