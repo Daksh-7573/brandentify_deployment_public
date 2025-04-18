@@ -850,12 +850,11 @@ const SkillsStep = ({ nextStep, prevStep, userData, updateFormData, formData }: 
 
 // Services Step
 const ServicesStep = ({ nextStep, prevStep, updateFormData, formData }: StepProps) => {
-  const [services, setServices] = useState<any[]>(formData.services || []);
-  
-  // In a real implementation, we would add UI to create/edit services
+  // Initialize with empty array as a fallback if services is undefined or not an array
+  const [servicesList, setServicesList] = useState<any[]>(Array.isArray(formData.services) ? formData.services : []);
   
   const handleNext = () => {
-    updateFormData({ services });
+    updateFormData({ services: servicesList });
     nextStep();
   };
   
@@ -875,13 +874,13 @@ const ServicesStep = ({ nextStep, prevStep, updateFormData, formData }: StepProp
       </div>
       
       <div className="space-y-4">
-        {services.length === 0 ? (
+        {servicesList.length === 0 ? (
           <div className="text-center p-6 border border-dashed rounded-md text-gray-500">
             You haven't added any services yet. You can add services from your profile page later.
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-4">
-            {services.map(service => (
+            {servicesList.map(service => (
               <div 
                 key={service.id} 
                 className="border rounded-lg p-4 hover:border-primary transition-colors"
@@ -904,7 +903,7 @@ const ServicesStep = ({ nextStep, prevStep, updateFormData, formData }: StepProp
         
         <div className="mt-4 text-center">
           <Button variant="outline" onClick={nextStep}>
-            {services.length === 0 ? "Skip this step" : "Continue"}
+            {servicesList.length === 0 ? "Skip this step" : "Continue"}
           </Button>
         </div>
       </div>
@@ -914,12 +913,11 @@ const ServicesStep = ({ nextStep, prevStep, updateFormData, formData }: StepProp
 
 // Work Experience Step
 const WorkExperienceStep = ({ nextStep, prevStep, updateFormData, formData }: StepProps) => {
-  const [experiences, setExperiences] = useState<any[]>(formData.experiences || []);
-  
-  // In a real implementation, we would add UI to create/edit work experiences
+  // Initialize with empty array as a fallback if experiences is undefined or not an array
+  const [experienceList, setExperienceList] = useState<any[]>(Array.isArray(formData.experiences) ? formData.experiences : []);
   
   const handleNext = () => {
-    updateFormData({ experiences });
+    updateFormData({ experiences: experienceList });
     nextStep();
   };
   
@@ -939,13 +937,13 @@ const WorkExperienceStep = ({ nextStep, prevStep, updateFormData, formData }: St
       </div>
       
       <div className="space-y-4">
-        {experiences.length === 0 ? (
+        {experienceList.length === 0 ? (
           <div className="text-center p-6 border border-dashed rounded-md text-gray-500">
             You haven't added any work experiences yet. You can add them from your profile page later.
           </div>
         ) : (
           <div className="space-y-4">
-            {experiences.map(exp => (
+            {experienceList.map(exp => (
               <div 
                 key={exp.id} 
                 className="border rounded-lg p-4 hover:border-primary transition-colors"
@@ -966,7 +964,7 @@ const WorkExperienceStep = ({ nextStep, prevStep, updateFormData, formData }: St
         
         <div className="mt-4 text-center">
           <Button variant="outline" onClick={nextStep}>
-            {experiences.length === 0 ? "Skip this step" : "Continue"}
+            {experienceList.length === 0 ? "Skip this step" : "Continue"}
           </Button>
         </div>
       </div>
@@ -976,12 +974,11 @@ const WorkExperienceStep = ({ nextStep, prevStep, updateFormData, formData }: St
 
 // Education Step
 const EducationStep = ({ nextStep, prevStep, updateFormData, formData }: StepProps) => {
-  const [educations, setEducations] = useState<any[]>(formData.educations || []);
-  
-  // In a real implementation, we would add UI to create/edit education entries
+  // Initialize with empty array as a fallback if educations is undefined or not an array
+  const [educationList, setEducationList] = useState<any[]>(Array.isArray(formData.educations) ? formData.educations : []);
   
   const handleNext = () => {
-    updateFormData({ educations });
+    updateFormData({ educations: educationList });
     nextStep();
   };
   
@@ -1001,13 +998,13 @@ const EducationStep = ({ nextStep, prevStep, updateFormData, formData }: StepPro
       </div>
       
       <div className="space-y-4">
-        {educations.length === 0 ? (
+        {educationList.length === 0 ? (
           <div className="text-center p-6 border border-dashed rounded-md text-gray-500">
             You haven't added any education entries yet. You can add them from your profile page later.
           </div>
         ) : (
           <div className="space-y-4">
-            {educations.map(edu => (
+            {educationList.map(edu => (
               <div 
                 key={edu.id} 
                 className="border rounded-lg p-4 hover:border-primary transition-colors"
@@ -1027,7 +1024,7 @@ const EducationStep = ({ nextStep, prevStep, updateFormData, formData }: StepPro
         
         <div className="mt-4 text-center">
           <Button variant="outline" onClick={nextStep}>
-            {educations.length === 0 ? "Skip this step" : "Continue"}
+            {educationList.length === 0 ? "Skip this step" : "Continue"}
           </Button>
         </div>
       </div>
@@ -1037,12 +1034,11 @@ const EducationStep = ({ nextStep, prevStep, updateFormData, formData }: StepPro
 
 // Projects Step
 const ProjectsStep = ({ nextStep, prevStep, updateFormData, formData }: StepProps) => {
-  const [projects, setProjects] = useState<any[]>(formData.projects || []);
-  
-  // In a real implementation, we would add UI to create/edit projects
+  // Initialize with empty array as a fallback if projects is undefined or not an array
+  const [projectList, setProjectList] = useState<any[]>(Array.isArray(formData.projects) ? formData.projects : []);
   
   const handleNext = () => {
-    updateFormData({ projects });
+    updateFormData({ projects: projectList });
     nextStep();
   };
   
@@ -1062,13 +1058,13 @@ const ProjectsStep = ({ nextStep, prevStep, updateFormData, formData }: StepProp
       </div>
       
       <div className="space-y-4">
-        {projects.length === 0 ? (
+        {projectList.length === 0 ? (
           <div className="text-center p-6 border border-dashed rounded-md text-gray-500">
             You haven't added any projects yet. You can add them from your profile page later.
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {projects.map(project => (
+            {projectList.map(project => (
               <div 
                 key={project.id} 
                 className="border rounded-lg overflow-hidden hover:border-primary transition-colors"
@@ -1094,7 +1090,7 @@ const ProjectsStep = ({ nextStep, prevStep, updateFormData, formData }: StepProp
         
         <div className="mt-4 text-center">
           <Button variant="outline" onClick={nextStep}>
-            {projects.length === 0 ? "Skip this step" : "Continue"}
+            {projectList.length === 0 ? "Skip this step" : "Continue"}
           </Button>
         </div>
       </div>
