@@ -322,8 +322,6 @@ export default function Education() {
     staleTime: 1000, 
     refetchOnMount: true,
     refetchOnWindowFocus: true,
-    // Make sure we always return an array
-    select: (data) => Array.isArray(data) ? data : []
   });
   
   const form = useForm<Education>({
@@ -616,7 +614,7 @@ export default function Education() {
               <Separator className="my-2" />
             </div>
           ))
-        ) : !Array.isArray(educations) || educations.length === 0 ? (
+        ) : educations.length === 0 ? (
           // Empty state
           <div className="py-6 text-center">
             <GraduationCap className="mx-auto h-10 w-10 text-muted-foreground/50" />
