@@ -189,9 +189,18 @@ type FormData = {
 export interface ProfileStepsProps {
   isEditing?: boolean;
   onComplete?: () => void;
+  startStep?: number;
+  activeTab?: string;
+  onTabChange?: (tab: string) => void;
 }
 
-export default function ProfileSteps({ isEditing = false, onComplete }: ProfileStepsProps) {
+export default function ProfileSteps({ 
+  isEditing = false, 
+  onComplete,
+  startStep = 1,
+  activeTab,
+  onTabChange
+}: ProfileStepsProps) {
   const { user, isAuthenticated, isDemoMode } = useAuth();
   const [_, setLocation] = useLocation();
   const { toast } = useToast();
@@ -200,7 +209,28 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
   const userId = user?.uid || (isDemoMode ? 1 : null);
   
   // State for current step
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(startStep || 1);
+  
+  // Update current step when startStep changes
+  useEffect(() => {
+    if (startStep) {
+      setCurrentStep(startStep);
+    }
+  }, [startStep]);
+  
+  // Sync with activeTab when it changes from parent component
+  useEffect(() => {
+    if (activeTab) {
+      // Find the step that corresponds to this tab
+      const stepIndex = steps.findIndex(
+        step => step.title.toLowerCase() === activeTab
+      );
+      
+      if (stepIndex !== -1) {
+        setCurrentStep(stepIndex + 1); // +1 because steps are 1-indexed
+      }
+    }
+  }, [activeTab]);
   const [showProfilePictureDialog, setShowProfilePictureDialog] = useState(false);
   const [selectedIndustry, setSelectedIndustry] = useState<string>('');
   const [selectedDomain, setSelectedDomain] = useState<string>('');
@@ -430,7 +460,15 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
     
     // Move to next step
     if (currentStep < steps.length) {
-      setCurrentStep(currentStep + 1);
+      const newStep = currentStep + 1;
+      setCurrentStep(newStep);
+      
+      // Notify parent component about tab change if callback is provided
+      if (onTabChange) {
+        const newTab = steps[newStep - 1].title.toLowerCase();
+        onTabChange(newTab);
+      }
+      
       window.scrollTo(0, 0);
     } else {
       // Complete onboarding
@@ -445,7 +483,15 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
   // Handle previous step
   const handlePreviousStep = () => {
     if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
+      const newStep = currentStep - 1;
+      setCurrentStep(newStep);
+      
+      // Notify parent component about tab change if callback is provided
+      if (onTabChange) {
+        const newTab = steps[newStep - 1].title.toLowerCase();
+        onTabChange(newTab);
+      }
+      
       window.scrollTo(0, 0);
     }
   };
@@ -454,6 +500,13 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
   const jumpToStep = (stepNumber: number) => {
     if (stepNumber >= 1 && stepNumber <= steps.length) {
       setCurrentStep(stepNumber);
+      
+      // Notify parent component about tab change if callback is provided
+      if (onTabChange) {
+        const newTab = steps[stepNumber - 1].title.toLowerCase();
+        onTabChange(newTab);
+      }
+      
       window.scrollTo(0, 0);
     }
   };
@@ -2314,56 +2367,82 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
   };
   
   return (
-    <div className="container max-w-3xl py-8">
-      {/* Progress and steps */}
-      {renderProgressIndicator()}
-      {renderStepsTabs()}
-      
-      {/* Current step */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            {steps[currentStep - 1].icon}
-            <span>Step {currentStep}: {steps[currentStep - 1].title}</span>
-            {steps[currentStep - 1].mandatory && 
-              <span className="text-sm text-red-500 font-normal">(Required)</span>
-            }
-          </CardTitle>
-          <CardDescription>
-            {stepMessages[currentStep - 1]}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {renderStepContent()}
-        </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button
-            variant="outline"
-            onClick={handlePreviousStep}
-            disabled={currentStep === 1}
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
-          </Button>
-          <Button onClick={handleNextStep}>
-            {currentStep === steps.length ? 'Complete' : 'Next'}
-            {currentStep !== steps.length && <ArrowRight className="ml-2 h-4 w-4" />}
-          </Button>
-        </CardFooter>
-      </Card>
-      
-      {/* Skip this step button for non-mandatory steps */}
-      {!steps[currentStep - 1].mandatory && currentStep !== steps.length && (
-        <div className="text-center">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setCurrentStep(currentStep + 1)}
-          >
-            Skip this step (you can come back later)
-          </Button>
+    <div className="w-full">
+      {/* Display progress bar and tabs only during onboarding, not in edit mode */}
+      {!isEditing && (
+        <div className="container max-w-3xl py-8">
+          {/* Progress and steps */}
+          {renderProgressIndicator()}
+          {renderStepsTabs()}
         </div>
       )}
+      
+      {/* Current step */}
+      <div className={`${isEditing ? 'p-6' : 'container max-w-3xl py-8'}`}>
+        {!isEditing && (
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                {steps[currentStep - 1].icon}
+                <span>Step {currentStep}: {steps[currentStep - 1].title}</span>
+                {steps[currentStep - 1].mandatory && 
+                  <span className="text-sm text-red-500 font-normal">(Required)</span>
+                }
+              </CardTitle>
+              <CardDescription>
+                {stepMessages[currentStep - 1]}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {renderStepContent()}
+            </CardContent>
+            <CardFooter className="flex justify-between">
+              <Button
+                variant="outline"
+                onClick={handlePreviousStep}
+                disabled={currentStep === 1}
+              >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back
+              </Button>
+              <Button onClick={handleNextStep}>
+                {currentStep === steps.length ? 'Complete' : 'Next'}
+                {currentStep !== steps.length && <ArrowRight className="ml-2 h-4 w-4" />}
+              </Button>
+            </CardFooter>
+          </Card>
+        )}
+        
+        {/* In edit mode, just show the form content without the card wrapper */}
+        {isEditing && (
+          <div className="space-y-6">
+            <div className="flex items-center gap-2 mb-4">
+              {steps[currentStep - 1].icon}
+              <h2 className="text-2xl font-semibold">
+                {steps[currentStep - 1].title}
+                {steps[currentStep - 1].mandatory && 
+                  <span className="text-sm text-red-500 font-normal ml-2">(Required)</span>
+                }
+              </h2>
+            </div>
+            
+            {renderStepContent()}
+          </div>
+        )}
+        
+        {/* Skip this step button for non-mandatory steps in onboarding mode */}
+        {!isEditing && !steps[currentStep - 1].mandatory && currentStep !== steps.length && (
+          <div className="text-center">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setCurrentStep(currentStep + 1)}
+            >
+              Skip this step (you can come back later)
+            </Button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
