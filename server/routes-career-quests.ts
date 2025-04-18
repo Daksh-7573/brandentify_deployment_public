@@ -165,6 +165,36 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
       res.status(500).json({ message: 'Failed to fetch weekly user quests' });
     }
   });
+  
+  // Get user quests with their definitions in a single response
+  apiRouter.get("/users/:userId/quests-with-definitions", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: 'Invalid user ID' });
+      }
+      
+      // Get user quests
+      const userQuests = await storage.getUserQuestsByUserId(userId);
+      
+      // Get all quest definitions
+      const questDefinitions = await storage.getQuestDefinitions();
+      
+      // Combine user quests with their definitions
+      const questsWithDefinitions = userQuests.map(userQuest => {
+        const definition = questDefinitions.find(def => def.id === userQuest.questDefinitionId);
+        return {
+          ...userQuest,
+          definition: definition || null
+        };
+      });
+      
+      res.json(questsWithDefinitions);
+    } catch (error) {
+      console.error(`[GET /users/${req.params.userId}/quests-with-definitions] Error:`, error);
+      res.status(500).json({ message: 'Failed to fetch quests with definitions' });
+    }
+  });
 
   apiRouter.get("/user-quests/:id", async (req, res) => {
     try {
