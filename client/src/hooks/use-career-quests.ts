@@ -58,9 +58,22 @@ export const useUserXp = (userId: number) => {
   return useQuery({
     queryKey: [`/api/users/${userId}/xp`],
     queryFn: async () => {
-      const res = await fetch(`/api/users/${userId}/xp`);
-      if (!res.ok) throw new Error('Failed to fetch user XP');
-      return res.json() as Promise<UserXp>;
+      try {
+        const res = await fetch(`/api/users/${userId}/xp`);
+        if (!res.ok) {
+          console.error('Failed to fetch user XP, status:', res.status);
+          throw new Error('Failed to fetch user XP');
+        }
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          console.error('Expected JSON but got', contentType);
+          throw new Error('Unexpected response format');
+        }
+        return res.json() as Promise<UserXp>;
+      } catch (error) {
+        console.error('Error fetching XP:', error);
+        throw error;
+      }
     },
     enabled: !!userId
   });
@@ -84,9 +97,22 @@ export const useXpTransactions = (userId: number) => {
   return useQuery({
     queryKey: [`/api/users/${userId}/xp-transactions`],
     queryFn: async () => {
-      const res = await fetch(`/api/users/${userId}/xp-transactions`);
-      if (!res.ok) throw new Error('Failed to fetch XP transactions');
-      return res.json() as Promise<XpTransaction[]>;
+      try {
+        const res = await fetch(`/api/users/${userId}/xp-transactions`);
+        if (!res.ok) {
+          console.error('Failed to fetch XP transactions, status:', res.status);
+          throw new Error('Failed to fetch XP transactions');
+        }
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          console.error('Expected JSON but got', contentType);
+          throw new Error('Unexpected response format for XP transactions');
+        }
+        return res.json() as Promise<XpTransaction[]>;
+      } catch (error) {
+        console.error('Error fetching XP transactions:', error);
+        throw error;
+      }
     },
     enabled: !!userId
   });
