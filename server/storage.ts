@@ -798,6 +798,13 @@ export class MemStorage implements IStorage {
     // Clear all existing services
     this.services.clear();
     
+    // Clear all Career Quests data
+    this.questDefinitions.clear();
+    this.userQuests.clear();
+    this.userXp.clear();
+    this.userBadges.clear();
+    this.xpTransactions.clear();
+    
     // Clear all existing pulses
     this.pulses.clear();
     
@@ -854,13 +861,6 @@ export class MemStorage implements IStorage {
     // Clear all Nowboard data
     this.nowboardItems.clear();
     this.nowboardInspiredBy.clear();
-    
-    // Clear all Career Quests data
-    this.questDefinitions.clear();
-    this.userQuests.clear();
-    this.userXp.clear();
-    this.userBadges.clear();
-    this.xpTransactions.clear();
   }
   
   /**
