@@ -38,6 +38,22 @@ type Message = {
 };
 
 export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) {
+  const [inputValue, setInputValue] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadType, setUploadType] = useState<'resume' | 'pitchdeck'>('resume');
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const pitchDeckFileInputRef = useRef<HTMLInputElement>(null);
+  
+  // For generating personalized suggested questions
+  const [suggestedQuestions, setSuggestedQuestions] = useState<SuggestedQuestion[]>([]);
+  const [engagementHistory, setEngagementHistory] = useState<Record<string, number>>({});
+  
   // Initialize with default welcome message
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -75,23 +91,6 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
       }
     }
   }, [userData, suggestedQuestions, messages.length]);
-  
-  const [inputValue, setInputValue] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [uploadType, setUploadType] = useState<'resume' | 'pitchdeck'>('resume');
-  const [userData, setUserData] = useState<UserData | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { toast } = useToast();
-  const inputRef = useRef<HTMLInputElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const pitchDeckFileInputRef = useRef<HTMLInputElement>(null);
-  
-  // Fetch user data when component mounts
-  // For generating personalized suggested questions
-  const [suggestedQuestions, setSuggestedQuestions] = useState<SuggestedQuestion[]>([]);
-  const [engagementHistory, setEngagementHistory] = useState<Record<string, number>>({});
   
   // Fetch user data when component mounts
   useEffect(() => {
