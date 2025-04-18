@@ -16,6 +16,7 @@ import muskSuggestionRoutes from "./routes-musk-suggestions";
 import muskMatchRoutes from "./routes-musk-match";
 import { registerSmartConnectRoutes } from "./routes-smart-connect";
 import { setupShadowResumeRoutes } from "./routes-shadow-resume";
+import { setupNowboardRoutes } from "./routes-nowboard";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -4594,6 +4595,9 @@ ${extractedText.substring(0, 5000)}
 
   // Shadow Resume routes
   setupShadowResumeRoutes(apiRouter, storage);
+  
+  // Nowboard routes
+  setupNowboardRoutes(apiRouter, storage);
 
   app.use("/api", apiRouter);
 

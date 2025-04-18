@@ -3027,6 +3027,184 @@ export class MemStorage implements IStorage {
     return updatedSuggestion;
   }
 
+  // Nowboard Item operations
+  async getNowboardItems(): Promise<NowboardItem[]> {
+    return Array.from(this.nowboardItems.values())
+      .sort((a, b) => {
+        // Sort by createdAt in descending order (newest first)
+        const timeA = a.createdAt ? a.createdAt.getTime() : 0;
+        const timeB = b.createdAt ? b.createdAt.getTime() : 0;
+        return timeB - timeA;
+      });
+  }
+  
+  async getNowboardItemsByUserId(userId: number): Promise<NowboardItem[]> {
+    return Array.from(this.nowboardItems.values())
+      .filter(item => item.userId === userId)
+      .sort((a, b) => {
+        // Sort by createdAt in descending order (newest first)
+        const timeA = a.createdAt ? a.createdAt.getTime() : 0;
+        const timeB = b.createdAt ? b.createdAt.getTime() : 0;
+        return timeB - timeA;
+      });
+  }
+  
+  async getNowboardItemById(id: number): Promise<NowboardItem | undefined> {
+    return this.nowboardItems.get(id);
+  }
+  
+  async getNowboardItemsByCategory(category: "growth" | "learning" | "launch" | "planning" | "collaboration" | "visibility"): Promise<NowboardItem[]> {
+    return Array.from(this.nowboardItems.values())
+      .filter(item => item.category === category)
+      .sort((a, b) => {
+        // Sort by createdAt in descending order (newest first)
+        const timeA = a.createdAt ? a.createdAt.getTime() : 0;
+        const timeB = b.createdAt ? b.createdAt.getTime() : 0;
+        return timeB - timeA;
+      });
+  }
+  
+  async createNowboardItem(item: InsertNowboardItem): Promise<NowboardItem> {
+    const id = this.currentNowboardItemId++;
+    const createdAt = new Date();
+    
+    const newItem: NowboardItem = {
+      ...item,
+      id,
+      createdAt,
+      inspiredCount: 0,
+      visibility: item.visibility ?? 'public',
+      relatedSkills: item.relatedSkills ?? null,
+      relatedProject: item.relatedProject ?? null,
+      imageUrl: item.imageUrl ?? null,
+      updatedAt: createdAt
+    };
+    
+    this.nowboardItems.set(id, newItem);
+    return newItem;
+  }
+  
+  async updateNowboardItem(id: number, item: Partial<NowboardItem>): Promise<NowboardItem | undefined> {
+    const existingItem = this.nowboardItems.get(id);
+    if (!existingItem) return undefined;
+    
+    const updatedAt = new Date();
+    const updatedItem = { 
+      ...existingItem, 
+      ...item,
+      updatedAt 
+    };
+    
+    this.nowboardItems.set(id, updatedItem);
+    return updatedItem;
+  }
+  
+  async deleteNowboardItem(id: number): Promise<boolean> {
+    // Also delete all related inspired-by records
+    const inspiredByEntries = Array.from(this.nowboardInspiredBy.entries());
+    for (const [inspiredId, inspiredBy] of inspiredByEntries) {
+      if (inspiredBy.nowboardItemId === id) {
+        this.nowboardInspiredBy.delete(inspiredId);
+      }
+    }
+    
+    return this.nowboardItems.delete(id);
+  }
+  
+  // Nowboard Inspired By operations
+  async getInspiredByForNowboardItem(nowboardItemId: number): Promise<NowboardInspiredBy[]> {
+    return Array.from(this.nowboardInspiredBy.values())
+      .filter(inspired => inspired.nowboardItemId === nowboardItemId)
+      .sort((a, b) => {
+        // Sort by createdAt in descending order (newest first)
+        const timeA = a.createdAt ? a.createdAt.getTime() : 0;
+        const timeB = b.createdAt ? b.createdAt.getTime() : 0;
+        return timeB - timeA;
+      });
+  }
+  
+  async markInspiredByNowboardItem(userId: number, nowboardItemId: number): Promise<NowboardInspiredBy> {
+    // Check if this user already marked this item
+    const existingInspired = Array.from(this.nowboardInspiredBy.values())
+      .find(inspired => inspired.userId === userId && inspired.nowboardItemId === nowboardItemId);
+    
+    if (existingInspired) {
+      return existingInspired;
+    }
+    
+    const id = this.currentNowboardInspiredById++;
+    const createdAt = new Date();
+    
+    const newInspired: NowboardInspiredBy = {
+      id,
+      userId,
+      nowboardItemId,
+      createdAt
+    };
+    
+    this.nowboardInspiredBy.set(id, newInspired);
+    
+    // Increment the inspire count on the nowboard item
+    await this.incrementInspiredCount(nowboardItemId);
+    
+    return newInspired;
+  }
+  
+  async unmarkInspiredByNowboardItem(userId: number, nowboardItemId: number): Promise<boolean> {
+    const existingInspired = Array.from(this.nowboardInspiredBy.values())
+      .find(inspired => inspired.userId === userId && inspired.nowboardItemId === nowboardItemId);
+    
+    if (!existingInspired) {
+      return false;
+    }
+    
+    // Delete the inspired-by record
+    const deleted = this.nowboardInspiredBy.delete(existingInspired.id);
+    
+    if (deleted) {
+      // Decrement the inspire count on the nowboard item
+      await this.decrementInspiredCount(nowboardItemId);
+    }
+    
+    return deleted;
+  }
+  
+  async isNowboardItemInspiredByUser(userId: number, nowboardItemId: number): Promise<boolean> {
+    return Array.from(this.nowboardInspiredBy.values())
+      .some(inspired => inspired.userId === userId && inspired.nowboardItemId === nowboardItemId);
+  }
+  
+  async incrementInspiredCount(nowboardItemId: number): Promise<NowboardItem | undefined> {
+    const item = this.nowboardItems.get(nowboardItemId);
+    if (!item) return undefined;
+    
+    const updatedItem = { 
+      ...item, 
+      inspiredCount: (item.inspiredCount || 0) + 1,
+      updatedAt: new Date()
+    };
+    
+    this.nowboardItems.set(nowboardItemId, updatedItem);
+    return updatedItem;
+  }
+  
+  async decrementInspiredCount(nowboardItemId: number): Promise<NowboardItem | undefined> {
+    const item = this.nowboardItems.get(nowboardItemId);
+    if (!item) return undefined;
+    
+    // Don't let it go below 0
+    const newCount = Math.max(0, (item.inspiredCount || 0) - 1);
+    
+    const updatedItem = { 
+      ...item, 
+      inspiredCount: newCount,
+      updatedAt: new Date() 
+    };
+    
+    this.nowboardItems.set(nowboardItemId, updatedItem);
+    return updatedItem;
+  }
+
   // News Pulse operations
   async createNewsPulse(article: NewsArticle, userId: number): Promise<Pulse> {
     // First, generate content based on the article
