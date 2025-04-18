@@ -125,7 +125,19 @@ export default function Header() {
                 <span>Smart Radar</span>
               </Button>
               
-
+              <Button
+                variant="ghost"
+                size="sm" 
+                className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
+                  isActive('/resume') 
+                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
+                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
+                }`}
+                onClick={() => setLocation('/resume')}
+              >
+                <FileText className="h-4 w-4" />
+                <span>Resume & CV</span>
+              </Button>
               
               <Button
                 variant="ghost"
@@ -166,16 +178,6 @@ export default function Header() {
               onClick={() => setLocation('/create-pulse')}
             >
               <Zap className="h-4 w-4" /> Create Pulse
-            </Button>
-            
-            {/* Resume Button */}
-            <Button 
-              variant="outline" 
-              size="sm"
-              className="hidden sm:flex px-4 py-2 text-sm font-medium text-primary border-primary/30 hover:bg-primary/5 items-center gap-1.5"
-              onClick={() => setLocation('/profile#resume')}
-            >
-              <FileText className="h-4 w-4" /> Resume
             </Button>
             
             {/* Settings Button */}
@@ -284,7 +286,22 @@ export default function Header() {
               <span>Smart Radar</span>
             </Button>
             
-
+            <Button
+              variant="ghost"
+              size="sm"
+              className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
+                isActive('/resume') 
+                  ? 'text-primary bg-primary/5' 
+                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+              }`}
+              onClick={() => {
+                setLocation('/resume');
+                setIsMobileMenuOpen(false);
+              }}
+            >
+              <FileText className="h-4 w-4 mr-3 ml-0.5" />
+              <span>Resume & CV</span>
+            </Button>
             
             <Button
               variant="ghost"
@@ -349,19 +366,6 @@ export default function Header() {
               >
                 <Zap className="h-4 w-4 mr-2" />
                 <span>Create Pulse</span>
-              </Button>
-              
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full mt-2 justify-center py-3 text-sm font-medium text-primary border-primary/30 hover:bg-primary/5"
-                onClick={() => {
-                  setLocation('/profile#resume');
-                  setIsMobileMenuOpen(false);
-                }}
-              >
-                <FileText className="h-4 w-4 mr-2" />
-                <span>Resume</span>
               </Button>
             </div>
           </div>

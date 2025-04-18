@@ -13,8 +13,7 @@ import Services from "@/components/profile/services";
 import PersonalInfoSection from "@/components/profile/personal-info-section";
 import EditPersonalInfo from "@/components/profile/edit-personal-info";
 import MuskButton from "@/components/musk/musk-button";
-import ResumeUpload from "@/components/profile/resume-upload";
-import ShadowResumeSection from "@/components/resume/shadow-resume-section";
+// Removed Resume and LinkedIn import components
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { calculateOverallProfileCompletion } from "@/lib/profile-utils";
@@ -519,23 +518,6 @@ export default function Profile() {
     staleTime: 1000,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
-  });
-  
-  // Fetch user's shadow resume data
-  const { data: resumeData, isLoading: isLoadingResume } = useQuery({
-    queryKey: ['/api/users', userNumericId, 'shadow-resume'],
-    queryFn: async () => {
-      if (!userNumericId) return null;
-      try {
-        const response = await apiRequest('GET', `/api/users/${userNumericId}/shadow-resume`);
-        return response;
-      } catch (error) {
-        console.error('Error fetching shadow resume:', error);
-        return null;
-      }
-    },
-    enabled: !!userNumericId && isAuthenticated,
-    staleTime: 1000,
   });
   
   // Mutation for updating user basic info
@@ -1846,21 +1828,6 @@ export default function Profile() {
             
             {/* Skills Section */}
             <Skills />
-            
-            {/* Resume & CV Section */}
-            <div className="mb-6">
-              <h2 className="text-lg font-medium text-gray-900 mb-4">Resume & CV</h2>
-              <div className="space-y-6">
-                <ResumeUpload />
-                
-                {/* Shadow Resume Section */}
-                <ShadowResumeSection 
-                  user={userData} 
-                  resume={resumeData} 
-                  isCurrentUser={true} 
-                />
-              </div>
-            </div>
             
             {/* Services Section */}
             <Services />
