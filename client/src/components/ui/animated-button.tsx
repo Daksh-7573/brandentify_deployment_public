@@ -1,116 +1,108 @@
-import * as React from "react";
-import { motion, MotionProps } from "framer-motion";
-import { cn } from "@/lib/utils";
+import React from "react";
+import { motion, HTMLMotionProps } from "framer-motion";
 import { Button, ButtonProps } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
-interface AnimatedButtonProps extends ButtonProps, MotionProps {
-  children: React.ReactNode;
-  animation?: "bounce" | "pulse" | "ripple" | "gradient" | "float" | "none";
-  rippleColor?: string;
-}
+// We need to omit conflicting properties
+type AnimatedButtonProps = ButtonProps & Omit<HTMLMotionProps<"button">, keyof ButtonProps> & {
+  animation?: "pulse" | "scale" | "slide" | "glow" | "gradient" | "none";
+  hoverScale?: number;
+  disabled?: boolean;
+};
 
-export const AnimatedButton = React.forwardRef<HTMLButtonElement, AnimatedButtonProps>(
-  ({ 
-    className, 
-    children, 
-    animation = "pulse", 
-    rippleColor = "rgba(99, 102, 241, 0.3)",
-    variant = "default", 
-    ...props 
-  }, ref) => {
-    const [ripple, setRipple] = React.useState({
-      x: 0,
-      y: 0,
-      show: false
-    });
-    
-    // Define animation variants
-    const animationVariants = {
-      bounce: {
-        whileHover: { scale: 1.05 },
-        whileTap: { scale: 0.95 },
-        transition: { type: "spring", stiffness: 400, damping: 17 }
-      },
-      pulse: {
-        whileHover: { 
-          scale: 1.02,
-          boxShadow: "0 0 8px rgba(99, 102, 241, 0.5)"
-        },
-        whileTap: { scale: 0.98 },
-        transition: { type: "spring", stiffness: 400, damping: 10 }
-      },
-      float: {
-        whileHover: { y: -5 },
-        whileTap: { y: 0 },
-        transition: { type: "spring", stiffness: 400 }
-      },
-      gradient: {
-        whileHover: { 
-          backgroundPosition: "right center" 
-        },
-        transition: { duration: 0.5, ease: "easeInOut" }
-      },
-      none: {}
-    };
-    
-    // Handle ripple effect
-    const handleRipple = (e: React.MouseEvent<HTMLButtonElement>) => {
-      const rect = e.currentTarget.getBoundingClientRect();
-      setRipple({
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
-        show: true
-      });
-      
-      setTimeout(() => {
-        setRipple(prev => ({ ...prev, show: false }));
-      }, 700);
-    };
-    
-    // Special class for gradient animation
-    const gradientClass = animation === "gradient" ? 
-      "bg-gradient-to-r from-purple-500 via-teal-400 to-purple-500 bg-[length:200%_100%] text-white border-none" : "";
-    
-    return (
-      <motion.div
-        className="relative inline-block"
-        {...animationVariants[animation !== "ripple" ? animation : "none"]}
+export const AnimatedButton: React.FC<AnimatedButtonProps> = ({
+  children,
+  className,
+  animation = "scale",
+  hoverScale = 1.05,
+  disabled = false,
+  ...props
+}) => {
+  // Animation variants based on the animation prop
+  const getAnimationProps = () => {
+    switch (animation) {
+      case "pulse":
+        return {
+          whileHover: { scale: hoverScale },
+          whileTap: { scale: 0.98 },
+          initial: { opacity: 0, scale: 0.9 },
+          animate: { opacity: 1, scale: 1 },
+          transition: { type: "spring", stiffness: 300, damping: 15 }
+        };
+      case "scale":
+        return {
+          whileHover: { scale: hoverScale },
+          whileTap: { scale: 0.95 },
+          initial: { opacity: 0, scale: 0.9 },
+          animate: { opacity: 1, scale: 1 },
+          transition: { duration: 0.3 }
+        };
+      case "slide":
+        return {
+          whileHover: { x: 5 },
+          whileTap: { x: 2, scale: 0.98 },
+          initial: { opacity: 0, x: -20 },
+          animate: { opacity: 1, x: 0 },
+          transition: { duration: 0.3 }
+        };
+      case "glow":
+        return {
+          whileHover: { boxShadow: "0 0 15px rgba(99, 102, 241, 0.6)" },
+          whileTap: { boxShadow: "0 0 5px rgba(99, 102, 241, 0.4)", scale: 0.98 },
+          initial: { opacity: 0 },
+          animate: { opacity: 1 },
+          transition: { duration: 0.3 }
+        };
+      case "gradient":
+        return {
+          whileHover: { 
+            backgroundPosition: ["0% 50%", "100% 50%"],
+            scale: hoverScale 
+          },
+          whileTap: { scale: 0.98 },
+          initial: { opacity: 0 },
+          animate: { opacity: 1 },
+          transition: { 
+            duration: 0.3,
+            backgroundPosition: {
+              repeat: Infinity,
+              duration: 3,
+              ease: "linear"
+            }
+          }
+        };
+      case "none":
+      default:
+        return {
+          initial: { opacity: 0 },
+          animate: { opacity: 1 },
+          transition: { duration: 0.3 }
+        };
+    }
+  };
+
+  // Style for gradient animation
+  const gradientStyle = animation === "gradient" ? {
+    background: "linear-gradient(90deg, #6366F1 0%, #14B8A6 50%, #6366F1 100%)",
+    backgroundSize: "200% 100%",
+    color: "white",
+    border: "none"
+  } : {};
+
+  return (
+    <motion.div
+      {...getAnimationProps()}
+      className={cn("inline-block")}
+      style={{ opacity: disabled ? 0.6 : 1 }}
+    >
+      <Button
+        className={cn("relative overflow-hidden", className)}
+        disabled={disabled}
+        style={gradientStyle}
+        {...props}
       >
-        <Button
-          ref={ref}
-          variant={variant}
-          className={cn(
-            "relative overflow-hidden transition-all",
-            gradientClass,
-            className
-          )}
-          onClick={animation === "ripple" ? handleRipple : undefined}
-          {...props}
-        >
-          {children}
-          
-          {/* Ripple effect */}
-          {animation === "ripple" && ripple.show && (
-            <motion.span 
-              initial={{ scale: 0, opacity: 1 }}
-              animate={{ scale: 4, opacity: 0 }}
-              transition={{ duration: 0.7, ease: "easeOut" }}
-              style={{ 
-                position: "absolute", 
-                top: ripple.y, 
-                left: ripple.x,
-                width: "20px", 
-                height: "20px", 
-                borderRadius: "50%", 
-                backgroundColor: rippleColor,
-                transform: "translate(-50%, -50%)"
-              }} 
-            />
-          )}
-        </Button>
-      </motion.div>
-    );
-  }
-);
-
-AnimatedButton.displayName = "AnimatedButton";
+        {children}
+      </Button>
+    </motion.div>
+  );
+};

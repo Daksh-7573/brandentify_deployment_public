@@ -6,6 +6,8 @@ import { AuthProvider } from "./context/auth-context";
 import { useAuth } from "./hooks/use-auth";
 import { useEffect } from "react";
 import GlobalMuskButton from "@/components/musk/global-musk-button";
+import { TransitionLayout } from "@/components/ui/transition-layout";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
@@ -53,8 +55,13 @@ function ProtectedRoute({ component: Component, ...rest }: { component: React.Co
   
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <LoadingSpinner 
+          size="lg" 
+          variant="gradient" 
+          text="Loading your professional space..." 
+          className="mb-4"
+        />
       </div>
     );
   }
@@ -136,7 +143,9 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <Router />
+        <TransitionLayout animation="fade" duration={0.4}>
+          <Router />
+        </TransitionLayout>
         <GlobalMuskButton />
         <Toaster />
       </AuthProvider>

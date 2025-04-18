@@ -2,6 +2,67 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Modern UI Variables */
+:root {
+  --gradient-primary: linear-gradient(135deg, #6366F1 0%, #14B8A6 100%);
+  --gradient-secondary: linear-gradient(135deg, #FF6B6B 0%, #F59E0B 100%);
+  --gradient-tertiary: linear-gradient(135deg, #14B8A6 0%, #F59E0B 100%);
+  --gradient-rainbow: linear-gradient(135deg, #6366F1 0%, #14B8A6 50%, #F59E0B 100%);
+  --shadow-quantum: 0 8px 32px rgba(99, 102, 241, 0.2);
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --glow-purple: 0 0 15px rgba(99, 102, 241, 0.5);
+  --glow-teal: 0 0 15px rgba(20, 184, 166, 0.5);
+  --glow-amber: 0 0 15px rgba(245, 158, 11, 0.5);
+}
+
+/* Modern UI Components */
+.gradient-text {
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  background-image: var(--gradient-primary);
+}
+
+.gradient-border {
+  position: relative;
+  border-radius: 0.75rem;
+  padding: 1px;
+  background: var(--gradient-rainbow);
+}
+
+.gradient-border-content {
+  border-radius: 0.75rem;
+  background: white;
+  height: 100%;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.125);
+}
+
+.glass-card-dark {
+  background: rgba(30, 30, 30, 0.7);
+  backdrop-filter: blur(10px);
+  border-radius: 1rem;
+  border: 1px solid rgba(50, 50, 50, 0.5);
+}
+
+.button-hover-effect {
+  transition: all 0.3s ease;
+}
+
+.button-hover-effect:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-quantum);
+}
+
+.profile-pattern-bg {
+  background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%236366F1' fill-opacity='0.05' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3Ccircle cx='13' cy='13' r='3'/%3E%3C/g%3E%3C/svg%3E");
+}
+
 /* Custom animations */
 
 /* Artistic Card animations */

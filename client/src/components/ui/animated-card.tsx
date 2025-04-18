@@ -1,96 +1,175 @@
-import * as React from "react";
-import { motion, MotionProps } from "framer-motion";
+import React from "react";
+import { motion, HTMLMotionProps } from "framer-motion";
 import { cn } from "@/lib/utils";
 
-interface AnimatedCardProps extends React.HTMLAttributes<HTMLDivElement>, MotionProps {
-  children: React.ReactNode;
-  variant?: "default" | "outline" | "ghost" | "gradient" | "quantum";
-  depth?: "flat" | "subtle" | "medium" | "deep";
-  interactive?: boolean;
-}
+// We need to omit conflicting properties
+type AnimatedCardProps = Omit<HTMLMotionProps<"div">, "animate" | "initial" | "transition" | "whileHover"> & {
+  animation?: "fade" | "slide" | "scale" | "tilt" | "border" | "none";
+  className?: string;
+  duration?: number;
+  delay?: number;
+  hoverEffect?: boolean;
+  once?: boolean;
+  cardStyle?: "shadow" | "outline" | "gradient" | "glass" | "minimal";
+  borderColor?: string;
+};
 
-export const AnimatedCard = React.forwardRef<HTMLDivElement, AnimatedCardProps>(
-  ({ 
-    className, 
-    children, 
-    variant = "default", 
-    depth = "medium", 
-    interactive = true, 
-    ...props 
-  }, ref) => {
-    // Card appearance variants
-    const variantClasses = {
-      default: "bg-white dark:bg-gray-800",
-      outline: "bg-white dark:bg-gray-800 border border-border",
-      ghost: "bg-transparent hover:bg-gray-50 dark:hover:bg-gray-800",
-      gradient: "bg-gradient-to-br from-purple-400 via-purple-500 to-teal-400 text-white",
-      quantum: "relative bg-white dark:bg-gray-800 before:absolute before:inset-0 before:rounded-xl before:p-[1.5px] before:bg-gradient-to-r before:from-purple-500 before:via-teal-400 before:to-amber-400 before:-z-10",
+export const AnimatedCard: React.FC<AnimatedCardProps> = ({
+  children,
+  animation = "fade",
+  className = "",
+  duration = 0.5,
+  delay = 0,
+  hoverEffect = true,
+  once = true,
+  cardStyle = "shadow",
+  borderColor = "linear-gradient(135deg, #6366F1 0%, #14B8A6 100%)",
+  ...props
+}) => {
+  // Animation variants based on the animation prop
+  const getAnimationProps = () => {
+    const baseTransition = {
+      duration,
+      delay,
+      ease: "easeOut",
     };
     
-    // Card depth (shadow) variants
-    const depthClasses = {
-      flat: "shadow-none",
-      subtle: "shadow-sm",
-      medium: "shadow-md",
-      deep: "shadow-lg",
-    };
+    // Initial and animate states
+    switch (animation) {
+      case "fade":
+        return {
+          initial: { opacity: 0 },
+          animate: { opacity: 1 },
+          transition: baseTransition,
+        };
+      case "slide":
+        return {
+          initial: { opacity: 0, x: -20 },
+          animate: { opacity: 1, x: 0 },
+          transition: baseTransition,
+        };
+      case "scale":
+        return {
+          initial: { opacity: 0, scale: 0.9 },
+          animate: { opacity: 1, scale: 1 },
+          transition: baseTransition,
+        };
+      case "tilt":
+        return {
+          initial: { opacity: 0, rotate: -2 },
+          animate: { opacity: 1, rotate: 0 },
+          transition: baseTransition,
+        };
+      case "border":
+        return {
+          initial: { opacity: 0, borderWidth: 0 },
+          animate: { opacity: 1, borderWidth: 2 },
+          transition: baseTransition,
+        };
+      case "none":
+      default:
+        return {
+          initial: {},
+          animate: {},
+          transition: baseTransition,
+        };
+    }
+  };
+
+  // Hover effects
+  const getHoverProps = () => {
+    if (!hoverEffect) return {};
     
-    // Card entrance animation variants
-    const enterAnimation = {
-      hidden: { opacity: 0, y: 20 },
-      visible: { 
-        opacity: 1, 
-        y: 0,
-        transition: {
-          duration: 0.4,
-          ease: "easeOut"
-        }
-      },
-      exit: { 
-        opacity: 0, 
-        y: -20,
-        transition: {
-          duration: 0.2,
-          ease: "easeIn"
-        }
-      }
-    };
+    switch (cardStyle) {
+      case "shadow":
+        return {
+          whileHover: { 
+            y: -5, 
+            boxShadow: "0 20px 40px rgba(0, 0, 0, 0.1)",
+            transition: { duration: 0.2 }
+          }
+        };
+      case "outline":
+        return {
+          whileHover: { 
+            scale: 1.02,
+            borderColor: "rgba(99, 102, 241, 0.8)",
+            transition: { duration: 0.2 }
+          }
+        };
+      case "gradient":
+        return {
+          whileHover: { 
+            y: -5,
+            boxShadow: "0 15px 30px rgba(99, 102, 241, 0.2)",
+            transition: { duration: 0.2 }
+          }
+        };
+      case "glass":
+        return {
+          whileHover: { 
+            backdropFilter: "blur(12px)",
+            scale: 1.02,
+            transition: { duration: 0.2 }
+          }
+        };
+      case "minimal":
+      default:
+        return {
+          whileHover: { 
+            y: -3,
+            transition: { duration: 0.2 }
+          }
+        };
+    }
+  };
 
-    // Card hover animation (if interactive)
-    const hoverAnimation = interactive ? {
-      whileHover: { 
-        scale: 1.02,
-        boxShadow: "0 10px 30px rgba(0,0,0,0.12)"
-      },
-      whileTap: { scale: 0.98 },
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 20
-      }
-    } : {};
+  // Card style classes
+  const getCardStyleClasses = () => {
+    switch (cardStyle) {
+      case "shadow":
+        return "bg-card shadow-md";
+      case "outline":
+        return "bg-card border border-border";
+      case "gradient":
+        return "bg-card border border-transparent";
+      case "glass":
+        return "glass-card backdrop-blur-sm bg-opacity-70";
+      case "minimal":
+      default:
+        return "bg-card";
+    }
+  };
 
-    return (
-      <motion.div
-        ref={ref}
-        className={cn(
-          "rounded-xl overflow-hidden p-5",
-          variantClasses[variant],
-          depthClasses[depth],
-          interactive ? "cursor-pointer" : "",
-          className
-        )}
-        initial="hidden"
-        animate="visible"
-        exit="exit"
-        variants={enterAnimation}
-        {...hoverAnimation}
-        {...props}
-      >
-        {children}
-      </motion.div>
-    );
-  }
-);
+  // Gradient border style
+  const gradientBorderStyle = cardStyle === "gradient" ? {
+    position: "relative",
+    backgroundClip: "padding-box",
+    border: "1px solid transparent",
+    "&::before": {
+      content: "''",
+      position: "absolute",
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+      margin: "-1px",
+      borderRadius: "inherit",
+      background: borderColor,
+      zIndex: -1,
+    }
+  } : {};
 
-AnimatedCard.displayName = "AnimatedCard";
+  return (
+    <motion.div
+      className={cn("rounded-xl p-4", getCardStyleClasses(), className)}
+      style={gradientBorderStyle}
+      {...getAnimationProps()}
+      {...getHoverProps()}
+      viewport={{ once }}
+      {...props}
+    >
+      {children}
+    </motion.div>
+  );
+};
