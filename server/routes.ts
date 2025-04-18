@@ -15,13 +15,7 @@ import { handleMuskChat, handleResumeUpload, handlePitchDeckUpload } from "./rou
 import muskSuggestionRoutes from "./routes-musk-suggestions";
 import muskMatchRoutes from "./routes-musk-match";
 import { registerSmartConnectRoutes } from "./routes-smart-connect";
-import { 
-  getShadowResume, 
-  updateShadowResume, 
-  generateResumeContent, 
-  applyGeneratedContent,
-  createInitialShadowResume
-} from "./routes-shadow-resume";
+import { setupShadowResumeRoutes } from "./routes-shadow-resume";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -4599,11 +4593,7 @@ ${extractedText.substring(0, 5000)}
   app.use("/api/musk-matches", muskMatchRoutes);
 
   // Shadow Resume routes
-  apiRouter.get("/users/:userId/shadow-resume", getShadowResume);
-  apiRouter.put("/resumes/:id", updateShadowResume);
-  apiRouter.post("/resume/generate-content", generateResumeContent);
-  apiRouter.post("/resume/apply-content", applyGeneratedContent);
-  apiRouter.post("/users/:userId/create-shadow-resume", createInitialShadowResume);
+  setupShadowResumeRoutes(apiRouter, storage);
 
   app.use("/api", apiRouter);
 
