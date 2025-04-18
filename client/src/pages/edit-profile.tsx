@@ -16,7 +16,7 @@ export default function EditProfilePage() {
   const { user, isAuthenticated, isDemoMode } = useAuth();
   const [_, setLocation] = useLocation();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState("about-me");
+  const [activeTab, setActiveTab] = useState("all about me");
   const [isSaving, setIsSaving] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [completionPercentage, setCompletionPercentage] = useState(0);
@@ -73,17 +73,25 @@ export default function EditProfilePage() {
   
   // Map tab names to more user-friendly display names
   const tabDisplayNames: Record<string, { label: string, icon: React.ReactNode }> = {
-    "about-me": { label: "About Me", icon: <User className="h-4 w-4 mr-2" /> },
-    "skills": { label: "Skills", icon: <Lightbulb className="h-4 w-4 mr-2" /> },
-    "services": { label: "Services", icon: <BadgeCheck className="h-4 w-4 mr-2" /> },
-    "projects": { label: "Showcase", icon: <BookOpen className="h-4 w-4 mr-2" /> },
-    "experiences": { label: "Work History", icon: <Briefcase className="h-4 w-4 mr-2" /> },
-    "educations": { label: "Education", icon: <GraduationCap className="h-4 w-4 mr-2" /> },
-    "contact": { label: "Contact", icon: <BadgeCheck className="h-4 w-4 mr-2" /> },
+    "all about me": { label: "About Me", icon: <User className="h-4 w-4 mr-2" /> },
+    "what i'm good at": { label: "Skills", icon: <Lightbulb className="h-4 w-4 mr-2" /> },
+    "what i offer": { label: "Services", icon: <BadgeCheck className="h-4 w-4 mr-2" /> },
+    "showcase": { label: "Projects", icon: <BookOpen className="h-4 w-4 mr-2" /> },
+    "career path": { label: "Work History", icon: <Briefcase className="h-4 w-4 mr-2" /> },
+    "academic background": { label: "Education", icon: <GraduationCap className="h-4 w-4 mr-2" /> },
+    "personal information": { label: "Contact", icon: <BadgeCheck className="h-4 w-4 mr-2" /> },
   };
   
   // Tabs order
-  const tabOrder = ["about-me", "skills", "services", "projects", "experiences", "educations", "contact"];
+  const tabOrder = [
+    "all about me", 
+    "what i'm good at", 
+    "what i offer", 
+    "showcase", 
+    "career path", 
+    "academic background", 
+    "personal information"
+  ];
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
