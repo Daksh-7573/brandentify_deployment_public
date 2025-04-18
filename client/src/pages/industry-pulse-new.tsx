@@ -1045,131 +1045,139 @@ export default function IndustryPulsePage() {
       <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top for fixed header */}
         {/* Main content area */}
         <div className="flex-1 overflow-auto">
-          <div className="container py-8 px-6 max-w-5xl mx-auto">
-            <div className="mb-8 flex justify-between items-center">
-              <div>
-                <h1 className="text-3xl font-bold tracking-tight">Industry Pulse</h1>
-                <p className="text-muted-foreground mt-1">
-                  Discover insights, polls, and media from your professional network
-                </p>
+          <div className="container py-8 px-6 mx-auto flex">
+            {/* Main content */}
+            <div className="flex-1 max-w-4xl mr-6">
+              <div className="mb-8 flex justify-between items-center">
+                <div>
+                  <h1 className="text-3xl font-bold tracking-tight">Industry Pulse</h1>
+                  <p className="text-muted-foreground mt-1">
+                    Discover insights, polls, and media from your professional network
+                  </p>
+                </div>
+                <Button onClick={() => setLocation("/create-pulse")}>
+                  Create Pulse
+                </Button>
               </div>
-              <Button onClick={() => setLocation("/create-pulse")}>
-                Create Pulse
-              </Button>
-            </div>
-            
-            <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="mb-6">
-                <TabsTrigger value="all">All</TabsTrigger>
-                <TabsTrigger value="media-pulse">Media</TabsTrigger>
-                <TabsTrigger value="poll">Polls</TabsTrigger>
-                <TabsTrigger value="project">Projects</TabsTrigger>
-                <TabsTrigger value="musk-news" className="bg-amber-50 text-amber-900 hover:bg-amber-100 data-[state=active]:bg-amber-200">
-                  Musk ⚡
-                </TabsTrigger>
-              </TabsList>
               
-              <TabsContent value={activeTab}>
-                {/* Smart refresh banner */}
-                <SmartRefreshBanner 
-                  hasNewContent={hasNewContent} 
-                  onRefresh={handleRefresh}
-                  isPremiumContent={hasPremiumContent}
-                />
+              <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
+                <TabsList className="mb-6">
+                  <TabsTrigger value="all">All</TabsTrigger>
+                  <TabsTrigger value="media-pulse">Media</TabsTrigger>
+                  <TabsTrigger value="poll">Polls</TabsTrigger>
+                  <TabsTrigger value="project">Projects</TabsTrigger>
+                  <TabsTrigger value="musk-news" className="bg-amber-50 text-amber-900 hover:bg-amber-100 data-[state=active]:bg-amber-200">
+                    Musk ⚡
+                  </TabsTrigger>
+                </TabsList>
                 
-                {isLoading ? (
-                  <div className="flex justify-center py-12">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-                  </div>
-                ) : filteredPulses.length === 0 ? (
-                  <Card>
-                    <CardContent className="flex flex-col items-center justify-center py-10">
-                      <Users className="h-16 w-16 text-muted-foreground/50 mb-4" />
-                      <h3 className="text-xl font-semibold mb-2">No pulses yet</h3>
-                      <p className="text-center text-muted-foreground max-w-md mb-6">
-                        {activeTab === "all" 
-                          ? "Be the first to create a pulse in your professional network!" 
-                          : activeTab === "musk-news" 
-                            ? "No Musk news updates available yet. Check back later for the latest insights!" 
-                            : `No ${activeTab} pulses available yet. Create one to get started!`}
-                      </p>
-                      {activeTab === "musk-news" ? (
-                        <Button variant="outline" onClick={() => setActiveTab("all")}>
-                          View All Pulses
-                        </Button>
-                      ) : (
-                        <Button onClick={() => setLocation("/create-pulse")}>
-                          Create Your First Pulse
-                        </Button>
-                      )}
-                    </CardContent>
-                  </Card>
-                ) : (
-                  <div className="space-y-6">
-                    {filteredPulses.map((pulse: PulseWithUser) => (
-                      <Card key={pulse.id} className="overflow-hidden">
-                        <CardHeader className="pb-3">
-                          <div className="flex justify-between">
-                            <div className="flex items-start gap-3">
-                              <Avatar className="h-9 w-9">
-                                {pulse.user?.photoURL ? (
-                                  <AvatarImage src={pulse.user.photoURL} alt={pulse.user.name || "User"} />
-                                ) : (
-                                  <AvatarFallback>
-                                    {pulse.user?.name?.[0] || "U"}
-                                  </AvatarFallback>
-                                )}
-                              </Avatar>
-                              <div>
-                                <div className="font-medium">
-                                  {pulse.user?.name || "Anonymous User"}
-                                  {/* Special labeling for Musk */}
-                                  {pulse.userId === 3 && <span className="text-amber-500 ml-1">⚡</span>}
-                                </div>
-                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                  <span>
-                                    {formatDistanceToNow(new Date(pulse.createdAt), { addSuffix: true })}
-                                  </span>
-                                  <span>•</span>
-                                  <span className="flex items-center gap-1">
-                                    {getPulseIcon(pulse)}
-                                    {pulse.type === 'media-pulse' ? pulse.mediaType : pulse.type}
-                                  </span>
+                <TabsContent value={activeTab}>
+                  {/* Smart refresh banner */}
+                  <SmartRefreshBanner 
+                    hasNewContent={hasNewContent} 
+                    onRefresh={handleRefresh}
+                    isPremiumContent={hasPremiumContent}
+                  />
+                  
+                  {isLoading ? (
+                    <div className="flex justify-center py-12">
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                    </div>
+                  ) : filteredPulses.length === 0 ? (
+                    <Card>
+                      <CardContent className="flex flex-col items-center justify-center py-10">
+                        <Users className="h-16 w-16 text-muted-foreground/50 mb-4" />
+                        <h3 className="text-xl font-semibold mb-2">No pulses yet</h3>
+                        <p className="text-center text-muted-foreground max-w-md mb-6">
+                          {activeTab === "all" 
+                            ? "Be the first to create a pulse in your professional network!" 
+                            : activeTab === "musk-news" 
+                              ? "No Musk news updates available yet. Check back later for the latest insights!" 
+                              : `No ${activeTab} pulses available yet. Create one to get started!`}
+                        </p>
+                        {activeTab === "musk-news" ? (
+                          <Button variant="outline" onClick={() => setActiveTab("all")}>
+                            View All Pulses
+                          </Button>
+                        ) : (
+                          <Button onClick={() => setLocation("/create-pulse")}>
+                            Create Your First Pulse
+                          </Button>
+                        )}
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <div className="space-y-6">
+                      {filteredPulses.map((pulse: PulseWithUser) => (
+                        <Card key={pulse.id} className="overflow-hidden">
+                          <CardHeader className="pb-3">
+                            <div className="flex justify-between">
+                              <div className="flex items-start gap-3">
+                                <Avatar className="h-9 w-9">
+                                  {pulse.user?.photoURL ? (
+                                    <AvatarImage src={pulse.user.photoURL} alt={pulse.user.name || "User"} />
+                                  ) : (
+                                    <AvatarFallback>
+                                      {pulse.user?.name?.[0] || "U"}
+                                    </AvatarFallback>
+                                  )}
+                                </Avatar>
+                                <div>
+                                  <div className="font-medium">
+                                    {pulse.user?.name || "Anonymous User"}
+                                    {/* Special labeling for Musk */}
+                                    {pulse.userId === 3 && <span className="text-amber-500 ml-1">⚡</span>}
+                                  </div>
+                                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                    <span>
+                                      {formatDistanceToNow(new Date(pulse.createdAt), { addSuffix: true })}
+                                    </span>
+                                    <span>•</span>
+                                    <span className="flex items-center gap-1">
+                                      {getPulseIcon(pulse)}
+                                      {pulse.type === 'media-pulse' ? pulse.mediaType : pulse.type}
+                                    </span>
+                                  </div>
                                 </div>
                               </div>
                             </div>
-                          </div>
-                        </CardHeader>
-                        <CardContent>
-                          <CardTitle className="mb-3">{pulse.title}</CardTitle>
-                          <p className="text-muted-foreground">{pulse.content}</p>
-                          
-                          {/* Render pulse content based on type */}
-                          {pulse.type === 'poll' && (
-                            <PollVoting pulse={pulse} />
-                          )}
-                          
-                          {pulse.type === 'media-pulse' && pulse.mediaType === 'image' && (
-                            <ImageCarousel pulse={pulse} />
-                          )}
-                          
-                          {pulse.type === 'media-pulse' && pulse.mediaType === 'video' && (
-                            <VideoPlayer pulse={pulse} />
-                          )}
-                          
-                          {pulse.type === 'project' && (
-                            <ProjectDetails pulse={pulse} />
-                          )}
-                        </CardContent>
-                        <CardFooter className="flex justify-between pt-0">
-                          <PulseReactions pulse={pulse} />
-                        </CardFooter>
-                      </Card>
-                    ))}
-                  </div>
-                )}
-              </TabsContent>
-            </Tabs>
+                          </CardHeader>
+                          <CardContent>
+                            <CardTitle className="mb-3">{pulse.title}</CardTitle>
+                            <p className="text-muted-foreground">{pulse.content}</p>
+                            
+                            {/* Render pulse content based on type */}
+                            {pulse.type === 'poll' && (
+                              <PollVoting pulse={pulse} />
+                            )}
+                            
+                            {pulse.type === 'media-pulse' && pulse.mediaType === 'image' && (
+                              <ImageCarousel pulse={pulse} />
+                            )}
+                            
+                            {pulse.type === 'media-pulse' && pulse.mediaType === 'video' && (
+                              <VideoPlayer pulse={pulse} />
+                            )}
+                            
+                            {pulse.type === 'project' && (
+                              <ProjectDetails pulse={pulse} />
+                            )}
+                          </CardContent>
+                          <CardFooter className="flex justify-between pt-0">
+                            <PulseReactions pulse={pulse} />
+                          </CardFooter>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+                </TabsContent>
+              </Tabs>
+            </div>
+            
+            {/* Nowboard Panel Sidebar */}
+            <div className="hidden lg:block w-80">
+              <NowboardPanel />
+            </div>
           </div>
         </div>
       </div>
