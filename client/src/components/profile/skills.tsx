@@ -111,8 +111,9 @@ export default function Skills() {
     // Also update the proficiency level based on the slider value
     let level = 'Intermediate';
     if (proficiency <= 25) level = 'Beginner';
-    else if (proficiency <= 75) level = 'Intermediate';
-    else level = 'Advanced';
+    else if (proficiency <= 50) level = 'Intermediate';
+    else if (proficiency <= 75) level = 'Advanced';
+    else level = 'Expert';
     
     setNewSkill(prev => ({ ...prev, proficiency, level }));
   };
@@ -122,7 +123,8 @@ export default function Skills() {
     let proficiency = 50;
     if (value === 'Beginner') proficiency = 25;
     else if (value === 'Intermediate') proficiency = 50;
-    else if (value === 'Advanced') proficiency = 100;
+    else if (value === 'Advanced') proficiency = 75;
+    else if (value === 'Expert') proficiency = 100;
     
     setSliderValue(proficiency);
     setNewSkill(prev => ({ ...prev, level: value, proficiency }));
@@ -333,7 +335,9 @@ export default function Skills() {
               <div className="col-span-3 px-2">
                 <div className="mb-2 flex justify-between">
                   <span className="text-xs text-gray-600">Beginner</span>
+                  <span className="text-xs text-gray-600">Intermediate</span>
                   <span className="text-xs text-gray-600">Advanced</span>
+                  <span className="text-xs text-gray-600">Expert</span>
                 </div>
                 <Slider
                   value={[sliderValue]}

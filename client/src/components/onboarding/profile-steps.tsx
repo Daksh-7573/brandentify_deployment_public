@@ -920,6 +920,12 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
                 <Label htmlFor="proficiency">Proficiency Percentage <span className="text-xs text-gray-500">(two-way sync with level)</span></Label>
                 <span className="text-sm text-gray-500">{proficiencyValue}%</span>
               </div>
+              <div className="mb-2 flex justify-between text-xs text-gray-600">
+                <span>Beginner</span>
+                <span>Intermediate</span>
+                <span>Advanced</span>
+                <span>Expert</span>
+              </div>
               <Slider
                 value={[proficiencyValue]}
                 onValueChange={(values) => {
@@ -929,8 +935,9 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
                   // Also update the proficiency level based on the slider value
                   let level = 'Intermediate';
                   if (value <= 25) level = 'Beginner';
-                  else if (value <= 75) level = 'Intermediate';
-                  else if (value <= 100) level = 'Expert';
+                  else if (value <= 50) level = 'Intermediate';
+                  else if (value <= 75) level = 'Advanced';
+                  else level = 'Expert';
                   
                   setNewSkillLevel(level);
                 }}
