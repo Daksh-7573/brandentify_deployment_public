@@ -1740,7 +1740,7 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
               <input
                 type="checkbox"
                 id="currentEducation"
-                checked={education.current}
+                checked={educationFormData.current}
                 onChange={handleCurrentChange}
                 className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
               />
@@ -1757,8 +1757,8 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
               <Textarea
                 id="eduDescription"
                 placeholder="Describe your studies, achievements, activities"
-                value={education.description}
-                onChange={(e) => setEducation(prev => ({ ...prev, description: e.target.value }))}
+                value={educationFormData.description}
+                onChange={(e) => setEducationFormData(prev => ({ ...prev, description: e.target.value }))}
                 rows={3}
               />
             </div>
