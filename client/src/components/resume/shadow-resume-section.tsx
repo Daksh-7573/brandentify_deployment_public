@@ -33,9 +33,10 @@ interface ShadowResumeProps {
   user: UserData | any; // Using any for demo purposes to handle potential null or partial data
   resume?: Resume;
   isCurrentUser: boolean;
+  isOwner?: boolean;
 }
 
-export default function ShadowResumeSection({ user, resume, isCurrentUser }: ShadowResumeProps) {
+export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwner = true }: ShadowResumeProps) {
   const { toast } = useToast();
   const [resumeTheme, setResumeTheme] = useState<ResumeTheme>(
     (resume?.themeStyle as ResumeTheme) || 'professional'
@@ -125,9 +126,6 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser }: Sha
     { date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30), description: 'Initial resume creation based on profile data', version: 30 },
   ];
 
-  // Whether the current user is viewing their own resume
-  const isOwner = isCurrentUser;
-  
   // Format options for themes that match portfolio layouts
   const themeOptions = [
     { value: 'professional', label: 'Professional' },
