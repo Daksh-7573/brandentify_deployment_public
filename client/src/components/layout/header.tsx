@@ -168,6 +168,16 @@ export default function Header() {
               <Zap className="h-4 w-4" /> Create Pulse
             </Button>
             
+            {/* Resume Button */}
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="hidden sm:flex px-4 py-2 text-sm font-medium text-primary border-primary/30 hover:bg-primary/5 items-center gap-1.5"
+              onClick={() => setLocation('/profile#resume')}
+            >
+              <FileText className="h-4 w-4" /> Resume
+            </Button>
+            
             {/* Settings Button */}
             <Button
               variant="ghost"
