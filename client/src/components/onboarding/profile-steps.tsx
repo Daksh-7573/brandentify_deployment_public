@@ -846,7 +846,7 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
     const removeSkill = (index: number) => {
       setFormData(prev => ({
         ...prev,
-        skills: prev.skills.filter((_, i) => i !== index)
+        skills: (prev.skills || []).filter((_, i) => i !== index)
       }));
     };
     
@@ -953,7 +953,7 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
         </div>
         
         {/* Skills list */}
-        {formData.skills.length > 0 ? (
+        {formData.skills && formData.skills.length > 0 ? (
           <div>
             <h3 className="text-sm font-medium mb-3">Your Skills</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -1124,7 +1124,7 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
         </div>
         
         {/* Services list */}
-        {formData.services.length > 0 ? (
+        {formData.services && formData.services.length > 0 ? (
           <div>
             <h3 className="text-sm font-medium mb-3">Your Services</h3>
             <div className="grid gap-4">
@@ -1320,7 +1320,7 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
         </div>
         
         {/* Projects list */}
-        {formData.projects.length > 0 ? (
+        {formData.projects && formData.projects.length > 0 ? (
           <div>
             <h3 className="text-sm font-medium mb-3">Your Projects</h3>
             <div className="grid gap-4">
@@ -1542,7 +1542,7 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
         </div>
         
         {/* Experiences list */}
-        {formData.experiences.length > 0 ? (
+        {formData.experiences && formData.experiences.length > 0 ? (
           <div>
             <h3 className="text-sm font-medium mb-3">Your Work Experience</h3>
             <div className="grid gap-4">
@@ -1774,7 +1774,7 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
         </div>
         
         {/* Educations list */}
-        {formData.educations.length > 0 ? (
+        {formData.educations && formData.educations.length > 0 ? (
           <div>
             <h3 className="text-sm font-medium mb-3">Your Education</h3>
             <div className="grid gap-4">
