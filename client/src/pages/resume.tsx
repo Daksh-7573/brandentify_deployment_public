@@ -130,6 +130,7 @@ export default function ResumePage() {
                 user={userData || user} 
                 resume={resume}
                 isCurrentUser={true}
+                isOwner={true}
               />
             ) : (
               <div className="flex flex-col items-center justify-center p-10 border rounded-lg bg-card">
