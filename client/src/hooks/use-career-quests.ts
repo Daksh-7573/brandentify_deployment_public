@@ -17,9 +17,9 @@ export const useQuestDefinitions = () => {
 // Fetch user's active quests
 export const useUserQuests = (userId: number) => {
   return useQuery({
-    queryKey: ['/api/user-quests', userId],
+    queryKey: [`/api/users/${userId}/quests`],
     queryFn: async () => {
-      const res = await fetch(`/api/user-quests/${userId}`);
+      const res = await fetch(`/api/users/${userId}/quests`);
       if (!res.ok) throw new Error('Failed to fetch user quests');
       return res.json() as Promise<UserQuest[]>;
     },
@@ -30,9 +30,9 @@ export const useUserQuests = (userId: number) => {
 // Fetch user's active quests with full quest definitions
 export const useUserQuestsWithDefinitions = (userId: number) => {
   return useQuery({
-    queryKey: ['/api/user-quests-with-definitions', userId],
+    queryKey: [`/api/users/${userId}/quests-with-definitions`],
     queryFn: async () => {
-      const res = await fetch(`/api/user-quests-with-definitions/${userId}`);
+      const res = await fetch(`/api/users/${userId}/quests-with-definitions`);
       if (!res.ok) throw new Error('Failed to fetch user quests with definitions');
       return res.json() as Promise<UserQuest[]>;
     },
@@ -43,9 +43,9 @@ export const useUserQuestsWithDefinitions = (userId: number) => {
 // Fetch user's weekly quests
 export const useUserWeeklyQuests = (userId: number, weekNumber: number, year: number) => {
   return useQuery({
-    queryKey: ['/api/user-quests/weekly', userId, weekNumber, year],
+    queryKey: [`/api/users/${userId}/quests/current-week`],
     queryFn: async () => {
-      const res = await fetch(`/api/user-quests/weekly/${userId}/${weekNumber}/${year}`);
+      const res = await fetch(`/api/users/${userId}/quests/current-week?week=${weekNumber}&year=${year}`);
       if (!res.ok) throw new Error('Failed to fetch weekly quests');
       return res.json() as Promise<UserQuest[]>;
     },
@@ -56,7 +56,7 @@ export const useUserWeeklyQuests = (userId: number, weekNumber: number, year: nu
 // Fetch user's XP information
 export const useUserXp = (userId: number) => {
   return useQuery({
-    queryKey: ['/api/users/:userId/xp', userId],
+    queryKey: [`/api/users/${userId}/xp`],
     queryFn: async () => {
       const res = await fetch(`/api/users/${userId}/xp`);
       if (!res.ok) throw new Error('Failed to fetch user XP');
@@ -69,7 +69,7 @@ export const useUserXp = (userId: number) => {
 // Fetch user's badges
 export const useUserBadges = (userId: number) => {
   return useQuery({
-    queryKey: ['/api/users/:userId/badges', userId],
+    queryKey: [`/api/users/${userId}/badges`],
     queryFn: async () => {
       const res = await fetch(`/api/users/${userId}/badges`);
       if (!res.ok) throw new Error('Failed to fetch user badges');
@@ -82,7 +82,7 @@ export const useUserBadges = (userId: number) => {
 // Fetch user's XP transactions
 export const useXpTransactions = (userId: number) => {
   return useQuery({
-    queryKey: ['/api/users/:userId/xp-transactions', userId],
+    queryKey: [`/api/users/${userId}/xp-transactions`],
     queryFn: async () => {
       const res = await fetch(`/api/users/${userId}/xp-transactions`);
       if (!res.ok) throw new Error('Failed to fetch XP transactions');
@@ -121,7 +121,7 @@ export const useUpdateQuestProgress = () => {
         queryKey: [`/api/users/${data.userId}/quests/current-week`] 
       });
       queryClient.invalidateQueries({ 
-        queryKey: ['/api/user-quests-with-definitions', data.userId] 
+        queryKey: [`/api/users/${data.userId}/quests-with-definitions`] 
       });
       
       // If quest was completed, also invalidate XP and badges
@@ -160,7 +160,7 @@ export const useCompleteQuest = () => {
         queryKey: [`/api/users/${data.userId}/quests/current-week`] 
       });
       queryClient.invalidateQueries({ 
-        queryKey: ['/api/user-quests-with-definitions', data.userId] 
+        queryKey: [`/api/users/${data.userId}/quests-with-definitions`] 
       });
       queryClient.invalidateQueries({ queryKey: [`/api/users/${data.userId}/xp`] });
       queryClient.invalidateQueries({ queryKey: [`/api/users/${data.userId}/badges`] });
@@ -198,7 +198,7 @@ export const useDismissQuest = () => {
         queryKey: [`/api/users/${data.userId}/quests/current-week`] 
       });
       queryClient.invalidateQueries({ 
-        queryKey: ['/api/user-quests-with-definitions', data.userId] 
+        queryKey: [`/api/users/${data.userId}/quests-with-definitions`] 
       });
     }
   });
