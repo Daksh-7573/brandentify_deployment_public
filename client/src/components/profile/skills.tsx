@@ -107,7 +107,14 @@ export default function Skills() {
   const handleSliderChange = (value: number[]) => {
     const proficiency = value[0];
     setSliderValue(proficiency);
-    setNewSkill(prev => ({ ...prev, proficiency }));
+    
+    // Also update the proficiency level based on the slider value
+    let level = 'Intermediate';
+    if (proficiency <= 25) level = 'Beginner';
+    else if (proficiency <= 75) level = 'Intermediate';
+    else level = 'Advanced';
+    
+    setNewSkill(prev => ({ ...prev, proficiency, level }));
   };
   
   const handleLevelChange = (value: string) => {

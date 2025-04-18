@@ -208,7 +208,7 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
   // State for Skills step
   const [newSkillName, setNewSkillName] = useState<string>('');
   const [newSkillLevel, setNewSkillLevel] = useState<string>('Intermediate');
-  const [newSkillCategory, setNewSkillCategory] = useState<string>('Technical');
+  // Category field removed as it's not needed
   const [proficiencyValue, setProficiencyValue] = useState<number>(50);
   
   // State for Services step
@@ -828,7 +828,7 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
       const newSkill = {
         name: newSkillName,
         level: newSkillLevel,
-        category: newSkillCategory,
+        category: '', // Empty category since it's no longer used
         proficiency: proficiencyValue
       };
       
@@ -889,61 +889,51 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
               />
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="skillCategory">Category <span className="text-xs text-gray-500">(optional)</span></Label>
-                <Select
-                  value={newSkillCategory}
-                  onValueChange={setNewSkillCategory}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {skillsCategories.map((category) => (
-                      <SelectItem key={category.value} value={category.value}>
-                        {category.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="grid gap-2">
-                <Label htmlFor="skillLevel">Proficiency Level <span className="text-red-500">*</span></Label>
-                <Select
-                  value={newSkillLevel}
-                  onValueChange={(value) => {
-                    setNewSkillLevel(value);
-                    // Automatically set a matching proficiency value based on level
-                    if (value === 'Beginner') setProficiencyValue(25);
-                    else if (value === 'Intermediate') setProficiencyValue(50);
-                    else if (value === 'Advanced') setProficiencyValue(75);
-                    else if (value === 'Expert') setProficiencyValue(100);
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {skillLevels.map((level) => (
-                      <SelectItem key={level.value} value={level.value}>
-                        {level.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="grid gap-2">
+              <Label htmlFor="skillLevel">Proficiency Level <span className="text-red-500">*</span></Label>
+              <Select
+                value={newSkillLevel}
+                onValueChange={(value) => {
+                  setNewSkillLevel(value);
+                  // Automatically set a matching proficiency value based on level
+                  if (value === 'Beginner') setProficiencyValue(25);
+                  else if (value === 'Intermediate') setProficiencyValue(50);
+                  else if (value === 'Advanced') setProficiencyValue(75);
+                  else if (value === 'Expert') setProficiencyValue(100);
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a level" />
+                </SelectTrigger>
+                <SelectContent>
+                  {skillLevels.map((level) => (
+                    <SelectItem key={level.value} value={level.value}>
+                      {level.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             
             <div className="grid gap-2">
               <div className="flex justify-between">
-                <Label htmlFor="proficiency">Proficiency Percentage <span className="text-xs text-gray-500">(auto-set based on level)</span></Label>
+                <Label htmlFor="proficiency">Proficiency Percentage <span className="text-xs text-gray-500">(two-way sync with level)</span></Label>
                 <span className="text-sm text-gray-500">{proficiencyValue}%</span>
               </div>
               <Slider
                 value={[proficiencyValue]}
-                onValueChange={(values) => setProficiencyValue(values[0])}
+                onValueChange={(values) => {
+                  const value = values[0];
+                  setProficiencyValue(value);
+                  
+                  // Also update the proficiency level based on the slider value
+                  let level = 'Intermediate';
+                  if (value <= 25) level = 'Beginner';
+                  else if (value <= 75) level = 'Intermediate';
+                  else if (value <= 100) level = 'Expert';
+                  
+                  setNewSkillLevel(level);
+                }}
                 max={100}
                 step={1}
               />
