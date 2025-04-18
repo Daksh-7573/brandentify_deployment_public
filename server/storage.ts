@@ -762,6 +762,10 @@ export class MemStorage implements IStorage {
     this.industryTrendsMonitor.clear();
     this.userMilestones.clear();
     this.smartPostSuggestions.clear();
+    
+    // Clear all Nowboard data
+    this.nowboardItems.clear();
+    this.nowboardInspiredBy.clear();
   }
   
   /**
