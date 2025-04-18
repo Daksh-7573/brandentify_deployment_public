@@ -1029,7 +1029,7 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
       
       setFormData(prev => ({
         ...prev,
-        services: [...prev.services, serviceFormData]
+        services: [...(prev.services || []), serviceFormData]
       }));
       
       // Reset form
@@ -1045,7 +1045,7 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
     const removeService = (index: number) => {
       setFormData(prev => ({
         ...prev,
-        services: prev.services.filter((_, i) => i !== index)
+        services: (prev.services || []).filter((_, i) => i !== index)
       }));
     };
     
@@ -1200,7 +1200,7 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
       
       setFormData(prev => ({
         ...prev,
-        projects: [...prev.projects, projectFormData]
+        projects: [...(prev.projects || []), projectFormData]
       }));
       
       // Reset form
@@ -1218,7 +1218,7 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
     const removeProject = (index: number) => {
       setFormData(prev => ({
         ...prev,
-        projects: prev.projects.filter((_, i) => i !== index)
+        projects: (prev.projects || []).filter((_, i) => i !== index)
       }));
     };
     
