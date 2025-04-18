@@ -1,5 +1,6 @@
 import { useContext } from 'react';
 import { AuthContext } from '@/context/auth-context';
+import Header from '@/components/layout/header';
 import { QuestPanel } from '@/components/career-quests/quest-panel';
 import { BadgeDisplay } from '@/components/career-quests/badge-display';
 import { XpProgressBar } from '@/components/career-quests/xp-progress-bar';
@@ -36,89 +37,92 @@ export default function CareerQuestsPage() {
   }
   
   return (
-    <div className="container mx-auto py-8">
-      <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold">Career Quests</h1>
-        <p className="text-muted-foreground">Complete quests to earn XP and badges</p>
-      </div>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main content - Quests */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* XP Summary */}
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle>Your Career Growth</CardTitle>
-              <CardDescription>Track your professional development</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {isLoadingXp ? (
-                <Skeleton className="w-full h-[50px]" />
-              ) : userXp ? (
-                <XpProgressBar 
-                  balance={userXp.balance}
-                  monthlyEarned={userXp.currentMonthEarned}
-                  lifetimeEarned={userXp.lifetimeEarned}
-                />
-              ) : (
-                <div className="text-center py-4 text-muted-foreground">
-                  No XP data available
-                </div>
-              )}
-            </CardContent>
-          </Card>
-          
-          {/* Quests Panel */}
-          <QuestPanel userId={userId} />
+    <>
+      <Header />
+      <div className="container mx-auto py-8 mt-16">
+        <div className="mb-8 text-center">
+          <h1 className="text-3xl font-bold">Career Quests</h1>
+          <p className="text-muted-foreground">Complete quests to earn XP and badges</p>
         </div>
         
-        {/* Sidebar - Badges and transactions */}
-        <div className="space-y-6">
-          {/* Badges */}
-          <BadgeDisplay userId={userId} />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Main content - Quests */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* XP Summary */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle>Your Career Growth</CardTitle>
+                <CardDescription>Track your professional development</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {isLoadingXp ? (
+                  <Skeleton className="w-full h-[50px]" />
+                ) : userXp ? (
+                  <XpProgressBar 
+                    balance={userXp.balance}
+                    monthlyEarned={userXp.currentMonthEarned}
+                    lifetimeEarned={userXp.lifetimeEarned}
+                  />
+                ) : (
+                  <div className="text-center py-4 text-muted-foreground">
+                    No XP data available
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+            
+            {/* Quests Panel */}
+            <QuestPanel userId={userId} />
+          </div>
           
-          {/* XP Transactions */}
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle>XP Activity</CardTitle>
-              <CardDescription>Your recent XP earnings</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {isLoadingTransactions ? (
-                <div className="space-y-3">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Skeleton key={i} className="w-full h-[25px]" />
-                  ))}
-                </div>
-              ) : !xpTransactions || xpTransactions.length === 0 ? (
-                <div className="text-center py-4 text-muted-foreground">
-                  No XP activity yet. Complete quests to earn XP!
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {xpTransactions.slice(0, 10).map(transaction => (
-                    <div 
-                      key={transaction.id} 
-                      className="flex justify-between items-center py-2 border-b last:border-0"
-                    >
-                      <div>
-                        <div className="font-medium text-sm">{transaction.reason}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {new Date(transaction.createdAt).toLocaleDateString()} at {' '}
-                          {new Date(transaction.createdAt).toLocaleTimeString()}
+          {/* Sidebar - Badges and transactions */}
+          <div className="space-y-6">
+            {/* Badges */}
+            <BadgeDisplay userId={userId} />
+            
+            {/* XP Transactions */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle>XP Activity</CardTitle>
+                <CardDescription>Your recent XP earnings</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {isLoadingTransactions ? (
+                  <div className="space-y-3">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Skeleton key={i} className="w-full h-[25px]" />
+                    ))}
+                  </div>
+                ) : !xpTransactions || xpTransactions.length === 0 ? (
+                  <div className="text-center py-4 text-muted-foreground">
+                    No XP activity yet. Complete quests to earn XP!
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {xpTransactions.slice(0, 10).map(transaction => (
+                      <div 
+                        key={transaction.id} 
+                        className="flex justify-between items-center py-2 border-b last:border-0"
+                      >
+                        <div>
+                          <div className="font-medium text-sm">{transaction.reason}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {new Date(transaction.createdAt).toLocaleDateString()} at {' '}
+                            {new Date(transaction.createdAt).toLocaleTimeString()}
+                          </div>
+                        </div>
+                        <div className="text-yellow-500 dark:text-yellow-400 font-bold">
+                          +{transaction.amount} XP
                         </div>
                       </div>
-                      <div className="text-yellow-500 dark:text-yellow-400 font-bold">
-                        +{transaction.amount} XP
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
