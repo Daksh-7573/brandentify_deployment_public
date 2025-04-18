@@ -3,6 +3,8 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { Pulse } from "@shared/schema";
 import { useLocation } from "wouter";
 import Header from "@/components/layout/header";
+// Nowboard panel import
+import NowboardPanel from "@/components/nowboard/nowboard-panel";
 // Removed Sidebar import, using top navigation only
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -1041,6 +1043,7 @@ export default function IndustryPulsePage() {
     <div className="flex h-screen flex-col">
       <Header />
       <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top for fixed header */}
+        {/* Main content area */}
         <div className="flex-1 overflow-auto">
           <div className="container py-8 px-6 max-w-5xl mx-auto">
             <div className="mb-8 flex justify-between items-center">
