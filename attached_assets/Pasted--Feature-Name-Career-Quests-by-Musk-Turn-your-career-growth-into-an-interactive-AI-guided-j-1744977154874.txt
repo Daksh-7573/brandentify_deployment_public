@@ -1,0 +1,117 @@
+ Feature Name: “Career Quests” by Musk
+🎯 "Turn your career growth into an interactive, AI-guided journey."
+
+🧠 What is Career Quests?
+It’s a gamified, AI-personalized mission system inside Brandentifier that:
+Gives each user weekly or monthly quests
+
+
+Based on their profile, goal, industry, and behavior
+
+
+Includes micro-challenges like:
+
+
+“Post your first Insight Pulse this week”
+
+
+“Comment on 3 trending Pulses in your domain”
+
+
+“Connect with a mentor”
+
+
+“Update your portfolio with one new project”
+
+
+“Rewrite your bio using Musk's suggestion”
+
+
+“React to a post with 🔥 Insightful”
+
+
+And in return, they earn:
+🚀 XP (Growth Points)
+
+
+🧠 Skill Badges
+
+
+🎖️ Portfolio Boost Stickers
+
+
+🌐 “Discover Me” mode (get featured on Wall)
+
+
+🔓 Unlock new Musk features or portfolio layouts
+
+
+
+🔄 How It Works (Flow)
+User logs in → Musk says:
+
+
+ "Hi Nishant! Based on your goal to 'Get More Freelance Gigs', I’ve designed 3 Career Quests for this week."
+ ✅ “Polish your profile”
+ ✅ “Post an Assignment Pulse”
+ ✅ “Connect with 1 person in your domain”
+
+
+
+Every Quest has:
+
+
+A purpose
+
+
+A progress tracker
+
+
+A Musk tip
+
+
+A clear action button (Go →)
+
+
+After completion → user earns:
+
+
+Points, badges
+
+
+New visibility boosts
+
+
+Sometimes, new unlocks
+
+
+
+🧠 Why It’s Unique & Engaging
+✅ AI-personalized: Quests change per user, per week, based on goals & profile progress
+ ✅ Feels like a career RPG — users level up, grow, get feedback
+ ✅ Social loop: Can showcase completion or badges on wall
+ ✅ Musk gives feedback after each Quest: “Well done, your profile strength improved by 9%”
+
+🔁 Sample Career Quests per Goal
+Goal
+Quest Example
+🚀 Get Freelance Gigs
+“Add 1 freelance project to your portfolio”
+💼 Find a Mentor
+“Message 2 potential mentors suggested by Musk”
+🎤 Build My Brand
+“Post a Pulse with a tip from your industry”
+🧑‍🎓 Learn & Grow
+“Finish 1 certification Musk recommends”
+💸 Find Clients
+“Update your services & enable Hire Me badge”
+🔍 Looking for Job
+“Rewrite your headline to attract recruiters”
+
+
+
+
+
+
+
+Turns Musk from assistant → AI coach with progress vision

@@ -723,3 +723,149 @@ export type InsertNowboardItem = z.infer<typeof insertNowboardItemSchema>;
 
 export type NowboardInspiredBy = typeof nowboardInspiredBy.$inferSelect;
 export type InsertNowboardInspiredBy = z.infer<typeof insertNowboardInspiredBySchema>;
+
+// Career Quests Feature
+// Quest types enum
+export const questTypeEnum = pgEnum("quest_type", [
+  "profile_update",
+  "pulse_creation",
+  "networking",
+  "learning",
+  "portfolio",
+  "resume",
+  "visibility"
+]);
+
+// Quest status enum
+export const questStatusEnum = pgEnum("quest_status", [
+  "active",
+  "completed",
+  "dismissed",
+  "expired"
+]);
+
+// Badge type enum
+export const badgeTypeEnum = pgEnum("badge_type", [
+  "quest_initiate",
+  "weekly_hustler",
+  "musk_learner",
+  "thought_leader",
+  "portfolio_star",
+  "visibility_boosted"
+]);
+
+// Quests definition model - stores templates for quests
+export const questDefinitions = pgTable("quest_definitions", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  type: questTypeEnum("type").notNull(),
+  targetCount: integer("target_count").notNull().default(1), // Number of actions needed to complete
+  targetAction: text("target_action").notNull(), // Specific action required
+  xpReward: integer("xp_reward").notNull().default(50),
+  badgeReward: badgeTypeEnum("badge_reward"),
+  requiredProfileCompletion: integer("required_profile_completion").default(0), // Minimum profile completion % to get this quest
+  requiredCareerStage: text("required_career_stage"), // Only show for certain career stages
+  requiredIndustry: text("required_industry"), // Only show for specific industries
+  muskTip: text("musk_tip"), // Tip from Musk about this quest
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// User quests model - tracks active and completed quests for each user
+export const userQuests = pgTable("user_quests", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  questDefinitionId: integer("quest_definition_id").references(() => questDefinitions.id).notNull(),
+  status: questStatusEnum("status").notNull().default("active"),
+  progress: integer("progress").notNull().default(0), // Current progress count
+  assignedAt: timestamp("assigned_at").defaultNow(),
+  completedAt: timestamp("completed_at"), // When the quest was completed
+  weekNumber: integer("week_number").notNull(), // Week of the year (1-52)
+  year: integer("year").notNull(), // Year of the quest
+  dismissedReason: text("dismissed_reason"), // If dismissed, why
+  xpEarned: integer("xp_earned"), // Actual XP earned upon completion
+  badgeEarned: badgeTypeEnum("badge_earned"), // Badge earned upon completion
+  muskResponse: text("musk_response"), // Custom response from Musk on completion
+});
+
+// User XP model - tracks user XP balance and history
+export const userXp = pgTable("user_xp", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  balance: integer("balance").notNull().default(0), // Current XP balance
+  lifetimeEarned: integer("lifetime_earned").notNull().default(0), // Total XP earned all-time
+  currentMonthEarned: integer("current_month_earned").notNull().default(0), // XP earned this month
+  lastEarnedAt: timestamp("last_earned_at"), // Last time XP was earned
+  lastResetAt: timestamp("last_reset_at"), // Last time monthly XP was reset
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// User badges model - tracks badges earned by users
+export const userBadges = pgTable("user_badges", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  badgeType: badgeTypeEnum("badge_type").notNull(),
+  earnedAt: timestamp("earned_at").defaultNow(),
+  questId: integer("quest_id").references(() => userQuests.id), // Quest that earned this badge
+  displayOnProfile: boolean("display_on_profile").default(true), // Whether to show on profile
+  displayOnResume: boolean("display_on_resume").default(false), // Whether to show on downloaded resume
+});
+
+// XP transactions model - tracks all XP earned/spent
+export const xpTransactions = pgTable("xp_transactions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  amount: integer("amount").notNull(), // Can be positive (earned) or negative (spent)
+  source: text("source").notNull(), // quest_completion, daily_login, reaction, etc.
+  sourceId: integer("source_id"), // ID of the source (quest ID, etc.)
+  description: text("description").notNull(), // Human-readable description
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Insert schemas for Career Quests
+export const insertQuestDefinitionSchema = createInsertSchema(questDefinitions).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export const insertUserQuestSchema = createInsertSchema(userQuests).omit({
+  id: true,
+  assignedAt: true,
+  completedAt: true
+});
+
+export const insertUserXpSchema = createInsertSchema(userXp).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export const insertUserBadgeSchema = createInsertSchema(userBadges).omit({
+  id: true,
+  earnedAt: true
+});
+
+export const insertXpTransactionSchema = createInsertSchema(xpTransactions).omit({
+  id: true,
+  createdAt: true
+});
+
+// Export types for Career Quests
+export type QuestDefinition = typeof questDefinitions.$inferSelect;
+export type InsertQuestDefinition = z.infer<typeof insertQuestDefinitionSchema>;
+
+export type UserQuest = typeof userQuests.$inferSelect;
+export type InsertUserQuest = z.infer<typeof insertUserQuestSchema>;
+
+export type UserXp = typeof userXp.$inferSelect;
+export type InsertUserXp = z.infer<typeof insertUserXpSchema>;
+
+export type UserBadge = typeof userBadges.$inferSelect;
+export type InsertUserBadge = z.infer<typeof insertUserBadgeSchema>;
+
+export type XpTransaction = typeof xpTransactions.$inferSelect;
+export type InsertXpTransaction = z.infer<typeof insertXpTransactionSchema>;
