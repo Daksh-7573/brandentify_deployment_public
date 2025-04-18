@@ -29,8 +29,15 @@ export default function ResumePage() {
   // Fetch shadow resume for the user (if it exists)
   const { data: resumeData, isLoading: isResumeLoading } = useQuery<{resume: any}>({
     queryKey: ['/api/users', user?.id, 'shadow-resume'],
-    enabled: !!user?.id,
+    enabled: !!user?.id
   });
+  
+  // Log data for debugging
+  useEffect(() => {
+    if (resumeData) {
+      console.log('Shadow resume data loaded:', resumeData);
+    }
+  }, [resumeData]);
 
   // Create shadow resume mutation
   const createResumeMutation = useMutation<any, Error, void>({

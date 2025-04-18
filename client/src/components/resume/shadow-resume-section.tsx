@@ -343,66 +343,66 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
         )}
       </CardContent>
 
-      {resume && (
-        <CardFooter className="flex justify-between border-t pt-4">
-          <div className="flex gap-2">
+      {/* Always show the buttons for the resume */}
+      <CardFooter className="flex justify-between border-t pt-4">
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="gap-1"
+            onClick={() => {
+              console.log("View button clicked - resume data:", resume);
+              // Open resume in a new tab
+              if (resume?.fileData) {
+                const dataUrl = `data:application/pdf;base64,${resume.fileData}`;
+                window.open(dataUrl, '_blank');
+              } else {
+                toast({
+                  title: 'No Preview Available',
+                  description: 'This resume has no content to preview yet.',
+                  variant: 'destructive',
+                });
+              }
+            }}
+          >
+            <Eye className="h-4 w-4" />
+            <span>View</span>
+          </Button>
+          {isOwner && (
             <Button 
               variant="outline" 
               size="sm" 
               className="gap-1"
               onClick={() => {
-                // Open resume in a new tab
-                if (resume.fileData) {
-                  const dataUrl = `data:application/pdf;base64,${resume.fileData}`;
-                  window.open(dataUrl, '_blank');
-                } else {
-                  toast({
-                    title: 'No Preview Available',
-                    description: 'This resume has no content to preview yet.',
-                    variant: 'destructive',
-                  });
-                }
+                // Navigate to edit page or open edit modal
+                toast({
+                  title: 'Edit Resume',
+                  description: 'Resume editing is accessed through the Resume Writer tab.',
+                });
               }}
             >
-              <Eye className="h-4 w-4" />
-              <span>View</span>
+              <Pencil className="h-4 w-4" />
+              <span>Edit</span>
             </Button>
-            {isOwner && (
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="gap-1"
-                onClick={() => {
-                  // Navigate to edit page or open edit modal
-                  toast({
-                    title: 'Edit Resume',
-                    description: 'Resume editing is accessed through the Resume Writer tab.',
-                  });
-                }}
-              >
-                <Pencil className="h-4 w-4" />
-                <span>Edit</span>
-              </Button>
-            )}
-          </div>
-          <Button 
-            variant="default" 
-            size="sm" 
-            className="gap-1"
-            onClick={handleDownload}
-            disabled={(!isOwner && !resume.isDownloadable) || updateResumeMutation.isPending}
-          >
-            {updateResumeMutation.isPending ? (
-              <span>Saving...</span>
-            ) : (
-              <>
-                <Download className="h-4 w-4" />
-                <span>Download</span>
-              </>
-            )}
-          </Button>
-        </CardFooter>
-      )}
+          )}
+        </div>
+        <Button 
+          variant="default" 
+          size="sm" 
+          className="gap-1"
+          onClick={handleDownload}
+          disabled={(!isOwner && !resume?.isDownloadable) || updateResumeMutation.isPending}
+        >
+          {updateResumeMutation.isPending ? (
+            <span>Saving...</span>
+          ) : (
+            <>
+              <Download className="h-4 w-4" />
+              <span>Download</span>
+            </>
+          )}
+        </Button>
+      </CardFooter>
     </Card>
   );
 }
