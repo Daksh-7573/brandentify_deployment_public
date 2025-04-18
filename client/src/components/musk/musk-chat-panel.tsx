@@ -15,7 +15,7 @@ import { apiRequest } from '@/lib/queryClient';
 import { X, Send, MessageSquare, Loader2, FileUp, Paperclip, FileText, PresentationIcon, LightbulbIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import SuggestedQuestionsDisplay from './suggested-questions-display';
+import { getSuggestedQuestions, type SuggestedQuestion } from './suggested-questions';
 import { UserData } from '@/types/user';
 
 interface MuskChatPanelProps {
@@ -38,7 +38,7 @@ type Message = {
 };
 
 export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) {
-  // Initialize with a welcome message that includes suggested quick responses
+  // Initialize with default welcome message
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'welcome',
@@ -54,6 +54,28 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
     }
   ]);
   
+  // Update welcome message with personalized questions once user data loads
+  useEffect(() => {
+    // Once user data and suggested questions are loaded, update the welcome message
+    if (userData && suggestedQuestions.length > 0 && messages.length === 1) {
+      const personalizedQuestions = suggestedQuestions.slice(0, 4).map(q => q.text);
+      
+      // Only update if we have personalized questions and still just the welcome message
+      if (personalizedQuestions.length > 0) {
+        setMessages(prev => 
+          prev.map(msg => 
+            msg.id === 'welcome' 
+              ? {
+                  ...msg,
+                  quickResponses: personalizedQuestions
+                }
+              : msg
+          )
+        );
+      }
+    }
+  }, [userData, suggestedQuestions, messages.length]);
+  
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -65,6 +87,11 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const pitchDeckFileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Fetch user data when component mounts
+  // For generating personalized suggested questions
+  const [suggestedQuestions, setSuggestedQuestions] = useState<SuggestedQuestion[]>([]);
+  const [engagementHistory, setEngagementHistory] = useState<Record<string, number>>({});
   
   // Fetch user data when component mounts
   useEffect(() => {
@@ -84,6 +111,25 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
     
     fetchUserData();
   }, [context?.userId]);
+  
+  // Generate suggested questions when user data is available
+  useEffect(() => {
+    if (userData) {
+      // Load engagement history from localStorage if available
+      try {
+        const saved = localStorage.getItem('musk-question-engagement');
+        if (saved) {
+          setEngagementHistory(JSON.parse(saved));
+        }
+      } catch (error) {
+        console.error("Failed to load question engagement history:", error);
+      }
+      
+      // Generate fresh set of questions
+      const questions = getSuggestedQuestions(userData, engagementHistory);
+      setSuggestedQuestions(questions);
+    }
+  }, [userData]);
   
   // Auto-scroll to bottom when messages change
   useEffect(() => {
@@ -164,6 +210,10 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
       }
       
       // Replace the thinking message with the actual response
+      // Instead of separate quick responses, use the suggested questions
+      // that we've already generated
+      const personalizedQuestions = suggestedQuestions.slice(0, 4).map(q => q.text);
+      
       setMessages(prev => 
         prev.map(msg => 
           msg.id === thinkingMessage.id 
@@ -172,11 +222,37 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
                 content: content,
                 sender: 'musk',
                 timestamp: new Date(),
-                quickResponses
+                quickResponses: personalizedQuestions.length > 0 
+                  ? personalizedQuestions 
+                  : quickResponses // Fallback to regular quick responses if no suggested questions
               }
             : msg
         )
       );
+      
+      // Update engagement history for the suggested questions that were used
+      if (personalizedQuestions.length > 0) {
+        // Find the categories of the questions we just used
+        const usedQuestions = suggestedQuestions.slice(0, 4);
+        const newHistory = { ...engagementHistory };
+        
+        // Increment usage count for each category
+        usedQuestions.forEach(question => {
+          newHistory[question.category] = (newHistory[question.category] || 0) + 1;
+        });
+        
+        // Save updated history
+        setEngagementHistory(newHistory);
+        try {
+          localStorage.setItem('musk-question-engagement', JSON.stringify(newHistory));
+        } catch (error) {
+          console.error("Failed to save question engagement history:", error);
+        }
+        
+        // Generate new questions for next time
+        const freshQuestions = getSuggestedQuestions(userData, newHistory);
+        setSuggestedQuestions(freshQuestions);
+      }
     } catch (error) {
       console.error('Error getting Musk response:', error);
       
@@ -333,18 +409,24 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
         analysis: uploadResult.message
       };
       
-      // Different quick responses based on file type
-      const quickResponses = isResume 
-        ? [
-            'How can I improve my skills section?',
-            'What about my work experiences?',
-            'Can you help me tailor it for a specific role?'
-          ]
-        : [
-            'How can I improve my problem statement?',
-            'Is my business model compelling enough?',
-            'What should I focus on for investor readiness?'
-          ];
+      // Use personalized questions or fallback to file-type specific responses
+      const personalizedQuestions = suggestedQuestions.slice(0, 4).map(q => q.text);
+      
+      // If we have personalized questions, use them
+      // Otherwise fall back to default file-type specific responses
+      const quickResponses = personalizedQuestions.length > 0 
+        ? personalizedQuestions
+        : (isResume 
+            ? [
+                'How can I improve my skills section?',
+                'What about my work experiences?',
+                'Can you help me tailor it for a specific role?'
+              ]
+            : [
+                'How can I improve my problem statement?',
+                'Is my business model compelling enough?',
+                'What should I focus on for investor readiness?'
+              ]);
       
       // Replace the thinking message with the analysis result
       setMessages(prev => 
@@ -360,6 +442,30 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
             : msg
         )
       );
+      
+      // Update engagement history if we used personalized questions
+      if (personalizedQuestions.length > 0) {
+        // Find the categories of the questions we just used
+        const usedQuestions = suggestedQuestions.slice(0, 4);
+        const newHistory = { ...engagementHistory };
+        
+        // Increment usage count for each category
+        usedQuestions.forEach(question => {
+          newHistory[question.category] = (newHistory[question.category] || 0) + 1;
+        });
+        
+        // Save updated history
+        setEngagementHistory(newHistory);
+        try {
+          localStorage.setItem('musk-question-engagement', JSON.stringify(newHistory));
+        } catch (error) {
+          console.error("Failed to save question engagement history:", error);
+        }
+        
+        // Generate new questions for next time
+        const freshQuestions = getSuggestedQuestions(userData, newHistory);
+        setSuggestedQuestions(freshQuestions);
+      }
       
       toast({
         title: 'Analysis complete',
