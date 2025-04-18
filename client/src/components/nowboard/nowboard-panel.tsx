@@ -1,8 +1,7 @@
-import { useState, useRef } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { useState } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { 
@@ -20,7 +19,52 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/context/auth-context";
-import { formatDistanceToNow } from "date-fns";
+import { useFeedAlgorithm, useFeedEngagement, formatFeedDate, getEngagementStyles } from "@/hooks/feed";
+
+// Button component for "Inspired" action
+function NowboardInspiredButton({ 
+  itemId, 
+  userId, 
+  currentCount = 0 
+}: { 
+  itemId: number; 
+  userId: number; 
+  currentCount: number 
+}) {
+  // Get user's existing inspired status
+  const { data: userInspiredData } = useQuery<{ id: number } | null>({
+    queryKey: [`/api/nowboard-items/${itemId}/inspired-by/user/${userId}`],
+    refetchOnWindowFocus: false
+  });
+  
+  const userInspiredId = userInspiredData?.id;
+  const isInspired = !!userInspiredId;
+  
+  // Use the shared engagement hook
+  const { handleEngagement, isLoading } = useFeedEngagement({
+    engagementType: "inspired",
+    userId,
+    itemId,
+    apiEndpoint: "nowboard-items",
+    currentCount
+  });
+  
+  // Get appropriate styles based on engagement status
+  const styles = getEngagementStyles("inspired", isInspired);
+  
+  return (
+    <Button
+      variant="ghost"
+      size="sm"
+      className={`h-auto p-1 ${styles.textColor} ${styles.hoverBg}`}
+      onClick={() => handleEngagement(userInspiredId)}
+      disabled={isLoading}
+    >
+      <Lightbulb className={`h-4 w-4 mr-1 ${styles.activeFill}`} />
+      <span>{currentCount} inspired</span>
+    </Button>
+  );
+}
 
 // Interface for Nowboard items
 interface NowboardItem {
@@ -38,13 +82,6 @@ interface NowboardItem {
   };
 }
 
-interface NowboardInspiredBy {
-  id: number;
-  userId: number;
-  nowboardItemId: number;
-  createdAt: string;
-}
-
 export default function NowboardPanel() {
   const { toast } = useToast();
   const { user } = useAuth();
@@ -52,27 +89,36 @@ export default function NowboardPanel() {
   
   const [newItemContent, setNewItemContent] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<"growth" | "learning" | "launch" | "planning" | "collaboration" | "visibility">("learning");
+  const [categoryFilter, setCategoryFilter] = useState<string | undefined>(undefined);
   
-  // Fetch nowboard items
-  const { data: nowboardItems = [], isLoading, refetch } = useQuery<NowboardItem[]>({
+  // Use the shared feed algorithm hook
+  const { 
+    items: nowboardItems, 
+    isLoading, 
+    refetch 
+  } = useFeedAlgorithm<NowboardItem>({
     queryKey: ["/api/nowboard-items"],
-    onSuccess: (data) => {
+    filters: categoryFilter ? { category: categoryFilter } : undefined,
+    fetchUserData: async (items) => {
       // Fetch user data for each item
-      data.forEach(async (item) => {
-        try {
-          const response = await fetch(`/api/users/${item.userId}`);
-          if (response.ok) {
-            const userData = await response.json();
-            item.user = {
-              name: userData.name,
-              photoURL: userData.photoURL
-            };
+      for (const item of items) {
+        if (!item.user) {
+          try {
+            const response = await fetch(`/api/users/${item.userId}`);
+            if (response.ok) {
+              const userData = await response.json();
+              item.user = {
+                name: userData.name,
+                photoURL: userData.photoURL
+              };
+            }
+          } catch (error) {
+            console.error("Error fetching user data for nowboard item:", error);
           }
-        } catch (error) {
-          console.error("Error fetching user data for nowboard item:", error);
         }
-      });
-    }
+      }
+    },
+    refreshInterval: 60000 // Refresh every minute
   });
 
   // Create new nowboard item
@@ -100,24 +146,6 @@ export default function NowboardPanel() {
       toast({
         title: "Failed to share update",
         description: "There was an error sharing your update. Please try again.",
-        variant: "destructive",
-      });
-    }
-  });
-
-  // Mark as inspired mutation
-  const inspiredMutation = useMutation({
-    mutationFn: async ({ itemId, userId }: { itemId: number; userId: number }) => {
-      const res = await apiRequest("POST", `/api/nowboard-items/${itemId}/inspired-by`, { userId });
-      return await res.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/nowboard-items"] });
-    },
-    onError: (error) => {
-      toast({
-        title: "Failed to mark as inspired",
-        description: "There was an error marking this update as inspiring. Please try again.",
         variant: "destructive",
       });
     }
@@ -151,11 +179,6 @@ export default function NowboardPanel() {
       category: selectedCategory,
       visibility: "public"
     });
-  };
-
-  // Handle click on Inspired Me button
-  const handleInspiredClick = (itemId: number) => {
-    inspiredMutation.mutate({ itemId, userId });
   };
 
   // Get icon for category
@@ -281,17 +304,8 @@ export default function NowboardPanel() {
                       </div>
                       <p className="text-sm mt-1">{item.content}</p>
                       <div className="flex items-center justify-between text-xs text-muted-foreground mt-2">
-                        <span>{formatDistanceToNow(new Date(item.createdAt), { addSuffix: true })}</span>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-auto p-1"
-                          onClick={() => handleInspiredClick(item.id)}
-                          disabled={inspiredMutation.isPending}
-                        >
-                          <Lightbulb className="h-4 w-4 mr-1 text-amber-500" />
-                          <span>{item.inspiredCount} inspired</span>
-                        </Button>
+                        <span>{formatFeedDate(item.createdAt)}</span>
+                        <NowboardInspiredButton itemId={item.id} userId={userId} currentCount={item.inspiredCount} />
                       </div>
                     </div>
                   </div>
