@@ -3600,6 +3600,584 @@ export class MemStorage implements IStorage {
       .slice(0, limit)
       .map(item => item.match);
   }
+
+  // Career Quests operations - Quest Definition methods
+  async getQuestDefinitions(): Promise<QuestDefinition[]> {
+    return Array.from(this.questDefinitions.values());
+  }
+
+  async getQuestDefinitionById(id: number): Promise<QuestDefinition | undefined> {
+    return this.questDefinitions.get(id);
+  }
+
+  async getActiveQuestDefinitions(): Promise<QuestDefinition[]> {
+    return Array.from(this.questDefinitions.values())
+      .filter(quest => quest.isActive);
+  }
+
+  async getQuestDefinitionsByType(type: string): Promise<QuestDefinition[]> {
+    return Array.from(this.questDefinitions.values())
+      .filter(quest => quest.type === type && quest.isActive);
+  }
+
+  async createQuestDefinition(quest: InsertQuestDefinition): Promise<QuestDefinition> {
+    const id = this.currentQuestDefinitionId++;
+    const createdAt = new Date();
+    const updatedAt = new Date();
+    
+    const questDefinition: QuestDefinition = {
+      ...quest,
+      id,
+      createdAt,
+      updatedAt,
+      targetCount: quest.targetCount ?? 1,
+      xpReward: quest.xpReward ?? 50,
+      requiredProfileCompletion: quest.requiredProfileCompletion ?? 0,
+      requiredCareerStage: quest.requiredCareerStage ?? null,
+      requiredIndustry: quest.requiredIndustry ?? null,
+      muskTip: quest.muskTip ?? null,
+      badgeReward: quest.badgeReward ?? null,
+      isActive: quest.isActive ?? true
+    };
+    
+    this.questDefinitions.set(id, questDefinition);
+    return questDefinition;
+  }
+
+  async updateQuestDefinition(id: number, quest: Partial<QuestDefinition>): Promise<QuestDefinition | undefined> {
+    const existingQuest = this.questDefinitions.get(id);
+    if (!existingQuest) return undefined;
+    
+    const updatedQuest: QuestDefinition = {
+      ...existingQuest,
+      ...quest,
+      updatedAt: new Date()
+    };
+    
+    this.questDefinitions.set(id, updatedQuest);
+    return updatedQuest;
+  }
+
+  async deleteQuestDefinition(id: number): Promise<boolean> {
+    return this.questDefinitions.delete(id);
+  }
+
+  // User Quest operations
+  async getUserQuestsByUserId(userId: number): Promise<UserQuest[]> {
+    return Array.from(this.userQuests.values())
+      .filter(quest => quest.userId === userId)
+      .sort((a, b) => {
+        // Sort by most recently assigned first
+        const timeA = a.assignedAt ? a.assignedAt.getTime() : 0;
+        const timeB = b.assignedAt ? b.assignedAt.getTime() : 0;
+        return timeB - timeA;
+      });
+  }
+
+  async getUserQuestById(id: number): Promise<UserQuest | undefined> {
+    return this.userQuests.get(id);
+  }
+
+  async getActiveUserQuests(userId: number): Promise<UserQuest[]> {
+    return Array.from(this.userQuests.values())
+      .filter(quest => quest.userId === userId && quest.status === "active")
+      .sort((a, b) => {
+        // Sort by most recently assigned first
+        const timeA = a.assignedAt ? a.assignedAt.getTime() : 0;
+        const timeB = b.assignedAt ? b.assignedAt.getTime() : 0;
+        return timeB - timeA;
+      });
+  }
+
+  async getCompletedUserQuests(userId: number): Promise<UserQuest[]> {
+    return Array.from(this.userQuests.values())
+      .filter(quest => quest.userId === userId && quest.status === "completed")
+      .sort((a, b) => {
+        // Sort by most recently completed first
+        const timeA = a.completedAt ? a.completedAt.getTime() : 0;
+        const timeB = b.completedAt ? b.completedAt.getTime() : 0;
+        return timeB - timeA;
+      });
+  }
+
+  async getCurrentWeekUserQuests(userId: number): Promise<UserQuest[]> {
+    // Get current week number and year
+    const now = new Date();
+    const currentWeek = this.getWeekNumber(now);
+    const currentYear = now.getFullYear();
+    
+    return Array.from(this.userQuests.values())
+      .filter(quest => 
+        quest.userId === userId && 
+        quest.weekNumber === currentWeek &&
+        quest.year === currentYear)
+      .sort((a, b) => {
+        if (a.status === "completed" && b.status !== "completed") return 1;
+        if (a.status !== "completed" && b.status === "completed") return -1;
+        return 0;
+      });
+  }
+
+  async createUserQuest(quest: InsertUserQuest): Promise<UserQuest> {
+    const id = this.currentUserQuestId++;
+    const assignedAt = new Date();
+    
+    // Get current week number and year if not provided
+    const now = new Date();
+    const weekNumber = quest.weekNumber || this.getWeekNumber(now);
+    const year = quest.year || now.getFullYear();
+    
+    const userQuest: UserQuest = {
+      ...quest,
+      id,
+      assignedAt,
+      weekNumber,
+      year,
+      progress: quest.progress ?? 0,
+      status: quest.status ?? "active",
+      completedAt: null,
+      dismissedReason: null,
+      xpEarned: null,
+      badgeEarned: null,
+      muskResponse: null
+    };
+    
+    this.userQuests.set(id, userQuest);
+    return userQuest;
+  }
+
+  async updateUserQuest(id: number, quest: Partial<UserQuest>): Promise<UserQuest | undefined> {
+    const existingQuest = this.userQuests.get(id);
+    if (!existingQuest) return undefined;
+    
+    const updatedQuest: UserQuest = {
+      ...existingQuest,
+      ...quest
+    };
+    
+    this.userQuests.set(id, updatedQuest);
+    return updatedQuest;
+  }
+
+  async completeUserQuest(id: number, earnedXp?: number): Promise<UserQuest | undefined> {
+    const quest = this.userQuests.get(id);
+    if (!quest) return undefined;
+    
+    // Only complete if active
+    if (quest.status !== "active") return quest;
+    
+    // Get quest definition
+    const questDefinition = await this.getQuestDefinitionById(quest.questDefinitionId);
+    if (!questDefinition) return undefined;
+    
+    // Set XP earned (either provided or from quest definition)
+    const xpEarned = earnedXp || questDefinition.xpReward;
+    
+    // Update the quest
+    const completedQuest: UserQuest = {
+      ...quest,
+      status: "completed",
+      completedAt: new Date(),
+      progress: questDefinition.targetCount, // Set to target count
+      xpEarned,
+      badgeEarned: questDefinition.badgeReward || null
+    };
+    
+    this.userQuests.set(id, completedQuest);
+    
+    // If there's a badge reward, award it to the user
+    if (questDefinition.badgeReward) {
+      await this.createUserBadge({
+        userId: quest.userId,
+        badgeType: questDefinition.badgeReward,
+        questId: id,
+        displayOnProfile: true,
+        displayOnResume: false
+      });
+    }
+    
+    // Add XP to user account
+    await this.incrementUserXp(
+      quest.userId, 
+      xpEarned, 
+      "quest_completion", 
+      id
+    );
+    
+    return completedQuest;
+  }
+
+  async dismissUserQuest(id: number, reason?: string): Promise<UserQuest | undefined> {
+    const quest = this.userQuests.get(id);
+    if (!quest) return undefined;
+    
+    // Only dismiss if active
+    if (quest.status !== "active") return quest;
+    
+    const dismissedQuest: UserQuest = {
+      ...quest,
+      status: "dismissed",
+      dismissedReason: reason || null
+    };
+    
+    this.userQuests.set(id, dismissedQuest);
+    return dismissedQuest;
+  }
+
+  async incrementQuestProgress(id: number): Promise<UserQuest | undefined> {
+    const quest = this.userQuests.get(id);
+    if (!quest) return undefined;
+    
+    // Only increment if active
+    if (quest.status !== "active") return quest;
+    
+    // Get quest definition
+    const questDefinition = await this.getQuestDefinitionById(quest.questDefinitionId);
+    if (!questDefinition) return undefined;
+    
+    // Calculate new progress
+    const newProgress = quest.progress + 1;
+    
+    // Update the quest
+    const updatedQuest: UserQuest = {
+      ...quest,
+      progress: newProgress
+    };
+    
+    this.userQuests.set(id, updatedQuest);
+    
+    // If progress meets the target, complete the quest
+    if (newProgress >= questDefinition.targetCount) {
+      return this.completeUserQuest(id);
+    }
+    
+    return updatedQuest;
+  }
+
+  async assignWeeklyQuestsToUser(userId: number): Promise<UserQuest[]> {
+    // Get current week number and year
+    const now = new Date();
+    const currentWeek = this.getWeekNumber(now);
+    const currentYear = now.getFullYear();
+    
+    // Check if user already has quests for this week
+    const existingWeeklyQuests = await this.getCurrentWeekUserQuests(userId);
+    if (existingWeeklyQuests.length > 0) {
+      return existingWeeklyQuests;
+    }
+    
+    // Get user for profile completion check
+    const user = await this.getUser(userId);
+    if (!user) return [];
+    
+    // Get all active quest definitions
+    const allQuests = await this.getActiveQuestDefinitions();
+    
+    // Filter quests based on user's profile completion level
+    const eligibleQuests = allQuests.filter(quest => {
+      if (quest.requiredProfileCompletion && user.profileCompleted < quest.requiredProfileCompletion) {
+        return false;
+      }
+      
+      // Filter by required career stage or industry if specified
+      if (quest.requiredCareerStage && user.title && !user.title.toLowerCase().includes(quest.requiredCareerStage.toLowerCase())) {
+        return false;
+      }
+      
+      if (quest.requiredIndustry && user.industry && user.industry !== quest.requiredIndustry) {
+        return false;
+      }
+      
+      return true;
+    });
+    
+    // Randomly select 5 quests (or all if less than 5)
+    const numQuests = Math.min(5, eligibleQuests.length);
+    const selectedQuests: QuestDefinition[] = [];
+    
+    // Try to get at least one quest of each type if possible
+    const questTypes = [...new Set(eligibleQuests.map(q => q.type))];
+    
+    for (const type of questTypes) {
+      const typeQuests = eligibleQuests.filter(q => q.type === type);
+      if (typeQuests.length > 0) {
+        // Randomly select one quest of this type
+        const randomIndex = Math.floor(Math.random() * typeQuests.length);
+        selectedQuests.push(typeQuests[randomIndex]);
+        
+        // Break if we have enough quests
+        if (selectedQuests.length >= numQuests) break;
+      }
+    }
+    
+    // If we still need more quests, randomly select from the remaining
+    if (selectedQuests.length < numQuests) {
+      const remainingQuests = eligibleQuests.filter(q => !selectedQuests.includes(q));
+      
+      while (selectedQuests.length < numQuests && remainingQuests.length > 0) {
+        const randomIndex = Math.floor(Math.random() * remainingQuests.length);
+        selectedQuests.push(remainingQuests[randomIndex]);
+        remainingQuests.splice(randomIndex, 1);
+      }
+    }
+    
+    // Create user quests for the selected quest definitions
+    const createdQuests: UserQuest[] = [];
+    
+    for (const questDef of selectedQuests) {
+      const quest = await this.createUserQuest({
+        userId,
+        questDefinitionId: questDef.id,
+        status: "active",
+        progress: 0,
+        weekNumber: currentWeek,
+        year: currentYear
+      });
+      
+      createdQuests.push(quest);
+    }
+    
+    return createdQuests;
+  }
+
+  // User XP operations
+  async getUserXp(userId: number): Promise<UserXp | undefined> {
+    return Array.from(this.userXp.values())
+      .find(xp => xp.userId === userId);
+  }
+
+  async createUserXp(userXp: InsertUserXp): Promise<UserXp> {
+    const id = this.currentUserXpId++;
+    const createdAt = new Date();
+    const updatedAt = new Date();
+    
+    const newUserXp: UserXp = {
+      ...userXp,
+      id,
+      createdAt,
+      updatedAt,
+      balance: userXp.balance ?? 0,
+      lifetimeEarned: userXp.lifetimeEarned ?? 0,
+      currentMonthEarned: userXp.currentMonthEarned ?? 0,
+      lastEarnedAt: userXp.lastEarnedAt ?? null,
+      lastResetAt: userXp.lastResetAt ?? null
+    };
+    
+    this.userXp.set(id, newUserXp);
+    return newUserXp;
+  }
+
+  async updateUserXp(id: number, userXp: Partial<UserXp>): Promise<UserXp | undefined> {
+    const existingXp = this.userXp.get(id);
+    if (!existingXp) return undefined;
+    
+    const updatedXp: UserXp = {
+      ...existingXp,
+      ...userXp,
+      updatedAt: new Date()
+    };
+    
+    this.userXp.set(id, updatedXp);
+    return updatedXp;
+  }
+
+  async incrementUserXp(userId: number, amount: number, source: string, sourceId?: number): Promise<{ 
+    userXp: UserXp, 
+    transaction: XpTransaction 
+  }> {
+    // Get or create user XP record
+    let userXp = await this.getUserXp(userId);
+    
+    // Check if we need to reset month counters
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    if (userXp) {
+      // Check if we need to reset monthly XP (different month)
+      if (userXp.lastResetAt) {
+        const lastResetMonth = userXp.lastResetAt.getMonth();
+        const lastResetYear = userXp.lastResetAt.getFullYear();
+        
+        if (lastResetMonth !== currentMonth || lastResetYear !== currentYear) {
+          userXp = await this.updateUserXp(userXp.id, {
+            currentMonthEarned: 0,
+            lastResetAt: now
+          });
+        }
+      }
+      
+      // Update existing record
+      userXp = await this.updateUserXp(userXp.id, {
+        balance: userXp.balance + amount,
+        lifetimeEarned: userXp.lifetimeEarned + amount,
+        currentMonthEarned: userXp.currentMonthEarned + amount,
+        lastEarnedAt: now
+      });
+    } else {
+      // Create new record
+      userXp = await this.createUserXp({
+        userId,
+        balance: amount,
+        lifetimeEarned: amount,
+        currentMonthEarned: amount,
+        lastEarnedAt: now,
+        lastResetAt: now
+      });
+    }
+    
+    // Create transaction record
+    const transaction = await this.createXpTransaction({
+      userId,
+      amount,
+      source,
+      sourceId,
+      description: this.getXpTransactionDescription(source, amount, sourceId)
+    });
+    
+    return { userXp, transaction };
+  }
+
+  async resetMonthlyXp(userId: number): Promise<UserXp | undefined> {
+    const userXp = await this.getUserXp(userId);
+    if (!userXp) return undefined;
+    
+    return this.updateUserXp(userXp.id, {
+      currentMonthEarned: 0,
+      lastResetAt: new Date()
+    });
+  }
+
+  // Helper function to generate transaction descriptions
+  private getXpTransactionDescription(source: string, amount: number, sourceId?: number): string {
+    switch (source) {
+      case "quest_completion":
+        return `Earned ${amount} XP for completing a quest`;
+      case "daily_login":
+        return `Earned ${amount} XP for daily login`;
+      case "pulse_reaction":
+        return `Earned ${amount} XP for reacting to a pulse`;
+      case "pulse_share":
+        return `Earned ${amount} XP for sharing a pulse`;
+      case "project_upload":
+        return `Earned ${amount} XP for uploading a project`;
+      case "musk_suggestion":
+        return `Earned ${amount} XP for accepting a Musk suggestion`;
+      case "weekly_quest_completion":
+        return `Earned ${amount} XP for completing all weekly quests`;
+      default:
+        return `Earned ${amount} XP`;
+    }
+  }
+
+  // User Badge operations
+  async getUserBadges(userId: number): Promise<UserBadge[]> {
+    return Array.from(this.userBadges.values())
+      .filter(badge => badge.userId === userId)
+      .sort((a, b) => {
+        // Sort by most recently earned first
+        const timeA = a.earnedAt ? a.earnedAt.getTime() : 0;
+        const timeB = b.earnedAt ? b.earnedAt.getTime() : 0;
+        return timeB - timeA;
+      });
+  }
+
+  async getUserBadgeById(id: number): Promise<UserBadge | undefined> {
+    return this.userBadges.get(id);
+  }
+
+  async getUserBadgesByType(userId: number, badgeType: string): Promise<UserBadge[]> {
+    return Array.from(this.userBadges.values())
+      .filter(badge => badge.userId === userId && badge.badgeType === badgeType)
+      .sort((a, b) => {
+        // Sort by most recently earned first
+        const timeA = a.earnedAt ? a.earnedAt.getTime() : 0;
+        const timeB = b.earnedAt ? b.earnedAt.getTime() : 0;
+        return timeB - timeA;
+      });
+  }
+
+  async createUserBadge(badge: InsertUserBadge): Promise<UserBadge> {
+    const id = this.currentUserBadgeId++;
+    const earnedAt = new Date();
+    
+    const userBadge: UserBadge = {
+      ...badge,
+      id,
+      earnedAt,
+      displayOnProfile: badge.displayOnProfile ?? true,
+      displayOnResume: badge.displayOnResume ?? false
+    };
+    
+    this.userBadges.set(id, userBadge);
+    return userBadge;
+  }
+
+  async updateUserBadge(id: number, badge: Partial<UserBadge>): Promise<UserBadge | undefined> {
+    const existingBadge = this.userBadges.get(id);
+    if (!existingBadge) return undefined;
+    
+    const updatedBadge: UserBadge = {
+      ...existingBadge,
+      ...badge
+    };
+    
+    this.userBadges.set(id, updatedBadge);
+    return updatedBadge;
+  }
+
+  async toggleBadgeDisplay(id: number, displayOnProfile: boolean, displayOnResume: boolean): Promise<UserBadge | undefined> {
+    return this.updateUserBadge(id, { displayOnProfile, displayOnResume });
+  }
+
+  // XP Transaction operations
+  async getXpTransactions(userId: number): Promise<XpTransaction[]> {
+    return Array.from(this.xpTransactions.values())
+      .filter(transaction => transaction.userId === userId)
+      .sort((a, b) => {
+        // Sort by most recent first
+        const timeA = a.createdAt ? a.createdAt.getTime() : 0;
+        const timeB = b.createdAt ? b.createdAt.getTime() : 0;
+        return timeB - timeA;
+      });
+  }
+
+  async getXpTransactionById(id: number): Promise<XpTransaction | undefined> {
+    return this.xpTransactions.get(id);
+  }
+
+  async getXpTransactionsBySource(userId: number, source: string): Promise<XpTransaction[]> {
+    return Array.from(this.xpTransactions.values())
+      .filter(transaction => transaction.userId === userId && transaction.source === source)
+      .sort((a, b) => {
+        // Sort by most recent first
+        const timeA = a.createdAt ? a.createdAt.getTime() : 0;
+        const timeB = b.createdAt ? b.createdAt.getTime() : 0;
+        return timeB - timeA;
+      });
+  }
+
+  async createXpTransaction(transaction: InsertXpTransaction): Promise<XpTransaction> {
+    const id = this.currentXpTransactionId++;
+    const createdAt = new Date();
+    
+    const xpTransaction: XpTransaction = {
+      ...transaction,
+      id,
+      createdAt,
+      sourceId: transaction.sourceId ?? null
+    };
+    
+    this.xpTransactions.set(id, xpTransaction);
+    return xpTransaction;
+  }
+
+  // Helper function to calculate week number (1-52) from date
+  private getWeekNumber(date: Date): number {
+    const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+    const pastDaysOfYear = (date.getTime() - firstDayOfYear.getTime()) / 86400000;
+    return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+  }
 }
 
 export const storage = new MemStorage();
