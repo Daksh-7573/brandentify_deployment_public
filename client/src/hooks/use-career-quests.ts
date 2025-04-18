@@ -114,9 +114,9 @@ export const useUpdateQuestProgress = () => {
       return res.json() as Promise<UserQuest>;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['/api/user-quests', data.userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users/:userId/quests', data.userId] });
       queryClient.invalidateQueries({ 
-        queryKey: ['/api/user-quests/weekly', data.userId, data.weekNumber, data.year] 
+        queryKey: ['/api/users/:userId/quests/current-week', data.userId] 
       });
       queryClient.invalidateQueries({ 
         queryKey: ['/api/user-quests-with-definitions', data.userId] 
