@@ -25,6 +25,7 @@ import SmartConnectPage from "@/pages/smart-connect";
 import MuskMatchPage from "@/pages/musk-match";
 import ResumePage from "@/pages/resume";
 import FeedTestPage from "@/pages/feed-test";
+import CareerQuestsPage from "@/pages/career-quests";
 
 // Redirect component to handle page redirects
 const Redirect = ({ to }: { to: string }) => {
