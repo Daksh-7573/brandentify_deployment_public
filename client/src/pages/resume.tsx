@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState, useEffect } from 'react';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
-import { apiRequest } from '@/lib/queryClient';
+import { apiRequest, queryClient } from '@/lib/queryClient';
+import { Resume } from '@/types/resume';
 
 import { PageLayout } from '@/components/layout/page-layout';
 import { PageHeader } from '@/components/ui/page-header';
@@ -24,19 +25,59 @@ export default function ResumePage() {
     queryKey: ['/api/users', user?.id],
     enabled: !!user?.id,
   });
+  
+  // Fetch shadow resume for the user (if it exists)
+  const { data: resumeData, isLoading: isResumeLoading } = useQuery<{resume: any}>({
+    queryKey: ['/api/users', user?.id, 'shadow-resume'],
+    enabled: !!user?.id,
+  });
 
-  // Mock resume data (in a real app, this would come from the API)
-  const mockResume = {
-    id: 1,
+  // Create shadow resume mutation
+  const createResumeMutation = useMutation<any, Error, void>({
+    mutationFn: async () => {
+      return await fetch(`/api/users/${user?.id}/create-shadow-resume`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: user?.id }),
+      }).then(res => {
+        if (!res.ok) throw new Error('Failed to create shadow resume');
+        return res.json();
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: 'Shadow Resume Created',
+        description: 'Your shadow resume has been created successfully.',
+      });
+      // Invalidate queries to refresh data
+      queryClient.invalidateQueries({
+        queryKey: ['/api/users', user?.id, 'shadow-resume']
+      });
+    },
+    onError: (error: any) => {
+      console.error('Error creating shadow resume:', error);
+      toast({
+        title: 'Failed to Create Resume',
+        description: 'There was a problem creating your shadow resume.',
+        variant: 'destructive',
+      });
+    }
+  });
+
+  // Use real resume data if available, otherwise use fallback data for UI development
+  const resume = resumeData?.resume || {
+    id: 0,
     userId: user?.id || 0,
-    fileName: `${user?.name?.replace(/\s+/g, '')}_Resume_2025.pdf`,
-    fileData: '',  // Base64 data would be here
-    score: 85,
+    fileName: `${user?.name?.replace(/\s+/g, '') || 'User'}_Resume.pdf`,
+    fileData: '',
+    score: 0,
     uploadedAt: new Date(),
     isShadowResume: true,
     themeStyle: 'professional' as const,
     isDownloadable: false,
-    lastUpdatedByMusk: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3), // 3 days ago
+    lastUpdatedByMusk: new Date(),
     visibility: 'private' as const,
   };
 
@@ -84,11 +125,29 @@ export default function ResumePage() {
 
         <TabsContent value="shadow-resume" className="space-y-6">
           <div className="grid grid-cols-1 gap-6">
-            <ShadowResumeSection 
-              user={userData || user} 
-              resume={mockResume}
-              isCurrentUser={true}
-            />
+            {resumeData && resumeData.resume ? (
+              <ShadowResumeSection 
+                user={userData || user} 
+                resume={resume}
+                isCurrentUser={true}
+              />
+            ) : (
+              <div className="flex flex-col items-center justify-center p-10 border rounded-lg bg-card">
+                <Zap className="h-16 w-16 mb-4 text-primary" />
+                <h3 className="text-2xl font-bold mb-2">No Shadow Resume Found</h3>
+                <p className="text-center text-muted-foreground mb-6">
+                  Let Musk create and maintain a resume for you based on your profile data.
+                  Your shadow resume will continuously update as your career evolves.
+                </p>
+                <Button 
+                  onClick={() => createResumeMutation.mutate()}
+                  disabled={createResumeMutation.isPending}
+                  className="gap-2"
+                >
+                  {createResumeMutation.isPending ? 'Creating...' : 'Create Shadow Resume'}
+                </Button>
+              </div>
+            )}
           </div>
         </TabsContent>
 
