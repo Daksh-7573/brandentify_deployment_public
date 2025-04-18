@@ -228,7 +228,25 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
     projectUrl: '',
     category: 'Web Development',
     thumbnailUrl: '',
+    mediaUrls: [], // Additional media (images, videos, documents) - max 10 images or 150 sec video
+    collaborators: [], // Team members/collaborators - max 6 profiles
+    endorsements: [], // Client testimonials/endorsements
   });
+  
+  // Additional state for media, collaborators, and endorsements
+  const [mediaUrlInput, setMediaUrlInput] = useState('');
+  const [mediaType, setMediaType] = useState('image'); // 'image' or 'video'
+  
+  // Collaborator fields
+  const [collaboratorName, setCollaboratorName] = useState('');
+  const [collaboratorRole, setCollaboratorRole] = useState('');
+  const [collaboratorProfileLink, setCollaboratorProfileLink] = useState('');
+  
+  // Endorsement fields
+  const [endorsementText, setEndorsementText] = useState('');
+  const [endorsementAuthor, setEndorsementAuthor] = useState('');
+  const [endorsementTitle, setEndorsementTitle] = useState('');
+  const [endorsementProfileLink, setEndorsementProfileLink] = useState('');
   
   // State for Experiences step
   const [experienceFormData, setExperienceFormData] = useState({
@@ -1274,6 +1292,9 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
         projectUrl: '',
         category: 'Web Development',
         thumbnailUrl: '',
+        mediaUrls: [],
+        collaborators: [],
+        endorsements: [],
       });
     };
     
@@ -1378,6 +1399,237 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
                 onChange={(e) => setProjectFormData(prev => ({ ...prev, thumbnailUrl: e.target.value }))}
               />
               <p className="text-xs text-gray-500">Add a URL for a project thumbnail image</p>
+            </div>
+            
+            {/* Media URLs Section */}
+            <div className="grid gap-2">
+              <Label htmlFor="mediaUrl">Additional Media</Label>
+              <div className="flex space-x-2">
+                <Input
+                  id="mediaUrl"
+                  placeholder="https://example.com/additional-image.jpg"
+                  value={mediaUrlInput || ''}
+                  onChange={(e) => setMediaUrlInput(e.target.value)}
+                />
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => {
+                    if (mediaUrlInput) {
+                      setProjectFormData(prev => ({
+                        ...prev,
+                        mediaUrls: [...prev.mediaUrls, mediaUrlInput]
+                      }));
+                      setMediaUrlInput('');
+                    }
+                  }}
+                >
+                  Add
+                </Button>
+              </div>
+              <p className="text-xs text-gray-500">Add URLs to images, videos, or documents that showcase your project</p>
+              
+              {/* Display added media URLs */}
+              {projectFormData.mediaUrls.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {projectFormData.mediaUrls.map((url, idx) => (
+                    <div key={idx} className="flex items-center bg-gray-100 rounded-full px-3 py-1 text-sm">
+                      <span className="truncate max-w-[150px]">{url.split('/').pop()}</span>
+                      <button
+                        type="button"
+                        className="ml-2 text-gray-500 hover:text-red-500"
+                        onClick={() => {
+                          setProjectFormData(prev => ({
+                            ...prev,
+                            mediaUrls: prev.mediaUrls.filter((_, i) => i !== idx)
+                          }));
+                        }}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <line x1="18" y1="6" x2="6" y2="18"></line>
+                          <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            
+            {/* Collaborators Section */}
+            <div className="grid gap-2">
+              <Label>Team Members / Collaborators <span className="text-xs text-gray-500 ml-1">(Max 6)</span></Label>
+              <div className="grid gap-2 mt-1">
+                <Input
+                  placeholder="Team Member Name"
+                  value={collaboratorName || ''}
+                  onChange={(e) => setCollaboratorName(e.target.value)}
+                />
+                <div className="grid grid-cols-2 gap-2">
+                  <Input
+                    placeholder="Role (e.g., Designer, Developer)"
+                    value={collaboratorRole || ''}
+                    onChange={(e) => setCollaboratorRole(e.target.value)}
+                  />
+                  <Input
+                    placeholder="Profile Link*"
+                    value={collaboratorProfileLink || ''}
+                    onChange={(e) => setCollaboratorProfileLink(e.target.value)}
+                  />
+                </div>
+              </div>
+              <Button 
+                type="button" 
+                variant="outline" 
+                className="mt-1"
+                disabled={projectFormData.collaborators.length >= 6}
+                onClick={() => {
+                  if (collaboratorName && collaboratorRole && collaboratorProfileLink) {
+                    setProjectFormData(prev => ({
+                      ...prev,
+                      collaborators: [...prev.collaborators, { 
+                        name: collaboratorName, 
+                        role: collaboratorRole,
+                        profileLink: collaboratorProfileLink
+                      }]
+                    }));
+                    setCollaboratorName('');
+                    setCollaboratorRole('');
+                    setCollaboratorProfileLink('');
+                  } else {
+                    toast({
+                      title: "Missing information",
+                      description: "Please fill in all team member fields, including profile link",
+                      variant: "destructive",
+                    });
+                  }
+                }}
+              >
+                Add Team Member
+              </Button>
+              
+              {projectFormData.collaborators.length >= 6 && (
+                <p className="text-xs text-amber-600">Maximum of 6 team members reached</p>
+              )}
+              
+              {/* Display added collaborators */}
+              {projectFormData.collaborators.length > 0 && (
+                <div className="mt-2 space-y-2">
+                  {projectFormData.collaborators.map((collaborator, idx) => (
+                    <div key={idx} className="flex justify-between items-center bg-gray-50 rounded p-3 text-sm">
+                      <div className="flex flex-col">
+                        <div className="flex items-center">
+                          <span className="font-medium">{collaborator.name}</span>
+                          <span className="text-gray-500 ml-2">{collaborator.role}</span>
+                        </div>
+                        {collaborator.profileLink && (
+                          <a 
+                            href={collaborator.profileLink}
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-xs text-primary hover:underline flex items-center mt-1"
+                          >
+                            <ExternalLink size={12} className="mr-1" />
+                            {collaborator.profileLink.replace(/^https?:\/\//, '')}
+                          </a>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        className="text-gray-500 hover:text-red-500"
+                        onClick={() => {
+                          setProjectFormData(prev => ({
+                            ...prev,
+                            collaborators: prev.collaborators.filter((_, i) => i !== idx)
+                          }));
+                        }}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <line x1="18" y1="6" x2="6" y2="18"></line>
+                          <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            
+            {/* Endorsements Section */}
+            <div className="grid gap-2">
+              <Label>Client Testimonials / Endorsements</Label>
+              <Textarea
+                placeholder="Testimonial or endorsement message"
+                value={endorsementText || ''}
+                onChange={(e) => setEndorsementText(e.target.value)}
+                rows={2}
+              />
+              <div className="grid grid-cols-2 gap-2 mt-1">
+                <Input
+                  placeholder="Client Name"
+                  value={endorsementAuthor || ''}
+                  onChange={(e) => setEndorsementAuthor(e.target.value)}
+                />
+                <Input
+                  placeholder="Client Title/Company"
+                  value={endorsementTitle || ''}
+                  onChange={(e) => setEndorsementTitle(e.target.value)}
+                />
+              </div>
+              <Button 
+                type="button" 
+                variant="outline" 
+                className="mt-1"
+                onClick={() => {
+                  if (endorsementText && endorsementAuthor) {
+                    setProjectFormData(prev => ({
+                      ...prev,
+                      endorsements: [...prev.endorsements, { 
+                        text: endorsementText, 
+                        author: endorsementAuthor,
+                        title: endorsementTitle || ''
+                      }]
+                    }));
+                    setEndorsementText('');
+                    setEndorsementAuthor('');
+                    setEndorsementTitle('');
+                  }
+                }}
+              >
+                Add Endorsement
+              </Button>
+              
+              {/* Display added endorsements */}
+              {projectFormData.endorsements.length > 0 && (
+                <div className="mt-2 space-y-2">
+                  {projectFormData.endorsements.map((endorsement, idx) => (
+                    <div key={idx} className="bg-gray-50 rounded p-3 text-sm relative">
+                      <button
+                        type="button"
+                        className="absolute top-2 right-2 text-gray-500 hover:text-red-500"
+                        onClick={() => {
+                          setProjectFormData(prev => ({
+                            ...prev,
+                            endorsements: prev.endorsements.filter((_, i) => i !== idx)
+                          }));
+                        }}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <line x1="18" y1="6" x2="6" y2="18"></line>
+                          <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                      </button>
+                      <p className="italic mb-2">"{endorsement.text}"</p>
+                      <div className="flex items-center">
+                        <span className="font-medium">{endorsement.author}</span>
+                        {endorsement.title && (
+                          <span className="text-gray-500 ml-1">— {endorsement.title}</span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
             
             <Button type="button" onClick={addProject} className="w-full">
