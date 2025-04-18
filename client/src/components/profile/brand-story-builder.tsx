@@ -1,28 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'wouter';
-import { User } from '@/types/user';
-import { Button } from '@/components/ui/button';
+import { useState, useEffect, useRef } from "react";
+import { useLocation } from "wouter";
+import { User } from "@shared/schema";
 import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { apiRequest } from '@/lib/queryClient';
-import { useToast } from '@/hooks/use-toast';
-import { FileText, Camera, ArrowRight, ArrowLeft, Check, Upload, Save, Home } from 'lucide-react';
-import { LOOKING_FOR_CATEGORIES, INDUSTRIES } from '@/lib/constants';
-import MuskAvatar from '@/components/musk/musk-avatar';
-import { Progress } from '@/components/ui/progress';
-import confetti from 'canvas-confetti';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useMutation } from "@tanstack/react-query";
+import { queryClient, apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import MuskAvatar from "@/components/musk/musk-avatar";
+import confetti from "canvas-confetti";
 
 interface BrandStoryBuilderProps {
   user: User | null;
@@ -31,515 +30,1124 @@ interface BrandStoryBuilderProps {
   isOpen: boolean;
 }
 
-// Define steps
-const STEPS = [
-  {
-    id: 'all-about-me',
-    title: 'All About Me',
-    subtitle: 'Who are you... and where are you going?',
-    emoji: '👋',
-  },
-  {
-    id: 'what-im-good-at',
-    title: 'What I\'m Good At',
-    subtitle: 'Flex your skill muscles.',
-    emoji: '💪',
-  },
-  {
-    id: 'what-i-offer',
-    title: 'What I Offer',
-    subtitle: 'How can others benefit from your brilliance?',
-    emoji: '🎁',
-  },
-  {
-    id: 'showcase',
-    title: 'Showcase',
-    subtitle: 'Show. Don\'t just tell.',
-    emoji: '✨',
-  },
-  {
-    id: 'career-path',
-    title: 'Career Path',
-    subtitle: 'Let\'s map the trail behind your current shine.',
-    emoji: '🚀',
-  },
-  {
-    id: 'academic-background',
-    title: 'Academic Background',
-    subtitle: 'Where did your journey begin?',
-    emoji: '🎓',
-  },
-  {
-    id: 'personal-information',
-    title: 'Personal Information',
-    subtitle: 'Just so we can keep in touch (and so can others).',
-    emoji: '📱',
-  },
-];
+interface StepProps {
+  currentStep: number;
+  setCurrentStep: (step: number) => void;
+  user: User | null;
+  userData: any;
+  updateFormData: (data: any) => void;
+  formData: any;
+  nextStep: () => void;
+  prevStep: () => void;
+  complete: () => void;
+}
 
-const BrandStoryBuilder: React.FC<BrandStoryBuilderProps> = ({ 
-  user, 
-  userData, 
-  onClose, 
-  isOpen 
-}) => {
+const BrandStoryBuilder = ({ user, userData, onClose, isOpen }: BrandStoryBuilderProps) => {
+  const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<any>({});
-  const [isUploading, setIsUploading] = useState(false);
-  const [progressPercent, setProgressPercent] = useState(0);
-  const [justCompleted, setJustCompleted] = useState<number | null>(null);
-  const queryClient = useQueryClient();
-  const { toast } = useToast();
-  const [, setLocation] = useLocation();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const confettiRef = useRef<HTMLDivElement>(null);
 
-  // Initialize form data with user data
+  // Steps in the brand story building process
+  const steps = [
+    "Introduction",
+    "Basic Info",
+    "Professional Identity",
+    "Skills",
+    "Services",
+    "Work Experience",
+    "Education",
+    "Projects",
+    "Review",
+  ];
+
   useEffect(() => {
-    if (userData) {
+    // Initialize form data with user data when it loads
+    if (user) {
       setFormData({
-        name: userData.name || '',
-        title: userData.title || '',
-        location: userData.location || '',
-        industry: userData.industry || '',
-        lookingFor: userData.lookingFor || '',
-        aboutMe: userData.aboutMe || '',
-        // Additional fields will be initialized as we implement each step
+        name: user.name || "",
+        title: user.title || "",
+        location: user.location || "",
+        industry: user.industry || "",
+        domain: user.domain || "",
+        lookingFor: user.lookingFor || "",
+        aboutMe: user.aboutMe || "",
+        skills: userData?.skills || [],
+        services: userData?.services || [],
+        experiences: userData?.experiences || [],
+        educations: userData?.educations || [],
+        projects: userData?.projects || [],
       });
     }
-  }, [userData]);
+  }, [user, userData]);
 
+  // Calculate progress
   useEffect(() => {
-    // Calculate progress percentage based on current step
-    setProgressPercent(((currentStep + 1) / STEPS.length) * 100);
-  }, [currentStep]);
-
-  // Show confetti when a step is completed
-  useEffect(() => {
-    if (justCompleted !== null) {
-      // Trigger confetti
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
-      
-      // Reset after animation
-      const timer = setTimeout(() => {
-        setJustCompleted(null);
-      }, 2000);
-      
-      return () => clearTimeout(timer);
+    if (isOpen) {
+      setProgress(Math.round((currentStep / (steps.length - 1)) * 100));
     }
-  }, [justCompleted]);
+  }, [currentStep, steps.length, isOpen]);
 
-  const updateUser = useMutation({
-    mutationFn: async (data: any) => {
-      return await apiRequest(`/api/users/${userData.id}`, {
-        method: 'PATCH',
-        data
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/users', userData.id] });
-      toast({
-        title: "Profile updated!",
-        description: "Your brand story is getting stronger.",
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Error updating profile",
-        description: "Please try again.",
-        variant: "destructive",
-      });
-      console.error("Error updating profile:", error);
-    }
-  });
-
-  const handleInputChange = (field: string, value: any) => {
-    setFormData(prev => ({
+  // Handle form data updates
+  const updateFormData = (data: any) => {
+    setFormData((prev: any) => ({
       ...prev,
-      [field]: value
+      ...data,
     }));
   };
 
-  const handleNextStep = () => {
-    // Save the current step data
-    updateUser.mutate(formData);
-    
-    // Trigger confetti
-    setJustCompleted(currentStep);
-    
-    // Move to next step
-    if (currentStep < STEPS.length - 1) {
+  // Update user profile mutation
+  const updateProfileMutation = useMutation({
+    mutationFn: async (data: any) => {
+      return await apiRequest('PUT', `/api/users/${user?.id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.id}`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.id}/skills`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.id}/experiences`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.id}/educations`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.id}/projects`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.id}/services`] });
+      
+      // Show confetti animation
+      if (confettiRef.current) {
+        const rect = confettiRef.current.getBoundingClientRect();
+        const x = rect.left + rect.width / 2;
+        const y = rect.top + rect.height / 2;
+        
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { x: x / window.innerWidth, y: y / window.innerHeight }
+        });
+      }
+      
+      toast({
+        title: "Success!",
+        description: "Your brand story has been updated successfully.",
+      });
+      
+      setTimeout(() => {
+        onClose();
+      }, 1500);
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "There was an error updating your profile. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Navigation functions
+  const nextStep = () => {
+    if (currentStep < steps.length - 1) {
       setCurrentStep(prev => prev + 1);
-    } else {
-      // Complete the process
-      handleComplete();
     }
   };
 
-  const handlePrevStep = () => {
+  const prevStep = () => {
     if (currentStep > 0) {
       setCurrentStep(prev => prev - 1);
     }
   };
 
-  const handleComplete = () => {
-    // Final save
-    updateUser.mutate(formData);
+  const completeStoryBuilder = () => {
+    setIsSubmitting(true);
     
-    // Show success toast
-    toast({
-      title: "Profile complete!",
-      description: "Your brand story is now live.",
-    });
+    // Extract basic profile fields
+    const profileData = {
+      name: formData.name,
+      title: formData.title,
+      location: formData.location,
+      industry: formData.industry,
+      domain: formData.domain,
+      lookingFor: formData.lookingFor,
+      aboutMe: formData.aboutMe,
+    };
     
-    // Trigger massive confetti for completion
-    confetti({
-      particleCount: 200,
-      spread: 100,
-      origin: { y: 0.6 }
-    });
-    
-    // Close the builder
-    onClose();
+    // Update the profile
+    updateProfileMutation.mutate(profileData);
   };
-
-  const jumpToStep = (index: number) => {
-    // Save current progress first
-    updateUser.mutate(formData);
-    setCurrentStep(index);
-  };
-
-  const handleUploadCV = () => {
-    // To be implemented: CV upload and parsing functionality
-    setIsUploading(true);
-    
-    setTimeout(() => {
-      setIsUploading(false);
-      toast({
-        title: "CV uploaded",
-        description: "Your CV has been processed. We've filled in many of your details for you.",
-      });
-      
-      // For demo: Update form data as if CV was parsed
-      setFormData(prev => ({
-        ...prev,
-        title: prev.title || "Software Engineer",
-        industry: prev.industry || "Technology: Software Development",
-        // Additional fields would be populated here
-      }));
-    }, 2000);
-  };
-
-  // Render specific step based on currentStep
-  const renderStep = () => {
-    const step = STEPS[currentStep];
-    
-    switch (step.id) {
-      case 'all-about-me':
-        return (
-          <div className="space-y-6">
-            <div className="text-center mb-8">
-              <MuskAvatar size="lg" />
-              <div className="mt-4 text-lg text-primary">
-                "{step.subtitle}"
-              </div>
-            </div>
-            
-            <div className="space-y-4">
-              {/* Profile Picture Upload */}
-              <div className="flex flex-col items-center gap-4">
-                <div className="relative group">
-                  <div className="h-32 w-32 overflow-hidden rounded-full bg-white ring-4 ring-primary/20 flex items-center justify-center">
-                    <img 
-                      className="h-full w-full object-cover" 
-                      src={userData?.photoURL || user?.photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
-                      alt="User profile"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
-                      }}
-                    />
-                  </div>
-                  <button 
-                    className="absolute bottom-0 right-0 bg-primary hover:bg-primary/90 text-white p-2 rounded-full shadow-md"
-                    aria-label="Change profile picture"
-                  >
-                    <Camera size={20} />
-                  </button>
-                </div>
-                <p className="text-sm text-muted-foreground">Your face = your brand. Pick a good one or go bold.</p>
-              </div>
-              
-              {/* Name */}
-              <div className="space-y-2">
-                <Label htmlFor="name" className="font-medium">Your name</Label>
-                <Input 
-                  id="name" 
-                  value={formData.name || ''}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
-                  placeholder="Enter your full name"
-                  className="bg-white"
-                />
-              </div>
-              
-              {/* Job Title */}
-              <div className="space-y-2">
-                <Label htmlFor="title" className="font-medium">I am:</Label>
-                <Input 
-                  id="title" 
-                  value={formData.title || ''}
-                  onChange={(e) => handleInputChange('title', e.target.value)}
-                  placeholder="Enter something cool (e.g., Senior DevOps Engineer)"
-                  className="bg-white"
-                />
-                <p className="text-xs text-muted-foreground">This is your professional tagline</p>
-              </div>
-              
-              {/* Looking For */}
-              <div className="space-y-2">
-                <Label htmlFor="lookingFor" className="font-medium">Looking for:</Label>
-                <Select 
-                  value={formData.lookingFor || ''} 
-                  onValueChange={(value) => handleInputChange('lookingFor', value)}
-                >
-                  <SelectTrigger className="bg-white">
-                    <SelectValue placeholder="What are you looking for?" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {LOOKING_FOR_CATEGORIES.map((category) => (
-                      <SelectItem key={category.value} value={category.value}>
-                        {category.icon} {category.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-muted-foreground">
-                  Let others know what you're currently seeking
-                </p>
-              </div>
-              
-              {/* Location */}
-              <div className="space-y-2">
-                <Label htmlFor="location" className="font-medium">Location:</Label>
-                <Input 
-                  id="location" 
-                  value={formData.location || ''}
-                  onChange={(e) => handleInputChange('location', e.target.value)}
-                  placeholder="City, Country"
-                  className="bg-white"
-                />
-              </div>
-              
-              {/* Industry */}
-              <div className="space-y-2">
-                <Label htmlFor="industry" className="font-medium">Industry:</Label>
-                <Select 
-                  value={formData.industry || ''} 
-                  onValueChange={(value) => handleInputChange('industry', value)}
-                >
-                  <SelectTrigger className="bg-white">
-                    <SelectValue placeholder="Select your industry" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {INDUSTRIES.map((industry) => (
-                      <SelectItem key={industry.value} value={industry.value}>
-                        {industry.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              {/* About Me */}
-              <div className="space-y-2">
-                <Label htmlFor="aboutMe" className="font-medium">What I'm All About:</Label>
-                <Textarea 
-                  id="aboutMe" 
-                  value={formData.aboutMe || ''}
-                  onChange={(e) => handleInputChange('aboutMe', e.target.value)}
-                  placeholder="Tell us about yourself, your passion, and what drives you."
-                  className="h-32 bg-white"
-                />
-              </div>
-            </div>
-            
-            {/* Encouragement Toast */}
-            <div className="bg-primary/10 text-primary-foreground p-3 rounded-md text-sm flex items-center gap-2">
-              <div className="bg-primary text-white rounded-full p-1 flex items-center justify-center">
-                <Check size={16} />
-              </div>
-              <div>
-                🔥 92% of top profiles have this section filled right.
-              </div>
-            </div>
-          </div>
-        );
-      
-      case 'what-im-good-at':
-        return (
-          <div className="space-y-6">
-            <div className="text-center mb-8">
-              <MuskAvatar size="lg" />
-              <div className="mt-4 text-lg text-primary">
-                "{step.subtitle}"
-              </div>
-            </div>
-            
-            <div className="space-y-4">
-              <p className="text-sm text-center text-muted-foreground mb-6">
-                Let's add your skills. These are what make you stand out.
-              </p>
-              
-              {/* Skills section will be implemented here */}
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <p className="text-sm text-center">Skills section coming soon</p>
-                <p className="text-xs text-center text-muted-foreground mt-2">This step will allow you to add and manage your technical and soft skills</p>
-              </div>
-              
-              {/* Placeholder for skills UI */}
-              <div className="flex flex-wrap gap-2 my-4">
-                <div className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm">React.js</div>
-                <div className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm">Node.js</div>
-                <div className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm">TypeScript</div>
-                <div className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm">UI/UX Design</div>
-                <div className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm">+ Add Skill</div>
-              </div>
-            </div>
-          </div>
-        );
-      
-      // Other steps will be implemented as we continue development
-      default:
-        return (
-          <div className="text-center p-8">
-            <div className="text-center mb-8">
-              <MuskAvatar size="lg" />
-              <div className="mt-4 text-lg text-primary">
-                "{step.subtitle}"
-              </div>
-            </div>
-            <p className="text-muted-foreground">
-              This step is coming soon! We're working on implementing {step.title}.
-            </p>
-          </div>
-        );
-    }
-  };
-
-  // If not open, don't render anything
-  if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center overflow-y-auto">
-      <div className="w-full max-w-4xl p-4">
-        <Card className="border-2 border-primary/10 shadow-lg">
-          <CardHeader className="border-b">
-            <div className="flex justify-between items-center">
-              <div>
-                <CardTitle className="text-2xl font-bold text-primary">
-                  Your Brand Story Builder
-                </CardTitle>
-                <CardDescription>
-                  Let's build your brand. One spark at a time.
-                </CardDescription>
-              </div>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={() => setLocation('/profile')}
-                className="rounded-full"
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <div ref={confettiRef} className="absolute top-0 left-0 w-full h-full pointer-events-none" />
+        
+        <DialogHeader>
+          <div className="flex items-center gap-3 mb-2">
+            <MuskAvatar size="md" withSparks={true} />
+            <div>
+              <DialogTitle className="text-xl font-bold">
+                Build Your Brand Story with Musk
+              </DialogTitle>
+              <DialogDescription>
+                Let's craft a compelling narrative of your professional journey together.
+              </DialogDescription>
+            </div>
+          </div>
+          
+          {/* Progress Bar */}
+          <div className="w-full bg-gray-200 rounded-full h-2.5 mt-4">
+            <div 
+              className="bg-primary h-2.5 rounded-full transition-all duration-300 ease-in-out" 
+              style={{ width: `${progress}%` }}
+            ></div>
+          </div>
+          
+          {/* Step Indicators */}
+          <div className="flex justify-between mt-2 px-1 overflow-x-auto pb-2">
+            {steps.map((step, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentStep(index)}
+                className={`flex flex-col items-center min-w-[80px] transition-colors ${
+                  index === currentStep
+                    ? "text-primary"
+                    : index < currentStep
+                    ? "text-gray-500"
+                    : "text-gray-400"
+                }`}
               >
-                <Home size={20} />
-              </Button>
+                <div
+                  className={`w-6 h-6 rounded-full flex items-center justify-center text-xs mb-1 ${
+                    index === currentStep
+                      ? "bg-primary text-white"
+                      : index < currentStep
+                      ? "bg-gray-200 text-gray-700"
+                      : "bg-gray-100 text-gray-400"
+                  }`}
+                >
+                  {index + 1}
+                </div>
+                <span className="text-xs whitespace-nowrap">{step}</span>
+              </button>
+            ))}
+          </div>
+        </DialogHeader>
+
+        {/* Step Content */}
+        <div className="py-4">
+          {currentStep === 0 && (
+            <IntroductionStep
+              currentStep={currentStep}
+              setCurrentStep={setCurrentStep}
+              user={user}
+              userData={userData}
+              updateFormData={updateFormData}
+              formData={formData}
+              nextStep={nextStep}
+              prevStep={prevStep}
+              complete={completeStoryBuilder}
+            />
+          )}
+          
+          {currentStep === 1 && (
+            <BasicInfoStep
+              currentStep={currentStep}
+              setCurrentStep={setCurrentStep}
+              user={user}
+              userData={userData}
+              updateFormData={updateFormData}
+              formData={formData}
+              nextStep={nextStep}
+              prevStep={prevStep}
+              complete={completeStoryBuilder}
+            />
+          )}
+          
+          {currentStep === 2 && (
+            <ProfessionalIdentityStep
+              currentStep={currentStep}
+              setCurrentStep={setCurrentStep}
+              user={user}
+              userData={userData}
+              updateFormData={updateFormData}
+              formData={formData}
+              nextStep={nextStep}
+              prevStep={prevStep}
+              complete={completeStoryBuilder}
+            />
+          )}
+          
+          {currentStep === 3 && (
+            <SkillsStep
+              currentStep={currentStep}
+              setCurrentStep={setCurrentStep}
+              user={user}
+              userData={userData}
+              updateFormData={updateFormData}
+              formData={formData}
+              nextStep={nextStep}
+              prevStep={prevStep}
+              complete={completeStoryBuilder}
+            />
+          )}
+          
+          {currentStep === 4 && (
+            <ServicesStep
+              currentStep={currentStep}
+              setCurrentStep={setCurrentStep}
+              user={user}
+              userData={userData}
+              updateFormData={updateFormData}
+              formData={formData}
+              nextStep={nextStep}
+              prevStep={prevStep}
+              complete={completeStoryBuilder}
+            />
+          )}
+          
+          {currentStep === 5 && (
+            <WorkExperienceStep
+              currentStep={currentStep}
+              setCurrentStep={setCurrentStep}
+              user={user}
+              userData={userData}
+              updateFormData={updateFormData}
+              formData={formData}
+              nextStep={nextStep}
+              prevStep={prevStep}
+              complete={completeStoryBuilder}
+            />
+          )}
+          
+          {currentStep === 6 && (
+            <EducationStep
+              currentStep={currentStep}
+              setCurrentStep={setCurrentStep}
+              user={user}
+              userData={userData}
+              updateFormData={updateFormData}
+              formData={formData}
+              nextStep={nextStep}
+              prevStep={prevStep}
+              complete={completeStoryBuilder}
+            />
+          )}
+          
+          {currentStep === 7 && (
+            <ProjectsStep
+              currentStep={currentStep}
+              setCurrentStep={setCurrentStep}
+              user={user}
+              userData={userData}
+              updateFormData={updateFormData}
+              formData={formData}
+              nextStep={nextStep}
+              prevStep={prevStep}
+              complete={completeStoryBuilder}
+            />
+          )}
+          
+          {currentStep === 8 && (
+            <ReviewStep
+              currentStep={currentStep}
+              setCurrentStep={setCurrentStep}
+              user={user}
+              userData={userData}
+              updateFormData={updateFormData}
+              formData={formData}
+              nextStep={nextStep}
+              prevStep={prevStep}
+              complete={completeStoryBuilder}
+            />
+          )}
+        </div>
+
+        <DialogFooter className="flex justify-between mt-6 gap-2">
+          {currentStep > 0 && (
+            <Button 
+              variant="outline" 
+              onClick={prevStep}
+              disabled={isSubmitting}
+            >
+              Back
+            </Button>
+          )}
+          
+          {currentStep === 0 && (
+            <Button 
+              variant="outline" 
+              onClick={onClose}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
+          )}
+          
+          <div className="flex-1"></div>
+          
+          {currentStep < steps.length - 1 ? (
+            <Button onClick={nextStep} disabled={isSubmitting}>
+              Continue
+            </Button>
+          ) : (
+            <Button 
+              onClick={completeStoryBuilder} 
+              disabled={isSubmitting}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              {isSubmitting ? "Saving..." : "Complete Your Story"}
+            </Button>
+          )}
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// Introduction Step
+const IntroductionStep = ({ nextStep, user, formData }: StepProps) => {
+  return (
+    <div className="space-y-6">
+      <div className="flex items-start gap-4">
+        <div className="mt-1">
+          <MuskAvatar size="sm" withSparks={true} />
+        </div>
+        <div className="bg-gray-50 rounded-lg p-4 rounded-tl-none">
+          <h3 className="font-medium text-lg text-gray-900">Hi {user?.name || "there"}!</h3>
+          <p className="text-gray-600 mt-2">
+            I'm Musk, your AI career assistant. Together, we're going to craft your professional brand story step by step.
+          </p>
+          <p className="text-gray-600 mt-2">
+            This guided experience will help you complete your profile and present yourself in the best possible light to potential 
+            connections, employers, and clients.
+          </p>
+        </div>
+      </div>
+      
+      <div className="flex items-start gap-4">
+        <div className="mt-1">
+          <MuskAvatar size="sm" withSparks={true} />
+        </div>
+        <div className="bg-gray-50 rounded-lg p-4 rounded-tl-none">
+          <h3 className="font-medium text-lg text-gray-900">Here's what we'll cover:</h3>
+          <ul className="list-disc pl-5 mt-2 space-y-2 text-gray-600">
+            <li>Your basic information and professional identity</li>
+            <li>Your skills and expertise</li>
+            <li>Services you offer (if applicable)</li>
+            <li>Your work experience and education</li>
+            <li>Projects you've worked on</li>
+          </ul>
+          <p className="text-gray-600 mt-3">
+            You can navigate between steps using the indicators at the top, and your progress will be 
+            saved automatically. Ready to get started?
+          </p>
+        </div>
+      </div>
+      
+      <div className="flex justify-end">
+        <Button onClick={nextStep} className="mt-4 px-6">Let's Begin</Button>
+      </div>
+    </div>
+  );
+};
+
+// Basic Info Step
+const BasicInfoStep = ({ nextStep, prevStep, user, updateFormData, formData }: StepProps) => {
+  const [name, setName] = useState(formData.name || "");
+  const [title, setTitle] = useState(formData.title || "");
+  const [location, setLocation] = useState(formData.location || "");
+  
+  const handleNext = () => {
+    updateFormData({ name, title, location });
+    nextStep();
+  };
+  
+  return (
+    <div className="space-y-6">
+      <div className="flex items-start gap-4">
+        <div className="mt-1">
+          <MuskAvatar size="sm" withSparks={true} />
+        </div>
+        <div className="bg-gray-50 rounded-lg p-4 rounded-tl-none">
+          <h3 className="font-medium text-lg text-gray-900">Let's start with the basics</h3>
+          <p className="text-gray-600 mt-2">
+            These fundamental details help people identify you and understand your role at a glance.
+          </p>
+        </div>
+      </div>
+      
+      <div className="space-y-4">
+        <div className="grid gap-2">
+          <Label htmlFor="name">Full Name</Label>
+          <Input 
+            id="name" 
+            value={name} 
+            onChange={(e) => setName(e.target.value)} 
+            placeholder="John Doe"
+          />
+        </div>
+        
+        <div className="grid gap-2">
+          <Label htmlFor="title">Professional Title</Label>
+          <Input 
+            id="title" 
+            value={title} 
+            onChange={(e) => setTitle(e.target.value)} 
+            placeholder="Senior Software Engineer"
+          />
+          <p className="text-xs text-gray-500">Your current job title or professional role</p>
+        </div>
+        
+        <div className="grid gap-2">
+          <Label htmlFor="location">Location</Label>
+          <Input 
+            id="location" 
+            value={location} 
+            onChange={(e) => setLocation(e.target.value)} 
+            placeholder="San Francisco, CA, USA"
+          />
+          <p className="text-xs text-gray-500">City, State/Province, Country</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Professional Identity Step
+const ProfessionalIdentityStep = ({ nextStep, prevStep, updateFormData, formData }: StepProps) => {
+  const [industry, setIndustry] = useState(formData.industry || "");
+  const [domain, setDomain] = useState(formData.domain || "");
+  const [lookingFor, setLookingFor] = useState(formData.lookingFor || "");
+  const [aboutMe, setAboutMe] = useState(formData.aboutMe || "");
+  
+  // For demo - use the INDUSTRY_DOMAINS and LOOKING_FOR_CATEGORIES from Profile page
+  // In a real implementation, these would be imported or fetched
+  const INDUSTRIES = [
+    "Technology",
+    "Healthcare",
+    "Finance",
+    "Education",
+    "Marketing",
+    "Design",
+  ];
+  
+  const DOMAINS = {
+    "Technology": [
+      "Software Development",
+      "Data Science",
+      "Cybersecurity",
+      "Cloud Computing",
+      "AI & Machine Learning",
+    ],
+    "Healthcare": [
+      "Medical Practice",
+      "Healthcare IT",
+      "Biotech",
+      "Pharmaceuticals",
+      "Public Health",
+    ],
+  };
+  
+  const LOOKING_FOR = [
+    { value: "job_opportunities", label: "Job Opportunities" },
+    { value: "mentors", label: "Career Mentors" },
+    { value: "industry_experts", label: "Industry Experts" },
+    { value: "share_expertise", label: "Sharing My Expertise" },
+    { value: "business_partners", label: "Business Partners" },
+  ];
+  
+  const handleNext = () => {
+    updateFormData({ industry, domain, lookingFor, aboutMe });
+    nextStep();
+  };
+  
+  return (
+    <div className="space-y-6">
+      <div className="flex items-start gap-4">
+        <div className="mt-1">
+          <MuskAvatar size="sm" withSparks={true} />
+        </div>
+        <div className="bg-gray-50 rounded-lg p-4 rounded-tl-none">
+          <h3 className="font-medium text-lg text-gray-900">Tell me about your professional identity</h3>
+          <p className="text-gray-600 mt-2">
+            This helps us connect you with the right people and opportunities in your field.
+          </p>
+        </div>
+      </div>
+      
+      <div className="space-y-4">
+        <div className="grid gap-2">
+          <Label htmlFor="industry">Industry</Label>
+          <Select 
+            value={industry} 
+            onValueChange={setIndustry}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select your industry" />
+            </SelectTrigger>
+            <SelectContent>
+              {INDUSTRIES.map((ind) => (
+                <SelectItem key={ind} value={ind}>{ind}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        
+        <div className="grid gap-2">
+          <Label htmlFor="domain">Domain/Specialization</Label>
+          <Select 
+            value={domain} 
+            onValueChange={setDomain}
+            disabled={!industry}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder={industry ? "Select your domain" : "Select an industry first"} />
+            </SelectTrigger>
+            <SelectContent>
+              {industry && DOMAINS[industry as keyof typeof DOMAINS]?.map((dom) => (
+                <SelectItem key={dom} value={dom}>{dom}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        
+        <div className="grid gap-2">
+          <Label htmlFor="lookingFor">What are you looking for?</Label>
+          <Select 
+            value={lookingFor} 
+            onValueChange={setLookingFor}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select what you're looking for" />
+            </SelectTrigger>
+            <SelectContent>
+              {LOOKING_FOR.map((option) => (
+                <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        
+        <div className="grid gap-2">
+          <Label htmlFor="aboutMe">About Me</Label>
+          <Textarea 
+            id="aboutMe" 
+            value={aboutMe} 
+            onChange={(e) => setAboutMe(e.target.value)} 
+            placeholder="Tell others a bit about yourself, your background, and what drives you professionally..."
+            rows={5}
+          />
+          <p className="text-xs text-gray-500">A brief professional bio (350 words max)</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Skills Step
+const SkillsStep = ({ nextStep, prevStep, userData, updateFormData, formData }: StepProps) => {
+  const [skills, setSkills] = useState<any[]>(formData.skills || []);
+  const [newSkill, setNewSkill] = useState("");
+  const [skillLevel, setSkillLevel] = useState("Intermediate");
+  
+  const addSkill = () => {
+    if (!newSkill.trim()) return;
+    
+    const skillExists = skills.some(skill => 
+      skill.name.toLowerCase() === newSkill.toLowerCase()
+    );
+    
+    if (skillExists) {
+      // Could show a toast here
+      return;
+    }
+    
+    setSkills(prev => [
+      ...prev, 
+      { 
+        id: Date.now(), // Temporary ID
+        name: newSkill.trim(),
+        level: skillLevel,
+        proficiency: skillLevel === "Beginner" ? 25 : skillLevel === "Intermediate" ? 50 : 75
+      }
+    ]);
+    
+    setNewSkill("");
+  };
+  
+  const removeSkill = (skillId: number) => {
+    setSkills(prev => prev.filter(skill => skill.id !== skillId));
+  };
+  
+  const handleNext = () => {
+    updateFormData({ skills });
+    nextStep();
+  };
+  
+  return (
+    <div className="space-y-6">
+      <div className="flex items-start gap-4">
+        <div className="mt-1">
+          <MuskAvatar size="sm" withSparks={true} />
+        </div>
+        <div className="bg-gray-50 rounded-lg p-4 rounded-tl-none">
+          <h3 className="font-medium text-lg text-gray-900">What skills do you bring to the table?</h3>
+          <p className="text-gray-600 mt-2">
+            Add your professional skills and expertise. These help others understand your capabilities
+            and are essential for being discovered.
+          </p>
+        </div>
+      </div>
+      
+      <div className="space-y-4">
+        <div className="flex gap-2">
+          <div className="flex-1">
+            <Input 
+              value={newSkill} 
+              onChange={(e) => setNewSkill(e.target.value)} 
+              placeholder="Add a skill (e.g. JavaScript, Project Management)"
+              onKeyDown={(e) => e.key === 'Enter' && addSkill()}
+            />
+          </div>
+          
+          <Select value={skillLevel} onValueChange={setSkillLevel}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Beginner">Beginner</SelectItem>
+              <SelectItem value="Intermediate">Intermediate</SelectItem>
+              <SelectItem value="Advanced">Advanced</SelectItem>
+            </SelectContent>
+          </Select>
+          
+          <Button onClick={addSkill}>Add</Button>
+        </div>
+        
+        <div className="mt-4">
+          <Label className="mb-2 block">Your Skills</Label>
+          
+          {skills.length === 0 ? (
+            <div className="text-center p-6 border border-dashed rounded-md text-gray-500">
+              You haven't added any skills yet. Add your skills to complete your profile.
             </div>
-            
-            {/* Progress Bar */}
-            <div className="w-full mt-4">
-              <div className="flex justify-between text-sm mb-1">
-                <span>Progress</span>
-                <span>{Math.round(progressPercent)}%</span>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {skills.map(skill => (
+                <Badge 
+                  key={skill.id} 
+                  variant="outline" 
+                  className="px-3 py-1 flex items-center gap-2 group"
+                >
+                  <span>{skill.name}</span>
+                  <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+                    skill.level === "Beginner" 
+                      ? "bg-blue-100 text-blue-800" 
+                      : skill.level === "Intermediate" 
+                        ? "bg-green-100 text-green-800"
+                        : "bg-purple-100 text-purple-800"
+                  }`}>
+                    {skill.level}
+                  </span>
+                  <button 
+                    onClick={() => removeSkill(skill.id)}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity ml-1 text-gray-400 hover:text-red-500"
+                  >
+                    ×
+                  </button>
+                </Badge>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Services Step
+const ServicesStep = ({ nextStep, prevStep, updateFormData, formData }: StepProps) => {
+  const [services, setServices] = useState<any[]>(formData.services || []);
+  
+  // In a real implementation, we would add UI to create/edit services
+  
+  const handleNext = () => {
+    updateFormData({ services });
+    nextStep();
+  };
+  
+  return (
+    <div className="space-y-6">
+      <div className="flex items-start gap-4">
+        <div className="mt-1">
+          <MuskAvatar size="sm" withSparks={true} />
+        </div>
+        <div className="bg-gray-50 rounded-lg p-4 rounded-tl-none">
+          <h3 className="font-medium text-lg text-gray-900">Do you offer any professional services?</h3>
+          <p className="text-gray-600 mt-2">
+            If you're a freelancer, consultant, or offer any professional services, showcase them here.
+            This is optional - you can skip this step if it doesn't apply to you.
+          </p>
+        </div>
+      </div>
+      
+      <div className="space-y-4">
+        {services.length === 0 ? (
+          <div className="text-center p-6 border border-dashed rounded-md text-gray-500">
+            You haven't added any services yet. You can add services from your profile page later.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-4">
+            {services.map(service => (
+              <div 
+                key={service.id} 
+                className="border rounded-lg p-4 hover:border-primary transition-colors"
+              >
+                <h3 className="font-medium">{service.title}</h3>
+                <p className="text-sm text-gray-600 mt-1">{service.description}</p>
+                <div className="flex justify-between items-center mt-2">
+                  <Badge variant="outline" className="bg-primary-50">
+                    {service.category}
+                  </Badge>
+                  <p className="text-sm font-medium">
+                    {service.priceUsd && `$${service.priceUsd}`} 
+                    {service.isHourly ? '/hr' : ''}
+                  </p>
+                </div>
               </div>
-              <Progress value={progressPercent} className="h-2" />
+            ))}
+          </div>
+        )}
+        
+        <div className="mt-4 text-center">
+          <Button variant="outline" onClick={nextStep}>
+            {services.length === 0 ? "Skip this step" : "Continue"}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Work Experience Step
+const WorkExperienceStep = ({ nextStep, prevStep, updateFormData, formData }: StepProps) => {
+  const [experiences, setExperiences] = useState<any[]>(formData.experiences || []);
+  
+  // In a real implementation, we would add UI to create/edit work experiences
+  
+  const handleNext = () => {
+    updateFormData({ experiences });
+    nextStep();
+  };
+  
+  return (
+    <div className="space-y-6">
+      <div className="flex items-start gap-4">
+        <div className="mt-1">
+          <MuskAvatar size="sm" withSparks={true} />
+        </div>
+        <div className="bg-gray-50 rounded-lg p-4 rounded-tl-none">
+          <h3 className="font-medium text-lg text-gray-900">Tell me about your work experience</h3>
+          <p className="text-gray-600 mt-2">
+            Add your professional experience to showcase your career journey. This helps connections
+            understand your background and expertise.
+          </p>
+        </div>
+      </div>
+      
+      <div className="space-y-4">
+        {experiences.length === 0 ? (
+          <div className="text-center p-6 border border-dashed rounded-md text-gray-500">
+            You haven't added any work experiences yet. You can add them from your profile page later.
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {experiences.map(exp => (
+              <div 
+                key={exp.id} 
+                className="border rounded-lg p-4 hover:border-primary transition-colors"
+              >
+                <div className="flex justify-between">
+                  <h3 className="font-medium">{exp.title}</h3>
+                  <p className="text-sm text-gray-500">
+                    {exp.startDate} - {exp.endDate || 'Present'}
+                  </p>
+                </div>
+                <p className="text-sm font-medium text-gray-700 mt-1">{exp.company}</p>
+                <p className="text-sm text-gray-600 mt-1">{exp.location}</p>
+                <p className="text-sm text-gray-600 mt-2">{exp.description}</p>
+              </div>
+            ))}
+          </div>
+        )}
+        
+        <div className="mt-4 text-center">
+          <Button variant="outline" onClick={nextStep}>
+            {experiences.length === 0 ? "Skip this step" : "Continue"}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Education Step
+const EducationStep = ({ nextStep, prevStep, updateFormData, formData }: StepProps) => {
+  const [educations, setEducations] = useState<any[]>(formData.educations || []);
+  
+  // In a real implementation, we would add UI to create/edit education entries
+  
+  const handleNext = () => {
+    updateFormData({ educations });
+    nextStep();
+  };
+  
+  return (
+    <div className="space-y-6">
+      <div className="flex items-start gap-4">
+        <div className="mt-1">
+          <MuskAvatar size="sm" withSparks={true} />
+        </div>
+        <div className="bg-gray-50 rounded-lg p-4 rounded-tl-none">
+          <h3 className="font-medium text-lg text-gray-900">What's your educational background?</h3>
+          <p className="text-gray-600 mt-2">
+            Add your education history to complete your professional profile. This helps establish
+            your academic credentials and areas of study.
+          </p>
+        </div>
+      </div>
+      
+      <div className="space-y-4">
+        {educations.length === 0 ? (
+          <div className="text-center p-6 border border-dashed rounded-md text-gray-500">
+            You haven't added any education entries yet. You can add them from your profile page later.
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {educations.map(edu => (
+              <div 
+                key={edu.id} 
+                className="border rounded-lg p-4 hover:border-primary transition-colors"
+              >
+                <div className="flex justify-between">
+                  <h3 className="font-medium">{edu.degree}</h3>
+                  <p className="text-sm text-gray-500">
+                    {edu.startDate} - {edu.endDate || 'Present'}
+                  </p>
+                </div>
+                <p className="text-sm font-medium text-gray-700 mt-1">{edu.institution}</p>
+                <p className="text-sm text-gray-600 mt-1">{edu.location}</p>
+              </div>
+            ))}
+          </div>
+        )}
+        
+        <div className="mt-4 text-center">
+          <Button variant="outline" onClick={nextStep}>
+            {educations.length === 0 ? "Skip this step" : "Continue"}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Projects Step
+const ProjectsStep = ({ nextStep, prevStep, updateFormData, formData }: StepProps) => {
+  const [projects, setProjects] = useState<any[]>(formData.projects || []);
+  
+  // In a real implementation, we would add UI to create/edit projects
+  
+  const handleNext = () => {
+    updateFormData({ projects });
+    nextStep();
+  };
+  
+  return (
+    <div className="space-y-6">
+      <div className="flex items-start gap-4">
+        <div className="mt-1">
+          <MuskAvatar size="sm" withSparks={true} />
+        </div>
+        <div className="bg-gray-50 rounded-lg p-4 rounded-tl-none">
+          <h3 className="font-medium text-lg text-gray-900">Tell me about your projects</h3>
+          <p className="text-gray-600 mt-2">
+            Showcase the projects you've worked on to demonstrate your capabilities and achievements.
+            These provide tangible examples of your skills in action.
+          </p>
+        </div>
+      </div>
+      
+      <div className="space-y-4">
+        {projects.length === 0 ? (
+          <div className="text-center p-6 border border-dashed rounded-md text-gray-500">
+            You haven't added any projects yet. You can add them from your profile page later.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {projects.map(project => (
+              <div 
+                key={project.id} 
+                className="border rounded-lg overflow-hidden hover:border-primary transition-colors"
+              >
+                {project.thumbnailUrl && (
+                  <div className="h-40 overflow-hidden">
+                    <img 
+                      src={project.thumbnailUrl} 
+                      alt={project.title}
+                      className="w-full h-full object-cover" 
+                    />
+                  </div>
+                )}
+                <div className="p-4">
+                  <h3 className="font-medium">{project.title}</h3>
+                  <p className="text-sm text-gray-500 mt-1">{project.category}</p>
+                  <p className="text-sm text-gray-600 mt-2 line-clamp-2">{project.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+        
+        <div className="mt-4 text-center">
+          <Button variant="outline" onClick={nextStep}>
+            {projects.length === 0 ? "Skip this step" : "Continue"}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Review Step
+const ReviewStep = ({ complete, prevStep, formData }: StepProps) => {
+  return (
+    <div className="space-y-6">
+      <div className="flex items-start gap-4">
+        <div className="mt-1">
+          <MuskAvatar size="sm" withSparks={true} />
+        </div>
+        <div className="bg-gray-50 rounded-lg p-4 rounded-tl-none">
+          <h3 className="font-medium text-lg text-gray-900">Great job! Let's review your brand story</h3>
+          <p className="text-gray-600 mt-2">
+            Review the information you've provided before finalizing your profile. You can always come back
+            and make changes later.
+          </p>
+        </div>
+      </div>
+      
+      <div className="space-y-4">
+        <Tabs defaultValue="basic" className="w-full">
+          <TabsList className="grid grid-cols-3 gap-2">
+            <TabsTrigger value="basic">Basic Info</TabsTrigger>
+            <TabsTrigger value="professional">Professional Identity</TabsTrigger>
+            <TabsTrigger value="skills">Skills & Experience</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="basic" className="space-y-4 pt-4">
+            <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+              <div>
+                <h4 className="text-sm font-medium text-gray-500">Name</h4>
+                <p className="text-gray-900">{formData.name || "Not provided"}</p>
+              </div>
+              <div>
+                <h4 className="text-sm font-medium text-gray-500">Title</h4>
+                <p className="text-gray-900">{formData.title || "Not provided"}</p>
+              </div>
+              <div>
+                <h4 className="text-sm font-medium text-gray-500">Location</h4>
+                <p className="text-gray-900">{formData.location || "Not provided"}</p>
+              </div>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="professional" className="space-y-4 pt-4">
+            <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+              <div>
+                <h4 className="text-sm font-medium text-gray-500">Industry</h4>
+                <p className="text-gray-900">{formData.industry || "Not provided"}</p>
+              </div>
+              <div>
+                <h4 className="text-sm font-medium text-gray-500">Domain</h4>
+                <p className="text-gray-900">{formData.domain || "Not provided"}</p>
+              </div>
+              <div>
+                <h4 className="text-sm font-medium text-gray-500">Looking For</h4>
+                <p className="text-gray-900">{formData.lookingFor || "Not provided"}</p>
+              </div>
             </div>
             
-            {/* Steps Navigation */}
-            <div className="flex items-center justify-between mt-4 overflow-x-auto py-2">
-              <ScrollArea className="w-full whitespace-nowrap">
-                <div className="flex space-x-1">
-                  {STEPS.map((step, index) => (
-                    <Button
-                      key={step.id}
-                      variant={currentStep === index ? "default" : "outline"}
-                      size="sm"
-                      className={`px-2 py-1 text-xs flex items-center gap-1 ${
-                        currentStep === index ? "bg-primary text-white" : ""
-                      }`}
-                      onClick={() => jumpToStep(index)}
+            <div>
+              <h4 className="text-sm font-medium text-gray-500">About Me</h4>
+              <p className="text-gray-900 whitespace-pre-line mt-1">
+                {formData.aboutMe || "Not provided"}
+              </p>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="skills" className="space-y-4 pt-4">
+            <div>
+              <h4 className="text-sm font-medium text-gray-500">Skills</h4>
+              {formData.skills?.length > 0 ? (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {formData.skills.map((skill: any) => (
+                    <Badge 
+                      key={skill.id} 
+                      variant="outline" 
+                      className="px-3 py-1"
                     >
-                      <span>{step.emoji}</span>
-                      <span className="hidden sm:inline">{step.title}</span>
-                      {index < currentStep && <Check size={12} className="text-green-500" />}
-                    </Button>
+                      {skill.name} · {skill.level}
+                    </Badge>
                   ))}
                 </div>
-              </ScrollArea>
+              ) : (
+                <p className="text-gray-500 italic mt-1">No skills added</p>
+              )}
             </div>
             
-            {/* CV Upload Option */}
-            {currentStep === 0 && (
-              <div className="mt-4 flex justify-center">
-                <Button 
-                  variant="outline"
-                  className="text-xs flex items-center gap-2"
-                  onClick={handleUploadCV}
-                  disabled={isUploading}
-                >
-                  {isUploading ? (
-                    <>Uploading... <span className="animate-spin">⏳</span></>
-                  ) : (
-                    <><Upload size={14} /> Upload CV to help fill this faster</>
-                  )}
-                </Button>
-              </div>
-            )}
-          </CardHeader>
-          
-          <CardContent className="pt-6 pb-4">
-            {renderStep()}
-          </CardContent>
-          
-          <CardFooter className="flex justify-between border-t pt-4">
-            <Button
-              variant="outline"
-              onClick={handlePrevStep}
-              disabled={currentStep === 0}
-              className="flex items-center gap-2"
-            >
-              <ArrowLeft size={16} /> Previous
-            </Button>
-            
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  updateUser.mutate(formData);
-                  onClose();
-                }}
-              >
-                <Save size={16} className="mr-2" /> Save & Exit
-              </Button>
-              
-              <Button
-                onClick={handleNextStep}
-                className="flex items-center gap-2"
-              >
-                {currentStep === STEPS.length - 1 ? 'Complete' : 'Next'} <ArrowRight size={16} />
-              </Button>
+            <div>
+              <h4 className="text-sm font-medium text-gray-500">Work Experience</h4>
+              {formData.experiences?.length > 0 ? (
+                <div className="space-y-2 mt-2">
+                  {formData.experiences.map((exp: any) => (
+                    <div key={exp.id} className="text-sm">
+                      <p className="font-medium">{exp.title} at {exp.company}</p>
+                      <p className="text-gray-500">{exp.startDate} - {exp.endDate || 'Present'}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500 italic mt-1">No experience added</p>
+              )}
             </div>
-          </CardFooter>
-        </Card>
+            
+            <div>
+              <h4 className="text-sm font-medium text-gray-500">Education</h4>
+              {formData.educations?.length > 0 ? (
+                <div className="space-y-2 mt-2">
+                  {formData.educations.map((edu: any) => (
+                    <div key={edu.id} className="text-sm">
+                      <p className="font-medium">{edu.degree} at {edu.institution}</p>
+                      <p className="text-gray-500">{edu.startDate} - {edu.endDate || 'Present'}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500 italic mt-1">No education added</p>
+              )}
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+      
+      <div className="flex items-start gap-4">
+        <div className="mt-1">
+          <MuskAvatar size="sm" withSparks={true} />
+        </div>
+        <div className="bg-green-50 rounded-lg p-4 rounded-tl-none border border-green-100">
+          <h3 className="font-medium text-green-800">Ready to save your brand story?</h3>
+          <p className="text-green-700 mt-2">
+            Click "Complete Your Story" to save your profile. I'll help you keep your profile
+            updated and optimized over time!
+          </p>
+        </div>
       </div>
     </div>
   );

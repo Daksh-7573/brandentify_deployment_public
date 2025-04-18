@@ -18,7 +18,8 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { calculateOverallProfileCompletion } from "@/lib/profile-utils";
 import { useState, useEffect } from "react";
-import { Camera, FileText } from "lucide-react";
+import { Camera, FileText, Edit, Sparkles } from "lucide-react";
+import BrandStoryBuilder from "@/components/profile/brand-story-builder";
 import PersonalInfoIcon from "@/components/icons/personal-info-icon";
 import { useProfilePicture } from "@/hooks/use-profile-picture";
 import { ProfilePictureDialog } from "@/components/profile/profile-picture-dialog";
@@ -412,6 +413,7 @@ export default function Profile() {
   const [showEditBasicInfo, setShowEditBasicInfo] = useState(false);
   const [showEditPersonalInfo, setShowEditPersonalInfo] = useState(false);
   const [showProfilePictureDialog, setShowProfilePictureDialog] = useState(false);
+  const [showBrandStoryBuilder, setShowBrandStoryBuilder] = useState(false);
   const [selectedIndustry, setSelectedIndustry] = useState<string>('');
   const [selectedDomain, setSelectedDomain] = useState<string>('');
   
@@ -1736,7 +1738,17 @@ export default function Profile() {
             
             {/* Profile Header */}
             <Card className="mb-6 overflow-hidden">
-              <div className="h-32 bg-gradient-to-r from-primary to-purple-600"></div>
+              <div className="h-32 bg-gradient-to-r from-primary to-purple-600 relative">
+                {/* Main Edit Profile Button */}
+                <Button
+                  onClick={() => setShowBrandStoryBuilder(true)}
+                  className="absolute bottom-4 right-4 bg-white text-primary hover:bg-gray-100 gap-2 shadow-md"
+                >
+                  <Edit size={16} />
+                  <span className="font-medium">Edit Profile</span>
+                  <Sparkles className="h-4 w-4 text-yellow-500" />
+                </Button>
+              </div>
               <CardContent className="relative pt-16 pb-4">
                 <div className="absolute -top-16 left-1/2 sm:left-6 transform -translate-x-1/2 sm:translate-x-0">
                   <div className="relative group">
@@ -1946,6 +1958,20 @@ export default function Profile() {
         No individual MuskButton needed here - using global MuskButton from App.tsx instead 
         that appears on all pages
       */}
+      
+      {/* Brand Story Builder Dialog */}
+      <BrandStoryBuilder 
+        user={userData} 
+        userData={{
+          skills,
+          experiences,
+          educations,
+          projects,
+          services
+        }}
+        isOpen={showBrandStoryBuilder}
+        onClose={() => setShowBrandStoryBuilder(false)}
+      />
     </div>
   );
 }
