@@ -7,9 +7,22 @@ export const useQuestDefinitions = () => {
   return useQuery({
     queryKey: ['/api/quest-definitions'],
     queryFn: async () => {
-      const res = await fetch('/api/quest-definitions');
-      if (!res.ok) throw new Error('Failed to fetch quest definitions');
-      return res.json() as Promise<QuestDefinition[]>;
+      try {
+        const res = await fetch('/api/quest-definitions');
+        if (!res.ok) {
+          console.error('Failed to fetch quest definitions, status:', res.status);
+          throw new Error('Failed to fetch quest definitions');
+        }
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          console.error('Expected JSON but got', contentType);
+          throw new Error('Unexpected response format for quest definitions');
+        }
+        return res.json() as Promise<QuestDefinition[]>;
+      } catch (error) {
+        console.error('Error fetching quest definitions:', error);
+        throw error;
+      }
     }
   });
 };
@@ -19,9 +32,22 @@ export const useUserQuests = (userId: number) => {
   return useQuery({
     queryKey: [`/api/users/${userId}/quests`],
     queryFn: async () => {
-      const res = await fetch(`/api/users/${userId}/quests`);
-      if (!res.ok) throw new Error('Failed to fetch user quests');
-      return res.json() as Promise<UserQuest[]>;
+      try {
+        const res = await fetch(`/api/users/${userId}/quests`);
+        if (!res.ok) {
+          console.error('Failed to fetch user quests, status:', res.status);
+          throw new Error('Failed to fetch user quests');
+        }
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          console.error('Expected JSON but got', contentType);
+          throw new Error('Unexpected response format for quests');
+        }
+        return res.json() as Promise<UserQuest[]>;
+      } catch (error) {
+        console.error('Error fetching quests:', error);
+        throw error;
+      }
     },
     enabled: !!userId
   });
@@ -32,9 +58,22 @@ export const useUserQuestsWithDefinitions = (userId: number) => {
   return useQuery({
     queryKey: [`/api/users/${userId}/quests-with-definitions`],
     queryFn: async () => {
-      const res = await fetch(`/api/users/${userId}/quests-with-definitions`);
-      if (!res.ok) throw new Error('Failed to fetch user quests with definitions');
-      return res.json() as Promise<UserQuest[]>;
+      try {
+        const res = await fetch(`/api/users/${userId}/quests-with-definitions`);
+        if (!res.ok) {
+          console.error('Failed to fetch quests with definitions, status:', res.status);
+          throw new Error('Failed to fetch user quests with definitions');
+        }
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          console.error('Expected JSON but got', contentType);
+          throw new Error('Unexpected response format for quests with definitions');
+        }
+        return res.json() as Promise<UserQuest[]>;
+      } catch (error) {
+        console.error('Error fetching quests with definitions:', error);
+        throw error;
+      }
     },
     enabled: !!userId
   });
@@ -45,9 +84,22 @@ export const useUserWeeklyQuests = (userId: number, weekNumber: number, year: nu
   return useQuery({
     queryKey: [`/api/users/${userId}/quests/current-week`],
     queryFn: async () => {
-      const res = await fetch(`/api/users/${userId}/quests/current-week?week=${weekNumber}&year=${year}`);
-      if (!res.ok) throw new Error('Failed to fetch weekly quests');
-      return res.json() as Promise<UserQuest[]>;
+      try {
+        const res = await fetch(`/api/users/${userId}/quests/current-week?week=${weekNumber}&year=${year}`);
+        if (!res.ok) {
+          console.error('Failed to fetch weekly quests, status:', res.status);
+          throw new Error('Failed to fetch weekly quests');
+        }
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          console.error('Expected JSON but got', contentType);
+          throw new Error('Unexpected response format for weekly quests');
+        }
+        return res.json() as Promise<UserQuest[]>;
+      } catch (error) {
+        console.error('Error fetching weekly quests:', error);
+        throw error;
+      }
     },
     enabled: !!userId && !!weekNumber && !!year
   });
@@ -84,9 +136,22 @@ export const useUserBadges = (userId: number) => {
   return useQuery({
     queryKey: [`/api/users/${userId}/badges`],
     queryFn: async () => {
-      const res = await fetch(`/api/users/${userId}/badges`);
-      if (!res.ok) throw new Error('Failed to fetch user badges');
-      return res.json() as Promise<UserBadge[]>;
+      try {
+        const res = await fetch(`/api/users/${userId}/badges`);
+        if (!res.ok) {
+          console.error('Failed to fetch user badges, status:', res.status);
+          throw new Error('Failed to fetch user badges');
+        }
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          console.error('Expected JSON but got', contentType);
+          throw new Error('Unexpected response format for badges');
+        }
+        return res.json() as Promise<UserBadge[]>;
+      } catch (error) {
+        console.error('Error fetching badges:', error);
+        throw error;
+      }
     },
     enabled: !!userId
   });
