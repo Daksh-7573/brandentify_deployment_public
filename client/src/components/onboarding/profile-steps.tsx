@@ -1403,17 +1403,44 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
             
             {/* Media URLs Section */}
             <div className="grid gap-2">
-              <Label htmlFor="mediaUrl">Additional Media</Label>
+              <Label htmlFor="mediaUrl">
+                Project Media <span className="text-xs text-gray-500 ml-1">(Max 10 images or 150 sec video)</span>
+              </Label>
+              
+              <div className="flex items-center space-x-2 mb-1">
+                <div className="flex space-x-2 items-center">
+                  <div
+                    className={`rounded-full px-3 py-1 text-xs cursor-pointer ${
+                      mediaType === 'image' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700'
+                    }`}
+                    onClick={() => setMediaType('image')}
+                  >
+                    Image
+                  </div>
+                  <div
+                    className={`rounded-full px-3 py-1 text-xs cursor-pointer ${
+                      mediaType === 'video' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700'
+                    }`}
+                    onClick={() => setMediaType('video')}
+                  >
+                    Video
+                  </div>
+                </div>
+              </div>
+              
               <div className="flex space-x-2">
                 <Input
                   id="mediaUrl"
-                  placeholder="https://example.com/additional-image.jpg"
+                  placeholder={mediaType === 'image' 
+                    ? "https://example.com/image.jpg" 
+                    : "https://example.com/video.mp4"}
                   value={mediaUrlInput || ''}
                   onChange={(e) => setMediaUrlInput(e.target.value)}
                 />
                 <Button 
                   type="button" 
                   variant="outline" 
+                  disabled={projectFormData.mediaUrls.length >= 10}
                   onClick={() => {
                     if (mediaUrlInput) {
                       setProjectFormData(prev => ({
@@ -1427,17 +1454,40 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
                   Add
                 </Button>
               </div>
-              <p className="text-xs text-gray-500">Add URLs to images, videos, or documents that showcase your project</p>
+              <p className="text-xs text-gray-500">
+                {mediaType === 'image' 
+                  ? "Add URLs to images that showcase your project (up to 10)" 
+                  : "Add URLs to videos that showcase your project (max 150 seconds)"}
+              </p>
+              
+              {projectFormData.mediaUrls.length >= 10 && (
+                <p className="text-xs text-amber-600 mt-1">Maximum of 10 media items reached</p>
+              )}
               
               {/* Display added media URLs */}
               {projectFormData.mediaUrls.length > 0 && (
-                <div className="mt-2 flex flex-wrap gap-2">
+                <div className="mt-2 grid grid-cols-2 gap-2">
                   {projectFormData.mediaUrls.map((url, idx) => (
-                    <div key={idx} className="flex items-center bg-gray-100 rounded-full px-3 py-1 text-sm">
-                      <span className="truncate max-w-[150px]">{url.split('/').pop()}</span>
+                    <div key={idx} className="flex justify-between items-center bg-gray-50 rounded p-2 text-sm border border-gray-200">
+                      <div className="flex items-center space-x-2">
+                        <div className="bg-gray-200 rounded-full p-1">
+                          {url.toLowerCase().endsWith('.mp4') || url.toLowerCase().includes('video') ? (
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                            </svg>
+                          ) : (
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                              <polyline points="21 15 16 10 5 21"></polyline>
+                            </svg>
+                          )}
+                        </div>
+                        <span className="truncate max-w-[150px]">{url.split('/').pop()}</span>
+                      </div>
                       <button
                         type="button"
-                        className="ml-2 text-gray-500 hover:text-red-500"
+                        className="text-gray-500 hover:text-red-500"
                         onClick={() => {
                           setProjectFormData(prev => ({
                             ...prev,
@@ -1576,6 +1626,12 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
                   onChange={(e) => setEndorsementTitle(e.target.value)}
                 />
               </div>
+              <Input
+                placeholder="Client Profile Link*"
+                value={endorsementProfileLink || ''}
+                onChange={(e) => setEndorsementProfileLink(e.target.value)}
+                className="mt-1"
+              />
               <Button 
                 type="button" 
                 variant="outline" 
@@ -1587,12 +1643,20 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
                       endorsements: [...prev.endorsements, { 
                         text: endorsementText, 
                         author: endorsementAuthor,
-                        title: endorsementTitle || ''
+                        title: endorsementTitle || '',
+                        profileLink: endorsementProfileLink || ''
                       }]
                     }));
                     setEndorsementText('');
                     setEndorsementAuthor('');
                     setEndorsementTitle('');
+                    setEndorsementProfileLink('');
+                  } else {
+                    toast({
+                      title: "Missing information",
+                      description: "Please provide at least the testimonial text and client name",
+                      variant: "destructive",
+                    });
                   }
                 }}
               >
@@ -1620,10 +1684,27 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
                         </svg>
                       </button>
                       <p className="italic mb-2">"{endorsement.text}"</p>
-                      <div className="flex items-center">
-                        <span className="font-medium">{endorsement.author}</span>
-                        {endorsement.title && (
-                          <span className="text-gray-500 ml-1">— {endorsement.title}</span>
+                      <div className="flex flex-col">
+                        <div className="flex items-center">
+                          <span className="font-medium">{endorsement.author}</span>
+                          {endorsement.title && (
+                            <span className="text-gray-500 ml-1">— {endorsement.title}</span>
+                          )}
+                        </div>
+                        {endorsement.profileLink && (
+                          <a 
+                            href={endorsement.profileLink}
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-xs text-primary hover:underline flex items-center mt-1"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+                              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                              <polyline points="15 3 21 3 21 9"></polyline>
+                              <line x1="10" y1="14" x2="21" y2="3"></line>
+                            </svg>
+                            {endorsement.profileLink.replace(/^https?:\/\//, '')}
+                          </a>
                         )}
                       </div>
                     </div>
