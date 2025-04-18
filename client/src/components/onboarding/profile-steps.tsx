@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Slider } from "@/components/ui/slider";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { 
   Select,
@@ -143,7 +144,7 @@ type FormData = {
   aboutMe: string;
   
   // Step 2: Skills
-  skills: Array<{name: string, level: string, category: string}>;
+  skills: Array<{name: string, level: string, category: string, proficiency: number}>;
   
   // Step 3: Services
   services: Array<{title: string, description: string, rate: string, rateUnit: string}>;
@@ -765,52 +766,1047 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
     );
   };
   
-  // Step 2: Skills (placeholder)
+  // Step 2: Skills
   const renderSkillsStep = () => {
+    const [newSkillName, setNewSkillName] = useState<string>('');
+    const [newSkillLevel, setNewSkillLevel] = useState<string>('Intermediate');
+    const [newSkillCategory, setNewSkillCategory] = useState<string>('Technical');
+    const [proficiencyValue, setProficiencyValue] = useState<number>(50);
+    
+    // Add new skill
+    const addSkill = () => {
+      if (!newSkillName) {
+        toast({
+          title: "Skill name required",
+          description: "Please enter a skill name",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      const newSkill = {
+        name: newSkillName,
+        level: newSkillLevel,
+        category: newSkillCategory,
+        proficiency: proficiencyValue
+      };
+      
+      setFormData(prev => ({
+        ...prev,
+        skills: [...prev.skills, newSkill]
+      }));
+      
+      // Reset form
+      setNewSkillName('');
+      setProficiencyValue(50);
+    };
+    
+    // Remove skill
+    const removeSkill = (index: number) => {
+      setFormData(prev => ({
+        ...prev,
+        skills: prev.skills.filter((_, i) => i !== index)
+      }));
+    };
+    
+    // Get color based on proficiency
+    const getColor = (proficiency: number) => {
+      if (proficiency < 33) return 'bg-red-500';
+      if (proficiency < 66) return 'bg-yellow-500';
+      return 'bg-green-500';
+    };
+    
+    const skillsCategories = [
+      { value: 'Technical', label: 'Technical' },
+      { value: 'Soft', label: 'Soft Skills' },
+      { value: 'Domain', label: 'Domain Knowledge' },
+      { value: 'Tools', label: 'Tools & Software' },
+      { value: 'Languages', label: 'Languages' },
+      { value: 'Certifications', label: 'Certifications' },
+    ];
+    
+    const skillLevels = [
+      { value: 'Beginner', label: 'Beginner' },
+      { value: 'Intermediate', label: 'Intermediate' },
+      { value: 'Advanced', label: 'Advanced' },
+      { value: 'Expert', label: 'Expert' },
+    ];
+    
     return (
       <div className="space-y-6">
-        <p className="text-gray-500">Skills section will be implemented</p>
-        <p>We'll use the existing skills component but integrate it into this flow</p>
+        {/* Add new skill form */}
+        <div className="p-4 border rounded-lg bg-gray-50">
+          <h3 className="text-sm font-medium mb-3">Add a new skill</h3>
+          <div className="space-y-4">
+            <div className="grid gap-2">
+              <Label htmlFor="skillName">Skill Name <span className="text-red-500">*</span></Label>
+              <Input
+                id="skillName"
+                placeholder="e.g. JavaScript, Project Management, Data Analysis"
+                value={newSkillName}
+                onChange={(e) => setNewSkillName(e.target.value)}
+              />
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="skillCategory">Category</Label>
+                <Select
+                  value={newSkillCategory}
+                  onValueChange={setNewSkillCategory}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {skillsCategories.map((category) => (
+                      <SelectItem key={category.value} value={category.value}>
+                        {category.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="grid gap-2">
+                <Label htmlFor="skillLevel">Level</Label>
+                <Select
+                  value={newSkillLevel}
+                  onValueChange={setNewSkillLevel}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {skillLevels.map((level) => (
+                      <SelectItem key={level.value} value={level.value}>
+                        {level.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            <div className="grid gap-2">
+              <div className="flex justify-between">
+                <Label htmlFor="proficiency">Proficiency</Label>
+                <span className="text-sm text-gray-500">{proficiencyValue}%</span>
+              </div>
+              <Slider
+                value={[proficiencyValue]}
+                onValueChange={(values) => setProficiencyValue(values[0])}
+                max={100}
+                step={1}
+              />
+            </div>
+            
+            <Button type="button" onClick={addSkill} className="w-full">
+              Add Skill
+            </Button>
+          </div>
+        </div>
+        
+        {/* Skills list */}
+        {formData.skills.length > 0 ? (
+          <div>
+            <h3 className="text-sm font-medium mb-3">Your Skills</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {formData.skills.map((skill, index) => (
+                <div 
+                  key={index} 
+                  className="border bg-white rounded-lg p-4 transition-all hover:shadow-md hover:border-primary/30"
+                >
+                  <div className="flex justify-between items-start">
+                    <h3 className="font-medium text-base line-clamp-2 flex-1">{skill.name}</h3>
+                    <button 
+                      onClick={() => removeSkill(index)} 
+                      className="text-gray-400 hover:text-red-500 focus:outline-none rounded-full p-1 hover:bg-gray-100"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M3 6h18"></path>
+                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                      </svg>
+                    </button>
+                  </div>
+                  <div className="mt-2">
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      <span className="inline-block text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+                        {skill.level || 'No level set'}
+                      </span>
+                      {skill.category && (
+                        <span className="inline-block text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
+                          {skill.category}
+                        </span>
+                      )}
+                    </div>
+                    <div className="mt-2">
+                      <div className="flex items-center justify-between text-xs mb-1">
+                        <span className="text-gray-500">Proficiency</span>
+                        <span>{skill.proficiency || 0}%</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-1.5">
+                        <div 
+                          className={`${getColor(skill.proficiency || 0)} h-1.5 rounded-full`} 
+                          style={{ width: `${skill.proficiency || 0}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-10 border border-dashed rounded-lg">
+            <div className="text-4xl mb-3">💪</div>
+            <h3 className="font-medium text-gray-900 mb-1">No skills added yet</h3>
+            <p className="text-sm text-gray-500 mb-4">Share your expertise to stand out</p>
+          </div>
+        )}
       </div>
     );
   };
   
-  // Step 3: Services (placeholder)
+  // Step 3: Services
   const renderServicesStep = () => {
+    const [service, setService] = useState({
+      title: '',
+      description: '',
+      rate: '',
+      rateUnit: 'hr' // Default rate unit is per hour
+    });
+    
+    // Add new service
+    const addService = () => {
+      if (!service.title) {
+        toast({
+          title: "Service title required",
+          description: "Please enter a title for your service",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      setFormData(prev => ({
+        ...prev,
+        services: [...prev.services, service]
+      }));
+      
+      // Reset form
+      setService({
+        title: '',
+        description: '',
+        rate: '',
+        rateUnit: 'hr'
+      });
+    };
+    
+    // Remove service
+    const removeService = (index: number) => {
+      setFormData(prev => ({
+        ...prev,
+        services: prev.services.filter((_, i) => i !== index)
+      }));
+    };
+    
+    const rateUnits = [
+      { value: 'hr', label: 'Per Hour' },
+      { value: 'day', label: 'Per Day' },
+      { value: 'week', label: 'Per Week' },
+      { value: 'month', label: 'Per Month' },
+      { value: 'project', label: 'Per Project' },
+    ];
+    
     return (
       <div className="space-y-6">
-        <p className="text-gray-500">Services section will be implemented</p>
-        <p>We'll use the existing services component but integrate it into this flow</p>
+        {/* Add new service form */}
+        <div className="p-4 border rounded-lg bg-gray-50">
+          <h3 className="text-sm font-medium mb-3">Add a service you offer</h3>
+          <div className="space-y-4">
+            <div className="grid gap-2">
+              <Label htmlFor="serviceTitle">Service Title</Label>
+              <Input
+                id="serviceTitle"
+                placeholder="e.g. Website Development, UI/UX Design, Marketing Consultation"
+                value={service.title}
+                onChange={(e) => setService(prev => ({ ...prev, title: e.target.value }))}
+              />
+            </div>
+            
+            <div className="grid gap-2">
+              <Label htmlFor="serviceDescription">Description</Label>
+              <Textarea
+                id="serviceDescription"
+                placeholder="Describe what your service includes and what clients can expect"
+                value={service.description}
+                onChange={(e) => setService(prev => ({ ...prev, description: e.target.value }))}
+                rows={3}
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="serviceRate">Rate</Label>
+                <Input
+                  id="serviceRate"
+                  placeholder="e.g. 50"
+                  value={service.rate}
+                  onChange={(e) => setService(prev => ({ ...prev, rate: e.target.value }))}
+                  type="text"
+                  inputMode="decimal"
+                />
+              </div>
+              
+              <div className="grid gap-2">
+                <Label htmlFor="serviceRateUnit">Rate Unit</Label>
+                <Select
+                  value={service.rateUnit}
+                  onValueChange={(value) => setService(prev => ({ ...prev, rateUnit: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a rate unit" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {rateUnits.map((unit) => (
+                      <SelectItem key={unit.value} value={unit.value}>
+                        {unit.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            <Button type="button" onClick={addService} className="w-full">
+              Add Service
+            </Button>
+          </div>
+        </div>
+        
+        {/* Services list */}
+        {formData.services.length > 0 ? (
+          <div>
+            <h3 className="text-sm font-medium mb-3">Your Services</h3>
+            <div className="grid gap-4">
+              {formData.services.map((service, index) => (
+                <div 
+                  key={index} 
+                  className="border bg-white rounded-lg p-4 transition-all hover:shadow-md hover:border-primary/30"
+                >
+                  <div className="flex justify-between items-start">
+                    <h3 className="font-medium text-base flex-1">{service.title}</h3>
+                    <button 
+                      onClick={() => removeService(index)} 
+                      className="text-gray-400 hover:text-red-500 focus:outline-none rounded-full p-1 hover:bg-gray-100"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M3 6h18"></path>
+                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                      </svg>
+                    </button>
+                  </div>
+                  
+                  {service.description && (
+                    <p className="text-sm text-gray-600 mt-1 line-clamp-3">{service.description}</p>
+                  )}
+                  
+                  {service.rate && (
+                    <div className="mt-2">
+                      <span className="inline-block text-sm font-medium text-primary">
+                        ${service.rate} {getRateUnitLabel(service.rateUnit)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-10 border border-dashed rounded-lg">
+            <div className="text-4xl mb-3">🛠️</div>
+            <h3 className="font-medium text-gray-900 mb-1">No services added yet</h3>
+            <p className="text-sm text-gray-500 mb-4">Add services you provide to potential clients</p>
+          </div>
+        )}
       </div>
     );
   };
   
-  // Step 4: Projects (placeholder)
+  // Helper function to get rate unit label
+  const getRateUnitLabel = (unit: string) => {
+    switch (unit) {
+      case 'hr': return 'per hour';
+      case 'day': return 'per day';
+      case 'week': return 'per week';
+      case 'month': return 'per month';
+      case 'project': return 'per project';
+      default: return '';
+    }
+  };
+  
+  // Step 4: Projects
   const renderProjectsStep = () => {
+    const [project, setProject] = useState({
+      title: '',
+      description: '',
+      startDate: '',
+      projectUrl: '',
+      category: 'Web Development',
+      thumbnailUrl: '',
+    });
+    
+    // Add new project
+    const addProject = () => {
+      if (!project.title) {
+        toast({
+          title: "Project title required",
+          description: "Please enter a title for your project",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      setFormData(prev => ({
+        ...prev,
+        projects: [...prev.projects, project]
+      }));
+      
+      // Reset form
+      setProject({
+        title: '',
+        description: '',
+        startDate: '',
+        projectUrl: '',
+        category: 'Web Development',
+        thumbnailUrl: '',
+      });
+    };
+    
+    // Remove project
+    const removeProject = (index: number) => {
+      setFormData(prev => ({
+        ...prev,
+        projects: prev.projects.filter((_, i) => i !== index)
+      }));
+    };
+    
+    const projectCategories = [
+      { value: 'Web Development', label: 'Web Development' },
+      { value: 'Mobile App', label: 'Mobile App' },
+      { value: 'UI/UX Design', label: 'UI/UX Design' },
+      { value: 'Data Science', label: 'Data Science' },
+      { value: 'Machine Learning', label: 'Machine Learning' },
+      { value: 'IoT', label: 'IoT' },
+      { value: 'Blockchain', label: 'Blockchain' },
+      { value: 'Game Development', label: 'Game Development' },
+      { value: 'Other', label: 'Other' },
+    ];
+    
     return (
       <div className="space-y-6">
-        <p className="text-gray-500">Projects section will be implemented</p>
-        <p>We'll use the existing projects component but integrate it into this flow</p>
+        {/* Add new project form */}
+        <div className="p-4 border rounded-lg bg-gray-50">
+          <h3 className="text-sm font-medium mb-3">Add a new project</h3>
+          <div className="space-y-4">
+            <div className="grid gap-2">
+              <Label htmlFor="projectTitle">Project Title</Label>
+              <Input
+                id="projectTitle"
+                placeholder="e.g. E-commerce Website, Mobile App, Data Visualization"
+                value={project.title}
+                onChange={(e) => setProject(prev => ({ ...prev, title: e.target.value }))}
+              />
+            </div>
+            
+            <div className="grid gap-2">
+              <Label htmlFor="projectDescription">Description</Label>
+              <Textarea
+                id="projectDescription"
+                placeholder="Describe the project, its purpose, and your role"
+                value={project.description}
+                onChange={(e) => setProject(prev => ({ ...prev, description: e.target.value }))}
+                rows={3}
+              />
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="projectCategory">Category</Label>
+                <Select
+                  value={project.category}
+                  onValueChange={(value) => setProject(prev => ({ ...prev, category: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {projectCategories.map((category) => (
+                      <SelectItem key={category.value} value={category.value}>
+                        {category.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="grid gap-2">
+                <Label htmlFor="projectStartDate">Date</Label>
+                <Input
+                  id="projectStartDate"
+                  type="date"
+                  value={project.startDate}
+                  onChange={(e) => setProject(prev => ({ ...prev, startDate: e.target.value }))}
+                />
+              </div>
+            </div>
+            
+            <div className="grid gap-2">
+              <Label htmlFor="projectUrl">Project URL</Label>
+              <Input
+                id="projectUrl"
+                placeholder="https://example.com"
+                value={project.projectUrl}
+                onChange={(e) => setProject(prev => ({ ...prev, projectUrl: e.target.value }))}
+              />
+            </div>
+            
+            <div className="grid gap-2">
+              <Label htmlFor="thumbnailUrl">Thumbnail URL</Label>
+              <Input
+                id="thumbnailUrl"
+                placeholder="https://example.com/image.jpg"
+                value={project.thumbnailUrl}
+                onChange={(e) => setProject(prev => ({ ...prev, thumbnailUrl: e.target.value }))}
+              />
+              <p className="text-xs text-gray-500">Add a URL for a project thumbnail image</p>
+            </div>
+            
+            <Button type="button" onClick={addProject} className="w-full">
+              Add Project
+            </Button>
+          </div>
+        </div>
+        
+        {/* Projects list */}
+        {formData.projects.length > 0 ? (
+          <div>
+            <h3 className="text-sm font-medium mb-3">Your Projects</h3>
+            <div className="grid gap-4">
+              {formData.projects.map((project, index) => (
+                <div 
+                  key={index} 
+                  className="border bg-white rounded-lg p-4 transition-all hover:shadow-md hover:border-primary/30"
+                >
+                  <div className="flex justify-between items-start">
+                    <h3 className="font-medium text-base flex-1">{project.title}</h3>
+                    <button 
+                      onClick={() => removeProject(index)} 
+                      className="text-gray-400 hover:text-red-500 focus:outline-none rounded-full p-1 hover:bg-gray-100"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M3 6h18"></path>
+                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                      </svg>
+                    </button>
+                  </div>
+                  
+                  {project.description && (
+                    <p className="text-sm text-gray-600 mt-1 line-clamp-2">{project.description}</p>
+                  )}
+                  
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {project.category && (
+                      <span className="inline-block text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
+                        {project.category}
+                      </span>
+                    )}
+                    {project.startDate && (
+                      <span className="inline-block text-xs bg-gray-100 text-gray-800 px-2 py-0.5 rounded-full">
+                        {new Date(project.startDate).toLocaleDateString()}
+                      </span>
+                    )}
+                  </div>
+                  
+                  {project.projectUrl && (
+                    <a 
+                      href={project.projectUrl}
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-xs text-primary hover:underline mt-2 inline-block"
+                    >
+                      View Project
+                    </a>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-10 border border-dashed rounded-lg">
+            <div className="text-4xl mb-3">🚀</div>
+            <h3 className="font-medium text-gray-900 mb-1">No projects added yet</h3>
+            <p className="text-sm text-gray-500 mb-4">Showcase your best work to stand out</p>
+          </div>
+        )}
       </div>
     );
   };
   
-  // Step 5: Experiences (placeholder)
+  // Step 5: Experiences
   const renderExperiencesStep = () => {
+    const [experience, setExperience] = useState({
+      company: '',
+      title: '',
+      startDate: '',
+      endDate: '',
+      current: false,
+      location: '',
+      description: ''
+    });
+    
+    // Add new experience
+    const addExperience = () => {
+      if (!experience.company || !experience.title) {
+        toast({
+          title: "Missing information",
+          description: "Please enter both company name and job title",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      setFormData(prev => ({
+        ...prev,
+        experiences: [...prev.experiences, experience]
+      }));
+      
+      // Reset form
+      setExperience({
+        company: '',
+        title: '',
+        startDate: '',
+        endDate: '',
+        current: false,
+        location: '',
+        description: ''
+      });
+    };
+    
+    // Remove experience
+    const removeExperience = (index: number) => {
+      setFormData(prev => ({
+        ...prev,
+        experiences: prev.experiences.filter((_, i) => i !== index)
+      }));
+    };
+    
+    // Handle current job checkbox
+    const handleCurrentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const checked = e.target.checked;
+      setExperience(prev => ({ 
+        ...prev, 
+        current: checked,
+        endDate: checked ? '' : prev.endDate
+      }));
+    };
+    
+    const formatDateForDisplay = (dateString: string) => {
+      if (!dateString) return '';
+      
+      try {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('default', { month: 'short', year: 'numeric' });
+      } catch (error) {
+        return dateString;
+      }
+    };
+    
     return (
       <div className="space-y-6">
-        <p className="text-gray-500">Experiences section will be implemented</p>
-        <p>We'll use the existing work experience component but integrate it into this flow</p>
+        {/* Add new experience form */}
+        <div className="p-4 border rounded-lg bg-gray-50">
+          <h3 className="text-sm font-medium mb-3">Add work experience</h3>
+          <div className="space-y-4">
+            <div className="grid gap-2">
+              <Label htmlFor="companyName">Company</Label>
+              <Input
+                id="companyName"
+                placeholder="Company or Organization Name"
+                value={experience.company}
+                onChange={(e) => setExperience(prev => ({ ...prev, company: e.target.value }))}
+              />
+            </div>
+            
+            <div className="grid gap-2">
+              <Label htmlFor="jobTitle">Job Title</Label>
+              <Input
+                id="jobTitle"
+                placeholder="Your role or position"
+                value={experience.title}
+                onChange={(e) => setExperience(prev => ({ ...prev, title: e.target.value }))}
+              />
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="startDate">Start Date</Label>
+                <Input
+                  id="startDate"
+                  type="month"
+                  value={experience.startDate}
+                  onChange={(e) => setExperience(prev => ({ ...prev, startDate: e.target.value }))}
+                />
+              </div>
+              
+              <div className="grid gap-2">
+                <Label 
+                  htmlFor="endDate" 
+                  className={experience.current ? "text-gray-400" : ""}
+                >
+                  End Date
+                </Label>
+                <Input
+                  id="endDate"
+                  type="month"
+                  value={experience.endDate}
+                  onChange={(e) => setExperience(prev => ({ ...prev, endDate: e.target.value }))}
+                  disabled={experience.current}
+                />
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="currentPosition"
+                checked={experience.current}
+                onChange={handleCurrentChange}
+                className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+              />
+              <Label 
+                htmlFor="currentPosition" 
+                className="text-sm font-normal"
+              >
+                I currently work here
+              </Label>
+            </div>
+            
+            <div className="grid gap-2">
+              <Label htmlFor="jobLocation">Location</Label>
+              <Input
+                id="jobLocation"
+                placeholder="City, Country"
+                value={experience.location}
+                onChange={(e) => setExperience(prev => ({ ...prev, location: e.target.value }))}
+              />
+            </div>
+            
+            <div className="grid gap-2">
+              <Label htmlFor="jobDescription">Description</Label>
+              <Textarea
+                id="jobDescription"
+                placeholder="Describe your responsibilities and achievements"
+                value={experience.description}
+                onChange={(e) => setExperience(prev => ({ ...prev, description: e.target.value }))}
+                rows={3}
+              />
+            </div>
+            
+            <Button type="button" onClick={addExperience} className="w-full">
+              Add Experience
+            </Button>
+          </div>
+        </div>
+        
+        {/* Experiences list */}
+        {formData.experiences.length > 0 ? (
+          <div>
+            <h3 className="text-sm font-medium mb-3">Your Work Experience</h3>
+            <div className="grid gap-4">
+              {formData.experiences.map((exp, index) => (
+                <div 
+                  key={index} 
+                  className="border bg-white rounded-lg p-4 transition-all hover:shadow-md hover:border-primary/30"
+                >
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="font-medium text-base">{exp.title}</h3>
+                      <p className="text-sm text-gray-600">{exp.company}</p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {formatDateForDisplay(exp.startDate)} - {exp.current ? 'Present' : formatDateForDisplay(exp.endDate)}
+                        {exp.location ? ` • ${exp.location}` : ''}
+                      </p>
+                    </div>
+                    <button 
+                      onClick={() => removeExperience(index)} 
+                      className="text-gray-400 hover:text-red-500 focus:outline-none rounded-full p-1 hover:bg-gray-100"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M3 6h18"></path>
+                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                      </svg>
+                    </button>
+                  </div>
+                  
+                  {exp.description && (
+                    <p className="text-sm text-gray-600 mt-2 line-clamp-3">{exp.description}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-10 border border-dashed rounded-lg">
+            <div className="text-4xl mb-3">💼</div>
+            <h3 className="font-medium text-gray-900 mb-1">No work experience added yet</h3>
+            <p className="text-sm text-gray-500 mb-4">Share your professional journey</p>
+          </div>
+        )}
       </div>
     );
   };
   
-  // Step 6: Educations (placeholder)
+  // Step 6: Educations
   const renderEducationsStep = () => {
+    const [education, setEducation] = useState({
+      institution: '',
+      degree: '',
+      field: '',
+      startDate: '',
+      endDate: '',
+      current: false,
+      description: ''
+    });
+    
+    // Add new education
+    const addEducation = () => {
+      if (!education.institution || !education.degree) {
+        toast({
+          title: "Missing information",
+          description: "Please enter both institution name and degree",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      setFormData(prev => ({
+        ...prev,
+        educations: [...prev.educations, education]
+      }));
+      
+      // Reset form
+      setEducation({
+        institution: '',
+        degree: '',
+        field: '',
+        startDate: '',
+        endDate: '',
+        current: false,
+        description: ''
+      });
+    };
+    
+    // Remove education
+    const removeEducation = (index: number) => {
+      setFormData(prev => ({
+        ...prev,
+        educations: prev.educations.filter((_, i) => i !== index)
+      }));
+    };
+    
+    // Handle current education checkbox
+    const handleCurrentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const checked = e.target.checked;
+      setEducation(prev => ({ 
+        ...prev, 
+        current: checked,
+        endDate: checked ? '' : prev.endDate
+      }));
+    };
+    
+    const formatDateForDisplay = (dateString: string) => {
+      if (!dateString) return '';
+      
+      try {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('default', { month: 'short', year: 'numeric' });
+      } catch (error) {
+        return dateString;
+      }
+    };
+    
+    // List of common degrees
+    const degreeOptions = [
+      { value: 'High School Diploma', label: 'High School Diploma' },
+      { value: 'Associate\'s Degree', label: 'Associate\'s Degree' },
+      { value: 'Bachelor\'s Degree', label: 'Bachelor\'s Degree' },
+      { value: 'Master\'s Degree', label: 'Master\'s Degree' },
+      { value: 'MBA', label: 'MBA' },
+      { value: 'Ph.D.', label: 'Ph.D.' },
+      { value: 'M.D.', label: 'M.D.' },
+      { value: 'J.D.', label: 'J.D.' },
+      { value: 'Certificate', label: 'Certificate' },
+      { value: 'Diploma', label: 'Diploma' },
+      { value: 'Other', label: 'Other' },
+    ];
+    
     return (
       <div className="space-y-6">
-        <p className="text-gray-500">Educations section will be implemented</p>
-        <p>We'll use the existing education component but integrate it into this flow</p>
+        {/* Add new education form */}
+        <div className="p-4 border rounded-lg bg-gray-50">
+          <h3 className="text-sm font-medium mb-3">Add education</h3>
+          <div className="space-y-4">
+            <div className="grid gap-2">
+              <Label htmlFor="institution">Institution</Label>
+              <Input
+                id="institution"
+                placeholder="School, College or University Name"
+                value={education.institution}
+                onChange={(e) => setEducation(prev => ({ ...prev, institution: e.target.value }))}
+              />
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="degree">Degree</Label>
+                <Select
+                  value={education.degree}
+                  onValueChange={(value) => setEducation(prev => ({ ...prev, degree: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select degree type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {degreeOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="grid gap-2">
+                <Label htmlFor="field">Field of Study</Label>
+                <Input
+                  id="field"
+                  placeholder="e.g. Computer Science, Business"
+                  value={education.field}
+                  onChange={(e) => setEducation(prev => ({ ...prev, field: e.target.value }))}
+                />
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="eduStartDate">Start Date</Label>
+                <Input
+                  id="eduStartDate"
+                  type="month"
+                  value={education.startDate}
+                  onChange={(e) => setEducation(prev => ({ ...prev, startDate: e.target.value }))}
+                />
+              </div>
+              
+              <div className="grid gap-2">
+                <Label 
+                  htmlFor="eduEndDate" 
+                  className={education.current ? "text-gray-400" : ""}
+                >
+                  End Date
+                </Label>
+                <Input
+                  id="eduEndDate"
+                  type="month"
+                  value={education.endDate}
+                  onChange={(e) => setEducation(prev => ({ ...prev, endDate: e.target.value }))}
+                  disabled={education.current}
+                />
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="currentEducation"
+                checked={education.current}
+                onChange={handleCurrentChange}
+                className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+              />
+              <Label 
+                htmlFor="currentEducation" 
+                className="text-sm font-normal"
+              >
+                I'm currently studying here
+              </Label>
+            </div>
+            
+            <div className="grid gap-2">
+              <Label htmlFor="eduDescription">Description</Label>
+              <Textarea
+                id="eduDescription"
+                placeholder="Describe your studies, achievements, activities"
+                value={education.description}
+                onChange={(e) => setEducation(prev => ({ ...prev, description: e.target.value }))}
+                rows={3}
+              />
+            </div>
+            
+            <Button type="button" onClick={addEducation} className="w-full">
+              Add Education
+            </Button>
+          </div>
+        </div>
+        
+        {/* Educations list */}
+        {formData.educations.length > 0 ? (
+          <div>
+            <h3 className="text-sm font-medium mb-3">Your Education</h3>
+            <div className="grid gap-4">
+              {formData.educations.map((edu, index) => (
+                <div 
+                  key={index} 
+                  className="border bg-white rounded-lg p-4 transition-all hover:shadow-md hover:border-primary/30"
+                >
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="font-medium text-base">{edu.degree}{edu.field ? `, ${edu.field}` : ''}</h3>
+                      <p className="text-sm text-gray-600">{edu.institution}</p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {formatDateForDisplay(edu.startDate)} - {edu.current ? 'Present' : formatDateForDisplay(edu.endDate)}
+                      </p>
+                    </div>
+                    <button 
+                      onClick={() => removeEducation(index)} 
+                      className="text-gray-400 hover:text-red-500 focus:outline-none rounded-full p-1 hover:bg-gray-100"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M3 6h18"></path>
+                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                      </svg>
+                    </button>
+                  </div>
+                  
+                  {edu.description && (
+                    <p className="text-sm text-gray-600 mt-2 line-clamp-3">{edu.description}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-10 border border-dashed rounded-lg">
+            <div className="text-4xl mb-3">🎓</div>
+            <h3 className="font-medium text-gray-900 mb-1">No education added yet</h3>
+            <p className="text-sm text-gray-500 mb-4">Share your academic background</p>
+          </div>
+        )}
       </div>
     );
   };
