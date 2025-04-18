@@ -575,10 +575,10 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
               <div 
                 key={message.id}
                 className={cn(
-                  "flex flex-col max-w-[85%] rounded-lg p-3 animate-in fade-in-0 zoom-in-95 duration-300",
+                  "flex flex-col rounded-lg p-3 animate-in fade-in-0 zoom-in-95 duration-300",
                   message.sender === 'user' 
-                    ? "ml-auto bg-primary text-primary-foreground rounded-br-none" 
-                    : "mr-auto bg-muted rounded-bl-none"
+                    ? "ml-auto bg-primary text-primary-foreground rounded-br-none max-w-[85%]" 
+                    : "mr-auto bg-muted rounded-bl-none max-w-[90%]"
                 )}
               >
                 {/* Show thinking indicator */}
@@ -588,21 +588,21 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
                     <Loader2 className="h-4 w-4 animate-spin" />
                   </div>
                 ) : (
-                  <div className="text-sm whitespace-pre-wrap">{message.content}</div>
+                  <div className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</div>
                 )}
                 
                 {/* Quick responses */}
                 {message.sender === 'musk' && message.quickResponses && message.quickResponses.length > 0 && (
-                  <div className="mt-3 flex flex-wrap gap-2">
+                  <div className="mt-3 flex flex-col gap-1">
                     {message.quickResponses.map((response, i) => (
                       <Button 
                         key={i}
                         variant="secondary"
                         size="sm"
-                        className="text-xs py-1 h-auto bg-background/80 hover:bg-background"
+                        className="text-xs py-1 px-2 h-auto bg-background/80 hover:bg-background text-left w-full justify-start overflow-hidden whitespace-normal"
                         onClick={() => handleQuickResponse(response)}
                       >
-                        {response}
+                        <span className="line-clamp-2">{response}</span>
                       </Button>
                     ))}
                   </div>
