@@ -981,7 +981,7 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
                     </div>
                     <div className="mt-2">
                       <div className="flex items-center justify-between text-xs mb-1">
-                        <span className="text-gray-500">Proficiency</span>
+                        <span className="text-gray-500">Proficiency Percentage</span>
                         <span>{skill.proficiency || 0}%</span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-1.5">
