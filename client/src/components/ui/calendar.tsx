@@ -1,6 +1,6 @@
 import * as React from "react"
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react"
-import { DayPicker, CaptionProps } from "react-day-picker"
+import { DayPicker } from "react-day-picker"
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
@@ -8,31 +8,23 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
 
-// Generate a range of years for the year selector
-const generateYearRange = (fromYear: number, toYear: number) => {
-  const years = []
-  for (let year = fromYear; year <= toYear; year++) {
-    years.push(year)
-  }
-  return years
-}
-
 // Custom caption component with year selector
-function CustomCaption({ 
-  displayMonth, 
-  goToMonth, 
-  ...props 
-}: CaptionProps) {
+function CustomCaption(props: any) { 
+  const { displayMonth, goToMonth } = props;
   const months = [
     "January", "February", "March", "April", "May", "June", 
     "July", "August", "September", "October", "November", "December"
   ]
   
-  // Default year range if not specified
-  const fromYear = props.fromYear || new Date().getFullYear() - 100
-  const toYear = props.toYear || new Date().getFullYear() + 5
+  // Default year range
+  const fromYear = 1950
+  const toYear = 2035
   
-  const years = generateYearRange(fromYear, toYear)
+  // Generate years
+  const years = []
+  for (let year = fromYear; year <= toYear; year++) {
+    years.push(year)
+  }
   
   const handleYearChange = (year: string) => {
     const newMonth = new Date(displayMonth)
@@ -166,9 +158,9 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" />,
-        IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" />,
-        Caption: CustomCaption
+        IconLeft: () => <ChevronLeft className="h-4 w-4" />,
+        IconRight: () => <ChevronRight className="h-4 w-4" />,
+        Caption: CustomCaption as any
       }}
       {...props}
     />
