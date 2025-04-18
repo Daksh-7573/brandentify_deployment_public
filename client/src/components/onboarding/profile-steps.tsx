@@ -1196,7 +1196,7 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
                   {service.rate && (
                     <div className="mt-2">
                       <span className="inline-block text-sm font-medium text-primary">
-                        {getCurrencySymbol(service.currency)}{service.rate} {getRateUnitLabel(service.rateUnit)}
+                        {getCurrencySymbol(service.currency || 'USD')}{service.rate} {getRateUnitLabel(service.rateUnit)}
                       </span>
                     </div>
                   )}
