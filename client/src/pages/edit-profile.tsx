@@ -73,13 +73,13 @@ export default function EditProfilePage() {
   
   // Map tab names to more user-friendly display names
   const tabDisplayNames: Record<string, { label: string, icon: React.ReactNode }> = {
-    "all about me": { label: "About Me", icon: <User className="h-4 w-4 mr-2" /> },
-    "what i'm good at": { label: "Skills", icon: <Lightbulb className="h-4 w-4 mr-2" /> },
-    "what i offer": { label: "Services", icon: <BadgeCheck className="h-4 w-4 mr-2" /> },
-    "showcase": { label: "Projects", icon: <BookOpen className="h-4 w-4 mr-2" /> },
-    "career path": { label: "Work History", icon: <Briefcase className="h-4 w-4 mr-2" /> },
-    "academic background": { label: "Education", icon: <GraduationCap className="h-4 w-4 mr-2" /> },
-    "personal information": { label: "Contact", icon: <BadgeCheck className="h-4 w-4 mr-2" /> },
+    "all about me": { label: "All About Me", icon: <User className="h-4 w-4 mr-2" /> },
+    "what i'm good at": { label: "What I'm Good At", icon: <Lightbulb className="h-4 w-4 mr-2" /> },
+    "what i offer": { label: "What I Offer", icon: <BadgeCheck className="h-4 w-4 mr-2" /> },
+    "showcase": { label: "Showcase", icon: <BookOpen className="h-4 w-4 mr-2" /> },
+    "career path": { label: "Career Path", icon: <Briefcase className="h-4 w-4 mr-2" /> },
+    "academic background": { label: "Academic Background", icon: <GraduationCap className="h-4 w-4 mr-2" /> },
+    "personal information": { label: "Personal Information", icon: <BadgeCheck className="h-4 w-4 mr-2" /> },
   };
   
   // Tabs order
@@ -143,6 +143,7 @@ export default function EditProfilePage() {
                       <Button
                         key={tabId}
                         variant={activeTab === tabId ? "default" : "ghost"}
+                        size="sm"
                         className={`w-full justify-start ${activeTab === tabId ? "" : "text-gray-700"}`}
                         onClick={() => setActiveTab(tabId)}
                       >
