@@ -8,7 +8,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, ArrowLeft, Save, User, Briefcase, GraduationCap, Lightbulb, BookOpen, BadgeCheck } from "lucide-react";
+import { 
+  Loader2, ArrowLeft, Save, User, Briefcase, GraduationCap, 
+  Lightbulb, BookText, Wrench, Phone, Contact, Award, Star, Check
+} from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
 
@@ -74,12 +77,12 @@ export default function EditProfilePage() {
   // Map tab names to more user-friendly display names
   const tabDisplayNames: Record<string, { label: string, icon: React.ReactNode }> = {
     "all about me": { label: "All About Me", icon: <User className="h-4 w-4 mr-2" /> },
-    "what i'm good at": { label: "What I'm Good At", icon: <Lightbulb className="h-4 w-4 mr-2" /> },
-    "what i offer": { label: "What I Offer", icon: <BadgeCheck className="h-4 w-4 mr-2" /> },
-    "showcase": { label: "Showcase", icon: <BookOpen className="h-4 w-4 mr-2" /> },
+    "what i'm good at": { label: "What I'm Good At", icon: <Star className="h-4 w-4 mr-2" /> },
+    "what i offer": { label: "What I Offer", icon: <Wrench className="h-4 w-4 mr-2" /> },
+    "showcase": { label: "Showcase", icon: <BookText className="h-4 w-4 mr-2" /> },
     "career path": { label: "Career Path", icon: <Briefcase className="h-4 w-4 mr-2" /> },
     "academic background": { label: "Academic Background", icon: <GraduationCap className="h-4 w-4 mr-2" /> },
-    "personal information": { label: "Personal Information", icon: <BadgeCheck className="h-4 w-4 mr-2" /> },
+    "personal information": { label: "Personal Information", icon: <Contact className="h-4 w-4 mr-2" /> },
   };
   
   // Tabs order
