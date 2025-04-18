@@ -56,9 +56,9 @@ export const useUserWeeklyQuests = (userId: number, weekNumber: number, year: nu
 // Fetch user's XP information
 export const useUserXp = (userId: number) => {
   return useQuery({
-    queryKey: ['/api/user-xp', userId],
+    queryKey: ['/api/users/:userId/xp', userId],
     queryFn: async () => {
-      const res = await fetch(`/api/user-xp/${userId}`);
+      const res = await fetch(`/api/users/${userId}/xp`);
       if (!res.ok) throw new Error('Failed to fetch user XP');
       return res.json() as Promise<UserXp>;
     },
@@ -69,9 +69,9 @@ export const useUserXp = (userId: number) => {
 // Fetch user's badges
 export const useUserBadges = (userId: number) => {
   return useQuery({
-    queryKey: ['/api/user-badges', userId],
+    queryKey: ['/api/users/:userId/badges', userId],
     queryFn: async () => {
-      const res = await fetch(`/api/user-badges/${userId}`);
+      const res = await fetch(`/api/users/${userId}/badges`);
       if (!res.ok) throw new Error('Failed to fetch user badges');
       return res.json() as Promise<UserBadge[]>;
     },
@@ -82,9 +82,9 @@ export const useUserBadges = (userId: number) => {
 // Fetch user's XP transactions
 export const useXpTransactions = (userId: number) => {
   return useQuery({
-    queryKey: ['/api/xp-transactions', userId],
+    queryKey: ['/api/users/:userId/xp-transactions', userId],
     queryFn: async () => {
-      const res = await fetch(`/api/xp-transactions/${userId}`);
+      const res = await fetch(`/api/users/${userId}/xp-transactions`);
       if (!res.ok) throw new Error('Failed to fetch XP transactions');
       return res.json() as Promise<XpTransaction[]>;
     },
@@ -124,9 +124,9 @@ export const useUpdateQuestProgress = () => {
       
       // If quest was completed, also invalidate XP and badges
       if (data.status === 'completed') {
-        queryClient.invalidateQueries({ queryKey: ['/api/user-xp', data.userId] });
-        queryClient.invalidateQueries({ queryKey: ['/api/user-badges', data.userId] });
-        queryClient.invalidateQueries({ queryKey: ['/api/xp-transactions', data.userId] });
+        queryClient.invalidateQueries({ queryKey: ['/api/users/:userId/xp', data.userId] });
+        queryClient.invalidateQueries({ queryKey: ['/api/users/:userId/badges', data.userId] });
+        queryClient.invalidateQueries({ queryKey: ['/api/users/:userId/xp-transactions', data.userId] });
       }
     }
   });
@@ -158,9 +158,9 @@ export const useCompleteQuest = () => {
       queryClient.invalidateQueries({ 
         queryKey: ['/api/user-quests-with-definitions', data.userId] 
       });
-      queryClient.invalidateQueries({ queryKey: ['/api/user-xp', data.userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/user-badges', data.userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/xp-transactions', data.userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users/:userId/xp', data.userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users/:userId/badges', data.userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users/:userId/xp-transactions', data.userId] });
     }
   });
 };
