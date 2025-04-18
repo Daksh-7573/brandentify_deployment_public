@@ -350,6 +350,19 @@ export default function Header() {
                 <Zap className="h-4 w-4 mr-2" />
                 <span>Create Pulse</span>
               </Button>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full mt-2 justify-center py-3 text-sm font-medium text-primary border-primary/30 hover:bg-primary/5"
+                onClick={() => {
+                  setLocation('/profile#resume');
+                  setIsMobileMenuOpen(false);
+                }}
+              >
+                <FileText className="h-4 w-4 mr-2" />
+                <span>Resume</span>
+              </Button>
             </div>
           </div>
         </div>
