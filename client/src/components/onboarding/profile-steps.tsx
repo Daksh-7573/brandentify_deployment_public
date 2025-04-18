@@ -1185,7 +1185,7 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
   const renderProjectsStep = () => {
     // Add new project
     const addProject = () => {
-      if (!project.title) {
+      if (!projectFormData.title) {
         toast({
           title: "Project title required",
           description: "Please enter a title for your project",
@@ -1196,11 +1196,11 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
       
       setFormData(prev => ({
         ...prev,
-        projects: [...prev.projects, project]
+        projects: [...prev.projects, projectFormData]
       }));
       
       // Reset form
-      setProject({
+      setProjectFormData({
         title: '',
         description: '',
         startDate: '',
@@ -1241,8 +1241,8 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
               <Input
                 id="projectTitle"
                 placeholder="e.g. E-commerce Website, Mobile App, Data Visualization"
-                value={project.title}
-                onChange={(e) => setProject(prev => ({ ...prev, title: e.target.value }))}
+                value={projectFormData.title}
+                onChange={(e) => setProjectFormData(prev => ({ ...prev, title: e.target.value }))}
               />
             </div>
             
@@ -1251,8 +1251,8 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
               <Textarea
                 id="projectDescription"
                 placeholder="Describe the project, its purpose, and your role"
-                value={project.description}
-                onChange={(e) => setProject(prev => ({ ...prev, description: e.target.value }))}
+                value={projectFormData.description}
+                onChange={(e) => setProjectFormData(prev => ({ ...prev, description: e.target.value }))}
                 rows={3}
               />
             </div>
@@ -1261,8 +1261,8 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
               <div className="grid gap-2">
                 <Label htmlFor="projectCategory">Category</Label>
                 <Select
-                  value={project.category}
-                  onValueChange={(value) => setProject(prev => ({ ...prev, category: value }))}
+                  value={projectFormData.category}
+                  onValueChange={(value) => setProjectFormData(prev => ({ ...prev, category: value }))}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a category" />
@@ -1282,8 +1282,8 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
                 <Input
                   id="projectStartDate"
                   type="date"
-                  value={project.startDate}
-                  onChange={(e) => setProject(prev => ({ ...prev, startDate: e.target.value }))}
+                  value={projectFormData.startDate}
+                  onChange={(e) => setProjectFormData(prev => ({ ...prev, startDate: e.target.value }))}
                 />
               </div>
             </div>
@@ -1293,8 +1293,8 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
               <Input
                 id="projectUrl"
                 placeholder="https://example.com"
-                value={project.projectUrl}
-                onChange={(e) => setProject(prev => ({ ...prev, projectUrl: e.target.value }))}
+                value={projectFormData.projectUrl}
+                onChange={(e) => setProjectFormData(prev => ({ ...prev, projectUrl: e.target.value }))}
               />
             </div>
             
@@ -1303,8 +1303,8 @@ export default function ProfileSteps({ isEditing = false, onComplete }: ProfileS
               <Input
                 id="thumbnailUrl"
                 placeholder="https://example.com/image.jpg"
-                value={project.thumbnailUrl}
-                onChange={(e) => setProject(prev => ({ ...prev, thumbnailUrl: e.target.value }))}
+                value={projectFormData.thumbnailUrl}
+                onChange={(e) => setProjectFormData(prev => ({ ...prev, thumbnailUrl: e.target.value }))}
               />
               <p className="text-xs text-gray-500">Add a URL for a project thumbnail image</p>
             </div>
