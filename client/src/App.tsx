@@ -26,6 +26,8 @@ import MuskMatchPage from "@/pages/musk-match";
 import ResumePage from "@/pages/resume";
 import FeedTestPage from "@/pages/feed-test";
 import CareerQuestsPage from "@/pages/career-quests";
+import OnboardingPage from "@/pages/onboarding";
+import EditProfilePage from "@/pages/edit-profile";
 
 // Redirect component to handle page redirects
 const Redirect = ({ to }: { to: string }) => {
@@ -118,6 +120,12 @@ function Router() {
       </Route>
       <Route path="/career-quests">
         <ProtectedRoute path="/career-quests" component={CareerQuestsPage} />
+      </Route>
+      <Route path="/onboarding">
+        <ProtectedRoute path="/onboarding" component={OnboardingPage} />
+      </Route>
+      <Route path="/edit-profile">
+        <ProtectedRoute path="/edit-profile" component={EditProfilePage} />
       </Route>
       <Route component={NotFound} />
     </Switch>
