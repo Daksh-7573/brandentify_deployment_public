@@ -112,6 +112,9 @@ function Router() {
       <Route path="/resume">
         <ProtectedRoute path="/resume" component={ResumePage} />
       </Route>
+      <Route path="/feed-test">
+        <ProtectedRoute path="/feed-test" component={FeedTestPage} />
+      </Route>
       <Route component={NotFound} />
     </Switch>
   );
