@@ -203,7 +203,7 @@ export const UIShowcase: React.FC = () => {
                   
                   <motion.div 
                     className="absolute bottom-20 right-20"
-                    animate={{ rotate: 360 }}
+                    animate={{ rotate: [0, 360] }}
                     transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                   >
                     <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500/20 to-teal-500/20 flex items-center justify-center">
