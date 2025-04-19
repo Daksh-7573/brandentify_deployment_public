@@ -869,3 +869,29 @@ export type InsertUserBadge = z.infer<typeof insertUserBadgeSchema>;
 
 export type XpTransaction = typeof xpTransactions.$inferSelect;
 export type InsertXpTransaction = z.infer<typeof insertXpTransactionSchema>;
+
+// Brand of the Day model - for storing and tracking featured profiles
+export const brandsOfTheDay = pgTable("brands_of_the_day", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  industry: text("industry").notNull(),  // Industry category
+  domain: text("domain").notNull(),      // Domain/specialty within industry
+  brandValueScore: integer("brand_value_score").notNull(), // Score out of 100
+  muskComment: text("musk_comment").notNull(), // AI-generated comment about why featured
+  scoreBreakdown: jsonb("score_breakdown").notNull(), // Detailed score components
+  featuredDate: timestamp("featured_date").notNull().defaultNow(), // When profile was featured
+  expiresDate: timestamp("expires_date").notNull(), // When feature expires (24h later)
+  hasBeenShared: boolean("has_been_shared").default(false), // Whether user has shared their feature
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Insert schema for Brand of the Day
+export const insertBrandOfTheDaySchema = createInsertSchema(brandsOfTheDay).omit({
+  id: true,
+  createdAt: true,
+  expiresDate: true,
+});
+
+// Export types for Brand of the Day
+export type BrandOfTheDay = typeof brandsOfTheDay.$inferSelect;
+export type InsertBrandOfTheDay = z.infer<typeof insertBrandOfTheDaySchema>;

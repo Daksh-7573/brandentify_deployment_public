@@ -35,7 +35,9 @@ import {
   userQuests, UserQuest, InsertUserQuest,
   userXp, UserXp, InsertUserXp,
   userBadges, UserBadge, InsertUserBadge,
-  xpTransactions, XpTransaction, InsertXpTransaction
+  xpTransactions, XpTransaction, InsertXpTransaction,
+  // Brand of the Day models
+  brandsOfTheDay, BrandOfTheDay, InsertBrandOfTheDay
 } from "@shared/schema";
 
 // Import Musk suggestion models
