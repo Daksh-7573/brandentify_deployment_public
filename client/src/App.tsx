@@ -30,6 +30,7 @@ import FeedTestPage from "@/pages/feed-test";
 import CareerQuestsPage from "@/pages/career-quests";
 import OnboardingPage from "@/pages/onboarding";
 import EditProfilePage from "@/pages/edit-profile";
+import UIDemo from "@/pages/ui-demo";
 
 // Redirect component to handle page redirects
 const Redirect = ({ to }: { to: string }) => {
@@ -134,6 +135,7 @@ function Router() {
       <Route path="/edit-profile">
         <ProtectedRoute path="/edit-profile" component={EditProfilePage} />
       </Route>
+      <Route path="/ui-demo" component={UIDemo} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -1,228 +1,231 @@
-import React, { useState } from "react";
-import { motion, HTMLMotionProps, AnimatePresence } from "framer-motion";
-import { Button, ButtonProps } from "@/components/ui/button";
+import React, { useState, useRef, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
-// We need to omit conflicting properties
-type AnimatedButtonProps = ButtonProps & Omit<HTMLMotionProps<"button">, keyof ButtonProps> & {
-  animation?: "pulse" | "scale" | "slide" | "glow" | "gradient" | "ripple" | "float" | "3d" | "none";
-  hoverScale?: number;
-  disabled?: boolean;
-  glowColor?: string;
-  gradientColors?: string[];
+type ButtonAnimation = 
+  | "pulse" 
+  | "scale" 
+  | "slide" 
+  | "glow" 
+  | "gradient" 
+  | "ripple" 
+  | "float"
+  | "3d";
+
+interface RippleProps {
+  x: number;
+  y: number;
+  size: number;
+}
+
+interface AnimatedButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>, 
+  VariantProps<typeof Button> {
+  children: React.ReactNode;
+  animation?: ButtonAnimation;
+  className?: string;
   withIcon?: React.ReactNode;
   iconPosition?: "left" | "right";
-};
+  gradientColors?: string[];
+  glowColor?: string;
+  glowSize?: number;
+  hoverScale?: number;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
+}
 
 export const AnimatedButton: React.FC<AnimatedButtonProps> = ({
   children,
-  className,
   animation = "scale",
-  hoverScale = 1.05,
-  disabled = false,
-  glowColor = "rgba(99, 102, 241, 0.6)",
-  gradientColors = ["#6366F1", "#14B8A6", "#6366F1"],
+  className = "",
   withIcon,
   iconPosition = "left",
+  gradientColors = ["#6366F1", "#14B8A6", "#F59E0B"],
+  glowColor = "rgba(99, 102, 241, 0.6)",
+  glowSize = 15,
+  hoverScale = 1.05,
+  variant = "default",
+  size = "default",
+  onClick,
   ...props
 }) => {
-  const [isRippling, setIsRippling] = useState(false);
-  const [ripplePosition, setRipplePosition] = useState({ x: 0, y: 0 });
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isPressed, setIsPressed] = useState(false);
+  const [ripples, setRipples] = useState<RippleProps[]>([]);
+  const [rippleCount, setRippleCount] = useState(0);
+  
+  // For 3D animation
+  const [rotation, setRotation] = useState({ x: 0, y: 0 });
+  
+  // For float animation
+  const [floatY, setFloatY] = useState(0);
+  
+  useEffect(() => {
+    if (animation === "float" && isHovered) {
+      const interval = setInterval(() => {
+        setFloatY(prev => -prev);
+      }, 1000);
+      
+      return () => clearInterval(interval);
+    }
+  }, [animation, isHovered]);
   
   // Handle ripple effect
-  const handleRipple = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (animation !== "ripple") return;
-    
-    const button = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - button.left;
-    const y = e.clientY - button.top;
-    
-    setRipplePosition({ x, y });
-    setIsRippling(true);
-    
-    setTimeout(() => {
-      setIsRippling(false);
-    }, 700);
+  const addRipple = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (animation === "ripple") {
+      const buttonRect = buttonRef.current?.getBoundingClientRect() || { left: 0, top: 0 };
+      const size = Math.max(buttonRect.width, buttonRect.height) * 2;
+      const x = e.clientX - buttonRect.left - size / 2;
+      const y = e.clientY - buttonRect.top - size / 2;
+      
+      const newRipple = {
+        x,
+        y,
+        size,
+      };
+      
+      setRipples(prev => [...prev, newRipple]);
+      setRippleCount(prev => prev + 1);
+      
+      // Remove the ripple after animation completes
+      setTimeout(() => {
+        setRipples(prev => prev.slice(1));
+      }, 600);
+    }
   };
-
-  // Animation variants based on the animation prop
-  const getAnimationProps = () => {
+  
+  // Handle 3D effect on hover
+  const handle3DEffect = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (animation === "3d" && buttonRef.current) {
+      const buttonRect = buttonRef.current.getBoundingClientRect();
+      const buttonCenterX = buttonRect.left + buttonRect.width / 2;
+      const buttonCenterY = buttonRect.top + buttonRect.height / 2;
+      
+      const rotateY = ((e.clientX - buttonCenterX) / (buttonRect.width / 2)) * 10;
+      const rotateX = ((buttonCenterY - e.clientY) / (buttonRect.height / 2)) * 5;
+      
+      setRotation({ x: rotateX, y: rotateY });
+    }
+  };
+  
+  // Reset position when not hovering for 3D animation
+  useEffect(() => {
+    if (animation === "3d" && !isHovered) {
+      const timeout = setTimeout(() => {
+        setRotation({ x: 0, y: 0 });
+      }, 150);
+      
+      return () => clearTimeout(timeout);
+    }
+  }, [isHovered, animation]);
+  
+  // Get animation-specific styles
+  const getAnimationStyles = (): React.CSSProperties => {
     switch (animation) {
-      case "pulse":
-        return {
-          whileHover: { scale: hoverScale },
-          whileTap: { scale: 0.98 },
-          initial: { opacity: 0, scale: 0.9 },
-          animate: { 
-            opacity: 1, 
-            scale: 1,
-            boxShadow: ["0 0 0 0 rgba(99, 102, 241, 0.4)", "0 0 0 15px rgba(99, 102, 241, 0)", "0 0 0 0 rgba(99, 102, 241, 0.4)"]
-          },
-          transition: { 
-            type: "spring", 
-            stiffness: 300, 
-            damping: 15,
-            boxShadow: {
-              repeat: Infinity,
-              duration: 2,
-              ease: "easeInOut"
-            }
-          }
-        };
-      case "scale":
-        return {
-          whileHover: { scale: hoverScale },
-          whileTap: { scale: 0.95 },
-          initial: { opacity: 0, scale: 0.9 },
-          animate: { opacity: 1, scale: 1 },
-          transition: { duration: 0.3 }
-        };
-      case "slide":
-        return {
-          whileHover: { x: 5 },
-          whileTap: { x: 2, scale: 0.98 },
-          initial: { opacity: 0, x: -20 },
-          animate: { opacity: 1, x: 0 },
-          transition: { duration: 0.3 }
-        };
       case "glow":
         return {
-          whileHover: { boxShadow: `0 0 20px ${glowColor}` },
-          whileTap: { boxShadow: `0 0 10px ${glowColor}`, scale: 0.98 },
-          initial: { opacity: 0 },
-          animate: { opacity: 1 },
-          transition: { duration: 0.3 }
+          boxShadow: isHovered ? `0 0 ${glowSize}px ${glowColor}` : "none",
+          transition: "box-shadow 0.3s ease",
         };
       case "gradient":
         return {
-          whileHover: { 
-            backgroundPosition: ["0% 50%", "100% 50%"],
-            scale: hoverScale 
-          },
-          whileTap: { scale: 0.98 },
-          initial: { opacity: 0 },
-          animate: { opacity: 1 },
-          transition: { 
-            duration: 0.3,
-            backgroundPosition: {
-              repeat: Infinity,
-              duration: 3,
-              ease: "linear"
-            }
-          }
-        };
-      case "float":
-        return {
-          whileHover: { y: -5 },
-          whileTap: { y: -2, scale: 0.98 },
-          initial: { opacity: 0, y: 10 },
-          animate: { 
-            opacity: 1, 
-            y: 0,
-            transition: { 
-              y: { type: "spring", stiffness: 400, damping: 17 }
-            }
-          }
+          background: `linear-gradient(90deg, ${gradientColors.join(", ")})`,
+          backgroundSize: "200% 100%",
+          animation: isHovered ? "gradient-shift 2s linear infinite" : "none",
+          transition: "all 0.3s ease",
+          color: "white",
         };
       case "3d":
         return {
-          whileHover: { 
-            scale: hoverScale,
-            rotateX: 5,
-            rotateY: 10,
-            boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"
-          },
-          whileTap: { 
-            scale: 0.98,
-            rotateX: 0,
-            rotateY: 0,
-            boxShadow: "0 5px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)"
-          },
-          initial: { opacity: 0, scale: 0.9 },
-          animate: { opacity: 1, scale: 1, rotateX: 0, rotateY: 0 },
-          transition: { 
-            type: "spring", 
-            stiffness: 500, 
-            damping: 15 
-          }
+          transform: isHovered ? `perspective(1000px) rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)` : "perspective(1000px) rotateX(0) rotateY(0)",
+          transition: "transform 0.1s ease",
         };
-      case "ripple":
+      case "float":
         return {
-          whileHover: { scale: hoverScale },
-          whileTap: { scale: 0.98 },
-          initial: { opacity: 0 },
-          animate: { opacity: 1 },
-          transition: { duration: 0.3 }
+          transform: isHovered ? `translateY(${floatY * 3}px)` : "translateY(0)",
+          transition: "transform 0.6s ease",
         };
-      case "none":
       default:
-        return {
-          initial: { opacity: 0 },
-          animate: { opacity: 1 },
-          transition: { duration: 0.3 }
-        };
+        return {};
     }
   };
-
-  // Style for gradient animation
-  const gradientStyle = animation === "gradient" ? {
-    background: `linear-gradient(90deg, ${gradientColors.join(", ")})`,
-    backgroundSize: "200% 100%",
-    color: "white",
-    border: "none"
-  } : {};
-
-  return (
-    <motion.div
-      {...getAnimationProps()}
-      className={cn("inline-block", animation === "3d" && "perspective-1000")}
-      style={{ 
-        opacity: disabled ? 0.6 : 1,
-        perspective: animation === "3d" ? 1000 : undefined
-      }}
-      onClick={handleRipple}
-    >
-      <Button
-        className={cn(
-          "relative overflow-hidden", 
-          animation === "float" && "shadow-lg",
-          animation === "3d" && "transform-style-3d",
-          className
-        )}
-        disabled={disabled}
-        style={gradientStyle}
-        {...props}
-      >
-        {withIcon && iconPosition === "left" && (
-          <span className="mr-2 inline-flex items-center">{withIcon}</span>
-        )}
-        
+  
+  // Get animation className
+  const getAnimationClassName = (): string => {
+    switch (animation) {
+      case "pulse":
+        return isHovered ? "animate-pulse" : "";
+      case "scale":
+        return isHovered ? "scale-105 transform-gpu transition-transform" : "transform-gpu transition-transform";
+      case "slide":
+        return isHovered ? "translate-x-1 transform-gpu transition-transform" : "transform-gpu transition-transform";
+      default:
+        return "";
+    }
+  };
+  
+  // Get content with icon
+  const getContent = () => {
+    if (!withIcon) return children;
+    
+    return (
+      <div className="flex items-center gap-2">
+        {iconPosition === "left" && withIcon}
         {children}
-        
-        {withIcon && iconPosition === "right" && (
-          <span className="ml-2 inline-flex items-center">{withIcon}</span>
-        )}
-        
-        {animation === "ripple" && isRippling && (
-          <AnimatePresence>
-            <motion.span
-              key="ripple"
-              initial={{ scale: 0, opacity: 0.7 }}
-              animate={{ scale: 4, opacity: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.7 }}
-              className="absolute rounded-full bg-white/30 pointer-events-none"
-              style={{
-                top: ripplePosition.y,
-                left: ripplePosition.x,
-                width: 20,
-                height: 20,
-                transform: "translate(-50%, -50%)",
-              }}
-            />
-          </AnimatePresence>
-        )}
-      </Button>
-    </motion.div>
+        {iconPosition === "right" && withIcon}
+      </div>
+    );
+  };
+  
+  // Calculate the z-index for layered ripples
+  const getRippleZIndex = (index: number) => {
+    return rippleCount - index;
+  };
+  
+  return (
+    <Button
+      ref={buttonRef}
+      variant={variant}
+      size={size}
+      className={cn(
+        "relative overflow-hidden transition-all",
+        getAnimationClassName(),
+        className
+      )}
+      style={{
+        ...getAnimationStyles(),
+        ...props.style,
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onMouseMove={animation === "3d" ? handle3DEffect : undefined}
+      onMouseDown={() => setIsPressed(true)}
+      onMouseUp={() => setIsPressed(false)}
+      onClick={(e) => {
+        addRipple(e);
+        if (onClick) onClick(e);
+      }}
+      {...props}
+    >
+      {animation === "ripple" && ripples.map((ripple, index) => (
+        <motion.span
+          key={index}
+          className="absolute rounded-full bg-white/30 pointer-events-none"
+          initial={{ opacity: 0.6, scale: 0 }}
+          animate={{ opacity: 0, scale: 1 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          style={{
+            left: ripple.x,
+            top: ripple.y,
+            width: ripple.size,
+            height: ripple.size,
+            zIndex: getRippleZIndex(index),
+          }}
+        />
+      ))}
+      
+      {getContent()}
+    </Button>
   );
 };

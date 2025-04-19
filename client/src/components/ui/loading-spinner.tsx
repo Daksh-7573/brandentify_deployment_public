@@ -1,133 +1,104 @@
 import React from "react";
-import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 interface LoadingSpinnerProps {
-  size?: "sm" | "md" | "lg";
-  color?: string;
-  className?: string;
+  size?: "sm" | "md" | "lg" | "xl";
+  variant?: "default" | "primary" | "gradient" | "subtle";
   text?: string;
-  variant?: "circle" | "dots" | "gradient" | "pulse";
+  className?: string;
+  centered?: boolean;
 }
 
 export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   size = "md",
-  color = "currentColor",
-  className,
+  variant = "default",
   text,
-  variant = "circle",
+  className,
+  centered = false,
 }) => {
+  // Size mappings
   const sizeMap = {
-    sm: "w-4 h-4",
-    md: "w-8 h-8",
-    lg: "w-12 h-12",
+    sm: "w-4 h-4 border-2",
+    md: "w-8 h-8 border-2",
+    lg: "w-12 h-12 border-3",
+    xl: "w-16 h-16 border-4",
   };
-
-  // Circle spinner (classic spinner)
-  if (variant === "circle") {
-    return (
-      <div className={cn("flex flex-col items-center justify-center", className)}>
+  
+  // Variant mappings
+  const variantMap = {
+    default: "border-gray-300 border-t-primary",
+    primary: "border-primary/30 border-t-primary",
+    gradient: "border-transparent border-t-transparent gradient-border-spinner",
+    subtle: "border-gray-200 border-t-gray-500",
+  };
+  
+  // Text size mapping
+  const textSizeMap = {
+    sm: "text-xs",
+    md: "text-sm",
+    lg: "text-base",
+    xl: "text-lg",
+  };
+  
+  // Get spinner circle based on gradient variant
+  const getSpinnerCircle = () => {
+    if (variant === "gradient") {
+      return (
         <motion.div
-          className={cn("border-t-2 border-b-2 rounded-full", sizeMap[size])}
+          className={cn(
+            "rounded-full absolute inset-0",
+            "bg-gradient-to-r from-purple-600 via-teal-500 to-amber-500"
+          )}
           style={{ 
-            borderTopColor: color,
-            borderBottomColor: "transparent",
+            clipPath: "polygon(50% 0%, 50% 50%, 100% 50%, 100% 0%)",
           }}
           animate={{ rotate: 360 }}
           transition={{
-            duration: 1,
+            duration: 1.4,
             repeat: Infinity,
             ease: "linear",
           }}
         />
-        {text && <p className="mt-2 text-sm text-gray-500">{text}</p>}
+      );
+    }
+    return null;
+  };
+  
+  const spinner = (
+    <div className={cn(
+      "relative",
+      centered && "flex flex-col items-center justify-center",
+      className
+    )}>
+      <div
+        className={cn(
+          "rounded-full border animate-spin-slow",
+          sizeMap[size],
+          variantMap[variant]
+        )}
+      >
+        {getSpinnerCircle()}
       </div>
-    );
-  }
-
-  // Dots spinner (three dots)
-  if (variant === "dots") {
+      
+      {text && (
+        <p className={cn(
+          "mt-3 text-gray-600",
+          textSizeMap[size]
+        )}>
+          {text}
+        </p>
+      )}
+    </div>
+  );
+  
+  if (centered) {
     return (
-      <div className={cn("flex flex-col items-center justify-center", className)}>
-        <div className="flex space-x-2">
-          {[0, 1, 2].map((i) => (
-            <motion.div
-              key={i}
-              className={cn("rounded-full", 
-                size === "sm" ? "w-1.5 h-1.5" : 
-                size === "md" ? "w-2.5 h-2.5" : "w-3.5 h-3.5"
-              )}
-              style={{ backgroundColor: color }}
-              animate={{
-                scale: [1, 1.5, 1],
-                opacity: [0.6, 1, 0.6],
-              }}
-              transition={{
-                duration: 1,
-                repeat: Infinity,
-                delay: i * 0.2,
-                ease: "easeInOut",
-              }}
-            />
-          ))}
-        </div>
-        {text && <p className="mt-2 text-sm text-gray-500">{text}</p>}
+      <div className="flex items-center justify-center w-full h-full">
+        {spinner}
       </div>
     );
   }
-
-  // Gradient spinner (rotating gradient)
-  if (variant === "gradient") {
-    return (
-      <div className={cn("flex flex-col items-center justify-center", className)}>
-        <div className="relative">
-          <motion.div
-            className={cn("rounded-full absolute", sizeMap[size])}
-            style={{
-              background: "linear-gradient(135deg, #6366F1 0%, #14B8A6 50%, #F59E0B 100%)",
-              opacity: 0.7,
-            }}
-            animate={{ rotate: 360 }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: "linear",
-            }}
-          />
-          <div 
-            className={cn(
-              "rounded-full flex items-center justify-center", 
-              sizeMap[size],
-              "bg-white dark:bg-gray-800 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2",
-              size === "sm" ? "w-2 h-2" : size === "md" ? "w-4 h-4" : "w-6 h-6"
-            )}
-          />
-        </div>
-        {text && <p className="mt-2 text-sm text-gray-500">{text}</p>}
-      </div>
-    );
-  }
-
-  // Pulse spinner (growing and shrinking circle)
-  if (variant === "pulse") {
-    return (
-      <div className={cn("flex flex-col items-center justify-center", className)}>
-        <motion.div
-          className={cn("rounded-full", sizeMap[size])}
-          style={{ backgroundColor: color, opacity: 0.6 }}
-          animate={{
-            scale: [1, 1.3, 1],
-          }}
-          transition={{
-            duration: 1.5,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        {text && <p className="mt-2 text-sm text-gray-500">{text}</p>}
-      </div>
-    );
-  }
-
-  return null;
+  
+  return spinner;
 };

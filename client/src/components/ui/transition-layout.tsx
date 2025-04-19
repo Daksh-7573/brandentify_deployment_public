@@ -1,51 +1,63 @@
 import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
+import { motion, AnimatePresence } from "framer-motion";
+
+type TransitionAnimation = "fade" | "slide" | "scale" | "flip" | "rotate";
 
 interface TransitionLayoutProps {
   children: React.ReactNode;
-  className?: string;
-  animation?: "fade" | "slide" | "scale" | "none";
+  animation?: TransitionAnimation;
   duration?: number;
+  delay?: number;
 }
 
 export const TransitionLayout: React.FC<TransitionLayoutProps> = ({
   children,
-  className = "",
   animation = "fade",
   duration = 0.3,
+  delay = 0,
 }) => {
   const [location] = useLocation();
   
-  // Animation variants
-  const animations = {
-    fade: {
-      initial: { opacity: 0 },
-      animate: { opacity: 1 },
-      exit: { opacity: 0 },
-    },
-    slide: {
-      initial: { opacity: 0, x: 15 },
-      animate: { opacity: 1, x: 0 },
-      exit: { opacity: 0, x: -15 },
-    },
-    scale: {
-      initial: { opacity: 0, scale: 0.95 },
-      animate: { opacity: 1, scale: 1 },
-      exit: { opacity: 0, scale: 1.05 },
-    },
-    none: {
-      initial: {},
-      animate: {},
-      exit: {},
-    },
+  // Define animation variants based on animation type
+  const getVariants = () => {
+    switch (animation) {
+      case "slide":
+        return {
+          initial: { x: 20, opacity: 0 },
+          animate: { x: 0, opacity: 1 },
+          exit: { x: -20, opacity: 0 },
+        };
+      case "scale":
+        return {
+          initial: { scale: 0.9, opacity: 0 },
+          animate: { scale: 1, opacity: 1 },
+          exit: { scale: 0.9, opacity: 0 },
+        };
+      case "flip":
+        return {
+          initial: { rotateY: 90, opacity: 0 },
+          animate: { rotateY: 0, opacity: 1 },
+          exit: { rotateY: -90, opacity: 0 },
+        };
+      case "rotate":
+        return {
+          initial: { rotate: 5, opacity: 0 },
+          animate: { rotate: 0, opacity: 1 },
+          exit: { rotate: -5, opacity: 0 },
+        };
+      case "fade":
+      default:
+        return {
+          initial: { opacity: 0 },
+          animate: { opacity: 1 },
+          exit: { opacity: 0 },
+        };
+    }
   };
-
-  const transition = {
-    duration,
-    ease: "easeInOut",
-  };
-
+  
+  const variants = getVariants();
+  
   return (
     <AnimatePresence mode="wait">
       <motion.div
@@ -53,9 +65,13 @@ export const TransitionLayout: React.FC<TransitionLayoutProps> = ({
         initial="initial"
         animate="animate"
         exit="exit"
-        variants={animations[animation]}
-        transition={transition}
-        className={className}
+        variants={variants}
+        transition={{ 
+          duration, 
+          delay,
+          ease: "easeInOut" 
+        }}
+        style={{ width: "100%", height: "100%" }}
       >
         {children}
       </motion.div>
