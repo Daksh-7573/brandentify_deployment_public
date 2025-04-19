@@ -310,6 +310,30 @@ export interface IStorage {
   createMuskMatch(match: InsertMuskMatch): Promise<MuskMatch>;
   updateMuskMatch(id: number, match: Partial<MuskMatch>): Promise<MuskMatch | undefined>;
   deleteMuskMatch(id: number): Promise<boolean>;
+  
+  // Brand of the Day operations
+  getBrandsOfTheDay(): Promise<BrandOfTheDay[]>;
+  getBrandsOfTheDayByDate(date: Date): Promise<BrandOfTheDay[]>;
+  getBrandOfTheDayById(id: number): Promise<BrandOfTheDay | undefined>;
+  getBrandOfTheDayByIndustryAndDomain(industry: string, domain: string, date: Date): Promise<BrandOfTheDay | undefined>;
+  getBrandsOfTheDayByUserId(userId: number): Promise<BrandOfTheDay[]>;
+  createBrandOfTheDay(brand: InsertBrandOfTheDay): Promise<BrandOfTheDay>;
+  updateBrandOfTheDay(id: number, brand: Partial<BrandOfTheDay>): Promise<BrandOfTheDay | undefined>;
+  markBrandOfTheDayAsShared(id: number): Promise<BrandOfTheDay | undefined>;
+  calculateBrandValueScore(userId: number): Promise<{
+    userId: number;
+    brandValueScore: number;
+    scoreBreakdown: {
+      profileStrength: number;
+      careerQuests: number;
+      pulseActivity: number;
+      portfolioProjects: number;
+      engagement: number;
+      muskUsage: number;
+      consistency: number;
+      badges: number;
+    };
+  }>;
   markMuskMatchAsRead(id: number): Promise<MuskMatch | undefined>;
   markMuskMatchAsDismissed(id: number): Promise<MuskMatch | undefined>;
   markMuskMatchAsConnected(id: number): Promise<MuskMatch | undefined>;
@@ -394,6 +418,8 @@ export class MemStorage implements IStorage {
   private newsUserPreferences: Map<number, NewsUserPreference>;
   // Musk Match feature
   private muskMatches: Map<number, MuskMatch>;
+  // Brand of the Day feature
+  private brandsOfTheDay: Map<number, BrandOfTheDay>;
   
   // Musk suggestion models
   private muskSuggestions: Map<number, MuskSuggestion>;
@@ -467,6 +493,9 @@ export class MemStorage implements IStorage {
   private currentUserXpId: number;
   private currentUserBadgeId: number;
   private currentXpTransactionId: number;
+  
+  // Brand of the Day ID
+  private currentBrandOfTheDayId: number;
 
   constructor() {
     this.users = new Map();
@@ -503,6 +532,9 @@ export class MemStorage implements IStorage {
     
     // Initialize Musk Match map
     this.muskMatches = new Map();
+    
+    // Initialize Brand of the Day map
+    this.brandsOfTheDay = new Map();
     
     // Initialize Career Quests maps
     this.questDefinitions = new Map();
@@ -573,6 +605,9 @@ export class MemStorage implements IStorage {
     this.currentUserXpId = 1;
     this.currentUserBadgeId = 1;
     this.currentXpTransactionId = 1;
+    
+    // Initialize Brand of the Day ID
+    this.currentBrandOfTheDayId = 1;
     
     // Initialize with a default user for development/demo
     this.initializeDemoData();
@@ -691,6 +726,9 @@ export class MemStorage implements IStorage {
     this.currentUserXpId = 1;
     this.currentUserBadgeId = 1;
     this.currentXpTransactionId = 1;
+    
+    // Reset Brand of the Day ID
+    this.currentBrandOfTheDayId = 1;
     
     // No pre-created skills
     
@@ -845,6 +883,9 @@ export class MemStorage implements IStorage {
     
     // Clear all Musk matches
     this.muskMatches.clear();
+    
+    // Clear all Brands of the Day
+    this.brandsOfTheDay.clear();
     
     // Clear all Musk suggestions
     this.muskSuggestions.clear();
