@@ -52,8 +52,8 @@ const domains = [
 export default function BrandsOfTheDayPage() {
   const { toast } = useToast();
   const [date, setDate] = useState<Date | undefined>(new Date());
-  const [industry, setIndustry] = useState<string>("");
-  const [domain, setDomain] = useState<string>("");
+  const [industry, setIndustry] = useState<string>("all");
+  const [domain, setDomain] = useState<string>("all");
   const [tab, setTab] = useState<string>("all");
   const queryClient = useQueryClient();
   const { user, isDemoMode } = useAuth();
@@ -76,7 +76,7 @@ export default function BrandsOfTheDayPage() {
   const { data: filteredBrands, isLoading: isFilteredBrandsLoading } = useQuery({
     queryKey: ['/api/brands-of-the-day', industry, domain, date ? format(date, 'yyyy-MM-dd') : ''],
     select: (data) => [data] as BrandOfTheDay[],
-    enabled: !!(industry && domain),
+    enabled: !!(industry !== "all" || domain !== "all"),
   });
 
   // Mutation to share a brand of the day
@@ -133,7 +133,7 @@ export default function BrandsOfTheDayPage() {
 
   // Display brands based on the selected tab
   const getBrandsToDisplay = () => {
-    if (industry && domain) {
+    if (industry !== "all" || domain !== "all") {
       return filteredBrands || [];
     }
     
@@ -191,7 +191,7 @@ export default function BrandsOfTheDayPage() {
                     <SelectValue placeholder="Select industry" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Industries</SelectItem>
+                    <SelectItem value="all">All Industries</SelectItem>
                     {industries.map(ind => (
                       <SelectItem key={ind} value={ind}>{ind}</SelectItem>
                     ))}
@@ -206,7 +206,7 @@ export default function BrandsOfTheDayPage() {
                     <SelectValue placeholder="Select domain" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Domains</SelectItem>
+                    <SelectItem value="all">All Domains</SelectItem>
                     {domains.map(dom => (
                       <SelectItem key={dom} value={dom}>{dom}</SelectItem>
                     ))}
@@ -244,8 +244,8 @@ export default function BrandsOfTheDayPage() {
                 variant="outline" 
                 className="w-full mt-2"
                 onClick={() => {
-                  setIndustry("");
-                  setDomain("");
+                  setIndustry("all");
+                  setDomain("all");
                   setDate(new Date());
                 }}
               >
