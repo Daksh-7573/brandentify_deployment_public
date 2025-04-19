@@ -1744,83 +1744,57 @@ export default function Profile() {
               </div>
             </div>
             
-            {/* Profile Header - Glassmorphic with Glow Animation */}
-            <div className="mb-6 overflow-hidden rounded-xl relative perspective-1000">
-              {/* Background gradient with animation */}
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-purple-500/20 to-teal-500/30 animate-gradient-slow"></div>
-              
-              {/* Glassmorphic Card */}
-              <div className="relative backdrop-blur-md bg-white/70 dark:bg-gray-900/70 border border-white/20 shadow-xl rounded-xl">
-                {/* Top decorative arc */}
-                <div className="h-32 bg-gradient-to-r from-primary/80 to-purple-600/80 relative overflow-hidden">
-                  {/* Animated glow orbs */}
-                  <div className="absolute -left-6 -top-6 w-20 h-20 rounded-full bg-purple-500/30 blur-xl animate-float-slow"></div>
-                  <div className="absolute right-1/4 -bottom-10 w-32 h-32 rounded-full bg-primary/30 blur-xl animate-float-medium"></div>
-                  
-                  {/* Decorative elements */}
-                  <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJncmlkIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiPjxwYXRoIGQ9Ik0gMjAgMCBMIDAgMCAwIDIwIiBmaWxsPSJub25lIiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjA1IiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')]"></div>
-                </div>
-                
-                <div className="relative p-6 pt-16 z-10">
-                  {/* Profile Picture with 3D lift effect */}
-                  <div className="absolute -top-16 left-1/2 sm:left-6 transform -translate-x-1/2 sm:translate-x-0 z-20">
-                    <div className="relative group transition-transform duration-500 hover:scale-105 hover:-translate-y-1">
-                      <div className="h-24 w-24 overflow-hidden rounded-full bg-white ring-4 ring-white/80 flex items-center justify-center shadow-lg">
-                        <img 
-                          className="h-full w-full object-cover" 
-                          src={userData?.photoURL || user?.photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
-                          alt="User profile"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
-                          }}
-                        />
-                      </div>
-                      
-                      {/* Glow effect on hover */}
-                      <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-purple-600 rounded-full opacity-0 group-hover:opacity-70 blur-md transition-opacity duration-500"></div>
-                      
-                      {/* Camera button for profile picture update with glow effect */}
-                      <button 
-                        onClick={() => setShowProfilePictureDialog(true)}
-                        className="absolute bottom-0 right-0 bg-gradient-to-br from-primary to-purple-600 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 z-20 shadow-md hover:shadow-primary/50"
-                        aria-label="Change profile picture"
-                      >
-                        <Camera size={16} />
-                      </button>
-                      
-                      {/* Personal info button with 3D effect and glow */}
-                      <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
-                        <button 
-                          onClick={() => setLocation('/personal-details')}
-                          className="bg-gradient-to-br from-primary to-purple-600 text-white p-3 rounded-full shadow-[0_5px_15px_rgba(99,102,241,0.4)] hover:shadow-[0_8px_25px_rgba(99,102,241,0.6)] transition-all duration-300"
-                          aria-label="View personal information"
-                        >
-                          <PersonalInfoIcon className="w-7 h-7" />
-                        </button>
-                      </div>
+            {/* Profile Header */}
+            <Card className="mb-6 overflow-hidden">
+              <div className="h-32 bg-gradient-to-r from-primary to-purple-600"></div>
+              <CardContent className="relative pt-16 pb-4">
+                <div className="absolute -top-16 left-1/2 sm:left-6 transform -translate-x-1/2 sm:translate-x-0">
+                  <div className="relative group">
+                    <div className="h-24 w-24 overflow-hidden rounded-full bg-white ring-4 ring-white flex items-center justify-center">
+                      <img 
+                        className="h-full w-full object-cover" 
+                        src={userData?.photoURL || user?.photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
+                        alt="User profile"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
+                        }}
+                      />
                     </div>
-                  </div>
-                  
-                  {/* Profile Information with Layered Content */}
-                  <div className="pl-0 sm:pl-32 mt-12 sm:mt-2 relative">
-                    {/* Subtle background shapes for layered content look */}
-                    <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-primary/5 rounded-full blur-2xl"></div>
+                    {/* Camera button for profile picture update */}
+                    <button 
+                      onClick={() => setShowProfilePictureDialog(true)}
+                      className="absolute bottom-0 right-0 bg-primary hover:bg-primary/90 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      aria-label="Change profile picture"
+                    >
+                      <Camera size={16} />
+                    </button>
                     
-                    <div className="relative z-10">
-                      <div className="flex justify-between items-center group">
-                        <h2 className="text-xl text-gray-900 dark:text-white">
-                          Hey there! <span className="font-bold text-2xl bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-600">{userData?.name || user?.name || 'User'}</span> here,
-                        </h2>
-                      </div>
-                      <p className="text-sm text-gray-500 dark:text-gray-300 mt-1 backdrop-blur-sm bg-white/30 dark:bg-gray-800/30 inline-block px-2 py-1 rounded-md">
-                        <span className="font-medium">I am:</span> {userData?.title || user?.title || 'Professional'}
-                      </p>
-                      <p className="text-sm text-gray-500 dark:text-gray-300 mt-1 backdrop-blur-sm bg-white/30 dark:bg-gray-800/30 inline-block px-2 py-1 rounded-md ml-2">
-                        <span className="font-medium">From:</span> {userData?.location || user?.location || 'Location not specified'}
-                      </p>
+                    {/* Personal info button - Positioned directly under the profile picture with business card icon */}
+                    <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
+                      <button 
+                        onClick={() => setLocation('/personal-details')}
+                        className="bg-primary hover:bg-primary/90 text-white p-3 rounded-full shadow-md"
+                        aria-label="View personal information"
+                      >
+                        <PersonalInfoIcon className="w-7 h-7" />
+                      </button>
                     </div>
                   </div>
+                </div>
+                <div className="pl-0 sm:pl-32 mt-12 sm:mt-2">
+                  <div className="flex justify-between items-center group">
+                    <h2 className="text-xl text-gray-900">
+                      Hey there! <span className="font-bold text-2xl text-primary">{userData?.name || user?.name || 'User'}</span> here,
+                    </h2>
+                    {/* Edit button removed, using single Edit Profile button instead */}
+                  </div>
+                  <p className="text-sm text-gray-500 mt-1">
+                    <span className="font-medium">I am:</span> {userData?.title || user?.title || 'Professional'}
+                  </p>
+                  <p className="text-sm text-gray-500 mt-1">
+                    <span className="font-medium">From:</span> {userData?.location || user?.location || 'Location not specified'}
+                  </p>
                   {userData?.industry && (
                     <>
                       {/* Parse industry and domain if they're combined with ": " */}
@@ -1859,44 +1833,9 @@ export default function Profile() {
                     </div>
                   )}
                 </div>
-              </div>
-            </div>
-            
-            {/* We need to fix the industry display that was removed in previous edit */}
-            {userData?.industry && (
-              <div className="mt-2 pl-0 sm:pl-32">
-                <p className="text-sm text-gray-500 dark:text-gray-300 backdrop-blur-sm bg-white/30 dark:bg-gray-800/30 inline-block px-2 py-1 rounded-md">
-                  <span className="font-medium">Industry:</span> {userData.industry.includes(': ') ? userData.industry.split(': ')[0] : userData.industry}
-                </p>
-                {userData.industry.includes(': ') && (
-                  <p className="text-sm text-gray-500 dark:text-gray-300 backdrop-blur-sm bg-white/30 dark:bg-gray-800/30 inline-block px-2 py-1 rounded-md ml-2">
-                    <span className="font-medium">Domain:</span> {userData.industry.split(': ')[1]}
-                  </p>
-                )}
-              </div>
-            )}
-            
-            {userData?.lookingFor && (
-              <div className="mt-2 pl-0 sm:pl-32">
-                <p className="text-sm text-gray-500 dark:text-gray-300 backdrop-blur-sm bg-white/30 dark:bg-gray-800/30 inline-block px-2 py-1 rounded-md">
-                  <span className="font-medium">Looking for:</span> {
-                    LOOKING_FOR_CATEGORIES.find(cat => cat.value === userData.lookingFor)?.label || userData.lookingFor
-                  }
-                </p>
-              </div>
-            )}
-            
-            {/* What I'm All About section */}
-            {userData?.aboutMe && (
-              <div className="mt-4 pl-0 sm:pl-32">
-                <div className="backdrop-blur-sm bg-white/30 dark:bg-gray-800/30 p-3 rounded-lg">
-                  <h3 className="text-sm font-medium text-gray-900 dark:text-white">What I'm All About</h3>
-                  <p className="mt-2 text-sm text-gray-600 dark:text-gray-300 whitespace-pre-line">
-                    {userData.aboutMe}
-                  </p>
-                </div>
-              </div>
-            )}
+                {/* Skills section removed */}
+              </CardContent>
+            </Card>
             
             {/* Personal Information Section moved to dedicated page */}
             
