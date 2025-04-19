@@ -339,6 +339,30 @@ export interface IStorage {
   markMuskMatchAsConnected(id: number): Promise<MuskMatch | undefined>;
   getPendingMuskMatches(userId: number): Promise<MuskMatch[]>;
   
+  // Brands of the Day operations
+  getBrandsOfTheDay(): Promise<BrandOfTheDay[]>;
+  getBrandsOfTheDayByDate(date: Date): Promise<BrandOfTheDay[]>;
+  getBrandOfTheDayById(id: number): Promise<BrandOfTheDay | undefined>;
+  getBrandOfTheDayByIndustryAndDomain(industry: string, domain: string, date: Date): Promise<BrandOfTheDay | undefined>;
+  getBrandsOfTheDayByUserId(userId: number): Promise<BrandOfTheDay[]>;
+  createBrandOfTheDay(brand: InsertBrandOfTheDay): Promise<BrandOfTheDay>;
+  updateBrandOfTheDay(id: number, brand: Partial<BrandOfTheDay>): Promise<BrandOfTheDay | undefined>;
+  markBrandOfTheDayAsShared(id: number): Promise<BrandOfTheDay | undefined>;
+  calculateBrandValueScore(userId: number): Promise<{
+    userId: number;
+    brandValueScore: number;
+    scoreBreakdown: {
+      profileStrength: number;
+      careerQuests: number;
+      pulseActivity: number;
+      portfolioProjects: number;
+      engagement: number;
+      muskUsage: number;
+      consistency: number;
+      badges: number;
+    };
+  }>;
+  
   // Career Quests operations
   // Quest Definition operations
   getQuestDefinitions(): Promise<QuestDefinition[]>;
