@@ -3668,6 +3668,245 @@ export class MemStorage implements IStorage {
       .map(item => item.match);
   }
 
+  // Brands of the Day operations
+  async getBrandsOfTheDay(): Promise<BrandOfTheDay[]> {
+    return Array.from(this.brandsOfTheDay.values())
+      .sort((a, b) => {
+        const dateA = a.featuredDate.getTime();
+        const dateB = b.featuredDate.getTime();
+        return dateB - dateA; // Sort by date, newest first
+      });
+  }
+
+  async getBrandsOfTheDayByDate(date: Date): Promise<BrandOfTheDay[]> {
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+    
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+    
+    return Array.from(this.brandsOfTheDay.values())
+      .filter(brand => {
+        const brandDate = brand.featuredDate;
+        return brandDate >= startOfDay && brandDate <= endOfDay;
+      })
+      .sort((a, b) => {
+        const scoreA = a.brandValueScore;
+        const scoreB = b.brandValueScore;
+        return scoreB - scoreA; // Sort by score, highest first
+      });
+  }
+
+  async getBrandOfTheDayById(id: number): Promise<BrandOfTheDay | undefined> {
+    return this.brandsOfTheDay.get(id);
+  }
+
+  async getBrandOfTheDayByIndustryAndDomain(industry: string, domain: string, date: Date): Promise<BrandOfTheDay | undefined> {
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+    
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+    
+    return Array.from(this.brandsOfTheDay.values())
+      .find(brand => {
+        const brandDate = brand.featuredDate;
+        return brand.industry === industry &&
+               brand.domain === domain &&
+               brandDate >= startOfDay && 
+               brandDate <= endOfDay;
+      });
+  }
+
+  async getBrandsOfTheDayByUserId(userId: number): Promise<BrandOfTheDay[]> {
+    return Array.from(this.brandsOfTheDay.values())
+      .filter(brand => brand.userId === userId)
+      .sort((a, b) => {
+        const dateA = a.featuredDate.getTime();
+        const dateB = b.featuredDate.getTime();
+        return dateB - dateA; // Sort by date, newest first
+      });
+  }
+
+  async createBrandOfTheDay(brand: InsertBrandOfTheDay): Promise<BrandOfTheDay> {
+    const id = this.currentBrandOfTheDayId++;
+    const createdAt = new Date();
+    
+    const newBrand: BrandOfTheDay = {
+      ...brand,
+      id,
+      createdAt,
+      isShared: false,
+      shareCount: 0
+    };
+    
+    this.brandsOfTheDay.set(id, newBrand);
+    return newBrand;
+  }
+
+  async updateBrandOfTheDay(id: number, brand: Partial<BrandOfTheDay>): Promise<BrandOfTheDay | undefined> {
+    const existingBrand = this.brandsOfTheDay.get(id);
+    if (!existingBrand) {
+      return undefined;
+    }
+    
+    const updatedBrand = { ...existingBrand, ...brand };
+    this.brandsOfTheDay.set(id, updatedBrand);
+    return updatedBrand;
+  }
+
+  async markBrandOfTheDayAsShared(id: number): Promise<BrandOfTheDay | undefined> {
+    const brand = this.brandsOfTheDay.get(id);
+    if (!brand) {
+      return undefined;
+    }
+    
+    const updatedBrand: BrandOfTheDay = {
+      ...brand,
+      isShared: true,
+      shareCount: brand.shareCount + 1
+    };
+    
+    this.brandsOfTheDay.set(id, updatedBrand);
+    return updatedBrand;
+  }
+
+  async calculateBrandValueScore(userId: number): Promise<{
+    userId: number;
+    brandValueScore: number;
+    scoreBreakdown: {
+      profileStrength: number;
+      careerQuests: number;
+      pulseActivity: number;
+      portfolioProjects: number;
+      engagement: number;
+      muskUsage: number;
+      consistency: number;
+      badges: number;
+    };
+  }> {
+    // Get user
+    const user = await this.getUser(userId);
+    if (!user) {
+      throw new Error(`User with ID ${userId} not found`);
+    }
+
+    // Initialize score breakdown
+    const scoreBreakdown = {
+      profileStrength: 0,  // Max 25 points
+      careerQuests: 0,     // Max 15 points
+      pulseActivity: 0,    // Max 15 points
+      portfolioProjects: 0, // Max 10 points
+      engagement: 0,       // Max 10 points
+      muskUsage: 0,        // Max 10 points
+      consistency: 0,      // Max 10 points
+      badges: 0            // Max 5 points
+    };
+
+    // 1. Profile Strength (max 25 points)
+    // Based on profile completedness percentage
+    const profileCompleted = user.profileCompleted || 0;
+    scoreBreakdown.profileStrength = Math.round((profileCompleted / 100) * 25);
+
+    // 2. Career Quests (max 15 points)
+    // Count completed quests in the last 30 days
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    
+    const completedQuests = Array.from(this.userQuests.values())
+      .filter(quest => 
+        quest.userId === userId && 
+        quest.status === 'completed' && 
+        quest.completedAt && 
+        quest.completedAt >= thirtyDaysAgo
+      );
+    
+    // Each completed quest gives 1.5 points, max 15 points
+    scoreBreakdown.careerQuests = Math.min(15, completedQuests.length * 1.5);
+
+    // 3. Pulse Activity (max 15 points)
+    // Count pulses in the last 30 days
+    const recentPulses = Array.from(this.pulses.values())
+      .filter(pulse => 
+        pulse.userId === userId && 
+        pulse.createdAt >= thirtyDaysAgo
+      );
+    
+    // Each pulse is 3 points, max 15 points
+    scoreBreakdown.pulseActivity = Math.min(15, recentPulses.length * 3);
+
+    // 4. Portfolio/Projects (max 10 points)
+    // Check if portfolio is published and count projects
+    const portfolio = Array.from(this.portfolios.values())
+      .find(p => p.userId === userId);
+    
+    const projects = Array.from(this.projects.values())
+      .filter(p => p.userId === userId);
+    
+    // Published portfolio is 5 points, each project is 1 point, max 10 points
+    const portfolioPoints = portfolio && portfolio.isPublished ? 5 : 0;
+    scoreBreakdown.portfolioProjects = Math.min(10, portfolioPoints + projects.length);
+
+    // 5. Engagement (max 10 points)
+    // Count reactions, comments, shares in the last 30 days
+    const recentReactions = Array.from(this.pulseReactions.values())
+      .filter(r => r.userId === userId && r.createdAt >= thirtyDaysAgo);
+    
+    const recentComments = Array.from(this.pulseComments.values())
+      .filter(c => c.userId === userId && c.createdAt >= thirtyDaysAgo);
+    
+    const recentShares = Array.from(this.pulseShares.values())
+      .filter(s => s.userId === userId && s.createdAt >= thirtyDaysAgo);
+    
+    // Each engagement action is 0.5 points, max 10 points
+    const engagementCount = recentReactions.length + recentComments.length + recentShares.length;
+    scoreBreakdown.engagement = Math.min(10, engagementCount * 0.5);
+
+    // 6. Musk Usage (max 10 points)
+    // Count chat messages with Musk in the last 30 days
+    const recentMuskMessages = Array.from(this.chatMessages.values())
+      .filter(m => 
+        m.userId === userId && 
+        m.timestamp && 
+        m.timestamp >= thirtyDaysAgo
+      );
+    
+    // Each message is 0.5 points, max 10 points
+    scoreBreakdown.muskUsage = Math.min(10, recentMuskMessages.length * 0.5);
+
+    // 7. Consistency (max 10 points)
+    // Check activity spread over time (last 30 days)
+    const daysWithActivity = new Set<string>();
+    
+    // Collect dates from pulses, reactions, comments, messages
+    [...recentPulses, ...recentReactions, ...recentComments, ...recentMuskMessages].forEach(item => {
+      const date = item.createdAt || item.timestamp;
+      if (date) {
+        daysWithActivity.add(date.toISOString().split('T')[0]);
+      }
+    });
+    
+    // Activity on different days gives points, max 10 points
+    scoreBreakdown.consistency = Math.min(10, daysWithActivity.size / 3);
+
+    // 8. Badges (max 5 points)
+    // Count badges
+    const userBadges = Array.from(this.userBadges.values())
+      .filter(b => b.userId === userId);
+    
+    // Each badge is 1 point, max 5 points
+    scoreBreakdown.badges = Math.min(5, userBadges.length);
+
+    // Calculate total brand value score
+    const brandValueScore = Object.values(scoreBreakdown).reduce((sum, score) => sum + score, 0);
+
+    return {
+      userId,
+      brandValueScore,
+      scoreBreakdown
+    };
+  }
+
   // Career Quests operations - Quest Definition methods
   async getQuestDefinitions(): Promise<QuestDefinition[]> {
     return Array.from(this.questDefinitions.values());
