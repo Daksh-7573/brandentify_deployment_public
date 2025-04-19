@@ -1,175 +1,198 @@
-import React from "react";
-import { motion, HTMLMotionProps } from "framer-motion";
+import React, { useState } from "react";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
-// We need to omit conflicting properties
-type AnimatedCardProps = Omit<HTMLMotionProps<"div">, "animate" | "initial" | "transition" | "whileHover"> & {
-  animation?: "fade" | "slide" | "scale" | "tilt" | "border" | "none";
+type AnimationStyle = 
+  | "fade" 
+  | "slide" 
+  | "scale" 
+  | "flip" 
+  | "pulse" 
+  | "bounce" 
+  | "glow"
+  | "none";
+
+interface AnimatedCardProps {
+  children: React.ReactNode;
   className?: string;
-  duration?: number;
-  delay?: number;
+  animation?: AnimationStyle;
+  title?: React.ReactNode;
+  description?: React.ReactNode;
+  footer?: React.ReactNode;
   hoverEffect?: boolean;
-  once?: boolean;
-  cardStyle?: "shadow" | "outline" | "gradient" | "glass" | "minimal";
-  borderColor?: string;
-};
+  clickable?: boolean;
+  onClick?: () => void;
+  delay?: number;
+  duration?: number;
+  glowColor?: string;
+  withBadge?: React.ReactNode;
+  headerClassName?: string;
+  contentClassName?: string;
+  footerClassName?: string;
+}
 
 export const AnimatedCard: React.FC<AnimatedCardProps> = ({
   children,
-  animation = "fade",
   className = "",
-  duration = 0.5,
-  delay = 0,
+  animation = "fade",
+  title,
+  description,
+  footer,
   hoverEffect = true,
-  once = true,
-  cardStyle = "shadow",
-  borderColor = "linear-gradient(135deg, #6366F1 0%, #14B8A6 100%)",
-  ...props
+  clickable = false,
+  onClick,
+  delay = 0,
+  duration = 0.3,
+  glowColor = "rgba(99, 102, 241, 0.5)",
+  withBadge,
+  headerClassName = "",
+  contentClassName = "",
+  footerClassName = "",
 }) => {
-  // Animation variants based on the animation prop
-  const getAnimationProps = () => {
-    const baseTransition = {
-      duration,
-      delay,
-      ease: "easeOut",
-    };
-    
-    // Initial and animate states
+  const [isHovered, setIsHovered] = useState(false);
+  
+  // Define initial animation states
+  const getAnimationVariants = () => {
     switch (animation) {
       case "fade":
         return {
-          initial: { opacity: 0 },
-          animate: { opacity: 1 },
-          transition: baseTransition,
+          hidden: { opacity: 0 },
+          visible: { opacity: 1 },
         };
       case "slide":
         return {
-          initial: { opacity: 0, x: -20 },
-          animate: { opacity: 1, x: 0 },
-          transition: baseTransition,
+          hidden: { x: 20, opacity: 0 },
+          visible: { x: 0, opacity: 1 },
         };
       case "scale":
         return {
-          initial: { opacity: 0, scale: 0.9 },
-          animate: { opacity: 1, scale: 1 },
-          transition: baseTransition,
+          hidden: { scale: 0.8, opacity: 0 },
+          visible: { scale: 1, opacity: 1 },
         };
-      case "tilt":
+      case "flip":
         return {
-          initial: { opacity: 0, rotate: -2 },
-          animate: { opacity: 1, rotate: 0 },
-          transition: baseTransition,
+          hidden: { rotateY: 90, opacity: 0 },
+          visible: { rotateY: 0, opacity: 1 },
         };
-      case "border":
+      case "pulse":
         return {
-          initial: { opacity: 0, borderWidth: 0 },
-          animate: { opacity: 1, borderWidth: 2 },
-          transition: baseTransition,
+          hidden: { opacity: 0 },
+          visible: { 
+            opacity: 1,
+            scale: [1, 1.02, 1],
+            transition: {
+              scale: {
+                repeat: Infinity,
+                repeatType: "reverse",
+                duration: 1.5,
+              }
+            }
+          },
+        };
+      case "bounce":
+        return {
+          hidden: { opacity: 0, y: 20 },
+          visible: { 
+            opacity: 1, 
+            y: 0,
+            transition: {
+              type: "spring",
+              stiffness: 300,
+              damping: 15,
+            }
+          },
         };
       case "none":
       default:
         return {
-          initial: {},
-          animate: {},
-          transition: baseTransition,
+          hidden: { opacity: 1 },
+          visible: { opacity: 1 },
         };
     }
   };
-
-  // Hover effects
-  const getHoverProps = () => {
+  
+  // Get hover effect styles
+  const getHoverStyles = () => {
     if (!hoverEffect) return {};
     
-    switch (cardStyle) {
-      case "shadow":
+    switch (animation) {
+      case "glow":
         return {
-          whileHover: { 
-            y: -5, 
-            boxShadow: "0 20px 40px rgba(0, 0, 0, 0.1)",
-            transition: { duration: 0.2 }
-          }
+          boxShadow: isHovered ? `0 0 15px ${glowColor}` : "none",
+          transition: "box-shadow 0.3s ease",
         };
-      case "outline":
+      case "scale":
         return {
-          whileHover: { 
-            scale: 1.02,
-            borderColor: "rgba(99, 102, 241, 0.8)",
-            transition: { duration: 0.2 }
-          }
+          transform: isHovered ? "scale(1.02)" : "scale(1)",
+          transition: "transform 0.3s ease",
         };
-      case "gradient":
+      case "slide":
         return {
-          whileHover: { 
-            y: -5,
-            boxShadow: "0 15px 30px rgba(99, 102, 241, 0.2)",
-            transition: { duration: 0.2 }
-          }
+          transform: isHovered ? "translateY(-5px)" : "translateY(0)",
+          transition: "transform 0.3s ease",
         };
-      case "glass":
-        return {
-          whileHover: { 
-            backdropFilter: "blur(12px)",
-            scale: 1.02,
-            transition: { duration: 0.2 }
-          }
-        };
-      case "minimal":
       default:
         return {
-          whileHover: { 
-            y: -3,
-            transition: { duration: 0.2 }
-          }
+          transform: isHovered ? "translateY(-5px)" : "translateY(0)",
+          transition: "transform 0.3s ease, box-shadow 0.3s ease",
+          boxShadow: isHovered 
+            ? "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"
+            : "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
         };
     }
   };
-
-  // Card style classes
-  const getCardStyleClasses = () => {
-    switch (cardStyle) {
-      case "shadow":
-        return "bg-card shadow-md";
-      case "outline":
-        return "bg-card border border-border";
-      case "gradient":
-        return "bg-card border border-transparent";
-      case "glass":
-        return "glass-card backdrop-blur-sm bg-opacity-70";
-      case "minimal":
-      default:
-        return "bg-card";
-    }
-  };
-
-  // Gradient border style
-  const gradientBorderStyle = cardStyle === "gradient" ? {
-    position: "relative",
-    backgroundClip: "padding-box",
-    border: "1px solid transparent",
-    "&::before": {
-      content: "''",
-      position: "absolute",
-      top: 0,
-      right: 0,
-      bottom: 0,
-      left: 0,
-      margin: "-1px",
-      borderRadius: "inherit",
-      background: borderColor,
-      zIndex: -1,
-    }
-  } : {};
-
+  
+  const variants = getAnimationVariants();
+  
   return (
     <motion.div
-      className={cn("rounded-xl p-4", getCardStyleClasses(), className)}
-      style={gradientBorderStyle}
-      {...getAnimationProps()}
-      {...getHoverProps()}
-      viewport={{ once }}
-      {...props}
+      className={cn(
+        "relative",
+        clickable && "cursor-pointer",
+        className
+      )}
+      initial="hidden"
+      animate="visible"
+      variants={variants}
+      transition={{ 
+        duration: animation === "bounce" ? 0.5 : duration, 
+        delay, 
+        ease: "easeOut" 
+      }}
+      onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={getHoverStyles()}
     >
-      {children}
+      {withBadge && (
+        <div className="absolute -top-2 -right-2 z-10">
+          {withBadge}
+        </div>
+      )}
+      
+      <Card className={cn(
+        "overflow-hidden",
+        animation === "glow" && isHovered && "border-primary",
+        clickable && "cursor-pointer",
+      )}>
+        {(title || description) && (
+          <CardHeader className={headerClassName}>
+            {title && <CardTitle>{title}</CardTitle>}
+            {description && <CardDescription>{description}</CardDescription>}
+          </CardHeader>
+        )}
+        
+        <CardContent className={cn("", contentClassName)}>
+          {children}
+        </CardContent>
+        
+        {footer && (
+          <CardFooter className={cn("flex justify-between", footerClassName)}>
+            {footer}
+          </CardFooter>
+        )}
+      </Card>
     </motion.div>
   );
 };
