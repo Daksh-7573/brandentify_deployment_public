@@ -1,247 +1,157 @@
-import { Request, Response, Router } from "express";
+import { Router, Request, Response } from "express";
 import { storage } from "./storage";
-import { brandsOfTheDay, users, insertBrandOfTheDaySchema } from "@shared/schema";
-import { eq, and, gte, lte, desc } from "drizzle-orm";
-import { db } from "./db";
-import { add } from "date-fns";
+import { z } from "zod";
+import { insertBrandOfTheDaySchema } from "@shared/schema";
 
-const router = Router();
+export const router = Router();
 
-// Get today's featured brands for all industries
+/**
+ * Get all Brands of the Day
+ * GET /api/brands-of-the-day
+ */
 router.get("/api/brands-of-the-day", async (req: Request, res: Response) => {
   try {
-    // Get today's date at 00:00:00
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    // Get tomorrow's date at 00:00:00
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    
-    // Get all brands featured today
-    const featuredBrands = await db
-      .select({
-        id: brandsOfTheDay.id,
-        userId: brandsOfTheDay.userId,
-        industry: brandsOfTheDay.industry,
-        domain: brandsOfTheDay.domain,
-        brandValueScore: brandsOfTheDay.brandValueScore,
-        muskComment: brandsOfTheDay.muskComment,
-        scoreBreakdown: brandsOfTheDay.scoreBreakdown,
-        featuredDate: brandsOfTheDay.featuredDate,
-        expiresDate: brandsOfTheDay.expiresDate,
-        hasBeenShared: brandsOfTheDay.hasBeenShared,
-        user: {
-          id: users.id,
-          name: users.name,
-          photoURL: users.photoURL,
-          title: users.title,
-          industry: users.industry,
-          domain: users.domain,
-          company: users.company
-        }
-      })
-      .from(brandsOfTheDay)
-      .leftJoin(users, eq(brandsOfTheDay.userId, users.id))
-      .where(
-        and(
-          gte(brandsOfTheDay.featuredDate, today),
-          lte(brandsOfTheDay.featuredDate, tomorrow)
-        )
-      )
-      .orderBy(desc(brandsOfTheDay.brandValueScore));
-
-    res.json(featuredBrands);
+    const brands = await storage.getBrandsOfTheDay();
+    res.json(brands);
   } catch (error) {
     console.error("[GET /brands-of-the-day] Error:", error);
-    res.status(500).json({ message: "Failed to fetch featured brands" });
+    res.status(500).json({ message: "Failed to get brands of the day" });
   }
 });
 
-// Get featured brands for a specific industry and domain
+/**
+ * Get Brands of the Day by industry and domain for a specific date
+ * GET /api/brands-of-the-day/:industry/:domain
+ */
 router.get("/api/brands-of-the-day/:industry/:domain", async (req: Request, res: Response) => {
   try {
     const { industry, domain } = req.params;
+    const dateStr = req.query.date as string;
     
-    // Get today's date at 00:00:00
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // Default to today if no date provided
+    const date = dateStr ? new Date(dateStr) : new Date();
     
-    // Get tomorrow's date at 00:00:00
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    
-    // Get brand featured today for the specific industry and domain
-    const [featuredBrand] = await db
-      .select({
-        id: brandsOfTheDay.id,
-        userId: brandsOfTheDay.userId,
-        industry: brandsOfTheDay.industry,
-        domain: brandsOfTheDay.domain,
-        brandValueScore: brandsOfTheDay.brandValueScore,
-        muskComment: brandsOfTheDay.muskComment,
-        scoreBreakdown: brandsOfTheDay.scoreBreakdown,
-        featuredDate: brandsOfTheDay.featuredDate,
-        expiresDate: brandsOfTheDay.expiresDate,
-        hasBeenShared: brandsOfTheDay.hasBeenShared,
-        user: {
-          id: users.id,
-          name: users.name,
-          photoURL: users.photoURL,
-          title: users.title,
-          industry: users.industry,
-          domain: users.domain,
-          company: users.company
-        }
-      })
-      .from(brandsOfTheDay)
-      .leftJoin(users, eq(brandsOfTheDay.userId, users.id))
-      .where(
-        and(
-          gte(brandsOfTheDay.featuredDate, today),
-          lte(brandsOfTheDay.featuredDate, tomorrow),
-          eq(brandsOfTheDay.industry, industry),
-          eq(brandsOfTheDay.domain, domain)
-        )
-      );
-    
-    if (!featuredBrand) {
-      return res.status(404).json({ message: "No featured brand found for this industry and domain today" });
+    // Validate the date
+    if (isNaN(date.getTime())) {
+      return res.status(400).json({ message: "Invalid date format" });
     }
     
-    res.json(featuredBrand);
+    const brand = await storage.getBrandOfTheDayByIndustryAndDomain(industry, domain, date);
+    
+    if (!brand) {
+      return res.status(404).json({ message: "No brand of the day found for this industry and domain" });
+    }
+    
+    res.json(brand);
   } catch (error) {
     console.error("[GET /brands-of-the-day/:industry/:domain] Error:", error);
-    res.status(500).json({ message: "Failed to fetch featured brand" });
+    res.status(500).json({ message: "Failed to get brand of the day" });
   }
 });
 
-// Get history of featured brands for a specific user
+/**
+ * Get Brands of the Day by user ID
+ * GET /api/users/:userId/brands-of-the-day
+ */
 router.get("/api/users/:userId/brands-of-the-day", async (req: Request, res: Response) => {
   try {
-    const userId = parseInt(req.params.userId);
+    const userId = parseInt(req.params.userId, 10);
     
-    // Get all instances of this user being featured
-    const featuredHistory = await db
-      .select()
-      .from(brandsOfTheDay)
-      .where(eq(brandsOfTheDay.userId, userId))
-      .orderBy(desc(brandsOfTheDay.featuredDate));
+    // Validate userId
+    if (isNaN(userId)) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
     
-    res.json(featuredHistory);
+    const brands = await storage.getBrandsOfTheDayByUserId(userId);
+    res.json(brands);
   } catch (error) {
     console.error("[GET /users/:userId/brands-of-the-day] Error:", error);
-    res.status(500).json({ message: "Failed to fetch featured history" });
+    res.status(500).json({ message: "Failed to get brands of the day for this user" });
   }
 });
 
-// Create a new Brand of the Day (admin/system route)
+/**
+ * Create a new Brand of the Day
+ * POST /api/brands-of-the-day
+ */
 router.post("/api/brands-of-the-day", async (req: Request, res: Response) => {
   try {
-    // Validate request body
-    const validation = insertBrandOfTheDaySchema.safeParse(req.body);
+    const validationResult = insertBrandOfTheDaySchema.safeParse(req.body);
     
-    if (!validation.success) {
-      return res.status(400).json({ errors: validation.error.errors });
+    if (!validationResult.success) {
+      return res.status(400).json({ 
+        message: "Invalid brand of the day data", 
+        errors: validationResult.error.format() 
+      });
     }
     
-    const brandData = validation.data;
+    const brandData = validationResult.data;
     
-    // Set expiration date to 24 hours from now
-    const expiresDate = add(new Date(), { hours: 24 });
+    // Check if the user exists
+    const user = await storage.getUser(brandData.userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
     
-    // Insert new Brand of the Day
-    const [createdBrand] = await db
-      .insert(brandsOfTheDay)
-      .values({
-        ...brandData,
-        expiresDate
-      })
-      .returning();
-    
-    res.status(201).json(createdBrand);
+    // Create the brand of the day
+    const newBrand = await storage.createBrandOfTheDay(brandData);
+    res.status(201).json(newBrand);
   } catch (error) {
     console.error("[POST /brands-of-the-day] Error:", error);
-    res.status(500).json({ message: "Failed to create featured brand" });
+    res.status(500).json({ message: "Failed to create brand of the day" });
   }
 });
 
-// Mark a Brand of the Day as shared by the user
+/**
+ * Mark a Brand of the Day as shared
+ * PATCH /api/brands-of-the-day/:id/share
+ */
 router.patch("/api/brands-of-the-day/:id/share", async (req: Request, res: Response) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(req.params.id, 10);
     
-    // Update the record to mark as shared
-    const [updatedBrand] = await db
-      .update(brandsOfTheDay)
-      .set({ hasBeenShared: true })
-      .where(eq(brandsOfTheDay.id, id))
-      .returning();
-    
-    if (!updatedBrand) {
-      return res.status(404).json({ message: "Featured brand not found" });
+    // Validate id
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid brand of the day ID" });
     }
     
+    // Check if the brand exists
+    const brand = await storage.getBrandOfTheDayById(id);
+    if (!brand) {
+      return res.status(404).json({ message: "Brand of the day not found" });
+    }
+    
+    // Mark as shared
+    const updatedBrand = await storage.markBrandOfTheDayAsShared(id);
     res.json(updatedBrand);
   } catch (error) {
     console.error("[PATCH /brands-of-the-day/:id/share] Error:", error);
-    res.status(500).json({ message: "Failed to update featured brand" });
+    res.status(500).json({ message: "Failed to mark brand of the day as shared" });
   }
 });
 
-// Calculate Brand Value Score for a user (for Musk AI)
+/**
+ * Calculate a user's Brand Value Score
+ * POST /api/users/:userId/calculate-brand-value-score
+ */
 router.post("/api/users/:userId/calculate-brand-value-score", async (req: Request, res: Response) => {
   try {
-    const userId = parseInt(req.params.userId);
+    const userId = parseInt(req.params.userId, 10);
     
-    // This would be a complex calculation in a real implementation
-    // For now, we'll implement a simple scoring system
+    // Validate userId
+    if (isNaN(userId)) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
     
-    // 1. Check profile completion (25 points max)
+    // Check if the user exists
     const user = await storage.getUser(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
     
-    const profileScore = Math.min(user.profileCompleted || 0, 25);
-    
-    // 2. This is just a sample - in a real implementation, you'd calculate:
-    // Career Quests (15 pts), Pulse Activity (15 pts), Portfolio/Projects (10 pts),
-    // Engagement (10 pts), Musk Usage (10 pts), Consistency (10 pts), Badges (5 pts)
-    
-    // For this demo, we'll generate a random score for the remaining categories
-    // In a real implementation, this would be calculated based on actual user data
-    const remainingCategories = {
-      careerQuests: Math.floor(Math.random() * 15),
-      pulseActivity: Math.floor(Math.random() * 15),
-      portfolioProjects: Math.floor(Math.random() * 10),
-      engagement: Math.floor(Math.random() * 10),
-      muskUsage: Math.floor(Math.random() * 10),
-      consistency: Math.floor(Math.random() * 10),
-      badges: Math.floor(Math.random() * 5)
-    };
-    
-    // Calculate total score
-    const totalScore = profileScore + 
-      remainingCategories.careerQuests +
-      remainingCategories.pulseActivity +
-      remainingCategories.portfolioProjects +
-      remainingCategories.engagement +
-      remainingCategories.muskUsage +
-      remainingCategories.consistency +
-      remainingCategories.badges;
-    
-    // Prepare score breakdown
-    const scoreBreakdown = {
-      profileStrength: profileScore,
-      ...remainingCategories
-    };
-    
-    res.json({
-      userId,
-      brandValueScore: totalScore,
-      scoreBreakdown
-    });
+    // Calculate the brand value score
+    const scoreResult = await storage.calculateBrandValueScore(userId);
+    res.json(scoreResult);
   } catch (error) {
     console.error("[POST /users/:userId/calculate-brand-value-score] Error:", error);
     res.status(500).json({ message: "Failed to calculate brand value score" });

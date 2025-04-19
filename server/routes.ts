@@ -18,6 +18,7 @@ import { registerSmartConnectRoutes } from "./routes-smart-connect";
 import { setupShadowResumeRoutes } from "./routes-shadow-resume";
 import { setupNowboardRoutes } from "./routes-nowboard";
 import { setupCareerQuestsRoutes } from "./routes-career-quests";
+import brandsOfTheDayRoutes from "./routes-brands-of-the-day";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -4602,6 +4603,9 @@ ${extractedText.substring(0, 5000)}
   
   // Career Quests routes
   setupCareerQuestsRoutes(apiRouter, storage);
+  
+  // Brands of the Day routes
+  app.use(brandsOfTheDayRoutes);
 
   app.use("/api", apiRouter);
 
