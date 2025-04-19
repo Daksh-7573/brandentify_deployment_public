@@ -28,6 +28,7 @@ import FeedTestPage from "@/pages/feed-test";
 import CareerQuestsPage from "@/pages/career-quests";
 import OnboardingPage from "@/pages/onboarding";
 import EditProfilePage from "@/pages/edit-profile";
+import BrandsOfTheDayPage from "@/pages/brands-of-the-day";
 
 // Redirect component to handle page redirects
 const Redirect = ({ to }: { to: string }) => {
@@ -126,6 +127,9 @@ function Router() {
       </Route>
       <Route path="/edit-profile">
         <ProtectedRoute path="/edit-profile" component={EditProfilePage} />
+      </Route>
+      <Route path="/brands-of-the-day">
+        <ProtectedRoute path="/brands-of-the-day" component={BrandsOfTheDayPage} />
       </Route>
       <Route component={NotFound} />
     </Switch>
