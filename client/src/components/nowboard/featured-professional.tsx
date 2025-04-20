@@ -116,10 +116,15 @@ export default function FeaturedProfessional() {
               <div className="flex-1">
                 <h4 className="font-semibold">{brandWithUser.userData?.name}</h4>
                 <p className="text-sm text-muted-foreground">{brandWithUser.userData?.title}</p>
-                <div className="flex items-center mt-1">
+                <div className="flex items-center mt-1 gap-2">
                   <Badge variant="outline" className="text-xs bg-amber-50 text-amber-700 border-amber-200">
                     Brand of the Day
                   </Badge>
+                  {brandWithUser.brandValueScore && (
+                    <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                      Brand Value: {brandWithUser.brandValueScore}/100
+                    </Badge>
+                  )}
                 </div>
               </div>
             </div>
