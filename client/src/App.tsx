@@ -28,7 +28,7 @@ import FeedTestPage from "@/pages/feed-test";
 import CareerQuestsPage from "@/pages/career-quests";
 import OnboardingPage from "@/pages/onboarding";
 import EditProfilePage from "@/pages/edit-profile";
-import BrandsOfTheDayPage from "@/pages/brands-of-the-day";
+// Brand of the Day is now integrated into Nowboard
 
 // Redirect component to handle page redirects
 const Redirect = ({ to }: { to: string }) => {
@@ -128,9 +128,7 @@ function Router() {
       <Route path="/edit-profile">
         <ProtectedRoute path="/edit-profile" component={EditProfilePage} />
       </Route>
-      <Route path="/brands-of-the-day">
-        <ProtectedRoute path="/brands-of-the-day" component={BrandsOfTheDayPage} />
-      </Route>
+      {/* Brand of the Day is now integrated into Nowboard panel */}
       <Route component={NotFound} />
     </Switch>
   );
