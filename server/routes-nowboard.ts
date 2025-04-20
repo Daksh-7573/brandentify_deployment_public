@@ -9,9 +9,18 @@ export function setupNowboardRoutes(router: Router, storage: IStorage) {
   router.get('/nowboard-items', async (req: Request, res: Response) => {
     try {
       const items = await storage.getNowboardItems();
-      console.log('[GET /nowboard-items]', 'Retrieved items count:', items.length);
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
+      
+      console.log('[GET /nowboard-items]', 'Retrieved total items count:', items.length);
       console.log('[GET /nowboard-items]', 'Items:', JSON.stringify(items.slice(0, 3))); // Log first 3 items
-      res.json(items);
+      
+      // If limit is specified and valid, return only that many items
+      const resultItems = limit && !isNaN(limit) && limit > 0 
+        ? items.slice(0, limit) 
+        : items;
+      
+      console.log('[GET /nowboard-items]', 'Returning items count:', resultItems.length);
+      res.json(resultItems);
     } catch (error) {
       console.error('[GET /nowboard-items]', error);
       res.status(500).json({ message: 'Error fetching Nowboard items' });

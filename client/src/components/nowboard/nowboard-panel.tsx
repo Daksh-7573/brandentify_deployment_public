@@ -105,13 +105,14 @@ export default function NowboardPanel() {
     queryKey: ["/api/nowboard-items"],
     filters: categoryFilter ? { category: categoryFilter } : undefined,
     fetchUserData: async (items) => {
-      console.log("Nowboard items received:", items);
+      console.log("==============================");
+      console.log("Nowboard items received:", items.length);
       
       // Detailed log of what's being received
       items.forEach((item, index) => {
         console.log(`Item ${index} details:`, {
           id: item.id,
-          content: item.content,
+          content: item.content?.substring(0, 20) + (item.content && item.content.length > 20 ? '...' : ''),
           category: item.category,
           createdAt: item.createdAt,
           visibility: item.visibility,
@@ -138,8 +139,9 @@ export default function NowboardPanel() {
           }
         }
       }
+      console.log("==============================");
     },
-    refreshInterval: 60000 // Refresh every minute
+    refreshInterval: 30000 // Refresh every 30 seconds for testing
   });
 
   // Create new nowboard item
