@@ -44,10 +44,11 @@ router.get("/api/brands-of-the-day/:industry/:domain", async (req: Request, res:
       // Check if we're in demo mode (for testing purposes)
       const isDemoMode = req.query.demo === 'true';
       
-      if (isDemoMode || process.env.NODE_ENV === 'development') {
-        console.log(`[GET /brands-of-the-day/:industry/:domain] No brand found, returning sample data for industry ${industry}, domain ${domain}`);
-        
-        // Get a demo user to associate with the brand
+      // Always return sample data for development or when demo=true
+      console.log(`[GET /brands-of-the-day/:industry/:domain] No brand found, returning sample data for industry ${industry}, domain ${domain}, demo mode: ${isDemoMode}`);
+      
+      // Get a demo user to associate with the brand
+      try {
         const demoUser = await storage.getUser(1); // Demo user ID
         
         if (demoUser) {
@@ -74,7 +75,11 @@ router.get("/api/brands-of-the-day/:industry/:domain", async (req: Request, res:
             hasBeenShared: false,
             createdAt: new Date()
           });
+        } else {
+          console.log("Could not find demo user with ID 1");
         }
+      } catch (err) {
+        console.error("Error fetching demo user:", err);
       }
       
       return res.status(404).json({ message: "No brand of the day found for this industry and domain" });

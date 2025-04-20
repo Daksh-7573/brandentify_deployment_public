@@ -297,6 +297,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log(`[GET /users/:id] Found user with numeric ID: ${userId}`);
       }
       
+      // Special case for Brand of the Day/Featured Professional demo
+      if (user.id === 1 && req.query.demo === 'true') {
+        // For demo purposes, enhance user data 
+        const demoUser = {
+          ...user,
+          photoURL: user.photoURL || "/images/demo/profile-photo.jpg",
+          title: user.title || "Senior Software Engineer",
+          name: user.name || "Senior Professional",
+          industry: "Technology",
+          domain: "Engineering",
+        };
+        console.log("[GET /users/:id] Returning enhanced demo user data for featured professional");
+        return res.json(demoUser);
+      }
+      
       console.log(`[GET /users/:id] Returning user data:`, user);
       res.json(user);
     } catch (error) {

@@ -50,9 +50,11 @@ export function FeaturedProfessional() {
     const fetchUserData = async () => {
       if (brandOfTheDay) {
         try {
-          const response = await fetch(`/api/users/${brandOfTheDay.userId}`);
+          // Use the same demo mode parameter to get enhanced user data
+          const response = await fetch(`/api/users/${brandOfTheDay.userId}?demo=true`);
           if (response.ok) {
             const userData = await response.json() as User;
+            console.log("Fetched user data for Brand of the Day:", userData);
             setBrandWithUser({
               ...brandOfTheDay,
               userData: {
