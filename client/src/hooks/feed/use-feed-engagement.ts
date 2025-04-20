@@ -99,6 +99,46 @@ export function useFeedEngagement({
       const res = await apiRequest("POST", endpoint, payload);
       return await res.json();
     },
+    onMutate: async () => {
+      // For inspired actions, implement optimistic updates
+      if (engagementType === "inspired") {
+        // Cancel any outgoing refetches
+        await queryClient.cancelQueries({ queryKey: [`/api/${apiEndpoint}`] });
+        await queryClient.cancelQueries({ queryKey: [`/api/${apiEndpoint}/${itemId}/inspired-by/user/${userId}`] });
+        await queryClient.cancelQueries({ queryKey: [`/api/users/${userId}/inspired-count`] });
+        
+        // Snapshot the previous values
+        const previousItems = queryClient.getQueryData<any[]>([`/api/${apiEndpoint}`]);
+        const previousCount = queryClient.getQueryData<{ count: number }>([`/api/users/${userId}/inspired-count`]);
+        
+        // Optimistically update the item's inspired count
+        if (previousItems) {
+          const newItems = previousItems.map(item => {
+            if (item.id === itemId) {
+              return {
+                ...item,
+                inspiredCount: (item.inspiredCount || 0) + 1
+              };
+            }
+            return item;
+          });
+          
+          queryClient.setQueryData([`/api/${apiEndpoint}`], newItems);
+        }
+        
+        // Optimistically update the user's inspired-by status
+        queryClient.setQueryData([`/api/${apiEndpoint}/${itemId}/inspired-by/user/${userId}`], 
+          { isInspired: true });
+        
+        // Optimistically update the user's total inspired count
+        if (previousCount) {
+          queryClient.setQueryData([`/api/users/${userId}/inspired-count`], 
+            { count: previousCount.count + 1 });
+        }
+        
+        return { previousItems, previousCount };
+      }
+    },
     onSuccess: () => {
       // Invalidate relevant queries
       queryClient.invalidateQueries({ queryKey: [`/api/${apiEndpoint}/${itemId}/reactions`] });
@@ -127,9 +167,28 @@ export function useFeedEngagement({
           : undefined,
       });
     },
-    onError: (error) => {
+    onError: (error, _variables, context) => {
       // If 409 (already engaged), don't show error - this could be a duplicate click
       const isConflict = (error as any)?.status === 409;
+      
+      // For inspired actions, roll back optimistic updates on error
+      if (engagementType === "inspired" && context) {
+        const { previousItems, previousCount } = context as any;
+        
+        // Restore previous items data
+        if (previousItems) {
+          queryClient.setQueryData([`/api/${apiEndpoint}`], previousItems);
+        }
+        
+        // Restore previous count data
+        if (previousCount) {
+          queryClient.setQueryData([`/api/users/${userId}/inspired-count`], previousCount);
+        }
+        
+        // Restore previous inspired status
+        queryClient.setQueryData([`/api/${apiEndpoint}/${itemId}/inspired-by/user/${userId}`], 
+          { isInspired: false });
+      }
       
       if (!isConflict) {
         toast({
