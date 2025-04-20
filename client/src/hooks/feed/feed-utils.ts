@@ -4,7 +4,24 @@ import { formatDistanceToNow } from "date-fns";
  * Format a date for display in feed items
  */
 export function formatFeedDate(date: Date | string): string {
-  return formatDistanceToNow(new Date(date), { addSuffix: true });
+  try {
+    // Handle ISO string format
+    if (typeof date === 'string') {
+      return formatDistanceToNow(new Date(date), { addSuffix: true });
+    }
+    
+    // Handle Date object
+    if (date instanceof Date) {
+      return formatDistanceToNow(date, { addSuffix: true });
+    }
+    
+    // Fallback for any other case
+    console.log('Unexpected date format:', date, typeof date);
+    return formatDistanceToNow(new Date(), { addSuffix: true });
+  } catch (error) {
+    console.error('Error formatting date:', error, date);
+    return 'recently';
+  }
 }
 
 /**

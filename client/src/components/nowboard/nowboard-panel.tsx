@@ -75,7 +75,11 @@ interface NowboardItem {
   category: "growth" | "learning" | "launch" | "planning" | "collaboration" | "visibility";
   visibility: "public" | "connections-only";
   inspiredCount: number;
-  createdAt: string;
+  createdAt: string | Date;
+  updatedAt?: string | Date;
+  relatedSkills?: string | null;
+  relatedProject?: number | null;
+  imageUrl?: string | null;
   // User info for display
   user?: {
     name: string | null;
