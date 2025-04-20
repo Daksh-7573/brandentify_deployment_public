@@ -81,9 +81,8 @@ type PortfolioFormValues = z.infer<typeof portfolioFormSchema>;
 // Wizard steps
 const STEPS = {
   SELECT_LAYOUT: 0,
-  CUSTOMIZE: 1,
-  PREVIEW: 2,
-  PUBLISH: 3
+  PREVIEW: 1,
+  PUBLISH: 2
 };
 
 export default function PortfolioBuilder() {
@@ -643,89 +642,15 @@ export default function PortfolioBuilder() {
             
             <div className="flex justify-end">
               <Button 
-                onClick={() => setCurrentStep(STEPS.CUSTOMIZE)}
+                onClick={handleCreatePortfolio}
                 className="flex items-center gap-2"
               >
-                Continue <ChevronRight className="h-4 w-4" />
+                <Bot className="h-4 w-4" /> Create with Musk AI
               </Button>
             </div>
           </div>
         );
-      case STEPS.CUSTOMIZE:
-        return (
-          <div className="space-y-8">
-            <div className="bg-primary/5 p-6 rounded-lg border mb-8">
-              <h2 className="text-xl font-semibold mb-2">Step 2: Customize Your Portfolio (Optional)</h2>
-              <p className="text-gray-600">
-                You can customize your portfolio settings or simply skip this step. Musk AI will analyze your profile and generate a personalized portfolio.
-              </p>
-            </div>
-            
-            <Form {...form}>
-              <form className="space-y-8">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Portfolio Settings</CardTitle>
-                    <CardDescription>Configure how your portfolio will be displayed and accessed</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <FormField
-                      control={form.control}
-                      name="publicUrl"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Custom URL</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="your-custom-url"
-                              {...field}
-                              value={field.value || ""}
-                            />
-                          </FormControl>
-                          <FormDescription>
-                            Create a custom URL for your portfolio (e.g., brandentifier.com/your-name)
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </CardContent>
-                </Card>
-                
-                <div className="flex justify-between">
-                  <Button 
-                    type="button"
-                    variant="outline"
-                    onClick={() => setCurrentStep(STEPS.SELECT_LAYOUT)}
-                    className="flex items-center gap-2"
-                  >
-                    <ArrowLeft className="h-4 w-4" /> Back
-                  </Button>
-                  <div className="flex gap-2">
-                    <Button 
-                      type="button"
-                      variant="outline"
-                      onClick={() => {
-                        // Skip customization and go directly to portfolio creation
-                        handleCreatePortfolio();
-                      }}
-                      className="flex items-center gap-2"
-                    >
-                      Skip
-                    </Button>
-                    <Button 
-                      type="button"
-                      onClick={handleCreatePortfolio}
-                      className="flex items-center gap-2"
-                    >
-                      <Bot className="h-4 w-4" /> Create with Musk AI
-                    </Button>
-                  </div>
-                </div>
-              </form>
-            </Form>
-          </div>
-        );
+
       case STEPS.PREVIEW:
         // Get portfolio data from local storage
         const storedData = localStorage.getItem('portfolio-preview-data');
@@ -769,7 +694,7 @@ export default function PortfolioBuilder() {
         return (
           <div className="space-y-8">
             <div className="bg-primary/5 p-6 rounded-lg border mb-8">
-              <h2 className="text-xl font-semibold mb-2">Step 3: Preview Your Portfolio</h2>
+              <h2 className="text-xl font-semibold mb-2">Step 2: Preview Your Portfolio</h2>
               <p className="text-gray-600">
                 Review your AI-generated portfolio before publishing it to the world.
               </p>
@@ -986,7 +911,7 @@ export default function PortfolioBuilder() {
             <div className="flex justify-between">
               <Button 
                 variant="outline"
-                onClick={() => setCurrentStep(STEPS.CUSTOMIZE)}
+                onClick={() => setCurrentStep(STEPS.SELECT_LAYOUT)}
                 className="flex items-center gap-2"
               >
                 <ArrowLeft className="h-4 w-4" /> Back
