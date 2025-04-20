@@ -20,6 +20,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/context/auth-context";
 import { useFeedAlgorithm, useFeedEngagement, formatFeedDate, getEngagementStyles } from "@/hooks/feed";
+import { FeaturedProfessional } from "./featured-professional";
 
 // Button component for "Inspired" action
 function NowboardInspiredButton({ 
@@ -159,7 +160,7 @@ export default function NowboardPanel() {
       toast({
         title: "Empty update",
         description: "Please enter some content for your update.",
-        variant: "warning",
+        variant: "destructive",
       });
       return;
     }
@@ -168,7 +169,7 @@ export default function NowboardPanel() {
       toast({
         title: "Update too long",
         description: "Please keep your update under 150 characters.",
-        variant: "warning",
+        variant: "destructive",
       });
       return;
     }
@@ -274,6 +275,9 @@ export default function NowboardPanel() {
         </div>
         
         <CardContent className="flex-1 overflow-y-auto pt-0">
+          {/* Featured Professional Section */}
+          <FeaturedProfessional />
+          
           {isLoading ? (
             <div className="flex justify-center py-8">
               <Loader2 className="h-8 w-8 animate-spin text-primary/70" />
