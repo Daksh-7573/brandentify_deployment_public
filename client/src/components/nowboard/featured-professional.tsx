@@ -26,14 +26,18 @@ export default function FeaturedProfessional() {
   const domain = "all"; // Default to 'all' as domain is not in AuthUser
   
   // Query to fetch Brand of the Day for the user's industry and domain
+  // Generate a timestamp that changes every minute to ensure dynamic score updates
+  const currentMinute = Math.floor(Date.now() / (30 * 1000)); // Changes every 30 seconds
+  
   const { 
     data: brandOfTheDay, 
     isLoading, 
     error 
   } = useQuery<BrandOfTheDay>({
-    queryKey: [`/api/brands-of-the-day/${industry}/${domain}?demo=true`],
+    queryKey: [`/api/brands-of-the-day/${industry}/${domain}?demo=true&t=${currentMinute}`],
     enabled: !!user, // Only run if user is logged in
     refetchOnWindowFocus: false,
+    refetchInterval: 30000, // Refetch every 30 seconds to show dynamic score changes
     // Handle 404 responses gracefully
     retry: (failureCount, error: any) => {
       // Don't retry if 404 (no brand of the day found)
