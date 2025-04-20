@@ -184,11 +184,32 @@ export function useFeedEngagement({
   // Handle engagement toggle
   const handleEngagement = (userEngagementId?: number) => {
     if (userEngagementId) {
+      // For 'inspired' type, don't allow removing once set
+      if (engagementType === "inspired") {
+        toast({
+          title: "Cannot un-inspire",
+          description: "Once you mark something as inspired, it cannot be undone.",
+        });
+        return;
+      }
+      
       // Remove existing engagement
       deleteMutation.mutate(userEngagementId);
     } else {
+      // Special case for "inspired" - hard limit of 10 per user
+      if (engagementType === "inspired") {
+        // Check if user has inspired 10 or more items
+        const quota = quotaData?.[engagementType];
+        if (quota && quota.used >= 10) {
+          toast({
+            title: "Inspiration limit reached",
+            description: "You can only mark 10 items as inspired in total.",
+          });
+          return;
+        }
+      }
       // Check quota before adding new engagement
-      if (quotaData && !hasRemainingQuota()) {
+      else if (quotaData && !hasRemainingQuota()) {
         const quota = quotaData[engagementType];
         toast({
           title: "Daily limit reached",

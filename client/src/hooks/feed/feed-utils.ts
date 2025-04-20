@@ -136,7 +136,7 @@ export function getEngagementStyles(type: string, isActive: boolean = false): {
         icon: "lightbulb",
         textColor: isActive ? "text-amber-500" : "text-muted-foreground",
         hoverBg: "hover:bg-amber-50 hover:text-amber-700",
-        activeFill: isActive ? "scale-110" : ""
+        activeFill: isActive ? "fill-amber-400 scale-110" : ""
       };
     case "share":
       return {

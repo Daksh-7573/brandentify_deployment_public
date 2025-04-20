@@ -32,14 +32,25 @@ function NowboardInspiredButton({
   userId: number; 
   currentCount: number 
 }) {
-  // Get user's existing inspired status
+  // Get user's existing inspired status for this item
   const { data: userInspiredData } = useQuery<{ id: number } | null>({
     queryKey: [`/api/nowboard-items/${itemId}/inspired-by/user/${userId}`],
     refetchOnWindowFocus: false
   });
   
+  // Get count of all items this user has inspired (for quota)
+  const { data: userInspiredCountData } = useQuery<{ count: number }>({
+    queryKey: [`/api/users/${userId}/inspired-count`],
+    refetchOnWindowFocus: false,
+    // Handle 404 gracefully
+    retry: (failureCount, error: any) => {
+      return !(error.status === 404) && failureCount < 3;
+    }
+  });
+  
   const userInspiredId = userInspiredData?.id;
   const isInspired = !!userInspiredId;
+  const totalUserInspired = userInspiredCountData?.count || 0;
   
   // Use the shared engagement hook
   const { handleEngagement, isLoading } = useFeedEngagement({
@@ -47,7 +58,14 @@ function NowboardInspiredButton({
     userId,
     itemId,
     apiEndpoint: "nowboard-items",
-    currentCount
+    currentCount,
+    quotaData: {
+      inspired: {
+        used: totalUserInspired,
+        remaining: Math.max(0, 10 - totalUserInspired),
+        max: 10
+      }
+    }
   });
   
   // Get appropriate styles based on engagement status
@@ -59,7 +77,12 @@ function NowboardInspiredButton({
       size="sm"
       className={`h-auto p-1 ${styles.textColor} ${styles.hoverBg}`}
       onClick={() => handleEngagement(userInspiredId)}
-      disabled={isLoading}
+      disabled={isLoading || (isInspired === false && totalUserInspired >= 10)}
+      title={isInspired 
+        ? "Already inspired" 
+        : (totalUserInspired >= 10 
+            ? "You've reached your limit of 10 inspirations"
+            : "Mark as inspired")}
     >
       <Lightbulb className={`h-4 w-4 mr-1 ${styles.activeFill}`} />
       <span>{currentCount} inspired</span>
