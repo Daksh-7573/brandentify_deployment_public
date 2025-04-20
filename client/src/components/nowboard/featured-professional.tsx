@@ -83,7 +83,7 @@ export default function FeaturedProfessional() {
         <CardHeader className="pb-2">
           <CardTitle className="text-md flex items-center gap-2">
             <Award className="h-4 w-4 text-yellow-500" />
-            <span>Featured Professional</span>
+            <span>Brand Of The Day</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -100,7 +100,7 @@ export default function FeaturedProfessional() {
       <CardHeader className="pb-2">
         <CardTitle className="text-md flex items-center gap-2">
           <Award className="h-4 w-4 text-yellow-500" />
-          <span>Featured Professional</span>
+          <span>Brand Of The Day</span>
         </CardTitle>
       </CardHeader>
       <CardContent>
