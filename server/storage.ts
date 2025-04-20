@@ -65,6 +65,7 @@ export interface IStorage {
   
   // Nowboard Inspired By operations
   getInspiredByForNowboardItem(nowboardItemId: number): Promise<NowboardInspiredBy[]>;
+  getInspiredByForUserAndItem(userId: number, nowboardItemId: number): Promise<NowboardInspiredBy | undefined>;
   markInspiredByNowboardItem(userId: number, nowboardItemId: number): Promise<NowboardInspiredBy>;
   unmarkInspiredByNowboardItem(userId: number, nowboardItemId: number): Promise<boolean>;
   isNowboardItemInspiredByUser(userId: number, nowboardItemId: number): Promise<boolean>;

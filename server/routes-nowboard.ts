@@ -198,7 +198,15 @@ export function setupNowboardRoutes(router: Router, storage: IStorage) {
       const alreadyInspired = await storage.isNowboardItemInspiredByUser(validatedData.userId, itemId);
       
       if (alreadyInspired) {
-        return res.status(409).json({ message: 'User has already marked this item as inspired' });
+        // Instead of just returning an error, return the existing inspired record
+        // This allows the client to handle conflicts gracefully
+        const existingInspired = await storage.getInspiredByForUserAndItem(validatedData.userId, itemId);
+        return res.status(200).json({ 
+          message: 'Already inspired',
+          isConflict: true,
+          data: existingInspired,
+          success: true
+        });
       }
       
       const inspired = await storage.markInspiredByNowboardItem(validatedData.userId, itemId);
