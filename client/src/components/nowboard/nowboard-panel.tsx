@@ -103,6 +103,19 @@ export default function NowboardPanel() {
     fetchUserData: async (items) => {
       console.log("Nowboard items received:", items);
       
+      // Detailed log of what's being received
+      items.forEach((item, index) => {
+        console.log(`Item ${index} details:`, {
+          id: item.id,
+          content: item.content,
+          category: item.category,
+          createdAt: item.createdAt,
+          visibility: item.visibility,
+          inspiredCount: item.inspiredCount,
+          userId: item.userId
+        });
+      });
+      
       // Fetch user data for each item
       for (const item of items) {
         if (!item.user) {
@@ -114,6 +127,7 @@ export default function NowboardPanel() {
                 name: userData.name,
                 photoURL: userData.photoURL
               };
+              console.log(`Added user data for item ${item.id}:`, item.user);
             }
           } catch (error) {
             console.error("Error fetching user data for nowboard item:", error);
@@ -310,7 +324,17 @@ export default function NowboardPanel() {
                       </div>
                       <p className="text-sm mt-1">{item.content}</p>
                       <div className="flex items-center justify-between text-xs text-muted-foreground mt-2">
-                        <span>{formatFeedDate(item.createdAt)}</span>
+                        <span>
+                          {(() => {
+                            console.log(`Date format for item ${item.id}:`, item.createdAt, typeof item.createdAt);
+                            try {
+                              return formatFeedDate(item.createdAt);
+                            } catch (error) {
+                              console.error(`Error formatting date for item ${item.id}:`, error);
+                              return "recently";
+                            }
+                          })()}
+                        </span>
                         <NowboardInspiredButton itemId={item.id} userId={userId} currentCount={item.inspiredCount} />
                       </div>
                     </div>

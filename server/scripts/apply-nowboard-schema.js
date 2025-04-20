@@ -29,7 +29,11 @@ async function applyNowboardSchema() {
         category nowboard_category NOT NULL,
         visibility VARCHAR(20) NOT NULL DEFAULT 'public',
         inspired_count INTEGER NOT NULL DEFAULT 0,
-        created_at TIMESTAMP NOT NULL DEFAULT NOW()
+        related_skills TEXT,
+        related_project INTEGER,
+        image_url TEXT,
+        created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+        updated_at TIMESTAMP NOT NULL DEFAULT NOW()
       );
     `);
     
