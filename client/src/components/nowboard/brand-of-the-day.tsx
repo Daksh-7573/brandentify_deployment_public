@@ -6,9 +6,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Award, UserRound, Star } from "lucide-react";
-import { BrandOfTheDay, User } from "@shared/schema";
+import { BrandOfTheDay as BrandOfTheDayType, User } from "@shared/schema";
 
-interface BrandOfTheDayWithUser extends BrandOfTheDay {
+interface BrandOfTheDayWithUser extends BrandOfTheDayType {
   userData?: {
     name: string | null;
     photoURL: string | null;
@@ -16,7 +16,7 @@ interface BrandOfTheDayWithUser extends BrandOfTheDay {
   };
 }
 
-export default function FeaturedProfessional() {
+export default function BrandOfTheDay() {
   const { user } = useAuth();
   const [brandWithUser, setBrandWithUser] = useState<BrandOfTheDayWithUser | null>(null);
   
@@ -33,7 +33,7 @@ export default function FeaturedProfessional() {
     data: brandOfTheDay, 
     isLoading, 
     error 
-  } = useQuery<BrandOfTheDay>({
+  } = useQuery<BrandOfTheDayType>({
     queryKey: [`/api/brands-of-the-day/${industry}/${domain}?demo=true&t=${currentMinute}`],
     enabled: !!user, // Only run if user is logged in
     refetchOnWindowFocus: false,

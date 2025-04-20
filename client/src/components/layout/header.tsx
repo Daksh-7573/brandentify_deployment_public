@@ -140,19 +140,7 @@ export default function Header() {
                 <span>Career Quests</span>
               </Button>
               
-              <Button
-                variant="ghost"
-                size="sm" 
-                className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
-                  isActive('/brands-of-the-day') 
-                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
-                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
-                }`}
-                onClick={() => setLocation('/brands-of-the-day')}
-              >
-                <Award className="h-4 w-4" />
-                <span>Brands of the Day</span>
-              </Button>
+              {/* Brand of the Day feature is now integrated into Nowboard panel */}
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -305,22 +293,7 @@ export default function Header() {
               <span>Career Quests</span>
             </Button>
             
-            <Button
-              variant="ghost"
-              size="sm"
-              className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
-                isActive('/brands-of-the-day') 
-                  ? 'text-primary bg-primary/5' 
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
-              }`}
-              onClick={() => {
-                setLocation('/brands-of-the-day');
-                setIsMobileMenuOpen(false);
-              }}
-            >
-              <Award className="h-4 w-4 mr-3 ml-0.5" />
-              <span>Brands of the Day</span>
-            </Button>
+            {/* Brand of the Day feature is now integrated into Nowboard panel */}
 
             <div className="pt-4 mt-2 border-t border-gray-200">
               <Button

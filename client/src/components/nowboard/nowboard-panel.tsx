@@ -20,7 +20,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/context/auth-context";
 import { useFeedAlgorithm, useFeedEngagement, formatFeedDate, getEngagementStyles } from "@/hooks/feed";
-import FeaturedProfessional from "./featured-professional";
+import BrandOfTheDay from "./brand-of-the-day";
 
 // Button component for "Inspired" action
 function NowboardInspiredButton({ 
@@ -339,8 +339,8 @@ export default function NowboardPanel() {
         </div>
         
         <CardContent className="flex-1 overflow-y-auto pt-0">
-          {/* Featured Professional Section */}
-          <FeaturedProfessional />
+          {/* Brand of the Day Section */}
+          <BrandOfTheDay />
           
           {isLoading ? (
             <div className="flex justify-center py-8">
