@@ -105,6 +105,12 @@ export function useFeedEngagement({
       queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/reaction-quota`] });
       queryClient.invalidateQueries({ queryKey: [`/api/${apiEndpoint}`] });
       
+      // If this is an inspired action, also invalidate the user's total inspired count
+      if (engagementType === "inspired") {
+        queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/inspired-count`] });
+        queryClient.invalidateQueries({ queryKey: [`/api/${apiEndpoint}/${itemId}/inspired-by/user/${userId}`] });
+      }
+      
       // Show success toast
       const messages = {
         insightful: "Marked as Insightful 🔥",
