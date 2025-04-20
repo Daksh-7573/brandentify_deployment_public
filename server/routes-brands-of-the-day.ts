@@ -101,7 +101,7 @@ router.get("/api/brands-of-the-day/:industry/:domain", async (req: Request, res:
             industry: industry,
             domain: domain || "all",
             brandValueScore: calculateBrandValueScore(demoUser, Date.now()),
-            muskComment: "This professional demonstrates exceptional expertise in their field and consistently delivers high-quality content that benefits the community.",
+            muskComment: "",
             scoreBreakdown: { 
               profileStrength: 22,
               careerQuests: 13,
@@ -214,7 +214,7 @@ router.patch("/api/brands-of-the-day/:id/share", async (req: Request, res: Respo
         industry: "Technology",
         domain: "all",
         brandValueScore: demoUser ? calculateBrandValueScore(demoUser, Date.now()) : 85,
-        muskComment: "This professional demonstrates exceptional expertise in their field and consistently delivers high-quality content that benefits the community.",
+        muskComment: "",
         scoreBreakdown: { 
           profileStrength: 22,
           careerQuests: 13,
