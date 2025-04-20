@@ -655,9 +655,9 @@ export default function PortfolioBuilder() {
         return (
           <div className="space-y-8">
             <div className="bg-primary/5 p-6 rounded-lg border mb-8">
-              <h2 className="text-xl font-semibold mb-2">Step 2: Customize Your Portfolio</h2>
+              <h2 className="text-xl font-semibold mb-2">Step 2: Customize Your Portfolio (Optional)</h2>
               <p className="text-gray-600">
-                Customize your portfolio settings before creating it. Musk AI will analyze your profile and generate a personalized portfolio.
+                You can customize your portfolio settings or simply skip this step. Musk AI will analyze your profile and generate a personalized portfolio.
               </p>
             </div>
             
@@ -701,13 +701,26 @@ export default function PortfolioBuilder() {
                   >
                     <ArrowLeft className="h-4 w-4" /> Back
                   </Button>
-                  <Button 
-                    type="button"
-                    onClick={handleCreatePortfolio}
-                    className="flex items-center gap-2"
-                  >
-                    <Bot className="h-4 w-4" /> Create with Musk AI
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button 
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        // Skip customization and go directly to portfolio creation
+                        handleCreatePortfolio();
+                      }}
+                      className="flex items-center gap-2"
+                    >
+                      Skip
+                    </Button>
+                    <Button 
+                      type="button"
+                      onClick={handleCreatePortfolio}
+                      className="flex items-center gap-2"
+                    >
+                      <Bot className="h-4 w-4" /> Create with Musk AI
+                    </Button>
+                  </div>
                 </div>
               </form>
             </Form>
