@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Award, UserRound } from "lucide-react";
+import { Award, UserRound, Star } from "lucide-react";
 import { BrandOfTheDay, User } from "@shared/schema";
 
 interface BrandOfTheDayWithUser extends BrandOfTheDay {
@@ -87,7 +87,7 @@ export default function FeaturedProfessional() {
         <CardHeader className="pb-2">
           <CardTitle className="text-md flex items-center gap-2">
             <Award className="h-4 w-4 text-yellow-500" />
-            <span>Brand Of The Day</span>
+            <span>Featured Professional</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -122,7 +122,8 @@ export default function FeaturedProfessional() {
                 <p className="text-sm text-muted-foreground">{brandWithUser.userData?.title}</p>
                 <div className="flex items-center mt-1">
                   {brandWithUser.brandValueScore && (
-                    <Badge className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                    <Badge className="text-xs bg-blue-50 text-blue-700 border-blue-200 flex items-center gap-1">
+                      <Award className="h-3 w-3 text-blue-500" />
                       {brandWithUser.brandValueScore}
                     </Badge>
                   )}
