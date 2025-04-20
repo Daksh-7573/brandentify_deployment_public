@@ -273,6 +273,29 @@ export function setupNowboardRoutes(router: Router, storage: IStorage) {
     }
   });
   
+  // Get the inspired-by record for a specific user and item
+  router.get('/nowboard-items/:id/inspired-by/user/:userId', async (req: Request, res: Response) => {
+    try {
+      const itemId = parseInt(req.params.id, 10);
+      const userId = parseInt(req.params.userId, 10);
+      
+      if (isNaN(itemId) || isNaN(userId)) {
+        return res.status(400).json({ message: 'Invalid IDs provided' });
+      }
+      
+      const inspiredRecord = await storage.getInspiredByForUserAndItem(userId, itemId);
+      
+      if (!inspiredRecord) {
+        return res.status(404).json({ message: 'Inspired record not found' });
+      }
+      
+      res.json(inspiredRecord);
+    } catch (error) {
+      console.error(`[GET /nowboard-items/${req.params.id}/inspired-by/user/${req.params.userId}]`, error);
+      res.status(500).json({ message: 'Error fetching inspired record' });
+    }
+  });
+  
   // Get total inspired count for a user
   router.get('/users/:userId/inspired-count', async (req: Request, res: Response) => {
     try {
