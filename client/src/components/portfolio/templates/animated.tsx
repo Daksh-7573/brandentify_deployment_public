@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, useMotionValue, useSpring } from 'framer-motion';
-import { ProjectFull, Skill, WorkExperience, Education, Service } from '@/types';
+import { Skill, WorkExperience, Education, Service } from '@shared/schema';
+import { ProjectFull } from '@/types';
 import { ProfileImage } from '@/components/ui/profile-image';
 import { Button } from '@/components/ui/button';
 import { 
