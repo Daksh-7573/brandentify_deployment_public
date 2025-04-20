@@ -73,6 +73,9 @@ export async function createDemoProfiles(storage: IStorage) {
   // Create demo Musk Matches between these profiles
   await createDemoMuskMatches(storage, techProfile.id, designerProfile.id, dataScientistProfile.id);
   
+  // Create demo Nowboard items
+  await createDemoNowboardItems(storage, techProfile.id, designerProfile.id, dataScientistProfile.id);
+  
   return {
     techProfile,
     designerProfile,
@@ -442,6 +445,59 @@ async function createUXDesignerProfile(storage: IStorage) {
   await storage.createProjectCollaborator(fixedCollaborator);
   
   return user;
+}
+
+/**
+ * Creates demo Nowboard items (what professionals are doing now)
+ */
+async function createDemoNowboardItems(storage: IStorage, techId: number, designerId: number, dataScientistId: number) {
+  console.log("Creating demo Nowboard items...");
+  
+  // Create some demo nowboard items
+  const nowboardItems = [
+    {
+      userId: techId,
+      content: "Learning about the latest AI developments at Google I/O conference",
+      category: "learning",
+      visibility: "public"
+    },
+    {
+      userId: techId,
+      content: "Just launched our new product feature - real-time collaboration tools",
+      category: "launch",
+      visibility: "public"
+    },
+    {
+      userId: designerId,
+      content: "Brushing up on my Figma animation skills with an online workshop",
+      category: "growth",
+      visibility: "public"
+    },
+    {
+      userId: designerId,
+      content: "Planning our next UX research sprint for the mobile app redesign",
+      category: "planning",
+      visibility: "public"
+    },
+    {
+      userId: dataScientistId,
+      content: "Working with the ML team to improve our recommendation algorithms",
+      category: "collaboration",
+      visibility: "public"
+    },
+    {
+      userId: dataScientistId,
+      content: "Speaking at the Data Science Summit next month about ML Ops",
+      category: "visibility",
+      visibility: "public"
+    }
+  ];
+  
+  for (const item of nowboardItems) {
+    await storage.createNowboardItem(item as any);
+  }
+  
+  console.log(`Successfully created ${nowboardItems.length} demo Nowboard items`);
 }
 
 async function createDataScientistProfile(storage: IStorage) {
