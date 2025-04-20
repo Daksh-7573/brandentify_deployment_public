@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Award, Share2, Loader2 } from "lucide-react";
+import { Award, Share2, Loader2, UserRound } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -159,7 +159,20 @@ export function FeaturedProfessional() {
             <div className="mt-3">
               <p className="text-sm">{brandWithUser.muskComment}</p>
             </div>
-            <div className="mt-3">
+            <div className="mt-3 space-y-2">
+              {/* View Profile Button */}
+              <a href={`/profile/${brandWithUser.userId}`} target="_blank" rel="noopener noreferrer">
+                <Button 
+                  variant="default" 
+                  size="sm"
+                  className="w-full flex items-center gap-1"
+                >
+                  <UserRound className="h-3 w-3" />
+                  <span>View Full Profile</span>
+                </Button>
+              </a>
+
+              {/* Share Button */}
               <Button 
                 variant="outline" 
                 size="sm"
