@@ -101,6 +101,8 @@ export default function NowboardPanel() {
     queryKey: ["/api/nowboard-items"],
     filters: categoryFilter ? { category: categoryFilter } : undefined,
     fetchUserData: async (items) => {
+      console.log("Nowboard items received:", items);
+      
       // Fetch user data for each item
       for (const item of items) {
         if (!item.user) {

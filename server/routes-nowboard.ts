@@ -9,6 +9,8 @@ export function setupNowboardRoutes(router: Router, storage: IStorage) {
   router.get('/nowboard-items', async (req: Request, res: Response) => {
     try {
       const items = await storage.getNowboardItems();
+      console.log('[GET /nowboard-items]', 'Retrieved items count:', items.length);
+      console.log('[GET /nowboard-items]', 'Items:', JSON.stringify(items.slice(0, 3))); // Log first 3 items
       res.json(items);
     } catch (error) {
       console.error('[GET /nowboard-items]', error);

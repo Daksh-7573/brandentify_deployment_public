@@ -127,8 +127,22 @@ export function useFeedAlgorithm<T extends FeedItem>(options: FeedAlgorithmOptio
     
     // Default sorting (newest first)
     return [...items].sort((a, b) => {
-      const dateA = new Date(a.createdAt);
-      const dateB = new Date(b.createdAt);
+      // Handle different date formats (string, Date object)
+      let dateA: Date;
+      let dateB: Date;
+      
+      if (a.createdAt instanceof Date) {
+        dateA = a.createdAt;
+      } else {
+        dateA = new Date(a.createdAt);
+      }
+      
+      if (b.createdAt instanceof Date) {
+        dateB = b.createdAt;
+      } else {
+        dateB = new Date(b.createdAt);
+      }
+      
       return dateB.getTime() - dateA.getTime();
     });
   };
