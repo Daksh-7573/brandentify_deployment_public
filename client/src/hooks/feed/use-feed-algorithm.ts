@@ -65,15 +65,9 @@ export function useFeedAlgorithm<T extends FeedItem>(options: FeedAlgorithmOptio
   const { data: items = [], isLoading, refetch } = useQuery<T[]>({
     queryKey,
     refetchInterval: options.refreshInterval,
-    onSuccess: async (data) => {
-      // If user data is missing and fetchUserData function is provided, fetch it
-      if (options.fetchUserData) {
-        await options.fetchUserData(data);
-      }
-      
-      // Apply category filtering if specified
+    // Using onSuccess callback for React Query v5
+    select: (data) => {
       const filtered = filterItems(data);
-      setFilteredItems(filtered);
       
       // Check for premium content
       const hasPremium = data.some((item) => 
@@ -81,9 +75,30 @@ export function useFeedAlgorithm<T extends FeedItem>(options: FeedAlgorithmOptio
         item.userId === 3 || // Musk is premium
         (item as any).isPremium === true
       );
+      
       setHasPremiumContent(hasPremium);
+      return data;
     }
   });
+  
+  // Effect to handle user data fetching and filtering with proper memoization
+  useEffect(() => {
+    // Skip if no items or no fetchUserData function
+    if (!items.length || !options.fetchUserData) {
+      setFilteredItems(filterItems(items));
+      return;
+    }
+    
+    // Function to fetch user data and update filtered items
+    const processItems = async () => {
+      await options.fetchUserData(items);
+      const filtered = filterItems(items);
+      setFilteredItems(filtered);
+    };
+    
+    // Call the processing function
+    processItems();
+  }, [items, options.fetchUserData]);
 
   // Filter items based on options
   const filterItems = (items: T[]) => {

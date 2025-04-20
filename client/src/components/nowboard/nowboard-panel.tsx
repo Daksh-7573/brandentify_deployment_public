@@ -119,68 +119,67 @@ export default function NowboardPanel() {
   const [selectedCategory, setSelectedCategory] = useState<"growth" | "learning" | "launch" | "planning" | "collaboration" | "visibility">("learning");
   const [categoryFilter, setCategoryFilter] = useState<string | undefined>(undefined);
   
-  // Direct query instead of feed algorithm hook
-  const { data: nowboardItemsData = [], isLoading } = useQuery<NowboardItem[]>({
+  // Use the useFeedAlgorithm hook from feed-algorithm.ts
+  const { 
+    items: nowboardItems, 
+    isLoading 
+  } = useFeedAlgorithm<NowboardItem>({
     queryKey: ["/api/nowboard-items"],
-    refetchInterval: 10000 // Refresh every 10 seconds for testing
-  });
-  
-  // State to hold items with user data
-  const [nowboardItems, setNowboardItems] = useState<NowboardItem[]>([]);
-  
-  // Effect to fetch user data for items
-  useEffect(() => {
-    console.log("==============================");
-    console.log("Nowboard items received from server:", nowboardItemsData?.length);
-    
-    // Detailed log of what's being received
-    nowboardItemsData?.forEach((item, index) => {
-      console.log(`Item ${index} details:`, {
-        id: item.id,
-        content: item.content?.substring(0, 20) + (item.content && item.content.length > 20 ? '...' : ''),
-        category: item.category,
-        createdAt: item.createdAt,
-        visibility: item.visibility,
-        inspiredCount: item.inspiredCount,
-        userId: item.userId
-      });
-    });
-    
-    // Clone the items to add user data
-    const itemsWithUser = [...(nowboardItemsData || [])];
-    
-    // Filter items if category filter is set
-    const filteredItems = categoryFilter
-      ? itemsWithUser.filter(item => item.category === categoryFilter)
-      : itemsWithUser;
+    filters: categoryFilter ? { category: categoryFilter } : undefined,
+    refreshInterval: 30000, // Refresh every 30 seconds (less frequent to avoid flickering)
+    fetchUserData: async (items) => {
+      // Use a Map to avoid duplicate user fetches
+      const uniqueUserIds = new Map<number, boolean>();
       
-    // Function to fetch user data for all items
-    const fetchUserData = async () => {
-      for (const item of filteredItems) {
-        if (!item.user) {
-          try {
-            const response = await fetch(`/api/users/${item.userId}`);
-            if (response.ok) {
-              const userData = await response.json();
-              item.user = {
-                name: userData.name,
-                photoURL: userData.photoURL
-              };
-            }
-          } catch (error) {
-            console.error("Error fetching user data for nowboard item:", error);
-          }
+      // Find all items that need user data
+      for (const item of items) {
+        if (!item.user && !uniqueUserIds.has(item.userId)) {
+          uniqueUserIds.set(item.userId, true);
         }
       }
       
-      // Update state with items that have user data
-      setNowboardItems(filteredItems);
-      console.log("Final items with user data:", filteredItems.length);
-      console.log("==============================");
-    };
-    
-    fetchUserData();
-  }, [nowboardItemsData, categoryFilter]);
+      // Fetch user data for all unique userIds in parallel (much faster)
+      const userDataPromises = Array.from(uniqueUserIds.keys()).map(async (userId) => {
+        try {
+          const response = await fetch(`/api/users/${userId}`);
+          if (response.ok) {
+            const userData = await response.json();
+            return { 
+              userId, 
+              userData: {
+                name: userData.name,
+                photoURL: userData.photoURL
+              }
+            };
+          }
+        } catch (error) {
+          console.error("Error fetching user data for nowboard item:", error);
+        }
+        return { userId, userData: null };
+      });
+      
+      // Wait for all user data to be fetched
+      const usersData = await Promise.all(userDataPromises);
+      
+      // Create a map of userId -> userData for faster lookup
+      const userDataMap = new Map<number, { name: string | null, photoURL: string | null }>();
+      usersData.forEach(data => {
+        if (data.userData) {
+          userDataMap.set(data.userId, data.userData);
+        }
+      });
+      
+      // Apply user data to all items
+      for (const item of items) {
+        if (!item.user) {
+          const userData = userDataMap.get(item.userId);
+          if (userData) {
+            item.user = userData;
+          }
+        }
+      }
+    }
+  });
   
   // Function to manually refetch
   const refetch = () => {
