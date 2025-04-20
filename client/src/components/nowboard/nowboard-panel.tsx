@@ -96,33 +96,44 @@ export default function NowboardPanel() {
   const [selectedCategory, setSelectedCategory] = useState<"growth" | "learning" | "launch" | "planning" | "collaboration" | "visibility">("learning");
   const [categoryFilter, setCategoryFilter] = useState<string | undefined>(undefined);
   
-  // Use the shared feed algorithm hook
-  const { 
-    items: nowboardItems, 
-    isLoading, 
-    refetch 
-  } = useFeedAlgorithm<NowboardItem>({
+  // Direct query instead of feed algorithm hook
+  const { data: nowboardItemsData = [], isLoading } = useQuery<NowboardItem[]>({
     queryKey: ["/api/nowboard-items"],
-    filters: categoryFilter ? { category: categoryFilter } : undefined,
-    fetchUserData: async (items) => {
-      console.log("==============================");
-      console.log("Nowboard items received:", items.length);
-      
-      // Detailed log of what's being received
-      items.forEach((item, index) => {
-        console.log(`Item ${index} details:`, {
-          id: item.id,
-          content: item.content?.substring(0, 20) + (item.content && item.content.length > 20 ? '...' : ''),
-          category: item.category,
-          createdAt: item.createdAt,
-          visibility: item.visibility,
-          inspiredCount: item.inspiredCount,
-          userId: item.userId
-        });
+    refetchInterval: 10000 // Refresh every 10 seconds for testing
+  });
+  
+  // State to hold items with user data
+  const [nowboardItems, setNowboardItems] = useState<NowboardItem[]>([]);
+  
+  // Effect to fetch user data for items
+  useEffect(() => {
+    console.log("==============================");
+    console.log("Nowboard items received from server:", nowboardItemsData?.length);
+    
+    // Detailed log of what's being received
+    nowboardItemsData?.forEach((item, index) => {
+      console.log(`Item ${index} details:`, {
+        id: item.id,
+        content: item.content?.substring(0, 20) + (item.content && item.content.length > 20 ? '...' : ''),
+        category: item.category,
+        createdAt: item.createdAt,
+        visibility: item.visibility,
+        inspiredCount: item.inspiredCount,
+        userId: item.userId
       });
+    });
+    
+    // Clone the items to add user data
+    const itemsWithUser = [...(nowboardItemsData || [])];
+    
+    // Filter items if category filter is set
+    const filteredItems = categoryFilter
+      ? itemsWithUser.filter(item => item.category === categoryFilter)
+      : itemsWithUser;
       
-      // Fetch user data for each item
-      for (const item of items) {
+    // Function to fetch user data for all items
+    const fetchUserData = async () => {
+      for (const item of filteredItems) {
         if (!item.user) {
           try {
             const response = await fetch(`/api/users/${item.userId}`);
@@ -132,17 +143,26 @@ export default function NowboardPanel() {
                 name: userData.name,
                 photoURL: userData.photoURL
               };
-              console.log(`Added user data for item ${item.id}:`, item.user);
             }
           } catch (error) {
             console.error("Error fetching user data for nowboard item:", error);
           }
         }
       }
+      
+      // Update state with items that have user data
+      setNowboardItems(filteredItems);
+      console.log("Final items with user data:", filteredItems.length);
       console.log("==============================");
-    },
-    refreshInterval: 30000 // Refresh every 30 seconds for testing
-  });
+    };
+    
+    fetchUserData();
+  }, [nowboardItemsData, categoryFilter]);
+  
+  // Function to manually refetch
+  const refetch = () => {
+    queryClient.invalidateQueries({ queryKey: ["/api/nowboard-items"] });
+  };
 
   // Create new nowboard item
   const createMutation = useMutation({
