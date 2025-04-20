@@ -5,10 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Award, Share2, Loader2, UserRound } from "lucide-react";
-import { useMutation } from "@tanstack/react-query";
-import { apiRequest, queryClient } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
+import { Award, UserRound } from "lucide-react";
 import { BrandOfTheDay, User } from "@shared/schema";
 
 interface BrandOfTheDayWithUser extends BrandOfTheDay {
@@ -21,7 +18,6 @@ interface BrandOfTheDayWithUser extends BrandOfTheDay {
 
 export function FeaturedProfessional() {
   const { user } = useAuth();
-  const { toast } = useToast();
   const [brandWithUser, setBrandWithUser] = useState<BrandOfTheDayWithUser | null>(null);
   
   // Get user's industry and domain for fetching relevant Brand of the Day
@@ -75,35 +71,6 @@ export function FeaturedProfessional() {
     }
   }, [brandOfTheDay]);
   
-  // Mutation to mark a Brand of the Day as shared
-  const shareMutation = useMutation({
-    mutationFn: async (brandId: number) => {
-      const res = await apiRequest("PATCH", `/api/brands-of-the-day/${brandId}/share`, {});
-      return await res.json();
-    },
-    onSuccess: () => {
-      // Invalidate the query to refresh data
-      queryClient.invalidateQueries({ queryKey: [`/api/brands-of-the-day/${industry}/${domain}?demo=true`] });
-      
-      toast({
-        title: "Successfully shared!",
-        description: "You've shared this professional's recognition.",
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Failed to share",
-        description: "There was an error sharing this recognition.",
-        variant: "destructive",
-      });
-    }
-  });
-  
-  // Handle sharing
-  const handleShare = (brand: BrandOfTheDay) => {
-    shareMutation.mutate(brand.id);
-  };
-  
   // If there's no brand of the day or loading, return null (don't show the section)
   if (isLoading || error || (!brandOfTheDay && !brandWithUser)) {
     return null;
@@ -121,7 +88,7 @@ export function FeaturedProfessional() {
         </CardHeader>
         <CardContent>
           <div className="flex justify-center py-4">
-            <Loader2 className="h-6 w-6 animate-spin text-primary/70" />
+            <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
           </div>
         </CardContent>
       </Card>
@@ -159,7 +126,7 @@ export function FeaturedProfessional() {
             <div className="mt-3">
               <p className="text-sm">{brandWithUser.muskComment}</p>
             </div>
-            <div className="mt-3 space-y-2">
+            <div className="mt-3">
               {/* View Profile Button */}
               <a href={`/profile/${brandWithUser.userId}`} target="_blank" rel="noopener noreferrer">
                 <Button 
@@ -171,19 +138,6 @@ export function FeaturedProfessional() {
                   <span>View Full Profile</span>
                 </Button>
               </a>
-
-              {/* Share Button */}
-              <Button 
-                variant="outline" 
-                size="sm"
-                className="w-full flex items-center gap-1"
-                onClick={() => handleShare(brandWithUser)}
-                disabled={brandWithUser.hasBeenShared || shareMutation.isPending}
-              >
-                {shareMutation.isPending && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
-                <Share2 className="h-3 w-3" />
-                <span>{brandWithUser.hasBeenShared ? "Already Shared" : "Share this recognition"}</span>
-              </Button>
             </div>
           </>
         )}
