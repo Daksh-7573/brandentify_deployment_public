@@ -696,6 +696,9 @@ export class MemStorage implements IStorage {
     // Add demo pulses for testing image carousel
     this.createDemoPulses(demoUser.id);
     
+    // Add demo Nowboard items
+    this.createDemoNowboardItems(demoUser.id);
+    
     console.log(`[storage.initializeDemoData] No pre-created services - users will add their own`);
     
   }
@@ -1740,6 +1743,61 @@ export class MemStorage implements IStorage {
     this.currentPulseId = 5; // Set next pulse ID
     
     console.log("[storage.createDemoPulses] Created demo pulses for image carousel testing");
+  }
+  
+  /**
+   * Create demo Nowboard items for testing
+   */
+  private createDemoNowboardItems(userId: number): void {
+    const nowboardItem1: NowboardItem = {
+      id: 1,
+      userId: userId,
+      content: "Just completed a new course on advanced React patterns. Learning never stops!",
+      category: "learning",
+      visibility: "public",
+      inspiredCount: 5,
+      relatedSkills: "React, JavaScript, Frontend Development",
+      relatedProject: null,
+      imageUrl: null,
+      createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
+      updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
+    };
+    
+    const nowboardItem2: NowboardItem = {
+      id: 2,
+      userId: userId,
+      content: "Just launched my new portfolio website! Check it out and let me know what you think.",
+      category: "launch",
+      visibility: "public",
+      inspiredCount: 12,
+      relatedSkills: "Web Design, UI/UX, Portfolio Development",
+      relatedProject: 1, // The demo project we created earlier
+      imageUrl: null,
+      createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
+      updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
+    };
+    
+    const nowboardItem3: NowboardItem = {
+      id: 3,
+      userId: userId,
+      content: "Achieved a major milestone in my current project. User engagement up by 45% after the latest update!",
+      category: "growth",
+      visibility: "public",
+      inspiredCount: 8,
+      relatedSkills: "Product Management, Analytics, Growth Hacking",
+      relatedProject: null,
+      imageUrl: null,
+      createdAt: new Date(Date.now() - 12 * 60 * 60 * 1000), // 12 hours ago
+      updatedAt: new Date(Date.now() - 12 * 60 * 60 * 1000)
+    };
+    
+    // Add Nowboard items to storage
+    this.nowboardItems.set(nowboardItem1.id, nowboardItem1);
+    this.nowboardItems.set(nowboardItem2.id, nowboardItem2);
+    this.nowboardItems.set(nowboardItem3.id, nowboardItem3);
+    this.currentNowboardItemId = 4; // Set next Nowboard item ID
+    
+    console.log("[storage.createDemoNowboardItems] Created demo Nowboard items");
   }
 
   // Pulse operations
