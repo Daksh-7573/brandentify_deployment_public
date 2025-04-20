@@ -264,6 +264,24 @@ export function setupNowboardRoutes(router: Router, storage: IStorage) {
       res.status(500).json({ message: 'Error checking inspired status' });
     }
   });
+  
+  // Get total inspired count for a user
+  router.get('/users/:userId/inspired-count', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId, 10);
+      
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: 'Invalid user ID' });
+      }
+      
+      const count = await storage.getUserInspiredCount(userId);
+      
+      res.json({ count });
+    } catch (error) {
+      console.error(`[GET /users/${req.params.userId}/inspired-count]`, error);
+      res.status(500).json({ message: 'Error getting user inspired count' });
+    }
+  });
 
   console.log('Nowboard routes loaded');
   return router;

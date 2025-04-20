@@ -70,6 +70,7 @@ export interface IStorage {
   isNowboardItemInspiredByUser(userId: number, nowboardItemId: number): Promise<boolean>;
   incrementInspiredCount(nowboardItemId: number): Promise<NowboardItem | undefined>;
   decrementInspiredCount(nowboardItemId: number): Promise<NowboardItem | undefined>;
+  getUserInspiredCount(userId: number): Promise<number>;
   
   // User Hashtag Follow operations
   followHashtag(userId: number, hashtagId: number): Promise<UserHashtagFollow>;
@@ -3392,6 +3393,15 @@ export class MemStorage implements IStorage {
   async isNowboardItemInspiredByUser(userId: number, nowboardItemId: number): Promise<boolean> {
     return Array.from(this.nowboardInspiredBy.values())
       .some(inspired => inspired.userId === userId && inspired.nowboardItemId === nowboardItemId);
+  }
+  
+  async getUserInspiredCount(userId: number): Promise<number> {
+    // Count all Nowboard items that this user has marked as inspired
+    const userInspiredCount = Array.from(this.nowboardInspiredBy.values())
+      .filter(inspired => inspired.userId === userId)
+      .length;
+    
+    return userInspiredCount;
   }
   
   async incrementInspiredCount(nowboardItemId: number): Promise<NowboardItem | undefined> {
