@@ -694,7 +694,11 @@ export const nowboardItems = pgTable("nowboard_items", {
   category: nowboardCategoryEnum("category").notNull(),
   visibility: varchar("visibility", { length: 20 }).notNull().default("public").$type<"public" | "connections-only">(),
   inspiredCount: integer("inspired_count").notNull().default(0),
+  relatedSkills: text("related_skills"),
+  relatedProject: integer("related_project"),
+  imageUrl: text("image_url"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
 // Nowboard inspired-by tracking
@@ -709,7 +713,8 @@ export const nowboardInspiredBy = pgTable("nowboard_inspired_by", {
 export const insertNowboardItemSchema = createInsertSchema(nowboardItems).omit({
   id: true,
   inspiredCount: true,
-  createdAt: true
+  createdAt: true,
+  updatedAt: true
 });
 
 export const insertNowboardInspiredBySchema = createInsertSchema(nowboardInspiredBy).omit({
