@@ -3345,6 +3345,11 @@ export class MemStorage implements IStorage {
       });
   }
   
+  async getInspiredByForUserAndItem(userId: number, nowboardItemId: number): Promise<NowboardInspiredBy | undefined> {
+    return Array.from(this.nowboardInspiredBy.values())
+      .find(inspired => inspired.userId === userId && inspired.nowboardItemId === nowboardItemId);
+  }
+  
   async markInspiredByNowboardItem(userId: number, nowboardItemId: number): Promise<NowboardInspiredBy> {
     // Check if this user already marked this item
     const existingInspired = Array.from(this.nowboardInspiredBy.values())
