@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/context/auth-context";
 import { useFeedAlgorithm, useFeedEngagement, formatFeedDate, getEngagementStyles } from "@/hooks/feed";
-import { FeaturedProfessional } from "./featured-professional";
+import FeaturedProfessional from "./featured-professional";
 
 // Button component for "Inspired" action
 function NowboardInspiredButton({ 

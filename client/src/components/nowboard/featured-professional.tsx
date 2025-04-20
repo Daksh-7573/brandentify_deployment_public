@@ -16,7 +16,7 @@ interface BrandOfTheDayWithUser extends BrandOfTheDay {
   };
 }
 
-export function FeaturedProfessional() {
+export default function FeaturedProfessional() {
   const { user } = useAuth();
   const [brandWithUser, setBrandWithUser] = useState<BrandOfTheDayWithUser | null>(null);
   
