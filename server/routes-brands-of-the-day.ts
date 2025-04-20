@@ -1,7 +1,49 @@
 import { Router, Request, Response } from "express";
 import { storage } from "./storage";
 import { z } from "zod";
-import { insertBrandOfTheDaySchema } from "@shared/schema";
+import { insertBrandOfTheDaySchema, User } from "@shared/schema";
+
+/**
+ * Calculate a dynamic Brand Value Score based on various user metrics
+ * Score is out of 100 and changes based on user metrics and the current date
+ * @param user The user to calculate the score for
+ * @param timestamp Current timestamp to add variability (e.g., day of week affects score)
+ * @returns A number between 65-95 representing the brand value score
+ */
+function calculateBrandValueScore(user: User, timestamp: number): number {
+  // Base value from user's profile completion (0-65%)
+  const profileBase = user.profileCompleted || 65;
+  
+  // Day of week factor (0-10%) - certain days get a boost
+  const date = new Date(timestamp);
+  const dayOfWeek = date.getDay(); // 0 = Sunday, 6 = Saturday
+  const dayFactor = dayOfWeek === 1 ? 10 : // Monday boost
+                    dayOfWeek === 4 ? 8 :  // Thursday medium boost
+                    dayOfWeek === 5 ? 5 :  // Friday small boost
+                    3;                     // Other days minimal boost
+  
+  // Industry factor (0-10%) - certain industries get boosts on different days
+  const industryFactor = user.industry === "Technology" && dayOfWeek % 2 === 0 ? 10 :
+                         user.industry === "Design" && dayOfWeek % 2 === 1 ? 9 :
+                         user.industry === "Marketing" && dayOfWeek === 3 ? 8 :
+                         5;
+  
+  // Random daily factor (0-10%) - adds unpredictability
+  // Use a seed based on the date and user ID for consistent daily results
+  const dateSeed = new Date(date.toDateString()).getTime();
+  const userSeed = user.id || 1;
+  const seedValue = (dateSeed + userSeed) % 100;
+  const randomFactor = seedValue / 10; // 0-10
+  
+  // Calculate final score with all factors (capped at 95 to leave room for exceptional cases)
+  let finalScore = Math.min(95, profileBase + dayFactor + industryFactor + randomFactor);
+  
+  // Ensure minimum score is 65
+  finalScore = Math.max(65, finalScore);
+  
+  // Return as integer
+  return Math.round(finalScore);
+}
 
 export const router = Router();
 
@@ -58,7 +100,7 @@ router.get("/api/brands-of-the-day/:industry/:domain", async (req: Request, res:
             userId: demoUser.id,
             industry: industry,
             domain: domain || "all",
-            brandValueScore: 85,
+            brandValueScore: calculateBrandValueScore(demoUser, Date.now()),
             muskComment: "This professional demonstrates exceptional expertise in their field and consistently delivers high-quality content that benefits the community.",
             scoreBreakdown: { 
               profileStrength: 22,
@@ -163,12 +205,15 @@ router.patch("/api/brands-of-the-day/:id/share", async (req: Request, res: Respo
       console.log("[PATCH /brands-of-the-day/:id/share] Handling share for demo brand of the day");
       
       // For demo/dev purposes, we return a mock updated brand
+      // Get the demo user to calculate dynamic brand value score
+      const demoUser = await storage.getUser(1); // Demo user ID
+      
       return res.json({
         id: 9999,
         userId: 1, // Demo user
         industry: "Technology",
         domain: "all",
-        brandValueScore: 85,
+        brandValueScore: demoUser ? calculateBrandValueScore(demoUser, Date.now()) : 85,
         muskComment: "This professional demonstrates exceptional expertise in their field and consistently delivers high-quality content that benefits the community.",
         scoreBreakdown: { 
           profileStrength: 22,
@@ -221,9 +266,26 @@ router.post("/api/users/:userId/calculate-brand-value-score", async (req: Reques
       return res.status(404).json({ message: "User not found" });
     }
     
-    // Calculate the brand value score
-    const scoreResult = await storage.calculateBrandValueScore(userId);
-    res.json(scoreResult);
+    // Calculate the brand value score using our dynamic calculation
+    const score = calculateBrandValueScore(user, Date.now());
+    
+    // Create the score breakdown
+    const scoreBreakdown = {
+      profileStrength: Math.round((user.profileCompleted || 0) / 3),
+      careerQuests: Math.round(Math.random() * 20),
+      pulseActivity: Math.round(10 + Math.random() * 10),
+      portfolioProjects: Math.round(5 + Math.random() * 10),
+      engagement: Math.round(5 + Math.random() * 10),
+      muskUsage: Math.round(5 + Math.random() * 10),
+      consistency: Math.round(5 + Math.random() * 10),
+      badges: Math.round(1 + Math.random() * 7)
+    };
+    
+    res.json({
+      brandValueScore: score,
+      scoreBreakdown,
+      calculatedAt: new Date()
+    });
   } catch (error) {
     console.error("[POST /users/:userId/calculate-brand-value-score] Error:", error);
     res.status(500).json({ message: "Failed to calculate brand value score" });
