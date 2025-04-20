@@ -104,7 +104,7 @@ export default function FeaturedProfessional() {
       <CardHeader className="pb-2">
         <CardTitle className="text-md flex items-center gap-2">
           <Award className="h-4 w-4 text-yellow-500" />
-          <span>Brand Of The Day</span>
+          <span>Featured Professional</span>
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -120,13 +120,10 @@ export default function FeaturedProfessional() {
               <div className="flex-1">
                 <h4 className="font-semibold">{brandWithUser.userData?.name}</h4>
                 <p className="text-sm text-muted-foreground">{brandWithUser.userData?.title}</p>
-                <div className="flex items-center mt-1 gap-2">
-                  <Badge variant="outline" className="text-xs bg-amber-50 text-amber-700 border-amber-200">
-                    Brand of the Day
-                  </Badge>
+                <div className="flex items-center mt-1">
                   {brandWithUser.brandValueScore && (
-                    <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
-                      Brand Value: {brandWithUser.brandValueScore}/100
+                    <Badge className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                      {brandWithUser.brandValueScore}
                     </Badge>
                   )}
                 </div>
