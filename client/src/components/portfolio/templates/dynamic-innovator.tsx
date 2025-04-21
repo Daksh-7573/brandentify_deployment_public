@@ -1194,8 +1194,8 @@ export function DynamicInnovator({
       
       {/* Let's Talk Modal */}
       <Dialog open={isContactModalOpen} onOpenChange={setIsContactModalOpen}>
-        <DialogContent className="max-w-md p-0 overflow-hidden border-2 border-[#7122FA] bg-[#080E24] shadow-xl shadow-[#08f7fe]/20" aria-describedby="contact-form-description">
-          <DialogHeader className="p-5 border-b border-[#7122FA]/30 bg-gradient-to-r from-[#080E24] via-[#0c162d] to-[#080E24]">
+        <DialogContent className="max-w-md p-0 overflow-hidden border-2 border-[#08f7fe] bg-[#0c162d] shadow-xl shadow-[#08f7fe]/20" aria-describedby="contact-form-description">
+          <DialogHeader className="p-5 border-b border-[#08f7fe]/30 bg-gradient-to-r from-[#0c162d] to-[#14243E]">
             <DialogTitle className="text-xl text-center">
               <span className="font-bold" style={{ fontFamily: 'Orbitron, sans-serif' }}>
                 <MessageSquare className="h-5 w-5 inline-block mr-2 text-[#08f7fe]" />
@@ -1216,12 +1216,12 @@ export function DynamicInnovator({
                 <SelectTrigger className="w-full bg-[#0D1D38] border border-[#08f7fe]/50 text-[#FFFFFF] focus:ring-1 focus:ring-[#08f7fe] focus:border-[#08f7fe]">
                   <SelectValue placeholder="Select a reason" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#0D1D38] border border-[#08f7fe] text-[#FFFFFF]">
-                  <SelectItem value="job-opportunity" className="hover:bg-[#08f7fe]/20 data-[highlighted]:bg-[#08f7fe]/30 data-[highlighted]:text-white text-[#FFFFFF]">Exciting job opportunities are available, and I believe you'd be a great fit.</SelectItem>
-                  <SelectItem value="project-collaboration" className="hover:bg-[#08f7fe]/20 data-[highlighted]:bg-[#08f7fe]/30 data-[highlighted]:text-white text-[#FFFFFF]">Would you be open to teaming up on innovative projects?</SelectItem>
-                  <SelectItem value="networking" className="hover:bg-[#08f7fe]/20 data-[highlighted]:bg-[#08f7fe]/30 data-[highlighted]:text-white text-[#FFFFFF]">Let's connect — I admire your work and would love to stay in touch.</SelectItem>
-                  <SelectItem value="partnership" className="hover:bg-[#08f7fe]/20 data-[highlighted]:bg-[#08f7fe]/30 data-[highlighted]:text-white text-[#FFFFFF]">I'd like to explore a potential partnership opportunity with you.</SelectItem>
-                  <SelectItem value="freelance" className="hover:bg-[#08f7fe]/20 data-[highlighted]:bg-[#08f7fe]/30 data-[highlighted]:text-white text-[#FFFFFF]">I have some exciting freelance projects you might be interested in.</SelectItem>
+                <SelectContent className="!bg-[#14243E] border-2 border-[#08f7fe] !text-white !shadow-xl !shadow-[#08f7fe]/30">
+                  <SelectItem value="job-opportunity" className="!bg-[#14243E] !text-white hover:!bg-[#08f7fe]/30 data-[highlighted]:!bg-[#08f7fe]/40 data-[highlighted]:!text-white focus:!bg-[#08f7fe]/50 focus:!text-white">Exciting job opportunities are available, and I believe you'd be a great fit.</SelectItem>
+                  <SelectItem value="project-collaboration" className="!bg-[#14243E] !text-white hover:!bg-[#08f7fe]/30 data-[highlighted]:!bg-[#08f7fe]/40 data-[highlighted]:!text-white focus:!bg-[#08f7fe]/50 focus:!text-white">Would you be open to teaming up on innovative projects?</SelectItem>
+                  <SelectItem value="networking" className="!bg-[#14243E] !text-white hover:!bg-[#08f7fe]/30 data-[highlighted]:!bg-[#08f7fe]/40 data-[highlighted]:!text-white focus:!bg-[#08f7fe]/50 focus:!text-white">Let's connect — I admire your work and would love to stay in touch.</SelectItem>
+                  <SelectItem value="partnership" className="!bg-[#14243E] !text-white hover:!bg-[#08f7fe]/30 data-[highlighted]:!bg-[#08f7fe]/40 data-[highlighted]:!text-white focus:!bg-[#08f7fe]/50 focus:!text-white">I'd like to explore a potential partnership opportunity with you.</SelectItem>
+                  <SelectItem value="freelance" className="!bg-[#14243E] !text-white hover:!bg-[#08f7fe]/30 data-[highlighted]:!bg-[#08f7fe]/40 data-[highlighted]:!text-white focus:!bg-[#08f7fe]/50 focus:!text-white">I have some exciting freelance projects you might be interested in.</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -1231,13 +1231,17 @@ export function DynamicInnovator({
               <label className="block text-sm font-medium text-[#08f7fe] mb-1">
                 Message:
               </label>
-              <Textarea 
-                placeholder="Write a message to get the conversation started..."
-                className="min-h-[120px] resize-none bg-[#0D1D38] border border-[#08f7fe]/50 text-[#FFFFFF] focus:ring-1 focus:ring-[#08f7fe] focus:border-[#08f7fe] placeholder:text-gray-300"
-                maxLength={350}
-                value={contactMessage}
-                onChange={(e) => setContactMessage(e.target.value)}
-              />
+              <div className="relative">
+                <Textarea 
+                  placeholder="Write a message to get the conversation started..."
+                  className="min-h-[120px] resize-none !bg-[#14243E] border-2 border-[#08f7fe]/50 !text-[#FFFFFF] focus:ring-1 focus:ring-[#08f7fe] focus:border-[#08f7fe] placeholder:!text-[#FFFFFF]/50"
+                  maxLength={350}
+                  value={contactMessage}
+                  onChange={(e) => setContactMessage(e.target.value)}
+                  style={{ color: 'white' }}
+                />
+                {/* Inline styles applied directly to textarea element */}
+              </div>
               <div className="text-right text-xs text-[#08f7fe]">
                 {contactMessage.length}/350 characters
               </div>
@@ -1278,8 +1282,8 @@ export function DynamicInnovator({
       
       {/* Project Detail Modal */}
       <Dialog open={isProjectModalOpen} onOpenChange={setIsProjectModalOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto p-0 border-2 border-[#7122FA] bg-[#080E24] shadow-xl shadow-[#08f7fe]/20" aria-describedby="project-details-description">
-          <DialogHeader className="p-5 border-b border-[#7122FA]/30 bg-gradient-to-r from-[#080E24] via-[#0c162d] to-[#080E24] sticky top-0 z-10">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto p-0 border-2 border-[#08f7fe] bg-[#0c162d] shadow-xl shadow-[#08f7fe]/20" aria-describedby="project-details-description">
+          <DialogHeader className="p-5 border-b border-[#08f7fe]/30 bg-gradient-to-r from-[#0c162d] to-[#14243E] sticky top-0 z-10">
             <div className="flex justify-between items-center">
               <DialogTitle className="text-xl">
                 <span className="font-bold" style={{ fontFamily: 'Orbitron, sans-serif' }}>
@@ -1290,7 +1294,7 @@ export function DynamicInnovator({
                 </span>
               </DialogTitle>
               
-              <DialogClose className="h-8 w-8 rounded-full flex items-center justify-center border border-[#7122FA]/50 text-[#08f7fe] hover:bg-[#7122FA]/20 transition-colors">
+              <DialogClose className="h-8 w-8 rounded-full flex items-center justify-center border border-[#08f7fe]/50 text-[#08f7fe] hover:bg-[#08f7fe]/20 transition-colors">
                 <X className="h-4 w-4" />
               </DialogClose>
             </div>
@@ -1299,7 +1303,7 @@ export function DynamicInnovator({
           {selectedProject && (
             <div className="p-6" id="project-details-description">
               {/* Project media */}
-              <div className="relative h-72 mb-6 overflow-hidden rounded-lg border border-[#7122FA]/30 shadow-lg shadow-[#08f7fe]/10">
+              <div className="relative h-72 mb-6 overflow-hidden rounded-lg border-2 border-[#08f7fe]/30 shadow-lg shadow-[#08f7fe]/10">
                 {selectedProject.thumbnailUrl ? (
                   <img 
                     src={selectedProject.thumbnailUrl} 
@@ -1311,7 +1315,7 @@ export function DynamicInnovator({
                     <CircuitBoard className="w-16 h-16 text-[#08f7fe]/50" />
                   </div>
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#080E24]/80 via-transparent to-transparent pointer-events-none"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0c162d]/80 via-transparent to-transparent pointer-events-none"></div>
               </div>
               
               {/* Project details */}
@@ -1336,36 +1340,36 @@ export function DynamicInnovator({
                 </div>
                 
                 {/* Project description */}
-                <div className="bg-[#0c162d]/80 border border-[#7122FA]/30 rounded-lg p-5 shadow-inner">
+                <div className="bg-[#14243E] border-2 border-[#08f7fe]/30 rounded-lg p-5 shadow-inner">
                   <h3 className="text-lg font-medium text-[#08f7fe] mb-3" style={{ fontFamily: 'Orbitron, sans-serif' }}>
                     Project Overview
                   </h3>
-                  <p className="text-gray-200 leading-relaxed">{selectedProject.description}</p>
+                  <p className="text-[#FFFFFF] leading-relaxed">{selectedProject.description}</p>
                 </div>
                 
                 {/* Tech stack - would be populated from project data in a full implementation */}
-                <div className="bg-[#0c162d]/80 border border-[#7122FA]/30 rounded-lg p-5 shadow-inner">
+                <div className="bg-[#14243E] border-2 border-[#08f7fe]/30 rounded-lg p-5 shadow-inner">
                   <h3 className="text-lg font-medium text-[#08f7fe] mb-3" style={{ fontFamily: 'Orbitron, sans-serif' }}>
                     Technologies
                   </h3>
                   <div className="flex flex-wrap gap-2">
-                    <Badge className="bg-[#080E24] border border-[#08f7fe]/30 text-[#08f7fe] py-1.5 px-3">
+                    <Badge className="bg-[#0D1D38] border border-[#08f7fe]/30 text-[#08f7fe] py-1.5 px-3">
                       <Code className="h-3.5 w-3.5 mr-1.5" />
                       React
                     </Badge>
-                    <Badge className="bg-[#080E24] border border-[#08f7fe]/30 text-[#08f7fe] py-1.5 px-3">
+                    <Badge className="bg-[#0D1D38] border border-[#08f7fe]/30 text-[#08f7fe] py-1.5 px-3">
                       <Code className="h-3.5 w-3.5 mr-1.5" />
                       TypeScript
                     </Badge>
-                    <Badge className="bg-[#080E24] border border-[#08f7fe]/30 text-[#08f7fe] py-1.5 px-3">
+                    <Badge className="bg-[#0D1D38] border border-[#08f7fe]/30 text-[#08f7fe] py-1.5 px-3">
                       <Server className="h-3.5 w-3.5 mr-1.5" />
                       Node.js
                     </Badge>
-                    <Badge className="bg-[#080E24] border border-[#08f7fe]/30 text-[#08f7fe] py-1.5 px-3">
+                    <Badge className="bg-[#0D1D38] border border-[#08f7fe]/30 text-[#08f7fe] py-1.5 px-3">
                       <Database className="h-3.5 w-3.5 mr-1.5" />
                       PostgreSQL
                     </Badge>
-                    <Badge className="bg-[#080E24] border border-[#08f7fe]/30 text-[#08f7fe] py-1.5 px-3">
+                    <Badge className="bg-[#0D1D38] border border-[#08f7fe]/30 text-[#08f7fe] py-1.5 px-3">
                       <Layout className="h-3.5 w-3.5 mr-1.5" />
                       Tailwind CSS
                     </Badge>
