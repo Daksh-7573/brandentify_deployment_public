@@ -50,6 +50,7 @@ interface AnimatedTemplateProps {
   email?: string;
 }
 
+// Animated Template Component
 export default function AnimatedTemplate({
   name,
   title,
@@ -58,310 +59,246 @@ export default function AnimatedTemplate({
   location,
   organization,
   photoURL,
-  skills,
-  projects,
-  experiences,
-  educations,
-  services,
+  skills = [], // Provide empty array fallbacks for all collections
+  projects = [],
+  experiences = [],
+  educations = [],
+  services = [],
   lookingFor,
   email
 }: AnimatedTemplateProps) {
-  // Get animation utilities
-  const {
-    initAmbientAuras,
-    animateCardStack,
-    animateParallaxSlide
-  } = useLumosAnimations();
+  // Use Lumos Animation hook
+  const { initializeParticles, initializeTilt, initializeSparkleEffect, initializeAmbientAuras } = useLumosAnimations();
   
-  // Component state
-  const [isShowing, setIsShowing] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [activeProject, setActiveProject] = useState<number | null>(null);
-  const [activeSection, setActiveSection] = useState('projects');
-  const [messageText, setMessageText] = useState('');
-  const [isHoveringCTA, setIsHoveringCTA] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
-  
-  // Section refs for animations
-  const heroRef = useRef<HTMLDivElement>(null);
-  
-  // For typewriter effect on title
-  const [text] = useTypewriter({
-    words: [title || 'Creative Professional', 'Motion Designer', 'VFX Specialist', 'Interactive Developer'],
-    loop: true,
-    delaySpeed: 2000
-  });
-  
-  // Timeline refs and animations
-  const timelineRef = useRef(null);
-  const isTimelineInView = useInView(timelineRef, { once: false, amount: 0.2 });
-  const timelineAnimation = useAnimation();
-  
-  // Refs for scroll animations
+  // Refs for sections for scroll animations
+  const heroRef = useRef(null);
   const projectsRef = useRef(null);
+  const timelineRef = useRef(null);
   const aboutRef = useRef(null);
   const skillsRef = useRef(null);
   const educationRef = useRef(null);
+  const contactRef = useRef(null);
   
-  // Corresponding useInView hooks
-  const isProjectsInView = useInView(projectsRef, { once: false, amount: 0.2 });
-  const isAboutInView = useInView(aboutRef, { once: false, amount: 0.2 });
-  const isSkillsInView = useInView(skillsRef, { once: false, amount: 0.2 });
-  const isEducationInView = useInView(educationRef, { once: false, amount: 0.2 });
+  // Check if sections are in view to trigger animations
+  const isHeroInView = useInView(heroRef, { once: false, amount: 0.3 });
+  const isProjectsInView = useInView(projectsRef, { once: false, amount: 0.1 });
+  const isTimelineInView = useInView(timelineRef, { once: false, amount: 0.1 });
+  const isAboutInView = useInView(aboutRef, { once: false, amount: 0.1 });
+  const isSkillsInView = useInView(skillsRef, { once: false, amount: 0.1 });
+  const isEducationInView = useInView(educationRef, { once: false, amount: 0.1 });
+  const isContactInView = useInView(contactRef, { once: false, amount: 0.1 });
   
-  // Handler for scroll navigation
-  const scrollToSection = (section: string) => {
-    setActiveSection(section);
-    const element = document.getElementById(section);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // Typewriter effect for hero section
+  const [typewriterText] = useTypewriter({
+    words: [
+      title || 'Creative Professional',
+      `${industry || 'Digital'} Specialist`,
+      `${domain || 'Design'} Expert`,
+      'Portfolio',
+    ],
+    loop: true,
+    typeSpeed: 80,
+    deleteSpeed: 50,
+    delaySpeed: 2000,
+  });
+  
+  // Video states for projects
+  const [activeVideoIndex, setActiveVideoIndex] = useState<number | null>(null);
+  
+  // Animation states
+  const controls = useAnimation();
+  
+  // Organize skills into categories based on the skill name
+  // This is a fallback mechanism since the schema might not have categories
+  const categorizeSkills = (allSkills: Skill[]) => {
+    const skillList = allSkills || [];
+    const categories = {
+      creative: [] as Skill[],
+      technical: [] as Skill[],
+      tools: [] as Skill[],
+      other: [] as Skill[]
+    };
+    
+    skillList.forEach(skill => {
+      const name = skill.name.toLowerCase();
+      
+      if (name.includes('design') || name.includes('art') || name.includes('creat') || name.includes('ui') || name.includes('ux')) {
+        categories.creative.push(skill);
+      } else if (name.includes('develop') || name.includes('code') || name.includes('program') || name.includes('architecture')) {
+        categories.technical.push(skill);
+      } else if (name.includes('tool') || name.includes('software') || name.includes('framework') || name.includes('platform')) {
+        categories.tools.push(skill);
+      } else {
+        categories.other.push(skill);
+      }
+    });
+    
+    return categories;
+  };
+  
+  const skillCategories = categorizeSkills(skills);
+  
+  // Handle video toggle for projects
+  const toggleProjectVideo = (index: number) => {
+    if (activeVideoIndex === index) {
+      setActiveVideoIndex(null);
+    } else {
+      setActiveVideoIndex(index);
     }
-  };
-  
-  // Suggested message options
-  const messageOptions = [
-    "Exciting job opportunities are available, and I believe you'd be a great fit.",
-    "Would you be open to teaming up on innovative projects?",
-    "Let's connect — I admire your work and would love to stay in touch.",
-    "I'd like to explore a potential partnership opportunity with you.",
-    "I have some exciting freelance projects you might be interested in."
-  ];
-  
-  // Category filter for skills - using skill names since category is not in schema
-  const skillCategories = {
-    creative: skills.filter(skill => 
-      ['design', 'animation', '3d', 'motion', 'video', 'creative', 'art', 'illustration'].some(keyword => 
-        skill.name.toLowerCase().includes(keyword)
-      )
-    ),
-    technical: skills.filter(skill => 
-      ['programming', 'development', 'code', 'software', 'technical', 'engineering'].some(keyword => 
-        skill.name.toLowerCase().includes(keyword)
-      )
-    ),
-    tools: skills.filter(skill => 
-      ['adobe', 'figma', 'sketch', 'blender', 'cinema', 'tool', 'suite', 'editor'].some(keyword => 
-        skill.name.toLowerCase().includes(keyword)
-      )
-    ),
-    other: skills.filter(skill => 
-      !['design', 'animation', '3d', 'motion', 'video', 'creative', 'art', 'illustration'].some(keyword => 
-        skill.name.toLowerCase().includes(keyword)
-      ) && 
-      !['programming', 'development', 'code', 'software', 'technical', 'engineering'].some(keyword => 
-        skill.name.toLowerCase().includes(keyword)
-      ) && 
-      !['adobe', 'figma', 'sketch', 'blender', 'cinema', 'tool', 'suite', 'editor'].some(keyword => 
-        skill.name.toLowerCase().includes(keyword)
-      )
-    )
-  };
-  
-  const handleLetsTalkClick = () => {
-    setShowModal(true);
-  };
-  
-  const handleCloseModal = () => {
-    setShowModal(false);
-  };
-  
-  const handleSendMessage = () => {
-    // Logic for sending message would go here
-    alert('Message sent: ' + messageText);
-    setMessageText('');
-    setShowModal(false);
-  };
-  
-  const handleSelectMessage = (msg: string) => {
-    setMessageText(msg);
   };
   
   // Initialize animations when component mounts
   useEffect(() => {
-    // Staggered animation sequence
-    const timeout = setTimeout(() => {
-      setIsShowing(true);
-    }, 100);
+    // Initialize all the Lumos animations
+    const particleCleanup = initializeParticles('.hero-particle-container');
+    const tiltCleanup = initializeTilt('.animated-project');
+    const sparkleCleanup = initializeSparkleEffect('.skill-bar');
+    const aurasCleanup = initializeAmbientAuras('.hero-section');
     
-    // Initialize Lumos animations
-    setTimeout(() => {
-      // Create ambient auras in the hero section
-      initAmbientAuras('.animated-hero', 5);
-      
-      // Animate card stacks for projects and skills
-      animateCardStack('.animated-projects');
-      animateCardStack('.animated-skills');
-      
-      // Set up parallax slide animations for section transitions
-      document.querySelectorAll('.section-title').forEach((title, index) => {
-        title.classList.add('sparkle-trigger');
-      });
-      
-      // Add tilt effect to appropriate cards
-      document.querySelectorAll('.project-card, .skill-card').forEach((card) => {
-        card.classList.add('tilt-card');
-      });
-      
-    }, 500);
+    // Scroll to top when component mounts
+    window.scrollTo(0, 0);
     
-    return () => clearTimeout(timeout);
-  }, [initAmbientAuras, animateCardStack]);
+    // Animation sequence
+    controls.start({
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.8, ease: "easeOut" }
+    });
+    
+    return () => {
+      // Cleanup animations when component unmounts
+      if (particleCleanup) particleCleanup();
+      if (tiltCleanup) tiltCleanup();
+      if (sparkleCleanup) sparkleCleanup();
+      if (aurasCleanup) aurasCleanup();
+    };
+  }, []);
   
-  // Animate timeline when it comes into view
-  useEffect(() => {
-    if (isTimelineInView) {
-      timelineAnimation.start({
-        opacity: 1,
-        x: 0,
-        transition: { duration: 0.8, delay: 0.2 }
-      });
-    } else {
-      timelineAnimation.start({ opacity: 0, x: -100 });
-    }
-  }, [isTimelineInView, timelineAnimation]);
-  
-  // Animate sections when they come into view
-  useEffect(() => {
-    if (isProjectsInView) {
-      animateParallaxSlide('#projects', '.projects-content');
-    }
-  }, [isProjectsInView, animateParallaxSlide]);
-  
-  useEffect(() => {
-    if (isSkillsInView) {
-      animateParallaxSlide('#skills', '.skills-content');
-    }
-  }, [isSkillsInView, animateParallaxSlide]);
-  
-  useEffect(() => {
-    if (isEducationInView) {
-      animateParallaxSlide('#education', '.education-content');
-    }
-  }, [isEducationInView, animateParallaxSlide]);
-
   return (
-    <div className="bg-gradient-to-r from-slate-900 to-gray-900 min-h-screen font-sans overflow-x-hidden">
-      {/* Floating CTA Button - Desktop */}
-      <motion.div 
-        className="fixed top-4 right-4 z-50 hidden md:flex space-x-3"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.5, duration: 0.5, type: "spring" }}
-      >
-        <motion.button
-          whileHover={{ scale: 1.05, y: -2 }}
-          whileTap={{ scale: 0.95 }}
-          className="bg-gradient-to-r from-purple-600 to-violet-600 text-white px-4 py-2 rounded-full font-medium flex items-center gap-2 shadow-lg"
-          onClick={handleLetsTalkClick}
-          onMouseEnter={() => setIsHoveringCTA(true)}
-          onMouseLeave={() => setIsHoveringCTA(false)}
-        >
-          <span>Let's Talk</span>
-          <motion.span
-            animate={{ 
-              x: isHoveringCTA ? [0, 5, 0] : 0,
-              opacity: isHoveringCTA ? [1, 0.8, 1] : 1
-            }}
-            transition={{ duration: 0.5, repeat: isHoveringCTA ? Infinity : 0 }}
-          >
-            <MessageCircle className="h-4 w-4" />
-          </motion.span>
-        </motion.button>
-        
-        <motion.button
-          whileHover={{ scale: 1.05, y: -2 }}
-          whileTap={{ scale: 0.95 }}
-          className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-full font-medium flex items-center gap-2 shadow-lg"
-        >
-          <span>Mentor</span>
-          <motion.span 
-            className="text-lg"
-            animate={{ 
-              rotate: isHoveringCTA ? [0, 15, -15, 0] : 0,
-            }}
-            transition={{ duration: 0.5, repeat: isHoveringCTA ? Infinity : 0 }}
-          >
-            🚀
-          </motion.span>
-        </motion.button>
-        
-        <motion.button
-          whileHover={{ scale: 1.05, y: -2 }}
-          whileTap={{ scale: 0.95 }}
-          className="bg-gradient-to-r from-teal-500 to-emerald-500 text-white px-4 py-2 rounded-full font-medium flex items-center gap-2 shadow-lg"
-        >
-          <span>Grab My Resume</span>
-          <motion.span 
-            className="text-lg"
-            animate={{ 
-              y: isHoveringCTA ? [0, -3, 0] : 0,
-            }}
-            transition={{ duration: 0.4, repeat: isHoveringCTA ? Infinity : 0 }}
-          >
-            📄
-          </motion.span>
-        </motion.button>
-      </motion.div>
-      
-      {/* Floating CTA Button - Mobile */}
-      <motion.div 
-        className="fixed bottom-4 right-4 z-50 md:hidden"
-        initial={{ opacity: 0, scale: 0 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 1.5, duration: 0.5, type: "spring" }}
-      >
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          className="bg-gradient-to-r from-purple-600 to-violet-600 text-white p-4 rounded-full shadow-xl"
-          onClick={handleLetsTalkClick}
-        >
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-            className="absolute inset-0 rounded-full opacity-30 bg-gradient-to-r from-yellow-400 to-pink-500 blur-sm"
-          />
-          <MessageCircle className="h-6 w-6" />
-        </motion.button>
-      </motion.div>
-      
+    <div className="animated-template bg-gray-900 text-white min-h-screen">
       {/* Hero Section */}
-      <section ref={heroRef} className="relative min-h-screen flex items-center overflow-hidden animated-hero">
-        {/* Background Animation */}
-        <motion.div 
-          className="absolute inset-0 z-0 opacity-20"
-          animate={{ 
-            backgroundPosition: ["0% 0%", "100% 100%"],
-          }}
-          transition={{ 
-            duration: 20, 
-            repeat: Infinity, 
-            repeatType: "reverse",
-            ease: "linear"
-          }}
-          style={{ 
-            backgroundSize: "400% 400%",
-            backgroundImage: "radial-gradient(circle at 30% 50%, rgba(138, 58, 185, 0.6) 0%, transparent 40%), radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.6) 0%, transparent 40%)" 
-          }}
-        />
+      <section id="hero" className="min-h-screen flex items-center justify-center relative hero-section" ref={heroRef}>
+        <div className="hero-particle-container absolute inset-0 pointer-events-none" />
         
-        <div className="container mx-auto px-6 relative z-10">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-8 items-center">
-            {/* Photo and Avatar Section */}
-            <div className="md:col-span-2 flex justify-center">
-              <motion.div 
-                className="relative"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.8, type: "spring" }}
+        {/* Animated background auras */}
+        <div className="ambient-aura ambient-aura-1" />
+        <div className="ambient-aura ambient-aura-2" />
+        <div className="ambient-aura ambient-aura-3" />
+        
+        <div className="container mx-auto px-6 py-20 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            {/* Hero Content */}
+            <motion.div 
+              className="lg:col-span-7 space-y-8"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: isHeroInView ? 1 : 0, y: isHeroInView ? 0 : 30 }}
+              transition={{ duration: 0.8 }}
+            >
+              <motion.h1 
+                className="text-4xl md:text-6xl font-bold leading-tight"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: isHeroInView ? 1 : 0, y: isHeroInView ? 0 : 20 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
               >
-                {/* Profile Image with Animation */}
-                <motion.div
-                  className="w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-white/20 shadow-2xl relative bg-gradient-to-b from-violet-600 to-purple-700"
-                  initial={{ y: 20 }}
-                  animate={{ y: [0, -10, 0] }}
-                  transition={{ duration: 6, repeat: Infinity, repeatType: "reverse" }}
-                >
+                Hello, I'm{' '}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500">
+                  {name}
+                </span>
+              </motion.h1>
+              
+              <motion.div 
+                className="text-3xl md:text-5xl font-bold text-gray-300 h-20"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: isHeroInView ? 1 : 0, y: isHeroInView ? 0 : 20 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+              >
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-500">
+                  {typewriterText}
+                </span>
+                <Cursor cursorStyle="|" cursorColor="#0EA5E9" />
+              </motion.div>
+              
+              <motion.p 
+                className="text-xl text-gray-400 max-w-2xl"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: isHeroInView ? 1 : 0, y: isHeroInView ? 0 : 20 }}
+                transition={{ duration: 0.8, delay: 0.6 }}
+              >
+                Based in {location || 'a creative space'}, specializing in {domain || 'digital design'} 
+                with expertise in interactive experiences and creative solutions.
+              </motion.p>
+              
+              <motion.div 
+                className="flex flex-wrap gap-4 pt-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: isHeroInView ? 1 : 0, y: isHeroInView ? 0 : 20 }}
+                transition={{ duration: 0.8, delay: 0.8 }}
+              >
+                <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-6 rounded-full text-lg font-medium flex items-center transition-all transform hover:scale-105 shadow-lg">
+                  <span>View My Work</span>
+                  <ChevronDown className="ml-2 h-5 w-5" />
+                </Button>
+                
+                <Button variant="outline" className="bg-transparent border border-purple-500 text-purple-400 hover:bg-purple-950/30 px-8 py-6 rounded-full text-lg font-medium flex items-center transition-all hover:text-purple-300">
+                  <Download className="mr-2 h-5 w-5" />
+                  <span>Download Resume</span>
+                </Button>
+              </motion.div>
+              
+              {/* Resume or skills teaser */}
+              <motion.div 
+                className="mt-8 pt-8 border-t border-gray-800"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: isHeroInView ? 1 : 0 }}
+                transition={{ duration: 0.8, delay: 1 }}
+              >
+                <h3 className="text-lg font-medium text-gray-300 mb-4">Featured Skills</h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {skills && skills.slice(0, 6).map((skill, index) => (
+                    <motion.div 
+                      key={skill.id || index} 
+                      className="bg-gray-800/40 rounded-lg p-3 border border-gray-700"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: isHeroInView ? 1 : 0, y: isHeroInView ? 0 : 10 }}
+                      transition={{ duration: 0.4, delay: 1 + (index * 0.1) }}
+                      whileHover={{ y: -5, boxShadow: '0 10px 25px rgba(139, 92, 246, 0.15)' }}
+                    >
+                      <div className="text-sm text-gray-400">{skill.name}</div>
+                      <Progress 
+                        value={skill.proficiency || 75} 
+                        className="h-1.5 mt-2" 
+                        indicatorClassName="bg-gradient-to-r from-purple-500 to-pink-500" 
+                      />
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            </motion.div>
+            
+            {/* Hero Image/Profile */}
+            <motion.div 
+              className="lg:col-span-5 flex justify-center"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: isHeroInView ? 1 : 0, scale: isHeroInView ? 1 : 0.9 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+            >
+              <div className="relative overflow-visible hero-profile">
+                {/* Glowing background behind profile image */}
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-600/40 to-pink-600/40 rounded-full filter blur-3xl opacity-70" />
+                
+                {/* Animated circles around profile */}
+                <div className="profile-orbit profile-orbit-1">
+                  <div className="profile-satellite bg-cyan-500"></div>
+                </div>
+                <div className="profile-orbit profile-orbit-2">
+                  <div className="profile-satellite bg-purple-500"></div>
+                </div>
+                <div className="profile-orbit profile-orbit-3">
+                  <div className="profile-satellite bg-pink-500"></div>
+                </div>
+                
+                {/* Profile image */}
+                <div className="w-64 h-64 sm:w-80 sm:h-80 relative z-10 rounded-full overflow-hidden border-4 border-purple-500/40 shadow-lg shadow-purple-500/30">
                   {photoURL ? (
                     <img 
                       src={photoURL} 
@@ -369,217 +306,61 @@ export default function AnimatedTemplate({
                       className="w-full h-full object-cover object-center"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-6xl text-white font-bold">
-                      {name.charAt(0)}
+                    <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+                      <span className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
+                        {name.charAt(0)}
+                      </span>
                     </div>
                   )}
-                  
-                  {/* Ripple Animation */}
-                  <motion.div
-                    className="absolute inset-0 border-4 border-purple-400 rounded-full"
-                    initial={{ scale: 1, opacity: 0.8 }}
-                    animate={{ scale: 1.2, opacity: 0 }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  />
+                </div>
+                
+                {/* Profile badges/cards */}
+                <motion.div 
+                  className="absolute -bottom-5 -right-5 bg-gray-800/90 backdrop-blur-sm p-3 rounded-xl border border-purple-500/30 shadow-lg"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: isHeroInView ? 1 : 0, y: isHeroInView ? 0 : 20 }}
+                  transition={{ duration: 0.5, delay: 0.9 }}
+                  whileHover={{ y: -5 }}
+                >
+                  <div className="text-sm font-medium text-gray-300">{industry || "Industry"}</div>
+                  <div className="text-xs text-purple-400">{domain || "Domain"}</div>
                 </motion.div>
                 
-                {/* Particles or Orbit Elements */}
-                {Array.from({ length: 3 }).map((_, index) => (
-                  <motion.div 
-                    key={index}
-                    className="absolute w-12 h-12 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 shadow-lg flex items-center justify-center text-white"
-                    style={{ 
-                      top: `${45 + 30 * Math.sin(2 * Math.PI * index / 3)}%`,
-                      left: `${45 + 30 * Math.cos(2 * Math.PI * index / 3)}%`,
-                    }}
-                    initial={{ opacity: 0, scale: 0 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.8 + index * 0.2, duration: 0.5 }}
-                  >
-                    {index === 0 && <Sparkles className="h-6 w-6" />}
-                    {index === 1 && <Code className="h-6 w-6" />}
-                    {index === 2 && <Play className="h-6 w-6" />}
-                  </motion.div>
-                ))}
-              </motion.div>
-            </div>
-            
-            {/* Name and Information Section */}
-            <div className="md:col-span-3 text-center md:text-left">
-              <motion.h1 
-                className="text-5xl md:text-6xl font-bold text-white mb-4"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-              >
-                {name}
-              </motion.h1>
-              
-              <motion.div
-                className="text-2xl md:text-3xl text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 font-bold mb-6 h-12"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.4 }}
-              >
-                <span>I Am </span>
-                <span className="relative">
-                  <span className="text-teal-400">{text}</span>
-                  <Cursor cursorStyle="_" cursorColor="#2dd4bf" />
-                </span>
-              </motion.div>
-              
-              {/* Industry & Domain Tags */}
-              <motion.div 
-                className="flex flex-wrap gap-3 justify-center md:justify-start mb-6"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.6 }}
-              >
-                {industry && (
-                  <motion.div
-                    whileHover={{ y: -4, scale: 1.05 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                  >
-                    <Badge className="bg-gradient-to-r from-violet-500 to-purple-500 px-4 py-2 text-white text-base font-medium rounded-full">
-                      #{industry}
-                    </Badge>
-                  </motion.div>
-                )}
-                {domain && (
-                  <motion.div
-                    whileHover={{ y: -4, scale: 1.05 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                  >
-                    <Badge className="bg-gradient-to-r from-fuchsia-500 to-pink-500 px-4 py-2 text-white text-base font-medium rounded-full">
-                      #{domain}
-                    </Badge>
-                  </motion.div>
-                )}
-                {organization && (
-                  <motion.div
-                    whileHover={{ y: -4, scale: 1.05 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                  >
-                    <Badge className="bg-gradient-to-r from-blue-500 to-cyan-500 px-4 py-2 text-white text-base font-medium rounded-full">
-                      @{organization}
-                    </Badge>
-                  </motion.div>
-                )}
-              </motion.div>
-              
-              {/* Location - Hidden by default, shows on hover */}
-              {location && (
-                <motion.div
-                  className="inline-flex items-center text-gray-400 mb-8"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.8 }}
-                  whileHover={{ 
-                    scale: 1.05, 
-                    color: "rgb(219, 39, 119)" // pink-600 
-                  }}
-                >
-                  <motion.div
-                    animate={{ y: [0, -5, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
-                  >
-                    <MapPin className="h-5 w-5 mr-2" />
-                  </motion.div>
-                  <span>{location}</span>
-                </motion.div>
-              )}
-              
-              {/* Looking For */}
-              {lookingFor && (
                 <motion.div 
-                  className="bg-gradient-to-r from-blue-600 to-violet-600 text-white px-5 py-3 rounded-lg inline-flex items-center mb-8 relative overflow-hidden"
-                  initial={{ scale: 0.9, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ delay: 1, type: "spring" }}
+                  className="absolute -top-5 -left-5 bg-gray-800/90 backdrop-blur-sm p-3 rounded-xl border border-blue-500/30 shadow-lg"
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: isHeroInView ? 1 : 0, y: isHeroInView ? 0 : -20 }}
+                  transition={{ duration: 0.5, delay: 1.1 }}
+                  whileHover={{ y: 5 }}
                 >
-                  {/* Animated background elements */}
-                  <motion.div 
-                    className="absolute -inset-1 blur-lg opacity-30 rounded-lg"
-                    animate={{ 
-                      scale: [1, 1.1, 1],
-                      rotate: [0, 5, 0, -5, 0],
-                    }}
-                    transition={{ duration: 8, repeat: Infinity }}
-                    style={{
-                      background: "linear-gradient(45deg, #4f46e5, #7e22ce, #a21caf, #4f46e5)"
-                    }}
-                  />
-                  
-                  <span className="text-lg mr-2 text-white z-10">🎯</span>
-                  <span className="font-medium z-10">
-                    {lookingFor}
-                  </span>
+                  <div className="text-sm font-medium text-gray-300">{title || "Professional Title"}</div>
+                  <div className="text-xs text-blue-400">{lookingFor || "Available for work"}</div>
                 </motion.div>
-              )}
-              
-              {/* Section Navigation Links */}
-              <motion.div 
-                className="flex flex-wrap gap-4 justify-center md:justify-start mt-8"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1.2 }}
-              >
-                {['projects', 'about', 'timeline', 'education', 'skills'].map((section, index) => (
-                  <motion.button
-                    key={section}
-                    onClick={() => scrollToSection(section)}
-                    className={`px-4 py-2 rounded-full border-2 flex items-center gap-2 transition-all ${
-                      activeSection === section 
-                        ? 'border-purple-500 text-purple-500' 
-                        : 'border-gray-700 text-gray-400 hover:text-white hover:border-white'
-                    }`}
-                    whileHover={{ y: -3 }}
-                    whileTap={{ scale: 0.95 }}
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 1.2 + index * 0.1 }}
-                  >
-                    <span className="capitalize">{section}</span>
-                    <ChevronRight className="h-4 w-4" />
-                  </motion.button>
-                ))}
-              </motion.div>
-              
-              {/* Hero Scroll Indicator */}
-              <motion.div 
-                className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center text-white/60"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1, y: [0, 10, 0] }}
-                transition={{ delay: 2, duration: 2, repeat: Infinity }}
-              >
-                <span className="text-sm mb-2">Scroll to Explore</span>
-                <ChevronDown className="h-6 w-6" />
-              </motion.div>
-            </div>
+              </div>
+            </motion.div>
           </div>
+          
+          {/* Scroll indicator */}
+          <motion.div 
+            className="absolute bottom-10 left-1/2 transform -translate-x-1/2"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ 
+              opacity: isHeroInView ? [0.4, 1, 0.4] : 0, 
+              y: isHeroInView ? [0, 10, 0] : -10 
+            }}
+            transition={{ 
+              duration: 2, 
+              repeat: Infinity,
+              repeatType: "loop"
+            }}
+          >
+            <ChevronDown className="h-8 w-8 text-purple-400" />
+          </motion.div>
         </div>
       </section>
       
       {/* Projects Section */}
-      <section id="projects" className="py-20 relative animated-projects" ref={projectsRef}>
-        {/* Motion Background */}
-        <motion.div 
-          className="absolute inset-0 z-0 opacity-10"
-          animate={{ 
-            backgroundPosition: ["0% 0%", "100% 100%"],
-          }}
-          transition={{ 
-            duration: 20, 
-            repeat: Infinity, 
-            repeatType: "reverse",
-            ease: "linear"
-          }}
-          style={{ 
-            backgroundSize: "200% 200%",
-            backgroundImage: "radial-gradient(circle at 30% 50%, rgba(236, 72, 153, 0.6) 0%, transparent 60%), radial-gradient(circle at 70% 70%, rgba(124, 58, 237, 0.6) 0%, transparent 60%)" 
-          }}
-        />
-        
+      <section id="projects" className="py-20 relative" ref={projectsRef}>
         <div className="container mx-auto px-6 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -588,55 +369,51 @@ export default function AnimatedTemplate({
             className="mb-16 text-center"
           >
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 section-title">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
                 Featured Projects
               </span>
             </h2>
             <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              Explore my creative work and projects, featuring motion design, animation, and interactive experiences.
+              Explore my latest work and creative implementations.
             </p>
           </motion.div>
           
-          {/* Project Gallery */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-            {projects.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 animated-projects">
+            {projects && projects.length > 0 ? (
               projects.map((project, index) => (
                 <motion.div 
                   key={project.id}
-                  className="relative bg-gray-800/50 overflow-hidden rounded-xl border border-gray-700 group project-card"
+                  className="animated-project bg-gray-800/30 rounded-xl overflow-hidden border border-gray-700 hover:border-purple-500/50 shadow-lg transition-all duration-500"
                   initial={{ opacity: 0, y: 50 }}
-                  animate={{ opacity: isProjectsInView ? 1 : 0, y: isProjectsInView ? 0 : 50 }}
-                  transition={{ duration: 0.6, delay: index * 0.2 }}
-                  whileHover={{ y: -8 }}
+                  animate={{ 
+                    opacity: isProjectsInView ? 1 : 0, 
+                    y: isProjectsInView ? 0 : 50
+                  }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  whileHover={{ y: -10, boxShadow: '0 20px 40px rgba(139, 92, 246, 0.15)' }}
                 >
-                  {/* Project Thumbnail with Hover Effects */}
-                  <div className="relative h-64 overflow-hidden">
+                  {/* Project Image */}
+                  <div className="aspect-video overflow-hidden relative group">
                     {project.thumbnailUrl ? (
-                      <>
-                        <img 
-                          src={project.thumbnailUrl} 
-                          alt={project.title} 
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-60" />
-                      </>
+                      <img 
+                        src={project.thumbnailUrl} 
+                        alt={project.title} 
+                        className="w-full h-full object-cover transition-all duration-700 ease-in-out group-hover:scale-110"
+                      />
                     ) : (
-                      <div className="w-full h-full bg-gradient-to-r from-purple-700 to-pink-600 flex items-center justify-center">
-                        <span className="text-white text-xl font-bold">{project.title}</span>
+                      <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center">
+                        <Sparkles className="h-12 w-12 text-purple-400 opacity-40" />
                       </div>
                     )}
                     
-                    {/* Play/Pause Button Overlay */}
+                    {/* Play/Pause Button if there's a video */}
                     <motion.button
-                      className="absolute top-4 right-4 bg-black/70 text-white p-2 rounded-full backdrop-blur-sm hover:bg-white hover:text-black transition-colors"
+                      className="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-purple-600/80 backdrop-blur-sm flex items-center justify-center text-white"
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
-                      onClick={() => {
-                        setActiveProject(activeProject === project.id ? null : project.id);
-                        setIsPlaying(!isPlaying);
-                      }}
+                      onClick={() => toggleProjectVideo(index)}
                     >
-                      {activeProject === project.id && isPlaying ? (
+                      {activeVideoIndex === index ? (
                         <Pause className="h-5 w-5" />
                       ) : (
                         <Play className="h-5 w-5" />
@@ -663,11 +440,12 @@ export default function AnimatedTemplate({
                     
                     {/* Project Tags/Technology */}
                     <div className="flex flex-wrap gap-2 mb-4">
-                      {project.tags && Array.isArray(project.tags) && project.tags.map((tag: string, i: number) => (
-                        <Badge key={i} className="bg-gray-700 text-gray-200 hover:bg-gray-600">
-                          {tag}
+                      {/* Using project.category as a fallback tag since tags field may not exist in schema */}
+                      {project.category && (
+                        <Badge className="bg-gray-700 text-gray-200 hover:bg-gray-600">
+                          {project.category}
                         </Badge>
-                      ))}
+                      )}
                     </div>
                     
                     {/* Project Links */}
@@ -902,41 +680,60 @@ export default function AnimatedTemplate({
               </span>
             </h2>
             <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              My professional path through the creative and tech industries.
+              My professional path and significant milestones.
             </p>
           </motion.div>
           
-          {/* Horizontal scrollable timeline */}
-          <div className="relative pb-12 overflow-x-auto hide-scrollbar">
-            <div className="absolute h-1 bg-gray-700 top-11 left-0 right-0" />
+          {/* Timeline Content */}
+          <div className="relative timeline-container">
+            {/* Timeline vertical line */}
+            <div className="absolute left-0 md:left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-orange-500/80 via-orange-500/50 to-orange-500/20 transform md:-translate-x-1/2"></div>
             
-            <div className="relative flex space-x-12 min-w-max px-4">
-              {experiences.length > 0 ? (
+            <div className="space-y-12">
+              {experiences && experiences.length > 0 ? (
                 experiences.map((experience, index) => (
                   <motion.div 
                     key={experience.id}
-                    className="relative flex-none w-80"
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={timelineAnimation}
-                    transition={{ duration: 0.5, delay: index * 0.2 }}
+                    className="relative flex flex-col md:flex-row"
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: isTimelineInView ? 1 : 0, y: isTimelineInView ? 0 : 50 }}
+                    transition={{ duration: 0.6, delay: index * 0.1 }}
                   >
-                    {/* Timeline Node */}
-                    <motion.div 
-                      className="absolute top-9 left-0 w-6 h-6 bg-orange-500 rounded-full transform -translate-x-1/2 -translate-y-1/2 z-20 timeline-node"
-                      initial={{ scale: 0 }}
-                      animate={{ scale: isTimelineInView ? 1 : 0 }}
-                      transition={{ duration: 0.4, delay: 0.6 + index * 0.1 }}
-                      whileHover={{ scale: 1.2 }}
-                    />
+                    {/* Timeline node */}
+                    <div className="timeline-node">
+                      <motion.div 
+                        className="absolute left-0 md:left-1/2 w-6 h-6 bg-orange-500 rounded-full shadow-lg shadow-orange-500/30 transform -translate-x-1/2 z-10"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: isTimelineInView ? 1 : 0 }}
+                        transition={{ duration: 0.4, delay: 0.2 + index * 0.1 }}
+                      >
+                        <motion.div 
+                          className="absolute inset-1 bg-orange-300 rounded-full"
+                          animate={{ scale: [1, 1.4, 1] }}
+                          transition={{ duration: 2, repeat: Infinity }}
+                        />
+                      </motion.div>
+                    </div>
                     
                     {/* Date */}
-                    <div className="mb-6 text-center">
-                      <span className="text-sm bg-gray-800 text-orange-400 py-1 px-3 rounded-full inline-block">
-                        {new Date(experience.startDate || '').getFullYear()} - 
-                        {experience.endDate 
-                          ? new Date(experience.endDate).getFullYear() 
-                          : 'Present'}
-                      </span>
+                    <div className="md:w-1/2 pr-8 pb-10 md:pb-0 md:text-right flex flex-col items-start md:items-end">
+                      <motion.div 
+                        className="bg-gray-800/40 px-4 py-2 rounded-lg inline-block"
+                        whileHover={{ y: -3 }}
+                      >
+                        <span className="text-orange-400 font-medium">
+                          {new Date(experience.startDate || '').toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short'
+                          })} - {' '}
+                          {experience.endDate 
+                            ? new Date(experience.endDate).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'short'
+                              })
+                            : 'Present'}
+                        </span>
+                      </motion.div>
                     </div>
                     
                     {/* Experience Card */}
@@ -956,13 +753,18 @@ export default function AnimatedTemplate({
                         </div>
                       )}
                       
-                      {/* Skills Used */}
+                      {/* Skills Used - Using industry or domain as a fallback skill */}
                       <div className="flex flex-wrap gap-1 mt-4">
-                        {experience.skills?.split(',').map((skill, i) => (
-                          <Badge key={i} className="bg-gray-700 text-gray-300 hover:bg-gray-600 text-xs">
-                            {skill.trim()}
+                        {experience.industry && (
+                          <Badge className="bg-gray-700 text-gray-300 hover:bg-gray-600 text-xs">
+                            {experience.industry}
                           </Badge>
-                        ))}
+                        )}
+                        {experience.domain && (
+                          <Badge className="bg-gray-700 text-gray-300 hover:bg-gray-600 text-xs">
+                            {experience.domain}
+                          </Badge>
+                        )}
                       </div>
                     </motion.div>
                   </motion.div>
@@ -1005,7 +807,7 @@ export default function AnimatedTemplate({
           
           {/* Education Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {educations.length > 0 ? (
+            {educations && educations.length > 0 ? (
               educations.map((education, index) => (
                 <motion.div 
                   key={education.id}
@@ -1025,14 +827,9 @@ export default function AnimatedTemplate({
                       <div>
                         <h3 className="text-lg font-bold text-white mb-1">{education.institution}</h3>
                         <h4 className="text-cyan-400 mb-1">{education.degree}</h4>
-                        {education.fieldOfStudy && (
-                          <p className="text-gray-400 text-sm">{education.fieldOfStudy}</p>
-                        )}
                       </div>
                       <GraduationCap className="h-8 w-8 text-cyan-500 opacity-70" />
                     </div>
-                    
-                    <p className="text-gray-400 mb-4">{education.description}</p>
                     
                     <div className="flex justify-between items-center mt-4 text-sm">
                       <div className="text-gray-500 flex items-center">
@@ -1044,12 +841,6 @@ export default function AnimatedTemplate({
                             : 'Present'}
                         </span>
                       </div>
-                      
-                      {education.grade && (
-                        <div className="bg-cyan-500/20 text-cyan-400 px-2 py-1 rounded">
-                          {education.grade}
-                        </div>
-                      )}
                     </div>
                   </div>
                 </motion.div>
@@ -1195,192 +986,59 @@ export default function AnimatedTemplate({
                     </div>
                   </motion.div>
                 )}
-                
-                {/* Tools */}
-                {skillCategories.tools.length > 0 && (
-                  <motion.div
-                    className="bg-gray-800/30 rounded-xl p-6 border border-gray-700"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: isSkillsInView ? 1 : 0, y: isSkillsInView ? 0 : 20 }}
-                    transition={{ duration: 0.5, delay: 0.3 }}
-                    whileHover={{ y: -5, boxShadow: '0 8px 30px rgba(45, 212, 191, 0.15)' }}
-                  >
-                    <h4 className="text-lg font-bold text-white mb-4 flex items-center">
-                      <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center mr-2">
-                        <Briefcase className="h-4 w-4 text-purple-400" />
-                      </div>
-                      Tools & Software
-                    </h4>
-                    
-                    <div className="space-y-3">
-                      {skillCategories.tools.map((skill, index) => (
-                        <motion.div 
-                          key={skill.id}
-                          className="flex items-center justify-between"
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: isSkillsInView ? 1 : 0, x: isSkillsInView ? 0 : -20 }}
-                          transition={{ duration: 0.3, delay: 0.4 + index * 0.05 }}
-                        >
-                          <span className="text-gray-300">{skill.name}</span>
-                          <div className="flex">
-                            {Array.from({ length: 5 }).map((_, i) => (
-                              <motion.div 
-                                key={i}
-                                whileHover={{ scale: 1.2 }}
-                                transition={{ duration: 0.2 }}
-                              >
-                                <Star
-                                  className={`h-4 w-4 ${i < (skill.proficiency || 3) ? 'text-purple-500' : 'text-gray-600'}`}
-                                  fill={i < (skill.proficiency || 3) ? 'currentColor' : 'none'}
-                                />
-                              </motion.div>
-                            ))}
-                          </div>
-                        </motion.div>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-                
-                {/* Other Skills */}
-                {skillCategories.other.length > 0 && (
-                  <motion.div
-                    className="bg-gray-800/30 rounded-xl p-6 border border-gray-700"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: isSkillsInView ? 1 : 0, y: isSkillsInView ? 0 : 20 }}
-                    transition={{ duration: 0.5, delay: 0.4 }}
-                    whileHover={{ y: -5, boxShadow: '0 8px 30px rgba(45, 212, 191, 0.15)' }}
-                  >
-                    <h4 className="text-lg font-bold text-white mb-4 flex items-center">
-                      <div className="w-8 h-8 rounded-full bg-pink-500/20 flex items-center justify-center mr-2">
-                        <Star className="h-4 w-4 text-pink-400" />
-                      </div>
-                      Other Skills
-                    </h4>
-                    
-                    <div className="space-y-3">
-                      {skillCategories.other.map((skill, index) => (
-                        <motion.div 
-                          key={skill.id}
-                          className="flex items-center justify-between"
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: isSkillsInView ? 1 : 0, x: isSkillsInView ? 0 : -20 }}
-                          transition={{ duration: 0.3, delay: 0.5 + index * 0.05 }}
-                        >
-                          <span className="text-gray-300">{skill.name}</span>
-                          <div className="flex">
-                            {Array.from({ length: 5 }).map((_, i) => (
-                              <motion.div 
-                                key={i}
-                                whileHover={{ scale: 1.2 }}
-                                transition={{ duration: 0.2 }}
-                              >
-                                <Star
-                                  className={`h-4 w-4 ${i < (skill.proficiency || 3) ? 'text-pink-500' : 'text-gray-600'}`}
-                                  fill={i < (skill.proficiency || 3) ? 'currentColor' : 'none'}
-                                />
-                              </motion.div>
-                            ))}
-                          </div>
-                        </motion.div>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
               </div>
             </div>
             
             {/* Services Column */}
-            <div className="space-y-8">
+            <div className="md:col-span-1">
               <motion.h3 
                 className="text-2xl font-bold text-white mb-6 flex items-center"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: isSkillsInView ? 1 : 0, x: isSkillsInView ? 0 : -20 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: isSkillsInView ? 1 : 0, x: isSkillsInView ? 0 : 20 }}
+                transition={{ duration: 0.6 }}
               >
-                <Plus className="h-6 w-6 mr-2 text-teal-500" />
-                Services Offered
+                <Sparkles className="h-6 w-6 mr-2 text-green-500" />
+                Services
               </motion.h3>
               
-              <div className="space-y-6">
-                {services.length > 0 ? (
+              <div className="space-y-4">
+                {services && services.length > 0 ? (
                   services.map((service, index) => (
                     <motion.div 
                       key={service.id}
-                      className="bg-gray-800/30 rounded-xl p-6 border border-gray-700 relative overflow-hidden group"
-                      initial={{ opacity: 0, x: 30 }}
-                      animate={{ opacity: isSkillsInView ? 1 : 0, x: isSkillsInView ? 0 : 30 }}
-                      transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
-                      whileHover={{ 
-                        y: -5,
-                        boxShadow: '0 8px 30px rgba(45, 212, 191, 0.15)',
-                        borderColor: 'rgba(45, 212, 191, 0.3)' 
-                      }}
+                      className="bg-gray-800/30 rounded-xl p-6 border border-gray-700 service-card"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: isSkillsInView ? 1 : 0, y: isSkillsInView ? 0 : 20 }}
+                      transition={{ duration: 0.5, delay: 0.1 + index * 0.1 }}
+                      whileHover={{ y: -5, boxShadow: '0 8px 30px rgba(16, 185, 129, 0.15)' }}
                     >
-                      {/* Animated background element */}
-                      <motion.div 
-                        className="absolute inset-0 bg-gradient-to-r from-teal-500/10 to-green-500/10 opacity-0 group-hover:opacity-100 transition-opacity"
-                        animate={{ scale: [1, 1.05, 1] }}
-                        transition={{ duration: 3, repeat: Infinity }}
-                      />
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-lg font-bold text-white">{service.title}</h4>
+                        <div className="text-green-400 text-sm">
+                          {service.category}
+                        </div>
+                      </div>
                       
-                      <h4 className="text-lg font-bold text-white mb-3">{service.name}</h4>
-                      <p className="text-gray-400 mb-4">{service.description}</p>
+                      <p className="text-gray-400 mt-2 mb-4 text-sm line-clamp-2">{service.description}</p>
                       
-                      {/* Price Range */}
-                      {service.priceRange && (
-                        <div className="text-teal-400 text-sm font-medium mb-3">{service.priceRange}</div>
-                      )}
-                      
-                      {/* Service Features/Tags */}
-                      <div className="flex flex-wrap gap-2 mt-4">
-                        {service.features?.split(',').map((feature, i) => (
-                          <Badge key={i} variant="secondary" className="bg-teal-500/20 text-teal-300 border border-teal-500/30">
-                            {feature.trim()}
-                          </Badge>
-                        ))}
+                      <div className="border-t border-gray-700 pt-4 mt-4">
+                        <Button className="w-full bg-gray-700 hover:bg-gray-600 text-white">
+                          Learn More
+                        </Button>
                       </div>
                     </motion.div>
                   ))
                 ) : (
                   <motion.div 
-                    className="text-center py-12 bg-gray-800/30 rounded-xl border border-gray-700"
+                    className="bg-gray-800/30 rounded-xl p-8 border border-gray-700 text-center"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: isSkillsInView ? 1 : 0 }}
-                    transition={{ duration: 0.6, delay: 0.4 }}
+                    transition={{ duration: 0.6 }}
                   >
-                    <PlusCircle className="h-12 w-12 text-teal-500 mx-auto mb-4 opacity-60" />
-                    <h3 className="text-white text-xl font-bold mb-2">No Services Listed Yet</h3>
-                    <p className="text-gray-400">Services will be displayed here once added.</p>
+                    <PlusCircle className="h-12 w-12 text-green-500 mx-auto mb-4 opacity-60" />
+                    <h3 className="text-white text-xl font-bold mb-2">No Services Yet</h3>
+                    <p className="text-gray-400 mb-4">Services will be displayed here once added.</p>
                   </motion.div>
-                )}
-                
-                {/* Example Services if none provided */}
-                {services.length === 0 && (
-                  <div className="space-y-6">
-                    {[
-                      { title: "Motion Design", desc: "Stunning animations for brands, products, and digital experiences." },
-                      { title: "Interactive Development", desc: "Engaging web and app experiences with cutting-edge animations." },
-                      { title: "3D Visualization", desc: "Immersive 3D models and environments for various applications." }
-                    ].map((service, index) => (
-                      <motion.div 
-                        key={index}
-                        className="bg-gray-800/30 rounded-xl p-6 border border-gray-700 relative overflow-hidden group"
-                        initial={{ opacity: 0, x: 30 }}
-                        animate={{ opacity: isSkillsInView ? 1 : 0, x: isSkillsInView ? 0 : 30 }}
-                        transition={{ duration: 0.5, delay: 0.5 + index * 0.1 }}
-                        whileHover={{ 
-                          y: -5,
-                          boxShadow: '0 8px 30px rgba(45, 212, 191, 0.15)',
-                          borderColor: 'rgba(45, 212, 191, 0.3)' 
-                        }}
-                      >
-                        <div className="absolute top-0 left-0 h-full w-1 bg-gradient-to-b from-teal-500 to-transparent" />
-                        <h4 className="text-lg font-bold text-white mb-3">{service.title}</h4>
-                        <p className="text-gray-400">{service.desc}</p>
-                      </motion.div>
-                    ))}
-                  </div>
                 )}
               </div>
             </div>
@@ -1388,183 +1046,160 @@ export default function AnimatedTemplate({
         </div>
       </section>
       
-      {/* Contact Section & Footer */}
-      <section className="py-20 relative">
+      {/* Contact Section */}
+      <section id="contact" className="py-20 relative" ref={contactRef}>
         <div className="container mx-auto px-6 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: isContactInView ? 1 : 0, y: isContactInView ? 0 : 30 }}
+            transition={{ duration: 0.7 }}
+            className="mb-16 text-center"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 section-title">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-500">
+                Get In Touch
+              </span>
+            </h2>
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+              Have a project in mind or want to collaborate? I'd love to hear from you.
+            </p>
+          </motion.div>
+          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <motion.div
+            <motion.div 
+              className="space-y-8"
               initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.7 }}
-              viewport={{ once: true }}
+              animate={{ opacity: isContactInView ? 1 : 0, x: isContactInView ? 0 : -30 }}
+              transition={{ duration: 0.8 }}
             >
-              <h2 className="text-4xl font-bold text-white mb-6">Let's Create Something <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500">Amazing</span></h2>
-              <p className="text-gray-400 text-lg mb-8">
-                Ready to collaborate on your next project? Let's connect and bring your vision to life with captivating animations and interactive experiences.
+              <h3 className="text-2xl font-bold text-white">Let's build something amazing together</h3>
+              
+              <p className="text-gray-400 text-lg">
+                I'm always open to discussing new projects, creative ideas or opportunities to be part of your vision.
               </p>
               
-              <motion.button
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-3 px-8 rounded-full flex items-center gap-2"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={handleLetsTalkClick}
-              >
-                <span>Get in Touch</span>
-                <motion.div
-                  animate={{ x: [0, 5, 0] }}
-                  transition={{ duration: 1, repeat: Infinity }}
-                >
-                  <ArrowRight className="h-5 w-5" />
-                </motion.div>
-              </motion.button>
-            </motion.div>
-            
-            <motion.div
-              className="relative"
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.7, delay: 0.2 }}
-              viewport={{ once: true }}
-            >
-              {/* Animated graphic element */}
-              <div className="aspect-square w-full max-w-md mx-auto relative">
-                <motion.div 
-                  className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 blur-xl"
-                  animate={{ 
-                    scale: [1, 1.1, 1],
-                    rotate: [0, 5, 0, -5, 0],
-                  }}
-                  transition={{ duration: 8, repeat: Infinity }}
-                />
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-purple-500/20 rounded-full flex items-center justify-center">
+                    <MessageCircle className="h-6 w-6 text-purple-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Email me at</p>
+                    <a
+                      href={`mailto:${email || 'contact@example.com'}`}
+                      className="text-white hover:text-purple-400 transition-colors"
+                    >
+                      {email || 'contact@example.com'}
+                    </a>
+                  </div>
+                </div>
                 
-                <motion.div 
-                  className="absolute inset-10 rounded-full border-4 border-purple-500/30"
-                  animate={{ 
-                    rotate: [0, 360],
-                  }}
-                  transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                />
-                
-                <motion.div 
-                  className="absolute inset-20 rounded-full border-4 border-pink-500/30"
-                  animate={{ 
-                    rotate: [360, 0],
-                  }}
-                  transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                />
-                
-                <motion.div 
-                  className="absolute inset-0 flex items-center justify-center"
-                  animate={{ 
-                    scale: [1, 1.05, 1],
-                  }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                >
-                  <div className="text-5xl">🚀</div>
-                </motion.div>
-              </div>
-            </motion.div>
-          </div>
-          
-          {/* Footer */}
-          <motion.div 
-            className="border-t border-gray-800 mt-20 pt-8 text-center text-gray-500"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-            viewport={{ once: true }}
-          >
-            <p>© {new Date().getFullYear()} {name}. All rights reserved.</p>
-            <p className="mt-2">Designed with 💜 and motion</p>
-          </motion.div>
-        </div>
-      </section>
-      
-      {/* Chat Modal */}
-      <AnimatePresence>
-        {showModal && (
-          <motion.div 
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={handleCloseModal}
-          >
-            <motion.div 
-              className="bg-gray-900 rounded-xl border border-gray-700 p-6 w-full max-w-md relative"
-              initial={{ scale: 0.9, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 20 }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button 
-                className="absolute top-4 right-4 text-gray-400 hover:text-white"
-                onClick={handleCloseModal}
-              >
-                <X className="h-5 w-5" />
-              </button>
-              
-              <h3 className="text-xl font-bold text-white mb-2">Let's Connect!</h3>
-              <p className="text-gray-400 mb-6">Send me a message and I'll get back to you soon.</p>
-              
-              {/* Message Suggestions */}
-              <div className="mb-6 space-y-2">
-                <h4 className="text-sm font-medium text-gray-300 mb-2">Select a message or write your own:</h4>
-                {messageOptions.map((msg, idx) => (
-                  <motion.button
-                    key={idx}
-                    className="block w-full text-left text-sm bg-gray-800 hover:bg-gray-700 text-gray-300 p-2 rounded border border-gray-700 transition-colors"
-                    whileHover={{ x: 3 }}
-                    onClick={() => handleSelectMessage(msg)}
-                  >
-                    {msg}
-                  </motion.button>
-                ))}
-              </div>
-              
-              {/* Message Input */}
-              <div className="mb-4">
-                <textarea
-                  className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white placeholder-gray-500 focus:border-purple-500 focus:ring focus:ring-purple-500/20 focus:outline-none transition"
-                  rows={4}
-                  placeholder="Write your message here... (350 char max)"
-                  value={messageText}
-                  onChange={(e) => setMessageText(e.target.value.slice(0, 350))}
-                  maxLength={350}
-                />
-                <div className="text-right text-sm text-gray-500 mt-1">
-                  {messageText.length}/350
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-purple-500/20 rounded-full flex items-center justify-center">
+                    <MapPin className="h-6 w-6 text-purple-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Based in</p>
+                    <p className="text-white">{location || 'San Francisco, CA'}</p>
+                  </div>
                 </div>
               </div>
               
-              {/* Attachment */}
-              <div className="flex items-center mb-6">
-                <button className="text-gray-400 hover:text-purple-400 transition-colors">
-                  <motion.div
-                    whileHover={{ rotate: 15 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                  >
-                    <PlusCircle className="h-5 w-5" />
-                  </motion.div>
-                </button>
-                <span className="ml-2 text-gray-500 text-sm">Add attachment</span>
+              <div className="pt-4">
+                <h4 className="text-lg font-bold text-white mb-4">Connect with me</h4>
+                <div className="flex gap-4">
+                  {['twitter', 'github', 'linkedin', 'dribbble'].map((platform, i) => (
+                    <motion.a
+                      key={platform}
+                      href="#"
+                      className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 hover:bg-purple-600 hover:text-white transition-all"
+                      whileHover={{ y: -5 }}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: isContactInView ? 1 : 0, y: isContactInView ? 0 : 20 }}
+                      transition={{ duration: 0.4, delay: 0.3 + i * 0.1 }}
+                    >
+                      <span className="sr-only">{platform}</span>
+                      {/* Platform icons would go here */}
+                    </motion.a>
+                  ))}
+                </div>
               </div>
-              
-              {/* Send Button */}
-              <motion.button
-                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={handleSendMessage}
-                disabled={!messageText.trim()}
-              >
-                <span>Send Message</span>
-                <Send className="h-5 w-5" />
-              </motion.button>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            
+            <motion.div 
+              className="bg-gray-800/30 rounded-xl p-8 border border-gray-700"
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: isContactInView ? 1 : 0, x: isContactInView ? 0 : 30 }}
+              transition={{ duration: 0.8 }}
+            >
+              <h3 className="text-xl font-bold text-white mb-6">Send a Message</h3>
+              
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <label htmlFor="name" className="text-gray-400 block">Name</label>
+                  <input 
+                    type="text" 
+                    id="name" 
+                    className="w-full bg-gray-900/70 border border-gray-700 rounded-lg p-3 text-white focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
+                    placeholder="Your name"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <label htmlFor="email" className="text-gray-400 block">Email</label>
+                  <input 
+                    type="email" 
+                    id="email" 
+                    className="w-full bg-gray-900/70 border border-gray-700 rounded-lg p-3 text-white focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
+                    placeholder="Your email"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <label htmlFor="message" className="text-gray-400 block">Message</label>
+                  <textarea 
+                    id="message" 
+                    rows={4}
+                    className="w-full bg-gray-900/70 border border-gray-700 rounded-lg p-3 text-white focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
+                    placeholder="Your message"
+                  ></textarea>
+                </div>
+                
+                <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-6 rounded-lg text-lg font-medium flex items-center justify-center">
+                  <Send className="mr-2 h-5 w-5" />
+                  <span>Send Message</span>
+                </Button>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+      
+      {/* Footer */}
+      <footer className="py-12 bg-gray-900/80 border-t border-gray-800">
+        <div className="container mx-auto px-6">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <div className="mb-6 md:mb-0">
+              <h3 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
+                {name}
+              </h3>
+              <p className="text-gray-500 mt-1">{title}</p>
+            </div>
+            
+            <div className="text-gray-500 text-sm text-center">
+              <p>© {new Date().getFullYear()} All rights reserved.</p>
+              <p>Made with ✨ using React, Tailwind & Framer Motion</p>
+            </div>
+            
+            <div className="mt-6 md:mt-0">
+              <Button variant="outline" className="bg-transparent border border-gray-700 text-gray-400 hover:bg-gray-800 hover:text-white">
+                <ArrowRight className="mr-2 h-4 w-4" />
+                <span>Back to top</span>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
