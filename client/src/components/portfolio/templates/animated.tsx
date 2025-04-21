@@ -255,8 +255,7 @@ export default function AnimatedTemplate({
                       <div className="text-sm text-gray-400">{skill.name}</div>
                       <Progress 
                         value={skill.proficiency || 75} 
-                        className="h-1.5 mt-2" 
-                        indicatorClassName="bg-gradient-to-r from-purple-500 to-pink-500" 
+                        className="h-1.5 mt-2 bg-gradient-to-r from-purple-500 to-pink-500" 
                       />
                     </motion.div>
                   ))}
@@ -737,7 +736,6 @@ export default function AnimatedTemplate({
                       {/* Location */}
                       {experience.location && (
                         <div className="flex items-center text-gray-500 text-sm mb-3">
-
                           <span>{experience.location}</span>
                         </div>
                       )}
