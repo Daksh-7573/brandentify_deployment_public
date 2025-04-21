@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useAnimation, useInView } from 'framer-motion';
 import '../../../styles/animated-template.css';
+import { useLumosAnimations } from '@/hooks/use-lumos-animations';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -31,9 +32,7 @@ import { Service, Project, Skill, WorkExperience, Education } from '@shared/sche
 import { Progress } from '@/components/ui/progress';
 import Lottie from 'react-lottie-player';
 
-// Import animation libraries
-import { useLumosAnimations } from '@/hooks/use-lumos-animations';
-
+// Define component props
 interface AnimatedTemplateProps {
   name: string;
   title: string;

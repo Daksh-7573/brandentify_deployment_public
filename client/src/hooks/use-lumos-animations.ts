@@ -1,161 +1,262 @@
-import { useEffect, useRef } from 'react';
-import {
-  initSparkleTrail,
-  initTiltCards,
-  createAmbientAuras,
-  animateXpBar,
-  triggerLevelUp,
-  animateBadgeUnlock
-} from '@/lib/animation-utils';
+import { useCallback } from 'react';
 
 /**
- * Hook to easily add Lumos Flow animations to components
+ * Lumos Animation System - Motion-driven interactions for the Animated Template
+ * Code Name: Lumos Flow - Where Career Meets Joy
  */
 export function useLumosAnimations() {
-  const initialized = useRef(false);
-  
   /**
-   * Initialize all animations when component mounts
+   * Creates ambient floating auras in the background
+   * @param selector - The CSS selector for the container
+   * @param count - Number of auras to create
    */
-  useEffect(() => {
-    if (initialized.current) return;
-    initialized.current = true;
-    
-    // Initialize basic animations with a slight delay to ensure DOM is ready
-    setTimeout(() => {
-      initSparkleTrail();
-      initTiltCards();
-    }, 500);
-    
+  const initAmbientAuras = useCallback((selector: string, count: number = 3) => {
+    const container = document.querySelector(selector);
+    if (!container) return;
+
+    // Clear existing auras
+    const existingAuras = container.querySelectorAll('.lumos-aura');
+    existingAuras.forEach(aura => aura.remove());
+
+    // Create new auras
+    for (let i = 0; i < count; i++) {
+      const aura = document.createElement('div');
+      aura.classList.add('lumos-aura');
+      
+      // Randomize aura properties
+      const size = Math.random() * 300 + 100; // 100-400px
+      const posX = Math.random() * 100;
+      const posY = Math.random() * 100;
+      const hue = Math.floor(Math.random() * 60) + 220; // Blue/Purple hues
+      const animDuration = Math.random() * 20 + 20; // 20-40s
+      const delay = Math.random() * 5;
+      
+      // Apply styles
+      Object.assign(aura.style, {
+        width: `${size}px`,
+        height: `${size}px`,
+        left: `${posX}%`,
+        top: `${posY}%`,
+        background: `radial-gradient(circle, hsla(${hue}, 70%, 60%, 0.1) 0%, transparent 70%)`,
+        animationDuration: `${animDuration}s`,
+        animationDelay: `${delay}s`
+      });
+      
+      container.appendChild(aura);
+    }
   }, []);
   
   /**
-   * Initialize ambient background auras in the specified container
-   * @param containerSelector CSS selector for the container element
-   * @param count Number of aura elements to create
+   * Animates a staggered card stack to create depth
+   * @param selector - CSS selector for the container
    */
-  const initAmbientAuras = (containerSelector: string, count: number = 3) => {
-    setTimeout(() => {
-      createAmbientAuras(containerSelector, count);
-    }, 100);
-  };
-  
-  /**
-   * Animate an XP progress bar with the specified percentage
-   * @param selector CSS selector for the XP bar
-   * @param percent Percentage to fill (0-100)
-   */
-  const animateXp = (selector: string, percent: number) => {
-    animateXpBar(selector, percent);
-  };
-  
-  /**
-   * Trigger a level-up animation with confetti effect
-   * @param selector CSS selector for the element to animate
-   */
-  const levelUp = (selector: string) => {
-    triggerLevelUp(selector);
-  };
-  
-  /**
-   * Animate a badge unlock with floating effect and halo
-   * @param selector CSS selector for the badge element
-   */
-  const unlockBadge = (selector: string) => {
-    animateBadgeUnlock(selector);
-  };
-
-  /**
-   * Add page transition animation classes
-   * @param pageRef React ref to the page component
-   */
-  const pageTransition = (pageRef: React.RefObject<HTMLElement>) => {
-    if (!pageRef.current) return;
-    
-    // Add the transition class
-    pageRef.current.classList.add('page-transition-fade');
-    
-    // Remove it after animation to avoid conflicts with other animations
-    setTimeout(() => {
-      if (pageRef.current) {
-        pageRef.current.classList.remove('page-transition-fade');
-      }
-    }, 1000);
-  };
-  
-  /**
-   * Set up modal animations (glassy backdrop with float-up content)
-   * @param backdropRef React ref to the modal backdrop
-   * @param contentRef React ref to the modal content
-   */
-  const setupModalAnimation = (
-    backdropRef: React.RefObject<HTMLElement>,
-    contentRef: React.RefObject<HTMLElement>
-  ) => {
-    if (backdropRef.current) {
-      backdropRef.current.classList.add('modal-backdrop');
-    }
-    
-    if (contentRef.current) {
-      contentRef.current.classList.add('modal-content');
-    }
-  };
-  
-  /**
-   * Apply card stack fly-in animation to a container of cards
-   * @param containerSelector CSS selector for the container element
-   */
-  const animateCardStack = (containerSelector: string) => {
-    const container = document.querySelector(containerSelector);
+  const animateCardStack = useCallback((selector: string) => {
+    const container = document.querySelector(selector);
     if (!container) return;
     
-    const cards = container.querySelectorAll('.card, .card-stack-item');
+    const cards = container.querySelectorAll('.project-card, .skill-card, .education-card');
     
-    cards.forEach((card) => {
-      card.classList.add('card-stack-item', 'entering');
+    cards.forEach((card, index) => {
+      card.classList.add('lumos-card');
+      
+      // Add interaction effects with timing based on index
+      (card as HTMLElement).style.transitionDelay = `${index * 0.05}s`;
+      
+      // Add interactive hover state
+      card.addEventListener('mouseenter', () => {
+        const otherCards = Array.from(cards).filter(c => c !== card);
+        otherCards.forEach(c => c.classList.add('lumos-card-dim'));
+      });
+      
+      card.addEventListener('mouseleave', () => {
+        cards.forEach(c => c.classList.remove('lumos-card-dim'));
+      });
     });
-  };
+  }, []);
   
   /**
-   * Apply parallax slide animation for tab/section transitions
-   * @param containerSelector CSS selector for the container element
-   * @param enteringSelector CSS selector for entering content
-   * @param exitingSelector CSS selector for exiting content (optional)
+   * Adds parallax slide animations for section transitions
+   * @param sectionSelector - CSS selector for the section
+   * @param contentSelector - CSS selector for the content container
    */
-  const animateParallaxSlide = (
-    containerSelector: string,
-    enteringSelector: string,
-    exitingSelector?: string
-  ) => {
-    const container = document.querySelector(containerSelector);
-    if (!container) return;
+  const animateParallaxSlide = useCallback((sectionSelector: string, contentSelector: string) => {
+    const section = document.querySelector(sectionSelector);
+    if (!section) return;
     
-    // Add container class
-    container.classList.add('slide-parallax-container');
+    const content = section.querySelector(contentSelector);
+    if (!content) return;
     
-    // Animate entering content
-    const entering = container.querySelector(enteringSelector);
-    if (entering) {
-      entering.classList.add('slide-parallax-item', 'entering');
+    // Add helper classes
+    section.classList.add('lumos-section');
+    content.classList.add('lumos-content');
+    
+    // Create parallax background if not present
+    if (!section.querySelector('.lumos-parallax-bg')) {
+      const bgElement = document.createElement('div');
+      bgElement.classList.add('lumos-parallax-bg');
+      section.insertBefore(bgElement, content);
     }
     
-    // Animate exiting content if provided
-    if (exitingSelector) {
-      const exiting = container.querySelector(exitingSelector);
-      if (exiting) {
-        exiting.classList.add('slide-parallax-item', 'exiting');
+    // Set up scroll-triggered animations
+    const handleScroll = () => {
+      const rect = section.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      
+      // Calculate how far the section is into the viewport
+      const percentVisible = Math.min(
+        Math.max(0, (viewportHeight - rect.top) / (viewportHeight + rect.height)),
+        1
+      );
+      
+      // Apply transformation based on scroll position
+      const translateY = 50 - (percentVisible * 50);
+      const opacity = Math.min(1, percentVisible * 1.5);
+      
+      const bg = section.querySelector('.lumos-parallax-bg') as HTMLElement;
+      if (bg) {
+        bg.style.transform = `translateY(${translateY * 0.5}px)`;
+        bg.style.opacity = `${opacity * 0.3}`;
       }
-    }
-  };
-
+      
+      (content as HTMLElement).style.transform = `translateY(${translateY * 0.2}px)`;
+      (content as HTMLElement).style.opacity = `${opacity}`;
+    };
+    
+    // Add event listener
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    // Initial call
+    handleScroll();
+    
+    // Cleanup - this is just for reference, we're not using React effects here
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+  
+  /**
+   * Adds sparkle effects to elements on interaction
+   * @param selector - CSS selector for elements to apply sparkle effect to
+   */
+  const addSparkleEffect = useCallback((selector: string) => {
+    const elements = document.querySelectorAll(selector);
+    
+    elements.forEach(el => {
+      el.classList.add('sparkle-trigger');
+      
+      el.addEventListener('mouseenter', () => {
+        // Create sparkle elements
+        for (let i = 0; i < 5; i++) {
+          const sparkle = document.createElement('div');
+          sparkle.classList.add('sparkle');
+          
+          // Randomize sparkle properties
+          const size = Math.random() * 10 + 5; // 5-15px
+          const posX = Math.random() * 100;
+          const posY = Math.random() * 100;
+          const animDuration = Math.random() * 1 + 1; // 1-2s
+          const delay = Math.random() * 0.5;
+          
+          // Apply styles
+          Object.assign(sparkle.style, {
+            width: `${size}px`,
+            height: `${size}px`,
+            left: `${posX}%`,
+            top: `${posY}%`,
+            animationDuration: `${animDuration}s`,
+            animationDelay: `${delay}s`
+          });
+          
+          el.appendChild(sparkle);
+          
+          // Remove sparkle after animation
+          setTimeout(() => {
+            sparkle.remove();
+          }, (animDuration + delay) * 1000);
+        }
+      });
+    });
+  }, []);
+  
+  /**
+   * Adds smooth typing effect to elements
+   * @param selector - CSS selector for elements to apply typing effect to
+   * @param speed - Speed of typing in milliseconds per character
+   */
+  const addTypingEffect = useCallback((selector: string, speed: number = 50) => {
+    const elements = document.querySelectorAll(selector);
+    
+    elements.forEach(el => {
+      const text = el.textContent || '';
+      el.textContent = '';
+      el.classList.add('typing-text');
+      
+      let i = 0;
+      const type = () => {
+        if (i < text.length) {
+          el.textContent += text.charAt(i);
+          i++;
+          setTimeout(type, speed);
+        } else {
+          // Add blinking cursor effect after typing is complete
+          el.classList.add('typing-done');
+        }
+      };
+      
+      // Start typing when element is in view
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            setTimeout(() => {
+              type();
+            }, 400); // Slight delay before typing starts
+            observer.disconnect();
+          }
+        });
+      });
+      
+      observer.observe(el);
+    });
+  }, []);
+  
+  /**
+   * Adds 3D tilt effect to cards
+   * @param selector - CSS selector for elements to apply 3D tilt effect to
+   * @param intensity - Intensity of the tilt effect (default: 10)
+   */
+  const addTiltEffect = useCallback((selector: string, intensity: number = 10) => {
+    const elements = document.querySelectorAll(selector);
+    
+    elements.forEach(el => {
+      el.classList.add('tilt-card');
+      
+      el.addEventListener('mousemove', (e: Event) => {
+        const mouseEvent = e as MouseEvent;
+        const rect = el.getBoundingClientRect();
+        const x = mouseEvent.clientX - rect.left; // x position within the element
+        const y = mouseEvent.clientY - rect.top; // y position within the element
+        
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        
+        const deltaX = (x - centerX) / centerX; // -1 to 1
+        const deltaY = (y - centerY) / centerY; // -1 to 1
+        
+        (el as HTMLElement).style.transform = `perspective(1000px) rotateX(${-deltaY * intensity}deg) rotateY(${deltaX * intensity}deg) scale3d(1.02, 1.02, 1.02)`;
+      });
+      
+      el.addEventListener('mouseleave', () => {
+        (el as HTMLElement).style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+      });
+    });
+  }, []);
+  
   return {
     initAmbientAuras,
-    animateXp,
-    levelUp,
-    unlockBadge,
-    pageTransition,
-    setupModalAnimation,
     animateCardStack,
-    animateParallaxSlide
+    animateParallaxSlide,
+    addSparkleEffect,
+    addTypingEffect,
+    addTiltEffect,
   };
 }
