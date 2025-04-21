@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import NeoPastel Glow theme */
+@import './styles/neopastel.css';
+
 /* Custom animations */
 
 /* Artistic Card animations */

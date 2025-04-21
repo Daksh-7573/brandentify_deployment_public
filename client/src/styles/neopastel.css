@@ -1,0 +1,139 @@
+/* NeoPastel Glow Theme - Custom Styling */
+
+:root {
+  /* Base Colors */
+  --sky-blush: #AEE6E6;
+  --peach-mist: #FFD6C0;
+  --soft-lavender: #E4D7FA;
+  --snow-gray: #F7F9FC;
+  --cloud-lilac: #F2EDF8;
+  --graphite: #2B2E33;
+  --dust-gray: #70757B;
+  --mint-green: #B7E4C7;
+  --soft-coral: #FFB3AB;
+  
+  /* Gradients */
+  --primary-gradient: linear-gradient(135deg, var(--sky-blush) 0%, var(--soft-lavender) 100%);
+  --secondary-gradient: linear-gradient(135deg, var(--peach-mist) 0%, var(--soft-lavender) 70%);
+  
+  /* Shadows */
+  --card-shadow: 0 4px 12px rgba(228, 215, 250, 0.15);
+  --hover-shadow: 0 6px 16px rgba(228, 215, 250, 0.25);
+  --button-shadow: 0 2px 6px rgba(174, 230, 230, 0.25);
+}
+
+/* Enhanced Button Styling */
+.btn-primary, 
+.button-primary,
+[data-variant="default"].button {
+  background: var(--primary-gradient) !important;
+  color: var(--graphite) !important;
+  font-weight: 500;
+  border: none !important;
+  box-shadow: var(--button-shadow);
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-primary:hover,
+.button-primary:hover,
+[data-variant="default"].button:hover {
+  background: var(--secondary-gradient) !important;
+  box-shadow: var(--hover-shadow);
+  transform: translateY(-1px);
+}
+
+/* Card Enhancements */
+.card {
+  background-color: var(--cloud-lilac);
+  border: 1px solid rgba(228, 215, 250, 0.3);
+  box-shadow: var(--card-shadow);
+  transition: all 0.25s ease;
+}
+
+.card:hover {
+  box-shadow: var(--hover-shadow);
+  border-color: rgba(228, 215, 250, 0.6);
+}
+
+/* Badge Styling */
+.badge {
+  border-radius: 12px;
+  padding: 0.25rem 0.5rem;
+  font-weight: 500;
+}
+
+.badge-success {
+  background-color: var(--mint-green);
+  color: #2F4F4F;
+}
+
+.badge-alert {
+  background-color: var(--soft-coral);
+  color: #8B4513;
+}
+
+/* Musk AI Button - Special Styling */
+.musk-button {
+  background: var(--primary-gradient);
+  border: 2px solid white;
+  box-shadow: 0 0 15px rgba(174, 230, 230, 0.5);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(174, 230, 230, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(174, 230, 230, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(174, 230, 230, 0);
+  }
+}
+
+/* Main App Background */
+body, .app-background {
+  background-color: var(--snow-gray);
+}
+
+/* Input Fields */
+input, textarea, select, .select-trigger {
+  background-color: white !important;
+  border: 1px solid rgba(228, 215, 250, 0.5) !important;
+  transition: all 0.2s ease;
+}
+
+input:focus, textarea:focus, select:focus, .select-trigger:focus {
+  border-color: var(--sky-blush) !important;
+  box-shadow: 0 0 0 2px rgba(174, 230, 230, 0.25) !important;
+}
+
+/* Section Headers */
+.section-header {
+  color: var(--graphite);
+  border-bottom: 2px solid var(--sky-blush);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+/* Avatar Highlights */
+.avatar {
+  border: 2px solid white;
+  box-shadow: 0 2px 6px rgba(174, 230, 230, 0.25);
+}
+
+/* "Inspired" Button Special Styling */
+.inspired-active {
+  color: var(--soft-coral) !important;
+  font-weight: 500;
+}
+
+/* Toggle Switch Customization */
+.switch[data-state="checked"] {
+  background-color: var(--mint-green) !important;
+}
+
+.switch[data-state="unchecked"] {
+  background-color: var(--soft-coral) !important;
+}

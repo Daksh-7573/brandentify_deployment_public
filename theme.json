@@ -1,6 +1,16 @@
 {
-  "variant": "vibrant",
-  "primary": "hsl(240, 60%, 50%)",
+  "variant": "tint",
+  "primary": "#AEE6E6",
   "appearance": "light",
-  "radius": 1.0
+  "radius": 1.2,
+  "colors": {
+    "secondary": "#FFD6C0",
+    "tertiary": "#E4D7FA",
+    "background": "#F7F9FC",
+    "card": "#F2EDF8",
+    "text": "#2B2E33",
+    "textSecondary": "#70757B",
+    "success": "#B7E4C7",
+    "warning": "#FFB3AB"
+  }
 }
