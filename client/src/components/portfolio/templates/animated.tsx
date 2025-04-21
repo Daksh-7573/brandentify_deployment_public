@@ -233,6 +233,11 @@ export default function AnimatedTemplate({
                   <MessageCircle className="ml-2 h-5 w-5" />
                 </Button>
                 
+                <Button className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white px-8 py-6 rounded-full text-lg font-medium flex items-center transition-all transform hover:scale-105 shadow-lg">
+                  <span>Mentor</span>
+                  <TrendingUp className="ml-2 h-5 w-5" />
+                </Button>
+                
                 <Button variant="outline" className="bg-transparent border border-purple-500 text-purple-400 hover:bg-purple-950/30 px-8 py-6 rounded-full text-lg font-medium flex items-center transition-all hover:text-purple-300">
                   <Download className="mr-2 h-5 w-5" />
                   <span>Download Resume</span>
