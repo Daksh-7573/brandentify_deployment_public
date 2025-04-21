@@ -903,7 +903,7 @@ export default function FreelancerHub({
                 </div>
                 
                 {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4 mt-2">
+                <div className="flex flex-col sm:flex-row flex-wrap gap-4 mt-2">
                   {/* Connect Button */}
                   <motion.div
                     whileHover={{ scale: 1.05 }}
@@ -959,6 +959,35 @@ export default function FreelancerHub({
                         }}
                       >
                         🚀
+                      </motion.span>
+                    </Button>
+                  </motion.div>
+                  
+                  {/* Grab My Resume Button */}
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.9, type: "spring" }}
+                  >
+                    <Button 
+                      className="bg-gradient-to-r from-teal-500 to-emerald-500 text-white text-lg px-6 py-6 rounded-full shadow-lg flex items-center gap-2 font-bold hover:shadow-xl transition-shadow w-full sm:w-auto"
+                      style={{ fontFamily: 'Fredoka, sans-serif' }}
+                    >
+                      <FileText className="h-6 w-6" />
+                      <span>Grab My Resume</span>
+                      <motion.span
+                        initial={{ y: 0 }}
+                        animate={{ y: [0, -5, 0] }}
+                        transition={{ 
+                          duration: 0.5,
+                          delay: 1.4,
+                          repeat: 1,
+                          repeatType: "reverse"
+                        }}
+                      >
+                        📄
                       </motion.span>
                     </Button>
                   </motion.div>
