@@ -31,7 +31,7 @@ import { Progress } from '@/components/ui/progress';
 import Lottie from 'react-lottie-player';
 
 // Import animation libraries
-import '@/hooks/use-lumos-animations.ts';
+import { useLumosAnimations } from '@/hooks/use-lumos-animations';
 
 interface AnimatedTemplateProps {
   name: string;
@@ -66,6 +66,14 @@ export default function AnimatedTemplate({
   lookingFor,
   email
 }: AnimatedTemplateProps) {
+  // Get animation utilities
+  const {
+    initAmbientAuras,
+    animateCardStack,
+    animateParallaxSlide
+  } = useLumosAnimations();
+  
+  // Component state
   const [isShowing, setIsShowing] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [activeProject, setActiveProject] = useState<number | null>(null);
@@ -73,6 +81,9 @@ export default function AnimatedTemplate({
   const [messageText, setMessageText] = useState('');
   const [isHoveringCTA, setIsHoveringCTA] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  
+  // Section refs for animations
+  const heroRef = useRef<HTMLDivElement>(null);
   
   // For typewriter effect on title
   const [text] = useTypewriter({
@@ -116,30 +127,33 @@ export default function AnimatedTemplate({
     "I have some exciting freelance projects you might be interested in."
   ];
   
-  // Category filter for skills
+  // Category filter for skills - using skill names since category is not in schema
   const skillCategories = {
     creative: skills.filter(skill => 
-      skill.category?.toLowerCase().includes('creative') || 
-      ['design', 'animation', '3d', 'motion', 'video'].some(keyword => 
+      ['design', 'animation', '3d', 'motion', 'video', 'creative', 'art', 'illustration'].some(keyword => 
         skill.name.toLowerCase().includes(keyword)
       )
     ),
     technical: skills.filter(skill => 
-      skill.category?.toLowerCase().includes('technical') || 
-      ['programming', 'development', 'code', 'software'].some(keyword => 
+      ['programming', 'development', 'code', 'software', 'technical', 'engineering'].some(keyword => 
         skill.name.toLowerCase().includes(keyword)
       )
     ),
     tools: skills.filter(skill => 
-      skill.category?.toLowerCase().includes('tool') || 
-      ['adobe', 'figma', 'sketch', 'blender', 'cinema'].some(keyword => 
+      ['adobe', 'figma', 'sketch', 'blender', 'cinema', 'tool', 'suite', 'editor'].some(keyword => 
         skill.name.toLowerCase().includes(keyword)
       )
     ),
     other: skills.filter(skill => 
-      !skill.category?.toLowerCase().includes('creative') && 
-      !skill.category?.toLowerCase().includes('technical') && 
-      !skill.category?.toLowerCase().includes('tool')
+      !['design', 'animation', '3d', 'motion', 'video', 'creative', 'art', 'illustration'].some(keyword => 
+        skill.name.toLowerCase().includes(keyword)
+      ) && 
+      !['programming', 'development', 'code', 'software', 'technical', 'engineering'].some(keyword => 
+        skill.name.toLowerCase().includes(keyword)
+      ) && 
+      !['adobe', 'figma', 'sketch', 'blender', 'cinema', 'tool', 'suite', 'editor'].some(keyword => 
+        skill.name.toLowerCase().includes(keyword)
+      )
     )
   };
   
