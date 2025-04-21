@@ -229,8 +229,8 @@ export default function AnimatedTemplate({
                 transition={{ duration: 0.8, delay: 0.8 }}
               >
                 <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-6 rounded-full text-lg font-medium flex items-center transition-all transform hover:scale-105 shadow-lg">
-                  <span>View My Work</span>
-                  <ChevronDown className="ml-2 h-5 w-5" />
+                  <span>Let's Talk</span>
+                  <MessageCircle className="ml-2 h-5 w-5" />
                 </Button>
                 
                 <Button variant="outline" className="bg-transparent border border-purple-500 text-purple-400 hover:bg-purple-950/30 px-8 py-6 rounded-full text-lg font-medium flex items-center transition-all hover:text-purple-300">
