@@ -251,6 +251,11 @@ export default function FreelancerHub({
     setIsProjectModalOpen(true);
   };
   
+  // Function to handle Let's Talk button click
+  const handleLetsTalkClick = () => {
+    setIsContactModalOpen(true);
+  };
+  
   // Function to handle scroll in horizontal sections
   const handleScroll = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
@@ -1674,7 +1679,7 @@ export default function FreelancerHub({
               <Button 
                 className="blob-button bg-white text-violet-600 hover:bg-gray-100 text-lg px-8 py-6 rounded-full shadow-lg flex items-center gap-2 w-full md:w-auto"
                 style={{ fontFamily: 'Fredoka, sans-serif' }}
-                onClick={() => userInfo.email ? window.location.href = `mailto:${userInfo.email}` : null}
+                onClick={handleLetsTalkClick}
               >
                 <MessageCircle className="h-5 w-5" />
                 Let's Connect 💬
