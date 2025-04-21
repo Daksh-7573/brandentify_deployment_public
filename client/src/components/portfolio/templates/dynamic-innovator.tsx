@@ -17,6 +17,7 @@ import {
   FileText,
   Award,
   Briefcase,
+  Folder,
   GraduationCap,
   MessageSquare,
   Lightbulb,
@@ -29,6 +30,7 @@ import {
   Server,
   Database,
   Globe,
+  Image as ImageIcon,
   Layers,
   CircuitBoard,
   GitBranch,
@@ -1327,12 +1329,13 @@ export function DynamicInnovator({
                   
                   <div className="flex flex-wrap items-center gap-3 mb-4">
                     {selectedProject.category && (
-                      <Badge className="bg-[#0c162d]/80 border border-[#7122FA]/50 text-[#08f7fe] py-1.5 px-3">
+                      <Badge className="bg-[#0D1D38] border border-[#08f7fe]/40 text-[#08f7fe] py-1.5 px-3">
+                        <Folder className="h-3.5 w-3.5 mr-1.5" />
                         {selectedProject.category}
                       </Badge>
                     )}
                     
-                    <span className="text-[#fe53bb] text-sm flex items-center">
+                    <span className="text-[#08f7fe] text-sm flex items-center">
                       <Calendar className="h-4 w-4 mr-1.5" />
                       {formatDate(selectedProject.startDate)}
                     </span>
@@ -1398,20 +1401,23 @@ export function DynamicInnovator({
                 
                 {/* Project gallery - if available */}
                 {selectedProject.mediaUrls && selectedProject.mediaUrls.length > 0 && (
-                  <div className="mt-8 pt-6 border-t border-[#7122FA]/20">
+                  <div className="mt-8 pt-6 border-t border-[#08f7fe]/20">
                     <h3 className="text-lg font-medium text-[#08f7fe] mb-4" style={{ fontFamily: 'Orbitron, sans-serif' }}>
                       Project Gallery
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {selectedProject.mediaUrls.map((url, index) => (
-                        <div key={index} className="overflow-hidden rounded-lg border border-[#7122FA]/30 shadow-lg shadow-[#080E24]/50 relative group">
+                        <div key={index} className="overflow-hidden rounded-lg border-2 border-[#08f7fe]/30 shadow-lg shadow-[#08f7fe]/10 relative group">
                           <img 
                             src={url}
                             alt={`${selectedProject.title} - visual ${index + 1}`}
                             className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-[#080E24]/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-start p-3">
-                            <span className="text-xs text-white font-medium">Image {index + 1}</span>
+                          <div className="absolute inset-0 bg-gradient-to-t from-[#0c162d]/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-start p-3">
+                            <span className="text-xs text-white font-medium flex items-center">
+                              <ImageIcon className="h-3.5 w-3.5 mr-1 text-[#08f7fe]" />
+                              Image {index + 1}
+                            </span>
                           </div>
                         </div>
                       ))}
