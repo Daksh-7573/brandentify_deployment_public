@@ -1,4 +1,3 @@
-import { storage } from "../storage";
 import { db, sql } from "../db";
 
 // Seed demo data for the test user with id=1
@@ -6,20 +5,27 @@ async function seedDemoData() {
   try {
     console.log("Starting to seed demo data...");
     
-    // Check if user with id=1 exists
-    const user = await storage.getUser(1);
-    if (!user) {
+    // Check if user with id=1 exists directly with SQL
+    const userResult = await db.execute(sql`SELECT id FROM users WHERE id = 1`);
+    
+    if (!userResult || userResult.length === 0) {
       console.error("User with id=1 does not exist. Please create this user first.");
       return;
     }
+    
+    console.log("Found user with ID 1, proceeding with data seeding...");
 
-    // Check if data already exists for this user
-    const existingSkills = await storage.getSkillsByUserId(1);
-    const existingExperiences = await storage.getWorkExperiencesByUserId(1);
-    const existingProjects = await storage.getProjectsByUserId(1);
+    // Check if data already exists for this user directly with SQL queries
+    const existingSkills = await db.execute(sql`SELECT COUNT(*) FROM skills WHERE user_id = 1`);
+    const existingExperiences = await db.execute(sql`SELECT COUNT(*) FROM work_experiences WHERE user_id = 1`);
+    const existingProjects = await db.execute(sql`SELECT COUNT(*) FROM projects WHERE user_id = 1`);
+    
+    const skillCount = parseInt(existingSkills[0]?.count || '0');
+    const experienceCount = parseInt(existingExperiences[0]?.count || '0');
+    const projectCount = parseInt(existingProjects[0]?.count || '0');
 
     // Only seed if there's no existing data
-    if (existingSkills.length === 0) {
+    if (skillCount === 0) {
       console.log("Seeding skills...");
       // Add skills
       const skills = [
@@ -43,10 +49,10 @@ async function seedDemoData() {
         );
       }
     } else {
-      console.log(`User already has ${existingSkills.length} skills. Skipping skill seeding.`);
+      console.log(`User already has ${skillCount} skills. Skipping skill seeding.`);
     }
 
-    if (existingExperiences.length === 0) {
+    if (experienceCount === 0) {
       console.log("Seeding work experiences...");
       // Add work experiences
       const experiences = [

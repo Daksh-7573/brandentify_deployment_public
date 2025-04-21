@@ -4785,18 +4785,16 @@ export class DatabaseStorage implements IStorage {
   // Service operations
   async getServicesByUserId(userId: number): Promise<Service[]> {
     try {
-      // Use raw SQL to select only the fields we know exist
-      const query = `
+      // Use sql template literal for safer parameter binding
+      const result = await db.execute(sql`
         SELECT id, user_id as "userId", title, description, category, 
                price_inr as "priceInr", price_usd as "priceUsd", 
                is_hourly as "isHourly", features, image_url as "imageUrl",
                "order", is_active as "isActive", created_at as "createdAt", 
                updated_at as "updatedAt"
         FROM services
-        WHERE user_id = $1
-      `;
-      
-      const result = await db.execute(sql.raw(query), [userId]);
+        WHERE user_id = ${userId}
+      `);
       return result as Service[];
     } catch (error) {
       console.error("Error fetching services:", error);

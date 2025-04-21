@@ -19,7 +19,16 @@ export const db = drizzle({ client: pool, schema });
 // Helper function to execute raw SQL queries
 export async function executeRawQuery(query: string, params: any[] = []) {
   try {
-    return await db.execute(sql.raw(query), params);
+    // For static queries, this approach is still needed
+    // but should only be used when dynamically building queries
+    // or when sql template literals aren't an option
+    const preparedQuery = query.replace(/\$(\d+)/g, (_, n) => {
+      return `\${params[${parseInt(n) - 1}]}`;
+    });
+    
+    // Create a dynamic eval of sql template literal
+    const templateFn = new Function('sql', 'params', `return sql\`${preparedQuery}\``);
+    return await db.execute(templateFn(sql, params));
   } catch (error) {
     console.error("Error executing raw query:", error);
     throw error;
