@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ProfileImage } from "@/components/ui/profile-image";
 import { Education, Project, Service, Skill, WorkExperience } from "@shared/schema";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, createRef } from "react";
 import PortfolioCtaButtons from "../portfolio-cta-buttons";
 import { 
   Calendar, 
@@ -13,20 +13,49 @@ import {
   Instagram, 
   Code, 
   ChevronRight, 
-  BriefcaseBusiness, 
+  ChevronDown,
+  BriefcaseBusiness,
+  Building,
   BookOpen, 
+  GraduationCap,
+  Briefcase,
+  FileText,
+  Award,
   Wallet, 
   ExternalLink, 
   User, 
   Clock, 
+  DownloadCloud,
   Radio, 
+  Lightbulb,
+  Download,
+  UserPlus,
+  Settings,
+  MessageSquare,
   Volume2, 
   VolumeX, 
   MessagesSquare, 
   Github, 
   CheckCircle, 
+  Plus,
   LucideIcon
 } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
 
 interface TimelineStorytellerProps {
   userInfo: {
@@ -67,13 +96,17 @@ export default function TimelineStoryteller({
   const [activeChapter, setActiveChapter] = useState("intro");
   const chapterRefs = {
     intro: useRef<HTMLDivElement>(null),
-    about: useRef<HTMLDivElement>(null),
-    skills: useRef<HTMLDivElement>(null),
-    services: useRef<HTMLDivElement>(null),
-    showcase: useRef<HTMLDivElement>(null),
     career: useRef<HTMLDivElement>(null),
-    education: useRef<HTMLDivElement>(null)
+    education: useRef<HTMLDivElement>(null),
+    projects: useRef<HTMLDivElement>(null),
+    certifications: useRef<HTMLDivElement>(null)
   };
+  
+  // State for Let's Talk modal
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [contactPurpose, setContactPurpose] = useState<string>("");
+  const [contactMessage, setContactMessage] = useState<string>("");
+  const { toast } = useToast();
   
   // Sort skills by proficiency
   const sortedSkills = [...userSkills].sort((a, b) => (b.proficiency || 0) - (a.proficiency || 0));
@@ -154,17 +187,45 @@ export default function TimelineStoryteller({
         to { width: 100%; }
       }
       
-      @keyframes glowPulse {
-        0% { box-shadow: 0 0 0 0 rgba(144, 202, 249, 0.7); }
-        70% { box-shadow: 0 0 0 10px rgba(144, 202, 249, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(144, 202, 249, 0); }
+      @keyframes blinkCursor {
+        from, to { border-right-color: transparent; }
+        50% { border-right-color: currentColor; }
       }
       
-      @keyframes pathAnimation {
-        0% { stroke-dashoffset: 1000; }
+      @keyframes glowPulse {
+        0% { box-shadow: 0 0 0 0 rgba(203, 213, 255, 0.7); }
+        70% { box-shadow: 0 0 0 10px rgba(203, 213, 255, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(203, 213, 255, 0); }
+      }
+      
+      @keyframes drawPath {
+        0% { stroke-dashoffset: 2000; }
         100% { stroke-dashoffset: 0; }
       }
       
+      @keyframes nodeGlow {
+        0% { filter: drop-shadow(0 0 2px rgba(255, 159, 178, 0.8)); }
+        50% { filter: drop-shadow(0 0 8px rgba(255, 159, 178, 0.8)); }
+        100% { filter: drop-shadow(0 0 2px rgba(255, 159, 178, 0.8)); }
+      }
+      
+      @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-8px); }
+        100% { transform: translateY(0px); }
+      }
+      
+      @keyframes expand {
+        0% { transform: scale(0.9); opacity: 0.7; }
+        100% { transform: scale(1); opacity: 1; }
+      }
+      
+      @keyframes lineAnimation {
+        0% { height: 0; opacity: 0; }
+        100% { height: 100%; opacity: 1; }
+      }
+      
+      /* Base animations */
       .timeline-storyteller-template .animate-fade-in {
         opacity: 0;
         animation: fadeIn 0.8s ease-out forwards;
@@ -184,17 +245,46 @@ export default function TimelineStoryteller({
         overflow: hidden;
         white-space: nowrap;
         display: inline-block;
-        animation: typewriter 2.5s steps(40, end) forwards;
+        border-right: 2px solid;
+        width: 0;
+        animation: 
+          typewriter 3.5s steps(40, end) forwards,
+          blinkCursor 0.8s step-end infinite;
       }
       
+      /* Timeline specific styles */
       .timeline-storyteller-template .timeline-dot {
-        animation: glowPulse 2s infinite;
+        position: relative;
+        z-index: 2;
+        animation: glowPulse 3s infinite, float 6s ease-in-out infinite;
+        transition: all 0.5s ease;
+      }
+      
+      .timeline-storyteller-template .timeline-node {
+        position: relative;
+        animation: nodeGlow 3s infinite;
+        transition: all 0.3s ease;
+      }
+      
+      .timeline-storyteller-template .timeline-node:hover {
+        transform: scale(1.1);
       }
       
       .timeline-storyteller-template .timeline-path {
-        stroke-dasharray: 1000;
-        stroke-dashoffset: 1000;
-        animation: pathAnimation 5s ease-out forwards;
+        stroke-dasharray: 2000;
+        stroke-dashoffset: 2000;
+        animation: drawPath 5s ease-out forwards;
+        stroke-width: 2px;
+      }
+      
+      .timeline-storyteller-template .timeline-vertical-line {
+        position: absolute;
+        left: 50%;
+        width: 3px;
+        background: linear-gradient(to bottom, #E2E8F8, #CAD2FE);
+        transform: translateX(-50%);
+        animation: lineAnimation 1.5s ease-out forwards;
+        z-index: 1;
       }
       
       /* Staggered animations */
@@ -204,24 +294,50 @@ export default function TimelineStoryteller({
       .timeline-storyteller-template .animate-fade-in:nth-child(4) { animation-delay: 0.7s; }
       .timeline-storyteller-template .animate-fade-in:nth-child(5) { animation-delay: 0.9s; }
       
-      /* Horizontal scrolling skill path */
-      .timeline-storyteller-template .skill-path {
-        overflow-x: auto;
-        white-space: nowrap;
-        -ms-overflow-style: none;
-        scrollbar-width: none;
+      /* Hero animations */
+      .timeline-storyteller-template .hero-bg-shape {
+        position: absolute;
+        opacity: 0.5;
+        filter: blur(40px);
+        z-index: 0;
+        animation: float 8s ease-in-out infinite;
       }
       
-      .timeline-storyteller-template .skill-path::-webkit-scrollbar {
-        display: none;
+      /* Card animations */
+      .timeline-storyteller-template .card-animated {
+        transform-origin: center bottom;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
       }
       
-      /* Chapter progress */
+      .timeline-storyteller-template .card-animated:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      }
+      
+      .timeline-storyteller-template .timeline-entry {
+        opacity: 0.7;
+        transform: scale(0.95);
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+      
+      .timeline-storyteller-template .timeline-entry.active,
+      .timeline-storyteller-template .timeline-entry:hover {
+        opacity: 1;
+        transform: scale(1);
+      }
+      
+      .timeline-storyteller-template .timeline-entry.active {
+        animation: expand 0.5s forwards;
+      }
+      
+      /* Navigation elements */
       .timeline-storyteller-template .chapter-nav {
         position: fixed;
         top: 50%;
         transform: translateY(-50%);
-        right: 20px;
+        right: 30px;
         z-index: 50;
       }
       
@@ -230,56 +346,67 @@ export default function TimelineStoryteller({
         height: 12px;
         border-radius: 50%;
         background-color: #e0e0e0;
-        margin: 8px 0;
+        margin: 12px 0;
         cursor: pointer;
         transition: all 0.3s ease;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       }
       
       .timeline-storyteller-template .chapter-indicator.active {
-        background-color: #5186EC;
+        background-color: #FF9FB2;
         transform: scale(1.3);
+        box-shadow: 0 0 10px rgba(255, 159, 178, 0.5);
       }
       
       .timeline-storyteller-template .progress-line {
         position: absolute;
         width: 2px;
-        background-color: #5186EC;
+        background: linear-gradient(to bottom, #E2E8F8, #CAD2FE);
         left: 50%;
         transform: translateX(-50%);
-        transition: height 0.3s ease;
+        transition: height 0.5s ease;
       }
       
-      /* Service cards */
-      .timeline-storyteller-template .service-card {
-        transform-style: preserve-3d;
-        transition: transform 0.6s;
+      /* CTA buttons */
+      .timeline-storyteller-template .cta-btn {
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
       }
       
-      .timeline-storyteller-template .service-card:hover {
-        transform: rotateY(10deg);
-      }
-      
-      /* Tooltip */
-      .timeline-storyteller-template .skill-tooltip {
+      .timeline-storyteller-template .cta-btn::after {
+        content: '';
         position: absolute;
-        bottom: 100%;
-        left: 50%;
-        transform: translateX(-50%);
-        background-color: #333;
-        color: white;
-        padding: 8px 12px;
-        border-radius: 6px;
-        font-size: 14px;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.3s;
-        white-space: normal;
-        width: 200px;
-        text-align: center;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.1), transparent);
+        transform: translateX(-100%);
       }
       
-      .timeline-storyteller-template .skill-item:hover .skill-tooltip {
-        opacity: 1;
+      .timeline-storyteller-template .cta-btn:hover::after {
+        transform: translateX(100%);
+        transition: transform 0.6s ease;
+      }
+      
+      /* Modal animations */
+      .timeline-storyteller-template .modal-animation {
+        animation: fadeIn 0.3s ease-out;
+      }
+      
+      /* Drag handle */
+      .timeline-storyteller-template .drag-handle {
+        width: 50px;
+        height: 5px;
+        border-radius: 10px;
+        background-color: rgba(0, 0, 0, 0.1);
+        margin: 0 auto;
+        cursor: grab;
+      }
+      
+      .timeline-storyteller-template .drag-handle:active {
+        cursor: grabbing;
       }
     `;
     document.head.appendChild(style);
@@ -360,187 +487,279 @@ export default function TimelineStoryteller({
         </div>
       </div>
       
-      {/* Hero section with typewriter effect */}
+      {/* Hero Section */}
       <section 
         id="chapter-intro"
         ref={chapterRefs.intro}
-        className="min-h-screen flex flex-col justify-center bg-gradient-to-b from-indigo-500 to-violet-600 text-white relative overflow-hidden px-8"
+        className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-b from-indigo-50 via-pink-50 to-purple-50 relative overflow-hidden px-4 md:px-8"
       >
-        <div className="mx-auto max-w-4xl z-10">
-          <div className="flex flex-col md:flex-row items-center gap-8 animate-fade-in">
-            {/* Profile photo with glow effect */}
-            <div className="relative">
-              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-white shadow-lg timeline-dot">
-                <ProfileImage
-                  src={userInfo.photoURL}
-                  alt={userInfo.name || "User profile"}
-                  className="h-full w-full object-cover"
-                />
-              </div>
-              <div className="absolute inset-0 rounded-full bg-indigo-400 blur-xl opacity-30"></div>
+        {/* Background shapes */}
+        <div className="hero-bg-shape absolute top-1/4 -left-24 w-64 h-64 rounded-full bg-pink-200 opacity-30"></div>
+        <div className="hero-bg-shape absolute bottom-1/3 right-0 w-80 h-80 rounded-full bg-indigo-200 opacity-25" style={{ animationDelay: '1s' }}></div>
+        <div className="hero-bg-shape absolute top-1/2 left-1/3 w-40 h-40 rounded-full bg-purple-200 opacity-20" style={{ animationDelay: '2s' }}></div>
+        
+        <div className="mx-auto max-w-4xl z-10 text-center relative">
+          {/* Dynamic line animation */}
+          <div className="mb-8 relative">
+            <svg className="w-full h-8 absolute -top-12" viewBox="0 0 400 40">
+              <path 
+                d="M 0,20 C 100,10 300,30 400,20" 
+                stroke="#e0e7ff" 
+                strokeWidth="2" 
+                fill="none"
+                className="timeline-path"
+              />
+            </svg>
+          </div>
+          
+          {/* Profile picture centered on timeline */}
+          <div className="relative mx-auto mb-6">
+            <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-white shadow-lg timeline-dot bg-white">
+              <ProfileImage
+                src={userInfo.photoURL}
+                alt={userInfo.name || "User profile"}
+                className="h-full w-full object-cover"
+              />
             </div>
+            <div className="absolute inset-0 rounded-full bg-pink-300 blur-xl opacity-30"></div>
+          </div>
+          
+          {/* Name with prominent styling */}
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-4 animate-fade-in">
+            {userInfo.name}
+          </h1>
+          
+          {/* Job Title in dynamic headline */}
+          <div className="text-xl md:text-2xl text-gray-700 mb-6 overflow-hidden animate-typewriter">
+            I'm a {userInfo.title || "Professional"} shaping the future of {userInfo.industry || "industry"}
+          </div>
+          
+          {/* Location subtly placed */}
+          <div className="flex items-center justify-center mt-2 mb-6 text-gray-600">
+            <MapPin className="h-4 w-4 mr-1" />
+            <span>{userInfo.location || "Location"}</span>
+          </div>
+          
+          {/* Industry & Domain as pastel tags */}
+          <div className="flex flex-wrap gap-3 justify-center mb-8">
+            {userInfo.industry && (
+              <Badge className="bg-indigo-100 text-indigo-700 hover:bg-indigo-200 border border-indigo-200 py-1.5 px-4 rounded-full flex items-center">
+                <Building className="h-3.5 w-3.5 mr-1.5" />
+                {userInfo.industry}
+              </Badge>
+            )}
+            {userInfo.domain && (
+              <Badge className="bg-pink-100 text-pink-700 hover:bg-pink-200 border border-pink-200 py-1.5 px-4 rounded-full flex items-center">
+                <Code className="h-3.5 w-3.5 mr-1.5" />
+                {userInfo.domain}
+              </Badge>
+            )}
+            {userInfo.lookingFor && (
+              <Badge className="bg-purple-100 text-purple-700 hover:bg-purple-200 border border-purple-200 py-1.5 px-4 rounded-full flex items-center">
+                <Lightbulb className="h-3.5 w-3.5 mr-1.5" />
+                Looking for {userInfo.lookingFor}
+              </Badge>
+            )}
+          </div>
+          
+          {/* Call to Actions - Always Visible */}
+          <div className="mt-8 flex flex-wrap gap-4 justify-center">
+            <Button
+              onClick={() => setIsContactModalOpen(true)}
+              className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white px-6 py-3 rounded-md shadow-md cta-btn"
+            >
+              <MessageSquare className="h-5 w-5 mr-2" />
+              Let's Talk
+            </Button>
             
-            <div className="text-center md:text-left">
-              {/* "I am" statement with typewriter effect */}
-              <div className="overflow-hidden mb-3">
-                <span className="text-indigo-200 text-lg">I am</span>
-                <h1 className="text-4xl md:text-5xl font-bold animate-typewriter">
-                  {userInfo.title || "a Professional"}
-                </h1>
-              </div>
-              
-              {/* Name */}
-              <h2 className="text-2xl font-medium">{userInfo.name}</h2>
-              
-              {/* Location tag */}
-              <div className="flex items-center justify-center md:justify-start mt-2">
-                <MapPin className="h-4 w-4 text-indigo-200 mr-1" />
-                <span className="text-indigo-100">{userInfo.location || "Location"}</span>
-              </div>
-              
-              {/* Industry/Domain chips */}
-              <div className="flex flex-wrap gap-2 mt-4 justify-center md:justify-start">
-                {userInfo.industry && (
-                  <Badge className="bg-indigo-700/50 text-white hover:bg-indigo-700/70 py-1.5 px-3">
-                    {userInfo.industry}
-                  </Badge>
-                )}
-                {userInfo.domain && (
-                  <Badge className="bg-fuchsia-700/50 text-white hover:bg-fuchsia-700/70 py-1.5 px-3">
-                    {userInfo.domain}
-                  </Badge>
-                )}
-              </div>
-              
-              {/* Looking for tag */}
-              {userInfo.lookingFor && (
-                <div className="mt-6 animate-fade-in">
-                  <Badge className="bg-gradient-to-r from-amber-500 to-pink-500 text-white hover:from-amber-600 hover:to-pink-600 py-2 px-4">
-                    Looking for {userInfo.lookingFor}
-                  </Badge>
+            <Button 
+              variant="outline" 
+              className="text-indigo-600 border-indigo-300 hover:bg-indigo-50 px-6 py-3 rounded-md shadow-sm cta-btn"
+            >
+              <Download className="h-5 w-5 mr-2" />
+              Grab My Resume
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              className="text-purple-600 border-purple-300 hover:bg-purple-50 px-6 py-3 rounded-md shadow-sm cta-btn"
+            >
+              <Lightbulb className="h-5 w-5 mr-2" />
+              Mentor
+            </Button>
+          </div>
+          
+          {/* Scroll indicator */}
+          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 flex flex-col items-center animate-bounce">
+            <span className="text-gray-500 text-sm mb-2">Scroll to view my story</span>
+            <ChevronDown className="h-6 w-6 text-gray-500" />
+          </div>
+        </div>
+      </section>
+      
+      {/* Career Path (Timeline Navigation) */}
+      <section 
+        id="chapter-career" 
+        ref={chapterRefs.career}
+        className="py-24 px-8 bg-gradient-to-b from-white to-pink-50 min-h-screen"
+      >
+        <div className="mx-auto max-w-4xl">
+          <div className="mb-12">
+            <div className="inline-block bg-pink-100 px-3 py-1 rounded-full text-pink-800 text-sm font-medium mb-3 animate-fade-in">
+              My Career Journey
+            </div>
+            <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">Career Path</h2>
+          </div>
+          
+          {/* Vertical timeline with nodes */}
+          <div className="relative mt-12 animate-fade-in">
+            {/* Timeline vertical line */}
+            <div className="timeline-vertical-line absolute top-0 bottom-0 h-full"></div>
+            
+            {/* Work experiences */}
+            <div className="relative z-10">
+              {sortedExperiences.length > 0 ? (
+                <div className="space-y-16">
+                  {sortedExperiences.map((exp, index) => (
+                    <div key={exp.id} 
+                      className={`timeline-entry flex items-start ${index === 0 ? 'active' : ''}`}
+                      onClick={() => {
+                        // Expand this entry when clicked
+                        const entries = document.querySelectorAll('.timeline-entry');
+                        entries.forEach(e => e.classList.remove('active'));
+                        document.getElementById(`exp-${exp.id}`)?.classList.add('active');
+                      }}
+                      id={`exp-${exp.id}`}
+                    >
+                      {/* Timeline node */}
+                      <div className="mr-8 pt-2 relative">
+                        <div className="timeline-node w-8 h-8 rounded-full bg-white border-2 border-pink-300 shadow-md flex items-center justify-center">
+                          <Briefcase className="h-4 w-4 text-pink-500" />
+                        </div>
+                        {/* Date tag */}
+                        <div className="absolute top-12 -left-2 transform -rotate-90 origin-top-left whitespace-nowrap">
+                          <span className="text-xs font-medium bg-pink-100 text-pink-800 py-1 px-2 rounded-md">
+                            {formatDate(exp.startDate)} - {exp.endDate ? formatDate(exp.endDate) : 'Present'}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      {/* Experience card */}
+                      <div className="card-animated bg-white rounded-lg shadow-md p-6 border border-pink-100 flex-grow">
+                        <div className="flex justify-between items-start mb-3">
+                          <h3 className="text-lg font-medium text-gray-800">{exp.title}</h3>
+                          {exp.companyName && (
+                            <Badge className="bg-pink-100 text-pink-700 font-normal">
+                              {exp.companyName}
+                            </Badge>
+                          )}
+                        </div>
+                        
+                        <p className="text-gray-600 mb-4">{exp.description}</p>
+                        
+                        {/* Key achievement */}
+                        <div className="bg-pink-50 rounded-md p-3 border border-pink-100">
+                          <h4 className="text-sm font-medium text-pink-800 mb-1">Key Achievement</h4>
+                          <p className="text-sm text-gray-700">
+                            {exp.highlights || "Led cross-functional teams to deliver projects on time and within budget."}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                // Empty state
+                <div className="bg-white rounded-lg shadow-md p-8 text-center">
+                  <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-pink-100 flex items-center justify-center">
+                    <Briefcase className="h-6 w-6 text-pink-400" />
+                  </div>
+                  <p className="text-gray-500">Your work experiences will appear here</p>
                 </div>
               )}
             </div>
           </div>
-          
-          {/* Scroll indicator */}
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center animate-bounce">
-            <span className="text-indigo-200 text-sm mb-2">Scroll to continue</span>
-            <ChevronRight className="h-6 w-6 text-white transform rotate-90" />
-          </div>
         </div>
-        
-        {/* Background decorative elements */}
-        <div className="absolute top-1/4 left-10 w-20 h-20 rounded-full bg-indigo-300 opacity-20 blur-xl"></div>
-        <div className="absolute bottom-1/3 right-10 w-32 h-32 rounded-full bg-violet-300 opacity-20 blur-xl"></div>
       </section>
       
-      {/* What I'm All About section */}
+      {/* Education Journey */}
       <section 
-        id="chapter-about" 
-        ref={chapterRefs.about}
-        className="py-24 px-8 bg-gradient-to-b from-white to-indigo-50"
+        id="chapter-education" 
+        ref={chapterRefs.education}
+        className="py-24 px-8 bg-gradient-to-b from-pink-50 to-indigo-50 min-h-screen"
       >
         <div className="mx-auto max-w-4xl">
           <div className="mb-12">
             <div className="inline-block bg-indigo-100 px-3 py-1 rounded-full text-indigo-800 text-sm font-medium mb-3 animate-fade-in">
-              Chapter 1: Why I Do What I Do
+              My Learning Path
             </div>
-            <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">What I'm All About</h2>
+            <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">Education</h2>
           </div>
           
-          {/* Personal mission block */}
-          <div className="bg-white rounded-xl shadow-md p-8 border border-indigo-100 relative overflow-hidden animate-fade-in">
-            {/* Quote style format */}
-            <div className="text-7xl text-indigo-200 absolute top-4 left-4 font-serif">"</div>
-            <div className="relative z-10">
-              <p className="text-xl text-gray-700 leading-relaxed font-serif pl-8">
-                {userInfo.lookingFor || 
-                `As a ${userInfo.title || "professional"} in the ${userInfo.industry || "industry"}, 
-                I'm passionate about creating solutions that make a real difference. My approach combines 
-                creativity with technical expertise to deliver exceptional results.`
-                }
-              </p>
-              <div className="text-7xl text-indigo-200 absolute bottom-0 right-4 font-serif">"</div>
-            </div>
-            
-            {/* Optional audio icon */}
-            <button 
-              className="mt-6 flex items-center text-indigo-600 font-medium hover:text-indigo-800"
-              onClick={() => toggleNarration()}
-            >
-              {isNarrating ? <VolumeX className="h-4 w-4 mr-2" /> : <Volume2 className="h-4 w-4 mr-2" />}
-              {isNarrating ? "Mute narration" : "Listen to narration"}
-            </button>
-          </div>
-        </div>
-      </section>
-      
-      {/* What I'm Good At (Skills) */}
-      <section 
-        id="chapter-skills" 
-        ref={chapterRefs.skills}
-        className="py-24 px-8 bg-gradient-to-b from-indigo-50 to-white"
-      >
-        <div className="mx-auto max-w-4xl">
-          <div className="mb-12">
-            <div className="inline-block bg-indigo-100 px-3 py-1 rounded-full text-indigo-800 text-sm font-medium mb-3 animate-fade-in">
-              Chapter 2: My Expertise
-            </div>
-            <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">What I'm Good At</h2>
-          </div>
-          
-          {/* Horizontally scrolling skill path with timeline markers */}
+          {/* Education timeline */}
           <div className="relative mt-12 animate-fade-in">
-            {/* Timeline path */}
-            <div className="absolute h-2 bg-indigo-100 left-0 right-0 top-14 z-0 rounded-full">
-              <div className="h-full bg-gradient-to-r from-indigo-300 to-indigo-600 timeline-path rounded-full" style={{ width: sortedSkills.length ? "100%" : "0%" }}></div>
-            </div>
+            {/* Timeline vertical line */}
+            <div className="timeline-vertical-line absolute top-0 bottom-0 h-full"></div>
             
-            {/* Skills */}
-            <div className="skill-path py-8 relative z-10">
-              {sortedSkills.length > 0 ? (
-                <div className="inline-flex gap-8 px-4 min-w-full">
-                  {sortedSkills.map((skill, index) => {
-                    const IconComponent = skillIconMap[skill.name.toLowerCase()] || skillIconMap.default;
-                    return (
-                      <div key={skill.id} className="skill-item relative">
-                        {/* Timeline dot */}
-                        <div className="absolute bottom-full mb-6 left-1/2 transform -translate-x-1/2 w-6 h-6 rounded-full bg-indigo-500 border-4 border-white shadow-md timeline-dot">
+            {/* Education experiences */}
+            <div className="relative z-10">
+              {sortedEducations.length > 0 ? (
+                <div className="space-y-16">
+                  {sortedEducations.map((edu, index) => (
+                    <div key={edu.id} 
+                      className={`timeline-entry flex items-start ${index === 0 ? 'active' : ''}`}
+                      onClick={() => {
+                        // Expand this entry when clicked
+                        const entries = document.querySelectorAll('.timeline-entry');
+                        entries.forEach(e => e.classList.remove('active'));
+                        document.getElementById(`edu-${edu.id}`)?.classList.add('active');
+                      }}
+                      id={`edu-${edu.id}`}
+                    >
+                      {/* Timeline node */}
+                      <div className="mr-8 pt-2 relative">
+                        <div className="timeline-node w-8 h-8 rounded-full bg-white border-2 border-indigo-300 shadow-md flex items-center justify-center">
+                          <GraduationCap className="h-4 w-4 text-indigo-500" />
                         </div>
-                        
-                        {/* Skill card */}
-                        <div className="w-40 bg-white rounded-lg shadow-md p-4 border border-indigo-100 hover:shadow-lg transition-shadow">
-                          <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-indigo-100 flex items-center justify-center">
-                            <IconComponent className="h-6 w-6 text-indigo-600" />
-                          </div>
-                          <h3 className="text-center font-medium text-gray-800">{skill.name}</h3>
-                          
-                          {/* Progress bar */}
-                          <div className="h-2 w-full bg-gray-200 rounded-full mt-2 overflow-hidden">
-                            <div 
-                              className="h-full bg-indigo-500 rounded-full" 
-                              style={{ width: `${skill.proficiency || 0}%` }}
-                            ></div>
-                          </div>
-                          <p className="text-xs text-center text-gray-500 mt-2">{skill.level || `${skill.proficiency || 0}%`}</p>
-                          
-                          {/* Tooltip */}
-                          <div className="skill-tooltip">
-                            Used in various projects and professional settings, with {Math.round((skill.proficiency || 0) / 10)} years of experience
-                          </div>
+                        {/* Date tag */}
+                        <div className="absolute top-12 -left-2 transform -rotate-90 origin-top-left whitespace-nowrap">
+                          <span className="text-xs font-medium bg-indigo-100 text-indigo-800 py-1 px-2 rounded-md">
+                            {formatDate(edu.startDate)} - {edu.endDate ? formatDate(edu.endDate) : 'Present'}
+                          </span>
                         </div>
                       </div>
-                    );
-                  })}
+                      
+                      {/* Education card */}
+                      <div className="card-animated bg-white rounded-lg shadow-md p-6 border border-indigo-100 flex-grow">
+                        <div className="flex justify-between items-start mb-3">
+                          <h3 className="text-lg font-medium text-gray-800">{edu.degree}</h3>
+                          {edu.institution && (
+                            <Badge className="bg-indigo-100 text-indigo-700 font-normal">
+                              {edu.institution}
+                            </Badge>
+                          )}
+                        </div>
+                        
+                        <p className="text-gray-600 mb-4">{edu.description}</p>
+                        
+                        {/* Highlights */}
+                        <div className="bg-indigo-50 rounded-md p-3 border border-indigo-100">
+                          <h4 className="text-sm font-medium text-indigo-800 mb-1">Highlight</h4>
+                          <p className="text-sm text-gray-700">
+                            {edu.fieldOfStudy || "Focused on academic excellence and practical application of concepts."}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               ) : (
                 // Empty state
                 <div className="bg-white rounded-lg shadow-md p-8 text-center">
                   <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-indigo-100 flex items-center justify-center">
-                    <User className="h-6 w-6 text-indigo-400" />
+                    <GraduationCap className="h-6 w-6 text-indigo-400" />
                   </div>
-                  <p className="text-gray-500">Your skills will appear here</p>
+                  <p className="text-gray-500">Your education history will appear here</p>
                 </div>
               )}
             </div>
@@ -548,71 +767,98 @@ export default function TimelineStoryteller({
         </div>
       </section>
       
-      {/* What I Offer (Services) */}
-      {sortedServices.length > 0 || true ? (
-        <section 
-          id="chapter-services" 
-          ref={chapterRefs.services}
-          className="py-24 px-8 bg-gradient-to-b from-white to-indigo-50"
-        >
+      {/* Projects Showcase */}
+      <section 
+        id="chapter-projects" 
+        ref={chapterRefs.projects}
+        className="py-24 px-8 bg-gradient-to-b from-indigo-50 to-purple-50 min-h-screen"
+      >
           <div className="mx-auto max-w-4xl">
             <div className="mb-12">
-              <div className="inline-block bg-indigo-100 px-3 py-1 rounded-full text-indigo-800 text-sm font-medium mb-3 animate-fade-in">
-                Chapter 3: How I Can Help
+              <div className="inline-block bg-purple-100 px-3 py-1 rounded-full text-purple-800 text-sm font-medium mb-3 animate-fade-in">
+                My Projects
               </div>
-              <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">What I Offer</h2>
+              <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">Featured Work</h2>
             </div>
             
-            {/* Service cards */}
-            {sortedServices.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
-                {sortedServices.map((service) => (
-                  <div key={service.id} className="service-card bg-white rounded-xl shadow-md overflow-hidden border border-indigo-100">
-                    <div className="h-3 bg-gradient-to-r from-indigo-500 to-violet-500"></div>
-                    <div className="p-6">
-                      <h3 className="text-xl font-bold text-gray-800 mb-2">{service.title}</h3>
-                      
-                      {service.description && (
-                        <p className="text-gray-600 mb-4 line-clamp-3">{service.description}</p>
+            {/* Project Gallery */}
+            <div className="grid grid-cols-1 gap-8 animate-fade-in">
+              {sortedProjects.length > 0 ? (
+                sortedProjects.map((project, index) => (
+                  <div 
+                    key={project.id}
+                    className="card-animated bg-white rounded-lg shadow-lg overflow-hidden border border-purple-100"
+                  >
+                    {/* Project media header */}
+                    <div className="relative h-56 overflow-hidden">
+                      {project.thumbnailUrl ? (
+                        <img 
+                          src={project.thumbnailUrl} 
+                          alt={project.title} 
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-r from-purple-100 to-indigo-100 flex items-center justify-center">
+                          <FileText className="w-12 h-12 text-purple-300" />
+                        </div>
                       )}
                       
-                      <div className="flex justify-between items-center mt-4">
-                        {(service.priceUsd || service.priceInr) && (
-                          <div className="text-indigo-600 font-medium">
-                            {service.priceUsd && `$${service.priceUsd}`}
-                            {service.priceUsd && service.priceInr && ' / '}
-                            {service.priceInr && `₹${service.priceInr}`}
-                          </div>
+                      {/* Timeline indicator */}
+                      <div className="absolute bottom-4 left-4 bg-white rounded-full py-1 px-3 shadow-md text-xs font-medium text-purple-700 flex items-center">
+                        <Calendar className="h-3 w-3 mr-1" />
+                        {formatDate(project.startDate)}
+                      </div>
+                    </div>
+                    
+                    <div className="p-6">
+                      <h3 className="text-xl font-bold text-gray-800 mb-3">{project.title}</h3>
+                      
+                      <p className="text-gray-600 mb-6">{project.description}</p>
+                      
+                      {/* Project links and additional info */}
+                      <div className="flex justify-between items-center">
+                        <div className="space-x-2">
+                          {project.category && (
+                            <Badge className="bg-purple-100 text-purple-700">
+                              {project.category}
+                            </Badge>
+                          )}
+                        </div>
+                        
+                        {project.projectUrl && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-purple-600 border-purple-200 hover:bg-purple-50"
+                            onClick={() => window.open(project.projectUrl || '#', '_blank')}
+                          >
+                            <ExternalLink className="h-4 w-4 mr-1" />
+                            View Project
+                          </Button>
                         )}
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          className="text-indigo-600 border-indigo-200 hover:bg-indigo-50"
-                        >
-                          Book Slot
-                        </Button>
                       </div>
                     </div>
                   </div>
-                ))}
-              </div>
-            ) : (
-              // Empty state
-              <div className="bg-white rounded-lg shadow-md p-8 text-center animate-fade-in">
-                <Wallet className="h-12 w-12 mx-auto mb-3 text-indigo-300" />
-                <p className="text-gray-500">Services will appear here</p>
-              </div>
-            )}
+                ))
+              ) : (
+                // Empty state
+                <div className="bg-white rounded-lg shadow-md p-8 text-center">
+                  <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-purple-100 flex items-center justify-center">
+                    <FileText className="h-6 w-6 text-purple-400" />
+                  </div>
+                  <p className="text-gray-500">Your projects will appear here</p>
+                </div>
+              )}
+            </div>
           </div>
         </section>
-      ) : null}
-      
-      {/* Showcase (Projects) */}
-      <section 
-        id="chapter-showcase" 
-        ref={chapterRefs.showcase}
-        className="py-24 px-8 bg-gradient-to-b from-indigo-50 to-white"
-      >
+        
+        {/* Certifications & Highlights Section */}
+        <section 
+          id="chapter-certifications" 
+          ref={chapterRefs.certifications}
+          className="py-24 px-8 bg-gradient-to-b from-purple-50 to-white min-h-screen"
+        >
         <div className="mx-auto max-w-4xl">
           <div className="mb-12">
             <div className="inline-block bg-indigo-100 px-3 py-1 rounded-full text-indigo-800 text-sm font-medium mb-3 animate-fade-in">
