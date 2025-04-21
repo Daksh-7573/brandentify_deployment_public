@@ -1,8 +1,23 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ProfileImage } from "@/components/ui/profile-image";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogClose,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { 
   Download, Palette, Heart, Music, Video, Film, 
   Briefcase, GraduationCap, Calendar, MapPin, 
@@ -10,9 +25,10 @@ import {
   Mail, Instagram, Twitter, Linkedin, Youtube, Camera, 
   FileText, PenTool, Coffee, Star, Zap, Headphones,
   Radio, Sparkles, Scissors, Pencil, Book, Gift, 
-  MessageCircle, Smile
+  MessageCircle, Smile, Upload, X, ExternalLink,
+  MessageSquare, PlusCircle
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Project, Skill, Service } from "@shared/schema";
 import { UserExperience, UserEducation } from "@/types";
 
@@ -49,6 +65,22 @@ export default function FreelancerHub({
   const [activeProject, setActiveProject] = useState<number | null>(null);
   const [energyLevel, setEnergyLevel] = useState<number>(85);
   const [isShowing, setIsShowing] = useState(false);
+  
+  // Let's Talk Modal state
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [contactPurpose, setContactPurpose] = useState<string>("");
+  const [contactMessage, setContactMessage] = useState<string>("");
+  
+  // Resume modal state
+  const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
+  
+  // Project detail modal state
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+  
+  // Scroll state for horizontal section
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [scrollPosition, setScrollPosition] = useState(0);
   
   // Sort skills by proficiency
   const sortedSkills = [...userSkills].sort((a, b) => (b.proficiency || 0) - (a.proficiency || 0));
@@ -212,6 +244,39 @@ export default function FreelancerHub({
         return 'from-rose-400 to-orange-300';
     }
   };
+  
+  // Function to handle project selection and modal display
+  const handleProjectClick = (project: Project) => {
+    setSelectedProject(project);
+    setIsProjectModalOpen(true);
+  };
+  
+  // Function to handle scroll in horizontal sections
+  const handleScroll = (direction: 'left' | 'right') => {
+    if (scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      const scrollAmount = 300; // adjust as needed
+      
+      if (direction === 'left') {
+        container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+      } else {
+        container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      }
+    }
+  };
+  
+  // Track scroll position for animations
+  useEffect(() => {
+    const handleScrollPosition = () => {
+      setScrollPosition(window.scrollY);
+    };
+    
+    window.addEventListener('scroll', handleScrollPosition);
+    
+    return () => {
+      window.removeEventListener('scroll', handleScrollPosition);
+    };
+  }, []);
   
   // Load fonts and styles on mount
   useEffect(() => {
@@ -457,9 +522,9 @@ export default function FreelancerHub({
       : "Taking it easy today 😌";
   
   return (
-    <div className="freelancer-hub bg-gradient-to-br from-orange-50 to-white min-h-screen pb-20">
+    <div className="freelancer-hub bg-gradient-to-br from-fuchsia-50 via-amber-50 to-blue-50 min-h-screen pb-20">
       {/* Mood Bar (just for fun) */}
-      <div className="bg-white py-2 px-4 border-b border-gray-100 flex items-center justify-between">
+      <div className="sticky top-0 z-50 bg-white py-2 px-4 border-b border-gray-100 flex items-center justify-between">
         <div className="flex items-center">
           <span className="text-xs font-medium mr-3" style={{ fontFamily: 'Poppins, sans-serif' }}>Creative Energy:</span>
           <div className="mood-bar w-32">
@@ -473,16 +538,43 @@ export default function FreelancerHub({
       
       {/* Hero Section */}
       <section className="relative py-16 px-6 md:px-10 overflow-hidden">
+        {/* Decorative elements */}
+        <motion.div 
+          className="absolute -top-10 -left-10 w-60 h-60 bg-gradient-to-br from-purple-200 to-purple-50 rounded-full opacity-30 blur-3xl"
+          animate={{ 
+            scale: [1, 1.2, 1],
+            rotate: [0, 15, 0]
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            repeatType: "reverse"
+          }}
+        />
+        
+        <motion.div 
+          className="absolute -bottom-20 -right-20 w-80 h-80 bg-gradient-to-tr from-amber-200 to-amber-50 rounded-full opacity-30 blur-3xl"
+          animate={{ 
+            scale: [1, 1.3, 1],
+            rotate: [0, -15, 0]
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            repeatType: "reverse"
+          }}
+        />
+        
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-8 md:gap-16">
             {/* Profile Picture with animated border */}
             <motion.div 
-              className="flex-shrink-0"
+              className="flex-shrink-0 relative"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <div className="profile-frame w-44 h-44 md:w-52 md:h-52">
+              <div className="profile-frame w-44 h-44 md:w-60 md:h-60">
                 <ProfileImage
                   src={userInfo.photoURL}
                   alt={userInfo.name}
@@ -492,13 +584,25 @@ export default function FreelancerHub({
               
               {/* Available badge sticker */}
               <motion.div 
-                className="sticker -right-4 top-5"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
+                className="sticker -right-5 top-5"
+                initial={{ scale: 0, rotate: -15 }}
+                animate={{ scale: 1, rotate: -15 }}
                 transition={{ delay: 0.8, type: "spring", stiffness: 300, damping: 10 }}
               >
                 <span className="text-xs font-semibold bg-green-100 text-green-800 px-2 py-1 rounded-full">
-                  Available
+                  Available for Work!
+                </span>
+              </motion.div>
+              
+              {/* Experience badge */}
+              <motion.div 
+                className="sticker -left-8 bottom-10"
+                initial={{ scale: 0, rotate: 15 }}
+                animate={{ scale: 1, rotate: 15 }}
+                transition={{ delay: 1, type: "spring", stiffness: 300, damping: 10 }}
+              >
+                <span className="text-xs font-semibold bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                  {userExperiences.length}+ Years Exp.
                 </span>
               </motion.div>
             </motion.div>
@@ -511,40 +615,77 @@ export default function FreelancerHub({
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
                 {/* Name and Title */}
-                <h1 className="text-4xl md:text-5xl font-bold mb-2" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-                  {userInfo.name}
+                <h1 className="text-4xl md:text-6xl font-bold mb-2" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+                  <span className="inline-block">
+                    <AnimatePresence>
+                      {isShowing && (
+                        <motion.span
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.5 }}
+                        >
+                          {userInfo.name}
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                  </span>
                 </h1>
                 
-                <h2 className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-pink-500 mb-4" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-                  {getTitleEmoji(userInfo.title)} I am a {userInfo.title || "Creative Professional"}
+                <h2 className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-600 via-pink-500 to-amber-500 mb-4" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+                  {getTitleEmoji(userInfo.title)} {userInfo.title || "Creative Professional"}
                 </h2>
                 
                 {/* Location */}
                 {userInfo.location && (
-                  <div className="flex items-center justify-center md:justify-start gap-1 mb-4">
+                  <motion.div 
+                    className="flex items-center justify-center md:justify-start gap-1 mb-4"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.4 }}
+                  >
                     <MapPin className="h-4 w-4 text-pink-500" />
-                    <span className="text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    <span className="text-gray-600 text-lg" style={{ fontFamily: 'Poppins, sans-serif' }}>
                       {userInfo.location}
                     </span>
-                  </div>
+                  </motion.div>
                 )}
                 
                 {/* Industry/Domain Tags */}
-                <div className="flex flex-wrap gap-2 justify-center md:justify-start mb-6">
+                <motion.div 
+                  className="flex flex-wrap gap-2 justify-center md:justify-start mb-6"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6 }}
+                >
                   {userInfo.industry && (
-                    <Badge className="bg-gradient-to-r from-violet-500 to-purple-400 text-white">
-                      #{userInfo.industry}
-                    </Badge>
+                    <motion.div
+                      whileHover={{ scale: 1.05, y: -2 }}
+                      transition={{ type: "spring", stiffness: 400 }}
+                    >
+                      <Badge className="bg-gradient-to-r from-violet-500 to-purple-400 text-white text-sm py-1.5 px-3">
+                        #{userInfo.industry}
+                      </Badge>
+                    </motion.div>
                   )}
                   {userInfo.domain && (
-                    <Badge className="bg-gradient-to-r from-pink-500 to-rose-400 text-white">
-                      #{userInfo.domain}
-                    </Badge>
+                    <motion.div
+                      whileHover={{ scale: 1.05, y: -2 }}
+                      transition={{ type: "spring", stiffness: 400 }}
+                    >
+                      <Badge className="bg-gradient-to-r from-pink-500 to-rose-400 text-white text-sm py-1.5 px-3">
+                        #{userInfo.domain}
+                      </Badge>
+                    </motion.div>
                   )}
-                  <Badge className="bg-gradient-to-r from-amber-400 to-orange-400 text-white">
-                    #Freelancer
-                  </Badge>
-                </div>
+                  <motion.div
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    transition={{ type: "spring", stiffness: 400 }}
+                  >
+                    <Badge className="bg-gradient-to-r from-amber-400 to-orange-400 text-white text-sm py-1.5 px-3">
+                      #Freelancer
+                    </Badge>
+                  </motion.div>
+                </motion.div>
                 
                 {/* Looking For */}
                 {userInfo.lookingFor && (
