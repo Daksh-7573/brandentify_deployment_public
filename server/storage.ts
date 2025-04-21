@@ -982,6 +982,7 @@ export class MemStorage implements IStorage {
       
       const user = result.rows[0];
       console.log(`[db.getUser] User found:`, user);
+      console.log(`[db.getUser] Domain value specifically:`, user.domain);
       
       return user as User;
       
@@ -1046,6 +1047,7 @@ export class MemStorage implements IStorage {
       
       const user = result.rows[0] as User;
       console.log(`Found user with username "${username}":`, user);
+      console.log(`[getUserByUsername] Domain value specifically:`, user.domain);
       return user;
     } catch (error) {
       console.error(`Error fetching user with username ${username}:`, error);
