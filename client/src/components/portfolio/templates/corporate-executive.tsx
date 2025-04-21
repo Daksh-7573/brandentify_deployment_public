@@ -436,7 +436,7 @@ export default function CorporateExecutive({
     }
   };
   
-  const formatDate = (dateString: string, showMonthName = false) => {
+  const formatDate = (dateString: string | null, showMonthName = false) => {
     if (!dateString) return '';
     const date = new Date(dateString);
     
@@ -581,7 +581,7 @@ export default function CorporateExecutive({
                   What I'm All About
                 </h3>
                 <div className="flex">
-                  <div className="text-[#b8860b] mr-3 flex-shrink-0 mt-1">
+                  <div className="text-[#6a0dad] mr-3 flex-shrink-0 mt-1">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-quote"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg>
                   </div>
                   <p className="text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
@@ -633,7 +633,7 @@ export default function CorporateExecutive({
                   style={{ animationDelay: `${0.1 + index * 0.1}s` }}
                 >
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="p-2 bg-gray-50 rounded-md text-[#b8860b]">
+                    <div className="p-2 bg-gray-50 rounded-md text-[#6a0dad]">
                       {getSkillIcon(skill.name)}
                     </div>
                     <h3 className="text-gray-900 font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>
@@ -670,93 +670,57 @@ export default function CorporateExecutive({
       {/* Services Section */}
       <section id="services" className="py-16 px-8 bg-gray-50">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 mb-10 accent-border" style={{ fontFamily: 'Playfair Display, serif' }}>
-            What I Offer
+          <h2 className="text-3xl font-bold text-gray-900 mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+            What I <span className="premium-gradient-text">Offer</span>
           </h2>
+          <p className="text-gray-600 mb-10 max-w-2xl" style={{ fontFamily: 'Inter, sans-serif' }}>
+            Specialized services tailored to drive organizational excellence and leadership effectiveness
+          </p>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {sortedServices.length > 0 ? (
-              sortedServices.slice(0, 3).map((service, index) => (
-                <div 
-                  key={service.id} 
-                  className="service-card bg-white rounded-lg p-6 shadow-sm fade-in"
-                  style={{ animationDelay: `${0.1 + index * 0.1}s` }}
-                >
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3" style={{ fontFamily: 'Playfair Display, serif' }}>
+            {enhancedServices.map((service, index) => (
+              <div 
+                key={service.id} 
+                className="service-card bg-white rounded-lg p-6 shadow-sm fade-in"
+                style={{ animationDelay: `${0.1 + index * 0.1}s` }}
+              >
+                <div className="flex items-center mb-4">
+                  <div className="service-card-icon mr-4 flex-shrink-0">
+                    {service.category === "consulting" ? (
+                      <Briefcase className="h-5 w-5" />
+                    ) : service.category === "coaching" ? (
+                      <UserCheck className="h-5 w-5" />
+                    ) : (
+                      <Star className="h-5 w-5" />
+                    )}
+                  </div>
+                
+                  <h3 className="text-xl font-semibold text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>
                     {service.title}
                   </h3>
-                  
-                  <p className="text-gray-600 mb-6 line-clamp-3" style={{ fontFamily: 'Inter, sans-serif' }}>
-                    {service.description}
-                  </p>
-                  
-                  <div className="flex justify-between items-center">
-                    {service.pricing && (
-                      <div className="text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
-                        {service.pricing}
-                      </div>
-                    )}
-                    
-                    <Button 
-                      variant="outline"
-                      className="text-sm px-4 py-2 rounded-md flex items-center"
-                    >
-                      <span style={{ fontFamily: 'Inter, sans-serif' }}>Inquire</span>
-                      <ChevronRight className="h-4 w-4 ml-1" />
-                    </Button>
-                  </div>
                 </div>
-              ))
-            ) : (
-              // Default services when none are provided
-              <>
-                {[
-                  {
-                    title: "Strategic Advisory",
-                    description: "Expert guidance on business strategy, growth initiatives, and market positioning to help your organization achieve its full potential.",
-                    pricing: "Custom engagement"
-                  },
-                  {
-                    title: "Executive Coaching",
-                    description: "Personalized coaching for senior leaders and executives focused on leadership development, decision-making, and organizational effectiveness.",
-                    pricing: "Starting at $5,000"
-                  },
-                  {
-                    title: "Board Directorship",
-                    description: "Experienced board member bringing strategic oversight, governance expertise, and industry knowledge to drive corporate success.",
-                    pricing: "On Request"
-                  }
-                ].map((service, index) => (
-                  <div 
-                    key={index} 
-                    className="service-card bg-white rounded-lg p-6 shadow-sm fade-in"
-                    style={{ animationDelay: `${0.1 + index * 0.1}s` }}
-                  >
-                    <h3 className="text-xl font-semibold text-gray-900 mb-3" style={{ fontFamily: 'Playfair Display, serif' }}>
-                      {service.title}
-                    </h3>
-                    
-                    <p className="text-gray-600 mb-6 line-clamp-3" style={{ fontFamily: 'Inter, sans-serif' }}>
-                      {service.description}
-                    </p>
-                    
-                    <div className="flex justify-between items-center">
-                      <div className="text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
-                        {service.pricing}
-                      </div>
-                      
-                      <Button 
-                        variant="outline"
-                        className="text-sm px-4 py-2 rounded-md flex items-center"
-                      >
-                        <span style={{ fontFamily: 'Inter, sans-serif' }}>Inquire</span>
-                        <ChevronRight className="h-4 w-4 ml-1" />
-                      </Button>
+                
+                <p className="text-gray-600 mb-6 line-clamp-3" style={{ fontFamily: 'Inter, sans-serif' }}>
+                  {service.description || "Comprehensive service designed to meet your specific business needs and challenges."}
+                </p>
+                
+                <div className="flex justify-between items-center">
+                  {service.pricing && (
+                    <div className="text-sm font-medium text-[#6a0dad] highlight-badge px-3 py-1 rounded-full" style={{ fontFamily: 'Inter, sans-serif' }}>
+                      {service.pricing}
                     </div>
-                  </div>
-                ))}
-              </>
-            )}
+                  )}
+                  
+                  <Button 
+                    variant="outline"
+                    className="ml-auto text-sm px-4 py-2 rounded-md flex items-center hover:bg-[#f9f0ff]"
+                  >
+                    <span style={{ fontFamily: 'Inter, sans-serif' }}>Inquire</span>
+                    <ChevronRight className="h-4 w-4 ml-1" />
+                  </Button>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -804,7 +768,7 @@ export default function CorporateExecutive({
                           href={project.projectUrl} 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          className="text-[#b8860b] text-sm flex items-center hover:underline"
+                          className="text-[#6a0dad] text-sm flex items-center hover:underline"
                           style={{ fontFamily: 'Inter, sans-serif' }}
                         >
                           <span>View Details</span>
