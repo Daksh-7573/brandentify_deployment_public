@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ProfileImage } from "@/components/ui/profile-image";
 import { Education, Project, Service, Skill, WorkExperience } from "@shared/schema";
 import { useEffect, useState, useRef } from "react";
+import PortfolioCtaButtons from "../portfolio-cta-buttons";
 import { 
   Calendar, 
   MapPin, 
@@ -329,23 +330,34 @@ export default function TimelineStoryteller({
       </div>
       
       {/* Story control buttons */}
-      <div className="fixed bottom-4 right-4 flex gap-2 z-50">
-        <Button 
-          onClick={toggleNarration} 
-          size="icon" 
-          variant="outline" 
-          className="rounded-full shadow-md"
-        >
-          {isNarrating ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-        </Button>
-        <Button 
-          onClick={viewMyStory} 
-          variant="outline" 
-          className="rounded-full shadow-md flex items-center gap-1 px-3"
-        >
-          <Clock className="h-4 w-4" />
-          <span className="text-xs">View My Story</span>
-        </Button>
+      <div className="fixed bottom-4 right-4 flex flex-col gap-2 z-50">
+        <PortfolioCtaButtons 
+          variant="minimal"
+          resumeUrl={null} 
+          mentorUrl={null}
+          connectUrl={null}
+          userEmail={userInfo.email}
+          userName={userInfo.name}
+          className="mb-2"
+        />
+        <div className="flex gap-2 justify-end">
+          <Button 
+            onClick={toggleNarration} 
+            size="icon" 
+            variant="outline" 
+            className="rounded-full shadow-md"
+          >
+            {isNarrating ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+          </Button>
+          <Button 
+            onClick={viewMyStory} 
+            variant="outline" 
+            className="rounded-full shadow-md flex items-center gap-1 px-3"
+          >
+            <Clock className="h-4 w-4" />
+            <span className="text-xs">View My Story</span>
+          </Button>
+        </div>
       </div>
       
       {/* Hero section with typewriter effect */}
