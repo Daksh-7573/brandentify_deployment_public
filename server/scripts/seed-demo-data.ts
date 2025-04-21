@@ -42,11 +42,10 @@ async function seedDemoData() {
       ];
 
       for (const skill of skills) {
-        await db.execute(sql.raw(
-          `INSERT INTO skills (user_id, name, level, proficiency) 
-           VALUES ($1, $2, $3, $4)`),
-          [1, skill.name, skill.level, skill.proficiency]
-        );
+        await db.execute(sql`
+          INSERT INTO skills (user_id, name, level, proficiency) 
+          VALUES (${1}, ${skill.name}, ${skill.level}, ${skill.proficiency})
+        `);
       }
     } else {
       console.log(`User already has ${skillCount} skills. Skipping skill seeding.`);
@@ -86,17 +85,16 @@ async function seedDemoData() {
       ];
 
       for (const exp of experiences) {
-        await db.execute(sql.raw(
-          `INSERT INTO work_experiences (user_id, title, company, location, industry, start_date, end_date, description) 
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`),
-          [1, exp.title, exp.company, exp.location, exp.industry, exp.startDate, exp.endDate, exp.description]
-        );
+        await db.execute(sql`
+          INSERT INTO work_experiences (user_id, title, company, location, industry, start_date, end_date, description) 
+          VALUES (${1}, ${exp.title}, ${exp.company}, ${exp.location}, ${exp.industry}, ${exp.startDate}, ${exp.endDate}, ${exp.description})
+        `);
       }
     } else {
-      console.log(`User already has ${existingExperiences.length} experiences. Skipping experience seeding.`);
+      console.log(`User already has ${experienceCount} experiences. Skipping experience seeding.`);
     }
 
-    if (existingProjects.length === 0) {
+    if (projectCount === 0) {
       console.log("Seeding projects...");
       // Add projects
       const projects = [
@@ -134,15 +132,13 @@ async function seedDemoData() {
       ];
 
       for (const project of projects) {
-        await db.execute(sql.raw(
-          `INSERT INTO projects (user_id, title, description, start_date, project_url, category, thumbnail_url, thumbnail_file, media_urls) 
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`),
-          [1, project.title, project.description, project.startDate, project.projectUrl, 
-           project.category, project.thumbnailUrl, project.thumbnailFile, project.mediaUrls]
-        );
+        await db.execute(sql`
+          INSERT INTO projects (user_id, title, description, start_date, project_url, category, thumbnail_url, thumbnail_file, media_urls) 
+          VALUES (${1}, ${project.title}, ${project.description}, ${project.startDate}, ${project.projectUrl}, ${project.category}, ${project.thumbnailUrl}, ${project.thumbnailFile}, ${project.mediaUrls})
+        `);
       }
     } else {
-      console.log(`User already has ${existingProjects.length} projects. Skipping project seeding.`);
+      console.log(`User already has ${projectCount} projects. Skipping project seeding.`);
     }
 
     console.log("Demo data seeding completed successfully!");
