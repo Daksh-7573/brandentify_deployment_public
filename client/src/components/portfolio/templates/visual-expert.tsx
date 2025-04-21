@@ -1221,25 +1221,18 @@ export default function VisualExpert({
               I'm always open to discussing new creative opportunities.
             </p>
             
-            <div className="flex gap-4 justify-center flex-wrap">
-              {userInfo.email && (
-                <a 
-                  href={`mailto:${userInfo.email}`} 
-                  className="cta-button bg-[#ff3d5a] hover:bg-[#ff2345] flex items-center gap-2"
-                >
-                  <Mail className="h-5 w-5" />
-                  Let's Talk
-                </a>
-              )}
-              
-              <Button 
-                variant="outline"
-                className="border-2 border-white text-white hover:bg-white/10 rounded-none"
-                onClick={() => window.open('#resume', '_blank')}
-              >
-                <Download className="h-5 w-5 mr-2" />
-                Download Resume
-              </Button>
+            <div className="flex gap-6 justify-center flex-wrap">
+              <PortfolioCtaButtons 
+                variant="custom"
+                resumeUrl={null}
+                mentorUrl={null}
+                connectUrl={null}
+                userEmail={userInfo.email}
+                userName={userInfo.name}
+                resumeBtnClass="bg-[#ff3d5a] hover:bg-[#ff2345] text-white rounded-none border-0 px-6 py-3"
+                mentorBtnClass="bg-transparent hover:bg-white/10 text-white rounded-none border-2 border-white px-6 py-3"
+                connectBtnClass="bg-white hover:bg-white/90 text-black rounded-none border-0 px-6 py-3"
+              />
             </div>
           </div>
         </div>
