@@ -4584,7 +4584,7 @@ export class DatabaseStorage implements IStorage {
         WHERE id = $1
       `;
       
-      const result = await executeRawQuery(query, [id]);
+      const result = await db.execute(sql.raw(query, [id]));
       
       if (result && result.length > 0) {
         return result[0] as User;
@@ -4642,7 +4642,7 @@ export class DatabaseStorage implements IStorage {
         WHERE user_id = $1
       `;
       
-      const result = await executeRawQuery(query, [userId]);
+      const result = await db.execute(sql.raw(query, [userId]));
       return result as WorkExperience[];
     } catch (error) {
       console.error("Error fetching work experiences:", error);
@@ -4714,7 +4714,7 @@ export class DatabaseStorage implements IStorage {
         WHERE user_id = $1
       `;
       
-      const result = await executeRawQuery(query, [userId]);
+      const result = await db.execute(sql.raw(query, [userId]));
       return result as Skill[];
     } catch (error) {
       console.error("Error fetching skills:", error);
@@ -4759,7 +4759,7 @@ export class DatabaseStorage implements IStorage {
         WHERE user_id = $1
       `;
       
-      const result = await executeRawQuery(query, [userId]);
+      const result = await db.execute(sql.raw(query, [userId]));
       return result as Project[];
     } catch (error) {
       console.error("Error fetching projects:", error);
@@ -4805,7 +4805,7 @@ export class DatabaseStorage implements IStorage {
         WHERE user_id = $1
       `;
       
-      const result = await executeRawQuery(query, [userId]);
+      const result = await db.execute(sql.raw(query, [userId]));
       return result as Service[];
     } catch (error) {
       console.error("Error fetching services:", error);
