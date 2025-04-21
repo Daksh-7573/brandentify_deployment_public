@@ -470,39 +470,16 @@ export default function TimelineStoryteller({
         </div>
       </div>
       
-      {/* Main CTA buttons that follow on scroll */}
-      <div className="fixed top-4 right-4 z-50 hidden md:flex gap-2">
-        <PortfolioCtaButtons 
-          variant="minimal"
-          resumeUrl={null} 
-          mentorUrl={null}
-          connectUrl={null}
-          userEmail={userInfo.email}
-          userName={userInfo.name}
-          className="shadow-lg"
-        />
-      </div>
-      
-      {/* Story control buttons - only on mobile */}
-      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 md:hidden">
-        <div className="flex gap-2 justify-center">
-          <Button 
-            onClick={toggleNarration} 
-            size="icon" 
-            variant="secondary" 
-            className="rounded-full shadow-md h-10 w-10"
-          >
-            {isNarrating ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-          </Button>
-          <Button 
-            onClick={viewMyStory} 
-            variant="secondary" 
-            className="rounded-full shadow-md flex items-center gap-1 px-4 h-10"
-          >
-            <Clock className="h-4 w-4" />
-            <span className="text-xs">View Story</span>
-          </Button>
-        </div>
+      {/* Audio narration control - on mobile only */}
+      <div className="fixed bottom-4 left-4 z-50 md:hidden">
+        <Button 
+          onClick={toggleNarration} 
+          size="icon" 
+          variant="secondary" 
+          className="rounded-full shadow-md h-10 w-10"
+        >
+          {isNarrating ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+        </Button>
       </div>
       
       {/* Hero Section */}
@@ -605,12 +582,6 @@ export default function TimelineStoryteller({
               <Lightbulb className="h-5 w-5 mr-2" />
               Mentor
             </Button>
-          </div>
-          
-          {/* Scroll indicator */}
-          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 flex flex-col items-center animate-bounce">
-            <span className="text-gray-500 text-sm mb-2">Scroll to view my story</span>
-            <ChevronDown className="h-6 w-6 text-gray-500" />
           </div>
         </div>
       </section>
