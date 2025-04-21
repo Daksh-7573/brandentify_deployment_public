@@ -1,3 +1,5 @@
+import { pool } from './db';
+import { sql } from 'drizzle-orm';
 import { 
   users, User, InsertUser, 
   resumes, Resume, InsertResume,
@@ -954,32 +956,123 @@ export class MemStorage implements IStorage {
 
   // User operations
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    console.log(`[db.getUser] Looking up user with ID: ${id}`);
+    try {
+      const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.getUser] No user found with ID: ${id}`);
+        return undefined;
+      }
+      
+      const userData = result.rows[0];
+      // Map database column names to camelCase property names
+      const user: User = {
+        id: userData.id,
+        username: userData.username,
+        email: userData.email,
+        password: userData.password,
+        phoneNumber: userData.phone_number,
+        name: userData.name,
+        photoURL: userData.photo_url,
+        title: userData.title,
+        location: userData.location,
+        industry: userData.industry,
+        lookingFor: userData.looking_for,
+        profileCompleted: userData.profile_completed,
+        emailVerified: userData.email_verified,
+        emailVerificationToken: userData.email_verification_token,
+        emailVerificationExpires: userData.email_verification_expires,
+        createdAt: userData.created_at,
+        aboutMe: userData.about_me,
+        visitingCardType: userData.visiting_card_type
+      };
+      
+      console.log(`[db.getUser] Found user with ID: ${id}`);
+      return user;
+    } catch (error) {
+      console.error(`[db.getUser] Error fetching user with ID ${id}:`, error);
+      return undefined;
+    }
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(user => user.email === email);
+    try {
+      const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+      
+      if (result.rows.length === 0) {
+        return undefined;
+      }
+      
+      const userData = result.rows[0];
+      return {
+        id: userData.id,
+        username: userData.username,
+        email: userData.email,
+        password: userData.password,
+        phoneNumber: userData.phone_number,
+        name: userData.name,
+        photoURL: userData.photo_url,
+        title: userData.title,
+        location: userData.location,
+        industry: userData.industry,
+        lookingFor: userData.looking_for,
+        profileCompleted: userData.profile_completed,
+        emailVerified: userData.email_verified,
+        emailVerificationToken: userData.email_verification_token,
+        emailVerificationExpires: userData.email_verification_expires,
+        createdAt: userData.created_at,
+        aboutMe: userData.about_me,
+        visitingCardType: userData.visiting_card_type
+      };
+    } catch (error) {
+      console.error(`Error fetching user with email ${email}:`, error);
+      return undefined;
+    }
   }
   
   async getUserByUsername(username: string): Promise<User | undefined> {
     console.log(`Looking up user by username: ${username}`);
     
-    // For Firebase UID strings like "0yvB0mlyKfQXGo3j4ueLtAeBREE3"
-    // We can do a more accurate search by storing the UID in the username field
-    // but we also want to warn about any issues in the console for debugging
-    
-    const user = Array.from(this.users.values()).find(user => user.username === username);
-    
-    if (!user) {
-      // Check if this is a Firebase UID and warn about it
-      if (username && username.length > 20) {
-        console.warn(`Firebase UID not found: ${username}. This is likely a Firebase UID that hasn't been properly registered.`);
+    try {
+      const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
+      
+      if (result.rows.length === 0) {
+        // Check if this is a Firebase UID and warn about it
+        if (username && username.length > 20) {
+          console.warn(`Firebase UID not found: ${username}. This is likely a Firebase UID that hasn't been properly registered.`);
+        }
+        return undefined;
       }
-    } else {
+      
+      const userData = result.rows[0];
+      const user: User = {
+        id: userData.id,
+        username: userData.username,
+        email: userData.email,
+        password: userData.password,
+        phoneNumber: userData.phone_number,
+        name: userData.name,
+        photoURL: userData.photo_url,
+        title: userData.title,
+        location: userData.location,
+        industry: userData.industry,
+        lookingFor: userData.looking_for,
+        profileCompleted: userData.profile_completed,
+        emailVerified: userData.email_verified,
+        emailVerificationToken: userData.email_verification_token,
+        emailVerificationExpires: userData.email_verification_expires,
+        createdAt: userData.created_at,
+        aboutMe: userData.about_me,
+        visitingCardType: userData.visiting_card_type
+      };
+      
       console.log(`Found user with username "${username}":`, user);
+      return user;
+    } catch (error) {
+      console.error(`Error fetching user with username ${username}:`, error);
+      return undefined;
     }
-    
-    return user;
   }
   
   async getUserByPhoneNumber(phoneNumber: string): Promise<User | undefined> {
@@ -1055,8 +1148,24 @@ export class MemStorage implements IStorage {
 
   // Work Experience operations
   async getWorkExperiencesByUserId(userId: number): Promise<WorkExperience[]> {
-    return Array.from(this.workExperiences.values())
-      .filter(experience => experience.userId === userId);
+    try {
+      const result = await pool.query('SELECT * FROM work_experiences WHERE user_id = $1', [userId]);
+      
+      return result.rows.map(row => ({
+        id: row.id,
+        userId: row.user_id,
+        title: row.title,
+        company: row.company,
+        location: row.location,
+        industry: row.industry,
+        startDate: row.start_date,
+        endDate: row.end_date,
+        description: row.description
+      }));
+    } catch (error) {
+      console.error(`Error fetching work experiences for user ${userId}:`, error);
+      return [];
+    }
   }
 
   async createWorkExperience(insertExperience: InsertWorkExperience): Promise<WorkExperience> {
@@ -1120,8 +1229,20 @@ export class MemStorage implements IStorage {
 
   // Skill operations
   async getSkillsByUserId(userId: number): Promise<Skill[]> {
-    return Array.from(this.skills.values())
-      .filter(skill => skill.userId === userId);
+    try {
+      const result = await pool.query('SELECT * FROM skills WHERE user_id = $1', [userId]);
+      
+      return result.rows.map(row => ({
+        id: row.id,
+        userId: row.user_id,
+        name: row.name,
+        level: row.level,
+        proficiency: row.proficiency
+      }));
+    } catch (error) {
+      console.error(`Error fetching skills for user ${userId}:`, error);
+      return [];
+    }
   }
 
   async createSkill(insertSkill: InsertSkill): Promise<Skill> {
