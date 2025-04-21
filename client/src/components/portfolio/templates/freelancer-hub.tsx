@@ -1185,60 +1185,160 @@ export default function FreelancerHub({
       </section>
       
       {/* Services Section */}
-      <section className="py-10 px-6 md:px-10">
+      <section className="py-16 px-6 md:px-10 relative overflow-hidden">
+        {/* Decorative elements */}
+        <motion.div 
+          className="absolute top-60 -right-20 w-80 h-80 bg-gradient-to-br from-fuchsia-100 to-pink-50 rounded-full opacity-30 blur-3xl"
+          animate={{ 
+            scale: [1, 1.2, 1],
+            rotate: [0, -10, 0]
+          }}
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            repeatType: "reverse"
+          }}
+        />
+        
         <div className="max-w-6xl mx-auto">
-          <motion.h2 
-            className="text-3xl font-bold mb-8 text-center"
-            style={{ fontFamily: 'Fredoka, sans-serif' }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 20 }}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 30 }}
             transition={{ duration: 0.5 }}
           >
-            <span className="highlight-text">What I Offer</span>
-          </motion.h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-3 text-center" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+              <span className="highlight-text">My Services</span>
+            </h2>
+            <p className="text-center text-gray-600 mb-10 max-w-2xl mx-auto" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              Specialized offerings crafted with creativity and care
+            </p>
+          </motion.div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {sortedServices.length > 0 ? (
               sortedServices.map((service, index) => (
                 <motion.div
                   key={service.id}
-                  className="service-card bg-white rounded-3xl shadow-xl overflow-hidden relative"
+                  className="service-card bg-white rounded-3xl shadow-xl overflow-hidden relative border-t-4 border-t-fuchsia-400"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 20 }}
                   transition={{ duration: 0.5, delay: 0.1 * index }}
-                  whileHover={{ y: -10 }}
+                  whileHover={{ 
+                    y: -15,
+                    rotateZ: index % 2 === 0 ? 2 : -2 
+                  }}
+                  style={{
+                    borderTopColor: index % 3 === 0 ? '#ec4899' : 
+                                    index % 3 === 1 ? '#8b5cf6' : 
+                                    '#3b82f6'
+                  }}
                 >
                   {/* Fun Background Pattern */}
                   <div className="absolute inset-0 opacity-5">
                     <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
                       <defs>
-                        <pattern id={`pattern-${index}`} x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-                          <circle cx="10" cy="10" r="2" fill="#000" />
+                        <pattern id={`service-pattern-${index}`} x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+                          {index % 3 === 0 ? (
+                            <path d="M0,20 L40,20 M20,0 L20,40" stroke="#000" strokeWidth="1" />
+                          ) : index % 3 === 1 ? (
+                            <circle cx="20" cy="20" r="3" fill="#000" />
+                          ) : (
+                            <path d="M0,0 L40,40 M0,40 L40,0" stroke="#000" strokeWidth="1" />
+                          )}
                         </pattern>
                       </defs>
-                      <rect width="100%" height="100%" fill={`url(#pattern-${index})`} />
+                      <rect width="100%" height="100%" fill={`url(#service-pattern-${index})`} />
                     </svg>
                   </div>
                   
-                  <div className="p-6 relative">
-                    {/* Service Icon */}
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-400 flex items-center justify-center mb-5 shadow-lg">
-                      {getSkillIcon(service.title)}
+                  <div className="p-8 relative">
+                    {/* Colorful Label */}
+                    <div className="absolute -right-10 top-5 w-40 text-center transform rotate-45 text-xs font-bold py-1"
+                         style={{
+                           background: index % 3 === 0 ? 'linear-gradient(90deg, #ec4899, #f472b6)' : 
+                                       index % 3 === 1 ? 'linear-gradient(90deg, #8b5cf6, #a78bfa)' : 
+                                       'linear-gradient(90deg, #3b82f6, #60a5fa)',
+                           color: 'white',
+                           fontFamily: 'Poppins, sans-serif'
+                         }}>
+                      {index % 3 === 0 ? 'POPULAR!' : index % 3 === 1 ? 'BEST VALUE!' : 'FEATURED!'}
                     </div>
                     
-                    <h3 className="text-xl font-bold mb-3" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+                    {/* Service Icon with animation */}
+                    <motion.div
+                      className="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 shadow-lg"
+                      style={{
+                        background: index % 3 === 0 ? 'linear-gradient(135deg, #f472b6, #ec4899)' : 
+                                  index % 3 === 1 ? 'linear-gradient(135deg, #a78bfa, #8b5cf6)' : 
+                                  'linear-gradient(135deg, #60a5fa, #3b82f6)',
+                      }}
+                      animate={{ 
+                        rotate: [0, 5, 0, -5, 0],
+                      }}
+                      transition={{ 
+                        duration: 5,
+                        repeat: Infinity,
+                        repeatType: "loop",
+                        ease: "easeInOut"
+                      }}
+                    >
+                      <div className="text-white text-2xl">
+                        {getSkillIcon(service.title)}
+                      </div>
+                    </motion.div>
+                    
+                    <h3 className="text-2xl font-bold mb-3" style={{ fontFamily: 'Fredoka, sans-serif' }}>
                       {service.title}
                     </h3>
                     
-                    <p className="text-gray-600 mb-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                      {service.description}
-                    </p>
+                    <div className="h-24 overflow-hidden">
+                      <p className="text-gray-600 mb-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                        {service.description}
+                      </p>
+                    </div>
                     
-                    <div className="flex justify-between items-center">
+                    {/* Features List */}
+                    <ul className="mb-6 pl-1">
+                      {['Fast delivery', 'Revisions included', 'Premium support'].map((feature, i) => (
+                        <motion.li 
+                          key={i}
+                          className="flex items-center gap-2 text-sm text-gray-700 mb-2"
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.5 + (i * 0.1) }}
+                          style={{ fontFamily: 'Poppins, sans-serif' }}
+                        >
+                          <div className="text-xs w-5 h-5 rounded-full flex items-center justify-center"
+                               style={{
+                                 background: index % 3 === 0 ? '#fce7f3' : 
+                                             index % 3 === 1 ? '#ede9fe' : 
+                                             '#dbeafe',
+                                 color: index % 3 === 0 ? '#ec4899' : 
+                                        index % 3 === 1 ? '#8b5cf6' : 
+                                        '#3b82f6'
+                               }}>
+                            ✓
+                          </div>
+                          {feature}
+                        </motion.li>
+                      ))}
+                    </ul>
+                    
+                    <div className="flex flex-col gap-3">
                       {/* Pricing */}
                       {((service.priceInr && Number(service.priceInr) > 0) || 
                        (service.priceUsd && Number(service.priceUsd) > 0)) && (
-                        <div className="text-sm font-bold text-violet-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                        <div className="text-center py-2 font-bold text-lg"
+                             style={{
+                               background: index % 3 === 0 ? '#fce7f3' : 
+                                           index % 3 === 1 ? '#ede9fe' : 
+                                           '#dbeafe',
+                               color: index % 3 === 0 ? '#be185d' : 
+                                      index % 3 === 1 ? '#6d28d9' : 
+                                      '#1e40af',
+                               fontFamily: 'Poppins, sans-serif',
+                               borderRadius: '0.75rem'
+                             }}>
                           {service.isHourly ? (
                             `${service.priceUsd ? `$${service.priceUsd}` : `₹${service.priceInr}`}/hour`
                           ) : (
@@ -1248,11 +1348,24 @@ export default function FreelancerHub({
                       )}
                       
                       {/* CTA Button */}
-                      <Button 
-                        className="bg-gradient-to-r from-violet-500 to-indigo-500 hover:from-violet-600 hover:to-indigo-600 text-white shadow-md"
+                      <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                       >
-                        Book Now
-                      </Button>
+                        <Button 
+                          onClick={handleLetsTalkClick}
+                          className="w-full shadow-lg font-bold py-3"
+                          style={{
+                            background: index % 3 === 0 ? 'linear-gradient(135deg, #f472b6, #ec4899)' : 
+                                      index % 3 === 1 ? 'linear-gradient(135deg, #a78bfa, #8b5cf6)' : 
+                                      'linear-gradient(135deg, #60a5fa, #3b82f6)',
+                            color: 'white',
+                            fontFamily: 'Fredoka, sans-serif'
+                          }}
+                        >
+                          Book Now
+                        </Button>
+                      </motion.div>
                     </div>
                   </div>
                 </motion.div>
@@ -1281,50 +1394,146 @@ export default function FreelancerHub({
               ].map((service, index) => (
                 <motion.div
                   key={index}
-                  className="service-card bg-white rounded-3xl shadow-xl overflow-hidden relative"
+                  className="service-card bg-white rounded-3xl shadow-xl overflow-hidden relative border-t-4 border-t-fuchsia-400"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 20 }}
                   transition={{ duration: 0.5, delay: 0.1 * index }}
-                  whileHover={{ y: -10 }}
+                  whileHover={{ 
+                    y: -15,
+                    rotateZ: index % 2 === 0 ? 2 : -2 
+                  }}
+                  style={{
+                    borderTopColor: index % 3 === 0 ? '#ec4899' : 
+                                    index % 3 === 1 ? '#8b5cf6' : 
+                                    '#3b82f6'
+                  }}
                 >
                   {/* Fun Background Pattern */}
                   <div className="absolute inset-0 opacity-5">
                     <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
                       <defs>
-                        <pattern id={`pattern-${index}`} x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-                          <circle cx="10" cy="10" r="2" fill="#000" />
+                        <pattern id={`pattern-${index}`} x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+                          {index % 3 === 0 ? (
+                            <path d="M0,20 L40,20 M20,0 L20,40" stroke="#000" strokeWidth="1" />
+                          ) : index % 3 === 1 ? (
+                            <circle cx="20" cy="20" r="3" fill="#000" />
+                          ) : (
+                            <path d="M0,0 L40,40 M0,40 L40,0" stroke="#000" strokeWidth="1" />
+                          )}
                         </pattern>
                       </defs>
                       <rect width="100%" height="100%" fill={`url(#pattern-${index})`} />
                     </svg>
                   </div>
                   
-                  <div className="p-6 relative">
-                    {/* Service Icon */}
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-400 flex items-center justify-center mb-5 shadow-lg">
-                      {service.icon}
+                  <div className="p-8 relative">
+                    {/* Colorful Label */}
+                    <div className="absolute -right-10 top-5 w-40 text-center transform rotate-45 text-xs font-bold py-1"
+                         style={{
+                           background: index % 3 === 0 ? 'linear-gradient(90deg, #ec4899, #f472b6)' : 
+                                       index % 3 === 1 ? 'linear-gradient(90deg, #8b5cf6, #a78bfa)' : 
+                                       'linear-gradient(90deg, #3b82f6, #60a5fa)',
+                           color: 'white',
+                           fontFamily: 'Poppins, sans-serif'
+                         }}>
+                      {index % 3 === 0 ? 'POPULAR!' : index % 3 === 1 ? 'BEST VALUE!' : 'FEATURED!'}
                     </div>
                     
-                    <h3 className="text-xl font-bold mb-3" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+                    {/* Service Icon with animation */}
+                    <motion.div
+                      className="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 shadow-lg"
+                      style={{
+                        background: index % 3 === 0 ? 'linear-gradient(135deg, #f472b6, #ec4899)' : 
+                                  index % 3 === 1 ? 'linear-gradient(135deg, #a78bfa, #8b5cf6)' : 
+                                  'linear-gradient(135deg, #60a5fa, #3b82f6)',
+                      }}
+                      animate={{ 
+                        rotate: [0, 5, 0, -5, 0],
+                      }}
+                      transition={{ 
+                        duration: 5,
+                        repeat: Infinity,
+                        repeatType: "loop",
+                        ease: "easeInOut"
+                      }}
+                    >
+                      <div className="text-white text-2xl">
+                        {service.icon}
+                      </div>
+                    </motion.div>
+                    
+                    <h3 className="text-2xl font-bold mb-3" style={{ fontFamily: 'Fredoka, sans-serif' }}>
                       {service.title}
                     </h3>
                     
-                    <p className="text-gray-600 mb-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                      {service.description}
-                    </p>
+                    <div className="h-24 overflow-hidden">
+                      <p className="text-gray-600 mb-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                        {service.description}
+                      </p>
+                    </div>
                     
-                    <div className="flex justify-between items-center">
+                    {/* Features List */}
+                    <ul className="mb-6 pl-1">
+                      {['Fast delivery', 'Revisions included', 'Premium support'].map((feature, i) => (
+                        <motion.li 
+                          key={i}
+                          className="flex items-center gap-2 text-sm text-gray-700 mb-2"
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.5 + (i * 0.1) }}
+                          style={{ fontFamily: 'Poppins, sans-serif' }}
+                        >
+                          <div className="text-xs w-5 h-5 rounded-full flex items-center justify-center"
+                               style={{
+                                 background: index % 3 === 0 ? '#fce7f3' : 
+                                             index % 3 === 1 ? '#ede9fe' : 
+                                             '#dbeafe',
+                                 color: index % 3 === 0 ? '#ec4899' : 
+                                        index % 3 === 1 ? '#8b5cf6' : 
+                                        '#3b82f6'
+                               }}>
+                            ✓
+                          </div>
+                          {feature}
+                        </motion.li>
+                      ))}
+                    </ul>
+                    
+                    <div className="flex flex-col gap-3">
                       {/* Pricing */}
-                      <div className="text-sm font-bold text-violet-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      <div className="text-center py-2 font-bold text-lg"
+                           style={{
+                             background: index % 3 === 0 ? '#fce7f3' : 
+                                         index % 3 === 1 ? '#ede9fe' : 
+                                         '#dbeafe',
+                             color: index % 3 === 0 ? '#be185d' : 
+                                    index % 3 === 1 ? '#6d28d9' : 
+                                    '#1e40af',
+                             fontFamily: 'Poppins, sans-serif',
+                             borderRadius: '0.75rem'
+                           }}>
                         {service.price}
                       </div>
                       
                       {/* CTA Button */}
-                      <Button 
-                        className="bg-gradient-to-r from-violet-500 to-indigo-500 hover:from-violet-600 hover:to-indigo-600 text-white shadow-md"
+                      <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                       >
-                        Let's Chat
-                      </Button>
+                        <Button 
+                          onClick={handleLetsTalkClick}
+                          className="w-full shadow-lg font-bold py-3"
+                          style={{
+                            background: index % 3 === 0 ? 'linear-gradient(135deg, #f472b6, #ec4899)' : 
+                                      index % 3 === 1 ? 'linear-gradient(135deg, #a78bfa, #8b5cf6)' : 
+                                      'linear-gradient(135deg, #60a5fa, #3b82f6)',
+                            color: 'white',
+                            fontFamily: 'Fredoka, sans-serif'
+                          }}
+                        >
+                          Book Now
+                        </Button>
+                      </motion.div>
                     </div>
                   </div>
                 </motion.div>
