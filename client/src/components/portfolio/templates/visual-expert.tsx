@@ -5,10 +5,11 @@ import { ProfileImage } from "@/components/ui/profile-image";
 import { Education, Project, Service, Skill, WorkExperience } from "@shared/schema";
 import { useEffect, useState, useRef } from "react";
 import { 
-  Mail, LinkedIn, MapPin, Camera, Film, Calendar, CheckCircle,
-  Download, Sparkles, GitHub, MessageSquare, ExternalLink, 
+  Mail, Linkedin, MapPin, Camera, Film, Calendar, CheckCircle,
+  Download, Sparkles, Github, MessageSquare, ExternalLink, 
   Instagram, Zap, Palette, ArrowUpRight, Compass, Image, Play, 
-  FileImage, Plus, Paperclip, Send, X
+  FileImage, Plus, Paperclip, Send, X, GraduationCap, Briefcase,
+  Building
 } from "lucide-react";
 import {
   Dialog,
@@ -121,6 +122,7 @@ export default function VisualExpert({
     }
     
     // In a full implementation, this would open a full-screen preview
+    window.open(project.projectUrl || '#', '_blank');
   };
   
   // Helper to determine masonry grid item size
