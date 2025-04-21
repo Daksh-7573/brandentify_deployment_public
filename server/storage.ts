@@ -4693,7 +4693,12 @@ export class DatabaseStorage implements IStorage {
   async getUser(id: number): Promise<User | undefined> {
     console.log(`[db.getUser] Looking up user with ID: ${id}`);
     try {
-      const result = await pool.query(`
+      // Simple query first to verify connection
+      const testQuery = await pool.query('SELECT 1 as test');
+      console.log(`[db.getUser] Test query result:`, testQuery.rows);
+      
+      // Now actual user query
+      const query = `
         SELECT 
           id, username, email, password, phone_number as "phoneNumber", 
           name, photo_url as "photoURL", title, about_me as "aboutMe", 
@@ -4703,13 +4708,20 @@ export class DatabaseStorage implements IStorage {
           email_verification_expires as "emailVerificationExpires", created_at as "createdAt"
         FROM users
         WHERE id = $1
-      `, [id]);
+      `;
       
-      console.log(`[db.getUser] Query returned ${result.rows.length} rows`);
+      console.log(`[db.getUser] Executing query: ${query.replace(/\s+/g, ' ')} with params [${id}]`);
+      
+      const result = await pool.query(query, [id]);
+      
+      console.log(`[db.getUser] Query returned ${result.rows.length} rows:`, JSON.stringify(result.rows));
       
       if (result.rows.length > 0) {
-        return result.rows[0] as User;
+        const user = result.rows[0] as User;
+        console.log(`[db.getUser] User found:`, JSON.stringify(user));
+        return user;
       }
+      console.log(`[db.getUser] No user found with ID ${id}`);
       return undefined;
     } catch (error) {
       console.error(`[db.getUser] Error fetching user with ID ${id}:`, error);
