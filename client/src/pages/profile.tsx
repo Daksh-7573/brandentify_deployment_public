@@ -1519,6 +1519,10 @@ export default function Profile() {
                       <SelectValue placeholder="Select your domain" />
                     </SelectTrigger>
                     <SelectContent className="max-h-80">
+                      {/* Add a General option as the first choice */}
+                      <SelectItem key="all" value="all">
+                        General
+                      </SelectItem>
                       {INDUSTRY_DOMAINS[formData.industry]?.map((domain: string) => (
                         <SelectItem key={domain} value={domain}>
                           {domain}
