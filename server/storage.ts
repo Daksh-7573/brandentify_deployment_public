@@ -320,7 +320,7 @@ export interface IStorage {
   getBrandsOfTheDay(): Promise<BrandOfTheDay[]>;
   getBrandsOfTheDayByDate(date: Date): Promise<BrandOfTheDay[]>;
   getBrandOfTheDayById(id: number): Promise<BrandOfTheDay | undefined>;
-  getBrandOfTheDayByIndustryAndDomain(industry: string, domain: string, date: Date): Promise<BrandOfTheDay | undefined>;
+  getBrandOfTheDayByIndustryAndDomain(industry: string, domain: string, date?: Date): Promise<BrandOfTheDay | undefined>;
   getBrandsOfTheDayByUserId(userId: number): Promise<BrandOfTheDay[]>;
   createBrandOfTheDay(brand: InsertBrandOfTheDay): Promise<BrandOfTheDay>;
   updateBrandOfTheDay(id: number, brand: Partial<BrandOfTheDay>): Promise<BrandOfTheDay | undefined>;
@@ -5102,6 +5102,79 @@ export class DatabaseStorage implements IStorage {
     return result.rowCount > 0;
   }
 
+  // Portfolio operations
+  async getPortfolioByUserId(userId: number): Promise<Portfolio | undefined> {
+    try {
+      console.log(`[db.getPortfolioByUserId] Looking for portfolio for user ${userId}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id, 
+          user_id as "userId", 
+          layout, 
+          custom_title as "customTitle", 
+          custom_bio as "customBio", 
+          customization_options as "customizationOptions", 
+          is_published as "isPublished", 
+          public_url as "publicUrl", 
+          featured_projects as "featuredProjects", 
+          featured_skills as "featuredSkills", 
+          featured_experiences as "featuredExperiences", 
+          created_at as "createdAt", 
+          updated_at as "updatedAt"
+        FROM portfolios
+        WHERE user_id = $1
+      `, [userId]);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.getPortfolioByUserId] No portfolio found for user ${userId}`);
+        return undefined;
+      }
+      
+      console.log(`[db.getPortfolioByUserId] Found portfolio for user ${userId}:`, result.rows[0]);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.getPortfolioByUserId] Error fetching portfolio for user ${userId}:`, error);
+      return undefined;
+    }
+  }
+
+  async getPortfolioById(id: number): Promise<Portfolio | undefined> {
+    try {
+      console.log(`[db.getPortfolioById] Looking for portfolio with ID ${id}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id, 
+          user_id as "userId", 
+          layout, 
+          custom_title as "customTitle", 
+          custom_bio as "customBio", 
+          customization_options as "customizationOptions", 
+          is_published as "isPublished", 
+          public_url as "publicUrl", 
+          featured_projects as "featuredProjects", 
+          featured_skills as "featuredSkills", 
+          featured_experiences as "featuredExperiences", 
+          created_at as "createdAt", 
+          updated_at as "updatedAt"
+        FROM portfolios
+        WHERE id = $1
+      `, [id]);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.getPortfolioById] No portfolio found with ID ${id}`);
+        return undefined;
+      }
+      
+      console.log(`[db.getPortfolioById] Found portfolio with ID ${id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.getPortfolioById] Error fetching portfolio with ID ${id}:`, error);
+      return undefined;
+    }
+  }
+
   // Service operations
   async getServicesByUserId(userId: number): Promise<Service[]> {
     try {
@@ -5164,6 +5237,383 @@ export class DatabaseStorage implements IStorage {
 
   // Additional methods from IStorage will be implemented as needed
   // This is a partial implementation for the demo profile data requirement
+  
+  // Brand of the Day operations
+  async getBrandsOfTheDay(): Promise<BrandOfTheDay[]> {
+    try {
+      console.log('[db.getBrandsOfTheDay] Fetching all brands of the day');
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          industry,
+          domain,
+          brand_value_score as "brandValueScore",
+          musk_comment as "muskComment",
+          score_breakdown as "scoreBreakdown",
+          featured_date as "featuredDate",
+          expires_date as "expiresDate",
+          has_been_shared as "hasBeenShared",
+          created_at as "createdAt"
+        FROM brands_of_the_day
+        ORDER BY featured_date DESC
+      `);
+      
+      console.log(`[db.getBrandsOfTheDay] Found ${result.rows.length} brands of the day`);
+      return result.rows;
+    } catch (error) {
+      console.error('[db.getBrandsOfTheDay] Error fetching brands of the day:', error);
+      return [];
+    }
+  }
+  
+  async getBrandsOfTheDayByDate(date: Date): Promise<BrandOfTheDay[]> {
+    try {
+      console.log(`[db.getBrandsOfTheDayByDate] Fetching brands of the day for date ${date.toISOString()}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          industry,
+          domain,
+          brand_value_score as "brandValueScore",
+          musk_comment as "muskComment",
+          score_breakdown as "scoreBreakdown",
+          featured_date as "featuredDate",
+          expires_date as "expiresDate",
+          has_been_shared as "hasBeenShared",
+          created_at as "createdAt"
+        FROM brands_of_the_day
+        WHERE featured_date::date = $1::date
+        ORDER BY industry
+      `, [date.toISOString().split('T')[0]]);
+      
+      console.log(`[db.getBrandsOfTheDayByDate] Found ${result.rows.length} brands of the day for date ${date.toISOString().split('T')[0]}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getBrandsOfTheDayByDate] Error fetching brands of the day for date ${date.toISOString()}:`, error);
+      return [];
+    }
+  }
+  
+  async getBrandOfTheDayById(id: number): Promise<BrandOfTheDay | undefined> {
+    try {
+      console.log(`[db.getBrandOfTheDayById] Looking for brand of the day with ID ${id}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          industry,
+          domain,
+          brand_value_score as "brandValueScore",
+          musk_comment as "muskComment",
+          score_breakdown as "scoreBreakdown",
+          featured_date as "featuredDate",
+          expires_date as "expiresDate",
+          has_been_shared as "hasBeenShared",
+          created_at as "createdAt"
+        FROM brands_of_the_day
+        WHERE id = $1
+      `, [id]);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.getBrandOfTheDayById] No brand of the day found with ID ${id}`);
+        return undefined;
+      }
+      
+      console.log(`[db.getBrandOfTheDayById] Found brand of the day with ID ${id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.getBrandOfTheDayById] Error fetching brand of the day with ID ${id}:`, error);
+      return undefined;
+    }
+  }
+  
+  async getBrandOfTheDayByIndustryAndDomain(industry: string, domain: string, date?: Date): Promise<BrandOfTheDay | undefined> {
+    try {
+      console.log(`[db.getBrandOfTheDayByIndustryAndDomain] Looking for brand of the day for industry ${industry} and domain ${domain}`);
+      
+      let query = `
+        SELECT 
+          id,
+          user_id as "userId",
+          industry,
+          domain,
+          brand_value_score as "brandValueScore",
+          musk_comment as "muskComment",
+          score_breakdown as "scoreBreakdown",
+          featured_date as "featuredDate",
+          expires_date as "expiresDate",
+          has_been_shared as "hasBeenShared",
+          created_at as "createdAt"
+        FROM brands_of_the_day
+        WHERE industry = $1 AND domain = $2
+      `;
+      
+      const params = [industry, domain];
+      
+      // If date is provided, add it to the query
+      if (date) {
+        query += ` AND featured_date::date = $3::date`;
+        params.push(date.toISOString().split('T')[0]);
+      } else {
+        // If no date is provided, get the most recent one
+        query += ` ORDER BY featured_date DESC LIMIT 1`;
+      }
+      
+      const result = await pool.query(query, params);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.getBrandOfTheDayByIndustryAndDomain] No brand of the day found for industry ${industry} and domain ${domain}`);
+        return undefined;
+      }
+      
+      console.log(`[db.getBrandOfTheDayByIndustryAndDomain] Found brand of the day for industry ${industry} and domain ${domain}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.getBrandOfTheDayByIndustryAndDomain] Error fetching brand of the day for industry ${industry} and domain ${domain}:`, error);
+      return undefined;
+    }
+  }
+  
+  async getBrandsOfTheDayByUserId(userId: number): Promise<BrandOfTheDay[]> {
+    try {
+      console.log(`[db.getBrandsOfTheDayByUserId] Fetching brands of the day for user ${userId}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          industry,
+          domain,
+          brand_value_score as "brandValueScore",
+          musk_comment as "muskComment",
+          score_breakdown as "scoreBreakdown",
+          featured_date as "featuredDate",
+          expires_date as "expiresDate",
+          has_been_shared as "hasBeenShared",
+          created_at as "createdAt"
+        FROM brands_of_the_day
+        WHERE user_id = $1
+        ORDER BY featured_date DESC
+      `, [userId]);
+      
+      console.log(`[db.getBrandsOfTheDayByUserId] Found ${result.rows.length} brands of the day for user ${userId}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getBrandsOfTheDayByUserId] Error fetching brands of the day for user ${userId}:`, error);
+      return [];
+    }
+  }
+  
+  async createBrandOfTheDay(brand: InsertBrandOfTheDay): Promise<BrandOfTheDay> {
+    try {
+      console.log(`[db.createBrandOfTheDay] Creating brand of the day for user ${brand.userId}`);
+      
+      const result = await pool.query(`
+        INSERT INTO brands_of_the_day (
+          user_id,
+          industry,
+          domain,
+          brand_value_score,
+          musk_comment,
+          score_breakdown,
+          featured_date,
+          expires_date,
+          has_been_shared,
+          created_at
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        RETURNING 
+          id,
+          user_id as "userId",
+          industry,
+          domain,
+          brand_value_score as "brandValueScore",
+          musk_comment as "muskComment",
+          score_breakdown as "scoreBreakdown",
+          featured_date as "featuredDate",
+          expires_date as "expiresDate",
+          has_been_shared as "hasBeenShared",
+          created_at as "createdAt"
+      `, [
+        brand.userId,
+        brand.industry,
+        brand.domain,
+        brand.brandValueScore,
+        brand.muskComment,
+        brand.scoreBreakdown,
+        brand.featuredDate,
+        brand.expiresDate,
+        brand.hasBeenShared,
+        brand.createdAt || new Date()
+      ]);
+      
+      console.log(`[db.createBrandOfTheDay] Created brand of the day with ID ${result.rows[0].id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.createBrandOfTheDay] Error creating brand of the day:`, error);
+      throw new Error(`Failed to create brand of the day: ${error.message}`);
+    }
+  }
+  
+  async updateBrandOfTheDay(id: number, brand: Partial<BrandOfTheDay>): Promise<BrandOfTheDay | undefined> {
+    try {
+      console.log(`[db.updateBrandOfTheDay] Updating brand of the day with ID ${id}`);
+      
+      const updateFields = [];
+      const values = [];
+      let valueCounter = 1;
+      
+      // Build dynamic update query based on provided fields
+      for (const [key, value] of Object.entries(brand)) {
+        if (value !== undefined) {
+          // Convert camelCase to snake_case for DB column names
+          const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+          updateFields.push(`${snakeKey} = $${valueCounter}`);
+          values.push(value);
+          valueCounter++;
+        }
+      }
+      
+      if (updateFields.length === 0) {
+        console.log(`[db.updateBrandOfTheDay] No fields to update for brand of the day with ID ${id}`);
+        return await this.getBrandOfTheDayById(id);
+      }
+      
+      values.push(id); // Add ID as the last parameter
+      
+      const result = await pool.query(`
+        UPDATE brands_of_the_day
+        SET ${updateFields.join(', ')}
+        WHERE id = $${valueCounter}
+        RETURNING 
+          id,
+          user_id as "userId",
+          industry,
+          domain,
+          brand_value_score as "brandValueScore",
+          musk_comment as "muskComment",
+          score_breakdown as "scoreBreakdown",
+          featured_date as "featuredDate",
+          expires_date as "expiresDate",
+          has_been_shared as "hasBeenShared",
+          created_at as "createdAt"
+      `, values);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.updateBrandOfTheDay] No brand of the day found with ID ${id}`);
+        return undefined;
+      }
+      
+      console.log(`[db.updateBrandOfTheDay] Updated brand of the day with ID ${id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.updateBrandOfTheDay] Error updating brand of the day with ID ${id}:`, error);
+      return undefined;
+    }
+  }
+  
+  async markBrandOfTheDayAsShared(id: number): Promise<BrandOfTheDay | undefined> {
+    try {
+      console.log(`[db.markBrandOfTheDayAsShared] Marking brand of the day with ID ${id} as shared`);
+      
+      const result = await pool.query(`
+        UPDATE brands_of_the_day
+        SET has_been_shared = true
+        WHERE id = $1
+        RETURNING 
+          id,
+          user_id as "userId",
+          industry,
+          domain,
+          brand_value_score as "brandValueScore",
+          musk_comment as "muskComment",
+          score_breakdown as "scoreBreakdown",
+          featured_date as "featuredDate",
+          expires_date as "expiresDate",
+          has_been_shared as "hasBeenShared",
+          created_at as "createdAt"
+      `, [id]);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.markBrandOfTheDayAsShared] No brand of the day found with ID ${id}`);
+        return undefined;
+      }
+      
+      console.log(`[db.markBrandOfTheDayAsShared] Marked brand of the day with ID ${id} as shared`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.markBrandOfTheDayAsShared] Error marking brand of the day with ID ${id} as shared:`, error);
+      return undefined;
+    }
+  }
+  
+  async calculateBrandValueScore(userId: number): Promise<{
+    userId: number;
+    brandValueScore: number;
+    scoreBreakdown: {
+      profileStrength: number;
+      careerQuests: number;
+      pulseActivity: number;
+      portfolioProjects: number;
+      engagement: number;
+      muskUsage: number;
+      consistency: number;
+      badges: number;
+    };
+  }> {
+    // This is a placeholder implementation
+    // In a real implementation, we would calculate these scores based on user activity
+    console.log(`[db.calculateBrandValueScore] Calculating brand value score for user ${userId}`);
+    
+    return {
+      userId,
+      brandValueScore: 75,
+      scoreBreakdown: {
+        profileStrength: 80,
+        careerQuests: 65,
+        pulseActivity: 70,
+        portfolioProjects: 85,
+        engagement: 60,
+        muskUsage: 90,
+        consistency: 75,
+        badges: 80
+      }
+    };
+  }
+  
+  // Nowboard methods
+  async getNowboardItems(): Promise<NowboardItem[]> {
+    try {
+      console.log('[db.getNowboardItems] Fetching all nowboard items');
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          type,
+          action,
+          content,
+          link,
+          metadata,
+          created_at as "createdAt",
+          updated_at as "updatedAt",
+          is_active as "isActive"
+        FROM nowboard_items
+        ORDER BY created_at DESC
+        LIMIT 50
+      `);
+      
+      console.log(`[db.getNowboardItems] Found ${result.rows.length} nowboard items`);
+      return result.rows;
+    } catch (error) {
+      console.error('[db.getNowboardItems] Error fetching nowboard items:', error);
+      return [];
+    }
+  }
 }
 
 // Switch to database storage
