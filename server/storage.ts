@@ -980,9 +980,26 @@ export class MemStorage implements IStorage {
         return undefined;
       }
       
+      // Get the user from the result
       const user = result.rows[0];
       console.log(`[db.getUser] User found:`, user);
       console.log(`[db.getUser] Domain value specifically:`, user.domain);
+      
+      // If domain is missing from the user object but exists in the database, query it explicitly
+      if (!user.domain) {
+        console.log(`[db.getUser] Domain is missing, querying it explicitly`);
+        try {
+          const domainQuery = `SELECT domain FROM users WHERE id = $1`;
+          const domainResult = await pool.query(domainQuery, [id]);
+          
+          if (domainResult.rows.length > 0 && domainResult.rows[0].domain) {
+            user.domain = domainResult.rows[0].domain;
+            console.log(`[db.getUser] Added domain explicitly:`, user.domain);
+          }
+        } catch (error) {
+          console.error(`[db.getUser] Error fetching domain:`, error);
+        }
+      }
       
       return user as User;
       

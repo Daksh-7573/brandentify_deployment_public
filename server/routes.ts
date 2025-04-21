@@ -312,6 +312,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.json(demoUser);
       }
       
+      // Check if domain is missing and fetch it directly from database
+      if (!user.domain) {
+        try {
+          const result = await pool.query('SELECT domain FROM users WHERE id = $1', [user.id]);
+          if (result.rows.length > 0 && result.rows[0].domain) {
+            user.domain = result.rows[0].domain;
+            console.log(`[GET /users/:id] Added domain explicitly:`, user.domain);
+          }
+        } catch (error) {
+          console.error(`[GET /users/:id] Error fetching domain:`, error);
+        }
+      }
+
       console.log(`[GET /users/:id] Returning user data:`, user);
       res.json(user);
     } catch (error) {
