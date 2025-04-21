@@ -346,21 +346,16 @@ export default function CorporateExecutive({
             </nav>
             
             {/* CTA Buttons */}
-            <div className="flex items-center space-x-4">
-              <Button 
-                className="btn-primary text-white text-sm px-4 py-2 rounded-md flex items-center"
-                onClick={() => userInfo.email ? window.location.href = `mailto:${userInfo.email}` : null}
-              >
-                <Mail className="h-4 w-4 mr-2" />
-                <span style={{ fontFamily: 'Inter, sans-serif' }}>Schedule</span>
-              </Button>
-              <Button 
-                variant="outline"
-                className="btn-outline text-sm px-4 py-2 rounded-md flex items-center"
-              >
-                <FileText className="h-4 w-4 mr-2" />
-                <span style={{ fontFamily: 'Inter, sans-serif' }}>Resume</span>
-              </Button>
+            <div className="hidden sm:block">
+              <PortfolioCtaButtons 
+                variant="corporate"
+                resumeUrl={null} 
+                mentorUrl={null}
+                connectUrl={null}
+                userEmail={userInfo.email}
+                userName={userInfo.name}
+                className="flex-row"
+              />
             </div>
           </div>
         </div>
@@ -797,22 +792,16 @@ export default function CorporateExecutive({
               </p>
             </div>
             
-            <div className="flex gap-4">
-              <Button 
-                className="btn-primary text-white px-6 py-3 rounded-md flex items-center"
-                onClick={() => userInfo.email ? window.location.href = `mailto:${userInfo.email}` : null}
-              >
-                <Mail className="h-4 w-4 mr-2" />
-                <span style={{ fontFamily: 'Inter, sans-serif' }}>Schedule a Call</span>
-              </Button>
-              
-              <Button 
-                variant="outline"
-                className="border-white text-white hover:bg-white/10 px-6 py-3 rounded-md flex items-center"
-              >
-                <Download className="h-4 w-4 mr-2" />
-                <span style={{ fontFamily: 'Inter, sans-serif' }}>Download Resume</span>
-              </Button>
+            <div>
+              <PortfolioCtaButtons 
+                variant="corporate"
+                resumeUrl={null} 
+                mentorUrl={null}
+                connectUrl={null}
+                userEmail={userInfo.email}
+                userName={userInfo.name}
+                className="sm:justify-end"
+              />
             </div>
           </div>
           
