@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ProfileImage } from "@/components/ui/profile-image";
 import { Project, Skill, WorkExperience, Education, Service } from "@shared/schema";
 import { useEffect, useState } from "react";
+import PortfolioCtaButtons from "../portfolio-cta-buttons";
 import { 
   Mail, Linkedin, ExternalLink, Calendar, GraduationCap, 
   MapPin, Star, Package, Briefcase, ChevronRight, ArrowUpRight
@@ -530,12 +531,17 @@ export default function MinimalistPro({
           )}
         </section>
         
-        {/* Sticky Contact Button */}
+        {/* Sticky CTA Buttons */}
         <div className="fixed bottom-4 right-4 z-40">
-          <Button className="rounded-full shadow-lg bg-primary hover:bg-primary/90">
-            Contact Me
-            <Mail className="ml-2 h-4 w-4" />
-          </Button>
+          <PortfolioCtaButtons 
+            variant="minimal"
+            resumeUrl={null} 
+            mentorUrl={null}
+            connectUrl={null}
+            userEmail={userInfo.email}
+            userName={userInfo.name}
+            className="flex-row" 
+          />
         </div>
         
         {/* Footer */}
