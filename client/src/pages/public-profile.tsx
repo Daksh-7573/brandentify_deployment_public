@@ -31,6 +31,7 @@ interface UserData {
   title: string | null;
   location: string | null;
   industry: string | null;
+  domain?: string | null;
   lookingFor: string | null;
   phoneNumber: string | null;
 }
@@ -181,7 +182,7 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
         name: portfolioData.userData.name || portfolioData.userData.username,
         title: portfolioData.userData.title,
         industry: portfolioData.userData.industry,
-        domain: null,
+        domain: portfolioData.userData.domain,
         location: portfolioData.userData.location,
         email: portfolioData.userData.email,
         photoURL: portfolioData.userData.photoURL,
