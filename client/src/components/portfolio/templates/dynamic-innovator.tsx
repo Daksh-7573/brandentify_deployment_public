@@ -1213,15 +1213,15 @@ export function DynamicInnovator({
                 Connection Purpose:
               </label>
               <Select value={contactPurpose} onValueChange={setContactPurpose}>
-                <SelectTrigger className="w-full bg-[#0c162d]/80 border border-[#7122FA]/50 text-white focus:ring-1 focus:ring-[#08f7fe] focus:border-[#08f7fe]">
+                <SelectTrigger className="w-full bg-[#0D1D38] border border-[#08f7fe]/50 text-[#FFFFFF] focus:ring-1 focus:ring-[#08f7fe] focus:border-[#08f7fe]">
                   <SelectValue placeholder="Select a reason" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#0c162d] border border-[#7122FA] text-white">
-                  <SelectItem value="job-opportunity" className="focus:bg-[#7122FA]/20 focus:text-white">Exciting job opportunities are available, and I believe you'd be a great fit.</SelectItem>
-                  <SelectItem value="project-collaboration" className="focus:bg-[#7122FA]/20 focus:text-white">Would you be open to teaming up on innovative projects?</SelectItem>
-                  <SelectItem value="networking" className="focus:bg-[#7122FA]/20 focus:text-white">Let's connect — I admire your work and would love to stay in touch.</SelectItem>
-                  <SelectItem value="partnership" className="focus:bg-[#7122FA]/20 focus:text-white">I'd like to explore a potential partnership opportunity with you.</SelectItem>
-                  <SelectItem value="freelance" className="focus:bg-[#7122FA]/20 focus:text-white">I have some exciting freelance projects you might be interested in.</SelectItem>
+                <SelectContent className="bg-[#0D1D38] border border-[#08f7fe] text-[#FFFFFF]">
+                  <SelectItem value="job-opportunity" className="hover:bg-[#08f7fe]/20 data-[highlighted]:bg-[#08f7fe]/30 data-[highlighted]:text-white text-[#FFFFFF]">Exciting job opportunities are available, and I believe you'd be a great fit.</SelectItem>
+                  <SelectItem value="project-collaboration" className="hover:bg-[#08f7fe]/20 data-[highlighted]:bg-[#08f7fe]/30 data-[highlighted]:text-white text-[#FFFFFF]">Would you be open to teaming up on innovative projects?</SelectItem>
+                  <SelectItem value="networking" className="hover:bg-[#08f7fe]/20 data-[highlighted]:bg-[#08f7fe]/30 data-[highlighted]:text-white text-[#FFFFFF]">Let's connect — I admire your work and would love to stay in touch.</SelectItem>
+                  <SelectItem value="partnership" className="hover:bg-[#08f7fe]/20 data-[highlighted]:bg-[#08f7fe]/30 data-[highlighted]:text-white text-[#FFFFFF]">I'd like to explore a potential partnership opportunity with you.</SelectItem>
+                  <SelectItem value="freelance" className="hover:bg-[#08f7fe]/20 data-[highlighted]:bg-[#08f7fe]/30 data-[highlighted]:text-white text-[#FFFFFF]">I have some exciting freelance projects you might be interested in.</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -1233,7 +1233,7 @@ export function DynamicInnovator({
               </label>
               <Textarea 
                 placeholder="Write a message to get the conversation started..."
-                className="min-h-[120px] resize-none bg-[#0c162d]/80 border border-[#7122FA]/50 text-white focus:ring-1 focus:ring-[#08f7fe] focus:border-[#08f7fe] placeholder:text-gray-400"
+                className="min-h-[120px] resize-none bg-[#0D1D38] border border-[#08f7fe]/50 text-[#FFFFFF] focus:ring-1 focus:ring-[#08f7fe] focus:border-[#08f7fe] placeholder:text-gray-300"
                 maxLength={350}
                 value={contactMessage}
                 onChange={(e) => setContactMessage(e.target.value)}
@@ -1244,13 +1244,13 @@ export function DynamicInnovator({
             </div>
             
             {/* File upload area */}
-            <div className="mt-4 border-2 border-dashed border-[#7122FA]/30 rounded-lg p-5 text-center hover:border-[#08f7fe]/40 transition-colors bg-[#080E24]/70">
+            <div className="mt-4 border-2 border-dashed border-[#08f7fe]/30 rounded-lg p-5 text-center hover:border-[#08f7fe]/60 transition-colors bg-[#0D1D38]/70">
               <label className="cursor-pointer block">
                 <input type="file" className="hidden" />
                 <div className="flex flex-col items-center">
-                  <Upload className="h-8 w-8 text-[#7122FA]/60 mb-2" />
-                  <span className="text-sm text-[#08f7fe]/80">Drag files here or click to upload</span>
-                  <span className="text-xs text-gray-400 mt-1">Maximum file size: 10MB</span>
+                  <Upload className="h-8 w-8 text-[#08f7fe]/70 mb-2" />
+                  <span className="text-sm text-[#FFFFFF]">Drag files here or click to upload</span>
+                  <span className="text-xs text-[#FFFFFF]/70 mt-1">Maximum file size: 10MB</span>
                 </div>
               </label>
             </div>
