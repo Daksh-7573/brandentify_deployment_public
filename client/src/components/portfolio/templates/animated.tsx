@@ -176,15 +176,38 @@ export default function AnimatedTemplate({
     setMessageText(msg);
   };
   
+  // Initialize animations when component mounts
   useEffect(() => {
     // Staggered animation sequence
     const timeout = setTimeout(() => {
       setIsShowing(true);
     }, 100);
     
+    // Initialize Lumos animations
+    setTimeout(() => {
+      // Create ambient auras in the hero section
+      initAmbientAuras('.animated-hero', 5);
+      
+      // Animate card stacks for projects and skills
+      animateCardStack('.animated-projects');
+      animateCardStack('.animated-skills');
+      
+      // Set up parallax slide animations for section transitions
+      document.querySelectorAll('.section-title').forEach((title, index) => {
+        title.classList.add('sparkle-trigger');
+      });
+      
+      // Add tilt effect to appropriate cards
+      document.querySelectorAll('.project-card, .skill-card').forEach((card) => {
+        card.classList.add('tilt-card');
+      });
+      
+    }, 500);
+    
     return () => clearTimeout(timeout);
-  }, []);
+  }, [initAmbientAuras, animateCardStack]);
   
+  // Animate timeline when it comes into view
   useEffect(() => {
     if (isTimelineInView) {
       timelineAnimation.start({
@@ -196,6 +219,25 @@ export default function AnimatedTemplate({
       timelineAnimation.start({ opacity: 0, x: -100 });
     }
   }, [isTimelineInView, timelineAnimation]);
+  
+  // Animate sections when they come into view
+  useEffect(() => {
+    if (isProjectsInView) {
+      animateParallaxSlide('#projects', '.projects-content');
+    }
+  }, [isProjectsInView, animateParallaxSlide]);
+  
+  useEffect(() => {
+    if (isSkillsInView) {
+      animateParallaxSlide('#skills', '.skills-content');
+    }
+  }, [isSkillsInView, animateParallaxSlide]);
+  
+  useEffect(() => {
+    if (isEducationInView) {
+      animateParallaxSlide('#education', '.education-content');
+    }
+  }, [isEducationInView, animateParallaxSlide]);
 
   return (
     <div className="bg-gradient-to-r from-slate-900 to-gray-900 min-h-screen font-sans overflow-x-hidden">
@@ -284,7 +326,7 @@ export default function AnimatedTemplate({
       </motion.div>
       
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center overflow-hidden">
+      <section ref={heroRef} className="relative min-h-screen flex items-center overflow-hidden animated-hero">
         {/* Background Animation */}
         <motion.div 
           className="absolute inset-0 z-0 opacity-20"
@@ -545,7 +587,7 @@ export default function AnimatedTemplate({
             transition={{ duration: 0.7 }}
             className="mb-16 text-center"
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 section-title">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500">
                 Featured Projects
               </span>
@@ -561,7 +603,7 @@ export default function AnimatedTemplate({
               projects.map((project, index) => (
                 <motion.div 
                   key={project.id}
-                  className="relative bg-gray-800/50 overflow-hidden rounded-xl border border-gray-700 group"
+                  className="relative bg-gray-800/50 overflow-hidden rounded-xl border border-gray-700 group project-card"
                   initial={{ opacity: 0, y: 50 }}
                   animate={{ opacity: isProjectsInView ? 1 : 0, y: isProjectsInView ? 0 : 50 }}
                   transition={{ duration: 0.6, delay: index * 0.2 }}
@@ -1029,7 +1071,7 @@ export default function AnimatedTemplate({
       </section>
       
       {/* Skills & Services Section */}
-      <section id="skills" className="py-20 relative" ref={skillsRef}>
+      <section id="skills" className="py-20 relative animated-skills" ref={skillsRef}>
         <div className="container mx-auto px-6 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
