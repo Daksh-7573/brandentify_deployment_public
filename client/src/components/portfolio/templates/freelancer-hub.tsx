@@ -521,6 +521,171 @@ export default function FreelancerHub({
       ? "Ready to collaborate! 🤝" 
       : "Taking it easy today 😌";
   
+  // Project Details Modal
+  const renderProjectDetailsModal = () => {
+    if (!selectedProject) return null;
+    
+    return (
+      <Dialog open={isProjectModalOpen} onOpenChange={setIsProjectModalOpen}>
+        <DialogContent className="sm:max-w-[700px] rounded-xl p-0 overflow-hidden">
+          <div className="relative h-64 overflow-hidden">
+            <div 
+              className="absolute w-full h-full"
+              style={{
+                backgroundImage: selectedProject.thumbnailUrl 
+                  ? `url(${selectedProject.thumbnailUrl})` 
+                  : `linear-gradient(135deg, ${getCategoryGradient(selectedProject.category || 'design')})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center'
+              }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10" />
+            
+            {/* Close button */}
+            <button 
+              onClick={() => setIsProjectModalOpen(false)}
+              className="absolute top-3 right-3 bg-white/20 backdrop-blur-sm p-2 rounded-full text-white hover:bg-white/40 transition-colors"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            
+            {/* Title area */}
+            <div className="absolute bottom-0 left-0 p-6 w-full">
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-1" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+                {selectedProject.title}
+              </h2>
+              {selectedProject.category && (
+                <div className="flex items-center">
+                  <Badge className="bg-white/30 text-white border-none">
+                    {selectedProject.category}
+                  </Badge>
+                </div>
+              )}
+            </div>
+          </div>
+          
+          <div className="p-6">
+            {/* Duration */}
+            {selectedProject.startDate && (
+              <div className="flex items-center text-violet-600 mb-4">
+                <Calendar className="h-4 w-4 mr-2" />
+                <span className="text-sm font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  {formatDate(selectedProject.startDate, true)} — {selectedProject.endDate ? formatDate(selectedProject.endDate, true) : 'Present'}
+                </span>
+              </div>
+            )}
+            
+            {/* Description */}
+            <p className="text-gray-700 mb-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              {selectedProject.description}
+            </p>
+            
+            {/* Tags */}
+            {selectedProject.tags && (
+              <div className="mb-6">
+                <h4 className="text-sm font-bold mb-2 text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  Technologies & Skills
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {selectedProject.tags.split(',').map((tag, i) => (
+                    <Badge key={i} className="bg-violet-100 text-violet-700 border-none">
+                      {tag.trim()}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Actions */}
+            <div className="flex justify-end gap-3">
+              {selectedProject.projectUrl && (
+                <a 
+                  href={selectedProject.projectUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-full font-medium shadow-md hover:shadow-lg transition-shadow"
+                  style={{ fontFamily: 'Poppins, sans-serif' }}
+                >
+                  Visit Project
+                  <ExternalLink className="h-4 w-4 ml-2" />
+                </a>
+              )}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  };
+  
+  // Let's Talk Contact Modal
+  const renderContactModal = () => {
+    return (
+      <Dialog open={isContactModalOpen} onOpenChange={setIsContactModalOpen}>
+        <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden rounded-2xl">
+          <div className="bg-gradient-to-r from-violet-500 via-purple-500 to-fuchsia-500 p-6">
+            <DialogTitle className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+              Let's Create Something Amazing!
+            </DialogTitle>
+            <p className="text-white/90" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              I'd love to hear about your project or opportunity.
+            </p>
+          </div>
+          
+          <div className="p-6">
+            <div className="mb-6">
+              <label className="block text-sm font-medium mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                What are you looking for?
+              </label>
+              <Select value={contactPurpose} onValueChange={setContactPurpose}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select a purpose" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="project">Project Collaboration</SelectItem>
+                  <SelectItem value="job">Job Opportunity</SelectItem>
+                  <SelectItem value="mentorship">Mentorship</SelectItem>
+                  <SelectItem value="networking">Professional Networking</SelectItem>
+                  <SelectItem value="other">Something Else</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="mb-6">
+              <label className="block text-sm font-medium mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                Your Message
+              </label>
+              <Textarea 
+                placeholder="Tell me a bit about what you have in mind..."
+                className="resize-none h-32"
+                value={contactMessage}
+                onChange={(e) => setContactMessage(e.target.value)}
+              />
+            </div>
+            
+            <div className="flex justify-end gap-3">
+              <DialogClose asChild>
+                <Button variant="outline">
+                  Cancel
+                </Button>
+              </DialogClose>
+              <Button 
+                className="px-6 py-2 bg-gradient-to-r from-pink-500 to-violet-500 text-white shadow-md hover:shadow-lg transition-shadow"
+                onClick={() => {
+                  // In a real app, this would send an email or message
+                  window.open(`mailto:${userInfo.email || ''}?subject=Let's Talk: ${contactPurpose}&body=${contactMessage}`);
+                  setIsContactModalOpen(false);
+                }}
+              >
+                <MessageSquare className="h-4 w-4 mr-2" />
+                Send Message
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  };
+  
   return (
     <div className="freelancer-hub bg-gradient-to-br from-fuchsia-50 via-amber-50 to-blue-50 min-h-screen pb-20">
       {/* Mood Bar (just for fun) */}
@@ -1165,115 +1330,158 @@ export default function FreelancerHub({
       </section>
       
       {/* Projects Section */}
-      <section className="py-10 px-6 md:px-10">
+      <section className="py-16 px-6 md:px-10 relative overflow-hidden">
+        {/* Decorative elements */}
+        <motion.div 
+          className="absolute -top-40 right-40 w-80 h-80 bg-gradient-to-br from-purple-100 to-cyan-50 rounded-full opacity-20 blur-3xl"
+          animate={{ 
+            scale: [1, 1.2, 1],
+            y: [0, -20, 0]
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            repeatType: "reverse"
+          }}
+        />
+        
         <div className="max-w-6xl mx-auto">
-          <motion.h2 
-            className="text-3xl font-bold mb-8 text-center"
-            style={{ fontFamily: 'Fredoka, sans-serif' }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 20 }}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 30 }}
             transition={{ duration: 0.5 }}
           >
-            <span className="highlight-text">Showcase</span>
-          </motion.h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-3 text-center" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+              <span className="highlight-text">My Creative Showcase</span>
+            </h2>
+            <p className="text-center text-gray-600 mb-10 max-w-2xl mx-auto" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              Take a look at some of my recent work. Each project represents a unique challenge solved with creativity and expertise.
+            </p>
+          </motion.div>
           
           {sortedProjects.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {sortedProjects.map((project, index) => (
-                <motion.div 
+                <motion.div
                   key={project.id}
-                  className="project-card bg-white rounded-xl shadow-lg overflow-hidden"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: isShowing ? 1 : 0, scale: isShowing ? 1 : 0.9 }}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 30 }}
                   transition={{ duration: 0.5, delay: 0.1 * index }}
-                  whileHover={{ y: -5 }}
-                  onMouseEnter={() => setActiveProject(project.id)}
-                  onMouseLeave={() => setActiveProject(null)}
+                  whileHover={{ y: -10 }}
                 >
-                  {/* Project Image */}
-                  <div className="h-48 overflow-hidden relative">
-                    {project.thumbnailUrl ? (
-                      <img 
-                        src={project.thumbnailUrl} 
-                        alt={project.title}
-                        className="project-image w-full h-full object-cover"
+                  <Card 
+                    className="project-card h-full overflow-hidden border-none shadow-xl rounded-xl cursor-pointer"
+                    onClick={() => handleProjectClick(project)}
+                  >
+                    <div className="relative h-52 overflow-hidden">
+                      {/* Project Image */}
+                      <div 
+                        className="project-image absolute w-full h-full"
+                        style={{
+                          backgroundImage: project.thumbnailUrl 
+                            ? `url(${project.thumbnailUrl})` 
+                            : `linear-gradient(135deg, ${getCategoryGradient(project.category || 'design')})`,
+                          backgroundSize: 'cover',
+                          backgroundPosition: 'center'
+                        }}
                       />
-                    ) : (
-                      <div className="project-image w-full h-full bg-gradient-to-br from-violet-400 to-purple-500 flex items-center justify-center">
-                        <Camera className="h-10 w-10 text-white" />
-                      </div>
-                    )}
-                    
-                    {/* Category label */}
-                    {project.category && (
-                      <div className="absolute top-3 left-3">
-                        <Badge className={`bg-gradient-to-r ${getCategoryGradient(project.category)} text-white shadow-md`}>
-                          {project.category}
-                        </Badge>
-                      </div>
-                    )}
-                    
-                    {/* Sticker on hover */}
-                    {activeProject === project.id && (
-                      <motion.div 
-                        className="sticker right-3 top-3"
-                        initial={{ rotate: -15, scale: 0 }}
-                        animate={{ rotate: -15, scale: 1 }}
-                        transition={{ type: "spring", stiffness: 300, damping: 10 }}
-                      >
-                        <span className="text-xs font-semibold bg-amber-100 text-amber-800 px-2 py-1 rounded">
-                          Favorite!
-                        </span>
-                      </motion.div>
-                    )}
-                  </div>
-                  
-                  {/* Project Content */}
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold mb-2" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-                      {project.title}
-                    </h3>
-                    
-                    {project.description && (
-                      <p className="text-gray-600 mb-4 line-clamp-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                        {project.description}
-                      </p>
-                    )}
-                    
-                    <div className="flex justify-between items-center">
-                      <div className="text-sm text-gray-500" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                        {formatDate(project.startDate)}
+                      
+                      {/* Colored Overlay with Playful Pattern */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex items-end">
+                        <div className="p-5 text-white">
+                          <h3 className="text-xl font-bold" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+                            {project.title}
+                          </h3>
+                          {project.category && (
+                            <div className="flex items-center mt-1">
+                              <Badge className="bg-white/20 text-white border-none">
+                                {project.category}
+                              </Badge>
+                            </div>
+                          )}
+                        </div>
                       </div>
                       
-                      {project.projectUrl && (
-                        <a 
-                          href={project.projectUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-violet-600 hover:text-violet-800 flex items-center gap-1 font-medium"
+                      {/* Floating badge for year */}
+                      {project.startDate && (
+                        <motion.div 
+                          className="absolute top-3 right-3 bg-white text-sm font-semibold px-2 py-1 rounded-full shadow-md"
+                          whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
                           style={{ fontFamily: 'Poppins, sans-serif' }}
                         >
-                          View Project
-                          <ChevronRight className="h-4 w-4" />
-                        </a>
+                          {new Date(project.startDate).getFullYear()}
+                        </motion.div>
                       )}
                     </div>
-                  </div>
+                    
+                    <CardContent className="p-5">
+                      <p className="text-gray-700 mb-4 line-clamp-3" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                        {project.description}
+                      </p>
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {project.tags && project.tags.split(',').slice(0, 3).map((tag, i) => (
+                          <Badge key={i} className="bg-violet-100 text-violet-700 border-none hover:bg-violet-200 transition-colors">
+                            {tag.trim()}
+                          </Badge>
+                        ))}
+                      </div>
+                      <div className="flex justify-between items-center mt-2">
+                        <motion.div
+                          whileHover={{ scale: 1.05 }}
+                          className="text-sm font-medium text-violet-600 flex items-center"
+                          style={{ fontFamily: 'Poppins, sans-serif' }}
+                        >
+                          View details
+                          <ChevronRight className="h-4 w-4 ml-1" />
+                        </motion.div>
+                        
+                        {/* Playful interaction hint */}
+                        <motion.div
+                          initial={{ scale: 1 }}
+                          animate={{ scale: [1, 1.1, 1] }}
+                          transition={{ 
+                            repeat: Infinity, 
+                            repeatType: "loop", 
+                            duration: 2,
+                            repeatDelay: 4
+                          }}
+                          className="text-pink-500 text-lg"
+                        >
+                          ✨
+                        </motion.div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </motion.div>
               ))}
             </div>
           ) : (
             // Empty state for projects
             <motion.div
-              className="bg-white rounded-3xl p-8 text-center shadow-lg"
+              className="bg-white rounded-3xl p-10 text-center shadow-lg max-w-xl mx-auto"
               initial={{ opacity: 0 }}
               animate={{ opacity: isShowing ? 1 : 0 }}
               transition={{ duration: 0.5 }}
             >
-              <Camera className="h-12 w-12 text-amber-400 mx-auto mb-3" />
+              <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-amber-200 to-amber-100 rounded-full flex items-center justify-center">
+                <Camera className="h-10 w-10 text-amber-500" />
+              </div>
+              <h3 className="text-xl font-bold mb-2" style={{ fontFamily: 'Fredoka, sans-serif' }}>No Projects Yet</h3>
               <p className="text-gray-500" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                Your portfolio projects will appear here!
+                Your amazing projects will be showcased here soon!
               </p>
+              <motion.div
+                initial={{ y: 0 }}
+                animate={{ y: [0, -8, 0] }}
+                transition={{ 
+                  repeat: Infinity, 
+                  duration: 1.5,
+                  repeatDelay: 1
+                }}
+                className="mt-6"
+              >
+                <span className="text-3xl">⬇️</span>
+              </motion.div>
             </motion.div>
           )}
         </div>
@@ -1511,6 +1719,10 @@ export default function FreelancerHub({
           New!
         </span>
       </motion.div>
+      
+      {/* Render Modals */}
+      {renderProjectDetailsModal()}
+      {renderContactModal()}
     </div>
   );
 }
