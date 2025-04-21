@@ -1,4 +1,5 @@
 /* NeoPastel Glow Theme - Custom Styling */
+/* Code Name: "NeoGlow Flow" UI System */
 
 :root {
   /* Base Colors */
@@ -11,18 +12,31 @@
   --dust-gray: #70757B;
   --mint-green: #B7E4C7;
   --soft-coral: #FFB3AB;
+  --dark-base: #1E1F23; /* Dark mode background */
+  --neon-lavender: #D8BFFF; /* Dark mode accent */
+  --neon-mint: #9BE8D9; /* Dark mode accent */
   
   /* Gradients */
   --primary-gradient: linear-gradient(135deg, var(--sky-blush) 0%, var(--soft-lavender) 100%);
   --secondary-gradient: linear-gradient(135deg, var(--peach-mist) 0%, var(--soft-lavender) 70%);
+  --active-glow: linear-gradient(135deg, var(--soft-lavender) 0%, var(--sky-blush) 100%);
   
-  /* Shadows */
-  --card-shadow: 0 4px 12px rgba(228, 215, 250, 0.15);
-  --hover-shadow: 0 6px 16px rgba(228, 215, 250, 0.25);
-  --button-shadow: 0 2px 6px rgba(174, 230, 230, 0.25);
+  /* Shadows & Effects */
+  --card-shadow: 0 8px 20px rgba(228, 215, 250, 0.15);
+  --hover-shadow: 0 12px 28px rgba(228, 215, 250, 0.25);
+  --button-shadow: 0 4px 12px rgba(174, 230, 230, 0.25);
+  --glass-blur: blur(10px);
+  --glass-opacity: 0.8;
+  
+  /* Sizes */
+  --border-radius-standard: 16px;
+  --border-radius-large: 20px;
+  --border-radius-pill: 9999px;
 }
 
-/* Enhanced Button Styling */
+/* ======= 1. CORE COMPONENT STYLING ======= */
+
+/* Enhanced Button Styling - Gradient + Bounce */
 .btn-primary, 
 .button-primary,
 [data-variant="default"].button {
@@ -30,8 +44,11 @@
   color: var(--graphite) !important;
   font-weight: 500;
   border: none !important;
+  border-radius: var(--border-radius-pill);
   box-shadow: var(--button-shadow);
-  transition: all 0.2s ease-in-out;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
 }
 
 .btn-primary:hover,
@@ -39,27 +56,91 @@
 [data-variant="default"].button:hover {
   background: var(--secondary-gradient) !important;
   box-shadow: var(--hover-shadow);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
-/* Card Enhancements */
+.btn-primary:active,
+.button-primary:active,
+[data-variant="default"].button:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+/* Spark trail on hover - pseudo element */
+.btn-primary::after,
+.button-primary::after,
+[data-variant="default"].button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transform: translateX(-100%);
+  transition: none;
+}
+
+.btn-primary:hover::after,
+.button-primary:hover::after,
+[data-variant="default"].button:hover::after {
+  transform: translateX(100%);
+  transition: transform 0.6s ease-in-out;
+}
+
+/* Card Enhancements - Neumorphic + Glass */
 .card {
-  background-color: var(--cloud-lilac);
+  background-color: rgba(242, 237, 248, 0.85);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid rgba(228, 215, 250, 0.3);
+  border-radius: var(--border-radius-standard);
   box-shadow: var(--card-shadow);
-  transition: all 0.25s ease;
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .card:hover {
   box-shadow: var(--hover-shadow);
   border-color: rgba(228, 215, 250, 0.6);
+  transform: translateY(-4px);
+}
+
+/* Card hover glow effect */
+.card:hover::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: var(--border-radius-standard);
+  padding: 2px;
+  background: var(--active-glow);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  animation: fade-in 0.3s forwards;
+  pointer-events: none;
+}
+
+@keyframes fade-in {
+  to { opacity: 1; }
 }
 
 /* Badge Styling */
 .badge {
-  border-radius: 12px;
-  padding: 0.25rem 0.5rem;
+  border-radius: var(--border-radius-pill);
+  padding: 0.25rem 0.75rem;
   font-weight: 500;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.badge:hover {
+  transform: translateY(-1px) scale(1.03);
 }
 
 .badge-success {
@@ -76,8 +157,14 @@
 .musk-button {
   background: var(--primary-gradient);
   border: 2px solid white;
+  border-radius: var(--border-radius-pill);
   box-shadow: 0 0 15px rgba(174, 230, 230, 0.5);
   animation: pulse 2s infinite;
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.musk-button:hover {
+  transform: scale(1.05) rotate(5deg);
 }
 
 @keyframes pulse {
@@ -92,21 +179,38 @@
   }
 }
 
+/* ======= 2. FORM ELEMENTS ======= */
+
 /* Main App Background */
 body, .app-background {
   background-color: var(--snow-gray);
 }
 
-/* Input Fields */
+/* Input Fields - Animated Underline */
 input, textarea, select, .select-trigger {
-  background-color: white !important;
+  background-color: rgba(255, 255, 255, 0.9) !important;
   border: 1px solid rgba(228, 215, 250, 0.5) !important;
+  border-radius: var(--border-radius-standard) !important;
   transition: all 0.2s ease;
+  padding: 0.75rem 1rem !important;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.03);
 }
 
 input:focus, textarea:focus, select:focus, .select-trigger:focus {
   border-color: var(--sky-blush) !important;
   box-shadow: 0 0 0 2px rgba(174, 230, 230, 0.25) !important;
+  transform: translateY(-1px);
+}
+
+/* Animated form label */
+.form-label {
+  transform-origin: left;
+  transition: all 0.2s ease;
+}
+
+.form-group:focus-within .form-label {
+  color: var(--sky-blush);
+  transform: translateY(-5px) scale(0.9);
 }
 
 /* Section Headers */
@@ -115,12 +219,31 @@ input:focus, textarea:focus, select:focus, .select-trigger:focus {
   border-bottom: 2px solid var(--sky-blush);
   padding-bottom: 0.5rem;
   margin-bottom: 1.25rem;
+  font-weight: 600;
 }
 
-/* Avatar Highlights */
+/* ======= 3. SPECIFIC UI COMPONENTS ======= */
+
+/* Avatar Highlights - With Glow Effect */
 .avatar {
   border: 2px solid white;
+  border-radius: 50%;
   box-shadow: 0 2px 6px rgba(174, 230, 230, 0.25);
+  transition: all 0.3s ease;
+}
+
+.avatar:hover {
+  box-shadow: 0 2px 15px rgba(174, 230, 230, 0.6);
+  transform: scale(1.05);
+}
+
+/* Profile card floating effect */
+.profile-card {
+  transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.profile-card:hover {
+  transform: translateY(-5px) rotateX(2deg);
 }
 
 /* "Inspired" Button Special Styling */
@@ -129,11 +252,173 @@ input:focus, textarea:focus, select:focus, .select-trigger:focus {
   font-weight: 500;
 }
 
-/* Toggle Switch Customization */
+/* Toggle Switch - Morphing Switch */
+.switch {
+  height: 24px !important;
+  width: 48px !important;
+  border-radius: var(--border-radius-pill) !important;
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+}
+
 .switch[data-state="checked"] {
   background-color: var(--mint-green) !important;
 }
 
 .switch[data-state="unchecked"] {
   background-color: var(--soft-coral) !important;
+}
+
+.switch::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  transform: translateX(0);
+  background-color: white;
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.switch[data-state="checked"]::before {
+  transform: translateX(24px);
+}
+
+/* ======= 4. MICRO-ANIMATIONS & EFFECTS ======= */
+
+/* Confetti animation for achievements */
+@keyframes confetti-fall {
+  0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+}
+
+.confetti-piece {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: var(--primary-gradient);
+  opacity: 0;
+  animation: confetti-fall 3s ease forwards;
+}
+
+/* XP Liquid Fill Animation */
+@keyframes liquid-fill {
+  0% { width: 0%; }
+  50% { width: calc(var(--percent) * 1.05); }
+  100% { width: var(--percent); }
+}
+
+.progress-bar-fill {
+  animation: liquid-fill 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* Nowboard Item Animations */
+.nowboard-item {
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  overflow: hidden;
+}
+
+.nowboard-item:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--hover-shadow);
+}
+
+.nowboard-item::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--active-glow);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.nowboard-item:hover::after {
+  transform: scaleX(1);
+}
+
+/* ======= 5. LAYOUT COMPONENTS ======= */
+
+/* Dashboard Glass Cards */
+.dashboard-card {
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  background-color: rgba(242, 237, 248, 0.75);
+  border-radius: var(--border-radius-large);
+  border: 1px solid rgba(228, 215, 250, 0.3);
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.dashboard-card:hover {
+  border-color: rgba(174, 230, 230, 0.3);
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(174, 230, 230, 0.1);
+}
+
+/* Navigation - Side Panel */
+.nav-item {
+  transition: all 0.2s ease;
+  position: relative;
+  border-radius: var(--border-radius-standard);
+}
+
+.nav-item:hover, .nav-item.active {
+  background-color: rgba(174, 230, 230, 0.1);
+}
+
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 3px;
+  background: var(--primary-gradient);
+  border-radius: 0 2px 2px 0;
+}
+
+/* Quest Cards */
+.quest-card {
+  border-radius: var(--border-radius-standard);
+  border: 1px solid rgba(228, 215, 250, 0.3);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.quest-card:hover {
+  transform: rotateY(5deg) translateZ(10px);
+  box-shadow: -5px 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* ======= 6. DARK MODE (Optional) ======= */
+
+.dark-mode {
+  background-color: var(--dark-base);
+  color: white;
+}
+
+.dark-mode .card,
+.dark-mode .dashboard-card {
+  background-color: rgba(40, 42, 54, 0.8);
+  border-color: rgba(216, 191, 255, 0.1);
+}
+
+.dark-mode .btn-primary,
+.dark-mode .button-primary {
+  background: linear-gradient(135deg, var(--neon-lavender) 0%, var(--neon-mint) 100%) !important;
+  color: var(--dark-base) !important;
+}
+
+.dark-mode .nav-item:hover,
+.dark-mode .nav-item.active {
+  background-color: rgba(216, 191, 255, 0.1);
 }

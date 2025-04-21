@@ -1,9 +1,7 @@
+@import './styles/neopastel.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Import NeoPastel Glow theme */
-@import './styles/neopastel.css';
 
 /* Custom animations */
 
