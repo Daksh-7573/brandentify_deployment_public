@@ -1,0 +1,223 @@
+/* Animation styles for "The Animated" portfolio template */
+
+/* Section Titles */
+.section-title {
+  position: relative;
+  display: inline-block;
+}
+
+.section-title::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #4ade80, #14b8a6);
+  transition: width 0.8s ease;
+}
+
+.section-title:hover::after {
+  width: 80%;
+}
+
+/* Hero Section Animations */
+.animated-hero {
+  position: relative;
+  overflow: hidden;
+}
+
+.animated-hero::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(76, 29, 149, 0.1) 0%, rgba(15, 23, 42, 0) 70%);
+  animation: rotateGradient 30s linear infinite;
+  z-index: 0;
+}
+
+@keyframes rotateGradient {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Projects Section Animations */
+.animated-projects .project-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.animated-projects .project-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+
+.animated-projects .project-image {
+  position: relative;
+  overflow: hidden;
+}
+
+.animated-projects .project-image img {
+  transition: transform 0.5s ease;
+}
+
+.animated-projects .project-image:hover img {
+  transform: scale(1.05);
+}
+
+/* Timeline Section */
+.animated-timeline .timeline-node {
+  position: relative;
+}
+
+.animated-timeline .timeline-node::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #fb923c;
+  transition: width 0.6s ease;
+  z-index: 0;
+}
+
+.animated-timeline .timeline-node:hover::before {
+  width: 100%;
+}
+
+/* Education Section */
+.animated-education .education-card {
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.animated-education .education-card:hover {
+  transform: translateY(-10px) scale(1.02);
+}
+
+/* Skills Section */
+.animated-skills .skill-card {
+  transition: all 0.3s ease;
+}
+
+.animated-skills .skill-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.animated-skills .skill-progress {
+  position: relative;
+  height: 6px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.animated-skills .skill-progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #4ade80, #14b8a6);
+  border-radius: 3px;
+  transition: width 1s ease;
+}
+
+/* Custom scroll effect */
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hover effects */
+.animated-hover-lift {
+  transition: transform 0.3s ease;
+}
+
+.animated-hover-lift:hover {
+  transform: translateY(-5px);
+}
+
+/* Pulse animation */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.animated-pulse {
+  animation: pulse 3s infinite ease-in-out;
+}
+
+/* Floating animation */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animated-float {
+  animation: float 4s infinite ease-in-out;
+}
+
+/* Fade in animation */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animated-fadeIn {
+  animation: fadeIn 1s forwards;
+}
+
+/* Section transition animations */
+.section-transition-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.section-transition-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 500ms, transform 500ms;
+}
+
+.section-transition-exit {
+  opacity: 1;
+}
+
+.section-transition-exit-active {
+  opacity: 0;
+  transition: opacity 300ms;
+}
+
+/* Custom flourish for animated template */
+.animated-flourish {
+  position: relative;
+}
+
+.animated-flourish::after {
+  content: "";
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background: linear-gradient(135deg, #4ade80 0%, transparent 50%, transparent 100%);
+  opacity: 0.4;
+  right: -5px;
+  top: -5px;
+  border-radius: 0 5px 0 50%;
+  transition: all 0.3s ease;
+}
+
+.animated-flourish:hover::after {
+  width: 40px;
+  height: 40px;
+  opacity: 0.6;
+}

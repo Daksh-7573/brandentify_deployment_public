@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useAnimation, useInView } from 'framer-motion';
+import '../../../styles/animated-template.css';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -723,7 +724,7 @@ export default function AnimatedTemplate({
             transition={{ duration: 0.7 }}
             className="mb-16 text-center"
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 section-title">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-500">
                 About Me
               </span>
@@ -888,7 +889,7 @@ export default function AnimatedTemplate({
       </section>
       
       {/* Career Timeline Section */}
-      <section id="timeline" className="py-20 relative" ref={timelineRef}>
+      <section id="timeline" className="py-20 relative animated-timeline" ref={timelineRef}>
         <div className="container mx-auto px-6 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -896,7 +897,7 @@ export default function AnimatedTemplate({
             transition={{ duration: 0.7 }}
             className="mb-16 text-center"
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 section-title">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">
                 Career Journey
               </span>
@@ -985,7 +986,7 @@ export default function AnimatedTemplate({
       </section>
       
       {/* Education Section */}
-      <section id="education" className="py-20 relative" ref={educationRef}>
+      <section id="education" className="py-20 relative animated-education" ref={educationRef}>
         <div className="container mx-auto px-6 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -993,7 +994,7 @@ export default function AnimatedTemplate({
             transition={{ duration: 0.7 }}
             className="mb-16 text-center"
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 section-title">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
                 Education
               </span>
@@ -1079,7 +1080,7 @@ export default function AnimatedTemplate({
             transition={{ duration: 0.7 }}
             className="mb-16 text-center"
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 section-title">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-teal-500">
                 Skills & Services
               </span>
