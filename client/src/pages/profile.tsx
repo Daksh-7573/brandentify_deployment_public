@@ -1645,15 +1645,6 @@ export default function Profile() {
               <h1 className="text-2xl font-semibold text-gray-900">Profile</h1>
               <div className="flex items-center gap-4">
                 <Button 
-                  onClick={() => setLocation('/edit-profile')}
-                  id="edit-profile-btn"
-                  className="flex items-center gap-2 bg-primary/90 hover:bg-primary"
-                >
-                  <i className="fas fa-user-edit"></i>
-                  Edit Profile
-                </Button>
-                
-                <Button 
                   onClick={() => {
                     // Create a loading state in the button
                     const btn = document.getElementById('portfolio-btn');
