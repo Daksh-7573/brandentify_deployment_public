@@ -4697,7 +4697,7 @@ export class DatabaseStorage implements IStorage {
         SELECT 
           id, username, email, password, phone_number as "phoneNumber", 
           name, photo_url as "photoURL", title, about_me as "aboutMe", 
-          location, industry, domain, looking_for as "lookingFor", job_level as "jobLevel",
+          location, industry, looking_for as "lookingFor",
           visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
           email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
           email_verification_expires as "emailVerificationExpires", created_at as "createdAt"
@@ -4723,13 +4723,15 @@ export class DatabaseStorage implements IStorage {
         SELECT 
           id, username, email, password, phone_number as "phoneNumber", 
           name, photo_url as "photoURL", title, about_me as "aboutMe", 
-          location, industry, domain, looking_for as "lookingFor", job_level as "jobLevel",
+          location, industry, looking_for as "lookingFor",
           visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
           email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
           email_verification_expires as "emailVerificationExpires", created_at as "createdAt"
         FROM users
         WHERE email = $1
       `, [email]);
+      
+      console.log(`[db.getUserByEmail] Query returned ${result.rows.length} rows`);
       
       if (result.rows.length > 0) {
         return result.rows[0] as User;
@@ -4747,13 +4749,15 @@ export class DatabaseStorage implements IStorage {
         SELECT 
           id, username, email, password, phone_number as "phoneNumber", 
           name, photo_url as "photoURL", title, about_me as "aboutMe", 
-          location, industry, domain, looking_for as "lookingFor", job_level as "jobLevel",
+          location, industry, looking_for as "lookingFor",
           visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
           email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
           email_verification_expires as "emailVerificationExpires", created_at as "createdAt"
         FROM users
         WHERE username = $1
       `, [username]);
+      
+      console.log(`[db.getUserByUsername] Query returned ${result.rows.length} rows`);
       
       if (result.rows.length > 0) {
         return result.rows[0] as User;
@@ -4771,13 +4775,15 @@ export class DatabaseStorage implements IStorage {
         SELECT 
           id, username, email, password, phone_number as "phoneNumber", 
           name, photo_url as "photoURL", title, about_me as "aboutMe", 
-          location, industry, domain, looking_for as "lookingFor", job_level as "jobLevel",
+          location, industry, looking_for as "lookingFor",
           visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
           email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
           email_verification_expires as "emailVerificationExpires", created_at as "createdAt"
         FROM users
         WHERE phone_number = $1
       `, [phoneNumber]);
+      
+      console.log(`[db.getUserByPhoneNumber] Query returned ${result.rows.length} rows`);
       
       if (result.rows.length > 0) {
         return result.rows[0] as User;
