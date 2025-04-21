@@ -1493,46 +1493,92 @@ export default function FreelancerHub({
       </section>
       
       {/* Experience Timeline */}
-      <section className="py-10 px-6 md:px-10">
+      <section className="py-16 px-6 md:px-10 relative overflow-hidden">
+        {/* Decorative elements */}
+        <motion.div 
+          className="absolute top-40 -left-20 w-60 h-60 bg-gradient-to-br from-indigo-100 to-blue-50 rounded-full opacity-30 blur-3xl"
+          animate={{ 
+            scale: [1, 1.2, 1],
+            rotate: [0, 10, 0]
+          }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            repeatType: "reverse"
+          }}
+        />
+        
         <div className="max-w-4xl mx-auto">
-          <motion.h2 
-            className="text-3xl font-bold mb-8 text-center"
-            style={{ fontFamily: 'Fredoka, sans-serif' }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 20 }}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 30 }}
             transition={{ duration: 0.5 }}
           >
-            <span className="highlight-text">Career Path</span>
-          </motion.h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-3 text-center" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+              <span className="highlight-text">Career Journey</span>
+            </h2>
+            <p className="text-center text-gray-600 mb-10 max-w-2xl mx-auto" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              A timeline of my professional adventures and growth through the years
+            </p>
+          </motion.div>
           
           {sortedExperiences.length > 0 ? (
-            <div className="relative pl-10 md:pl-16 border-l-2 border-gray-200">
+            <div className="relative pl-10 md:pl-16 border-l-4 border-dashed border-violet-200">
               {sortedExperiences.map((exp, index) => (
                 <motion.div 
                   key={exp.id}
-                  className="milestone-node mb-12"
+                  className="milestone-node mb-16"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: isShowing ? 1 : 0, x: isShowing ? 0 : -20 }}
                   transition={{ duration: 0.5, delay: 0.1 * index }}
-                  style={{ borderColor: index % 5 === 0 ? '#ec4899' : 
-                                      index % 5 === 1 ? '#8b5cf6' : 
-                                      index % 5 === 2 ? '#3b82f6' : 
-                                      index % 5 === 3 ? '#10b981' : 
-                                      '#f59e0b' }}
+                  whileHover={{ x: 5 }}
+                  style={{ borderColor: index % 6 === 0 ? '#ec4899' : 
+                                      index % 6 === 1 ? '#8b5cf6' : 
+                                      index % 6 === 2 ? '#3b82f6' : 
+                                      index % 6 === 3 ? '#10b981' : 
+                                      index % 6 === 4 ? '#f59e0b' :
+                                      '#ef4444' }}
                 >
-                  <div className="bg-white rounded-xl p-6 shadow-lg">
-                    <div className="flex flex-col md:flex-row justify-between mb-3">
+                  <div className="bg-white rounded-2xl p-7 shadow-xl relative overflow-hidden">
+                    {/* Colored corner accent */}
+                    <div 
+                      className="absolute top-0 right-0 w-20 h-20 -mr-10 -mt-10 rounded-full"
+                      style={{ 
+                        background: `linear-gradient(135deg, ${
+                          index % 6 === 0 ? '#ec4899, #db2777' : 
+                          index % 6 === 1 ? '#8b5cf6, #7c3aed' : 
+                          index % 6 === 2 ? '#3b82f6, #2563eb' : 
+                          index % 6 === 3 ? '#10b981, #059669' : 
+                          index % 6 === 4 ? '#f59e0b, #d97706' :
+                          '#ef4444, #dc2626'
+                        })`,
+                        opacity: 0.15
+                      }}
+                    />
+                    
+                    <div className="flex flex-col md:flex-row justify-between mb-4">
                       <div>
                         <h3 className="text-xl font-bold text-gray-900" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-                          {exp.title}
+                          {exp.title} 
+                          <motion.span 
+                            className="inline-block ml-2"
+                            animate={{ rotate: [0, 15, 0] }}
+                            transition={{ duration: 2, repeat: Infinity, repeatDelay: 5 }}
+                          >
+                            {index % 6 === 0 ? '🚀' : 
+                             index % 6 === 1 ? '✨' : 
+                             index % 6 === 2 ? '💡' : 
+                             index % 6 === 3 ? '🌟' : 
+                             index % 6 === 4 ? '🔥' : '🎯'}
+                          </motion.span>
                         </h3>
-                        <p className="text-violet-500 font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                        <p className="text-violet-600 font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
                           {exp.company}
                         </p>
                       </div>
                       
-                      <div className="flex items-center mt-2 md:mt-0 text-gray-500">
-                        <Calendar className="h-4 w-4 mr-1" />
+                      <div className="flex items-center mt-2 md:mt-0 text-gray-500 bg-gray-50 px-3 py-1 rounded-full">
+                        <Calendar className="h-4 w-4 mr-1 text-violet-500" />
                         <span className="text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>
                           {formatDate(exp.startDate)} — {exp.endDate ? formatDate(exp.endDate) : 'Present'}
                         </span>
@@ -1540,8 +1586,8 @@ export default function FreelancerHub({
                     </div>
                     
                     {exp.location && (
-                      <div className="flex items-center text-gray-500 mb-3">
-                        <MapPin className="h-4 w-4 mr-1" />
+                      <div className="flex items-center text-gray-500 mb-4">
+                        <MapPin className="h-4 w-4 mr-1 text-pink-500" />
                         <span className="text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>
                           {exp.location}
                         </span>
@@ -1549,10 +1595,42 @@ export default function FreelancerHub({
                     )}
                     
                     {exp.description && (
-                      <p className="text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                        {exp.description}
-                      </p>
+                      <div className="bg-gray-50 rounded-xl p-4 mb-2">
+                        <p className="text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                          {exp.description}
+                        </p>
+                      </div>
                     )}
+                    
+                    {/* Skills used tags */}
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {['Leadership', 'Teamwork', 'Strategy', 'Innovation'].slice(0, index % 3 + 2).map((skill, i) => (
+                        <Badge key={i} className="bg-violet-100 text-violet-700 border-none">
+                          {skill}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Timeline node decoration */}
+                  <div 
+                    className="absolute -left-[22px] top-7 w-8 h-8 rounded-full z-10 flex items-center justify-center"
+                    style={{ 
+                      background: `linear-gradient(135deg, ${
+                        index % 6 === 0 ? '#ec4899, #db2777' : 
+                        index % 6 === 1 ? '#8b5cf6, #7c3aed' : 
+                        index % 6 === 2 ? '#3b82f6, #2563eb' : 
+                        index % 6 === 3 ? '#10b981, #059669' : 
+                        index % 6 === 4 ? '#f59e0b, #d97706' :
+                        '#ef4444, #dc2626'
+                      })`
+                    }}
+                  >
+                    <motion.div 
+                      className="w-4 h-4 bg-white rounded-full"
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                    />
                   </div>
                 </motion.div>
               ))}
@@ -1560,87 +1638,171 @@ export default function FreelancerHub({
           ) : (
             // Empty state for experiences
             <motion.div
-              className="bg-white rounded-3xl p-8 text-center shadow-lg"
+              className="bg-white rounded-3xl p-10 text-center shadow-lg max-w-xl mx-auto"
               initial={{ opacity: 0 }}
               animate={{ opacity: isShowing ? 1 : 0 }}
               transition={{ duration: 0.5 }}
             >
-              <Briefcase className="h-12 w-12 text-amber-400 mx-auto mb-3" />
+              <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-violet-200 to-violet-100 rounded-full flex items-center justify-center">
+                <Briefcase className="h-10 w-10 text-violet-500" />
+              </div>
+              <h3 className="text-xl font-bold mb-2" style={{ fontFamily: 'Fredoka, sans-serif' }}>No Experience Added Yet</h3>
               <p className="text-gray-500" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                Your career journey will appear here!
+                Your impressive career journey will be showcased here! 
               </p>
+              <motion.div
+                initial={{ y: 0 }}
+                animate={{ y: [0, -8, 0] }}
+                transition={{ 
+                  repeat: Infinity, 
+                  duration: 1.5,
+                  repeatDelay: 1
+                }}
+                className="mt-6"
+              >
+                <span className="text-3xl">⬇️</span>
+              </motion.div>
             </motion.div>
           )}
         </div>
       </section>
       
       {/* Education Section */}
-      <section className="py-10 px-6 md:px-10">
-        <div className="max-w-4xl mx-auto">
-          <motion.h2 
-            className="text-3xl font-bold mb-8 text-center"
-            style={{ fontFamily: 'Fredoka, sans-serif' }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 20 }}
+      <section className="py-16 px-6 md:px-10 relative overflow-hidden">
+        {/* Decorative elements */}
+        <motion.div 
+          className="absolute -bottom-20 right-0 w-80 h-80 bg-gradient-to-br from-amber-100 to-orange-50 rounded-full opacity-30 blur-3xl"
+          animate={{ 
+            scale: [1, 1.1, 1],
+            rotate: [0, -5, 0]
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            repeatType: "reverse"
+          }}
+        />
+        
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 30 }}
             transition={{ duration: 0.5 }}
           >
-            <span className="highlight-text">Academic Background</span>
-          </motion.h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-3 text-center" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+              <span className="highlight-text">Academic Journey</span>
+            </h2>
+            <p className="text-center text-gray-600 mb-10 max-w-2xl mx-auto" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              The foundation of knowledge that powers my creative process
+            </p>
+          </motion.div>
           
           {sortedEducations.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {sortedEducations.map((edu, index) => (
                 <motion.div 
                   key={edu.id}
-                  className="bg-white rounded-xl p-6 shadow-lg overflow-hidden relative"
+                  className="bg-white rounded-2xl p-6 shadow-xl overflow-hidden relative"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 20 }}
                   transition={{ duration: 0.5, delay: 0.1 * index }}
-                  whileHover={{ y: -5 }}
+                  whileHover={{ y: -8, rotate: index % 2 === 0 ? 1 : -1 }}
                 >
-                  {/* Education cap icon */}
-                  <div className="absolute -right-4 -top-4 bg-amber-400 w-16 h-16 rounded-full flex items-center justify-center rotate-12 opacity-10">
-                    <GraduationCap className="h-8 w-8 text-white" />
+                  {/* Background pattern */}
+                  <div className="absolute inset-0 opacity-5">
+                    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                      <pattern id={`edu-pattern-${index}`} x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+                        {index % 3 === 0 ? (
+                          <circle cx="20" cy="20" r="3" fill="#000" />
+                        ) : index % 3 === 1 ? (
+                          <rect x="15" y="15" width="10" height="10" fill="#000" />
+                        ) : (
+                          <polygon points="20,10 10,30 30,30" fill="#000" />
+                        )}
+                      </pattern>
+                      <rect width="100%" height="100%" fill={`url(#edu-pattern-${index})`} />
+                    </svg>
                   </div>
                   
-                  <h3 className="text-xl font-bold mb-2" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-                    {edu.degree}
-                  </h3>
-                  
-                  <p className="text-violet-500 font-medium mb-3" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    {edu.institution}
-                  </p>
-                  
-                  <div className="flex items-center text-gray-500 mb-3">
-                    <Calendar className="h-4 w-4 mr-1" />
-                    <span className="text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                      {formatDate(edu.startDate, false)} — {edu.endDate ? formatDate(edu.endDate, false) : 'Present'}
-                    </span>
-                  </div>
-                  
-                  {edu.location && (
-                    <div className="flex items-center text-gray-500">
-                      <MapPin className="h-4 w-4 mr-1" />
-                      <span className="text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                        {edu.location}
-                      </span>
+                  {/* Floating graduation cap icon */}
+                  <motion.div 
+                    className="absolute -right-6 -top-6 w-20 h-20 rounded-full"
+                    animate={{ rotate: [0, 15, 0], y: [0, -5, 0] }}
+                    transition={{ duration: 5, repeat: Infinity, repeatType: "reverse" }}
+                  >
+                    <div className="w-full h-full bg-gradient-to-br from-amber-400 to-orange-300 rounded-full flex items-center justify-center shadow-lg">
+                      <GraduationCap className="h-8 w-8 text-white" />
                     </div>
-                  )}
+                  </motion.div>
+                  
+                  <div className="relative z-10">
+                    <h3 className="text-xl font-bold mb-2" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+                      {edu.degree}
+                    </h3>
+                    
+                    <div className="px-4 py-2 bg-gradient-to-r from-amber-100 to-amber-50 rounded-lg inline-block mb-4">
+                      <p className="text-amber-700 font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                        {edu.institution}
+                      </p>
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-4 mb-3">
+                      <div className="flex items-center text-gray-500 bg-gray-50 px-3 py-1 rounded-full">
+                        <Calendar className="h-4 w-4 mr-1 text-amber-500" />
+                        <span className="text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                          {formatDate(edu.startDate, false)} — {edu.endDate ? formatDate(edu.endDate, false) : 'Present'}
+                        </span>
+                      </div>
+                      
+                      {edu.location && (
+                        <div className="flex items-center text-gray-500 bg-gray-50 px-3 py-1 rounded-full">
+                          <MapPin className="h-4 w-4 mr-1 text-amber-500" />
+                          <span className="text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                            {edu.location}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Random education fields */}
+                    <div className="flex flex-wrap gap-2 mt-4">
+                      {['Research', 'Coursework', 'Leadership', 'Projects'].slice(0, index % 3 + 2).map((field, i) => (
+                        <Badge key={i} className="bg-amber-100 text-amber-700 border-none">
+                          {field}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
                 </motion.div>
               ))}
             </div>
           ) : (
             // Empty state for education
             <motion.div
-              className="bg-white rounded-3xl p-8 text-center shadow-lg"
+              className="bg-white rounded-3xl p-10 text-center shadow-lg max-w-xl mx-auto"
               initial={{ opacity: 0 }}
               animate={{ opacity: isShowing ? 1 : 0 }}
               transition={{ duration: 0.5 }}
             >
-              <GraduationCap className="h-12 w-12 text-amber-400 mx-auto mb-3" />
+              <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-amber-200 to-amber-100 rounded-full flex items-center justify-center">
+                <GraduationCap className="h-10 w-10 text-amber-500" />
+              </div>
+              <h3 className="text-xl font-bold mb-2" style={{ fontFamily: 'Fredoka, sans-serif' }}>No Education Added Yet</h3>
               <p className="text-gray-500" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                Your academic background will appear here!
+                Your academic achievements will shine here soon!
               </p>
+              <motion.div
+                initial={{ y: 0 }}
+                animate={{ y: [0, -8, 0] }}
+                transition={{ 
+                  repeat: Infinity, 
+                  duration: 1.5,
+                  repeatDelay: 1
+                }}
+                className="mt-6"
+              >
+                <span className="text-3xl">⬇️</span>
+              </motion.div>
             </motion.div>
           )}
         </div>
@@ -1723,6 +1885,58 @@ export default function FreelancerHub({
           <Smile className="h-4 w-4" />
           New!
         </span>
+      </motion.div>
+      
+      {/* Floating action buttons for mobile */}
+      <motion.div 
+        className="fixed bottom-4 left-0 right-0 z-50 flex justify-center md:hidden"
+        initial={{ y: 100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ 
+          type: "spring",
+          bounce: 0.5,
+          duration: 0.8,
+          delay: 0.5
+        }}
+      >
+        <div className="flex gap-4 p-3 bg-white/70 backdrop-blur-md rounded-full shadow-xl">
+          {/* Let's Talk button */}
+          <motion.button 
+            className="w-14 h-14 flex items-center justify-center rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white shadow-lg"
+            onClick={handleLetsTalkClick}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <MessageCircle className="h-6 w-6" />
+            <motion.span 
+              className="absolute -top-2 -right-2 w-6 h-6 bg-white rounded-full text-xs flex items-center justify-center text-violet-600 font-bold border-2 border-violet-400"
+              initial={{ scale: 0 }}
+              animate={{ scale: [0, 1.2, 1] }}
+              transition={{ delay: 1.2, duration: 0.5 }}
+            >
+              💬
+            </motion.span>
+          </motion.button>
+          
+          {/* Resume button */}
+          <motion.button 
+            className="w-14 h-14 flex items-center justify-center rounded-full bg-gradient-to-r from-amber-400 to-orange-400 text-white shadow-lg"
+            onClick={() => setIsResumeModalOpen(true)}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <FileText className="h-6 w-6" />
+          </motion.button>
+          
+          {/* Social media button */}
+          <motion.button 
+            className="w-14 h-14 flex items-center justify-center rounded-full bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-lg"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <Linkedin className="h-6 w-6" />
+          </motion.button>
+        </div>
       </motion.div>
       
       {/* Render Modals */}
