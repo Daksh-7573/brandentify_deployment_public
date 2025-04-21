@@ -10,6 +10,9 @@ interface PersonalInfoSectionProps {
 }
 
 const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ userData, onEdit }) => {
+  // Add debug logging for domain
+  console.log("PersonalInfoSection - userData:", userData);
+  console.log("PersonalInfoSection - userData.domain:", userData.domain);
   return (
     <Card className="shadow-sm">
       <CardContent className="p-6">
