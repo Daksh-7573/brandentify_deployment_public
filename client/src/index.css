@@ -4,6 +4,113 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Scholar theme notebook styling */
+.scholar-template {
+  font-family: 'Nunito Sans', sans-serif;
+}
+
+.scholar-template h1,
+.scholar-template h2,
+.scholar-template h3,
+.scholar-template h4 {
+  font-family: 'Lora', serif;
+}
+
+.scholar-template .notebook-paper {
+  background-color: white;
+  background-image: 
+    linear-gradient(90deg, transparent 79px, #abced4 79px, #abced4 81px, transparent 81px),
+    linear-gradient(#e1e1e1 0.1em, transparent 0.1em);
+  background-size: 100% 1.2em;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  padding: 1.5rem;
+  position: relative;
+}
+
+.scholar-template .notebook-card {
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  position: relative;
+}
+
+.scholar-template .graph-paper {
+  background-color: white;
+  background-image: 
+    linear-gradient(#e1e1e1 1px, transparent 1px),
+    linear-gradient(90deg, #e1e1e1 1px, transparent 1px);
+  background-size: 20px 20px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  position: relative;
+}
+
+.scholar-template .tag-badge {
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.5px;
+}
+
+.scholar-template .project-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.scholar-template .project-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.scholar-template .progress-bar {
+  height: 8px;
+  background-color: #edf2f7;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.scholar-template .progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4c51bf 0%, #667eea 100%);
+  border-radius: 4px;
+  transition: width 1s ease-in-out;
+}
+
+.scholar-template .dashed {
+  background-image: linear-gradient(to bottom, #c7d2fe 50%, transparent 50%);
+  background-repeat: repeat-y;
+  background-size: 1px 8px;
+}
+
+/* Fade-in animations */
+.fade-in-up {
+  animation: fadeInUp 0.8s ease forwards;
+  opacity: 0;
+}
+
+.delay-100 {
+  animation-delay: 0.1s;
+}
+
+.delay-200 {
+  animation-delay: 0.2s;
+}
+
+.delay-300 {
+  animation-delay: 0.3s;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Custom animations */
 
 /* Artistic Card animations */

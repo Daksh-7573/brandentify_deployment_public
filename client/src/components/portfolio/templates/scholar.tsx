@@ -305,12 +305,11 @@ export default function Scholar({
     userInfo.lookingFor ? `Looking for ${userInfo.lookingFor}` : "Open to Opportunities"
   ];
 
-  const { text } = useTypewriter({
+  const [text] = useTypewriter({
     words: phrases,
-    loop: true,
+    loop: 1 as any,
     typeSpeed: 80,
     deleteSpeed: 50,
-    delaySpeed: 2000
   });
 
   // Function to choose a color for skills based on skill name
@@ -646,45 +645,43 @@ export default function Scholar({
         </section>
       )}
 
-      {/* Projects Section */}
+      {/* Projects & Portfolio Section */}
       <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-4 md:px-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-            <span className="w-8 h-0.5 bg-blue-500 mr-3"></span> 
-            Showcase
+          <h2 className="text-2xl font-serif font-bold text-gray-800 mb-6 flex items-center">
+            <Layers className="h-6 w-6 mr-3 text-indigo-600" /> 
+            Projects & Portfolio
           </h2>
           
           {!hasProjects && (
-            <Card className="mb-6 border-dashed border-blue-200">
-              <CardContent className="p-6 text-center">
-                <p className="text-gray-500 italic">Add projects to showcase your work and accomplishments.</p>
-                <Button variant="outline" className="mt-4 text-blue-600 border-blue-200 hover:bg-blue-50">
-                  Add Projects
-                </Button>
-              </CardContent>
-            </Card>
+            <div className="notebook-paper mb-6 border-dashed border-blue-200 text-center">
+              <p className="text-gray-500 italic">Add projects to showcase your academic work, research, and accomplishments.</p>
+              <Button variant="outline" className="mt-4 text-blue-600 border-blue-200 hover:bg-blue-50">
+                Add Projects
+              </Button>
+            </div>
           )}
           
           {hasProjects && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {userProjects.map((project) => (
-                <Card key={project.id} className="overflow-hidden hover:shadow-md transition-shadow">
+              {userProjects.map((project, index) => (
+                <div key={project.id} className={`project-card fade-in-up delay-${index * 100} overflow-hidden rounded-lg bg-white shadow-sm`}>
                   {project.thumbnailUrl && (
                     <div className="w-full h-48 overflow-hidden">
                       <img 
                         src={project.thumbnailUrl} 
                         alt={project.title} 
-                        className="w-full h-full object-cover transition-transform hover:scale-105"
+                        className="w-full h-full object-cover"
                       />
                     </div>
                   )}
-                  <CardContent className="p-6">
+                  <div className="p-6 graph-paper">
                     <div className="flex justify-between items-start mb-3">
-                      <h3 className="text-lg font-semibold text-gray-800">{project.title}</h3>
+                      <h3 className="text-lg font-serif font-semibold text-blue-800">{project.title}</h3>
                       {project.category && (
                         <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-200 flex items-center">
                           {getCategoryIcon(project.category)}
-                          <span className="ml-1">{project.category}</span>
+                          <span className="ml-1 text-xs">{project.category}</span>
                         </Badge>
                       )}
                     </div>
@@ -711,62 +708,68 @@ export default function Scholar({
                           rel="noopener noreferrer"
                           className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800"
                         >
-                          View Project <ArrowRight className="h-3.5 w-3.5 ml-1" />
+                          View Project <ExternalLink className="h-3.5 w-3.5 ml-1" />
                         </a>
                       </div>
                     )}
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               ))}
             </div>
           )}
         </div>
       </section>
 
-      {/* Experience Section */}
+      {/* Career Path Section */}
       <section className="py-12 bg-white">
         <div className="container mx-auto px-4 md:px-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-            <span className="w-8 h-0.5 bg-blue-500 mr-3"></span> 
+          <h2 className="text-2xl font-serif font-bold text-gray-800 mb-6 flex items-center">
+            <Briefcase className="h-6 w-6 mr-3 text-indigo-600" /> 
             Career Path
           </h2>
           
           {!hasExperiences && (
-            <Card className="mb-6 border-dashed border-blue-200">
-              <CardContent className="p-6 text-center">
-                <p className="text-gray-500 italic">Add work experience to showcase your professional journey and achievements.</p>
-                <Button variant="outline" className="mt-4 text-blue-600 border-blue-200 hover:bg-blue-50">
-                  Add Work Experience
-                </Button>
-              </CardContent>
-            </Card>
+            <div className="notebook-paper mb-6 border-dashed border-blue-200 text-center">
+              <p className="text-gray-500 italic">Add work experience to showcase your professional journey and achievements.</p>
+              <Button variant="outline" className="mt-4 text-blue-600 border-blue-200 hover:bg-blue-50">
+                Add Work Experience
+              </Button>
+            </div>
           )}
             
           {hasExperiences && (
             <div className="relative">
-              {/* Timeline line */}
-              <div className="absolute left-0 md:left-3 top-0 bottom-0 w-0.5 bg-blue-200"></div>
+              {/* Timeline visualization */}
+              <div className="absolute left-0 md:left-3 top-0 bottom-0 w-0.5 bg-indigo-200 dashed"></div>
               
               <div className="space-y-8 pl-8 md:pl-12">
                 {userExperiences.map((experience, index) => (
-                  <div key={experience.id} className="relative">
+                  <div key={experience.id} className="relative fade-in-up" style={{ animationDelay: `${index * 100}ms` }}>
                     {/* Timeline dot */}
-                    <div className="absolute left-0 md:left-3 -translate-x-1/2 md:-translate-x-3 top-1.5 w-3 h-3 rounded-full bg-blue-500 border-2 border-white"></div>
+                    <div className="absolute left-0 md:left-3 -translate-x-1/2 md:-translate-x-3 top-1.5 w-4 h-4 rounded-full bg-indigo-500 border-2 border-white shadow-sm"></div>
                     
-                    <Card className="border-blue-100">
-                      <CardContent className="p-6">
-                        <div className="flex flex-col md:flex-row md:items-start justify-between mb-3">
-                          <div>
-                            <h3 className="text-lg font-semibold text-gray-800 mb-1">{experience.title}</h3>
-                            <div className="text-gray-600 mb-2">
-                              {experience.company}
-                              {experience.location && <span> • {experience.location}</span>}
-                            </div>
-                          </div>
-                          
-                          <div className="text-sm text-gray-500 mt-1 md:mt-0 md:ml-4 md:text-right whitespace-nowrap">
-                            {experience.startDate && (
+                    <div className="notebook-card p-6 rounded-lg">
+                      <div className="flex flex-col md:flex-row md:items-start justify-between mb-4">
+                        <div>
+                          <h3 className="text-lg font-serif font-semibold text-indigo-800 mb-1">{experience.title}</h3>
+                          <div className="flex items-center text-gray-700 mb-2">
+                            <Building className="h-4 w-4 mr-2 text-indigo-600" />
+                            <span className="font-medium">{experience.company}</span>
+                            {experience.location && (
                               <>
+                                <span className="mx-2">•</span>
+                                <MapPin className="h-4 w-4 mr-1 text-gray-500" />
+                                <span>{experience.location}</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                        
+                        <div className="text-sm text-indigo-700 font-semibold mt-1 md:mt-0 md:ml-4 md:text-right whitespace-nowrap">
+                          {experience.startDate && (
+                            <div className="flex items-center">
+                              <Calendar className="h-4 w-4 mr-1" />
+                              <span>
                                 {new Date(experience.startDate).toLocaleDateString(undefined, { 
                                   year: 'numeric', 
                                   month: 'short' 
@@ -775,29 +778,31 @@ export default function Scholar({
                                   year: 'numeric', 
                                   month: 'short' 
                                 })}` : ' - Present'}
-                              </>
-                            )}
-                          </div>
+                              </span>
+                            </div>
+                          )}
                         </div>
-                        
+                      </div>
+                      
+                      <div className="pl-4 border-l-2 border-indigo-100 py-2 mb-4">
                         <p className="text-gray-700">{experience.description}</p>
-                        
-                        {(experience.industry || experience.domain) && (
-                          <div className="mt-4 flex flex-wrap gap-2">
-                            {experience.industry && (
-                              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                                {experience.industry}
-                              </Badge>
-                            )}
-                            {experience.domain && (
-                              <Badge variant="outline" className="bg-indigo-50 text-indigo-700 border-indigo-200">
-                                {experience.domain}
-                              </Badge>
-                            )}
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
+                      </div>
+                      
+                      {(experience.industry || experience.domain) && (
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          {experience.industry && (
+                            <Badge variant="outline" className="tag-badge bg-blue-50 text-blue-700 border-blue-200">
+                              # {experience.industry}
+                            </Badge>
+                          )}
+                          {experience.domain && (
+                            <Badge variant="outline" className="tag-badge bg-indigo-50 text-indigo-700 border-indigo-200">
+                              # {experience.domain}
+                            </Badge>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -806,75 +811,79 @@ export default function Scholar({
         </div>
       </section>
 
-      {/* Education Section */}
+      {/* Academic Journey Section */}
       <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-4 md:px-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-            <span className="w-8 h-0.5 bg-blue-500 mr-3"></span> 
-            Academic Background
+          <h2 className="text-2xl font-serif font-bold text-gray-800 mb-6 flex items-center">
+            <GraduationCap className="h-6 w-6 mr-3 text-blue-600" /> 
+            Academic Journey
           </h2>
           
           {!hasEducation && (
-            <Card className="mb-6 border-dashed border-blue-200">
-              <CardContent className="p-6 text-center">
-                <p className="text-gray-500 italic">Add education details to showcase your academic background and achievements.</p>
-                <Button variant="outline" className="mt-4 text-blue-600 border-blue-200 hover:bg-blue-50">
-                  Add Education
-                </Button>
-              </CardContent>
-            </Card>
+            <div className="notebook-paper mb-6 border-dashed border-blue-200 text-center">
+              <p className="text-gray-500 italic">Add education details to showcase your academic background and achievements.</p>
+              <Button variant="outline" className="mt-4 text-blue-600 border-blue-200 hover:bg-blue-50">
+                Add Education
+              </Button>
+            </div>
           )}
           
           {hasEducation && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {sortedEducations.map((education) => (
-                <Card key={education.id} className="border-blue-100 hover:shadow-md transition-shadow">
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between mb-3">
+            <div className="space-y-6">
+              {sortedEducations.map((education, index) => (
+                <div key={education.id} className="timeline-entry fade-in-up delay-100">
+                  <div className="notebook-paper rounded-lg p-6 mb-2">
+                    <div className="flex items-start justify-between mb-4">
                       <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-gray-800 mb-1">{education.degree}</h3>
-                        <div className="text-gray-600 mb-2">
-                          {education.institution}
-                          {education.location && <span> • {education.location}</span>}
+                        <h3 className="text-xl font-serif font-semibold text-blue-800 mb-1">{education.degree}</h3>
+                        <div className="flex items-center text-gray-700 mb-2">
+                          <School className="h-4 w-4 mr-2 text-indigo-600" />
+                          <span className="font-medium">{education.institution}</span>
+                          {education.location && (
+                            <>
+                              <span className="mx-2">•</span>
+                              <MapPin className="h-4 w-4 mr-1 text-gray-500" />
+                              <span>{education.location}</span>
+                            </>
+                          )}
                         </div>
                       </div>
-                      <div className="ml-4">
-                        <div className="h-10 w-10 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center">
-                          <GraduationCap className="h-5 w-5" />
-                        </div>
+                      <div className="text-sm text-blue-700 font-semibold whitespace-nowrap">
+                        {education.startDate && (
+                          <div className="flex items-center">
+                            <Calendar className="h-4 w-4 mr-1" />
+                            <span>
+                              {new Date(education.startDate).toLocaleDateString(undefined, { 
+                                year: 'numeric', 
+                                month: 'short' 
+                              })}
+                              {education.endDate ? ` - ${new Date(education.endDate).toLocaleDateString(undefined, { 
+                                year: 'numeric', 
+                                month: 'short' 
+                              })}` : ' - Present'}
+                            </span>
+                          </div>
+                        )}
                       </div>
-                    </div>
-                    
-                    <div className="text-sm text-gray-500 mb-3">
-                      {education.startDate && (
-                        <>
-                          {new Date(education.startDate).toLocaleDateString(undefined, { 
-                            year: 'numeric', 
-                            month: 'short' 
-                          })}
-                          {education.endDate ? ` - ${new Date(education.endDate).toLocaleDateString(undefined, { 
-                            year: 'numeric', 
-                            month: 'short' 
-                          })}` : ' - Present'}
-                        </>
-                      )}
                     </div>
                     
                     {education.description && (
-                      <p className="text-gray-700 mb-3">{education.description}</p>
+                      <div className="pl-4 border-l-2 border-blue-100 py-2 mb-4">
+                        <p className="text-gray-700">{education.description}</p>
+                      </div>
                     )}
                     
                     {education.achievements && (
-                      <div className="mt-3">
-                        <div className="flex items-center mb-1">
-                          <Award className="h-4 w-4 text-blue-600 mr-2" />
-                          <span className="text-sm font-medium text-blue-700">Achievements</span>
+                      <div className="mt-3 bg-blue-50 p-3 rounded-lg">
+                        <div className="flex items-center mb-2">
+                          <Award className="h-5 w-5 text-indigo-600 mr-2" />
+                          <span className="font-medium text-indigo-800">Key Achievements</span>
                         </div>
-                        <p className="text-gray-700 pl-6">{education.achievements}</p>
+                        <p className="text-gray-700">{education.achievements}</p>
                       </div>
                     )}
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               ))}
             </div>
           )}
@@ -882,52 +891,71 @@ export default function Scholar({
       </section>
 
       {/* Contact Section / CTA */}
-      <section className="py-12 bg-gradient-to-r from-blue-50 to-indigo-50">
+      <section className="py-12 bg-gradient-to-r from-indigo-50 via-blue-50 to-indigo-50">
         <div className="container mx-auto px-4 md:px-8">
+          <h2 className="text-2xl font-serif font-bold text-gray-800 mb-6 flex items-center">
+            <Send className="h-6 w-6 mr-3 text-indigo-600" /> 
+            Let's Connect
+          </h2>
+          
           <div className="flex flex-col md:flex-row gap-8 items-center">
-            <div className="md:w-1/2">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">Let's Connect</h2>
-              <p className="text-gray-700 mb-6">
-                Interested in discussing potential opportunities, collaborations, or just want to chat about shared interests? Feel free to reach out!
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                  <MessageSquare className="h-4 w-4 mr-2" /> 
-                  Send Message
-                </Button>
+            <div className="md:w-1/2 fade-in-up">
+              <div className="notebook-paper mb-6">
+                <p className="text-gray-700 leading-relaxed">
+                  Interested in discussing academic opportunities, collaborations, mentorship, or just want to chat about shared research interests? Feel free to reach out!
+                </p>
                 
-                <Button variant="outline" className="border-blue-200 text-blue-700 hover:bg-blue-50">
-                  <Download className="h-4 w-4 mr-2" /> 
-                  Grab My Resume
-                </Button>
+                <div className="mt-6 flex flex-wrap gap-4">
+                  <Button className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm">
+                    <MessageSquare className="h-4 w-4 mr-2" /> 
+                    Send Message
+                  </Button>
+                  
+                  <Button variant="outline" className="border-indigo-200 text-indigo-700 hover:bg-indigo-50 shadow-sm">
+                    <Download className="h-4 w-4 mr-2" /> 
+                    Download Resume
+                  </Button>
+                  
+                  <Button variant="outline" className="border-blue-200 text-blue-700 hover:bg-blue-50 shadow-sm">
+                    <Lightbulb className="h-4 w-4 mr-2" /> 
+                    Mentorship
+                  </Button>
+                </div>
               </div>
             </div>
             
-            <div className="md:w-1/2 flex justify-center md:justify-end">
-              <Card className="w-full md:max-w-md border-blue-100">
-                <CardContent className="p-6">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Contact Details</h3>
+            <div className="md:w-1/2 flex justify-center md:justify-end fade-in-up delay-200">
+              <div className="w-full md:max-w-md graph-paper p-6 rounded-lg">
+                <h3 className="text-lg font-serif font-semibold text-indigo-800 mb-4 flex items-center">
+                  <Bookmark className="h-5 w-5 mr-2 text-indigo-600" /> Contact Information
+                </h3>
+                
+                <div className="space-y-4">
+                  {userInfo.email && (
+                    <div className="flex items-center p-3 bg-white rounded-lg border border-indigo-100 shadow-sm hover:shadow transition-shadow">
+                      <Mail className="h-5 w-5 text-indigo-600 mr-3" />
+                      <a href={`mailto:${userInfo.email}`} className="text-gray-700 hover:text-indigo-600 font-medium">
+                        {userInfo.email}
+                      </a>
+                    </div>
+                  )}
                   
-                  <div className="space-y-3">
-                    {userInfo.email && (
-                      <div className="flex items-center">
-                        <Mail className="h-5 w-5 text-blue-600 mr-3" />
-                        <a href={`mailto:${userInfo.email}`} className="text-gray-700 hover:text-blue-600">
-                          {userInfo.email}
-                        </a>
-                      </div>
-                    )}
-                    
-                    {userInfo.location && (
-                      <div className="flex items-center">
-                        <MapPin className="h-5 w-5 text-blue-600 mr-3" />
-                        <span className="text-gray-700">{userInfo.location}</span>
-                      </div>
-                    )}
+                  {userInfo.location && (
+                    <div className="flex items-center p-3 bg-white rounded-lg border border-indigo-100 shadow-sm">
+                      <MapPin className="h-5 w-5 text-indigo-600 mr-3" />
+                      <span className="text-gray-700">{userInfo.location}</span>
+                    </div>
+                  )}
+                  
+                  <div className="flex items-start p-3 bg-white rounded-lg border border-indigo-100 shadow-sm mt-4">
+                    <GraduationCap className="h-5 w-5 text-indigo-600 mr-3 mt-1" />
+                    <div>
+                      <span className="text-gray-700 block font-medium">Office Hours</span>
+                      <span className="text-gray-600 text-sm">Available for discussions Monday-Friday, 10 AM - 4 PM</span>
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </div>
           </div>
         </div>
