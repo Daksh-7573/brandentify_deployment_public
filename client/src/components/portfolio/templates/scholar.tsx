@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Briefcase,
   Mail,
@@ -15,14 +15,25 @@ import {
   Award,
   Tag,
   Code,
-  Wrench as Tool
+  Building,
+  Wrench as Tool,
+  UserPlus,
+  ExternalLink,
+  Bookmark,
+  CheckCircle2,
+  Send,
+  BookOpen as Book,
+  School,
+  Layers,
+  Lightbulb
 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { useTypewriter } from "@/hooks/use-typewriter";
+import PortfolioCtaButtons from "../portfolio-cta-buttons";
 
 interface ScholarProps {
   userInfo: {
@@ -90,6 +101,202 @@ export default function Scholar({
   userEducations,
   userProjects
 }: ScholarProps) {
+  
+  // Add notebook-style background and effects on component mount
+  useEffect(() => {
+    // Add premium web fonts - Lora (serif, headers) and Nunito Sans (body)
+    const loraFont = document.createElement('link');
+    loraFont.href = 'https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap';
+    loraFont.rel = 'stylesheet';
+    
+    const nunitoFont = document.createElement('link');
+    nunitoFont.href = 'https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;500;600;700&display=swap';
+    nunitoFont.rel = 'stylesheet';
+    
+    document.head.appendChild(loraFont);
+    document.head.appendChild(nunitoFont);
+    
+    // Add CSS for notebook-style theme and animations
+    const style = document.createElement('style');
+    style.textContent = `
+      /* Scholar Template - Academic Notebook Theme */
+      .scholar-template {
+        --notebook-blue: #4A69BD;
+        --notebook-light-blue: #D6E4FF;
+        --notebook-navy: #1E3A8A;
+        --notebook-red: #E55039;
+        --notebook-green: #009432;
+        --notebook-yellow: #FFC312;
+        --notebook-purple: #5F27CD;
+        --pastel-blue: #D6E4FF;
+        --pastel-green: #DCFFE4;
+        --pastel-yellow: #FFF5C3;
+        --pastel-red: #FFE2DD;
+        --pastel-purple: #F0E7FF;
+        font-family: 'Nunito Sans', sans-serif;
+      }
+
+      .scholar-template h1, 
+      .scholar-template h2, 
+      .scholar-template h3, 
+      .scholar-template h4 {
+        font-family: 'Lora', serif;
+      }
+      
+      .scholar-template .notebook-card {
+        background-color: white;
+        background-image: 
+          linear-gradient(#F1F5F9 1px, transparent 1px),
+          linear-gradient(90deg, #F1F5F9 1px, transparent 1px);
+        background-size: 20px 20px;
+        background-position: -1px -1px;
+        border-left: 2px solid var(--notebook-navy);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.03);
+      }
+      
+      .scholar-template .notebook-paper {
+        background-color: white;
+        background-image: linear-gradient(#F1F5F9 1px, transparent 1px);
+        background-size: 100% 20px;
+        background-position: 0 -1px;
+        padding: 20px;
+        border-radius: 8px;
+        border-left: 3px solid var(--notebook-blue);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+      }
+      
+      .scholar-template .graph-paper {
+        background-color: white;
+        background-image: 
+          linear-gradient(rgba(74, 105, 189, 0.1) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(74, 105, 189, 0.1) 1px, transparent 1px);
+        background-size: 20px 20px;
+        border-radius: 8px;
+        border: 1px solid rgba(74, 105, 189, 0.2);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+      }
+      
+      .scholar-template .skill-badge {
+        border-radius: 16px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+      }
+      
+      .scholar-template .skill-badge:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .scholar-template .timeline-entry {
+        position: relative;
+        padding-left: 30px;
+        padding-bottom: 24px;
+        border-left: 2px dashed #D1D5DB;
+      }
+      
+      .scholar-template .timeline-entry:last-child {
+        border-left: 2px dashed transparent;
+      }
+      
+      .scholar-template .timeline-entry::before {
+        content: '';
+        position: absolute;
+        left: -8px;
+        top: 0;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background-color: var(--notebook-blue);
+      }
+      
+      .scholar-template .project-card {
+        overflow: hidden;
+        transition: all 0.3s ease;
+      }
+      
+      .scholar-template .project-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      }
+      
+      .scholar-template .project-card img {
+        transition: all 0.5s ease;
+      }
+      
+      .scholar-template .project-card:hover img {
+        transform: scale(1.05);
+      }
+      
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      
+      .scholar-template .fade-in-up {
+        animation: fadeInUp 0.8s ease forwards;
+        opacity: 0;
+      }
+      
+      .scholar-template .delay-100 {
+        animation-delay: 0.1s;
+      }
+      
+      .scholar-template .delay-200 {
+        animation-delay: 0.2s;
+      }
+      
+      .scholar-template .delay-300 {
+        animation-delay: 0.3s;
+      }
+      
+      .scholar-template .delay-400 {
+        animation-delay: 0.4s;
+      }
+      
+      .scholar-template .progress-bar {
+        height: 8px;
+        border-radius: 4px;
+        background-color: #E2E8F0;
+        overflow: hidden;
+      }
+      
+      .scholar-template .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--notebook-blue), var(--notebook-purple));
+        border-radius: 4px;
+        transition: width 1s ease;
+      }
+      
+      .scholar-template .tag-badge {
+        border-radius: 12px;
+        padding: 3px 10px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+      }
+      
+      .scholar-template .tag-badge:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+    `;
+    
+    document.head.appendChild(style);
+    
+    // Clean up on unmount
+    return () => {
+      document.head.removeChild(style);
+      document.head.removeChild(loraFont);
+      document.head.removeChild(nunitoFont);
+    };
+  }, []);
   // Set up animated typewriter text based on user info
   const phrases = [
     userInfo.title || "Student & Lifelong Learner",
@@ -189,14 +396,15 @@ export default function Scholar({
   const hasServices = userServices && userServices.length > 0;
   
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white scholar-template">
       {/* Hero Section */}
-      <section className="relative pt-16 pb-12 bg-gradient-to-r from-blue-50 to-indigo-50">
+      <section className="relative pt-16 pb-12 bg-gradient-to-r from-indigo-50 via-blue-50 to-indigo-50">
         <div className="container mx-auto px-4 md:px-8">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
-            {/* Profile picture */}
+            {/* Profile picture with notebook motif */}
             <div className="relative">
-              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-white shadow-md transition-transform hover:scale-105">
+              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-white shadow-md transition-transform hover:scale-105 relative">
+                <div className="absolute inset-0 rounded-full border-2 border-dashed border-blue-300 z-10 opacity-50"></div>
                 <Avatar className="w-full h-full">
                   <AvatarImage src={userInfo.photoURL || ''} alt={userInfo.name} />
                   <AvatarFallback className="bg-blue-100 text-blue-800 text-xl">
@@ -204,6 +412,7 @@ export default function Scholar({
                   </AvatarFallback>
                 </Avatar>
               </div>
+              
               {userInfo.lookingFor && (
                 <Badge className="absolute -bottom-2 right-0 bg-blue-600 hover:bg-blue-700">
                   {userInfo.lookingFor}
@@ -211,34 +420,43 @@ export default function Scholar({
               )}
             </div>
 
-            {/* Name and intro */}
+            {/* Name and Academic Info */}
             <div className="text-center md:text-left flex-1">
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">
+              <h1 className="text-3xl md:text-4xl font-serif font-bold text-gray-800 mb-1 fade-in-up">
                 {userInfo.name}
               </h1>
               
-              <div className="h-8 mb-2 text-blue-700 font-serif text-lg">
-                {text}
-                <span className="animate-blink">|</span>
+              <div className="mb-2 text-blue-700 font-serif text-lg fade-in-up delay-100">
+                <span className="font-medium">
+                  {userInfo.title || "Academic Scholar"}
+                </span>
               </div>
 
               {userInfo.location && (
-                <div className="flex items-center justify-center md:justify-start text-gray-600 mb-4">
+                <div className="flex items-center justify-center md:justify-start text-gray-600 mb-3 fade-in-up delay-200">
                   <MapPin className="h-4 w-4 mr-1" />
                   <span>{userInfo.location}</span>
                 </div>
               )}
 
-              {/* Domain/Industry pills */}
-              <div className="flex flex-wrap gap-2 justify-center md:justify-start mb-4">
+              {/* Domain/Industry/Institution Pills */}
+              <div className="flex flex-wrap gap-2 justify-center md:justify-start mb-4 fade-in-up delay-300">
                 {userInfo.industry && (
-                  <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                    # {userInfo.industry}
+                  <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 py-1 px-3">
+                    <School className="w-3.5 h-3.5 mr-1.5" />
+                    {userInfo.industry}
                   </Badge>
                 )}
                 {userInfo.domain && (
-                  <Badge variant="outline" className="bg-indigo-50 text-indigo-700 border-indigo-200">
-                    # {userInfo.domain}
+                  <Badge variant="outline" className="bg-indigo-50 text-indigo-700 border-indigo-200 py-1 px-3">
+                    <Bookmark className="w-3.5 h-3.5 mr-1.5" />
+                    {userInfo.domain}
+                  </Badge>
+                )}
+                {userInfo.title && (
+                  <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200 py-1 px-3">
+                    <GraduationCap className="w-3.5 h-3.5 mr-1.5" />
+                    {userInfo.title}
                   </Badge>
                 )}
               </div>
@@ -247,152 +465,154 @@ export default function Scholar({
         </div>
       </section>
 
-      {/* About Section */}
+      {/* About Section with Notebook Style */}
       <section className="py-12 bg-white">
         <div className="container mx-auto px-4 md:px-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-            <span className="w-8 h-0.5 bg-blue-500 mr-3"></span> 
+          <h2 className="text-2xl font-serif font-bold text-gray-800 mb-6 flex items-center">
+            <Book className="h-6 w-6 mr-3 text-blue-600" />
             What I'm All About
           </h2>
           
-          <Card className="bg-blue-50 border-blue-100 overflow-hidden">
-            <CardContent className="p-6">
-              <div className="flex flex-col md:flex-row gap-6">
-                <div className="flex-1 space-y-4">
-                  <p className="text-gray-700 leading-relaxed">
-                    {userInfo.title || userInfo.industry 
-                      ? `As ${userInfo.title ? `a ${userInfo.title}` : ''}${userInfo.industry ? ` in the ${userInfo.industry} field` : ''}, I'm passionate about continuous learning and applying my knowledge to real-world challenges.`
-                      : "I'm passionate about continuous learning and applying my knowledge to real-world challenges. My academic journey has equipped me with both theoretical understanding and practical skills."}
-                  </p>
-                  <p className="text-gray-700 leading-relaxed">
-                    {userInfo.lookingFor 
-                      ? `Currently seeking ${userInfo.lookingFor.toLowerCase()}. I bring a fresh perspective, strong work ethic, and eagerness to contribute to meaningful projects.`
-                      : "I bring a fresh perspective, strong work ethic, and eagerness to contribute to meaningful projects. I'm constantly looking to expand my skills and take on new challenges."}
+          <div className="notebook-paper fade-in-up">
+            <div className="flex flex-col md:flex-row gap-6">
+              <div className="flex-1 space-y-4">
+                <p className="text-gray-700 leading-relaxed font-medium">
+                  {userInfo.title || userInfo.industry 
+                    ? `As ${userInfo.title ? `a ${userInfo.title}` : ''}${userInfo.industry ? ` in the ${userInfo.industry} field` : ''}, I'm passionate about continuous learning and applying my knowledge to real-world challenges.`
+                    : "I'm passionate about continuous learning and applying my knowledge to real-world challenges. My academic journey has equipped me with both theoretical understanding and practical skills."}
+                </p>
+                <p className="text-gray-700 leading-relaxed">
+                  {userInfo.lookingFor 
+                    ? `Currently seeking ${userInfo.lookingFor.toLowerCase()}. I bring a fresh perspective, strong work ethic, and eagerness to contribute to meaningful projects.`
+                    : "I bring a fresh perspective, strong work ethic, and eagerness to contribute to meaningful projects. I'm constantly looking to expand my skills and take on new challenges."}
+                </p>
+                
+                <div className="flex items-center gap-2 text-blue-600">
+                  <Lightbulb className="h-5 w-5" />
+                  <span className="font-medium">My academic focus:</span>
+                </div>
+                <div className="pl-7 border-l-2 border-blue-100">
+                  <p className="text-gray-700">
+                    {userInfo.domain 
+                      ? `Specializing in ${userInfo.domain} with a focus on practical applications and innovative approaches.`
+                      : "Combining theoretical knowledge with practical applications, I focus on creating meaningful solutions to real-world problems."}
                   </p>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Skills Section */}
       <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-4 md:px-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-            <span className="w-8 h-0.5 bg-blue-500 mr-3"></span> 
+          <h2 className="text-2xl font-serif font-bold text-gray-800 mb-6 flex items-center">
+            <Star className="h-6 w-6 mr-3 text-blue-600" />
             What I'm Good At
           </h2>
           
           {!hasSkills && (
-            <Card className="mb-6 border-dashed border-blue-200">
-              <CardContent className="p-6 text-center">
-                <p className="text-gray-500 italic">Add skills to showcase your strengths and abilities to potential employers or collaborators.</p>
-                <Button variant="outline" className="mt-4 text-blue-600 border-blue-200 hover:bg-blue-50">
-                  Add Skills
-                </Button>
-              </CardContent>
-            </Card>
+            <div className="notebook-paper mb-6 border-dashed border-blue-200 text-center">
+              <p className="text-gray-500 italic">Add skills to showcase your strengths and abilities to potential employers or collaborators.</p>
+              <Button variant="outline" className="mt-4 text-blue-600 border-blue-200 hover:bg-blue-50">
+                Add Skills
+              </Button>
+            </div>
           )}
           
           {hasSkills && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Technical Skills */}
               {skillCategories.technical.length > 0 && (
-                <Card>
-                  <CardContent className="p-6">
-                    <h3 className="text-lg font-semibold mb-4 flex items-center">
-                      <Code className="h-5 w-5 mr-2 text-blue-600" /> Technical Skills
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {skillCategories.technical.map((skill) => (
-                        <div key={skill.id} className="w-full mb-3">
-                          <div className="flex justify-between mb-1">
-                            <span className="text-sm font-medium">{skill.name}</span>
-                            <div className="flex">
-                              {Array.from({ length: 5 }).map((_, i) => (
-                                <Star
-                                  key={i}
-                                  className={`h-4 w-4 ${i < Math.round(skill.proficiency / 20) ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'}`}
-                                />
-                              ))}
-                            </div>
+                <div className="notebook-card fade-in-up p-6 rounded-lg">
+                  <h3 className="text-lg font-serif font-semibold mb-4 flex items-center text-blue-800">
+                    <Code className="h-5 w-5 mr-2 text-blue-600" /> Technical Skills
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {skillCategories.technical.map((skill) => (
+                      <div key={skill.id} className="w-full mb-4">
+                        <div className="flex justify-between mb-1">
+                          <span className="text-sm font-medium">{skill.name}</span>
+                          <div className="flex">
+                            {Array.from({ length: 5 }).map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`h-4 w-4 ${i < Math.round(skill.proficiency / 20) ? 'text-blue-600 fill-blue-600' : 'text-gray-300'}`}
+                              />
+                            ))}
                           </div>
-                          <Progress
-                            value={skill.proficiency}
-                            className="h-2 bg-blue-100"
+                        </div>
+                        <div className="progress-bar">
+                          <div 
+                            className="progress-fill" 
+                            style={{ width: `${skill.proficiency}%` }}
                           />
                         </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               )}
               
               {/* Soft Skills */}
               {skillCategories.soft.length > 0 && (
-                <Card>
-                  <CardContent className="p-6">
-                    <h3 className="text-lg font-semibold mb-4 flex items-center">
-                      <MessageSquare className="h-5 w-5 mr-2 text-indigo-600" /> Soft Skills
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {skillCategories.soft.map((skill) => (
-                        <Badge 
-                          key={skill.id} 
-                          variant="outline"
-                          className={`text-sm py-2 px-3 ${getSkillColor(skill.name)}`}
-                        >
-                          {skill.name}
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
+                <div className="graph-paper fade-in-up delay-100 p-6 rounded-lg">
+                  <h3 className="text-lg font-serif font-semibold mb-4 flex items-center text-indigo-800">
+                    <MessageSquare className="h-5 w-5 mr-2 text-indigo-600" /> Soft Skills
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {skillCategories.soft.map((skill) => (
+                      <Badge 
+                        key={skill.id} 
+                        variant="outline"
+                        className={`text-sm py-2 px-3 skill-badge ${getSkillColor(skill.name)}`}
+                      >
+                        {skill.name}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
               )}
               
               {/* Tools */}
               {skillCategories.tools.length > 0 && (
-                <Card>
-                  <CardContent className="p-6">
-                    <h3 className="text-lg font-semibold mb-4 flex items-center">
-                      <Tool className="h-5 w-5 mr-2 text-purple-600" /> Tools & Software
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {skillCategories.tools.map((skill) => (
-                        <Badge 
-                          key={skill.id} 
-                          variant="outline"
-                          className="bg-purple-50 text-purple-700 border-purple-200"
-                        >
-                          {skill.name}
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
+                <div className="notebook-paper fade-in-up delay-200 p-6 rounded-lg">
+                  <h3 className="text-lg font-serif font-semibold mb-4 flex items-center text-purple-800">
+                    <Tool className="h-5 w-5 mr-2 text-purple-600" /> Tools & Software
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {skillCategories.tools.map((skill) => (
+                      <Badge 
+                        key={skill.id} 
+                        variant="outline"
+                        className="bg-purple-50 text-purple-700 border-purple-200 skill-badge"
+                      >
+                        {skill.name}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
               )}
               
               {/* Other Skills */}
               {skillCategories.other.length > 0 && (
-                <Card>
-                  <CardContent className="p-6">
-                    <h3 className="text-lg font-semibold mb-4 flex items-center">
-                      <Award className="h-5 w-5 mr-2 text-green-600" /> Other Skills
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {skillCategories.other.map((skill) => (
-                        <Badge 
-                          key={skill.id} 
-                          variant="outline"
-                          className={`text-sm py-2 px-3 ${getSkillColor(skill.name)}`}
-                        >
-                          {skill.name}
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
+                <div className="graph-paper fade-in-up delay-300 p-6 rounded-lg">
+                  <h3 className="text-lg font-serif font-semibold mb-4 flex items-center text-green-800">
+                    <Award className="h-5 w-5 mr-2 text-green-600" /> Other Skills
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {skillCategories.other.map((skill) => (
+                      <Badge 
+                        key={skill.id} 
+                        variant="outline"
+                        className={`text-sm py-2 px-3 skill-badge ${getSkillColor(skill.name)}`}
+                      >
+                        {skill.name}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
               )}
             </div>
           )}
@@ -403,25 +623,23 @@ export default function Scholar({
       {hasServices && (
         <section className="py-12 bg-white">
           <div className="container mx-auto px-4 md:px-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-              <span className="w-8 h-0.5 bg-blue-500 mr-3"></span> 
+            <h2 className="text-2xl font-serif font-bold text-gray-800 mb-6 flex items-center">
+              <BookOpen className="h-6 w-6 mr-3 text-blue-600" />
               What I Offer
             </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {userServices.slice(0, 3).map((service) => (
-                <Card key={service.id} className="border-blue-100 hover:shadow-md transition-shadow">
-                  <CardContent className="p-6">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-2">{service.title}</h3>
-                    <p className="text-gray-600 mb-4">{service.description}</p>
-                    {service.rate && (
-                      <div className="text-blue-600 font-medium mb-4">{service.rate}</div>
-                    )}
-                    <Button variant="outline" className="text-blue-600 border-blue-200 hover:bg-blue-50">
-                      Request Service
-                    </Button>
-                  </CardContent>
-                </Card>
+              {userServices.slice(0, 3).map((service, index) => (
+                <div key={service.id} className={`notebook-paper fade-in-up delay-${index * 100} rounded-lg border-l-[3px] border-l-blue-500 hover:shadow-md transition-shadow p-6`}>
+                  <h3 className="text-lg font-serif font-semibold text-blue-800 mb-3">{service.title}</h3>
+                  <p className="text-gray-600 mb-4">{service.description}</p>
+                  {service.rate && (
+                    <div className="text-blue-600 font-medium mb-4">{service.rate}</div>
+                  )}
+                  <Button variant="outline" className="text-blue-600 border-blue-200 hover:bg-blue-50">
+                    Request Service
+                  </Button>
+                </div>
               ))}
             </div>
           </div>
