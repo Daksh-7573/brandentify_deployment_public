@@ -1194,71 +1194,82 @@ export function DynamicInnovator({
       
       {/* Let's Talk Modal */}
       <Dialog open={isContactModalOpen} onOpenChange={setIsContactModalOpen}>
-        <DialogContent className="futuristic-modal max-w-md p-0 border-[#08f7fe] overflow-hidden">
-          <DialogHeader className="modal-header bg-gradient-to-r from-[#080E24] to-[#0c162d] p-5">
-            <DialogTitle className="futuristic-heading text-xl text-center text-[#08f7fe]">
-              <MessageSquare className="h-5 w-5 inline-block mr-2" />
-              Let's Talk
+        <DialogContent className="max-w-md p-0 overflow-hidden border-2 border-[#7122FA] bg-[#080E24] shadow-xl shadow-[#08f7fe]/20" aria-describedby="contact-form-description">
+          <DialogHeader className="p-5 border-b border-[#7122FA]/30 bg-gradient-to-r from-[#080E24] via-[#0c162d] to-[#080E24]">
+            <DialogTitle className="text-xl text-center">
+              <span className="font-bold" style={{ fontFamily: 'Orbitron, sans-serif' }}>
+                <MessageSquare className="h-5 w-5 inline-block mr-2 text-[#08f7fe]" />
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#08f7fe] to-[#7122FA] animate-pulse">
+                  Let's Talk
+                </span>
+              </span>
             </DialogTitle>
           </DialogHeader>
           
-          <div className="p-5 space-y-5">
+          <div className="p-6 space-y-5" id="contact-form-description">
             {/* Purpose dropdown */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-[#08f7fe] mb-1">
                 Connection Purpose:
               </label>
               <Select value={contactPurpose} onValueChange={setContactPurpose}>
-                <SelectTrigger className="glassmorphic-input w-full">
+                <SelectTrigger className="w-full bg-[#0c162d]/80 border border-[#7122FA]/50 text-white focus:ring-1 focus:ring-[#08f7fe] focus:border-[#08f7fe]">
                   <SelectValue placeholder="Select a reason" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#0c162d] border border-[#08f7fe]/30 text-white">
-                  <SelectItem value="job-opportunity">Exciting job opportunities are available, and I believe you'd be a great fit.</SelectItem>
-                  <SelectItem value="project-collaboration">Would you be open to teaming up on innovative projects?</SelectItem>
-                  <SelectItem value="networking">Let's connect — I admire your work and would love to stay in touch.</SelectItem>
-                  <SelectItem value="partnership">I'd like to explore a potential partnership opportunity with you.</SelectItem>
-                  <SelectItem value="freelance">I have some exciting freelance projects you might be interested in.</SelectItem>
+                <SelectContent className="bg-[#0c162d] border border-[#7122FA] text-white">
+                  <SelectItem value="job-opportunity" className="focus:bg-[#7122FA]/20 focus:text-white">Exciting job opportunities are available, and I believe you'd be a great fit.</SelectItem>
+                  <SelectItem value="project-collaboration" className="focus:bg-[#7122FA]/20 focus:text-white">Would you be open to teaming up on innovative projects?</SelectItem>
+                  <SelectItem value="networking" className="focus:bg-[#7122FA]/20 focus:text-white">Let's connect — I admire your work and would love to stay in touch.</SelectItem>
+                  <SelectItem value="partnership" className="focus:bg-[#7122FA]/20 focus:text-white">I'd like to explore a potential partnership opportunity with you.</SelectItem>
+                  <SelectItem value="freelance" className="focus:bg-[#7122FA]/20 focus:text-white">I have some exciting freelance projects you might be interested in.</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             
             {/* Message box */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-[#08f7fe] mb-1">
                 Message:
               </label>
               <Textarea 
                 placeholder="Write a message to get the conversation started..."
-                className="glassmorphic-input min-h-[120px] resize-none"
+                className="min-h-[120px] resize-none bg-[#0c162d]/80 border border-[#7122FA]/50 text-white focus:ring-1 focus:ring-[#08f7fe] focus:border-[#08f7fe] placeholder:text-gray-400"
                 maxLength={350}
                 value={contactMessage}
                 onChange={(e) => setContactMessage(e.target.value)}
               />
-              <div className="text-right text-xs text-gray-400">
+              <div className="text-right text-xs text-[#08f7fe]">
                 {contactMessage.length}/350 characters
               </div>
             </div>
             
             {/* File upload area */}
-            <div className="mt-4 border-2 border-dashed border-[#08f7fe]/20 rounded-lg p-5 text-center">
+            <div className="mt-4 border-2 border-dashed border-[#7122FA]/30 rounded-lg p-5 text-center hover:border-[#08f7fe]/40 transition-colors bg-[#080E24]/70">
               <label className="cursor-pointer block">
                 <input type="file" className="hidden" />
                 <div className="flex flex-col items-center">
-                  <Upload className="h-8 w-8 text-[#08f7fe]/40 mb-2" />
-                  <span className="text-sm text-gray-400">Drag files here or click to upload</span>
-                  <span className="text-xs text-gray-500 mt-1">Maximum file size: 10MB</span>
+                  <Upload className="h-8 w-8 text-[#7122FA]/60 mb-2" />
+                  <span className="text-sm text-[#08f7fe]/80">Drag files here or click to upload</span>
+                  <span className="text-xs text-gray-400 mt-1">Maximum file size: 10MB</span>
                 </div>
               </label>
             </div>
             
             {/* Submit button */}
-            <div className="pt-4">
+            <div className="pt-5">
               <Button 
-                className="w-full neon-button bg-gradient-to-r from-[#08f7fe]/20 to-[#fe53bb]/20 border-[#08f7fe] hover:border-[#fe53bb] text-white rounded-md py-2.5"
+                className="w-full py-3 font-medium text-white rounded-md relative overflow-hidden border-0"
+                style={{
+                  background: 'linear-gradient(45deg, rgba(8, 247, 254, 0.9), rgba(113, 34, 250, 0.9))',
+                  boxShadow: '0 0 15px rgba(8, 247, 254, 0.5)'
+                }}
                 onClick={handleContactSubmit}
               >
-                <Zap className="h-5 w-5 mr-2" />
-                Request Connection
+                <div className="relative z-10 flex items-center justify-center">
+                  <Zap className="h-5 w-5 mr-2" />
+                  Request Connection
+                </div>
+                <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-[#08f7fe] to-[#7122FA] opacity-50 hover:opacity-80 transition-opacity"></div>
               </Button>
             </div>
           </div>
@@ -1267,24 +1278,28 @@ export function DynamicInnovator({
       
       {/* Project Detail Modal */}
       <Dialog open={isProjectModalOpen} onOpenChange={setIsProjectModalOpen}>
-        <DialogContent className="futuristic-modal max-w-4xl max-h-[90vh] overflow-auto p-0 border-[#08f7fe]">
-          <DialogHeader className="modal-header bg-gradient-to-r from-[#080E24] to-[#0c162d] p-5 sticky top-0 z-10">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto p-0 border-2 border-[#7122FA] bg-[#080E24] shadow-xl shadow-[#08f7fe]/20" aria-describedby="project-details-description">
+          <DialogHeader className="p-5 border-b border-[#7122FA]/30 bg-gradient-to-r from-[#080E24] via-[#0c162d] to-[#080E24] sticky top-0 z-10">
             <div className="flex justify-between items-center">
-              <DialogTitle className="futuristic-heading text-xl text-[#08f7fe]">
-                <CircuitBoard className="h-5 w-5 inline-block mr-2" />
-                Project Details
+              <DialogTitle className="text-xl">
+                <span className="font-bold" style={{ fontFamily: 'Orbitron, sans-serif' }}>
+                  <CircuitBoard className="h-5 w-5 inline-block mr-2 text-[#08f7fe]" />
+                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#08f7fe] to-[#7122FA]">
+                    Project Details
+                  </span>
+                </span>
               </DialogTitle>
               
-              <DialogClose className="h-8 w-8 rounded-full flex items-center justify-center border border-[#08f7fe]/30 text-[#08f7fe] hover:bg-[#08f7fe]/10">
+              <DialogClose className="h-8 w-8 rounded-full flex items-center justify-center border border-[#7122FA]/50 text-[#08f7fe] hover:bg-[#7122FA]/20 transition-colors">
                 <X className="h-4 w-4" />
               </DialogClose>
             </div>
           </DialogHeader>
           
           {selectedProject && (
-            <div className="p-5">
+            <div className="p-6" id="project-details-description">
               {/* Project media */}
-              <div className="relative h-72 mb-6 overflow-hidden rounded-lg border border-[#08f7fe]/30">
+              <div className="relative h-72 mb-6 overflow-hidden rounded-lg border border-[#7122FA]/30 shadow-lg shadow-[#08f7fe]/10">
                 {selectedProject.thumbnailUrl ? (
                   <img 
                     src={selectedProject.thumbnailUrl} 
@@ -1292,74 +1307,108 @@ export function DynamicInnovator({
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-[#08f7fe]/10 to-[#7122FA]/10 flex items-center justify-center">
-                    <CircuitBoard className="w-16 h-16 text-[#08f7fe]/40" />
+                  <div className="w-full h-full bg-gradient-to-br from-[#08f7fe]/10 to-[#7122FA]/20 flex items-center justify-center">
+                    <CircuitBoard className="w-16 h-16 text-[#08f7fe]/50" />
                   </div>
                 )}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#080E24]/80 via-transparent to-transparent pointer-events-none"></div>
               </div>
               
               {/* Project details */}
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-2xl font-medium text-[#08f7fe] mb-2">{selectedProject.title}</h2>
+                  <h2 className="text-2xl font-medium bg-clip-text text-transparent bg-gradient-to-r from-[#08f7fe] to-[#7122FA] mb-2" style={{ fontFamily: 'Orbitron, sans-serif' }}>
+                    {selectedProject.title}
+                  </h2>
                   
-                  <div className="flex items-center space-x-3 mb-4">
+                  <div className="flex flex-wrap items-center gap-3 mb-4">
                     {selectedProject.category && (
-                      <Badge className="holographic-badge">
+                      <Badge className="bg-[#0c162d]/80 border border-[#7122FA]/50 text-[#08f7fe] py-1.5 px-3">
                         {selectedProject.category}
                       </Badge>
                     )}
                     
-                    <span className="text-gray-400 text-sm flex items-center">
-                      <Calendar className="h-4 w-4 mr-1 text-[#fe53bb]" />
+                    <span className="text-[#fe53bb] text-sm flex items-center">
+                      <Calendar className="h-4 w-4 mr-1.5" />
                       {formatDate(selectedProject.startDate)}
                     </span>
                   </div>
                 </div>
                 
                 {/* Project description */}
-                <div className="tech-card p-5">
-                  <h3 className="text-lg font-medium text-white mb-3">Project Overview</h3>
-                  <p className="text-gray-300 leading-relaxed">{selectedProject.description}</p>
+                <div className="bg-[#0c162d]/80 border border-[#7122FA]/30 rounded-lg p-5 shadow-inner">
+                  <h3 className="text-lg font-medium text-[#08f7fe] mb-3" style={{ fontFamily: 'Orbitron, sans-serif' }}>
+                    Project Overview
+                  </h3>
+                  <p className="text-gray-200 leading-relaxed">{selectedProject.description}</p>
                 </div>
                 
                 {/* Tech stack - would be populated from project data in a full implementation */}
-                <div className="tech-card p-5">
-                  <h3 className="text-lg font-medium text-white mb-3">Technologies</h3>
+                <div className="bg-[#0c162d]/80 border border-[#7122FA]/30 rounded-lg p-5 shadow-inner">
+                  <h3 className="text-lg font-medium text-[#08f7fe] mb-3" style={{ fontFamily: 'Orbitron, sans-serif' }}>
+                    Technologies
+                  </h3>
                   <div className="flex flex-wrap gap-2">
-                    <Badge className="bg-[#080E24] border border-[#08f7fe]/20 text-[#08f7fe]">React</Badge>
-                    <Badge className="bg-[#080E24] border border-[#08f7fe]/20 text-[#08f7fe]">TypeScript</Badge>
-                    <Badge className="bg-[#080E24] border border-[#08f7fe]/20 text-[#08f7fe]">Node.js</Badge>
-                    <Badge className="bg-[#080E24] border border-[#08f7fe]/20 text-[#08f7fe]">PostgreSQL</Badge>
-                    <Badge className="bg-[#080E24] border border-[#08f7fe]/20 text-[#08f7fe]">Tailwind CSS</Badge>
+                    <Badge className="bg-[#080E24] border border-[#08f7fe]/30 text-[#08f7fe] py-1.5 px-3">
+                      <Code className="h-3.5 w-3.5 mr-1.5" />
+                      React
+                    </Badge>
+                    <Badge className="bg-[#080E24] border border-[#08f7fe]/30 text-[#08f7fe] py-1.5 px-3">
+                      <Code className="h-3.5 w-3.5 mr-1.5" />
+                      TypeScript
+                    </Badge>
+                    <Badge className="bg-[#080E24] border border-[#08f7fe]/30 text-[#08f7fe] py-1.5 px-3">
+                      <Server className="h-3.5 w-3.5 mr-1.5" />
+                      Node.js
+                    </Badge>
+                    <Badge className="bg-[#080E24] border border-[#08f7fe]/30 text-[#08f7fe] py-1.5 px-3">
+                      <Database className="h-3.5 w-3.5 mr-1.5" />
+                      PostgreSQL
+                    </Badge>
+                    <Badge className="bg-[#080E24] border border-[#08f7fe]/30 text-[#08f7fe] py-1.5 px-3">
+                      <Layout className="h-3.5 w-3.5 mr-1.5" />
+                      Tailwind CSS
+                    </Badge>
                   </div>
                 </div>
                 
                 {/* Project links */}
                 {selectedProject.projectUrl && (
-                  <div className="flex items-center mt-4">
+                  <div className="flex items-center mt-6">
                     <Button 
-                      className="neon-button bg-gradient-to-r from-[#08f7fe]/20 to-[#7122FA]/20 border-[#08f7fe] text-white rounded-md px-6 py-2.5"
+                      className="py-2.5 px-6 font-medium text-white rounded-md relative overflow-hidden border-0"
+                      style={{
+                        background: 'linear-gradient(45deg, rgba(8, 247, 254, 0.9), rgba(113, 34, 250, 0.9))',
+                        boxShadow: '0 0 15px rgba(8, 247, 254, 0.3)'
+                      }}
                       onClick={() => window.open(selectedProject.projectUrl || '#', '_blank')}
                     >
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      Visit Project
+                      <div className="relative z-10 flex items-center justify-center">
+                        <ExternalLink className="h-4 w-4 mr-2" />
+                        Visit Project
+                      </div>
+                      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-[#08f7fe] to-[#7122FA] opacity-50 hover:opacity-80 transition-opacity"></div>
                     </Button>
                   </div>
                 )}
                 
                 {/* Project gallery - if available */}
                 {selectedProject.mediaUrls && selectedProject.mediaUrls.length > 0 && (
-                  <div className="mt-8">
-                    <h3 className="text-lg font-medium text-white mb-4">Project Gallery</h3>
+                  <div className="mt-8 pt-6 border-t border-[#7122FA]/20">
+                    <h3 className="text-lg font-medium text-[#08f7fe] mb-4" style={{ fontFamily: 'Orbitron, sans-serif' }}>
+                      Project Gallery
+                    </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {selectedProject.mediaUrls.map((url, index) => (
-                        <div key={index} className="overflow-hidden rounded-lg border border-[#08f7fe]/20">
+                        <div key={index} className="overflow-hidden rounded-lg border border-[#7122FA]/30 shadow-lg shadow-[#080E24]/50 relative group">
                           <img 
                             src={url}
                             alt={`${selectedProject.title} - visual ${index + 1}`}
-                            className="w-full h-48 object-cover transition-transform duration-300 hover:scale-105"
+                            className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
                           />
+                          <div className="absolute inset-0 bg-gradient-to-t from-[#080E24]/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-start p-3">
+                            <span className="text-xs text-white font-medium">Image {index + 1}</span>
+                          </div>
                         </div>
                       ))}
                     </div>
