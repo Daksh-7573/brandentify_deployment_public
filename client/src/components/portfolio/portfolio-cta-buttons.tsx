@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
 
 export interface PortfolioCtaButtonsProps {
   variant?: 'default' | 'corporate' | 'creative' | 'minimal' | 'technical';
@@ -40,9 +41,10 @@ export default function PortfolioCtaButtons({
   className = ''
 }: PortfolioCtaButtonsProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [selectedIntro, setSelectedIntro] = useState<string>("custom_intro");
+  const [selectedIntro, setSelectedIntro] = useState<string>("");
   const [message, setMessage] = useState<string>("");
   const [file, setFile] = useState<File | null>(null);
+  const { toast } = useToast();
   
   const introOptions = [
     "Exciting job opportunities are available, and I believe you'd be a great fit.",
@@ -63,10 +65,28 @@ export default function PortfolioCtaButtons({
   };
 
   const handleSubmitRequest = () => {
+    // Check if purpose is selected (now mandatory)
+    if (!selectedIntro || selectedIntro === "") {
+      toast({
+        title: "Purpose required",
+        description: "Please select a purpose for your connection request",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Check if message is provided
+    if (message.trim() === '') {
+      toast({
+        title: "Message required",
+        description: "Please write a message to send with your request",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     // Combine selected intro and message
-    const combinedMessage = selectedIntro && selectedIntro !== "custom_intro"
-      ? `${selectedIntro}\n\n${message}` 
-      : message;
+    const combinedMessage = `Purpose: ${selectedIntro}\n\n${message}`;
       
     // Send email with attachment info if present
     const fileInfo = file ? `\n\nI've also prepared a file (${file.name}) to share with you.` : '';
@@ -80,7 +100,7 @@ export default function PortfolioCtaButtons({
     // Close dialog
     setDialogOpen(false);
     // Reset state
-    setSelectedIntro("custom_intro");
+    setSelectedIntro("");
     setMessage("");
     setFile(null);
   };
@@ -202,21 +222,12 @@ export default function PortfolioCtaButtons({
           <div className="p-1 space-y-6 max-h-[70vh] overflow-y-auto">
             {/* Dropdown with pre-written intros */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Choose an introduction (optional)</label>
+              <label className="text-sm font-medium text-gray-700">
+                Purpose to connect <span className="text-red-500">*</span>
+              </label>
               
               {/* Custom radio button implementation instead of Select */}
               <div className="border rounded-md p-2 space-y-1 max-h-64 overflow-y-auto">
-                <div 
-                  className={`p-2 cursor-pointer rounded-md ${selectedIntro === "custom_intro" ? 'bg-purple-50' : 'hover:bg-gray-50'}`} 
-                  onClick={() => setSelectedIntro("custom_intro")}
-                >
-                  <div className="flex items-start gap-2">
-                    <div className={`h-5 w-5 mt-0.5 rounded-full border flex items-center justify-center ${selectedIntro === "custom_intro" ? 'border-[#6a0dad]' : 'border-gray-300'}`}>
-                      {selectedIntro === "custom_intro" && <div className="w-3 h-3 rounded-full bg-[#6a0dad]" />}
-                    </div>
-                    <span className="font-medium">Choose your own...</span>
-                  </div>
-                </div>
                 
                 {introOptions.map((option, index) => (
                   <div 
