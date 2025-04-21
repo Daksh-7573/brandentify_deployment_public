@@ -1315,23 +1315,21 @@ export default function Profile() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Combine industry and domain if both are selected
+    // Create a copy of form data
     const updatedFormData = { ...formData };
-    if (formData.industry && formData.domain) {
-      updatedFormData.industry = `${formData.industry}: ${formData.domain}`;
-    }
     
     // Combine job level and title if both are present
     if (formData.jobLevel && formData.title) {
       updatedFormData.title = `${formData.jobLevel} ${formData.title}`;
     }
     
-    // Prepare data for the API
+    // Prepare data for the API - explicitly include domain field separately
     const apiData = {
       name: updatedFormData.name,
       title: updatedFormData.title,
       location: updatedFormData.location,
       industry: updatedFormData.industry,
+      domain: updatedFormData.domain, // Send domain as a separate field
       lookingFor: updatedFormData.lookingFor,
       aboutMe: updatedFormData.aboutMe
     };
