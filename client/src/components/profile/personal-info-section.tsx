@@ -50,11 +50,11 @@ const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ userData, onE
             </div>
           )}
           
-          {/* Domain - only show if value exists and is not "all" */}
-          {userData.domain && userData.domain !== "all" && (
+          {/* Domain - always show, display as "General" when value is "all" */}
+          {userData.domain && (
             <div className="flex items-center gap-2">
               <Code className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm">{userData.domain}</span>
+              <span className="text-sm">{userData.domain === "all" ? "General" : userData.domain}</span>
             </div>
           )}
           

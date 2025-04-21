@@ -136,14 +136,14 @@ const FlipCard: React.FC<FlipCardProps> = ({ userData }) => {
                 </div>
               )}
               
-              {/* Domain - only show if value exists and is not "all" */}
-              {userData.domain && userData.domain !== "all" && (
+              {/* Domain - always show, display as "General" when value is "all" */}
+              {userData.domain && (
                 <div className="flex items-center gap-3 relative">
                   <div className={`h-8 w-8 rounded-full ${iconBgColor} flex items-center justify-center`}>
                     <Code className={`h-4 w-4 ${iconColor}`} />
                   </div>
                   <span className={textColor}>
-                    {userData.domain}
+                    {userData.domain === "all" ? "General" : userData.domain}
                   </span>
                 </div>
               )}
