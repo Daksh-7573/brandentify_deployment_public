@@ -1,6 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { DownloadCloud, UserPlus, MessageCircle } from 'lucide-react';
+import { 
+  DownloadCloud, UserPlus, MessageCircle, X, 
+  ChevronDown, Send, File, Paperclip
+} from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogClose,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 export interface PortfolioCtaButtonsProps {
   variant?: 'default' | 'corporate' | 'creative' | 'minimal' | 'technical';
@@ -21,6 +39,51 @@ export default function PortfolioCtaButtons({
   userName = null,
   className = ''
 }: PortfolioCtaButtonsProps) {
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedIntro, setSelectedIntro] = useState<string>("");
+  const [message, setMessage] = useState<string>("");
+  const [file, setFile] = useState<File | null>(null);
+  
+  const introOptions = [
+    "Exciting job opportunities are available, and I believe you'd be a great fit.",
+    "Would you be open to teaming up on innovative projects?",
+    "Let's connect — I admire your work and would love to stay in touch.",
+    "I'd like to explore a potential partnership opportunity with you.",
+    "I have some exciting freelance projects you might be interested in."
+  ];
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setFile(e.target.files[0]);
+    }
+  };
+
+  const handleRemoveFile = () => {
+    setFile(null);
+  };
+
+  const handleSubmitRequest = () => {
+    // Combine selected intro and message
+    const combinedMessage = selectedIntro 
+      ? `${selectedIntro}\n\n${message}` 
+      : message;
+      
+    // Send email with attachment info if present
+    const fileInfo = file ? `\n\nI've also prepared a file (${file.name}) to share with you.` : '';
+    const subject = `Let's Talk - Request from Brandentifier`;
+    const body = `Hello ${userName || ''},\n\n${combinedMessage}${fileInfo}\n\nLooking forward to your response!\n\nBest regards,`;
+    
+    // In a real application, you'd upload the file to a server here
+    // For now, we'll just direct to email
+    window.location.href = `mailto:${userEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    
+    // Close dialog
+    setDialogOpen(false);
+    // Reset state
+    setSelectedIntro("");
+    setMessage("");
+    setFile(null);
+  };
   
   const handleDownloadResume = () => {
     if (resumeUrl) {
@@ -45,14 +108,8 @@ export default function PortfolioCtaButtons({
   };
   
   const handleConnect = () => {
-    if (connectUrl) {
-      window.open(connectUrl, '_blank');
-    } else if (userEmail) {
-      // Fallback to email if no connect URL
-      const subject = `Connection Request from Brandentifier`;
-      const body = `Hello ${userName || ''},\n\nI came across your profile on Brandentifier and would like to connect with you.\n\nLooking forward to your response!\n\nBest regards,`;
-      window.location.href = `mailto:${userEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    }
+    // Open the Let's Talk dialog
+    setDialogOpen(true);
   };
   
   // Styles based on portfolio variant
@@ -99,32 +156,141 @@ export default function PortfolioCtaButtons({
   const styles = getButtonStyles();
   
   return (
-    <div className={styles.container}>
-      <Button 
-        onClick={handleDownloadResume}
-        className={`${styles.resumeBtn} flex items-center gap-2 min-w-[120px] justify-center`}
-      >
-        <DownloadCloud size={16} />
-        Resume
-      </Button>
-      
-      <Button 
-        variant="outline" 
-        onClick={handleMentorRequest}
-        className={`${styles.mentorBtn} flex items-center gap-2 min-w-[120px] justify-center`}
-      >
-        <UserPlus size={16} />
-        Mentor
-      </Button>
-      
-      <Button 
-        variant="outline" 
-        onClick={handleConnect}
-        className={`${styles.connectBtn} flex items-center gap-2 min-w-[120px] justify-center`}
-      >
-        <MessageCircle size={16} />
-        Connect
-      </Button>
-    </div>
+    <>
+      <div className={styles.container}>
+        <Button 
+          onClick={handleDownloadResume}
+          className={`${styles.resumeBtn} flex items-center gap-2 min-w-[120px] justify-center`}
+        >
+          <DownloadCloud size={16} />
+          Resume
+        </Button>
+        
+        <Button 
+          variant="outline" 
+          onClick={handleMentorRequest}
+          className={`${styles.mentorBtn} flex items-center gap-2 min-w-[120px] justify-center`}
+        >
+          <UserPlus size={16} />
+          Mentor
+        </Button>
+        
+        <Button 
+          variant={variant === 'corporate' ? 'default' : 'outline'}
+          onClick={handleConnect}
+          className={variant === 'corporate' 
+            ? 'bg-[#6a0dad] hover:bg-[#7b1fa2] text-white border-none flex items-center gap-2 min-w-[120px] justify-center'
+            : `${styles.connectBtn} flex items-center gap-2 min-w-[120px] justify-center`}
+        >
+          <MessageCircle size={16} />
+          {variant === 'corporate' ? "Let's Talk" : "Connect"}
+        </Button>
+      </div>
+
+      {/* Let's Talk Dialog */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="max-w-md sm:max-w-lg md:max-w-xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center justify-between">
+              <span className="text-xl font-semibold">Let's Talk with {userName || 'Professional'}</span>
+              <DialogClose className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-100">
+                <X size={16} />
+              </DialogClose>
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="p-1 space-y-6 max-h-[70vh] overflow-y-auto">
+            {/* Dropdown with pre-written intros */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">Choose an introduction (optional)</label>
+              <Select value={selectedIntro} onValueChange={setSelectedIntro}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select a conversation starter..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Choose your own...</SelectItem>
+                  {introOptions.map((option, index) => (
+                    <SelectItem key={index} value={option}>
+                      {option.length > 50 ? option.substring(0, 50) + '...' : option}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {/* Message textarea */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">
+                Your message
+                <span className="text-gray-400 text-xs ml-2">
+                  {message.length}/350 characters
+                </span>
+              </label>
+              <Textarea
+                placeholder="Write a short note..."
+                value={message}
+                onChange={(e) => setMessage(e.target.value.slice(0, 350))}
+                className="min-h-[120px] resize-none"
+              />
+            </div>
+            
+            {/* File attachment section */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">Attachment (optional)</label>
+              
+              {!file ? (
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center text-gray-500">
+                  <Paperclip className="h-8 w-8 mb-2" />
+                  <p className="text-sm text-center mb-2">Drag files here or click to upload</p>
+                  <input
+                    type="file"
+                    id="file-upload"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                  />
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="mt-2"
+                    onClick={() => document.getElementById('file-upload')?.click()}
+                  >
+                    Select File
+                  </Button>
+                </div>
+              ) : (
+                <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 flex items-center justify-between">
+                  <div className="flex items-center">
+                    <File className="h-6 w-6 text-gray-400 mr-3" />
+                    <div>
+                      <p className="text-sm font-medium">{file.name}</p>
+                      <p className="text-xs text-gray-500">{(file.size / 1024).toFixed(0)} KB</p>
+                    </div>
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={handleRemoveFile}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    <X size={16} />
+                  </Button>
+                </div>
+              )}
+            </div>
+            
+            {/* Submit button */}
+            <div className="pt-4">
+              <Button 
+                onClick={handleSubmitRequest}
+                className="w-full bg-[#6a0dad] hover:bg-[#7b1fa2] text-white"
+              >
+                <Send size={16} className="mr-2" />
+                Send Request
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

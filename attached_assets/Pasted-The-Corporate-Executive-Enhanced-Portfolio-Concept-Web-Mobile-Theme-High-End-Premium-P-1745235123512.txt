@@ -1,0 +1,97 @@
+The Corporate Executive — Enhanced Portfolio Concept (Web & Mobile)
+
+✔ Theme: High-End, Premium, & Polished
+
+Best For: Senior Executives, Investors, Industry Experts
+
+🌐 Web & 📱 Mobile Layout Structure
+
+🖼️ Hero Section (Top Panel)
+
+Profile Picture: Circular, with light border glow
+
+Name: Prominent with professional font
+
+Job Title: Subheading, slightly italic
+
+Industry & Domain: Displayed as chip-style tags
+
+Current Organization: Beneath title
+
+Location: Small pin icon with city & country
+
+✍️ About Section
+
+“What I'm All About” in an elegant paragraph card with soft background
+
+🛠️ Skills & Services
+
+What I’m Good At: Horizontal scroll of skills with soft-colored tags
+
+What I Offer: Card style with up to 3 services (pricing optional)
+
+🎯 Career Timeline
+
+Elegant vertical timeline with interactive nodes
+
+Job Title, Company, Duration, Description expandable in panel
+
+🎓 Academic Background
+
+Displayed in same timeline format below career path
+
+🖼️ Showcase Projects
+
+Grid-style media blocks (image, short video, or case study)
+
+Hover reveals “View Project” modal
+
+📄 Buttons (Fixed Position on Scroll or Always Visible Panel)
+
+Let's Talk (🟣 New)
+
+Grab My Resume (Direct download or viewer)
+
+Mentor (Link to mentorship request panel or interest form)
+
+💬 Let's Talk — Interaction Overlay
+
+When clicked, it opens a modal/chat window with the following:
+
+🔽 Dropdown with Pre-Written Intros:
+
+Exciting job opportunities are available, and I believe you'd be a great fit.
+
+Would you be open to teaming up on innovative projects?
+
+Let’s connect — I admire your work and would love to stay in touch.
+
+I’d like to explore a potential partnership opportunity with you.
+
+I have some exciting freelance projects you might be interested in.
+
+✏️ Text Box:
+
+Optional message input (Max 350 characters)
+
+Placeholder: “Write a short note...”
+
+📎 Attachment:
+
+Drag/drop or click to upload a file
+
+✅ Button:
+
+[Request] (sends message and attachment)
+
+✅ Mobile View collapses into floating button → full-screen slide-up modal for conversation.
+
+🧠 UX Enhancements
+
+Polished card transitions
+
+Dark/light mode option for luxury feel
+
+Smooth scroll-to-section shortcuts
+
+Micro-animations on card hover (mobile: tap reveal)
