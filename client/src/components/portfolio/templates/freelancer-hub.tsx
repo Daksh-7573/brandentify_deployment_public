@@ -873,7 +873,7 @@ export default function FreelancerHub({
                 )}
                 
                 {/* Social Links */}
-                <div className="flex gap-3 justify-center md:justify-start">
+                <div className="flex gap-3 justify-center md:justify-start mb-6">
                   {userInfo.email && (
                     <a 
                       href={`mailto:${userInfo.email}`} 
@@ -901,6 +901,37 @@ export default function FreelancerHub({
                     <Youtube className="h-5 w-5" />
                   </a>
                 </div>
+                
+                {/* Connect Button - Main CTA */}
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="mt-2"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.7, type: "spring" }}
+                >
+                  <Button 
+                    onClick={handleLetsTalkClick}
+                    className="bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-lg px-6 py-6 rounded-full shadow-lg flex items-center gap-2 font-bold hover:shadow-xl transition-shadow"
+                    style={{ fontFamily: 'Fredoka, sans-serif' }}
+                  >
+                    <MessageCircle className="h-6 w-6" />
+                    <span>Let's Connect</span>
+                    <motion.span
+                      initial={{ rotate: 0 }}
+                      animate={{ rotate: [0, 15, -15, 15, 0] }}
+                      transition={{ 
+                        duration: 0.5,
+                        delay: 1.2,
+                        repeat: 1,
+                        repeatType: "reverse"
+                      }}
+                    >
+                      👋
+                    </motion.span>
+                  </Button>
+                </motion.div>
               </motion.div>
             </div>
           </div>
