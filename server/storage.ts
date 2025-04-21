@@ -973,7 +973,7 @@ export class MemStorage implements IStorage {
       console.log(`[db.getUser] Executing query: ${query} with params [${id}]`);
       const result = await pool.query(query, [id]);
       
-      console.log(`[db.getUser] Query returned ${result.rows.length} rows:`, result.rows);
+      console.log(`[db.getUser] Query returned ${result.rows.length} rows:`, JSON.stringify(result.rows, null, 2));
       
       if (result.rows.length === 0) {
         console.log(`[db.getUser] No user found with ID: ${id}`);
