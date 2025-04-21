@@ -917,7 +917,6 @@ export default function FreelancerHub({
                       className="bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-lg px-6 py-6 rounded-full shadow-lg flex items-center gap-2 font-bold hover:shadow-xl transition-shadow w-full sm:w-auto"
                       style={{ fontFamily: 'Fredoka, sans-serif' }}
                     >
-                      <MessageCircle className="h-6 w-6" />
                       <span>Let's Connect</span>
                       <motion.span
                         initial={{ rotate: 0 }}
@@ -928,6 +927,7 @@ export default function FreelancerHub({
                           repeat: 1,
                           repeatType: "reverse"
                         }}
+                        className="text-xl"
                       >
                         👋
                       </motion.span>
@@ -946,7 +946,6 @@ export default function FreelancerHub({
                       className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-lg px-6 py-6 rounded-full shadow-lg flex items-center gap-2 font-bold hover:shadow-xl transition-shadow w-full sm:w-auto"
                       style={{ fontFamily: 'Fredoka, sans-serif' }}
                     >
-                      <Zap className="h-6 w-6" />
                       <span>Mentor</span>
                       <motion.span
                         initial={{ scale: 1 }}
@@ -957,6 +956,7 @@ export default function FreelancerHub({
                           repeat: 1,
                           repeatType: "reverse"
                         }}
+                        className="text-xl"
                       >
                         🚀
                       </motion.span>
@@ -975,7 +975,6 @@ export default function FreelancerHub({
                       className="bg-gradient-to-r from-teal-500 to-emerald-500 text-white text-lg px-6 py-6 rounded-full shadow-lg flex items-center gap-2 font-bold hover:shadow-xl transition-shadow w-full sm:w-auto"
                       style={{ fontFamily: 'Fredoka, sans-serif' }}
                     >
-                      <FileText className="h-6 w-6" />
                       <span>Grab My Resume</span>
                       <motion.span
                         initial={{ y: 0 }}
@@ -986,6 +985,7 @@ export default function FreelancerHub({
                           repeat: 1,
                           repeatType: "reverse"
                         }}
+                        className="text-xl"
                       >
                         📄
                       </motion.span>
