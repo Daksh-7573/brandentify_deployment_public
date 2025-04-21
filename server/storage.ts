@@ -4560,4 +4560,204 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Import the database connection
+import { db } from './db';
+import { eq } from 'drizzle-orm';
+
+/**
+ * DatabaseStorage implementation that connects to a PostgreSQL database via Drizzle ORM
+ */
+export class DatabaseStorage implements IStorage {
+  // User operations
+  async getUser(id: number): Promise<User | undefined> {
+    console.log(`[db.getUser] Looking up user with ID: ${id}`);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
+  }
+
+  async getUserByPhoneNumber(phoneNumber: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.phoneNumber, phoneNumber));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db.insert(users).values(insertUser).returning();
+    return user;
+  }
+
+  async updateUser(id: number, userData: Partial<User>): Promise<User | undefined> {
+    const [updatedUser] = await db
+      .update(users)
+      .set(userData)
+      .where(eq(users.id, id))
+      .returning();
+    return updatedUser || undefined;
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return db.select().from(users);
+  }
+
+  // Work Experience operations
+  async getWorkExperiencesByUserId(userId: number): Promise<WorkExperience[]> {
+    console.log(`[db.getWorkExperiencesByUserId] Looking for experiences with userId: ${userId}`);
+    return db.select().from(workExperiences).where(eq(workExperiences.userId, userId));
+  }
+
+  async getWorkExperienceById(id: number): Promise<WorkExperience | undefined> {
+    const [experience] = await db.select().from(workExperiences).where(eq(workExperiences.id, id));
+    return experience || undefined;
+  }
+
+  async createWorkExperience(insertExperience: InsertWorkExperience): Promise<WorkExperience> {
+    console.log(`[db.createWorkExperience] Creating work experience for user ${insertExperience.userId}`);
+    const [experience] = await db.insert(workExperiences).values(insertExperience).returning();
+    return experience;
+  }
+
+  async updateWorkExperience(id: number, experienceData: Partial<WorkExperience>): Promise<WorkExperience | undefined> {
+    const [updatedExperience] = await db
+      .update(workExperiences)
+      .set(experienceData)
+      .where(eq(workExperiences.id, id))
+      .returning();
+    return updatedExperience || undefined;
+  }
+
+  async deleteWorkExperience(id: number): Promise<boolean> {
+    const result = await db.delete(workExperiences).where(eq(workExperiences.id, id));
+    return result.rowCount > 0;
+  }
+
+  // Education operations
+  async getEducationsByUserId(userId: number): Promise<Education[]> {
+    return db.select().from(educations).where(eq(educations.userId, userId));
+  }
+
+  async getEducationById(id: number): Promise<Education | undefined> {
+    const [education] = await db.select().from(educations).where(eq(educations.id, id));
+    return education || undefined;
+  }
+
+  async createEducation(insertEducation: InsertEducation): Promise<Education> {
+    const [education] = await db.insert(educations).values(insertEducation).returning();
+    return education;
+  }
+
+  async updateEducation(id: number, educationData: Partial<Education>): Promise<Education | undefined> {
+    const [updatedEducation] = await db
+      .update(educations)
+      .set(educationData)
+      .where(eq(educations.id, id))
+      .returning();
+    return updatedEducation || undefined;
+  }
+
+  async deleteEducation(id: number): Promise<boolean> {
+    const result = await db.delete(educations).where(eq(educations.id, id));
+    return result.rowCount > 0;
+  }
+
+  // Skill operations
+  async getSkillsByUserId(userId: number): Promise<Skill[]> {
+    return db.select().from(skills).where(eq(skills.userId, userId));
+  }
+
+  async getSkillById(id: number): Promise<Skill | undefined> {
+    const [skill] = await db.select().from(skills).where(eq(skills.id, id));
+    return skill || undefined;
+  }
+
+  async createSkill(insertSkill: InsertSkill): Promise<Skill> {
+    const [skill] = await db.insert(skills).values(insertSkill).returning();
+    return skill;
+  }
+
+  async updateSkill(id: number, skillData: Partial<Skill>): Promise<Skill | undefined> {
+    const [updatedSkill] = await db
+      .update(skills)
+      .set(skillData)
+      .where(eq(skills.id, id))
+      .returning();
+    return updatedSkill || undefined;
+  }
+
+  async deleteSkill(id: number): Promise<boolean> {
+    const result = await db.delete(skills).where(eq(skills.id, id));
+    return result.rowCount > 0;
+  }
+
+  // Project operations
+  async getProjectsByUserId(userId: number): Promise<Project[]> {
+    return db.select().from(projects).where(eq(projects.userId, userId));
+  }
+
+  async getProjectById(id: number): Promise<Project | undefined> {
+    const [project] = await db.select().from(projects).where(eq(projects.id, id));
+    return project || undefined;
+  }
+
+  async createProject(insertProject: InsertProject): Promise<Project> {
+    const [project] = await db.insert(projects).values(insertProject).returning();
+    return project;
+  }
+
+  async updateProject(id: number, projectData: Partial<Project>): Promise<Project | undefined> {
+    const [updatedProject] = await db
+      .update(projects)
+      .set(projectData)
+      .where(eq(projects.id, id))
+      .returning();
+    return updatedProject || undefined;
+  }
+
+  async deleteProject(id: number): Promise<boolean> {
+    const result = await db.delete(projects).where(eq(projects.id, id));
+    return result.rowCount > 0;
+  }
+
+  // Service operations
+  async getServicesByUserId(userId: number): Promise<Service[]> {
+    return db.select().from(services).where(eq(services.userId, userId));
+  }
+
+  async getServiceById(id: number): Promise<Service | undefined> {
+    const [service] = await db.select().from(services).where(eq(services.id, id));
+    return service || undefined;
+  }
+
+  async createService(insertService: InsertService): Promise<Service> {
+    const [service] = await db.insert(services).values(insertService).returning();
+    return service;
+  }
+
+  async updateService(id: number, serviceData: Partial<Service>): Promise<Service | undefined> {
+    const [updatedService] = await db
+      .update(services)
+      .set(serviceData)
+      .where(eq(services.id, id))
+      .returning();
+    return updatedService || undefined;
+  }
+
+  async deleteService(id: number): Promise<boolean> {
+    const result = await db.delete(services).where(eq(services.id, id));
+    return result.rowCount > 0;
+  }
+
+  // Additional methods from IStorage will be implemented as needed
+  // This is a partial implementation for the demo profile data requirement
+}
+
+// Switch to database storage
+export const storage = new DatabaseStorage();
