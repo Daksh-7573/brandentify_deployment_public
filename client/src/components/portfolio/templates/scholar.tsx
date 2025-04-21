@@ -899,57 +899,21 @@ export default function Scholar({
             Let's Connect
           </h2>
           
-          <div className="flex flex-col md:flex-row gap-8 items-center">
-            <div className="md:w-1/2 fade-in-up">
-              <div className="notebook-paper mb-6">
-                <p className="text-gray-700 leading-relaxed">
-                  Interested in discussing academic opportunities, collaborations, mentorship, or just want to chat about shared research interests? Feel free to reach out!
-                </p>
-                
-                <div className="mt-6">
-                  <PortfolioCtaButtons 
-                    userInfo={userInfo}
-                    variant="scholar"
-                    btnClass="group flex items-center gap-2 text-sm py-2 px-4 rounded-md transition-all transform hover:translate-x-1 shadow-sm"
-                    mentorBtnClass="bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 hover:text-blue-800"
-                    resumeBtnClass="bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 hover:text-indigo-800"
-                    connectBtnClass="bg-indigo-600 hover:bg-indigo-700 text-white"
-                  />
-                </div>
-              </div>
-            </div>
-            
-            <div className="md:w-1/2 flex justify-center md:justify-end fade-in-up delay-200">
-              <div className="w-full md:max-w-md graph-paper p-6 rounded-lg">
-                <h3 className="text-lg font-serif font-semibold text-indigo-800 mb-4 flex items-center">
-                  <Bookmark className="h-5 w-5 mr-2 text-indigo-600" /> Contact Information
-                </h3>
-                
-                <div className="space-y-4">
-                  {userInfo.email && (
-                    <div className="flex items-center p-3 bg-white rounded-lg border border-indigo-100 shadow-sm hover:shadow transition-shadow">
-                      <Mail className="h-5 w-5 text-indigo-600 mr-3" />
-                      <a href={`mailto:${userInfo.email}`} className="text-gray-700 hover:text-indigo-600 font-medium">
-                        {userInfo.email}
-                      </a>
-                    </div>
-                  )}
-                  
-                  {userInfo.location && (
-                    <div className="flex items-center p-3 bg-white rounded-lg border border-indigo-100 shadow-sm">
-                      <MapPin className="h-5 w-5 text-indigo-600 mr-3" />
-                      <span className="text-gray-700">{userInfo.location}</span>
-                    </div>
-                  )}
-                  
-                  <div className="flex items-start p-3 bg-white rounded-lg border border-indigo-100 shadow-sm mt-4">
-                    <GraduationCap className="h-5 w-5 text-indigo-600 mr-3 mt-1" />
-                    <div>
-                      <span className="text-gray-700 block font-medium">Office Hours</span>
-                      <span className="text-gray-600 text-sm">Available for discussions Monday-Friday, 10 AM - 4 PM</span>
-                    </div>
-                  </div>
-                </div>
+          <div className="max-w-3xl mx-auto fade-in-up">
+            <div className="notebook-paper mb-6 p-8">
+              <p className="text-gray-700 leading-relaxed mb-6">
+                Interested in discussing academic opportunities, collaborations, mentorship, or just want to chat about shared research interests? Feel free to reach out!
+              </p>
+              
+              <div>
+                <PortfolioCtaButtons 
+                  userInfo={userInfo}
+                  variant="creative"
+                  btnClass="group flex items-center gap-2 text-sm py-2 px-4 rounded-md transition-all transform hover:translate-x-1 shadow-sm"
+                  mentorBtnClass="bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 hover:text-blue-800"
+                  resumeBtnClass="bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 hover:text-indigo-800"
+                  connectBtnClass="bg-indigo-600 hover:bg-indigo-700 text-white"
+                />
               </div>
             </div>
           </div>
