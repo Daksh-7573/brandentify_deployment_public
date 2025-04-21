@@ -10,9 +10,7 @@ import {
   ChevronRight,
   Download,
   ExternalLink,
-  MessageCircle,
   Star,
-  MapPin,
   Calendar,
   Briefcase,
   Sparkles,
@@ -24,7 +22,6 @@ import {
   TrendingUp,
   Plus,
   PlusCircle,
-  Send,
   X
 } from 'lucide-react';
 import { useTypewriter, Cursor } from 'react-simple-typewriter';
@@ -740,7 +737,7 @@ export default function AnimatedTemplate({
                       {/* Location */}
                       {experience.location && (
                         <div className="flex items-center text-gray-500 text-sm mb-3">
-                          <MapPin className="h-4 w-4 mr-1" />
+
                           <span>{experience.location}</span>
                         </div>
                       )}
@@ -1037,135 +1034,7 @@ export default function AnimatedTemplate({
           </div>
         </div>
       </section>
-      
-      {/* Contact Section */}
-      <section id="contact" className="py-20 relative" ref={contactRef}>
-        <div className="container mx-auto px-6 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: isContactInView ? 1 : 0, y: isContactInView ? 0 : 30 }}
-            transition={{ duration: 0.7 }}
-            className="mb-16 text-center"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 section-title">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-500">
-                Get In Touch
-              </span>
-            </h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              Have a project in mind or want to collaborate? I'd love to hear from you.
-            </p>
-          </motion.div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <motion.div 
-              className="space-y-8"
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: isContactInView ? 1 : 0, x: isContactInView ? 0 : -30 }}
-              transition={{ duration: 0.8 }}
-            >
-              <h3 className="text-2xl font-bold text-white">Let's build something amazing together</h3>
-              
-              <p className="text-gray-400 text-lg">
-                I'm always open to discussing new projects, creative ideas or opportunities to be part of your vision.
-              </p>
-              
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-purple-500/20 rounded-full flex items-center justify-center">
-                    <MessageCircle className="h-6 w-6 text-purple-400" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Email me at</p>
-                    <a
-                      href={`mailto:${email || 'contact@example.com'}`}
-                      className="text-white hover:text-purple-400 transition-colors"
-                    >
-                      {email || 'contact@example.com'}
-                    </a>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-purple-500/20 rounded-full flex items-center justify-center">
-                    <MapPin className="h-6 w-6 text-purple-400" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Based in</p>
-                    <p className="text-white">{location || 'San Francisco, CA'}</p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="pt-4">
-                <h4 className="text-lg font-bold text-white mb-4">Connect with me</h4>
-                <div className="flex gap-4">
-                  {['twitter', 'github', 'linkedin', 'dribbble'].map((platform, i) => (
-                    <motion.a
-                      key={platform}
-                      href="#"
-                      className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 hover:bg-purple-600 hover:text-white transition-all"
-                      whileHover={{ y: -5 }}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: isContactInView ? 1 : 0, y: isContactInView ? 0 : 20 }}
-                      transition={{ duration: 0.4, delay: 0.3 + i * 0.1 }}
-                    >
-                      <span className="sr-only">{platform}</span>
-                      {/* Platform icons would go here */}
-                    </motion.a>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-            
-            <motion.div 
-              className="bg-gray-800/30 rounded-xl p-8 border border-gray-700"
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: isContactInView ? 1 : 0, x: isContactInView ? 0 : 30 }}
-              transition={{ duration: 0.8 }}
-            >
-              <h3 className="text-xl font-bold text-white mb-6">Send a Message</h3>
-              
-              <div className="space-y-6">
-                <div className="space-y-2">
-                  <label htmlFor="name" className="text-gray-400 block">Name</label>
-                  <input 
-                    type="text" 
-                    id="name" 
-                    className="w-full bg-gray-900/70 border border-gray-700 rounded-lg p-3 text-white focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
-                    placeholder="Your name"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <label htmlFor="email" className="text-gray-400 block">Email</label>
-                  <input 
-                    type="email" 
-                    id="email" 
-                    className="w-full bg-gray-900/70 border border-gray-700 rounded-lg p-3 text-white focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
-                    placeholder="Your email"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <label htmlFor="message" className="text-gray-400 block">Message</label>
-                  <textarea 
-                    id="message" 
-                    rows={4}
-                    className="w-full bg-gray-900/70 border border-gray-700 rounded-lg p-3 text-white focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
-                    placeholder="Your message"
-                  ></textarea>
-                </div>
-                
-                <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-6 rounded-lg text-lg font-medium flex items-center justify-center">
-                  <Send className="mr-2 h-5 w-5" />
-                  <span>Send Message</span>
-                </Button>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
+
       
       {/* Footer */}
       <footer className="py-12 bg-gray-900/80 border-t border-gray-800">
