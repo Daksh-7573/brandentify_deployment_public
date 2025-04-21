@@ -16,6 +16,7 @@ export const users = pgTable("users", {
   aboutMe: text("about_me"), // About Me section - max 350 words
   location: text("location"), // User location (city/state name)
   industry: text("industry"), // User's industry
+  domain: text("domain"), // User's domain within the industry
   lookingFor: text("looking_for"), // What the user is looking for (networking type)
   visitingCardType: text("visiting_card_type"), // Type of digital visiting card
   profileCompleted: integer("profile_completed").default(0), // Percentage
