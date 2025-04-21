@@ -77,7 +77,6 @@ export default function AnimatedTemplate({
   const aboutRef = useRef(null);
   const skillsRef = useRef(null);
   const educationRef = useRef(null);
-  const contactRef = useRef(null);
   
   // Check if sections are in view to trigger animations
   const isHeroInView = useInView(heroRef, { once: false, amount: 0.3 });
@@ -86,7 +85,6 @@ export default function AnimatedTemplate({
   const isAboutInView = useInView(aboutRef, { once: false, amount: 0.1 });
   const isSkillsInView = useInView(skillsRef, { once: false, amount: 0.1 });
   const isEducationInView = useInView(educationRef, { once: false, amount: 0.1 });
-  const isContactInView = useInView(contactRef, { once: false, amount: 0.1 });
   
   // Typewriter effect for hero section
   const [typewriterText] = useTypewriter({
