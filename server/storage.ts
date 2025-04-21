@@ -4572,28 +4572,24 @@ export class DatabaseStorage implements IStorage {
   async getUser(id: number): Promise<User | undefined> {
     console.log(`[db.getUser] Looking up user with ID: ${id}`);
     try {
-      // Select only the columns that we know exist in the database
-      const [user] = await db.select({
-        id: users.id,
-        username: users.username,
-        email: users.email,
-        password: users.password,
-        phoneNumber: users.phoneNumber,
-        name: users.name,
-        photoURL: users.photoURL,
-        title: users.title,
-        aboutMe: users.aboutMe,
-        location: users.location,
-        industry: users.industry,
-        lookingFor: users.lookingFor,
-        visitingCardType: users.visitingCardType,
-        profileCompleted: users.profileCompleted,
-        emailVerified: users.emailVerified,
-        emailVerificationToken: users.emailVerificationToken,
-        emailVerificationExpires: users.emailVerificationExpires,
-        createdAt: users.createdAt
-      }).from(users).where(eq(users.id, id));
-      return user || undefined;
+      // Use raw SQL to select only the fields we know exist
+      const query = `
+        SELECT id, username, email, password, phone_number as "phoneNumber", 
+               name, photo_url as "photoURL", title, about_me as "aboutMe", 
+               location, industry, looking_for as "lookingFor", 
+               visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
+               email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
+               email_verification_expires as "emailVerificationExpires", created_at as "createdAt"
+        FROM users
+        WHERE id = $1
+      `;
+      
+      const result = await executeRawQuery(query, [id]);
+      
+      if (result && result.length > 0) {
+        return result[0] as User;
+      }
+      return undefined;
     } catch (error) {
       console.error("Error fetching user:", error);
       throw error;
@@ -4636,7 +4632,22 @@ export class DatabaseStorage implements IStorage {
   // Work Experience operations
   async getWorkExperiencesByUserId(userId: number): Promise<WorkExperience[]> {
     console.log(`[db.getWorkExperiencesByUserId] Looking for experiences with userId: ${userId}`);
-    return db.select().from(workExperiences).where(eq(workExperiences.userId, userId));
+    try {
+      // Use raw SQL to select only the fields we know exist
+      const query = `
+        SELECT id, user_id as "userId", title, company, location, 
+               industry, start_date as "startDate", end_date as "endDate", 
+               description
+        FROM work_experiences
+        WHERE user_id = $1
+      `;
+      
+      const result = await executeRawQuery(query, [userId]);
+      return result as WorkExperience[];
+    } catch (error) {
+      console.error("Error fetching work experiences:", error);
+      throw error;
+    }
   }
 
   async getWorkExperienceById(id: number): Promise<WorkExperience | undefined> {
@@ -4695,7 +4706,20 @@ export class DatabaseStorage implements IStorage {
 
   // Skill operations
   async getSkillsByUserId(userId: number): Promise<Skill[]> {
-    return db.select().from(skills).where(eq(skills.userId, userId));
+    try {
+      // Use raw SQL to select only the fields we know exist
+      const query = `
+        SELECT id, user_id as "userId", name, level, proficiency
+        FROM skills
+        WHERE user_id = $1
+      `;
+      
+      const result = await executeRawQuery(query, [userId]);
+      return result as Skill[];
+    } catch (error) {
+      console.error("Error fetching skills:", error);
+      throw error;
+    }
   }
 
   async getSkillById(id: number): Promise<Skill | undefined> {
@@ -4724,7 +4748,23 @@ export class DatabaseStorage implements IStorage {
 
   // Project operations
   async getProjectsByUserId(userId: number): Promise<Project[]> {
-    return db.select().from(projects).where(eq(projects.userId, userId));
+    try {
+      // Use raw SQL to select only the fields we know exist
+      const query = `
+        SELECT id, user_id as "userId", title, description, start_date as "startDate",
+               project_url as "projectUrl", category, thumbnail_url as "thumbnailUrl",
+               thumbnail_file as "thumbnailFile", media_urls as "mediaUrls",
+               created_at as "createdAt", updated_at as "updatedAt"
+        FROM projects
+        WHERE user_id = $1
+      `;
+      
+      const result = await executeRawQuery(query, [userId]);
+      return result as Project[];
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+      throw error;
+    }
   }
 
   async getProjectById(id: number): Promise<Project | undefined> {
@@ -4753,7 +4793,24 @@ export class DatabaseStorage implements IStorage {
 
   // Service operations
   async getServicesByUserId(userId: number): Promise<Service[]> {
-    return db.select().from(services).where(eq(services.userId, userId));
+    try {
+      // Use raw SQL to select only the fields we know exist
+      const query = `
+        SELECT id, user_id as "userId", title, description, category, 
+               price_inr as "priceInr", price_usd as "priceUsd", 
+               is_hourly as "isHourly", features, image_url as "imageUrl",
+               "order", is_active as "isActive", created_at as "createdAt", 
+               updated_at as "updatedAt"
+        FROM services
+        WHERE user_id = $1
+      `;
+      
+      const result = await executeRawQuery(query, [userId]);
+      return result as Service[];
+    } catch (error) {
+      console.error("Error fetching services:", error);
+      throw error;
+    }
   }
 
   async getServiceById(id: number): Promise<Service | undefined> {
