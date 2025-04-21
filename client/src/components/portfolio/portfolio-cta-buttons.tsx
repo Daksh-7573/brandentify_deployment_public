@@ -40,7 +40,7 @@ export default function PortfolioCtaButtons({
   className = ''
 }: PortfolioCtaButtonsProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [selectedIntro, setSelectedIntro] = useState<string>("");
+  const [selectedIntro, setSelectedIntro] = useState<string>("custom_intro");
   const [message, setMessage] = useState<string>("");
   const [file, setFile] = useState<File | null>(null);
   
@@ -64,7 +64,7 @@ export default function PortfolioCtaButtons({
 
   const handleSubmitRequest = () => {
     // Combine selected intro and message
-    const combinedMessage = selectedIntro 
+    const combinedMessage = selectedIntro && selectedIntro !== "custom_intro"
       ? `${selectedIntro}\n\n${message}` 
       : message;
       
@@ -80,7 +80,7 @@ export default function PortfolioCtaButtons({
     // Close dialog
     setDialogOpen(false);
     // Reset state
-    setSelectedIntro("");
+    setSelectedIntro("custom_intro");
     setMessage("");
     setFile(null);
   };
@@ -118,9 +118,9 @@ export default function PortfolioCtaButtons({
       case 'corporate':
         return {
           container: `flex flex-col sm:flex-row gap-3 mt-6 ${className}`,
-          resumeBtn: 'bg-gradient-to-r from-[#b8860b] to-[#daa520] hover:opacity-90 text-white border-none',
-          mentorBtn: 'border-[#b8860b] text-[#b8860b] bg-white hover:bg-[#f9f5e8]',
-          connectBtn: 'border-[#b8860b] text-[#b8860b] bg-white hover:bg-[#f9f5e8]'
+          resumeBtn: 'bg-gradient-to-r from-[#6a0dad] to-[#9c27b0] hover:opacity-90 text-white border-none',
+          mentorBtn: 'border-[#6a0dad] text-[#6a0dad] bg-white hover:bg-[#f8f5fd]',
+          connectBtn: 'border-[#6a0dad] text-[#6a0dad] bg-white hover:bg-[#f8f5fd]'
         };
       case 'creative':
         return {
@@ -208,7 +208,7 @@ export default function PortfolioCtaButtons({
                   <SelectValue placeholder="Select a conversation starter..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Choose your own...</SelectItem>
+                  <SelectItem value="custom_intro">Choose your own...</SelectItem>
                   {introOptions.map((option, index) => (
                     <SelectItem key={index} value={option}>
                       {option.length > 50 ? option.substring(0, 50) + '...' : option}
