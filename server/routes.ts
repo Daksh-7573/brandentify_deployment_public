@@ -2,6 +2,7 @@ console.log("Loaded routes.ts");
 import express, { type Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { pool } from "./db";
 import { z } from "zod";
 import crypto from "crypto";
 import path from "path";
