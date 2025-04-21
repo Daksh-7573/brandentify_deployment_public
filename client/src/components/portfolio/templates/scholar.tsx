@@ -307,9 +307,10 @@ export default function Scholar({
 
   const [text] = useTypewriter({
     words: phrases,
-    loop: 1 as any,
+    loop: 0,
     typeSpeed: 80,
     deleteSpeed: 50,
+    delayBetween: 2000
   });
 
   // Function to choose a color for skills based on skill name
@@ -426,8 +427,8 @@ export default function Scholar({
               </h1>
               
               <div className="mb-2 text-blue-700 font-serif text-lg fade-in-up delay-100">
-                <span className="font-medium">
-                  {userInfo.title || "Academic Scholar"}
+                <span className="font-medium typewriter-cursor">
+                  {text || userInfo.title || "Academic Scholar"}
                 </span>
               </div>
 
