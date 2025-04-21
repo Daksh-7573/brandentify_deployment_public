@@ -562,7 +562,7 @@ export default function AnimatedTemplate({
       </section>
       
       {/* Projects Section */}
-      <section id="projects" className="py-20 relative" ref={projectsRef}>
+      <section id="projects" className="py-20 relative animated-projects" ref={projectsRef}>
         {/* Motion Background */}
         <motion.div 
           className="absolute inset-0 z-0 opacity-10"
@@ -716,7 +716,7 @@ export default function AnimatedTemplate({
       </section>
       
       {/* About Me Section */}
-      <section id="about" className="py-20 relative" ref={aboutRef}>
+      <section id="about" className="py-20 relative animated-about" ref={aboutRef}>
         <div className="container mx-auto px-6 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -820,7 +820,7 @@ export default function AnimatedTemplate({
                         initial={{ width: 0 }}
                         animate={{ width: isAboutInView ? `${skill.value}%` : 0 }}
                         transition={{ duration: 1, delay: 0.3 + index * 0.1 }}
-                        className="h-2 bg-gradient-to-r from-purple-600 to-pink-500 rounded-full"
+                        className="h-2 bg-gradient-to-r from-purple-600 to-pink-500 rounded-full skill-bar"
                       />
                     </div>
                   ))}
@@ -923,7 +923,7 @@ export default function AnimatedTemplate({
                   >
                     {/* Timeline Node */}
                     <motion.div 
-                      className="absolute top-9 left-0 w-6 h-6 bg-orange-500 rounded-full transform -translate-x-1/2 -translate-y-1/2 z-20"
+                      className="absolute top-9 left-0 w-6 h-6 bg-orange-500 rounded-full transform -translate-x-1/2 -translate-y-1/2 z-20 timeline-node"
                       initial={{ scale: 0 }}
                       animate={{ scale: isTimelineInView ? 1 : 0 }}
                       transition={{ duration: 0.4, delay: 0.6 + index * 0.1 }}
@@ -1010,7 +1010,7 @@ export default function AnimatedTemplate({
               educations.map((education, index) => (
                 <motion.div 
                   key={education.id}
-                  className="bg-gray-800/30 rounded-xl border border-gray-700 overflow-hidden"
+                  className="bg-gray-800/30 rounded-xl border border-gray-700 overflow-hidden education-card"
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: isEducationInView ? 1 : 0, y: isEducationInView ? 0 : 30 }}
                   transition={{ duration: 0.7, delay: index * 0.1 }}
@@ -1108,7 +1108,7 @@ export default function AnimatedTemplate({
                 {/* Creative Skills */}
                 {skillCategories.creative.length > 0 && (
                   <motion.div
-                    className="bg-gray-800/30 rounded-xl p-6 border border-gray-700"
+                    className="bg-gray-800/30 rounded-xl p-6 border border-gray-700 skill-card"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: isSkillsInView ? 1 : 0, y: isSkillsInView ? 0 : 20 }}
                     transition={{ duration: 0.5, delay: 0.1 }}
@@ -1154,7 +1154,7 @@ export default function AnimatedTemplate({
                 {/* Technical Skills */}
                 {skillCategories.technical.length > 0 && (
                   <motion.div
-                    className="bg-gray-800/30 rounded-xl p-6 border border-gray-700"
+                    className="bg-gray-800/30 rounded-xl p-6 border border-gray-700 skill-card"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: isSkillsInView ? 1 : 0, y: isSkillsInView ? 0 : 20 }}
                     transition={{ duration: 0.5, delay: 0.2 }}
