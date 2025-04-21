@@ -906,21 +906,15 @@ export default function Scholar({
                   Interested in discussing academic opportunities, collaborations, mentorship, or just want to chat about shared research interests? Feel free to reach out!
                 </p>
                 
-                <div className="mt-6 flex flex-wrap gap-4">
-                  <Button className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm">
-                    <MessageSquare className="h-4 w-4 mr-2" /> 
-                    Send Message
-                  </Button>
-                  
-                  <Button variant="outline" className="border-indigo-200 text-indigo-700 hover:bg-indigo-50 shadow-sm">
-                    <Download className="h-4 w-4 mr-2" /> 
-                    Download Resume
-                  </Button>
-                  
-                  <Button variant="outline" className="border-blue-200 text-blue-700 hover:bg-blue-50 shadow-sm">
-                    <Lightbulb className="h-4 w-4 mr-2" /> 
-                    Mentorship
-                  </Button>
+                <div className="mt-6">
+                  <PortfolioCtaButtons 
+                    userInfo={userInfo}
+                    variant="scholar"
+                    btnClass="group flex items-center gap-2 text-sm py-2 px-4 rounded-md transition-all transform hover:translate-x-1 shadow-sm"
+                    mentorBtnClass="bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 hover:text-blue-800"
+                    resumeBtnClass="bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 hover:text-indigo-800"
+                    connectBtnClass="bg-indigo-600 hover:bg-indigo-700 text-white"
+                  />
                 </div>
               </div>
             </div>
