@@ -860,47 +860,23 @@ export default function FreelancerHub({
                 {/* Looking For */}
                 {userInfo.lookingFor && (
                   <motion.div 
-                    className="bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white px-4 py-2 rounded-full inline-flex items-center mb-8"
+                    className="bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white px-4 py-2 rounded-full inline-flex items-center mb-8 relative"
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ delay: 0.5, type: "spring" }}
                   >
-                    <span className="text-lg mr-2">📢</span>
-                    <span className="font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    <span className="absolute opacity-10 text-4xl right-3 transform -translate-y-1/2 top-1/2 z-0">
+                      {userInfo.lookingFor.toLowerCase().includes("mentor") ? "🧠" : "🔍"}
+                    </span>
+                    <span className="text-lg mr-2 z-10">📢</span>
+                    <span className="font-medium z-10 relative" style={{ fontFamily: 'Poppins, sans-serif' }}>
                       {userInfo.lookingFor}
                     </span>
                   </motion.div>
                 )}
                 
-                {/* Social Links */}
-                <div className="flex gap-3 justify-center md:justify-start mb-6">
-                  {userInfo.email && (
-                    <a 
-                      href={`mailto:${userInfo.email}`} 
-                      className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-r from-pink-500 to-rose-500 text-white hover:shadow-lg hover:scale-110 transition-all"
-                    >
-                      <Mail className="h-5 w-5" />
-                    </a>
-                  )}
-                  <a 
-                    href="#" 
-                    className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white hover:shadow-lg hover:scale-110 transition-all"
-                  >
-                    <Instagram className="h-5 w-5" />
-                  </a>
-                  <a 
-                    href="#" 
-                    className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-400 to-blue-600 text-white hover:shadow-lg hover:scale-110 transition-all"
-                  >
-                    <Linkedin className="h-5 w-5" />
-                  </a>
-                  <a 
-                    href="#" 
-                    className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-r from-rose-500 to-red-600 text-white hover:shadow-lg hover:scale-110 transition-all"
-                  >
-                    <Youtube className="h-5 w-5" />
-                  </a>
-                </div>
+                {/* Spacer to replace removed social links */}
+                <div className="mb-6"></div>
                 
                 {/* Action Buttons */}
                 <div className="flex flex-col sm:flex-row flex-wrap gap-4 mt-2">
