@@ -50,82 +50,62 @@ export async function updateDemoUserProfile(storage: IStorage) {
     {
       userId,
       name: "JavaScript",
-      proficiency: 95,
-      category: "Programming",
-      endorsements: 42,
-      isVerified: true,
+      level: "Advanced",
+      proficiency: 95
     },
     {
       userId,
       name: "React",
-      proficiency: 90,
-      category: "Frontend",
-      endorsements: 38,
-      isVerified: true,
+      level: "Advanced",
+      proficiency: 90
     },
     {
       userId,
       name: "TypeScript",
-      proficiency: 85,
-      category: "Programming",
-      endorsements: 31,
-      isVerified: true,
+      level: "Advanced",
+      proficiency: 85
     },
     {
       userId,
       name: "Node.js",
-      proficiency: 88,
-      category: "Backend",
-      endorsements: 27,
-      isVerified: true,
+      level: "Advanced",
+      proficiency: 88
     },
     {
       userId,
       name: "GraphQL",
-      proficiency: 80,
-      category: "API",
-      endorsements: 22,
-      isVerified: true,
+      level: "Intermediate",
+      proficiency: 80
     },
     {
       userId,
       name: "AWS",
-      proficiency: 75,
-      category: "Cloud",
-      endorsements: 24,
-      isVerified: true,
+      level: "Intermediate",
+      proficiency: 75
     },
     {
       userId,
       name: "Docker",
-      proficiency: 82,
-      category: "DevOps",
-      endorsements: 19,
-      isVerified: true,
+      level: "Advanced",
+      proficiency: 82
     },
     {
       userId,
       name: "Agile Methodologies",
-      proficiency: 90,
-      category: "Project Management",
-      endorsements: 34,
-      isVerified: true,
+      level: "Advanced",
+      proficiency: 90
     },
     {
       userId,
       name: "UX/UI Design",
-      proficiency: 78,
-      category: "Design",
-      endorsements: 15,
-      isVerified: true,
+      level: "Intermediate",
+      proficiency: 78
     },
     {
       userId,
       name: "Data Analytics",
-      proficiency: 72,
-      category: "Data",
-      endorsements: 12,
-      isVerified: true,
+      level: "Intermediate",
+      proficiency: 72
     }
   ];
 
@@ -249,31 +229,34 @@ export async function updateDemoUserProfile(storage: IStorage) {
       userId,
       title: "Full-Stack Development",
       description: "End-to-end web application development using modern JavaScript frameworks and cloud infrastructure. Services include architecture planning, frontend and backend implementation, database design, and deployment strategies.",
-      rate: 120,
-      rateUnit: "hourly",
-      category: "Development",
-      availability: "Part-time",
-      thumbnailUrl: "/images/demo/ui-design-1.svg",
+      priceUsd: 120,
+      isHourly: true,
+      category: "development",
+      imageUrl: "/images/demo/ui-design-1.svg",
+      features: JSON.stringify(["Architecture planning", "Frontend implementation", "Backend development", "Database design", "Deployment strategies"]),
+      isActive: true
     },
     {
       userId,
       title: "Technical Consultation",
       description: "Expert guidance on technology stack selection, system architecture, and scaling strategies. Includes codebase audits, performance optimization recommendations, and migration planning for legacy systems.",
-      rate: 150,
-      rateUnit: "hourly",
-      category: "Consulting",
-      availability: "Flexible",
-      thumbnailUrl: "/images/demo/ui-design-2.svg",
+      priceUsd: 150,
+      isHourly: true,
+      category: "consulting",
+      imageUrl: "/images/demo/ui-design-2.svg",
+      features: JSON.stringify(["Tech stack selection", "System architecture", "Codebase audits", "Performance optimization", "Migration planning"]),
+      isActive: true
     },
     {
       userId,
       title: "UX/UI Design & Implementation",
       description: "Creating intuitive and engaging user experiences with a focus on accessibility and conversion optimization. Includes wireframing, interactive prototyping, user testing, and implementation using modern frontend technologies.",
-      rate: 1800,
-      rateUnit: "project",
-      category: "Design",
-      availability: "Available",
-      thumbnailUrl: "/images/demo/ui-design-3.svg",
+      priceUsd: 1800,
+      isHourly: false,
+      category: "design",
+      imageUrl: "/images/demo/ui-design-3.svg",
+      features: JSON.stringify(["Wireframing", "Interactive prototyping", "User testing", "Frontend implementation", "Conversion optimization"]),
+      isActive: true
     }
   ];
 
