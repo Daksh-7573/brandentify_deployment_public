@@ -902,36 +902,67 @@ export default function FreelancerHub({
                   </a>
                 </div>
                 
-                {/* Connect Button - Main CTA */}
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="mt-2"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.7, type: "spring" }}
-                >
-                  <Button 
-                    onClick={handleLetsTalkClick}
-                    className="bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-lg px-6 py-6 rounded-full shadow-lg flex items-center gap-2 font-bold hover:shadow-xl transition-shadow"
-                    style={{ fontFamily: 'Fredoka, sans-serif' }}
+                {/* Action Buttons */}
+                <div className="flex flex-col sm:flex-row gap-4 mt-2">
+                  {/* Connect Button */}
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.7, type: "spring" }}
                   >
-                    <MessageCircle className="h-6 w-6" />
-                    <span>Let's Connect</span>
-                    <motion.span
-                      initial={{ rotate: 0 }}
-                      animate={{ rotate: [0, 15, -15, 15, 0] }}
-                      transition={{ 
-                        duration: 0.5,
-                        delay: 1.2,
-                        repeat: 1,
-                        repeatType: "reverse"
-                      }}
+                    <Button 
+                      onClick={handleLetsTalkClick}
+                      className="bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-lg px-6 py-6 rounded-full shadow-lg flex items-center gap-2 font-bold hover:shadow-xl transition-shadow w-full sm:w-auto"
+                      style={{ fontFamily: 'Fredoka, sans-serif' }}
                     >
-                      👋
-                    </motion.span>
-                  </Button>
-                </motion.div>
+                      <MessageCircle className="h-6 w-6" />
+                      <span>Let's Connect</span>
+                      <motion.span
+                        initial={{ rotate: 0 }}
+                        animate={{ rotate: [0, 15, -15, 15, 0] }}
+                        transition={{ 
+                          duration: 0.5,
+                          delay: 1.2,
+                          repeat: 1,
+                          repeatType: "reverse"
+                        }}
+                      >
+                        👋
+                      </motion.span>
+                    </Button>
+                  </motion.div>
+                  
+                  {/* Find Mentor Button */}
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.8, type: "spring" }}
+                  >
+                    <Button 
+                      className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-lg px-6 py-6 rounded-full shadow-lg flex items-center gap-2 font-bold hover:shadow-xl transition-shadow w-full sm:w-auto"
+                      style={{ fontFamily: 'Fredoka, sans-serif' }}
+                    >
+                      <Zap className="h-6 w-6" />
+                      <span>Find Mentor</span>
+                      <motion.span
+                        initial={{ scale: 1 }}
+                        animate={{ scale: [1, 1.2, 1] }}
+                        transition={{ 
+                          duration: 1,
+                          delay: 1.3,
+                          repeat: 1,
+                          repeatType: "reverse"
+                        }}
+                      >
+                        🚀
+                      </motion.span>
+                    </Button>
+                  </motion.div>
+                </div>
               </motion.div>
             </div>
           </div>
