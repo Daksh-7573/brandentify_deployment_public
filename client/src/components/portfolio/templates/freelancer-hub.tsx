@@ -934,7 +934,7 @@ export default function FreelancerHub({
                     </Button>
                   </motion.div>
                   
-                  {/* Find Mentor Button */}
+                  {/* Mentor Button */}
                   <motion.div
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
@@ -947,7 +947,7 @@ export default function FreelancerHub({
                       style={{ fontFamily: 'Fredoka, sans-serif' }}
                     >
                       <Zap className="h-6 w-6" />
-                      <span>Find Mentor</span>
+                      <span>Mentor</span>
                       <motion.span
                         initial={{ scale: 1 }}
                         animate={{ scale: [1, 1.2, 1] }}
