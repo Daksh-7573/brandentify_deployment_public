@@ -382,6 +382,35 @@ input:focus, textarea:focus, select:focus, .select-trigger:focus {
   border-radius: 0 2px 2px 0;
 }
 
+/* Tab Navigation Styling */
+.tabs-list {
+  background-color: var(--cloud-lilac) !important;
+  border-radius: var(--border-radius-pill) !important;
+  padding: 4px !important;
+}
+
+[data-radix-collection-item] {
+  position: relative;
+  border-radius: var(--border-radius-pill) !important;
+  color: var(--graphite) !important;
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+  overflow: visible !important;
+}
+
+[data-state="active"][data-radix-collection-item] {
+  background-color: white !important;
+  color: var(--graphite) !important;
+  box-shadow: var(--button-shadow) !important;
+}
+
+/* Make sure click events work on tabs */
+[data-radix-collection-item],
+[role="tab"] {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  z-index: 10 !important;
+}
+
 /* Quest Cards */
 .quest-card {
   border-radius: var(--border-radius-standard);

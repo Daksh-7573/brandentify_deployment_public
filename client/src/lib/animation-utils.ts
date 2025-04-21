@@ -12,11 +12,12 @@ export function initSparkleTrail(selector: string = '.sparkle-trigger') {
 
   const elements = document.querySelectorAll(selector);
   elements.forEach(element => {
-    element.addEventListener('mousemove', (e: MouseEvent) => {
-      const target = e.currentTarget as HTMLElement;
+    element.addEventListener('mousemove', (e: Event) => {
+      const mouseEvent = e as MouseEvent;
+      const target = mouseEvent.currentTarget as HTMLElement;
       const rect = target.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
+      const x = mouseEvent.clientX - rect.left;
+      const y = mouseEvent.clientY - rect.top;
 
       // Create sparkle element
       const sparkle = document.createElement('div');
@@ -62,10 +63,11 @@ export function initTiltCards(selector: string = '.tilt-card') {
   cards.forEach(card => {
     const element = card as HTMLElement;
     
-    element.addEventListener('mousemove', (e: MouseEvent) => {
+    element.addEventListener('mousemove', (e: Event) => {
+      const mouseEvent = e as MouseEvent;
       const rect = element.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
+      const x = mouseEvent.clientX - rect.left;
+      const y = mouseEvent.clientY - rect.top;
       
       // Calculate rotation based on mouse position
       const centerX = rect.width / 2;
