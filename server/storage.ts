@@ -187,6 +187,7 @@ export interface IStorage {
   
   // Portfolio operations
   getPortfolioByUserId(userId: number): Promise<Portfolio | undefined>;
+  getPortfolioById(id: number): Promise<Portfolio | undefined>;
   createPortfolio(portfolio: InsertPortfolio): Promise<Portfolio>;
   updatePortfolio(id: number, portfolio: Partial<Portfolio>): Promise<Portfolio | undefined>;
   deletePortfolio(id: number): Promise<boolean>;
