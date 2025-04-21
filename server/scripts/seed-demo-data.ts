@@ -82,9 +82,9 @@ async function seedDemoData() {
       for (const exp of experiences) {
         await db.execute(sql.raw(
           `INSERT INTO work_experiences (user_id, title, company, location, industry, start_date, end_date, description) 
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`),
           [1, exp.title, exp.company, exp.location, exp.industry, exp.startDate, exp.endDate, exp.description]
-        ));
+        );
       }
     } else {
       console.log(`User already has ${existingExperiences.length} experiences. Skipping experience seeding.`);
@@ -130,10 +130,10 @@ async function seedDemoData() {
       for (const project of projects) {
         await db.execute(sql.raw(
           `INSERT INTO projects (user_id, title, description, start_date, project_url, category, thumbnail_url, thumbnail_file, media_urls) 
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`),
           [1, project.title, project.description, project.startDate, project.projectUrl, 
            project.category, project.thumbnailUrl, project.thumbnailFile, project.mediaUrls]
-        ));
+        );
       }
     } else {
       console.log(`User already has ${existingProjects.length} projects. Skipping project seeding.`);

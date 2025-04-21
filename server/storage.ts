@@ -4572,8 +4572,7 @@ export class DatabaseStorage implements IStorage {
   async getUser(id: number): Promise<User | undefined> {
     console.log(`[db.getUser] Looking up user with ID: ${id}`);
     try {
-      // Use raw SQL to select only the fields we know exist
-      const query = `
+      const users = await db.execute(sql`
         SELECT id, username, email, password, phone_number as "phoneNumber", 
                name, photo_url as "photoURL", title, about_me as "aboutMe", 
                location, industry, looking_for as "lookingFor", 
@@ -4581,13 +4580,11 @@ export class DatabaseStorage implements IStorage {
                email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
                email_verification_expires as "emailVerificationExpires", created_at as "createdAt"
         FROM users
-        WHERE id = $1
-      `;
+        WHERE id = ${id}
+      `);
       
-      const result = await db.execute(sql.raw(query), [id]);
-      
-      if (result && result.length > 0) {
-        return result[0] as User;
+      if (users && users.length > 0) {
+        return users[0] as User;
       }
       return undefined;
     } catch (error) {
@@ -4633,16 +4630,14 @@ export class DatabaseStorage implements IStorage {
   async getWorkExperiencesByUserId(userId: number): Promise<WorkExperience[]> {
     console.log(`[db.getWorkExperiencesByUserId] Looking for experiences with userId: ${userId}`);
     try {
-      // Use raw SQL to select only the fields we know exist
-      const query = `
+      // Use sql template literal for safer parameter binding
+      const result = await db.execute(sql`
         SELECT id, user_id as "userId", title, company, location, 
                industry, start_date as "startDate", end_date as "endDate", 
                description
         FROM work_experiences
-        WHERE user_id = $1
-      `;
-      
-      const result = await db.execute(sql.raw(query), [userId]);
+        WHERE user_id = ${userId}
+      `);
       return result as WorkExperience[];
     } catch (error) {
       console.error("Error fetching work experiences:", error);
@@ -4707,14 +4702,12 @@ export class DatabaseStorage implements IStorage {
   // Skill operations
   async getSkillsByUserId(userId: number): Promise<Skill[]> {
     try {
-      // Use raw SQL to select only the fields we know exist
-      const query = `
+      // Use sql template literal for safer parameter binding
+      const result = await db.execute(sql`
         SELECT id, user_id as "userId", name, level, proficiency
         FROM skills
-        WHERE user_id = $1
-      `;
-      
-      const result = await db.execute(sql.raw(query), [userId]);
+        WHERE user_id = ${userId}
+      `);
       return result as Skill[];
     } catch (error) {
       console.error("Error fetching skills:", error);
@@ -4749,17 +4742,15 @@ export class DatabaseStorage implements IStorage {
   // Project operations
   async getProjectsByUserId(userId: number): Promise<Project[]> {
     try {
-      // Use raw SQL to select only the fields we know exist
-      const query = `
+      // Use sql template literal for safer parameter binding
+      const result = await db.execute(sql`
         SELECT id, user_id as "userId", title, description, start_date as "startDate",
                project_url as "projectUrl", category, thumbnail_url as "thumbnailUrl",
                thumbnail_file as "thumbnailFile", media_urls as "mediaUrls",
                created_at as "createdAt", updated_at as "updatedAt"
         FROM projects
-        WHERE user_id = $1
-      `;
-      
-      const result = await db.execute(sql.raw(query), [userId]);
+        WHERE user_id = ${userId}
+      `);
       return result as Project[];
     } catch (error) {
       console.error("Error fetching projects:", error);
