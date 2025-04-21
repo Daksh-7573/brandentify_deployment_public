@@ -3,12 +3,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ProfileImage } from "@/components/ui/profile-image";
 import { Education, Project, Service, Skill, WorkExperience } from "@shared/schema";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import PortfolioCtaButtons from "../portfolio-cta-buttons";
 import { 
   Mail, Linkedin, MapPin, Calendar, Download, FileText, ChevronRight,
   Briefcase, GraduationCap, Award, Target, ChartBar, Presentation,
-  TrendingUp, Globe, BarChart2, Star, Database, UserCheck
+  TrendingUp, Globe, BarChart2, Star, Database, UserCheck, Building,
+  ExternalLink, Play, Image, Info
 } from "lucide-react";
 
 interface CorporateExecutiveProps {
@@ -28,6 +29,11 @@ interface CorporateExecutiveProps {
   userProjects: Project[];
   userEducations?: Education[];
   userServices?: Service[];
+}
+
+// Enhanced Service type for the Corporate Executive template
+interface EnhancedService extends Service {
+  pricing?: string;
 }
 
 export default function CorporateExecutive({ 
@@ -58,10 +64,62 @@ export default function CorporateExecutive({
     new Date(b.startDate || '').getTime() - new Date(a.startDate || '').getTime()
   );
   
-  // Sort services by title
-  const sortedServices = [...userServices].sort((a, b) => 
-    (a.title || '').localeCompare(b.title || '')
-  );
+  // Define example enhanced services with pricing for the template
+  const enhancedServices: EnhancedService[] = userServices.length > 0 ? 
+    [...userServices].sort((a, b) => (a.title || '').localeCompare(b.title || '')) :
+    [
+      {
+        id: 101,
+        userId: 1,
+        title: "Strategic Business Consulting",
+        description: "Comprehensive business strategy development and implementation services tailored to your industry and growth objectives.",
+        category: "consulting",
+        createdAt: new Date(),
+        priceInr: null,
+        priceUsd: null,
+        isHourly: false,
+        features: [],
+        imageUrl: null,
+        order: 1,
+        isActive: true,
+        updatedAt: null,
+        pricing: "Custom engagement"
+      },
+      {
+        id: 102,
+        userId: 1,
+        title: "Executive Coaching",
+        description: "Personalized coaching for senior leaders and executives focused on leadership development, decision-making, and organizational effectiveness.",
+        category: "coaching",
+        createdAt: new Date(),
+        priceInr: null,
+        priceUsd: null,
+        isHourly: false,
+        features: [],
+        imageUrl: null,
+        order: 2,
+        isActive: true,
+        updatedAt: null,
+        pricing: "Starting at $5,000"
+      },
+      {
+        id: 103,
+        userId: 1,
+        title: "Board Directorship",
+        description: "Experienced board member bringing strategic oversight, governance expertise, and industry knowledge to drive corporate success.",
+        category: "consulting",
+        createdAt: new Date(),
+        priceInr: null,
+        priceUsd: null,
+        isHourly: false,
+        features: [],
+        imageUrl: null,
+        order: 3,
+        isActive: true,
+        updatedAt: null,
+        pricing: "On Request"
+      }
+    ];
   
   // Maps skill names to appropriate icons
   const getSkillIcon = (name: string) => {
@@ -94,7 +152,7 @@ export default function CorporateExecutive({
     // Add CSS for animations and custom styling
     const style = document.createElement('style');
     style.textContent = `
-      /* Corporate Executive Template - Premium Styling */
+      /* Corporate Executive Template - Enhanced Premium Styling */
       @keyframes fadeIn {
         from { opacity: 0; transform: translateY(10px); }
         to { opacity: 1; transform: translateY(0); }
@@ -104,6 +162,11 @@ export default function CorporateExecutive({
         0% { background-position: 0% 50%; }
         50% { background-position: 100% 50%; }
         100% { background-position: 0% 50%; }
+      }
+
+      @keyframes shimmer {
+        0% { background-position: -100% 0; }
+        100% { background-position: 100% 0; }
       }
       
       .corporate-executive-template .fade-in {
@@ -134,7 +197,7 @@ export default function CorporateExecutive({
         left: 0;
         width: 40px;
         height: 2px;
-        background: #b8860b; /* Gold accent color */
+        background: #6a0dad; /* Modern purple accent color */
       }
       
       .corporate-executive-template .timeline-item {
@@ -151,7 +214,7 @@ export default function CorporateExecutive({
         width: 0.75rem;
         height: 0.75rem;
         border-radius: 50%;
-        background: #b8860b; /* Gold accent color */
+        background: #6a0dad; /* Modern purple accent color */
         z-index: 1;
       }
       
@@ -175,15 +238,17 @@ export default function CorporateExecutive({
       }
       
       .corporate-executive-template .skill-tag:hover {
-        border-color: #b8860b;
-        box-shadow: 0 2px 10px rgba(184, 134, 11, 0.1);
+        border-color: #6a0dad;
+        background: linear-gradient(120deg, rgba(106, 13, 173, 0.05) 0%, rgba(106, 13, 173, 0.1) 100%);
+        box-shadow: 0 2px 10px rgba(106, 13, 173, 0.1);
         transform: translateY(-2px);
       }
       
       .corporate-executive-template .profile-image-frame {
         position: relative;
-        border-radius: 50%;
+        border-radius: 12px;
         overflow: hidden;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
       }
       
       .corporate-executive-template .profile-image-frame::after {
@@ -193,8 +258,8 @@ export default function CorporateExecutive({
         left: 0;
         right: 0;
         bottom: 0;
-        border: 2px solid #b8860b; /* Gold accent color */
-        border-radius: 50%;
+        border: 2px solid rgba(106, 13, 173, 0.3);
+        border-radius: 12px;
         opacity: 0.8;
       }
       
@@ -215,52 +280,141 @@ export default function CorporateExecutive({
         left: 0;
         width: 100%;
         height: 2px;
-        background: #b8860b; /* Gold accent color */
+        background: #6a0dad; /* Modern purple accent color */
       }
       
       .corporate-executive-template .project-card {
         transition: all 0.3s ease;
         border: 1px solid #f3f4f6;
+        border-radius: 12px;
+        overflow: hidden;
       }
       
       .corporate-executive-template .project-card:hover {
-        border-color: #b8860b;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        border-color: #6a0dad;
+        box-shadow: 0 4px 20px rgba(106, 13, 173, 0.1);
         transform: translateY(-3px);
+      }
+
+      .corporate-executive-template .project-card-img {
+        position: relative;
+        overflow: hidden;
+        height: 180px;
+      }
+
+      .corporate-executive-template .project-card-img img {
+        transition: transform 0.6s ease;
+      }
+
+      .corporate-executive-template .project-card:hover .project-card-img img {
+        transform: scale(1.05);
       }
       
       .corporate-executive-template .service-card {
         transition: all 0.3s ease;
-        border-top: 3px solid transparent;
+        border-radius: 12px;
+        border-left: 3px solid transparent;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
       }
       
       .corporate-executive-template .service-card:hover {
-        border-top-color: #b8860b;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        border-left-color: #6a0dad;
+        background: linear-gradient(to right, rgba(106, 13, 173, 0.03), transparent);
+        box-shadow: 0 8px 30px rgba(106, 13, 173, 0.1);
+      }
+
+      .corporate-executive-template .service-card-icon {
+        background: linear-gradient(135deg, #7b1fa2, #6a0dad);
+        color: white;
+        border-radius: 12px;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(106, 13, 173, 0.2);
       }
       
       .corporate-executive-template .btn-primary {
-        background: linear-gradient(135deg, #b8860b, #daa520);
+        background: linear-gradient(135deg, #6a0dad, #9c27b0);
         background-size: 200% 200%;
         animation: gradientShift 4s ease infinite;
         transition: all 0.3s ease;
         color: white;
         font-weight: 500;
+        border-radius: 8px;
       }
       
       .corporate-executive-template .btn-primary:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(184, 134, 11, 0.2);
+        box-shadow: 0 4px 12px rgba(106, 13, 173, 0.3);
       }
       
       .corporate-executive-template .btn-outline {
         border: 1px solid #e5e7eb;
         transition: all 0.3s ease;
+        border-radius: 8px;
       }
       
       .corporate-executive-template .btn-outline:hover {
-        border-color: #b8860b;
-        color: #b8860b;
+        border-color: #6a0dad;
+        color: #6a0dad;
+        box-shadow: 0 2px 8px rgba(106, 13, 173, 0.1);
+      }
+
+      .corporate-executive-template .highlight-badge {
+        background: linear-gradient(90deg, rgba(106, 13, 173, 0.1) 0%, rgba(156, 39, 176, 0.1) 100%);
+        border: 1px solid rgba(106, 13, 173, 0.2);
+        color: #6a0dad;
+        font-weight: 500;
+      }
+
+      .corporate-executive-template .achievement-card {
+        border-radius: 12px;
+        background: linear-gradient(135deg, #f9f9f9, #ffffff);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        border: 1px solid #f0f0f0;
+        transition: all 0.3s ease;
+      }
+
+      .corporate-executive-template .achievement-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        border-color: rgba(106, 13, 173, 0.2);
+      }
+
+      .corporate-executive-template .premium-gradient-text {
+        background: linear-gradient(90deg, #6a0dad, #9c27b0);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: inline-block;
+      }
+
+      .corporate-executive-template .testimonial-card {
+        background: linear-gradient(135deg, #ffffff, #f9f9f9);
+        border-radius: 12px;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+        border: 1px solid #f0f0f0;
+        transition: all 0.3s ease;
+      }
+
+      .corporate-executive-template .testimonial-card:hover {
+        box-shadow: 0 8px 40px rgba(106, 13, 173, 0.1);
+      }
+
+      .corporate-executive-template .testimonial-quote {
+        position: relative;
+      }
+
+      .corporate-executive-template .testimonial-quote::before {
+        content: """;
+        position: absolute;
+        top: -20px;
+        left: -10px;
+        font-size: 80px;
+        color: rgba(106, 13, 173, 0.1);
+        font-family: "Georgia", serif;
       }
     `;
     
