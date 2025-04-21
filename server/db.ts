@@ -19,7 +19,7 @@ export const db = drizzle({ client: pool, schema });
 // Helper function to execute raw SQL queries
 export async function executeRawQuery(query: string, params: any[] = []) {
   try {
-    return await db.execute(sql.raw(query, params));
+    return await db.execute(sql.raw(query), params);
   } catch (error) {
     console.error("Error executing raw query:", error);
     throw error;

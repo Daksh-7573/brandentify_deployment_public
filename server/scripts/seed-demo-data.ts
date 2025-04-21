@@ -38,9 +38,9 @@ async function seedDemoData() {
       for (const skill of skills) {
         await db.execute(sql.raw(
           `INSERT INTO skills (user_id, name, level, proficiency) 
-           VALUES ($1, $2, $3, $4)`,
+           VALUES ($1, $2, $3, $4)`),
           [1, skill.name, skill.level, skill.proficiency]
-        ));
+        );
       }
     } else {
       console.log(`User already has ${existingSkills.length} skills. Skipping skill seeding.`);
