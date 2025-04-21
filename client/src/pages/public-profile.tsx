@@ -19,6 +19,7 @@ import TimelineStoryteller from "@/components/portfolio/templates/timeline-story
 import VisualExpert from "@/components/portfolio/templates/visual-expert";
 import CorporateExecutive from "@/components/portfolio/templates/corporate-executive";
 import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innovator";
+import Animated from "@/components/portfolio/templates/animated";
 
 // Type for our user data
 interface UserData {
@@ -207,6 +208,8 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
         return <CorporateExecutive {...templateProps} />;
       case 'dynamic-innovator':
         return <DynamicInnovator {...templateProps} />;
+      case 'animated':
+        return <Animated {...templateProps} />;
       default:
         return <VisualExpert {...templateProps} />;
     }
