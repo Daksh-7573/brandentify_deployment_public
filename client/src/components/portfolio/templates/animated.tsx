@@ -68,7 +68,7 @@ export default function AnimatedTemplate({
   email
 }: AnimatedTemplateProps) {
   // Use Lumos Animation hook
-  const { initializeParticles, initializeTilt, initializeSparkleEffect, initializeAmbientAuras } = useLumosAnimations();
+  const { initAmbientAuras, animateCardStack, addSparkleEffect, addTypingEffect } = useLumosAnimations();
   
   // Refs for sections for scroll animations
   const heroRef = useRef(null);
@@ -150,10 +150,10 @@ export default function AnimatedTemplate({
   // Initialize animations when component mounts
   useEffect(() => {
     // Initialize all the Lumos animations
-    const particleCleanup = initializeParticles('.hero-particle-container');
-    const tiltCleanup = initializeTilt('.animated-project');
-    const sparkleCleanup = initializeSparkleEffect('.skill-bar');
-    const aurasCleanup = initializeAmbientAuras('.hero-section');
+    initAmbientAuras('.hero-section');
+    animateCardStack('.animated-project');
+    addSparkleEffect('.skill-bar');
+    addTypingEffect('.animated-title');
     
     // Scroll to top when component mounts
     window.scrollTo(0, 0);
@@ -165,13 +165,7 @@ export default function AnimatedTemplate({
       transition: { duration: 0.8, ease: "easeOut" }
     });
     
-    return () => {
-      // Cleanup animations when component unmounts
-      if (particleCleanup) particleCleanup();
-      if (tiltCleanup) tiltCleanup();
-      if (sparkleCleanup) sparkleCleanup();
-      if (aurasCleanup) aurasCleanup();
-    };
+    // No cleanup needed as the animation hooks handle their own cleanup
   }, []);
   
   return (
@@ -202,7 +196,7 @@ export default function AnimatedTemplate({
               >
                 Hello, I'm{' '}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500">
-                  {name}
+                  {name || 'Creative Professional'}
                 </span>
               </motion.h1>
               
@@ -308,7 +302,7 @@ export default function AnimatedTemplate({
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
                       <span className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
-                        {name.charAt(0)}
+                        {name ? name.charAt(0) : '?'}
                       </span>
                     </div>
                   )}
