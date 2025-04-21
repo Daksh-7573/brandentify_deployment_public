@@ -1770,6 +1770,15 @@ export default function Profile() {
                       <Camera size={16} />
                     </button>
                     
+                    {/* Edit Profile button positioned to the side of profile picture */}
+                    <Button 
+                      onClick={() => setLocation('/edit-profile')}
+                      className="absolute -right-32 top-1/2 transform -translate-y-1/2 flex items-center gap-2 bg-primary/90 hover:bg-primary text-xs shadow-lg"
+                      size="sm"
+                    >
+                      Edit Profile
+                    </Button>
+                    
                     {/* Personal info button - Positioned directly under the profile picture with business card icon */}
                     <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
                       <button 
