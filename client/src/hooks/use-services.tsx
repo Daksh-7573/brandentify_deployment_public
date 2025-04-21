@@ -92,15 +92,21 @@ export function useServices() {
     }
   });
   
+  // Ensure services data is always an array
+  const services = servicesQuery.data || [];
+  const isServicesArray = Array.isArray(services);
+  
   console.log('useServices hook - returning data', { 
-    servicesData: servicesQuery.data,
+    servicesData: services,
+    isArray: isServicesArray,
+    length: isServicesArray ? services.length : 'not an array',
     isLoading: servicesQuery.isLoading,
     isError: servicesQuery.isError,
     error: servicesQuery.error?.message
   });
   
   return {
-    services: servicesQuery.data || [],
+    services: isServicesArray ? services : [],
     isLoading: servicesQuery.isLoading,
     isError: servicesQuery.isError,
     error: servicesQuery.error,

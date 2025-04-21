@@ -4906,6 +4906,8 @@ export class DatabaseStorage implements IStorage {
   // Service operations
   async getServicesByUserId(userId: number): Promise<Service[]> {
     try {
+      console.log(`[storage.getServicesByUserId] Fetching services for user ${userId}`);
+      
       // Use sql template literal for safer parameter binding
       const result = await db.execute(sql`
         SELECT id, user_id as "userId", title, description, category, 
@@ -4916,10 +4918,16 @@ export class DatabaseStorage implements IStorage {
         FROM services
         WHERE user_id = ${userId}
       `);
-      return result as Service[];
+      
+      // Ensure we're returning an array
+      const services = Array.isArray(result) ? result : [];
+      console.log(`[storage.getServicesByUserId] Found ${services.length} services for user ${userId}`);
+      
+      return services;
     } catch (error) {
-      console.error("Error fetching services:", error);
-      throw error;
+      console.error(`[storage.getServicesByUserId] Error fetching services for user ${userId}:`, error);
+      // Return empty array on error instead of throwing, to prevent UI from breaking
+      return [];
     }
   }
 
