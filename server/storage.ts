@@ -4874,7 +4874,23 @@ export class DatabaseStorage implements IStorage {
 
   // Education operations
   async getEducationsByUserId(userId: number): Promise<Education[]> {
-    return db.select().from(educations).where(eq(educations.userId, userId));
+    console.log(`[db.getEducationsByUserId] Looking for education records with userId: ${userId}`);
+    try {
+      const result = await pool.query(`
+        SELECT id, user_id as "userId", degree, institution, location, 
+               start_date as "startDate", end_date as "endDate"
+        FROM educations
+        WHERE user_id = $1
+      `, [userId]);
+      
+      console.log(`[db.getEducationsByUserId] Found ${result.rows.length} education records for user ${userId}`);
+      
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getEducationsByUserId] Error fetching education records for user ${userId}:`, error);
+      // Return empty array on error instead of throwing, to prevent UI from breaking
+      return [];
+    }
   }
 
   async getEducationById(id: number): Promise<Education | undefined> {
@@ -4883,22 +4899,117 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createEducation(insertEducation: InsertEducation): Promise<Education> {
-    const [education] = await db.insert(educations).values(insertEducation).returning();
-    return education;
+    console.log(`[db.createEducation] Creating education record for user ${insertEducation.userId}`);
+    try {
+      const result = await pool.query(`
+        INSERT INTO educations (
+          user_id, degree, institution, location, start_date, end_date
+        ) VALUES (
+          $1, $2, $3, $4, $5, $6
+        ) RETURNING 
+          id, user_id as "userId", degree, institution, location, 
+          start_date as "startDate", end_date as "endDate"
+      `, [
+        insertEducation.userId,
+        insertEducation.degree,
+        insertEducation.institution,
+        insertEducation.location,
+        insertEducation.startDate,
+        insertEducation.endDate
+      ]);
+      
+      console.log(`[db.createEducation] Created education record with ID ${result.rows[0].id}`);
+      
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.createEducation] Error creating education record:`, error);
+      throw error;
+    }
   }
 
   async updateEducation(id: number, educationData: Partial<Education>): Promise<Education | undefined> {
-    const [updatedEducation] = await db
-      .update(educations)
-      .set(educationData)
-      .where(eq(educations.id, id))
-      .returning();
-    return updatedEducation || undefined;
+    console.log(`[db.updateEducation] Updating education record with ID ${id}`);
+    try {
+      // Build the SET clause dynamically based on what fields are provided
+      const updateFields: string[] = [];
+      const values: any[] = [];
+      let valueIndex = 1;
+      
+      // Handle each possible field that could be updated
+      if (educationData.degree !== undefined) {
+        updateFields.push(`degree = $${valueIndex++}`);
+        values.push(educationData.degree);
+      }
+      
+      if (educationData.institution !== undefined) {
+        updateFields.push(`institution = $${valueIndex++}`);
+        values.push(educationData.institution);
+      }
+      
+      if (educationData.location !== undefined) {
+        updateFields.push(`location = $${valueIndex++}`);
+        values.push(educationData.location);
+      }
+      
+      if (educationData.startDate !== undefined) {
+        updateFields.push(`start_date = $${valueIndex++}`);
+        values.push(educationData.startDate);
+      }
+      
+      if (educationData.endDate !== undefined) {
+        updateFields.push(`end_date = $${valueIndex++}`);
+        values.push(educationData.endDate);
+      }
+      
+      // If no fields were provided to update, return the original education
+      if (updateFields.length === 0) {
+        console.log(`[db.updateEducation] No fields to update for education ${id}`);
+        return this.getEducationById(id);
+      }
+      
+      // Add the ID as the last parameter
+      values.push(id);
+      
+      const updateQuery = `
+        UPDATE educations 
+        SET ${updateFields.join(', ')} 
+        WHERE id = $${valueIndex}
+        RETURNING id, user_id as "userId", degree, institution, location, 
+                 start_date as "startDate", end_date as "endDate"
+      `;
+      
+      console.log(`[db.updateEducation] Executing update query for education ${id}`);
+      const result = await pool.query(updateQuery, values);
+      
+      if (result.rows.length > 0) {
+        console.log(`[db.updateEducation] Successfully updated education ${id}`);
+        return result.rows[0];
+      }
+      
+      console.log(`[db.updateEducation] No education found with ID ${id}`);
+      return undefined;
+    } catch (error) {
+      console.error(`[db.updateEducation] Error updating education with ID ${id}:`, error);
+      return undefined;
+    }
   }
 
   async deleteEducation(id: number): Promise<boolean> {
-    const result = await db.delete(educations).where(eq(educations.id, id));
-    return result.rowCount > 0;
+    console.log(`[db.deleteEducation] Deleting education record with ID ${id}`);
+    try {
+      const result = await pool.query(`
+        DELETE FROM educations
+        WHERE id = $1
+        RETURNING id
+      `, [id]);
+      
+      const deleted = result.rows.length > 0;
+      console.log(`[db.deleteEducation] Deleted education record with ID ${id}: ${deleted}`);
+      return deleted;
+    } catch (error) {
+      console.error(`[db.deleteEducation] Error deleting education with ID ${id}:`, error);
+      return false;
+    }
   }
 
   // Skill operations
