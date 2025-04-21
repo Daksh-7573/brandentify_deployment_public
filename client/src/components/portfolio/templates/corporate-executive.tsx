@@ -32,9 +32,22 @@ interface CorporateExecutiveProps {
 }
 
 // Enhanced Service type for the Corporate Executive template
-interface EnhancedService extends Omit<Service, 'category'> {
-  pricing?: string;
-  category?: "consulting" | "development" | "design" | "marketing" | "writing" | "coaching" | "teaching" | "other" | "advisory";
+interface EnhancedService {
+  id: number;
+  userId: number;
+  title: string;
+  description: string | null;
+  category: "consulting" | "development" | "design" | "marketing" | "writing" | "coaching" | "teaching" | "other" | "advisory";
+  createdAt: Date | null;
+  updatedAt: Date | null;
+  priceInr: number | null;
+  priceUsd: number | null;
+  isHourly: boolean | null;
+  features: string[] | null;
+  imageUrl: string | null;
+  order: number | null;
+  isActive: boolean | null;
+  pricing: string;
 }
 
 export default function CorporateExecutive({ 
@@ -104,16 +117,21 @@ export default function CorporateExecutive({
   
   // Create enhanced services with pricing information
   const enhancedServices: EnhancedService[] = (userServices.length > 0 ? userServices : mockServices)
-    .map(service => ({
-      ...service,
-      pricing: service.category === 'coaching' 
-        ? 'Starting at $5,000' 
-        : service.category === 'consulting' 
-          ? 'Custom engagement' 
-          : service.category === 'advisory' 
-            ? 'Retainer basis'
-            : 'On Request'
-    }));
+    .map(service => {
+      const serviceWithPricing = {
+        ...service,
+        pricing: service.category === 'coaching' 
+          ? 'Starting at $5,000' 
+          : service.category === 'consulting' 
+            ? 'Custom engagement' 
+            : service.category === 'advisory' 
+              ? 'Retainer basis'
+              : 'On Request'
+      };
+      
+      // Force the type to be EnhancedService
+      return serviceWithPricing as unknown as EnhancedService;
+    });
   
   // Sort experiences by date (most recent first)
   const sortedExperiences = [...userExperiences].sort((a, b) => 

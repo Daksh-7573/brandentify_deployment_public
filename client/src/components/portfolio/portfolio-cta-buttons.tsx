@@ -203,19 +203,36 @@ export default function PortfolioCtaButtons({
             {/* Dropdown with pre-written intros */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">Choose an introduction (optional)</label>
-              <Select value={selectedIntro} onValueChange={setSelectedIntro}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select a conversation starter..." />
-                </SelectTrigger>
-                <SelectContent className="max-w-md">
-                  <SelectItem value="custom_intro">Choose your own...</SelectItem>
-                  {introOptions.map((option, index) => (
-                    <SelectItem key={index} value={option} className="py-3 whitespace-normal">
-                      {option}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              
+              {/* Custom radio button implementation instead of Select */}
+              <div className="border rounded-md p-2 space-y-1 max-h-64 overflow-y-auto">
+                <div 
+                  className={`p-2 cursor-pointer rounded-md ${selectedIntro === "custom_intro" ? 'bg-purple-50' : 'hover:bg-gray-50'}`} 
+                  onClick={() => setSelectedIntro("custom_intro")}
+                >
+                  <div className="flex items-start gap-2">
+                    <div className={`h-5 w-5 mt-0.5 rounded-full border flex items-center justify-center ${selectedIntro === "custom_intro" ? 'border-[#6a0dad]' : 'border-gray-300'}`}>
+                      {selectedIntro === "custom_intro" && <div className="w-3 h-3 rounded-full bg-[#6a0dad]" />}
+                    </div>
+                    <span className="font-medium">Choose your own...</span>
+                  </div>
+                </div>
+                
+                {introOptions.map((option, index) => (
+                  <div 
+                    key={index} 
+                    className={`p-2 cursor-pointer rounded-md ${selectedIntro === option ? 'bg-purple-50' : 'hover:bg-gray-50'}`} 
+                    onClick={() => setSelectedIntro(option)}
+                  >
+                    <div className="flex items-start gap-2">
+                      <div className={`h-5 w-5 mt-0.5 rounded-full border flex items-center justify-center ${selectedIntro === option ? 'border-[#6a0dad]' : 'border-gray-300'}`}>
+                        {selectedIntro === option && <div className="w-3 h-3 rounded-full bg-[#6a0dad]" />}
+                      </div>
+                      <span className="text-sm">{option}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
             
             {/* Message textarea */}
