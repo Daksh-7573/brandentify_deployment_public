@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ProfileImage } from "@/components/ui/profile-image";
 import { Education, Project, Service, Skill, WorkExperience } from "@shared/schema";
-import { useEffect, useState, useRef, createRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import PortfolioCtaButtons from "../portfolio-cta-buttons";
 import { 
   Calendar, 
@@ -25,19 +25,11 @@ import {
   ExternalLink, 
   User, 
   Clock, 
-  DownloadCloud,
-  Radio, 
-  Lightbulb,
   Download,
-  UserPlus,
-  Settings,
+  Lightbulb,
   MessageSquare,
   Volume2, 
   VolumeX, 
-  MessagesSquare, 
-  Github, 
-  CheckCircle, 
-  Plus,
   LucideIcon
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
@@ -78,7 +70,7 @@ interface TimelineStorytellerProps {
 
 // For skill icons
 const skillIconMap: Record<string, LucideIcon> = {
-  default: CheckCircle
+  default: Award
 };
 
 export default function TimelineStoryteller({ 
@@ -159,6 +151,28 @@ export default function TimelineStoryteller({
         scrollToChapter(chapter);
       }, index * 2000); // 2 second intervals between chapters
     });
+  };
+  
+  // Handle contact form submission
+  const handleContactSubmit = () => {
+    if (!contactPurpose) {
+      toast({
+        title: "Please select a purpose",
+        description: "Please select a reason for connecting",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // In a real implementation, this would send the message
+    toast({
+      title: "Message sent!",
+      description: "Your message has been sent successfully",
+    });
+    
+    setIsContactModalOpen(false);
+    setContactPurpose("");
+    setContactMessage("");
   };
   
   // Initialize animations and scroll tracking
@@ -456,8 +470,8 @@ export default function TimelineStoryteller({
         </div>
       </div>
       
-      {/* Story control buttons */}
-      <div className="fixed bottom-4 right-4 flex flex-col gap-2 z-50">
+      {/* Main CTA buttons that follow on scroll */}
+      <div className="fixed top-4 right-4 z-50 hidden md:flex gap-2">
         <PortfolioCtaButtons 
           variant="minimal"
           resumeUrl={null} 
@@ -465,24 +479,28 @@ export default function TimelineStoryteller({
           connectUrl={null}
           userEmail={userInfo.email}
           userName={userInfo.name}
-          className="mb-2"
+          className="shadow-lg"
         />
-        <div className="flex gap-2 justify-end">
+      </div>
+      
+      {/* Story control buttons - only on mobile */}
+      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 md:hidden">
+        <div className="flex gap-2 justify-center">
           <Button 
             onClick={toggleNarration} 
             size="icon" 
-            variant="outline" 
-            className="rounded-full shadow-md"
+            variant="secondary" 
+            className="rounded-full shadow-md h-10 w-10"
           >
             {isNarrating ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
           </Button>
           <Button 
             onClick={viewMyStory} 
-            variant="outline" 
-            className="rounded-full shadow-md flex items-center gap-1 px-3"
+            variant="secondary" 
+            className="rounded-full shadow-md flex items-center gap-1 px-4 h-10"
           >
             <Clock className="h-4 w-4" />
-            <span className="text-xs">View My Story</span>
+            <span className="text-xs">View Story</span>
           </Button>
         </div>
       </div>
@@ -648,9 +666,9 @@ export default function TimelineStoryteller({
                       <div className="card-animated bg-white rounded-lg shadow-md p-6 border border-pink-100 flex-grow">
                         <div className="flex justify-between items-start mb-3">
                           <h3 className="text-lg font-medium text-gray-800">{exp.title}</h3>
-                          {exp.companyName && (
+                          {exp.company && (
                             <Badge className="bg-pink-100 text-pink-700 font-normal">
-                              {exp.companyName}
+                              {exp.company}
                             </Badge>
                           )}
                         </div>
@@ -661,7 +679,7 @@ export default function TimelineStoryteller({
                         <div className="bg-pink-50 rounded-md p-3 border border-pink-100">
                           <h4 className="text-sm font-medium text-pink-800 mb-1">Key Achievement</h4>
                           <p className="text-sm text-gray-700">
-                            {exp.highlights || "Led cross-functional teams to deliver projects on time and within budget."}
+                            {exp.description ? `${exp.description.substring(0, 100)}...` : "Led cross-functional teams to deliver projects on time and within budget."}
                           </p>
                         </div>
                       </div>
@@ -740,13 +758,19 @@ export default function TimelineStoryteller({
                           )}
                         </div>
                         
-                        <p className="text-gray-600 mb-4">{edu.description}</p>
+                        {/* Location if available */}
+                        {edu.location && (
+                          <div className="flex items-center text-gray-500 text-sm mb-4">
+                            <MapPin className="h-4 w-4 mr-1" />
+                            <span>{edu.location}</span>
+                          </div>
+                        )}
                         
                         {/* Highlights */}
                         <div className="bg-indigo-50 rounded-md p-3 border border-indigo-100">
                           <h4 className="text-sm font-medium text-indigo-800 mb-1">Highlight</h4>
                           <p className="text-sm text-gray-700">
-                            {edu.fieldOfStudy || "Focused on academic excellence and practical application of concepts."}
+                            Focused on academic excellence and practical application of concepts.
                           </p>
                         </div>
                       </div>
@@ -773,381 +797,199 @@ export default function TimelineStoryteller({
         ref={chapterRefs.projects}
         className="py-24 px-8 bg-gradient-to-b from-indigo-50 to-purple-50 min-h-screen"
       >
-          <div className="mx-auto max-w-4xl">
-            <div className="mb-12">
-              <div className="inline-block bg-purple-100 px-3 py-1 rounded-full text-purple-800 text-sm font-medium mb-3 animate-fade-in">
-                My Projects
-              </div>
-              <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">Featured Work</h2>
-            </div>
-            
-            {/* Project Gallery */}
-            <div className="grid grid-cols-1 gap-8 animate-fade-in">
-              {sortedProjects.length > 0 ? (
-                sortedProjects.map((project, index) => (
-                  <div 
-                    key={project.id}
-                    className="card-animated bg-white rounded-lg shadow-lg overflow-hidden border border-purple-100"
-                  >
-                    {/* Project media header */}
-                    <div className="relative h-56 overflow-hidden">
-                      {project.thumbnailUrl ? (
-                        <img 
-                          src={project.thumbnailUrl} 
-                          alt={project.title} 
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-gradient-to-r from-purple-100 to-indigo-100 flex items-center justify-center">
-                          <FileText className="w-12 h-12 text-purple-300" />
-                        </div>
-                      )}
-                      
-                      {/* Timeline indicator */}
-                      <div className="absolute bottom-4 left-4 bg-white rounded-full py-1 px-3 shadow-md text-xs font-medium text-purple-700 flex items-center">
-                        <Calendar className="h-3 w-3 mr-1" />
-                        {formatDate(project.startDate)}
-                      </div>
-                    </div>
-                    
-                    <div className="p-6">
-                      <h3 className="text-xl font-bold text-gray-800 mb-3">{project.title}</h3>
-                      
-                      <p className="text-gray-600 mb-6">{project.description}</p>
-                      
-                      {/* Project links and additional info */}
-                      <div className="flex justify-between items-center">
-                        <div className="space-x-2">
-                          {project.category && (
-                            <Badge className="bg-purple-100 text-purple-700">
-                              {project.category}
-                            </Badge>
-                          )}
-                        </div>
-                        
-                        {project.projectUrl && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="text-purple-600 border-purple-200 hover:bg-purple-50"
-                            onClick={() => window.open(project.projectUrl || '#', '_blank')}
-                          >
-                            <ExternalLink className="h-4 w-4 mr-1" />
-                            View Project
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                // Empty state
-                <div className="bg-white rounded-lg shadow-md p-8 text-center">
-                  <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-purple-100 flex items-center justify-center">
-                    <FileText className="h-6 w-6 text-purple-400" />
-                  </div>
-                  <p className="text-gray-500">Your projects will appear here</p>
-                </div>
-              )}
-            </div>
-          </div>
-        </section>
-        
-        {/* Certifications & Highlights Section */}
-        <section 
-          id="chapter-certifications" 
-          ref={chapterRefs.certifications}
-          className="py-24 px-8 bg-gradient-to-b from-purple-50 to-white min-h-screen"
-        >
         <div className="mx-auto max-w-4xl">
           <div className="mb-12">
-            <div className="inline-block bg-indigo-100 px-3 py-1 rounded-full text-indigo-800 text-sm font-medium mb-3 animate-fade-in">
-              Chapter 4: My Work
+            <div className="inline-block bg-purple-100 px-3 py-1 rounded-full text-purple-800 text-sm font-medium mb-3 animate-fade-in">
+              My Projects
             </div>
-            <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">Showcase</h2>
+            <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">Featured Work</h2>
           </div>
           
-          {/* Projects as milestones on timeline */}
-          <div className="relative">
-            {/* Main timeline */}
-            <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-1 bg-indigo-100 z-0"></div>
-            
+          {/* Project Gallery */}
+          <div className="grid grid-cols-1 gap-8 animate-fade-in">
             {sortedProjects.length > 0 ? (
-              <div className="space-y-12">
-                {sortedProjects.map((project, index) => (
-                  <div 
-                    key={project.id} 
-                    className={`relative flex flex-col ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} items-start gap-8 animate-fade-in`}
-                  >
-                    {/* Timeline node */}
-                    <div className={`
-                      absolute left-4 md:left-1/2 top-6 w-6 h-6 rounded-full bg-violet-500 border-4 border-white
-                      transform md:translate-x-[-50%] timeline-dot z-10
-                    `}></div>
+              sortedProjects.map((project, index) => (
+                <div 
+                  key={project.id}
+                  className="card-animated bg-white rounded-lg shadow-lg overflow-hidden border border-purple-100"
+                >
+                  {/* Project media header */}
+                  <div className="relative h-56 overflow-hidden">
+                    {project.thumbnailUrl ? (
+                      <img 
+                        src={project.thumbnailUrl} 
+                        alt={project.title} 
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-r from-purple-100 to-indigo-100 flex items-center justify-center">
+                        <FileText className="w-12 h-12 text-purple-300" />
+                      </div>
+                    )}
                     
-                    {/* Date marker */}
-                    <div className="absolute left-14 md:left-1/2 top-5 text-sm text-gray-500 md:transform md:translate-x-[-50%] md:mt-8">
+                    {/* Timeline indicator */}
+                    <div className="absolute bottom-4 left-4 bg-white rounded-full py-1 px-3 shadow-md text-xs font-medium text-purple-700 flex items-center">
+                      <Calendar className="h-3 w-3 mr-1" />
                       {formatDate(project.startDate)}
                     </div>
+                  </div>
+                  
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold text-gray-800 mb-3">{project.title}</h3>
                     
-                    {/* Project card - alternating sides */}
-                    <div className={`
-                      w-full md:w-5/12 ml-12 md:ml-0 
-                      ${index % 2 === 0 ? 'md:text-right md:mr-auto' : 'md:text-left md:ml-auto'}
-                    `}>
-                      <div className="bg-white rounded-lg shadow-md p-6 border border-indigo-100">
-                        <h3 className="text-xl font-bold text-gray-800 mb-2">{project.title}</h3>
-                        
-                        {/* Tags */}
-                        <div className={`flex flex-wrap gap-2 mb-3 ${index % 2 === 0 ? 'md:justify-end' : 'md:justify-start'}`}>
-                          {project.category && (
-                            <Badge className="bg-indigo-100 text-indigo-800 hover:bg-indigo-200">
-                              #{project.category}
-                            </Badge>
-                          )}
-                        </div>
-                        
-                        {project.description && (
-                          <p className="text-gray-600 mb-4">{project.description}</p>
-                        )}
-                        
-                        {/* Project URL */}
-                        {project.projectUrl && (
-                          <div className={`flex ${index % 2 === 0 ? 'md:justify-end' : 'md:justify-start'}`}>
-                            <a 
-                              href={project.projectUrl} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="text-indigo-600 hover:text-indigo-800 flex items-center gap-1 text-sm font-medium"
-                            >
-                              View Project <ExternalLink className="h-3.5 w-3.5" />
-                            </a>
-                          </div>
+                    <p className="text-gray-600 mb-6">{project.description}</p>
+                    
+                    {/* Project links and additional info */}
+                    <div className="flex justify-between items-center">
+                      <div className="space-x-2">
+                        {project.category && (
+                          <Badge className="bg-purple-100 text-purple-700">
+                            {project.category}
+                          </Badge>
                         )}
                       </div>
+                      
+                      {project.projectUrl && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-purple-600 border-purple-200 hover:bg-purple-50"
+                          onClick={() => window.open(project.projectUrl || '#', '_blank')}
+                        >
+                          <ExternalLink className="h-4 w-4 mr-1" />
+                          View Project
+                        </Button>
+                      )}
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))
             ) : (
               // Empty state
-              <div className="ml-12 md:ml-0 md:mx-auto md:w-6/12 bg-white rounded-lg shadow-md p-8 text-center animate-fade-in">
-                <div className="absolute left-4 md:left-1/2 top-6 w-6 h-6 rounded-full bg-violet-300 border-4 border-white transform md:translate-x-[-50%] timeline-dot z-10"></div>
-                <p className="text-gray-500">Your showcase projects will appear here</p>
+              <div className="bg-white rounded-lg shadow-md p-8 text-center">
+                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-purple-100 flex items-center justify-center">
+                  <FileText className="h-6 w-6 text-purple-400" />
+                </div>
+                <p className="text-gray-500">Your projects will appear here</p>
               </div>
             )}
           </div>
         </div>
       </section>
       
-      {/* Career Path (Experience) */}
+      {/* Certifications & Highlights Section */}
       <section 
-        id="chapter-career" 
-        ref={chapterRefs.career}
-        className="py-24 px-8 bg-gradient-to-b from-white to-indigo-50"
+        id="chapter-certifications" 
+        ref={chapterRefs.certifications}
+        className="py-24 px-8 bg-gradient-to-b from-purple-50 to-white min-h-screen"
       >
         <div className="mx-auto max-w-4xl">
           <div className="mb-12">
-            <div className="inline-block bg-indigo-100 px-3 py-1 rounded-full text-indigo-800 text-sm font-medium mb-3 animate-fade-in">
-              Chapter 5: My Journey
+            <div className="inline-block bg-pink-100 px-3 py-1 rounded-full text-pink-800 text-sm font-medium mb-3 animate-fade-in">
+              My Achievements
             </div>
-            <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">Career Path</h2>
+            <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">Certifications & Highlights</h2>
           </div>
           
-          {/* Vertical timeline with experience cards */}
-          <div className="relative pl-8 md:pl-0">
-            {/* Main timeline spine */}
-            <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-1 bg-indigo-200 md:transform md:translate-x-[-50%] z-0"></div>
-            
-            {sortedExperiences.length > 0 ? (
-              <div className="space-y-12">
-                {sortedExperiences.map((exp, index) => (
-                  <div 
-                    key={exp.id} 
-                    className={`relative flex flex-col ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} items-start gap-8 animate-fade-in`}
-                  >
-                    {/* Timeline dot */}
-                    <div className={`
-                      absolute left-4 md:left-1/2 top-6 w-6 h-6 rounded-full bg-indigo-500 border-4 border-white
-                      transform md:translate-x-[-50%] timeline-dot z-10
-                    `}></div>
-                    
-                    {/* Experience card - alternating sides */}
-                    <div className={`
-                      w-full md:w-5/12 ml-8 md:ml-0 
-                      ${index % 2 === 0 ? 'md:text-right md:mr-auto' : 'md:text-left md:ml-auto'}
-                    `}>
-                      <div className="bg-white rounded-lg shadow-md p-6 border border-indigo-100 hover:shadow-lg transition-shadow duration-300">
-                        <div className={`flex flex-col ${index % 2 === 0 ? 'md:items-end' : 'md:items-start'}`}>
-                          <h3 className="text-xl font-bold text-gray-800">{exp.title}</h3>
-                          <p className="text-indigo-600 font-medium">{exp.company}</p>
-                          
-                          <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
-                            <Calendar className="h-4 w-4" />
-                            <span>{formatDate(exp.startDate)} - {exp.endDate ? formatDate(exp.endDate) : 'Present'}</span>
-                          </div>
-                          
-                          {exp.location && (
-                            <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
-                              <MapPin className="h-4 w-4" />
-                              <span>{exp.location}</span>
-                            </div>
-                          )}
+          {/* If there are skills, display them as certifications */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
+            {sortedSkills.length > 0 ? (
+              sortedSkills.slice(0, 6).map((skill) => (
+                <div key={skill.id} className="card-animated bg-white rounded-lg shadow-md overflow-hidden border border-pink-100">
+                  <div className="h-2 bg-gradient-to-r from-pink-400 to-purple-400"></div>
+                  <div className="p-6">
+                    <div className="flex items-start mb-4">
+                      <div className="mr-4 mt-1">
+                        <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center">
+                          <Award className="h-5 w-5 text-pink-500" />
                         </div>
-                        
-                        {/* Description or details */}
-                        {exp.description ? (
-                          <p className="mt-3 text-gray-600 text-sm">{exp.description}</p>
-                        ) : null}
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-medium text-gray-800">{skill.name}</h3>
+                        <p className="text-gray-500 text-sm mt-1">
+                          {skill.level || `${skill.proficiency || 0}% Proficiency`}
+                        </p>
                       </div>
                     </div>
+                    
+                    {/* Progress indicator */}
+                    <div className="h-2 w-full bg-gray-100 rounded-full mt-2">
+                      <div 
+                        className="h-full bg-gradient-to-r from-pink-400 to-purple-400 rounded-full" 
+                        style={{ width: `${skill.proficiency || 0}%` }}
+                      ></div>
+                    </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))
             ) : (
               // Empty state
-              <div className="ml-8 md:ml-0 md:mx-auto md:w-6/12 bg-white rounded-lg shadow-md p-8 text-center">
-                <div className="absolute left-4 md:left-1/2 top-6 w-6 h-6 rounded-full bg-indigo-300 border-4 border-white transform md:translate-x-[-50%] timeline-dot z-10"></div>
-                <p className="text-gray-500">Your career experience will appear here</p>
+              <div className="col-span-1 md:col-span-2 bg-white rounded-lg shadow-md p-8 text-center">
+                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-pink-100 flex items-center justify-center">
+                  <Award className="h-6 w-6 text-pink-400" />
+                </div>
+                <p className="text-gray-500">Your certifications and key achievements will appear here</p>
               </div>
             )}
           </div>
         </div>
       </section>
       
-      {/* Academic Background */}
-      <section 
-        id="chapter-education" 
-        ref={chapterRefs.education}
-        className="py-24 px-8 bg-gradient-to-b from-indigo-50 to-white"
-      >
-        <div className="mx-auto max-w-4xl">
-          <div className="mb-12">
-            <div className="inline-block bg-indigo-100 px-3 py-1 rounded-full text-indigo-800 text-sm font-medium mb-3 animate-fade-in">
-              Chapter 6: Early Chapters
-            </div>
-            <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">Academic Background</h2>
-          </div>
+      {/* Let's Talk Modal Dialog */}
+      <Dialog open={isContactModalOpen} onOpenChange={setIsContactModalOpen}>
+        <DialogContent className="sm:max-w-md modal-animation">
+          <DialogHeader>
+            <DialogTitle className="text-center text-xl font-semibold text-gray-800">Let's Talk</DialogTitle>
+            <div className="drag-handle mt-1 mb-2"></div>
+          </DialogHeader>
           
-          {/* Academic timeline - styled similarly to career path */}
-          <div className="relative pl-8 md:pl-0">
-            {/* Main timeline spine */}
-            <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-1 bg-violet-200 md:transform md:translate-x-[-50%] z-0"></div>
-            
-            {sortedEducations.length > 0 ? (
-              <div className="space-y-12">
-                {sortedEducations.map((edu, index) => (
-                  <div 
-                    key={edu.id} 
-                    className={`relative flex flex-col ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} items-start gap-8 animate-fade-in`}
-                  >
-                    {/* Timeline dot */}
-                    <div className={`
-                      absolute left-4 md:left-1/2 top-6 w-6 h-6 rounded-full bg-violet-500 border-4 border-white
-                      transform md:translate-x-[-50%] timeline-dot z-10
-                    `}></div>
-                    
-                    {/* Education card - alternating sides */}
-                    <div className={`
-                      w-full md:w-5/12 ml-8 md:ml-0 
-                      ${index % 2 === 0 ? 'md:text-right md:mr-auto' : 'md:text-left md:ml-auto'}
-                    `}>
-                      <div className="bg-white rounded-lg shadow-md p-6 border border-violet-100 hover:shadow-lg transition-shadow duration-300">
-                        <div className={`flex flex-col ${index % 2 === 0 ? 'md:items-end' : 'md:items-start'}`}>
-                          <h3 className="text-xl font-bold text-gray-800">{edu.degree}</h3>
-                          <p className="text-violet-600 font-medium">{edu.institution}</p>
-                          
-                          <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
-                            <Calendar className="h-4 w-4" />
-                            <span>
-                              {formatDate(edu.startDate)} - {edu.endDate ? formatDate(edu.endDate) : 'Present'}
-                            </span>
-                          </div>
-                          
-                          {edu.location && (
-                            <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
-                              <MapPin className="h-4 w-4" />
-                              <span>{edu.location}</span>
-                            </div>
-                          )}
-                        </div>
-                        
-                        {/* Additional details */}
-                        {edu.degree && (
-                          <div className="mt-3 text-gray-600">
-                            <span className="font-medium">Degree:</span> {edu.degree}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
+          <div className="py-4">
+            <div className="space-y-6">
+              {/* Purpose dropdown */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Purpose to connect:</label>
+                <Select value={contactPurpose} onValueChange={setContactPurpose}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select a reason" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="job-opportunity">Exciting job opportunities are available, and I believe you'd be a great fit.</SelectItem>
+                    <SelectItem value="project-collaboration">Would you be open to teaming up on innovative projects?</SelectItem>
+                    <SelectItem value="networking">Let's connect — I admire your work and would love to stay in touch.</SelectItem>
+                    <SelectItem value="partnership">I'd like to explore a potential partnership opportunity with you.</SelectItem>
+                    <SelectItem value="freelance">I have some exciting freelance projects you might be interested in.</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-            ) : (
-              // Empty state
-              <div className="ml-8 md:ml-0 md:mx-auto md:w-6/12 bg-white rounded-lg shadow-md p-8 text-center">
-                <div className="absolute left-4 md:left-1/2 top-6 w-6 h-6 rounded-full bg-violet-300 border-4 border-white transform md:translate-x-[-50%] timeline-dot z-10"></div>
-                <p className="text-gray-500">Your academic background will appear here</p>
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
-      
-      {/* Footer with contact options */}
-      <section className="py-16 px-8 bg-indigo-900 text-white">
-        <div className="mx-auto max-w-4xl">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div>
-              <h2 className="text-2xl font-bold mb-3">Get in Touch</h2>
-              <p className="text-indigo-200 mb-6">Let's connect and create something amazing together</p>
               
-              <div className="flex gap-4">
-                {userInfo.email && (
-                  <a 
-                    href={`mailto:${userInfo.email}`} 
-                    className="w-10 h-10 rounded-full bg-indigo-800 hover:bg-indigo-700 flex items-center justify-center transition-colors"
-                  >
-                    <Mail className="h-5 w-5" />
-                  </a>
-                )}
-                <a 
-                  href="#" 
-                  className="w-10 h-10 rounded-full bg-indigo-800 hover:bg-indigo-700 flex items-center justify-center transition-colors"
+              {/* Message box */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Write a note to start the conversation (Optional):</label>
+                <Textarea 
+                  placeholder="Write a note to start the conversation..."
+                  className="min-h-[100px]"
+                  maxLength={350}
+                  value={contactMessage}
+                  onChange={(e) => setContactMessage(e.target.value)}
+                />
+                <div className="text-xs text-right text-gray-500">
+                  {contactMessage.length}/350 characters
+                </div>
+              </div>
+              
+              {/* Submit button */}
+              <div className="pt-4">
+                <Button 
+                  className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white"
+                  onClick={handleContactSubmit}
                 >
-                  <Linkedin className="h-5 w-5" />
-                </a>
-                <a 
-                  href="#" 
-                  className="w-10 h-10 rounded-full bg-indigo-800 hover:bg-indigo-700 flex items-center justify-center transition-colors"
-                >
-                  <Github className="h-5 w-5" />
-                </a>
-                <a 
-                  href="#" 
-                  className="w-10 h-10 rounded-full bg-indigo-800 hover:bg-indigo-700 flex items-center justify-center transition-colors"
-                >
-                  <MessagesSquare className="h-5 w-5" />
-                </a>
+                  Request Connection
+                </Button>
               </div>
             </div>
-            
-            <div className="mt-8 md:mt-0">
-              <Button 
-                onClick={() => scrollToChapter('intro')}
-                className="bg-white text-indigo-900 hover:bg-indigo-100 flex items-center gap-2"
-              >
-                Back to Top
-                <ChevronRight className="h-4 w-4 rotate-270 transform -rotate-90" />
-              </Button>
-            </div>
           </div>
-          
-          <div className="mt-12 text-center text-indigo-300 text-sm">
-            <p>© {new Date().getFullYear()} {userInfo.name} • Made with Brandentifier</p>
-          </div>
-        </div>
-      </section>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
