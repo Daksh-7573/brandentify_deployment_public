@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ProfileImage } from "@/components/ui/profile-image";
 import { Education, Project, Service, Skill, WorkExperience } from "@shared/schema";
 import { useEffect, useState } from "react";
+import PortfolioCtaButtons from "../portfolio-cta-buttons";
 import { 
   Mail, Linkedin, MapPin, Calendar, Download, FileText, ChevronRight,
   Briefcase, GraduationCap, Award, Target, ChartBar, Presentation,
