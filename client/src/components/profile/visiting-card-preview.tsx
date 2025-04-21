@@ -124,8 +124,8 @@ const VisitingCardPreview: React.FC<VisitingCardPreviewProps> = ({
           </div>
           
           <div className="flex-1 space-y-2 text-xs">
-            {/* Domain */}
-            {userData.domain && (
+            {/* Domain - only show if value exists and is not "all" */}
+            {userData.domain && userData.domain !== "all" && (
               <div className="flex items-center gap-2">
                 <Code className={`h-3.5 w-3.5 ${cardType === "minimalist" ? "text-blue-600 dark:text-blue-400" : "text-white/70"}`} />
                 <span className={cardType === "minimalist" ? "text-gray-800 dark:text-gray-300" : "text-white"}>

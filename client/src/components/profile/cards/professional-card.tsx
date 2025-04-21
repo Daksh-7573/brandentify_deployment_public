@@ -148,14 +148,14 @@ const ProfessionalCard: React.FC<ProfessionalCardProps> = ({ userData }) => {
             {userData.title || "Professional"}
           </p>
           
-          {/* Industry and domain */}
-          {(userData.industry || userData.domain) && (
+          {/* Industry and domain - only show domain if it exists and is not "all" */}
+          {(userData.industry || (userData.domain && userData.domain !== "all")) && (
             <div className={`mt-1 text-sm ${
               isDarkMode ? 'text-slate-500' : 'text-slate-500'
             }`}>
               {userData.industry && <span>{userData.industry}</span>}
-              {userData.industry && userData.domain && <span className="mx-1">•</span>}
-              {userData.domain && <span>{userData.domain}</span>}
+              {userData.industry && userData.domain && userData.domain !== "all" && <span className="mx-1">•</span>}
+              {userData.domain && userData.domain !== "all" && <span>{userData.domain}</span>}
             </div>
           )}
         </div>
