@@ -1,0 +1,831 @@
+/* Lumos Flow Animation System
+   Code Name: "Lumos Flow" – Where Career Meets Joy */
+
+/* ======= 1. PAGE TRANSITIONS ======= */
+
+/* Fade + Scale + Soft Glow */
+.page-transition-fade {
+  animation: fadeScaleGlow 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes fadeScaleGlow {
+  0% {
+    opacity: 0;
+    transform: scale(0.96);
+    filter: brightness(0.9);
+  }
+  60% {
+    filter: brightness(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+/* Swipe Slide + Parallax Layering */
+.slide-parallax-container {
+  perspective: 1000px;
+  overflow: hidden;
+}
+
+.slide-parallax-item {
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.slide-parallax-item.entering {
+  animation: slideParallaxIn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.slide-parallax-item.exiting {
+  animation: slideParallaxOut 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes slideParallaxIn {
+  from {
+    opacity: 0;
+    transform: translateX(100px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes slideParallaxOut {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-100px) scale(0.95);
+  }
+}
+
+/* Horizontal Card Stack Fly-in */
+.card-stack-container {
+  perspective: 1200px;
+}
+
+.card-stack-item {
+  transform-origin: center right;
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.card-stack-item:nth-child(1) { animation-delay: 0s; }
+.card-stack-item:nth-child(2) { animation-delay: 0.1s; }
+.card-stack-item:nth-child(3) { animation-delay: 0.2s; }
+.card-stack-item:nth-child(4) { animation-delay: 0.3s; }
+
+.card-stack-item.entering {
+  animation: cardStackIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes cardStackIn {
+  from {
+    opacity: 0;
+    transform: translateX(80px) rotateY(10deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) rotateY(0deg);
+  }
+}
+
+/* Glassy Blur Backdrop with Float-up Modals */
+.modal-backdrop {
+  backdrop-filter: blur(8px);
+  transition: backdrop-filter 0.3s ease, opacity 0.3s ease;
+}
+
+.modal-content {
+  animation: floatUpModal 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes floatUpModal {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ======= 2. MICROINTERACTIONS ======= */
+
+/* Button Click - Bouncy press + confetti trail */
+.bounce-button {
+  position: relative;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.bounce-button:active {
+  transform: scale(0.95);
+}
+
+/* Form Field Focus - Underline stretch + input background fade */
+.form-control-animated {
+  position: relative;
+  overflow: hidden;
+}
+
+.form-control-animated::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--sky-blush), var(--soft-lavender));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.form-control-animated:focus-within::after {
+  transform: scaleX(1);
+}
+
+.form-control-animated input, 
+.form-control-animated textarea {
+  background: transparent;
+  transition: background-color 0.3s ease;
+}
+
+.form-control-animated:focus-within input,
+.form-control-animated:focus-within textarea {
+  background-color: rgba(255, 255, 255, 0.95);
+}
+
+/* Upload Resume - Paperplane fly-in + sparkle explosion */
+.upload-animation-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.paperplane {
+  position: absolute;
+  top: 50%;
+  left: -50px;
+  opacity: 0;
+}
+
+.upload-complete .paperplane {
+  animation: paperplaneFly 1.2s forwards cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes paperplaneFly {
+  0% {
+    opacity: 0;
+    transform: translateX(0) translateY(0) rotate(0);
+  }
+  10% {
+    opacity: 1;
+  }
+  60% {
+    transform: translateX(calc(100% + 50px)) translateY(-100px) rotate(15deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(calc(100% + 50px)) translateY(-100px) rotate(15deg);
+    opacity: 0;
+  }
+}
+
+/* Sparkle explosion */
+.sparkle-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  pointer-events: none;
+}
+
+.sparkle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  opacity: 0;
+}
+
+.upload-complete .sparkle {
+  animation: sparkleExplode 1s forwards ease-out;
+}
+
+@keyframes sparkleExplode {
+  0% {
+    transform: translate(0, 0) scale(0);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--tx), var(--ty)) scale(1);
+    opacity: 0;
+  }
+}
+
+/* Musk Messages - AI typing dots + soft pop-in float */
+.typing-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.typing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--soft-lavender);
+  opacity: 0.6;
+}
+
+.typing-dot:nth-child(1) { animation: pulseDot 1.4s infinite 0s; }
+.typing-dot:nth-child(2) { animation: pulseDot 1.4s infinite 0.2s; }
+.typing-dot:nth-child(3) { animation: pulseDot 1.4s infinite 0.4s; }
+
+@keyframes pulseDot {
+  0%, 60%, 100% { transform: scale(1); opacity: 0.6; }
+  30% { transform: scale(1.5); opacity: 1; }
+}
+
+.musk-message {
+  animation: popInFloat 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes popInFloat {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+  70% {
+    transform: translateY(-2px) scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Add Pulse - Neon pulse ring + animated reaction buttons */
+.pulse-ring {
+  position: relative;
+}
+
+.pulse-ring::after {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  border-radius: 50%;
+  border: 3px solid var(--soft-lavender);
+  opacity: 0;
+  z-index: -1;
+}
+
+.pulse-active .pulse-ring::after {
+  animation: neonPulseRing 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes neonPulseRing {
+  0% {
+    opacity: 0.8;
+    transform: scale(0.5);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+}
+
+/* XP Earned - Flame that burns brighter */
+.xp-flame {
+  width: 30px;
+  height: 30px;
+  background: linear-gradient(to top, var(--soft-coral), var(--peach-mist));
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  position: relative;
+  transform-origin: center bottom;
+}
+
+.xp-flame::before,
+.xp-flame::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  transform-origin: center bottom;
+}
+
+.xp-flame::before {
+  background: linear-gradient(to top, var(--soft-coral), transparent);
+  animation: flameFlicker 3s infinite alternate;
+}
+
+.xp-flame::after {
+  background: linear-gradient(to top, var(--peach-mist), transparent 70%);
+  animation: flameFlicker 4s 0.5s infinite alternate;
+}
+
+@keyframes flameFlicker {
+  0%, 100% {
+    transform: scale(1) rotate(-2deg);
+    opacity: 0.5;
+  }
+  25% {
+    transform: scale(1.1) rotate(3deg);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(0.9) rotate(-1deg);
+    opacity: 0.6;
+  }
+  75% {
+    transform: scale(1.05) rotate(1deg);
+    opacity: 0.8;
+  }
+}
+
+.xp-boost .xp-flame,
+.xp-boost .xp-flame::before,
+.xp-boost .xp-flame::after {
+  animation-duration: 0.7s;
+  transform: scale(1.2);
+  filter: brightness(1.2);
+}
+
+/* ======= 3. INTELLIGENT FEEDBACK LOOPS ======= */
+
+/* Level-up flash */
+.level-up-flash {
+  position: relative;
+  overflow: hidden;
+}
+
+.level-up-flash::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 70%);
+  opacity: 0;
+}
+
+.level-up-active .level-up-flash::before {
+  animation: levelUpFlash 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes levelUpFlash {
+  0% {
+    opacity: 0;
+    transform: scale(0.1);
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+/* XP bar animate fill */
+.xp-bar {
+  position: relative;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  height: 10px;
+}
+
+.xp-fill {
+  height: 100%;
+  border-radius: 10px;
+  background: linear-gradient(90deg, var(--soft-lavender), var(--sky-blush));
+  width: var(--fill-percent, 0%);
+  transition: width 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Glow outline effect for AI enhanced sections */
+.ai-enhanced {
+  position: relative;
+}
+
+.ai-enhanced::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border-radius: inherit;
+  border: 2px solid transparent;
+  background: linear-gradient(45deg, var(--sky-blush), var(--soft-lavender)) border-box;
+  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
+  mask-composite: exclude;
+  opacity: 0;
+}
+
+.ai-enhanced.active::before {
+  animation: glowOutlineEffect 2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes glowOutlineEffect {
+  0% {
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Profile Completion Orb */
+.profile-orb {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: conic-gradient(var(--sky-blush) var(--percent, 0%), rgba(228, 215, 250, 0.3) var(--percent, 0%));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+  position: relative;
+}
+
+.profile-orb::before {
+  content: '';
+  position: absolute;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: white;
+}
+
+.profile-orb-icon {
+  position: relative;
+  z-index: 1;
+  transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.profile-complete .profile-orb-icon {
+  animation: orbIconGlow 2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  filter: drop-shadow(0 0 10px var(--sky-blush));
+}
+
+@keyframes orbIconGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 3px var(--sky-blush));
+    transform: scale(1);
+  }
+  50% {
+    filter: drop-shadow(0 0 15px var(--sky-blush));
+    transform: scale(1.2);
+  }
+}
+
+/* Badge Unlock Animation */
+.badge-unlock {
+  animation: badgeFloatDown 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes badgeFloatDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.7);
+    filter: brightness(1.5);
+  }
+  70% {
+    opacity: 1;
+    transform: translateY(5px) scale(1.1);
+    filter: brightness(1.2);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: brightness(1);
+  }
+}
+
+.badge-halo {
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+  opacity: 0;
+}
+
+.badge-unlock .badge-halo {
+  animation: badgeHaloPulse 1.5s ease-out;
+}
+
+@keyframes badgeHaloPulse {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  40% {
+    opacity: 0.8;
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+}
+
+/* ======= 4. GESTURAL UX ======= */
+
+/* 3D Tilt Card Effect */
+.tilt-card {
+  transform-style: preserve-3d;
+  transform: perspective(1000px);
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.tilt-card-inner {
+  transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.tilt-card-front,
+.tilt-card-back {
+  backface-visibility: hidden;
+  transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.tilt-card-back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transform: rotateY(180deg);
+}
+
+.tilt-card.flipped .tilt-card-inner {
+  transform: rotateY(180deg);
+}
+
+/* Drag-to-Organize with squishy animation */
+.draggable-item {
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.draggable-item.dragging {
+  transform: scale(1.05);
+  z-index: 10;
+}
+
+.draggable-item.squish {
+  animation: squishItem 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes squishItem {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(0.95, 1.05);
+  }
+  60% {
+    transform: scale(1.05, 0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Parallax Scroll Effects */
+.parallax-container {
+  perspective: 1px;
+  height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.parallax-layer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.parallax-layer-back {
+  transform: translateZ(-1px) scale(2);
+}
+
+.parallax-layer-base {
+  transform: translateZ(0);
+}
+
+.parallax-layer-front {
+  transform: translateZ(0.5px) scale(0.5);
+}
+
+/* ======= 5. AMBIENT DELIGHT LAYER ======= */
+
+/* Background Auras */
+.ambient-aura {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(228, 215, 250, 0.2) 0%, rgba(228, 215, 250, 0) 70%);
+  filter: blur(40px);
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: -1;
+  transform: translate(-50%, -50%);
+  animation: auraFloat 20s infinite alternate ease-in-out;
+}
+
+@keyframes auraFloat {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translate(-30%, -40%) scale(1);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate(-60%, -30%) scale(0.9);
+    opacity: 0.4;
+  }
+}
+
+/* Quantum Glow */
+.quantum-glow {
+  position: relative;
+}
+
+.quantum-glow::after {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  border-radius: inherit;
+  background: radial-gradient(circle, var(--soft-lavender) 0%, transparent 70%);
+  filter: blur(5px);
+  opacity: 0;
+  z-index: -1;
+  animation: quantumPulse 6s infinite cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes quantumPulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.05);
+  }
+}
+
+/* Live Pulse Ping */
+.pulse-ping {
+  position: relative;
+}
+
+.pulse-ping::before {
+  content: '✨';
+  position: absolute;
+  top: -20px;
+  right: -10px;
+  font-size: 20px;
+  opacity: 0;
+  transform: scale(0);
+}
+
+.pulse-ping.active::before {
+  animation: pulsePingTrail 1.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes pulsePingTrail {
+  0% {
+    opacity: 0;
+    transform: scale(0) translateY(0);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8) translateY(-15px);
+  }
+}
+
+/* Cursor Sparkle Trail (Optional with JS) */
+.sparkle-trail {
+  position: fixed;
+  pointer-events: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--primary-gradient);
+  opacity: 0;
+  z-index: 100000;
+}
+
+/* ======= 7. MOTIVATIONAL RHYTHMS ======= */
+
+/* Login Streak Flame Border */
+.streak-flame-border {
+  position: relative;
+}
+
+.streak-flame-border.active::before {
+  content: '';
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--soft-coral) 0deg, 
+    var(--peach-mist) 120deg, 
+    var(--soft-lavender) 240deg, 
+    var(--soft-coral) 360deg
+  );
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 5px;
+  animation: rotateBorder 4s linear infinite;
+}
+
+@keyframes rotateBorder {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Halfway Done Quest Popup */
+.quest-halfway-popup {
+  animation: popupMotivational 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes popupMotivational {
+  0% {
+    opacity: 0;
+    transform: scale(0) translateY(10px);
+  }
+  80% {
+    transform: scale(1.1) translateY(-5px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Resume Updated Success Animation */
+.resume-success-ring {
+  stroke-dasharray: 500;
+  stroke-dashoffset: 500;
+  animation: drawSuccessRing 2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes drawSuccessRing {
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.resume-success-check {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: drawSuccessCheck 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation-delay: 0.5s;
+}
+
+@keyframes drawSuccessCheck {
+  100% {
+    stroke-dashoffset: 0;
+  }
+}

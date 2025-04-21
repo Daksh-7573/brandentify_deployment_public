@@ -1,4 +1,5 @@
 @import './styles/neopastel.css';
+@import './styles/lumos-animations.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
