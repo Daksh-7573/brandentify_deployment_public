@@ -4908,22 +4908,30 @@ export class DatabaseStorage implements IStorage {
     try {
       console.log(`[storage.getServicesByUserId] Fetching services for user ${userId}`);
       
-      // Use sql template literal for safer parameter binding
-      const result = await db.execute(sql`
-        SELECT id, user_id as "userId", title, description, category, 
-               price_inr as "priceInr", price_usd as "priceUsd", 
-               is_hourly as "isHourly", features, image_url as "imageUrl",
-               "order", is_active as "isActive", created_at as "createdAt", 
-               updated_at as "updatedAt"
+      // Use direct pool query for more control over the result format
+      const result = await pool.query(`
+        SELECT 
+          id, 
+          user_id as "userId", 
+          title, 
+          description, 
+          category, 
+          price_inr as "priceInr", 
+          price_usd as "priceUsd",
+          is_hourly as "isHourly", 
+          features, 
+          image_url as "imageUrl",
+          "order", 
+          is_active as "isActive", 
+          created_at as "createdAt", 
+          updated_at as "updatedAt"
         FROM services
-        WHERE user_id = ${userId}
-      `);
+        WHERE user_id = $1
+      `, [userId]);
       
-      // Ensure we're returning an array
-      const services = Array.isArray(result) ? result : [];
-      console.log(`[storage.getServicesByUserId] Found ${services.length} services for user ${userId}`);
+      console.log(`[storage.getServicesByUserId] Found ${result.rows.length} services for user ${userId} (Query returned ${result.rowCount} rows)`);
       
-      return services;
+      return result.rows;
     } catch (error) {
       console.error(`[storage.getServicesByUserId] Error fetching services for user ${userId}:`, error);
       // Return empty array on error instead of throwing, to prevent UI from breaking
