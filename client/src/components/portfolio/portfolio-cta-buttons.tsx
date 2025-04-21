@@ -207,11 +207,11 @@ export default function PortfolioCtaButtons({
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select a conversation starter..." />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="max-w-md">
                   <SelectItem value="custom_intro">Choose your own...</SelectItem>
                   {introOptions.map((option, index) => (
-                    <SelectItem key={index} value={option}>
-                      {option.length > 50 ? option.substring(0, 50) + '...' : option}
+                    <SelectItem key={index} value={option} className="py-3 whitespace-normal">
+                      {option}
                     </SelectItem>
                   ))}
                 </SelectContent>
