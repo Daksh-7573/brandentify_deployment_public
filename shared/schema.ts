@@ -16,16 +16,9 @@ export const users = pgTable("users", {
   aboutMe: text("about_me"), // About Me section - max 350 words
   location: text("location"), // User location (city/state name)
   industry: text("industry"), // User's industry
-  domain: text("domain"), // User's professional domain/expertise
-  company: text("company"), // User's company name
   lookingFor: text("looking_for"), // What the user is looking for (networking type)
   visitingCardType: text("visiting_card_type"), // Type of digital visiting card
   profileCompleted: integer("profile_completed").default(0), // Percentage
-  // Smart Radar geolocation data
-  geoLatitude: decimal("geo_latitude", { precision: 10, scale: 7 }), // Latitude for geo search
-  geoLongitude: decimal("geo_longitude", { precision: 10, scale: 7 }), // Longitude for geo search
-  geoVisibleNearby: boolean("geo_visible_nearby").default(true), // Whether user is visible in nearby searches
-  geoLastUpdated: timestamp("geo_last_updated"), // When location was last updated
   emailVerified: boolean("email_verified").default(false), // Whether email is verified
   emailVerificationToken: text("email_verification_token"), // Token for email verification
   emailVerificationExpires: timestamp("email_verification_expires"), // When token expires
@@ -82,7 +75,6 @@ export const workExperiences = pgTable("work_experiences", {
   title: text("title").notNull(),
   company: text("company").notNull(),
   industry: text("industry"),
-  domain: text("domain"),
   location: text("location"),
   startDate: text("start_date").notNull(),
   endDate: text("end_date"),

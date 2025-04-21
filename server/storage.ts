@@ -4571,8 +4571,33 @@ export class DatabaseStorage implements IStorage {
   // User operations
   async getUser(id: number): Promise<User | undefined> {
     console.log(`[db.getUser] Looking up user with ID: ${id}`);
-    const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user || undefined;
+    try {
+      // Select only the columns that we know exist in the database
+      const [user] = await db.select({
+        id: users.id,
+        username: users.username,
+        email: users.email,
+        password: users.password,
+        phoneNumber: users.phoneNumber,
+        name: users.name,
+        photoURL: users.photoURL,
+        title: users.title,
+        aboutMe: users.aboutMe,
+        location: users.location,
+        industry: users.industry,
+        lookingFor: users.lookingFor,
+        visitingCardType: users.visitingCardType,
+        profileCompleted: users.profileCompleted,
+        emailVerified: users.emailVerified,
+        emailVerificationToken: users.emailVerificationToken,
+        emailVerificationExpires: users.emailVerificationExpires,
+        createdAt: users.createdAt
+      }).from(users).where(eq(users.id, id));
+      return user || undefined;
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      throw error;
+    }
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
