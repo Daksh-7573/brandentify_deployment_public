@@ -34,6 +34,7 @@ interface CorporateExecutiveProps {
 // Enhanced Service type for the Corporate Executive template
 interface EnhancedService extends Service {
   pricing?: string;
+  category?: "consulting" | "coaching" | "advisory" | string;
 }
 
 export default function CorporateExecutive({ 
@@ -48,6 +49,70 @@ export default function CorporateExecutive({
   
   // Sort skills by proficiency
   const sortedSkills = [...userSkills].sort((a, b) => (b.proficiency || 0) - (a.proficiency || 0));
+  
+  // Create enhanced services with pricing information
+  const enhancedServices: EnhancedService[] = userServices.length > 0 
+    ? userServices.map(service => ({
+        ...service,
+        pricing: service.category === 'coaching' 
+          ? 'Starting at $5,000' 
+          : service.category === 'consulting' 
+            ? 'Custom engagement' 
+            : 'On Request'
+      }))
+    : [
+        {
+          id: 1,
+          userId: 1,
+          title: "Strategic Advisory",
+          description: "Expert guidance on business strategy, growth initiatives, and market positioning to help your organization achieve its full potential.",
+          category: "consulting",
+          pricing: "Custom engagement",
+          createdAt: new Date(),
+          updatedAt: null,
+          priceInr: null,
+          priceUsd: null,
+          isHourly: false,
+          features: [],
+          imageUrl: null,
+          order: 1,
+          isActive: true
+        },
+        {
+          id: 2,
+          title: "Executive Coaching",
+          description: "Personalized coaching for senior leaders and executives focused on leadership development, decision-making, and organizational effectiveness.",
+          userId: 1,
+          category: "coaching",
+          pricing: "Starting at $5,000",
+          createdAt: new Date(),
+          updatedAt: null,
+          priceInr: null,
+          priceUsd: null,
+          isHourly: false,
+          features: [],
+          imageUrl: null,
+          order: 2,
+          isActive: true
+        },
+        {
+          id: 3,
+          title: "Board Directorship",
+          description: "Experienced board member bringing strategic oversight, governance expertise, and industry knowledge to drive corporate success.",
+          userId: 1,
+          category: "advisory",
+          pricing: "On Request",
+          createdAt: new Date(),
+          updatedAt: null,
+          priceInr: null,
+          priceUsd: null,
+          isHourly: false,
+          features: [],
+          imageUrl: null,
+          order: 3,
+          isActive: true
+        }
+      ];
   
   // Sort experiences by date (most recent first)
   const sortedExperiences = [...userExperiences].sort((a, b) => 
@@ -64,62 +129,7 @@ export default function CorporateExecutive({
     new Date(b.startDate || '').getTime() - new Date(a.startDate || '').getTime()
   );
   
-  // Define example enhanced services with pricing for the template
-  const enhancedServices: EnhancedService[] = userServices.length > 0 ? 
-    [...userServices].sort((a, b) => (a.title || '').localeCompare(b.title || '')) :
-    [
-      {
-        id: 101,
-        userId: 1,
-        title: "Strategic Business Consulting",
-        description: "Comprehensive business strategy development and implementation services tailored to your industry and growth objectives.",
-        category: "consulting",
-        createdAt: new Date(),
-        priceInr: null,
-        priceUsd: null,
-        isHourly: false,
-        features: [],
-        imageUrl: null,
-        order: 1,
-        isActive: true,
-        updatedAt: null,
-        pricing: "Custom engagement"
-      },
-      {
-        id: 102,
-        userId: 1,
-        title: "Executive Coaching",
-        description: "Personalized coaching for senior leaders and executives focused on leadership development, decision-making, and organizational effectiveness.",
-        category: "coaching",
-        createdAt: new Date(),
-        priceInr: null,
-        priceUsd: null,
-        isHourly: false,
-        features: [],
-        imageUrl: null,
-        order: 2,
-        isActive: true,
-        updatedAt: null,
-        pricing: "Starting at $5,000"
-      },
-      {
-        id: 103,
-        userId: 1,
-        title: "Board Directorship",
-        description: "Experienced board member bringing strategic oversight, governance expertise, and industry knowledge to drive corporate success.",
-        category: "consulting",
-        createdAt: new Date(),
-        priceInr: null,
-        priceUsd: null,
-        isHourly: false,
-        features: [],
-        imageUrl: null,
-        order: 3,
-        isActive: true,
-        updatedAt: null,
-        pricing: "On Request"
-      }
-    ];
+
   
   // Maps skill names to appropriate icons
   const getSkillIcon = (name: string) => {
@@ -598,7 +608,7 @@ export default function CorporateExecutive({
                 {userInfo.email && (
                   <a 
                     href={`mailto:${userInfo.email}`} 
-                    className="text-gray-500 hover:text-[#b8860b] transition-colors"
+                    className="text-gray-500 hover:text-[#6a0dad] transition-colors"
                     aria-label="Email"
                   >
                     <Mail className="h-5 w-5" />
@@ -606,7 +616,7 @@ export default function CorporateExecutive({
                 )}
                 <a 
                   href="#" 
-                  className="text-gray-500 hover:text-[#b8860b] transition-colors"
+                  className="text-gray-500 hover:text-[#6a0dad] transition-colors"
                   aria-label="LinkedIn"
                 >
                   <Linkedin className="h-5 w-5" />
@@ -646,7 +656,7 @@ export default function CorporateExecutive({
                     {Array.from({ length: 5 }).map((_, i) => (
                       <div 
                         key={i} 
-                        className={`h-1 rounded-full ${i < (skill.proficiency || 3) ? 'bg-[#b8860b]' : 'bg-gray-200'}`} 
+                        className={`h-1 rounded-full ${i < (skill.proficiency || 3) ? 'bg-[#6a0dad]' : 'bg-gray-200'}`} 
                         style={{ width: '12px' }}
                       ></div>
                     ))}
@@ -812,7 +822,7 @@ export default function CorporateExecutive({
                           <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>
                             {exp.title}
                           </h3>
-                          <p className="text-[#b8860b] font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          <p className="text-[#6a0dad] font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>
                             {exp.company}
                           </p>
                         </div>
@@ -868,7 +878,7 @@ export default function CorporateExecutive({
                       <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>
                         {edu.degree}
                       </h3>
-                      <p className="text-[#b8860b] font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>
+                      <p className="text-[#6a0dad] font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>
                         {edu.institution}
                       </p>
                     </div>
