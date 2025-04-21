@@ -597,10 +597,10 @@ export default function VisualExpert({
                       {service.description}
                     </p>
                     
-                    {service.pricing && (
+                    {service.category && (
                       <div className="bg-sky-50 p-4 rounded-lg mb-6">
                         <p className="text-sky-800 font-medium" style={{ fontFamily: "Poppins, sans-serif" }}>
-                          {service.pricing}
+                          Category: {service.category}
                         </p>
                       </div>
                     )}
@@ -932,11 +932,16 @@ export default function VisualExpert({
         </div>
       </section>
       
-      {/* Sticky "Talk" CTA Button */}
+      {/* Sticky CTA Buttons */}
       <div className="sticky-cta">
-        <Button className="rounded-full w-14 h-14 flex items-center justify-center p-0 bg-gradient-to-r from-sky-500 to-indigo-500 shadow-lg">
-          <MessagesSquare className="h-6 w-6 text-white" />
-        </Button>
+        <PortfolioCtaButtons 
+          variant="creative"
+          resumeUrl={null} 
+          mentorUrl={null}
+          connectUrl={null}
+          userEmail={userInfo.email}
+          userName={userInfo.name}
+        />
       </div>
     </div>
   );

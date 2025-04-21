@@ -827,9 +827,9 @@ export default function TimelineStoryteller({
                         </div>
                         
                         {/* Additional details */}
-                        {edu.fieldOfStudy && (
+                        {edu.degree && (
                           <div className="mt-3 text-gray-600">
-                            <span className="font-medium">Field of Study:</span> {edu.fieldOfStudy}
+                            <span className="font-medium">Degree:</span> {edu.degree}
                           </div>
                         )}
                       </div>
