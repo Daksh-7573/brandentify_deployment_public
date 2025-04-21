@@ -959,35 +959,31 @@ export class MemStorage implements IStorage {
   async getUser(id: number): Promise<User | undefined> {
     console.log(`[db.getUser] Looking up user with ID: ${id}`);
     try {
-      const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+      // Using explicit column names instead of SELECT * to ensure proper mapping
+      const query = `
+        SELECT id, username, email, password, phone_number as "phoneNumber", 
+        name, photo_url as "photoURL", title, about_me as "aboutMe", 
+        location, industry, domain, looking_for as "lookingFor", 
+        visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
+        email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
+        email_verification_expires as "emailVerificationExpires", created_at as "createdAt"
+        FROM users WHERE id = $1
+      `;
+      
+      console.log(`[db.getUser] Executing query: ${query} with params [${id}]`);
+      const result = await pool.query(query, [id]);
+      
+      console.log(`[db.getUser] Query returned ${result.rows.length} rows:`, result.rows);
       
       if (result.rows.length === 0) {
         console.log(`[db.getUser] No user found with ID: ${id}`);
         return undefined;
       }
       
-      const userData = result.rows[0];
-      // Map database column names to camelCase property names
-      const user: User = {
-        id: userData.id,
-        username: userData.username,
-        email: userData.email,
-        password: userData.password,
-        phoneNumber: userData.phone_number,
-        name: userData.name,
-        photoURL: userData.photo_url,
-        title: userData.title,
-        location: userData.location,
-        industry: userData.industry,
-        lookingFor: userData.looking_for,
-        profileCompleted: userData.profile_completed,
-        emailVerified: userData.email_verified,
-        emailVerificationToken: userData.email_verification_token,
-        emailVerificationExpires: userData.email_verification_expires,
-        createdAt: userData.created_at,
-        aboutMe: userData.about_me,
-        visitingCardType: userData.visiting_card_type
-      };
+      const user = result.rows[0];
+      console.log(`[db.getUser] User found:`, user);
+      
+      return user as User;
       
       console.log(`[db.getUser] Found user with ID: ${id}`);
       return user;
@@ -999,33 +995,24 @@ export class MemStorage implements IStorage {
 
   async getUserByEmail(email: string): Promise<User | undefined> {
     try {
-      const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+      // Using explicit column names instead of SELECT * to ensure proper mapping
+      const query = `
+        SELECT id, username, email, password, phone_number as "phoneNumber", 
+        name, photo_url as "photoURL", title, about_me as "aboutMe", 
+        location, industry, domain, looking_for as "lookingFor", 
+        visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
+        email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
+        email_verification_expires as "emailVerificationExpires", created_at as "createdAt"
+        FROM users WHERE email = $1
+      `;
+      
+      const result = await pool.query(query, [email]);
       
       if (result.rows.length === 0) {
         return undefined;
       }
       
-      const userData = result.rows[0];
-      return {
-        id: userData.id,
-        username: userData.username,
-        email: userData.email,
-        password: userData.password,
-        phoneNumber: userData.phone_number,
-        name: userData.name,
-        photoURL: userData.photo_url,
-        title: userData.title,
-        location: userData.location,
-        industry: userData.industry,
-        lookingFor: userData.looking_for,
-        profileCompleted: userData.profile_completed,
-        emailVerified: userData.email_verified,
-        emailVerificationToken: userData.email_verification_token,
-        emailVerificationExpires: userData.email_verification_expires,
-        createdAt: userData.created_at,
-        aboutMe: userData.about_me,
-        visitingCardType: userData.visiting_card_type
-      };
+      return result.rows[0] as User;
     } catch (error) {
       console.error(`Error fetching user with email ${email}:`, error);
       return undefined;
@@ -1036,7 +1023,18 @@ export class MemStorage implements IStorage {
     console.log(`Looking up user by username: ${username}`);
     
     try {
-      const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
+      // Using explicit column names instead of SELECT * to ensure proper mapping
+      const query = `
+        SELECT id, username, email, password, phone_number as "phoneNumber", 
+        name, photo_url as "photoURL", title, about_me as "aboutMe", 
+        location, industry, domain, looking_for as "lookingFor", 
+        visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
+        email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
+        email_verification_expires as "emailVerificationExpires", created_at as "createdAt"
+        FROM users WHERE username = $1
+      `;
+      
+      const result = await pool.query(query, [username]);
       
       if (result.rows.length === 0) {
         // Check if this is a Firebase UID and warn about it
@@ -1046,28 +1044,7 @@ export class MemStorage implements IStorage {
         return undefined;
       }
       
-      const userData = result.rows[0];
-      const user: User = {
-        id: userData.id,
-        username: userData.username,
-        email: userData.email,
-        password: userData.password,
-        phoneNumber: userData.phone_number,
-        name: userData.name,
-        photoURL: userData.photo_url,
-        title: userData.title,
-        location: userData.location,
-        industry: userData.industry,
-        lookingFor: userData.looking_for,
-        profileCompleted: userData.profile_completed,
-        emailVerified: userData.email_verified,
-        emailVerificationToken: userData.email_verification_token,
-        emailVerificationExpires: userData.email_verification_expires,
-        createdAt: userData.created_at,
-        aboutMe: userData.about_me,
-        visitingCardType: userData.visiting_card_type
-      };
-      
+      const user = result.rows[0] as User;
       console.log(`Found user with username "${username}":`, user);
       return user;
     } catch (error) {
@@ -1094,9 +1071,12 @@ export class MemStorage implements IStorage {
       name: insertUser.name ?? null,
       photoURL: insertUser.photoURL ?? null,
       title: insertUser.title ?? null,
+      aboutMe: insertUser.aboutMe ?? null,
       location: insertUser.location ?? null,
       industry: insertUser.industry ?? null,
+      domain: insertUser.domain ?? null,
       lookingFor: insertUser.lookingFor ?? null,
+      visitingCardType: insertUser.visitingCardType ?? null,
       profileCompleted: insertUser.profileCompleted ?? null,
       emailVerified: false,
       emailVerificationToken: null,
