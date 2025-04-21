@@ -4693,40 +4693,100 @@ export class DatabaseStorage implements IStorage {
   async getUser(id: number): Promise<User | undefined> {
     console.log(`[db.getUser] Looking up user with ID: ${id}`);
     try {
-      const users = await db.execute(sql`
-        SELECT id, username, email, password, phone_number as "phoneNumber", 
-               name, photo_url as "photoURL", title, about_me as "aboutMe", 
-               location, industry, looking_for as "lookingFor", 
-               visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
-               email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
-               email_verification_expires as "emailVerificationExpires", created_at as "createdAt"
+      const result = await pool.query(`
+        SELECT 
+          id, username, email, password, phone_number as "phoneNumber", 
+          name, photo_url as "photoURL", title, about_me as "aboutMe", 
+          location, industry, domain, looking_for as "lookingFor", job_level as "jobLevel",
+          visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
+          email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
+          email_verification_expires as "emailVerificationExpires", created_at as "createdAt"
         FROM users
-        WHERE id = ${id}
-      `);
+        WHERE id = $1
+      `, [id]);
       
-      if (users && users.length > 0) {
-        return users[0] as User;
+      console.log(`[db.getUser] Query returned ${result.rows.length} rows`);
+      
+      if (result.rows.length > 0) {
+        return result.rows[0] as User;
       }
       return undefined;
     } catch (error) {
-      console.error("Error fetching user:", error);
-      throw error;
+      console.error(`[db.getUser] Error fetching user with ID ${id}:`, error);
+      return undefined; // Return undefined instead of throwing to prevent UI from breaking
     }
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.email, email));
-    return user || undefined;
+    try {
+      const result = await pool.query(`
+        SELECT 
+          id, username, email, password, phone_number as "phoneNumber", 
+          name, photo_url as "photoURL", title, about_me as "aboutMe", 
+          location, industry, domain, looking_for as "lookingFor", job_level as "jobLevel",
+          visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
+          email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
+          email_verification_expires as "emailVerificationExpires", created_at as "createdAt"
+        FROM users
+        WHERE email = $1
+      `, [email]);
+      
+      if (result.rows.length > 0) {
+        return result.rows[0] as User;
+      }
+      return undefined;
+    } catch (error) {
+      console.error(`[db.getUserByEmail] Error fetching user with email ${email}:`, error);
+      return undefined;
+    }
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.username, username));
-    return user || undefined;
+    try {
+      const result = await pool.query(`
+        SELECT 
+          id, username, email, password, phone_number as "phoneNumber", 
+          name, photo_url as "photoURL", title, about_me as "aboutMe", 
+          location, industry, domain, looking_for as "lookingFor", job_level as "jobLevel",
+          visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
+          email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
+          email_verification_expires as "emailVerificationExpires", created_at as "createdAt"
+        FROM users
+        WHERE username = $1
+      `, [username]);
+      
+      if (result.rows.length > 0) {
+        return result.rows[0] as User;
+      }
+      return undefined;
+    } catch (error) {
+      console.error(`[db.getUserByUsername] Error fetching user with username ${username}:`, error);
+      return undefined;
+    }
   }
 
   async getUserByPhoneNumber(phoneNumber: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.phoneNumber, phoneNumber));
-    return user || undefined;
+    try {
+      const result = await pool.query(`
+        SELECT 
+          id, username, email, password, phone_number as "phoneNumber", 
+          name, photo_url as "photoURL", title, about_me as "aboutMe", 
+          location, industry, domain, looking_for as "lookingFor", job_level as "jobLevel",
+          visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
+          email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
+          email_verification_expires as "emailVerificationExpires", created_at as "createdAt"
+        FROM users
+        WHERE phone_number = $1
+      `, [phoneNumber]);
+      
+      if (result.rows.length > 0) {
+        return result.rows[0] as User;
+      }
+      return undefined;
+    } catch (error) {
+      console.error(`[db.getUserByPhoneNumber] Error fetching user with phone number ${phoneNumber}:`, error);
+      return undefined;
+    }
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
@@ -4751,18 +4811,21 @@ export class DatabaseStorage implements IStorage {
   async getWorkExperiencesByUserId(userId: number): Promise<WorkExperience[]> {
     console.log(`[db.getWorkExperiencesByUserId] Looking for experiences with userId: ${userId}`);
     try {
-      // Use sql template literal for safer parameter binding
-      const result = await db.execute(sql`
+      const result = await pool.query(`
         SELECT id, user_id as "userId", title, company, location, 
                industry, start_date as "startDate", end_date as "endDate", 
                description
         FROM work_experiences
-        WHERE user_id = ${userId}
-      `);
-      return result as WorkExperience[];
+        WHERE user_id = $1
+      `, [userId]);
+      
+      console.log(`[db.getWorkExperiencesByUserId] Found ${result.rows.length} work experiences for user ${userId}`);
+      
+      return result.rows;
     } catch (error) {
-      console.error("Error fetching work experiences:", error);
-      throw error;
+      console.error(`[db.getWorkExperiencesByUserId] Error fetching work experiences for user ${userId}:`, error);
+      // Return empty array on error instead of throwing, to prevent UI from breaking
+      return [];
     }
   }
 
@@ -4823,16 +4886,19 @@ export class DatabaseStorage implements IStorage {
   // Skill operations
   async getSkillsByUserId(userId: number): Promise<Skill[]> {
     try {
-      // Use sql template literal for safer parameter binding
-      const result = await db.execute(sql`
+      const result = await pool.query(`
         SELECT id, user_id as "userId", name, level, proficiency
         FROM skills
-        WHERE user_id = ${userId}
-      `);
-      return result as Skill[];
+        WHERE user_id = $1
+      `, [userId]);
+      
+      console.log(`[db.getSkillsByUserId] Found ${result.rows.length} skills for user ${userId}`);
+      
+      return result.rows;
     } catch (error) {
-      console.error("Error fetching skills:", error);
-      throw error;
+      console.error(`[db.getSkillsByUserId] Error fetching skills for user ${userId}:`, error);
+      // Return empty array on error instead of throwing
+      return [];
     }
   }
 
@@ -4863,19 +4929,22 @@ export class DatabaseStorage implements IStorage {
   // Project operations
   async getProjectsByUserId(userId: number): Promise<Project[]> {
     try {
-      // Use sql template literal for safer parameter binding
-      const result = await db.execute(sql`
+      const result = await pool.query(`
         SELECT id, user_id as "userId", title, description, start_date as "startDate",
                project_url as "projectUrl", category, thumbnail_url as "thumbnailUrl",
                thumbnail_file as "thumbnailFile", media_urls as "mediaUrls",
                created_at as "createdAt", updated_at as "updatedAt"
         FROM projects
-        WHERE user_id = ${userId}
-      `);
-      return result as Project[];
+        WHERE user_id = $1
+      `, [userId]);
+      
+      console.log(`[db.getProjectsByUserId] Found ${result.rows.length} projects for user ${userId}`);
+      
+      return result.rows;
     } catch (error) {
-      console.error("Error fetching projects:", error);
-      throw error;
+      console.error(`[db.getProjectsByUserId] Error fetching projects for user ${userId}:`, error);
+      // Return empty array on error instead of throwing, to prevent UI from breaking
+      return [];
     }
   }
 
