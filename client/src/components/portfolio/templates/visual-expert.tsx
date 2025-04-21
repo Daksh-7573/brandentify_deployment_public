@@ -659,16 +659,14 @@ export default function VisualExpert({
               </Button>
               
               <Button 
-                variant="outline" 
-                className="text-white border-white/30 hover:bg-white/10 px-8 py-6 rounded-md shadow-md glow-on-hover"
+                className="bg-pink-500/20 text-pink-300 border border-pink-400/30 hover:bg-pink-500/30 px-8 py-6 rounded-md shadow-md glow-on-hover"
               >
                 <Download className="w-5 h-5 mr-2" />
                 Grab My Resume
               </Button>
               
               <Button 
-                variant="outline" 
-                className="text-white border-white/30 hover:bg-white/10 px-8 py-6 rounded-md shadow-md glow-on-hover"
+                className="bg-purple-500/20 text-purple-300 border border-purple-400/30 hover:bg-purple-500/30 px-8 py-6 rounded-md shadow-md glow-on-hover"
               >
                 <Lightbulb className="w-5 h-5 mr-2" />
                 Mentor
@@ -931,8 +929,7 @@ export default function VisualExpert({
             </Button>
             
             <Button 
-              variant="outline" 
-              className="text-white border-white hover:bg-white/10 px-8 py-3 text-lg rounded-md"
+              className="bg-purple-700 text-white hover:bg-purple-800 border border-purple-400 px-8 py-3 text-lg rounded-md shadow-lg"
             >
               <Lightbulb className="w-5 h-5 mr-2" />
               Mentor
