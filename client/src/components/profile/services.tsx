@@ -60,6 +60,12 @@ export default function Services() {
     isPendingDelete
   } = useProfileServices();
   
+  console.log('Services component - data received:', { 
+    whatIOffer, 
+    servicesCount: services?.length || 0,
+    isLoading 
+  });
+  
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -130,13 +136,13 @@ export default function Services() {
     
       <CardContent>
         {/* Special "What I Offer" Statement Section */}
-        {whatIOffer && whatIOffer.whatIOffer && (
+        {whatIOffer && (
           <div className="mb-6 p-4 bg-primary/5 rounded-lg border border-primary/20">
             <div className="flex items-start space-x-2">
               <Quote className="h-6 w-6 text-primary/70 mt-0.5 flex-shrink-0" />
               <div>
                 <h3 className="text-lg font-medium text-primary-foreground mb-2">My Professional Offering</h3>
-                <p className="text-gray-700">{whatIOffer.whatIOffer}</p>
+                <p className="text-gray-700">{whatIOffer}</p>
               </div>
             </div>
           </div>

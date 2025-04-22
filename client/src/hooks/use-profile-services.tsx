@@ -230,14 +230,22 @@ export function useProfileServices() {
   });
   
   // Extract data from the query
-  const { whatIOffer = '', services = [] } = profileServicesQuery.data || {};
-  const isServicesArray = Array.isArray(services);
+  const data = profileServicesQuery.data || {};
   
-  console.log('useProfileServices hook - returning data', { 
+  // Handle both string and object format for whatIOffer
+  let whatIOffer = '';
+  if (typeof data.whatIOffer === 'string') {
+    whatIOffer = data.whatIOffer;
+  } else if (typeof data.whatIOffer === 'object' && data.whatIOffer && 'whatIOffer' in data.whatIOffer) {
+    whatIOffer = data.whatIOffer.whatIOffer;
+  }
+  
+  // Handle services array
+  const services = Array.isArray(data.services) ? data.services : [];
+  
+  console.log('useProfileServices hook - processed data', { 
     whatIOffer,
-    servicesData: services,
-    isArray: isServicesArray,
-    length: isServicesArray ? services.length : 'not an array',
+    servicesCount: services.length,
     isLoading: profileServicesQuery.isLoading,
     isError: profileServicesQuery.isError,
     error: profileServicesQuery.error?.message
@@ -245,7 +253,7 @@ export function useProfileServices() {
   
   return {
     whatIOffer,
-    services: isServicesArray ? services : [],
+    services,
     isLoading: profileServicesQuery.isLoading,
     isError: profileServicesQuery.isError,
     error: profileServicesQuery.error,
