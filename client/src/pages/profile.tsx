@@ -2273,47 +2273,55 @@ export default function Profile() {
                     </p>
                   )}
                   
-                  {/* What I'm All About section */}
-                  {userData?.aboutMe && (
-                    <div className="mt-4">
-                      <div className="flex justify-between items-center">
-                        <h3 className="text-sm font-medium text-gray-900">What I'm All About</h3>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="h-7 px-2 text-xs" 
-                          onClick={() => setLocation('/edit-profile')}
-                        >
-                          <Edit className="h-3 w-3 mr-1" />
-                          Edit
-                        </Button>
-                      </div>
+                  {/* What I'm All About section - always show with Edit button */}
+                  <div className="mt-4">
+                    <div className="flex justify-between items-center">
+                      <h3 className="text-sm font-medium text-gray-900">What I'm All About</h3>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-7 px-2 text-xs" 
+                        onClick={() => setLocation('/edit-profile')}
+                      >
+                        <Edit className="h-3 w-3 mr-1" />
+                        Edit
+                      </Button>
+                    </div>
+                    {userData?.aboutMe ? (
                       <p className="mt-2 text-sm text-gray-500 whitespace-pre-line">
                         {userData.aboutMe}
                       </p>
-                    </div>
-                  )}
+                    ) : (
+                      <p className="mt-2 text-sm text-gray-400 italic">
+                        Add information about yourself
+                      </p>
+                    )}
+                  </div>
                   
-                  {/* What I Offer section */}
-                  {userData?.whatIOffer && (
-                    <div className="mt-4">
-                      <div className="flex justify-between items-center">
-                        <h3 className="text-sm font-medium text-gray-900">What I Offer</h3>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="h-7 px-2 text-xs" 
-                          onClick={() => setLocation('/edit-profile')}
-                        >
-                          <Edit className="h-3 w-3 mr-1" />
-                          Edit
-                        </Button>
-                      </div>
+                  {/* What I Offer section - always show with Edit button */}
+                  <div className="mt-4">
+                    <div className="flex justify-between items-center">
+                      <h3 className="text-sm font-medium text-gray-900">What I Offer</h3>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-7 px-2 text-xs" 
+                        onClick={() => setLocation('/edit-profile')}
+                      >
+                        <Edit className="h-3 w-3 mr-1" />
+                        Edit
+                      </Button>
+                    </div>
+                    {userData?.whatIOffer ? (
                       <p className="mt-2 text-sm text-gray-500 whitespace-pre-line">
                         {userData.whatIOffer}
                       </p>
-                    </div>
-                  )}
+                    ) : (
+                      <p className="mt-2 text-sm text-gray-400 italic">
+                        Add details about your services and offerings
+                      </p>
+                    )}
+                  </div>
                 </div>
                 {/* Skills section removed */}
               </CardContent>
