@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient";
 import { 
   Loader2, ArrowLeft, Save, User, FileText, GraduationCap, 
   Sparkles, Folder, Briefcase, Phone
@@ -45,12 +46,13 @@ export default function EditProfilePage() {
   }, [userData]);
   
   // Handler for when editing is complete
-  const handleEditingComplete = () => {
+  const handleEditingComplete = async () => {
     setIsSaving(true);
     
-    // Simulate saving delay for better UX
-    setTimeout(() => {
-      setIsSaving(false);
+    try {
+      // Use the queryClient to invalidate and refetch user data
+      await queryClient.invalidateQueries({ queryKey: ['/api/users', user?.id] });
+      
       setShowSuccessMessage(true);
       
       toast({
@@ -64,7 +66,16 @@ export default function EditProfilePage() {
         setShowSuccessMessage(false);
         setLocation('/profile');
       }, 1500);
-    }, 800);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast({
+        title: "Error updating profile",
+        description: "There was a problem updating your profile. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
   
   // Handle cancel editing
