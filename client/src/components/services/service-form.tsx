@@ -21,9 +21,9 @@ import { Service } from "@shared/schema";
 const formSchema = z.object({
   title: z.string().min(1, "Service title is required"),
   description: z.string().optional(),
-  category: z.string().default("other"),
-  priceInr: z.number().nullable().optional(),
-  priceUsd: z.number().nullable().optional(),
+  category: z.string().optional().default("other"),
+  priceInr: z.string().nullable().optional(),
+  priceUsd: z.string().nullable().optional(),
   isHourly: z.boolean().default(false),
   isActive: z.boolean().default(true),
 });
@@ -61,14 +61,21 @@ export default function ServiceForm({ service, onSubmit, isPending, existingServ
   
   // Handle form submission
   const handleSubmit = (values: FormValues) => {
+    // Convert string price values to numbers if they exist
+    const priceInr = values.priceInr ? parseFloat(values.priceInr) || null : null;
+    const priceUsd = values.priceUsd ? parseFloat(values.priceUsd) || null : null;
+    
     // Transform form values to match API expectations
     const transformedData = {
       // Start with default values for all required fields
       features: [],
       // Then add existing service values if editing (except for values we're providing explicitly)
       ...(service || {}),
-      // Finally override with new values from the form
+      // Override with new values from the form
       ...values,
+      // Replace string prices with numeric values
+      priceInr,
+      priceUsd,
     };
     
     onSubmit(transformedData);
@@ -160,6 +167,78 @@ export default function ServiceForm({ service, onSubmit, isPending, existingServ
             </FormItem>
           )}
         />
+        
+        {/* Rate Fields */}
+        <div className="space-y-4 border rounded-lg p-4">
+          <h3 className="text-base font-medium">Pricing Details</h3>
+          
+          {/* Currency Selection */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <FormField
+                control={form.control}
+                name="priceInr"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Rate (INR)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        placeholder="Amount in INR"
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            
+            <div>
+              <FormField
+                control={form.control}
+                name="priceUsd"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Rate (USD)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        placeholder="Amount in USD"
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+          
+          {/* Rate Type */}
+          <FormField
+            control={form.control}
+            name="isHourly"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                <div className="space-y-0.5">
+                  <FormLabel className="text-base">Hourly Rate</FormLabel>
+                  <FormDescription className="text-xs">
+                    Toggle on if you charge per hour, off for fixed rate
+                  </FormDescription>
+                </div>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+        </div>
         
         <FormField
           control={form.control}
