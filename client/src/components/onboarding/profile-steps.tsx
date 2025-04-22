@@ -392,8 +392,27 @@ export default function ProfileSteps({
     onSuccess: async (updatedData) => {
       console.log("User update successful. Updated data:", updatedData);
       
-      // Clear all caches to force fresh data fetching
-      queryClient.clear();
+      // Invalidate all user-related queries without clearing the cache completely
+      await queryClient.invalidateQueries({ queryKey: ['/api/users'] });
+      
+      if (userId) {
+        // Invalidate specific user queries
+        await queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
+      }
+      
+      // Use window.location.reload with cache-busting
+      if (isEditing) {
+        console.log("Profile update complete, invalidating queries and refreshing data");
+        
+        // Force browser to reload with a fresh cache
+        const reloadWithCacheBust = () => {
+          const timestamp = new Date().getTime();
+          window.location.href = `/profile?_=${timestamp}`;
+        };
+        
+        // Add a slight delay to ensure server has processed the update
+        setTimeout(reloadWithCacheBust, 1000);
+      }
       
       // Force a refetch directly from the server
       if (userId) {
