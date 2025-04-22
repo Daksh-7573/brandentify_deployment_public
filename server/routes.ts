@@ -342,6 +342,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(`[PUT /users/:id] Updating user with ID: ${idParam}`);
       console.log(`[PUT /users/:id] Update data:`, userData);
       
+      // DEBUG: Log detailed information about the request for troubleshooting
+      console.log(`[PUT /users/:id] ===== DETAILED DEBUG INFO =====`);
+      console.log(`[PUT /users/:id] Headers:`, req.headers);
+      console.log(`[PUT /users/:id] Method:`, req.method);
+      console.log(`[PUT /users/:id] URL:`, req.url);
+      console.log(`[PUT /users/:id] Query params:`, req.query);
+      console.log(`[PUT /users/:id] Content-Type:`, req.headers['content-type']);
+      console.log(`[PUT /users/:id] Body raw:`, JSON.stringify(req.body));
+      console.log(`[PUT /users/:id] ===== END DEBUG INFO =====`);
+      
       // Check if there's a whatIOffer field in the update data
       if ('whatIOffer' in userData) {
         console.log(`[PUT /users/:id] whatIOffer field detected in update: "${userData.whatIOffer}"`);
