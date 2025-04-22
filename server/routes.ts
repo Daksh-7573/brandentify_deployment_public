@@ -342,6 +342,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(`[PUT /users/:id] Updating user with ID: ${idParam}`);
       console.log(`[PUT /users/:id] Update data:`, userData);
       
+      // Check if there's a whatIOffer field in the update data
+      if ('whatIOffer' in userData) {
+        console.log(`[PUT /users/:id] whatIOffer field detected in update: "${userData.whatIOffer}"`);
+      }
+      
       let user;
       let updatedUser;
       
