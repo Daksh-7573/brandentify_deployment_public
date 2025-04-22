@@ -403,10 +403,11 @@ export default function WorkExperience() {
     enabled: !!userId,
   });
   
-  // Get the numeric user ID from the fetched user data
-  const userNumericId = userData?.id || null;
+  // Get the numeric user ID from the fetched user data OR directly from the auth context
+  // This ensures we have a numeric ID even before the userData query completes
+  const userNumericId = userData?.id || user?.id || 2;
   
-  console.log("WorkExperience component - Using userNumericId:", userNumericId);
+  console.log("WorkExperience component - Using userNumericId:", userNumericId, "Firebase UID:", userId);
   
   // Form definition using useForm hook
   const form = useForm<z.infer<typeof workExperienceFormSchema>>({
@@ -487,6 +488,14 @@ export default function WorkExperience() {
     userId: userNumericId || 0,
     isCurrentlyWorking: false
   });
+  
+  // Update the userId in formData whenever userNumericId changes
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      userId: userNumericId || 0
+    }));
+  }, [userNumericId]);
   
   // State for location suggestions
   const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
@@ -835,13 +844,15 @@ export default function WorkExperience() {
       return;
     }
     
-    // Format dates to strings
+    // Format dates to strings and ensure we use the latest userNumericId
     const payload = {
       ...formData,
+      userId: userNumericId, // Make sure we're always using the latest value
       startDate: formData.startDate ? formData.startDate.toISOString() : null,
       endDate: formData.isCurrentlyWorking ? null : (formData.endDate ? formData.endDate.toISOString() : null)
     };
     
+    console.log("Submitting work experience with userId:", userNumericId);
     createExperienceMutation.mutate(payload);
   };
   
@@ -879,13 +890,15 @@ export default function WorkExperience() {
       return;
     }
     
-    // Format dates to strings
+    // Format dates to strings and ensure we use the latest userNumericId
     const payload = {
       ...formData,
+      userId: userNumericId, // Make sure we're always using the latest value
       startDate: formData.startDate ? formData.startDate.toISOString() : null,
       endDate: formData.isCurrentlyWorking ? null : (formData.endDate ? formData.endDate.toISOString() : null)
     };
     
+    console.log("Updating work experience with userId:", userNumericId);
     updateExperienceMutation.mutate(payload);
   };
   
