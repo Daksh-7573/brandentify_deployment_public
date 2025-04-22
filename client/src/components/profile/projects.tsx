@@ -784,7 +784,25 @@ export default function Projects() {
             <CardTitle className="text-xl font-bold">Showcase</CardTitle>
             <CardDescription>Showcase your professional projects and collaborations</CardDescription>
           </div>
-          {/* Add button removed - using central Edit Profile functionality */}
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 gap-1"
+            onClick={() => {
+              projectForm.reset({
+                title: '',
+                description: '',
+                startDate: format(new Date(), 'yyyy-MM-dd'),
+                projectUrl: '',
+                category: '',
+                thumbnailUrl: ''
+              });
+              setIsAddModalOpen(true);
+            }}
+          >
+            <Plus className="h-3.5 w-3.5" />
+            Add Project
+          </Button>
         </CardHeader>
         
         <CardContent>

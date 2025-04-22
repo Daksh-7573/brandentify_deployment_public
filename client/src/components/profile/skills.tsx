@@ -233,7 +233,15 @@ export default function Skills() {
             <CardTitle className="text-xl font-bold">What I'm Good At</CardTitle>
             <CardDescription>Add your professional skills and expertise levels</CardDescription>
           </div>
-          {/* Add button removed - using central Edit Profile functionality */}
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 gap-1"
+            onClick={handleOpenAddModal}
+          >
+            <Plus className="h-3.5 w-3.5" />
+            Add Skill
+          </Button>
         </CardHeader>
         <CardContent>
           {isLoading ? (

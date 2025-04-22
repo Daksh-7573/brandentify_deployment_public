@@ -275,7 +275,17 @@ export default function Services() {
           <CardDescription>Professional services I provide (max 6)</CardDescription>
         </div>
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          {/* Add button removed - using central Edit Profile functionality */}
+          <DialogTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 gap-1"
+              disabled={services.length >= 6 || isPendingCreate || isPendingUpdate}
+            >
+              <PlusCircle className="h-3.5 w-3.5" />
+              Add Service
+            </Button>
+          </DialogTrigger>
           <DialogContent className="sm:max-w-[525px] max-h-[88vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Add Service</DialogTitle>

@@ -595,7 +595,15 @@ export default function Education() {
           <CardTitle className="text-xl font-bold">Academic Background</CardTitle>
           <CardDescription>Add your academic journey</CardDescription>
         </div>
-        {/* Add button removed - using central Edit Profile functionality */}
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-8 gap-1"
+          onClick={() => setIsAddModalOpen(true)}
+        >
+          <Plus className="h-3.5 w-3.5" />
+          Add Education
+        </Button>
       </CardHeader>
       
       <CardContent>
