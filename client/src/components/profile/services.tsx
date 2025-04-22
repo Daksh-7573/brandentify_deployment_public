@@ -362,6 +362,29 @@ export default function Services() {
                     </div>
                   </div>
                   
+                  {/* Service description */}
+                  {service.description && (
+                    <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
+                      {service.description}
+                    </p>
+                  )}
+                  
+                  {/* Display price information */}
+                  <div className="mt-2">
+                    {(service.priceUsd !== undefined && service.priceUsd !== null) && (
+                      <p className="text-sm font-medium">
+                        {formatCurrency(service.priceUsd, 'USD')}
+                        {service.isHourly ? '/hr' : ''}
+                      </p>
+                    )}
+                    {(service.priceInr !== undefined && service.priceInr !== null) && (
+                      <p className="text-sm font-medium">
+                        {formatCurrency(service.priceInr, 'INR')}
+                        {service.isHourly ? '/hr' : ''}
+                      </p>
+                    )}
+                  </div>
+                  
                   <div className="mt-2 flex items-center">
                     <Badge variant="outline" className={service.isActive ? 'bg-primary/10 text-primary border-primary/30' : 'bg-muted'}>
                       {service.isActive ? 'Active' : 'Inactive'}
