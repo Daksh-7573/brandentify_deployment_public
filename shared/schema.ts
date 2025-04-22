@@ -326,10 +326,21 @@ export const services = pgTable("services", {
 });
 
 // Insert schema for Services
-export const insertServiceSchema = createInsertSchema(services).omit({
+const baseServiceSchema = createInsertSchema(services).omit({
   id: true,
   createdAt: true,
   updatedAt: true
+});
+
+// Custom schema with more relaxed validation for price fields
+export const insertServiceSchema = baseServiceSchema.extend({
+  // Make sure category always defaults to "other" if not provided
+  category: z.enum(["consulting", "development", "design", "marketing", "writing", "coaching", "teaching", "other"]).default("other"),
+  // Allow prices to be string or number or null
+  priceInr: z.union([z.number().nullable(), z.string().transform(val => val ? parseFloat(val) : null).nullable()]).nullable().optional(),
+  priceUsd: z.union([z.number().nullable(), z.string().transform(val => val ? parseFloat(val) : null).nullable()]).nullable().optional(),
+  // Make sure features is always an array
+  features: z.array(z.any()).default([])
 });
 
 // Export types for Services

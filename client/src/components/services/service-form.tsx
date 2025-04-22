@@ -22,7 +22,16 @@ const formSchema = z.object({
   title: z.string().min(1, "Service title is required"),
   description: z.string().optional(),
   currency: z.string().default("USD"),
-  price: z.string().nullable().optional(),
+  // Handle price input more robustly - accept string or number, transform to number
+  price: z.union([
+    z.string().transform(val => {
+      if (!val || val === '') return null;
+      const parsed = parseFloat(val);
+      return isNaN(parsed) ? null : parsed;
+    }),
+    z.number(),
+    z.null()
+  ]).nullable().optional(),
   isHourly: z.boolean().default(false),
   isActive: z.boolean().default(true),
 });
@@ -47,8 +56,9 @@ export default function ServiceForm({ service, onSubmit, isPending, existingServ
     title: service?.title || "",
     description: service?.description || "",
     currency: service ? (service.priceUsd ? "USD" : "INR") : "USD",
-    price: service ? (service.priceUsd ? service.priceUsd.toString() : 
-                      service.priceInr ? service.priceInr.toString() : null) : null,
+    // Convert string price to numeric for form schema compatibility
+    price: service ? (service.priceUsd ? parseFloat(service.priceUsd.toString()) : 
+                      service.priceInr ? parseFloat(service.priceInr.toString()) : null) : null,
     isHourly: service?.isHourly || false,
     isActive: service?.isActive !== false,
   };
@@ -60,11 +70,23 @@ export default function ServiceForm({ service, onSubmit, isPending, existingServ
   
   // Handle form submission
   const handleSubmit = (values: FormValues) => {
-    // Convert price string to number (avoid NaN issues)
-    const priceValue = values.price ? (parseFloat(values.price) || 0) : null;
+    // The price value should already be a number from the form schema validation
+    // but we'll ensure it's either a proper number or null
+    let priceValue: number | null = null;
+    
+    if (values.price !== undefined && values.price !== null) {
+      // If it's still a string (should be rare due to our schema), convert it
+      if (typeof values.price === 'string') {
+        const parsed = parseFloat(values.price);
+        priceValue = isNaN(parsed) ? null : parsed;
+      } else if (typeof values.price === 'number') {
+        // It's already a number, which is what we want
+        priceValue = values.price;
+      }
+    }
     
     // Log for debugging
-    console.log(`Service form - submitting with currency: ${values.currency}, price: ${priceValue}`);
+    console.log(`Service form - submitting with currency: ${values.currency}, price: ${priceValue}, price type: ${typeof priceValue}`);
     
     // Set all currency fields to null initially
     const priceData = {
@@ -243,10 +265,16 @@ export default function ServiceForm({ service, onSubmit, isPending, existingServ
                     <FormLabel>Rate Amount</FormLabel>
                     <FormControl>
                       <Input
-                        type="text"
+                        type="number" 
+                        step="0.01"
                         placeholder="Enter service price"
                         value={field.value || ''}
-                        onChange={(e) => field.onChange(e.target.value)}
+                        onChange={(e) => {
+                          // Parse number value directly to avoid string conversion issues
+                          const numValue = e.target.valueAsNumber;
+                          console.log("Price input changed:", e.target.value, "as number:", numValue);
+                          field.onChange(numValue);
+                        }}
                       />
                     </FormControl>
                     <FormMessage />
