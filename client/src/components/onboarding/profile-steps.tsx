@@ -522,7 +522,11 @@ export default function ProfileSteps({
       
       try {
         // Use direct fetch for more control over headers and error handling
-        const response = await fetch(`/api/users/${userId}`, {
+        // Make sure we're using the numeric user ID from the database, not the Firebase UID
+        const endpointId = userData?.id || userId;
+        console.log(`Using endpoint ID for update: ${endpointId}`);
+        
+        const response = await fetch(`/api/users/${endpointId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
