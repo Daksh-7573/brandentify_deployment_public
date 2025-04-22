@@ -338,11 +338,20 @@ export default function ProfileSteps({
     enabled: !!userData?.id && isAuthenticated
   });
   
-  // Fetch user services
-  const { data: services = [], isLoading: isLoadingServices } = useQuery<any[]>({
-    queryKey: ['/api/users', userData?.id, 'services'],
-    enabled: !!userData?.id && isAuthenticated
+  // Fetch user services using the unified endpoint to ensure consistency
+  const { data: servicesData, isLoading: isLoadingServices } = useQuery({
+    queryKey: ['/api/users', userData?.id, 'profile-services', Date.now()],
+    enabled: !!userData?.id && isAuthenticated,
+    refetchOnMount: true,
+    staleTime: 0
   });
+  
+  // Extract services array from the response
+  const services = Array.isArray(servicesData?.services) ? servicesData?.services : [];
+  
+  // Debug
+  console.log("Edit Profile - servicesData:", servicesData);
+  console.log("Edit Profile - services count:", services?.length);
   
   // Fetch user projects
   const { data: projects = [], isLoading: isLoadingProjects } = useQuery<any[]>({
@@ -461,25 +470,35 @@ export default function ProfileSteps({
   // Use effect to populate form with existing data when editing
   useEffect(() => {
     if (userData && isEditing) {
-      setFormData(prevData => ({
-        ...prevData,
-        name: userData.name || '',
-        photoURL: userData.photoURL || null,
-        title: userData.title || '',
-        location: userData.location || '',
-        industry: userData.industry?.split(': ')[0] || '',
-        domain: userData.industry?.includes(': ') ? userData.industry.split(': ')[1] : '',
-        lookingFor: userData.lookingFor || '',
-        aboutMe: userData.aboutMe || '',
-        whatIOffer: userData.whatIOffer || '',
-        email: userData.email || '',
-        phoneNumber: userData.phoneNumber || '',
-        skills: skills || [],
-        services: services || [],
-        projects: projects || [],
-        experiences: experiences || [],
-        educations: educations || [],
-      }));
+      // Debug services data before updating form
+      console.log("Services data from API before form update:", services);
+      console.log("WhatIOffer from userData:", userData.whatIOffer);
+      
+      setFormData(prevData => {
+        const updatedData = {
+          ...prevData,
+          name: userData.name || '',
+          photoURL: userData.photoURL || null,
+          title: userData.title || '',
+          location: userData.location || '',
+          industry: userData.industry?.split(': ')[0] || '',
+          domain: userData.industry?.includes(': ') ? userData.industry.split(': ')[1] : '',
+          lookingFor: userData.lookingFor || '',
+          aboutMe: userData.aboutMe || '',
+          whatIOffer: userData.whatIOffer || '',
+          email: userData.email || '',
+          phoneNumber: userData.phoneNumber || '',
+          skills: skills || [],
+          services: services || [], // Use services from the unified endpoint
+          projects: projects || [],
+          experiences: experiences || [],
+          educations: educations || [],
+        };
+        
+        // Debug the updated form data
+        console.log("Updated form data services:", updatedData.services);
+        return updatedData;
+      });
       
       // Set industry and domain for select components
       if (userData.industry) {
@@ -491,7 +510,7 @@ export default function ProfileSteps({
         }
       }
     }
-  }, [userData, skills, services, projects, experiences, educations, isEditing]);
+  }, [userData, skills, services, projects, experiences, educations, isEditing, servicesData]);
   
   // Handle form input changes for basic fields
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -716,7 +735,54 @@ export default function ProfileSteps({
           // Skills saving logic will be implemented
           break;
           
-        case 3: // What I Offer
+        case 3: // Services & What I Offer
+          // Log the current services to be saved
+          console.log("Saving services:", formData.services);
+          
+          // First, save the services directly to our unified endpoint
+          if (userData?.id) {
+            try {
+              // Use the unified profile-services endpoint
+              const servicesResponse = await fetch(`/api/users/${userData.id}/profile-services`, {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Cache-Control': 'no-cache, no-store, must-revalidate',
+                  'Pragma': 'no-cache',
+                },
+                body: JSON.stringify({
+                  services: formData.services || [],
+                  whatIOffer: formData.whatIOffer?.trim() || "",
+                  _timestamp: Date.now()
+                })
+              });
+              
+              if (servicesResponse.ok) {
+                const responseData = await servicesResponse.json();
+                console.log("Services saved successfully:", responseData);
+                
+                // Force a cache refresh after saving
+                queryClient.invalidateQueries({ queryKey: ['/api/users', userData.id, 'profile-services'] });
+                queryClient.invalidateQueries({ queryKey: ['/api/users', userData.id, 'services'] });
+              } else {
+                console.error("Failed to save services:", await servicesResponse.text());
+                toast({
+                  title: "Error saving services",
+                  description: "There was a problem saving your services. Please try again.",
+                  variant: "destructive"
+                });
+              }
+            } catch (err) {
+              console.error("Error saving services:", err);
+              toast({
+                title: "Error saving services",
+                description: "There was a problem saving your services. Please try again.",
+                variant: "destructive"
+              });
+            }
+          }
+          
+          // Then save the whatIOffer field separately to ensure it persists
           const whatIOffer = formData.whatIOffer?.trim() || "";
           
           console.log("Saving What I Offer data:", {
