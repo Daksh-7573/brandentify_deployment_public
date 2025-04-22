@@ -21,7 +21,6 @@ import { Service } from "@shared/schema";
 const formSchema = z.object({
   title: z.string().min(1, "Service title is required"),
   description: z.string().optional(),
-  category: z.string().default("other"),
   currency: z.string().default("USD"),
   price: z.string().nullable().optional(),
   isHourly: z.boolean().default(false),
@@ -47,7 +46,6 @@ export default function ServiceForm({ service, onSubmit, isPending, existingServ
   const defaultValues = {
     title: service?.title || "",
     description: service?.description || "",
-    category: service?.category || "other",
     currency: service ? (service.priceUsd ? "USD" : "INR") : "USD",
     price: service ? (service.priceUsd ? service.priceUsd.toString() : 
                       service.priceInr ? service.priceInr.toString() : null) : null,
@@ -102,8 +100,8 @@ export default function ServiceForm({ service, onSubmit, isPending, existingServ
       description: values.description,
       isHourly: values.isHourly,
       isActive: values.isActive,
-      // Use the selected category
-      category: values.category,
+      // Set hardcoded category to "other" - this is required by the database
+      category: "other",
       // Add all pricing fields
       ...priceData,
       // Then add any existing service values for fields we didn't explicitly set
@@ -201,34 +199,7 @@ export default function ServiceForm({ service, onSubmit, isPending, existingServ
           )}
         />
         
-        <FormField
-          control={form.control}
-          name="category"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Category</FormLabel>
-              <FormDescription className="text-xs mb-2">
-                Select the category that best describes your service.
-              </FormDescription>
-              <FormControl>
-                <select
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                  {...field}
-                >
-                  <option value="consulting">Consulting</option>
-                  <option value="development">Development</option>
-                  <option value="design">Design</option>
-                  <option value="marketing">Marketing</option>
-                  <option value="writing">Writing</option>
-                  <option value="coaching">Coaching</option>
-                  <option value="teaching">Teaching</option>
-                  <option value="other">Other</option>
-                </select>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+
         
         {/* Rate Fields */}
         <div className="space-y-4 border rounded-lg p-4">
