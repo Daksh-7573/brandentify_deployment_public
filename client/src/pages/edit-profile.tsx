@@ -101,10 +101,19 @@ export default function EditProfilePage() {
         // First, clear all React Query caches
         queryClient.clear();
         
-        // Instead of using wouter navigation, force a complete page reload
-        // This is our most drastic solution to ensure all caches are cleared
-        window.location.href = '/profile';
-      }, 1500);
+        // Instead of redirecting directly to profile, use a more reliable approach
+        // First navigate to a temporary state
+        setLocation('/');
+        
+        // Then after a short delay, navigate to the profile page
+        setTimeout(() => {
+          // Clear any React Query caches again to be sure
+          queryClient.clear();
+          
+          // Finally navigate to the profile page
+          setLocation('/profile');
+        }, 300);
+      }, 1000);
     } catch (error) {
       console.error("Error updating profile:", error);
       toast({

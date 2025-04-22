@@ -532,9 +532,22 @@ export default function ProfileSteps({
     } else {
       // Complete onboarding
       if (onComplete) {
+        console.log("Profile steps completed, calling onComplete callback");
         onComplete();
       } else {
-        setLocation('/profile');
+        console.log("No onComplete callback provided, navigating directly to profile");
+        // First clear all React Query caches
+        queryClient.clear();
+        
+        // Use a two-step navigation approach for more reliable navigation
+        // First navigate to root
+        setLocation('/');
+        
+        // Then after a brief delay, navigate to profile
+        setTimeout(() => {
+          queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
+          setLocation('/profile');
+        }, 300);
       }
     }
   };

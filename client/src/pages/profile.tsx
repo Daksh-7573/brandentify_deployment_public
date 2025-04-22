@@ -432,17 +432,17 @@ export default function Profile() {
   
   // Also fetch current user data for the profile with enhanced caching control
   const { data: userData, isLoading: isLoadingUser, refetch: refetchUserData } = useQuery<any>({
-    queryKey: [`/api/users/${userId}`],
+    queryKey: [`/api/users/${userId}`, Date.now()], // Add timestamp to force fresh data
     enabled: !!userId && isAuthenticated,
     staleTime: 0, // Always consider data stale to ensure fresh data
     gcTime: 0, // Disable caching for profile data (gcTime is the v5 name for cacheTime)
     refetchOnMount: "always", // Always refetch on mount
     refetchOnWindowFocus: true,
     retry: 3, // Retry failed requests 3 times
-    refetchInterval: 3000, // Poll for updates every 3 seconds
+    refetchInterval: 0, // Don't poll automatically
     queryFn: async () => {
       try {
-        console.log(`Forcing fresh fetch of user data for ID: ${userId}`);
+        console.log(`Forcing fresh fetch of user data for ID: ${userId} at ${new Date().toLocaleTimeString()}`);
         // Add cache busting parameter to prevent browser caching
         const timestamp = new Date().getTime();
         
