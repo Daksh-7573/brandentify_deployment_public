@@ -9,7 +9,7 @@ import fileUpload from "express-fileupload";
 import { projectThumbnailUpload, getFileUrl } from "./utils/upload";
 // Resume parsing functionality
 import { handleParseResume } from "./routes-parse-resume";
-import { handleCreateDemoProfiles } from "./routes-demo-profiles";
+// Demo profiles functionality removed
 import { updateUserGeolocation, updateUserRadarVisibility, getNearbyUsers } from "./routes-radar";
 import { 
   insertUserSchema, 
@@ -59,56 +59,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize the email service
   await initEmailService();
   
-  // Create detailed demo profiles with work experiences, education, skills, and projects
-  apiRouter.post("/debug/create-demo-profiles", async (req: Request, res: Response) => {
-    await handleCreateDemoProfiles(req, res, storage);
-  });
-  
-  // Add a special endpoint to clear all demo user profile data (for development purposes)
-  apiRouter.get("/debug/reset-demo-profile", async (req: Request, res: Response) => {
-    try {
-      console.log("Resetting all demo user profile data (experiences, education, skills)");
-      
-      // Create a tracking object for the result
-      const result = {
-        deletedExperiences: 0,
-        deletedEducation: 0,
-        deletedSkills: 0,
-        message: "Successfully reset all profile data"
-      };
-      
-      // Clear work experiences
-      const experiences = await storage.getWorkExperiencesByUserId(1);
-      for (const exp of experiences) {
-        await storage.deleteWorkExperience(exp.id);
-        result.deletedExperiences++;
-      }
-      
-      // Clear education
-      const education = await storage.getEducationsByUserId(1);
-      for (const edu of education) {
-        await storage.deleteEducation(edu.id);
-        result.deletedEducation++;
-      }
-      
-      // Clear skills
-      const skills = await storage.getSkillsByUserId(1);
-      for (const skill of skills) {
-        await storage.deleteSkill(skill.id);
-        result.deletedSkills++;
-      }
-      
-      console.log(`Reset complete! Deleted: ${result.deletedExperiences} experiences, ${result.deletedEducation} education items, ${result.deletedSkills} skills`);
-      
-      // Force a new blank initialization of data
-      await storage.reinitializeDemoData();
-      
-      res.status(200).json(result);
-    } catch (error) {
-      console.error("Error resetting demo profile:", error);
-      res.status(500).json({ message: "Failed to reset demo profile" });
-    }
-  });
+  // Demo endpoints removed
   
   // Debug endpoint to clear all users (only for development/testing)
   apiRouter.get("/debug/clear-all-users", async (req: Request, res: Response) => {

@@ -235,7 +235,6 @@ export interface IStorage {
   getPulsesByFollowedHashtags(userId: number): Promise<Pulse[]>;
   
   // Debug and maintenance operations
-  reinitializeDemoData(): Promise<void>;
   clearAllUsers(): Promise<void>;
   
   // News Source operations
