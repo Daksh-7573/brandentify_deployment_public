@@ -362,16 +362,72 @@ export default function ProfileSteps({
     enabled: !!userData?.id && isAuthenticated
   });
   
-  // Update user mutation
+  // Update user mutation with enhanced cache clearing
   const updateUserMutation = useMutation({
     mutationFn: async (data: any) => {
-      const res = await apiRequest('PUT', `/api/users/${userId}`, data);
+      console.log("Updating user data with:", data);
+      
+      // Make a copy of the data to preserve it
+      const dataWithTimestamp = { 
+        ...data,
+        _timestamp: new Date().getTime() // Add timestamp to bust cache
+      };
+      
+      const res = await apiRequest('PUT', `/api/users/${userId}`, dataWithTimestamp);
+      console.log("Server response from update:", res);
+      
+      // Store in localStorage for backup
+      try {
+        const currentCache = localStorage.getItem('cachedUserData');
+        const cachedData = currentCache ? JSON.parse(currentCache) : {};
+        const updatedCache = { ...cachedData, ...data };
+        localStorage.setItem('cachedUserData', JSON.stringify(updatedCache));
+        console.log("Updated localStorage cache with new data");
+      } catch (err) {
+        console.error("Failed to update localStorage cache:", err);
+      }
+      
       return res;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
+    onSuccess: async (updatedData) => {
+      console.log("User update successful. Updated data:", updatedData);
+      
+      // Clear all caches to force fresh data fetching
+      queryClient.clear();
+      
+      // Force a refetch directly from the server
+      if (userId) {
+        try {
+          // First, invalidate all related queries
+          await queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
+          await queryClient.invalidateQueries({ queryKey: ['/api/users', userId] });
+          
+          // Then directly fetch fresh data
+          const timestamp = new Date().getTime();
+          const response = await fetch(`/api/users/${userId}?_=${timestamp}`, {
+            method: 'GET',
+            headers: {
+              'Cache-Control': 'no-cache, no-store, must-revalidate',
+              'Pragma': 'no-cache',
+            }
+          });
+          
+          if (response.ok) {
+            // Process the response to ensure it's visible in logs
+            const freshData = await response.json();
+            console.log("Force-fetched fresh user data:", freshData);
+            
+            // Invalidate again to ensure UI updates
+            await queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
+            await queryClient.invalidateQueries({ queryKey: ['/api/users', userId] });
+          }
+        } catch (err) {
+          console.error("Error force-fetching updated user data:", err);
+        }
+      }
     },
     onError: (error: Error) => {
+      console.error("Error updating user data:", error);
       toast({
         title: "Error updating profile",
         description: error.message,

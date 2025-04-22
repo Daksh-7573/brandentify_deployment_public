@@ -79,9 +79,18 @@ export default function EditProfilePage() {
         variant: "default",
       });
       
-      // Hide success message after a delay and redirect
+      // Hide success message after a delay and redirect with a forced refresh
       setTimeout(() => {
         setShowSuccessMessage(false);
+        
+        // Store a flag in localStorage to indicate we're coming from edit mode
+        localStorage.setItem('justEditedProfile', 'true');
+        localStorage.setItem('profileEditTimestamp', Date.now().toString());
+        
+        // Force a complete cache clear before navigating
+        queryClient.clear();
+        
+        // Redirect to profile page
         setLocation('/profile');
       }, 1500);
     } catch (error) {

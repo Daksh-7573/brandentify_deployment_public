@@ -519,6 +519,26 @@ export default function Profile() {
   const userNumericId = isDemoMode ? 1 : (userData?.id || null);
   
   // Add debug logging to troubleshoot profile completion issues
+  // Check if we're coming from edit profile page
+  useEffect(() => {
+    const justEdited = localStorage.getItem('justEditedProfile');
+    const editTimestamp = localStorage.getItem('profileEditTimestamp');
+    
+    if (justEdited === 'true' && editTimestamp) {
+      console.log("Detected return from profile editing - forcing complete refresh");
+      
+      // Clear the flag so we don't keep refreshing
+      localStorage.removeItem('justEditedProfile');
+      
+      // Ensure we're getting truly fresh data
+      queryClient.clear();
+      
+      // Force a refresh
+      window.location.reload();
+    }
+  }, []);
+  
+  // Debug logging for userData
   useEffect(() => {
     console.log("Current userData:", userData);
     if (userData?.id) {
