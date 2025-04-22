@@ -994,7 +994,7 @@ export default function FreelancerHub({
               animate={{ opacity: isShowing ? 1 : 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              {userInfo.lookingFor || 
+              {userInfo.aboutMe || 
                 `I'm a passionate creative who loves to bring ideas to life through ${userInfo.domain || 'creative work'}. 
                 With a blend of imagination and technical skills, I help brands and individuals express their unique stories.
                 My approach focuses on collaboration, innovation, and delivering results that exceed expectations.`
