@@ -21,6 +21,7 @@ import { setupNowboardRoutes } from "./routes-nowboard";
 import { setupCareerQuestsRoutes } from "./routes-career-quests";
 import brandsOfTheDayRoutes from "./routes-brands-of-the-day";
 import enhancedUserRoutes from "./routes-enhanced-user";
+import whatIOfferRoutes from "./routes-what-i-offer";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
