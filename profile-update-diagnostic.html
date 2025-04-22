@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Update Diagnostic</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.5;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        .success { color: #22863a; font-weight: bold; }
+        .error { color: #cb2431; font-weight: bold; }
+        .warning { color: #b08800; font-weight: bold; }
+        .info { color: #0366d6; font-weight: bold; }
+        button {
+            padding: 10px 15px;
+            background-color: #0366d6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            min-width: 200px;
+        }
+        button:hover { background-color: #035cc1; }
+        .button-group { margin: 20px 0; }
+        .log-container {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            height: 500px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Profile Update Diagnostic Tool</h1>
+    <p>This tool helps diagnose issues with profile updates by testing different update paths.</p>
+    
+    <div class="button-group">
+        <button id="demoModeBtn">Check Demo Mode Status</button>
+        <button id="fetchUserBtn">Fetch Current User Data</button>
+        <button id="runUpdateTestBtn">Run Full Update Test</button>
+        <button id="testDemoModeBtn">Test Demo Mode Behavior</button>
+        <button id="updateSingleFieldBtn">Update Single Field</button>
+    </div>
+    
+    <div class="log-container" id="logContainer"></div>
+    
+    <script>
+        // Test data
+        const userId = 1;
+        const timestamp = Date.now();
+        
+        // Full update test data
+        const fullUpdateData = {
+            name: `Updated Test User ${timestamp}`,
+            title: `Senior Software Developer ${timestamp}`,
+            aboutMe: `Updated profile with test script at ${new Date().toISOString()}`,
+            location: "San Francisco, CA",
+            industry: "Software",
+            whatIOffer: `Test offer content updated via direct API test ${timestamp}`,
+            _timestamp: timestamp
+        };
+        
+        function log(message, type = 'info') {
+            const logContainer = document.getElementById('logContainer');
+            const logEntry = document.createElement('div');
+            
+            if (typeof message === 'object') {
+                try {
+                    message = JSON.stringify(message, null, 2);
+                } catch (e) {
+                    message = "Object couldn't be stringified: " + e.message;
+                }
+                logEntry.innerHTML = `<pre>${message}</pre>`;
+            } else {
+                if (type === 'success') {
+                    logEntry.innerHTML = `<span class="success">${message}</span>`;
+                } else if (type === 'error') {
+                    logEntry.innerHTML = `<span class="error">${message}</span>`;
+                } else if (type === 'warning') {
+                    logEntry.innerHTML = `<span class="warning">${message}</span>`;
+                } else if (type === 'info') {
+                    logEntry.innerHTML = `<span class="info">${message}</span>`;
+                } else {
+                    logEntry.textContent = message;
+                }
+            }
+            
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+            console.log(message);
+        }
+        
+        async function checkDemoMode() {
+            log("Checking demo mode status...", 'info');
+            
+            // Check localStorage for demo mode status
+            const isDemo = localStorage.getItem('demoMode') === 'true';
+            log(`localStorage demoMode value: ${isDemo}`, isDemo ? 'warning' : 'info');
+            
+            // Look for other demo mode indicators
+            const keys = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                keys.push(localStorage.key(i));
+            }
+            
+            log(`All localStorage keys: ${keys.join(', ')}`);
+            
+            // Extract relevant user data from localStorage
+            const userDataInStorage = localStorage.getItem('cachedUserData');
+            if (userDataInStorage) {
+                try {
+                    const data = JSON.parse(userDataInStorage);
+                    log("User data in localStorage:", 'info');
+                    log(data);
+                } catch (e) {
+                    log(`Error parsing cachedUserData: ${e.message}`, 'error');
+                }
+            } else {
+                log("No cachedUserData found in localStorage", 'warning');
+            }
+            
+            return isDemo;
+        }
+        
+        async function fetchCurrentUser() {
+            log(`Fetching current data for user ID: ${userId}`, 'info');
+            
+            try {
+                const timestamp = Date.now();
+                const response = await fetch(`/api/users/${userId}?_=${timestamp}`);
+                
+                if (!response.ok) {
+                    throw new Error(`Failed to get user: ${response.status} ${response.statusText}`);
+                }
+                
+                const userData = await response.json();
+                log("Current user data:", 'info');
+                log(userData);
+                
+                return userData;
+            } catch (error) {
+                log(`Error fetching user data: ${error.message}`, 'error');
+                return null;
+            }
+        }
+        
+        async function testFullUpdate() {
+            log("Starting full profile update test...", 'info');
+            
+            const isDemo = await checkDemoMode();
+            log(`Running in demo mode: ${isDemo}`, isDemo ? 'warning' : 'info');
+            
+            const beforeUser = await fetchCurrentUser();
+            if (!beforeUser) return;
+            
+            // Perform the update
+            log("Updating user with data:", 'info');
+            log(fullUpdateData);
+            
+            try {
+                const updateResponse = await fetch(`/api/users/${userId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(fullUpdateData)
+                });
+                
+                if (!updateResponse.ok) {
+                    throw new Error(`Update failed: ${updateResponse.status} ${updateResponse.statusText}`);
+                }
+                
+                const updateResult = await updateResponse.json();
+                log("Server update response:", 'info');
+                log(updateResult);
+                
+                // Verify if changes persisted
+                log("Verifying changes with fresh fetch...", 'info');
+                const afterUser = await fetchCurrentUser();
+                
+                // Check which fields were actually updated
+                const changedFields = [];
+                const unchangedFields = [];
+                
+                Object.entries(fullUpdateData).forEach(([key, value]) => {
+                    if (key === '_timestamp') return;
+                    
+                    if (afterUser[key] === value) {
+                        changedFields.push(`${key}: "${value}"`);
+                    } else {
+                        unchangedFields.push(`${key}: expected "${value}", got "${afterUser[key]}"`);
+                    }
+                });
+                
+                if (changedFields.length > 0) {
+                    log("✅ Fields that were updated:", 'success');
+                    changedFields.forEach(field => log(`  - ${field}`, 'success'));
+                } else {
+                    log("❌ No fields were updated!", 'error');
+                }
+                
+                if (unchangedFields.length > 0) {
+                    log("❌ Fields that were NOT updated:", 'error');
+                    unchangedFields.forEach(field => log(`  - ${field}`, 'error'));
+                }
+                
+                // Final verdict
+                if (unchangedFields.length === 0) {
+                    log("✅ SUCCESS: All fields were updated correctly!", 'success');
+                } else if (changedFields.length > 0) {
+                    log("⚠️ PARTIAL SUCCESS: Some fields were updated, but others were not.", 'warning');
+                } else {
+                    log("❌ FAILURE: No fields were updated despite server reporting success.", 'error');
+                }
+                
+            } catch (error) {
+                log(`Error during update test: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testDemoMode() {
+            log("Testing demo mode behavior...", 'info');
+            
+            const isDemo = await checkDemoMode();
+            log(`Current demo mode status: ${isDemo}`, isDemo ? 'warning' : 'info');
+            
+            if (!isDemo) {
+                log("Setting demoMode to true in localStorage", 'info');
+                localStorage.setItem('demoMode', 'true');
+            } else {
+                log("Setting demoMode to false in localStorage", 'info');
+                localStorage.setItem('demoMode', 'false');
+            }
+            
+            log("Demo mode toggled. Please refresh the page to see the effect.", 'warning');
+        }
+        
+        async function updateSingleField() {
+            const field = prompt("Enter field to update (e.g., name, title, whatIOffer):", "whatIOffer");
+            const value = prompt(`Enter new value for ${field}:`, `Test value for ${field} - ${Date.now()}`);
+            
+            if (!field || !value) {
+                log("Update cancelled - field or value was empty", 'warning');
+                return;
+            }
+            
+            log(`Testing update of single field: ${field} = "${value}"`, 'info');
+            
+            try {
+                const updateData = { 
+                    [field]: value,
+                    _timestamp: Date.now()
+                };
+                
+                log("Sending update with data:", 'info');
+                log(updateData);
+                
+                const updateResponse = await fetch(`/api/users/${userId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updateData)
+                });
+                
+                if (!updateResponse.ok) {
+                    throw new Error(`Update failed: ${updateResponse.status} ${updateResponse.statusText}`);
+                }
+                
+                const updateResult = await updateResponse.json();
+                log("Server update response:", 'info');
+                log(updateResult);
+                
+                // Verify if change persisted
+                log("Verifying change with fresh fetch...", 'info');
+                const afterUser = await fetchCurrentUser();
+                
+                if (afterUser[field] === value) {
+                    log(`✅ SUCCESS: Field "${field}" was updated to "${value}"`, 'success');
+                } else {
+                    log(`❌ FAILURE: Field "${field}" was NOT updated. Current value: "${afterUser[field]}"`, 'error');
+                }
+                
+            } catch (error) {
+                log(`Error updating single field: ${error.message}`, 'error');
+            }
+        }
+        
+        // Add event listeners
+        document.getElementById('demoModeBtn').addEventListener('click', checkDemoMode);
+        document.getElementById('fetchUserBtn').addEventListener('click', fetchCurrentUser);
+        document.getElementById('runUpdateTestBtn').addEventListener('click', testFullUpdate);
+        document.getElementById('testDemoModeBtn').addEventListener('click', testDemoMode);
+        document.getElementById('updateSingleFieldBtn').addEventListener('click', updateSingleField);
+    </script>
+</body>
+</html>

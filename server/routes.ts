@@ -244,6 +244,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const idParam = req.params.id;
       console.log(`[GET /users/:id] Fetching user with ID: ${idParam}`);
+      console.log(`[GET /users/:id] Query parameters:`, req.query);
       
       let user;
       
@@ -300,14 +301,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Special case for Brand of the Day/Featured Professional demo
       if (user.id === 1 && req.query.demo === 'true') {
-        // For demo purposes, enhance user data 
+        // For demo purposes, enhance user data but keep existing user fields if they exist
         const demoUser = {
           ...user,
+          // Only use default values if the actual values don't exist
           photoURL: user.photoURL || "/images/demo/profile-photo.jpg",
           title: user.title || "Senior Software Engineer",
-          name: user.name || "Senior Professional",
-          industry: "Technology",
-          domain: "Engineering",
+          name: user.name || "Senior Professional", 
+          industry: user.industry || "Technology",
+          domain: user.domain || "Engineering",
         };
         console.log("[GET /users/:id] Returning enhanced demo user data for featured professional");
         return res.json(demoUser);
