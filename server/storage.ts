@@ -4761,6 +4761,7 @@ export class MemStorage implements IStorage {
 
 // Import the database connection
 import { db, pool, executeWithRetry, sql } from './db';
+import { eq } from 'drizzle-orm';
 
 /**
  * DatabaseStorage implementation that connects to a PostgreSQL database via Drizzle ORM
@@ -5008,23 +5009,29 @@ export class DatabaseStorage implements IStorage {
   // Work Experience operations
   async getWorkExperiencesByUserId(userId: number): Promise<WorkExperience[]> {
     console.log(`[db.getWorkExperiencesByUserId] Looking for experiences with userId: ${userId}`);
-    try {
-      const result = await pool.query(`
-        SELECT id, user_id as "userId", title, company, location, 
-               industry, start_date as "startDate", end_date as "endDate", 
-               description
-        FROM work_experiences
-        WHERE user_id = $1
-      `, [userId]);
-      
-      console.log(`[db.getWorkExperiencesByUserId] Found ${result.rows.length} work experiences for user ${userId}`);
-      
-      return result.rows;
-    } catch (error) {
-      console.error(`[db.getWorkExperiencesByUserId] Error fetching work experiences for user ${userId}:`, error);
+    
+    return executeWithRetry(async () => {
+      try {
+        const result = await pool.query(`
+          SELECT id, user_id as "userId", title, company, location, 
+                industry, start_date as "startDate", end_date as "endDate", 
+                description
+          FROM work_experiences
+          WHERE user_id = $1
+        `, [userId]);
+        
+        console.log(`[db.getWorkExperiencesByUserId] Found ${result.rows.length} work experiences for user ${userId}`);
+        
+        return result.rows;
+      } catch (error) {
+        console.error(`[db.getWorkExperiencesByUserId] Error fetching work experiences for user ${userId}:`, error);
+        throw error; // Rethrow for retry mechanism
+      }
+    }, 3, 800).catch(error => {
+      console.error(`[db.getWorkExperiencesByUserId] All retries failed for user ${userId}:`, error);
       // Return empty array on error instead of throwing, to prevent UI from breaking
       return [];
-    }
+    });
   }
 
   async getWorkExperienceById(id: number): Promise<WorkExperience | undefined> {
@@ -5055,22 +5062,28 @@ export class DatabaseStorage implements IStorage {
   // Education operations
   async getEducationsByUserId(userId: number): Promise<Education[]> {
     console.log(`[db.getEducationsByUserId] Looking for education records with userId: ${userId}`);
-    try {
-      const result = await pool.query(`
-        SELECT id, user_id as "userId", degree, institution, location, 
-               start_date as "startDate", end_date as "endDate"
-        FROM educations
-        WHERE user_id = $1
-      `, [userId]);
-      
-      console.log(`[db.getEducationsByUserId] Found ${result.rows.length} education records for user ${userId}`);
-      
-      return result.rows;
-    } catch (error) {
-      console.error(`[db.getEducationsByUserId] Error fetching education records for user ${userId}:`, error);
+    
+    return executeWithRetry(async () => {
+      try {
+        const result = await pool.query(`
+          SELECT id, user_id as "userId", degree, institution, location, 
+                 start_date as "startDate", end_date as "endDate"
+          FROM educations
+          WHERE user_id = $1
+        `, [userId]);
+        
+        console.log(`[db.getEducationsByUserId] Found ${result.rows.length} education records for user ${userId}`);
+        
+        return result.rows;
+      } catch (error) {
+        console.error(`[db.getEducationsByUserId] Error fetching education records for user ${userId}:`, error);
+        throw error; // Rethrow for retry mechanism
+      }
+    }, 3, 800).catch(error => {
+      console.error(`[db.getEducationsByUserId] All retries failed for user ${userId}:`, error);
       // Return empty array on error instead of throwing, to prevent UI from breaking
       return [];
-    }
+    });
   }
 
   async getEducationById(id: number): Promise<Education | undefined> {
@@ -5194,21 +5207,28 @@ export class DatabaseStorage implements IStorage {
 
   // Skill operations
   async getSkillsByUserId(userId: number): Promise<Skill[]> {
-    try {
-      const result = await pool.query(`
-        SELECT id, user_id as "userId", name, level, proficiency
-        FROM skills
-        WHERE user_id = $1
-      `, [userId]);
-      
-      console.log(`[db.getSkillsByUserId] Found ${result.rows.length} skills for user ${userId}`);
-      
-      return result.rows;
-    } catch (error) {
-      console.error(`[db.getSkillsByUserId] Error fetching skills for user ${userId}:`, error);
-      // Return empty array on error instead of throwing
+    console.log(`[db.getSkillsByUserId] Looking for skills with userId: ${userId}`);
+    
+    return executeWithRetry(async () => {
+      try {
+        const result = await pool.query(`
+          SELECT id, user_id as "userId", name, level, proficiency
+          FROM skills
+          WHERE user_id = $1
+        `, [userId]);
+        
+        console.log(`[db.getSkillsByUserId] Found ${result.rows.length} skills for user ${userId}`);
+        
+        return result.rows;
+      } catch (error) {
+        console.error(`[db.getSkillsByUserId] Error fetching skills for user ${userId}:`, error);
+        throw error; // Rethrow for retry mechanism
+      }
+    }, 3, 800).catch(error => {
+      console.error(`[db.getSkillsByUserId] All retries failed for user ${userId}:`, error);
+      // Return empty array on error instead of throwing, to prevent UI from breaking
       return [];
-    }
+    });
   }
 
   async getSkillById(id: number): Promise<Skill | undefined> {
@@ -5237,24 +5257,31 @@ export class DatabaseStorage implements IStorage {
 
   // Project operations
   async getProjectsByUserId(userId: number): Promise<Project[]> {
-    try {
-      const result = await pool.query(`
-        SELECT id, user_id as "userId", title, description, start_date as "startDate",
-               project_url as "projectUrl", category, thumbnail_url as "thumbnailUrl",
-               thumbnail_file as "thumbnailFile", media_urls as "mediaUrls",
-               created_at as "createdAt", updated_at as "updatedAt"
-        FROM projects
-        WHERE user_id = $1
-      `, [userId]);
-      
-      console.log(`[db.getProjectsByUserId] Found ${result.rows.length} projects for user ${userId}`);
-      
-      return result.rows;
-    } catch (error) {
-      console.error(`[db.getProjectsByUserId] Error fetching projects for user ${userId}:`, error);
+    console.log(`[db.getProjectsByUserId] Looking for projects with userId: ${userId}`);
+    
+    return executeWithRetry(async () => {
+      try {
+        const result = await pool.query(`
+          SELECT id, user_id as "userId", title, description, start_date as "startDate",
+                project_url as "projectUrl", category, thumbnail_url as "thumbnailUrl",
+                thumbnail_file as "thumbnailFile", media_urls as "mediaUrls",
+                created_at as "createdAt", updated_at as "updatedAt"
+          FROM projects
+          WHERE user_id = $1
+        `, [userId]);
+        
+        console.log(`[db.getProjectsByUserId] Found ${result.rows.length} projects for user ${userId}`);
+        
+        return result.rows;
+      } catch (error) {
+        console.error(`[db.getProjectsByUserId] Error fetching projects for user ${userId}:`, error);
+        throw error; // Rethrow for retry mechanism
+      }
+    }, 3, 800).catch(error => {
+      console.error(`[db.getProjectsByUserId] All retries failed for user ${userId}:`, error);
       // Return empty array on error instead of throwing, to prevent UI from breaking
       return [];
-    }
+    });
   }
 
   async getProjectById(id: number): Promise<Project | undefined> {
@@ -5356,38 +5383,43 @@ export class DatabaseStorage implements IStorage {
 
   // Service operations
   async getServicesByUserId(userId: number): Promise<Service[]> {
-    try {
-      console.log(`[storage.getServicesByUserId] Fetching services for user ${userId}`);
-      
-      // Use direct pool query for more control over the result format
-      const result = await pool.query(`
-        SELECT 
-          id, 
-          user_id as "userId", 
-          title, 
-          description, 
-          category, 
-          price_inr as "priceInr", 
-          price_usd as "priceUsd",
-          is_hourly as "isHourly", 
-          features, 
-          image_url as "imageUrl",
-          "order", 
-          is_active as "isActive", 
-          created_at as "createdAt", 
-          updated_at as "updatedAt"
-        FROM services
-        WHERE user_id = $1
-      `, [userId]);
-      
-      console.log(`[storage.getServicesByUserId] Found ${result.rows.length} services for user ${userId} (Query returned ${result.rowCount} rows)`);
-      
-      return result.rows;
-    } catch (error) {
-      console.error(`[storage.getServicesByUserId] Error fetching services for user ${userId}:`, error);
+    console.log(`[storage.getServicesByUserId] Fetching services for user ${userId}`);
+    
+    return executeWithRetry(async () => {
+      try {
+        // Use direct pool query for more control over the result format
+        const result = await pool.query(`
+          SELECT 
+            id, 
+            user_id as "userId", 
+            title, 
+            description, 
+            category, 
+            price_inr as "priceInr", 
+            price_usd as "priceUsd",
+            is_hourly as "isHourly", 
+            features, 
+            image_url as "imageUrl",
+            "order", 
+            is_active as "isActive", 
+            created_at as "createdAt", 
+            updated_at as "updatedAt"
+          FROM services
+          WHERE user_id = $1
+        `, [userId]);
+        
+        console.log(`[storage.getServicesByUserId] Found ${result.rows.length} services for user ${userId} (Query returned ${result.rowCount} rows)`);
+        
+        return result.rows;
+      } catch (error) {
+        console.error(`[storage.getServicesByUserId] Error fetching services for user ${userId}:`, error);
+        throw error; // Rethrow for retry mechanism
+      }
+    }, 3, 800).catch(error => {
+      console.error(`[storage.getServicesByUserId] All retries failed for user ${userId}:`, error);
       // Return empty array on error instead of throwing, to prevent UI from breaking
       return [];
-    }
+    });
   }
 
   async getServiceById(id: number): Promise<Service | undefined> {
