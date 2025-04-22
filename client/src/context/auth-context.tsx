@@ -6,7 +6,8 @@ import {
   signOut as firebaseSignOut, 
   onAuthStateChanged, 
   GoogleAuthProvider, 
-  User as FirebaseUser 
+  User as FirebaseUser,
+  AuthErrorCodes
 } from "firebase/auth";
 import { auth, googleProvider } from "../lib/firebase";
 import { useToast } from "@/hooks/use-toast";
@@ -120,7 +121,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Remove any demo mode flags if they exist
     localStorage.removeItem('demoMode');
       
-    // Listen for auth state changes
+    // Listen for auth state changes with enhanced error handling
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setIsLoading(true);
       
@@ -147,8 +148,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               photoURL: firebaseUser.photoURL
             });
           }
-        } catch (error) {
+        } catch (error: any) {
           console.error("Error during authentication flow:", error);
+          
+          // Special handling for network errors with Firebase
+          if (error.code === AuthErrorCodes.NETWORK_REQUEST_FAILED || 
+              error.message?.includes('network') || 
+              error.message?.includes('Failed to fetch')) {
+            console.log("Network error detected during auth. Using cache if available.");
+            
+            // Look for cached user data in localStorage
+            const cachedUserData = localStorage.getItem('userDataCache');
+            if (cachedUserData) {
+              try {
+                const parsedUserData = JSON.parse(cachedUserData);
+                setUser(parsedUserData);
+                console.log("Using cached user data:", parsedUserData);
+                
+                // Don't show an error toast in this case as we've recovered
+                toast({
+                  title: "Using offline mode",
+                  description: "You appear to be offline. Some features may be limited.",
+                });
+                setIsLoading(false);
+                return;
+              } catch (cacheError) {
+                console.error("Error parsing cached user data:", cacheError);
+              }
+            }
+          }
+          
           // Fallback to basic Firebase data
           setUser({
             uid: firebaseUser.uid,
@@ -159,14 +188,61 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             photoURL: firebaseUser.photoURL
           });
         }
+        
+        // Cache current user data for offline use
+        try {
+          if (user) {
+            localStorage.setItem('userDataCache', JSON.stringify(user));
+            localStorage.setItem('userDataCacheTimestamp', Date.now().toString());
+          }
+        } catch (cacheError) {
+          console.error("Error caching user data:", cacheError);
+        }
       } else {
         console.log("Auth state changed: User signed out");
         
         // Clear user state
         setUser(null);
         
+        // Clear user data cache
+        localStorage.removeItem('userDataCache');
+        localStorage.removeItem('userDataCacheTimestamp');
+        
         // Clear all query cache to prevent stale data
         queryClient.clear();
+      }
+      
+      setIsLoading(false);
+    }, (error) => {
+      // Error handling for auth state observer
+      console.error("Firebase auth state observer error:", error);
+      
+      // Don't set loading to false if this is a network error
+      // as we might still recover with cached data
+      if (!(error as any).code || (error as any).code !== AuthErrorCodes.NETWORK_REQUEST_FAILED) {
+        setIsLoading(false);
+      }
+      
+      // Check for cached user data
+      try {
+        const cachedUserData = localStorage.getItem('userDataCache');
+        if (cachedUserData) {
+          const parsedUserData = JSON.parse(cachedUserData);
+          const cacheAge = Date.now() - parseInt(localStorage.getItem('userDataCacheTimestamp') || '0');
+          
+          // Use cached data if it's less than 24 hours old
+          if (cacheAge < 1000 * 60 * 60 * 24) {
+            setUser(parsedUserData);
+            console.log("Using cached user data after auth error:", parsedUserData);
+            
+            toast({
+              title: "Using cached data",
+              description: "Having trouble connecting to authentication servers. Using cached data.",
+            });
+          }
+        }
+      } catch (cacheError) {
+        console.error("Error recovering with cached user data:", cacheError);
       }
       
       setIsLoading(false);

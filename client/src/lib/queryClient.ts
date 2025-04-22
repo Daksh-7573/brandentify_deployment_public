@@ -30,7 +30,7 @@ export async function apiRequest(
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH',
   url: string,
   data?: unknown,
-  retries: number = 2
+  retries?: number
 ): Promise<Response>;
 
 /**
@@ -183,7 +183,11 @@ export async function apiRequest(
       return res;
     } catch (error) {
       // Handle network errors (e.g., when fetch itself fails)
-      if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+      if (error instanceof TypeError && 
+          (error.message.includes('Failed to fetch') || 
+           error.message.includes('Network request failed') ||
+           error.message.includes('network') ||
+           error.message.includes('timeout'))) {
         if (attempt < retries) {
           console.log(`Network error, retry ${attempt + 1}/${retries} for: ${url}`);
           attempt++;
@@ -197,6 +201,24 @@ export async function apiRequest(
         if (cachedResponse) {
           console.warn(`All retries failed for ${url}, serving stale data from cache as fallback`);
           return cachedResponse;
+        }
+        
+        // For specific endpoints that should return arrays when empty
+        if (url.includes('/projects') || 
+            url.includes('/experiences') || 
+            url.includes('/educations') || 
+            url.includes('/skills') ||
+            url.includes('/services')) {
+          console.warn(`Network error fetching array endpoint ${url}, returning empty array`);
+          
+          // Create a fake Response with an empty array
+          return new Response('[]', {
+            status: 200,
+            headers: { 
+              'Content-Type': 'application/json',
+              'X-Cache-Status': 'FALLBACK-EMPTY'
+            }
+          });
         }
         
         throw new Error("Network error: Unable to connect to the server after multiple attempts. Please check your internet connection.");
