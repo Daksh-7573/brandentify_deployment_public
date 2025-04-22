@@ -474,7 +474,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (eduResponse.ok) {
             const eduData = await eduResponse.json();
             console.log(`Successfully fetched educations data:`, eduData);
-            queryClient.setQueryData([`/api/users/${backendUserId}/educations`], eduData);
+            queryClient.setQueryData(['/api/users', backendUserId, 'educations'], eduData);
           }
         } catch (eduFetchError) {
           console.error("Error fetching educations data:", eduFetchError);
@@ -490,7 +490,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (skillsResponse.ok) {
             const skillsData = await skillsResponse.json();
             console.log(`Successfully fetched skills data:`, skillsData);
-            queryClient.setQueryData([`/api/users/${backendUserId}/skills`], skillsData);
+            queryClient.setQueryData(['/api/users', backendUserId, 'skills'], skillsData);
           }
         } catch (skillsFetchError) {
           console.error("Error fetching skills data:", skillsFetchError);
@@ -506,7 +506,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (portfoliosResponse.ok) {
             const portfoliosData = await portfoliosResponse.json();
             console.log(`Successfully fetched portfolio data:`, portfoliosData);
-            queryClient.setQueryData([`/api/users/${backendUserId}/portfolio`], portfoliosData);
+            queryClient.setQueryData(['/api/users', backendUserId, 'portfolio'], portfoliosData);
           }
         } catch (portfoliosFetchError) {
           console.error("Error fetching portfolio data:", portfoliosFetchError);
@@ -522,7 +522,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (projectsResponse.ok) {
             const projectsData = await projectsResponse.json();
             console.log(`Successfully fetched projects data:`, projectsData);
-            queryClient.setQueryData([`/api/users/${backendUserId}/projects`], projectsData);
+            queryClient.setQueryData(['/api/users', backendUserId, 'projects'], projectsData);
           }
         } catch (projectsFetchError) {
           console.error("Error fetching projects data:", projectsFetchError);
@@ -538,7 +538,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (servicesResponse.ok) {
             const servicesData = await servicesResponse.json();
             console.log(`Successfully fetched services data:`, servicesData);
-            queryClient.setQueryData([`/api/users/${backendUserId}/services`], servicesData);
+            queryClient.setQueryData(['/api/users', backendUserId, 'services'], servicesData);
           }
         } catch (servicesFetchError) {
           console.error("Error fetching services data:", servicesFetchError);
