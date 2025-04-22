@@ -151,16 +151,16 @@ export default function Services() {
     <Card className="mb-6">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <div>
-          <CardTitle className="text-xl font-bold">Services</CardTitle>
-          <CardDescription>Professional services I provide</CardDescription>
+          <CardTitle className="text-xl font-bold">What I Offer</CardTitle>
+          <CardDescription>List professional services you provide (max 6)</CardDescription>
         </div>
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           {/* Add button removed - using central Edit Profile functionality */}
           <DialogContent className="sm:max-w-[525px] max-h-[88vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Add Service</DialogTitle>
+              <DialogTitle>Add What You Offer</DialogTitle>
               <DialogDescription>
-                Enter a professional service you offer (one at a time).
+                Enter a single service you offer professionally (one at a time).
               </DialogDescription>
             </DialogHeader>
             <ServiceForm 
@@ -173,9 +173,22 @@ export default function Services() {
       </CardHeader>
     
       <CardContent>
+        {/* Special "What I Offer" Statement Section */}
+        {whatIOffer && (
+          <div className="mb-6 p-4 bg-primary/5 rounded-lg border border-primary/20">
+            <div className="flex items-start space-x-2">
+              <Quote className="h-6 w-6 text-primary/70 mt-0.5 flex-shrink-0" />
+              <div>
+                <h3 className="text-lg font-medium text-primary-foreground mb-2">My Professional Offering</h3>
+                <p className="text-gray-700">{whatIOffer}</p>
+              </div>
+            </div>
+          </div>
+        )}
         
-        {/* Services List */}
-        <div>
+        {/* Specific Services List */}
+        <div className="mt-4">
+          <h3 className="text-lg font-medium mb-4">Specific Services</h3>
           
           {isLoading ? (
             <div className="flex justify-center py-6">
@@ -184,7 +197,7 @@ export default function Services() {
           ) : !services || !Array.isArray(services) || services.length === 0 ? (
             <div className="py-6 text-center">
               <Package className="mx-auto h-10 w-10 text-muted-foreground/50" />
-              <p className="mt-2 text-muted-foreground">No services added yet.</p>
+              <p className="mt-2 text-muted-foreground">No specific services added yet.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -233,7 +246,7 @@ export default function Services() {
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="sm:max-w-[525px] max-h-[88vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Edit Service</DialogTitle>
+            <DialogTitle>Edit What You Offer</DialogTitle>
             <DialogDescription>
               Update your professional service.
             </DialogDescription>
@@ -257,11 +270,11 @@ export default function Services() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              Are you sure you want to delete this service?
+              Are you sure you want to delete this offering?
             </AlertDialogTitle>
             <AlertDialogDescription>
               This action cannot be undone. This will permanently delete your
-              service and remove it from our servers.
+              offering and remove it from our servers.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
