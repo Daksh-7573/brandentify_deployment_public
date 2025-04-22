@@ -1388,7 +1388,17 @@ export default function Profile() {
       )}
       
       {/* Edit Basic Info Dialog */}
-      <Dialog open={showEditBasicInfo} onOpenChange={setShowEditBasicInfo}>
+      <Dialog 
+        open={showEditBasicInfo} 
+        onOpenChange={(isOpen) => {
+          if (isOpen) {
+            // Debug what's in the form when the dialog opens
+            console.log("Opening dialog with form data:", formData);
+            console.log("Domain value:", formData.domain);
+          }
+          setShowEditBasicInfo(isOpen);
+        }}
+      >
         <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>All About Me</DialogTitle>
@@ -1496,37 +1506,36 @@ export default function Profile() {
                 </Select>
               </div>
               
-              {/* Domain selector - only show when an industry is selected */}
-              {formData.industry && (
-                <div className="grid gap-2">
-                  <Label htmlFor="domain">Specific Domain</Label>
-                  <Select
-                    value={formData.domain}
-                    onValueChange={(value) => {
-                      setSelectedDomain(value);
-                      setFormData(prev => ({
-                        ...prev,
-                        domain: value
-                      }));
-                    }}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select your domain" />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-80">
-                      {/* Add a General option as the first choice */}
-                      <SelectItem key="all" value="all">
-                        General
+              {/* Domain selector - always show it */}
+              <div className="grid gap-2">
+                <Label htmlFor="domain">Specific Domain</Label>
+                <Select
+                  value={formData.domain || ""}
+                  onValueChange={(value) => {
+                    console.log("Domain selected:", value);
+                    setSelectedDomain(value);
+                    setFormData(prev => ({
+                      ...prev,
+                      domain: value
+                    }));
+                  }}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select your domain" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-80">
+                    {/* Add a General option as the first choice */}
+                    <SelectItem key="all" value="all">
+                      General
+                    </SelectItem>
+                    {formData.industry && INDUSTRY_DOMAINS[formData.industry]?.map((domain: string) => (
+                      <SelectItem key={domain} value={domain}>
+                        {domain}
                       </SelectItem>
-                      {INDUSTRY_DOMAINS[formData.industry]?.map((domain: string) => (
-                        <SelectItem key={domain} value={domain}>
-                          {domain}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="grid gap-2">
                 <Label htmlFor="lookingFor">I am looking for</Label>
                 <Select
