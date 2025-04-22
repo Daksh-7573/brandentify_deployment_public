@@ -94,15 +94,32 @@ export default function Services() {
     }
   }, [userNumericId]);
   
-  // Original hook for mutation functions
+  // Use the unified hook for both data and mutations
   const { 
+    services: hookServices,
+    whatIOffer: hookWhatIOffer,
     createService, 
     updateService, 
     deleteService, 
     isPendingCreate,
     isPendingUpdate,
-    isPendingDelete
+    isPendingDelete,
+    isLoading: isLoadingFromHook
   } = useProfileServices();
+  
+  // Use services from the hook when they become available
+  useEffect(() => {
+    if (hookServices && Array.isArray(hookServices) && hookServices.length > 0) {
+      console.log('Services component - using services from useProfileServices hook:', hookServices.length);
+      setServices(hookServices);
+      setIsLoading(false);
+    }
+    
+    if (hookWhatIOffer) {
+      console.log('Services component - using whatIOffer from hook:', hookWhatIOffer);
+      setWhatIOffer(hookWhatIOffer);
+    }
+  }, [hookServices, hookWhatIOffer]);
   
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -110,22 +127,38 @@ export default function Services() {
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   
   const handleCreate = (formData: any) => {
-    if (!user?.id) return;
+    if (!userNumericId) return;
     
+    // Always use the numeric ID for the database
     createService({
       ...formData,
-      userId: user.id
+      userId: userNumericId
     });
+    
+    // Force a refresh after creation
+    setTimeout(() => {
+      fetchServicesData();
+    }, 1000);
+    
     setIsCreateDialogOpen(false);
   };
   
   const handleUpdate = (formData: any) => {
-    if (!selectedService) return;
+    if (!selectedService || !userNumericId) return;
     
     updateService({
       id: selectedService.id,
-      data: formData
+      data: {
+        ...formData,
+        userId: userNumericId // Ensure userId is always included
+      }
     });
+    
+    // Force a refresh after update
+    setTimeout(() => {
+      fetchServicesData();
+    }, 1000);
+    
     setIsEditDialogOpen(false);
   };
   
@@ -133,6 +166,12 @@ export default function Services() {
     if (!selectedService) return;
     
     deleteService(selectedService.id);
+    
+    // Force a refresh after deletion
+    setTimeout(() => {
+      fetchServicesData();
+    }, 1000);
+    
     setIsDeleteDialogOpen(false);
   };
   
