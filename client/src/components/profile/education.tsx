@@ -316,13 +316,16 @@ export default function Education() {
   const effectiveUserId = user?.id || 1;
   
   // Fetch education data for user
-  const { data: educations = [], isLoading } = useQuery<Education[]>({
+  const { data: fetchedEducations = [], isLoading } = useQuery<any>({
     queryKey: [`/api/users/${effectiveUserId}/educations`],
     enabled: true,
     staleTime: 1000, 
     refetchOnMount: true,
     refetchOnWindowFocus: true,
   });
+  
+  // Ensure educations is always an array to prevent "map is not a function" errors
+  const educations = Array.isArray(fetchedEducations) ? fetchedEducations : [];
   
   const form = useForm<Education>({
     resolver: zodResolver(educationSchema),

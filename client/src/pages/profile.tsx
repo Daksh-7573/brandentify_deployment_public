@@ -643,8 +643,14 @@ export default function Profile() {
     queryKey: [`/api/users/${userNumericId}/experiences`],
     queryFn: async () => {
       if (!userNumericId) return [];
-      const response = await apiRequest('GET', `/api/users/${userNumericId}/experiences`);
-      return response;
+      try {
+        const response = await apiRequest('GET', `/api/users/${userNumericId}/experiences`);
+        // Ensure we always return an array
+        return Array.isArray(response) ? response : [];
+      } catch (error) {
+        console.error("Error fetching experiences:", error);
+        return [];
+      }
     },
     enabled: !!userNumericId && isAuthenticated,
     staleTime: 1000,
@@ -657,8 +663,14 @@ export default function Profile() {
     queryKey: [`/api/users/${userNumericId}/educations`],
     queryFn: async () => {
       if (!userNumericId) return [];
-      const response = await apiRequest('GET', `/api/users/${userNumericId}/educations`);
-      return response;
+      try {
+        const response = await apiRequest('GET', `/api/users/${userNumericId}/educations`);
+        // Ensure we always return an array
+        return Array.isArray(response) ? response : [];
+      } catch (error) {
+        console.error("Error fetching educations:", error);
+        return [];
+      }
     },
     enabled: !!userNumericId && isAuthenticated,
     staleTime: 1000,
@@ -671,8 +683,14 @@ export default function Profile() {
     queryKey: [`/api/users/${userNumericId}/projects`],
     queryFn: async () => {
       if (!userNumericId) return [];
-      const response = await apiRequest('GET', `/api/users/${userNumericId}/projects`);
-      return response;
+      try {
+        const response = await apiRequest('GET', `/api/users/${userNumericId}/projects`);
+        // Ensure we always return an array
+        return Array.isArray(response) ? response : [];
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+        return [];
+      }
     },
     enabled: !!userNumericId && isAuthenticated,
     staleTime: 1000,
@@ -685,8 +703,14 @@ export default function Profile() {
     queryKey: ['/api/users', userNumericId, 'services'],
     queryFn: async () => {
       if (!userNumericId) return [];
-      const response = await apiRequest('GET', `/api/users/${userNumericId}/services`);
-      return response;
+      try {
+        const response = await apiRequest('GET', `/api/users/${userNumericId}/services`);
+        // Ensure we always return an array
+        return Array.isArray(response) ? response : [];
+      } catch (error) {
+        console.error("Error fetching services:", error);
+        return [];
+      }
     },
     enabled: !!userNumericId && isAuthenticated,
     staleTime: 1000,
