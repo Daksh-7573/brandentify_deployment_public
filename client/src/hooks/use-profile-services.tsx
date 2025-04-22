@@ -182,11 +182,30 @@ export function useProfileServices() {
         service = { ...service, category: "other" };
       }
       
+      // Ensure we have a userId
+      if (!service.userId) {
+        // Get the numeric userId if possible
+        const numericUserId = localStorage.getItem('numericUserId');
+        if (numericUserId) {
+          service = { ...service, userId: parseInt(numericUserId, 10) };
+          console.log('useProfileServices hook - setting numeric userId:', service.userId);
+        } else if (userId) {
+          // Otherwise use the Firebase UID from context
+          service = { ...service, userId: userId as unknown as number };
+          console.log('useProfileServices hook - setting Firebase UID as userId:', service.userId);
+        } else {
+          console.error('useProfileServices hook - no userId available!');
+        }
+      }
+
+      console.log('useProfileServices hook - final service data:', service);
+      
       const response = await apiRequest('POST', '/api/profile-services', service);
       
       if (!response.ok) {
-        console.error('Service creation failed:', await response.text());
-        throw new Error('Failed to create service. Please check the data and try again.');
+        const errorText = await response.text();
+        console.error('Service creation failed:', errorText);
+        throw new Error(`Failed to create service: ${errorText}`);
       }
       
       return response.json();

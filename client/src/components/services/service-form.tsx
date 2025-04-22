@@ -124,7 +124,36 @@ export default function ServiceForm({ service, onSubmit, isPending, existingServ
       ...(service ? (({ id, userId }) => ({ id, userId }))(service) : {})
     };
     
-    console.log("Service form - submitting transformed data:", transformedData);
+    // If we don't have userId from an existing service, add it from auth context
+    if (!transformedData.userId) {
+      const firebaseUid = localStorage.getItem('firebaseUid');
+      const numericUserId = localStorage.getItem('numericUserId');
+      
+      // Log details about what userId we're using
+      console.log("Service form - user ID details:", { 
+        firebaseUid,
+        numericUserId,
+        hasExistingUserId: !!service?.userId
+      });
+      
+      // Prefer numeric user ID if available
+      if (numericUserId) {
+        transformedData.userId = parseInt(numericUserId, 10);
+      } else if (firebaseUid) {
+        // The Firebase UID can be used as a string, but we need to properly handle it
+        // in the API endpoint since Drizzle expects a numeric ID
+        transformedData.userId = firebaseUid as unknown as number;
+      }
+      
+      console.log("Service form - setting userId to:", transformedData.userId);
+    }
+    
+    // Make sure we have a userId
+    if (!transformedData.userId) {
+      console.error("Service form - no userId available for service creation!");
+    }
+    
+    console.log("Service form - submitting final transformed data:", transformedData);
     onSubmit(transformedData);
   };
 
