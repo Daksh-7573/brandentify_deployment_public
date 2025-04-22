@@ -46,6 +46,7 @@ interface ScholarProps {
     photoURL: string | null;
     lookingFor: string | null;
     jobLevel: string | null;
+    aboutMe?: string | null;
   };
   userSkills: {
     id: number;
