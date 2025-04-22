@@ -802,22 +802,23 @@ export default function Profile() {
     refetchOnWindowFocus: true,
   });
   
-  // Fetch user services for profile completion calculation
-  const { data: services = [], isLoading: isLoadingServices, refetch: refetchServices } = useQuery<any[]>({
-    queryKey: ['/api/users', userNumericId, 'services'],
+  // Fetch user services via the unified profile-services endpoint for consistency with Edit Profile
+  const { data: profileServicesData, isLoading: isLoadingServices, refetch: refetchServices } = useQuery({
+    queryKey: ['/api/users', userNumericId, 'profile-services'],
     queryFn: async () => {
-      if (!userNumericId) return [];
+      if (!userNumericId) return { services: [] };
       try {
-        const response = await apiRequest('GET', `/api/users/${userNumericId}/services`);
-        // Ensure we always return an array
-        return Array.isArray(response) ? response : [];
+        console.log("Profile page - Fetching profile-services data");
+        const response = await apiRequest('GET', `/api/users/${userNumericId}/profile-services`);
+        console.log("Profile page - profile-services response:", response);
+        return response || { services: [] };
       } catch (error) {
-        console.error("Error fetching services:", error);
-        return [];
+        console.error("Error fetching profile services:", error);
+        return { services: [] };
       }
     },
     enabled: !!userNumericId && isAuthenticated,
-    staleTime: 1000,
+    staleTime: 0, // Always fetch fresh data
     refetchOnMount: true,
     refetchOnWindowFocus: true,
   });
