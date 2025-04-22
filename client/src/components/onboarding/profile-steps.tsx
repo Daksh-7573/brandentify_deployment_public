@@ -325,9 +325,64 @@ export default function ProfileSteps({
   // Profile picture update mutation
   const profilePictureMutation = useProfilePicture(userId);
   
-  // Fetch user data
+  // Fetch user data - ensure we're using the correct ID format
   const { data: userData, isLoading: isLoadingUser } = useQuery<any>({
     queryKey: [`/api/users/${userId}`],
+    queryFn: async () => {
+      if (!userId) return null;
+      
+      try {
+        console.log("ProfileSteps - Fetching user data with ID:", userId);
+        
+        // Add cache busting parameter
+        const cacheBuster = `?t=${Date.now()}`;
+        
+        // Try to fetch the user data
+        const response = await fetch(`/api/users/${userId}${cacheBuster}`, {
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
+        });
+        
+        if (!response.ok) {
+          console.error(`Error fetching user data: ${response.status} ${response.statusText}`);
+          
+          // If user wasn't found by Firebase UID, try by numeric ID if it appears to be a number
+          if (/^\d+$/.test(userId)) {
+            console.log("Attempting to fetch user by numeric ID instead");
+            const numericResponse = await fetch(`/api/users/${userId}${cacheBuster}`, {
+              headers: {
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+              }
+            });
+            
+            if (numericResponse.ok) {
+              const numericData = await numericResponse.json();
+              console.log("Successfully fetched user data by numeric ID:", numericData);
+              return numericData;
+            }
+          }
+          
+          return null;
+        }
+        
+        const data = await response.json();
+        console.log("Successfully fetched user data:", data);
+        
+        // Cache the user data in localStorage for recovery in case of disconnection
+        localStorage.setItem('cachedUserData', JSON.stringify(data));
+        localStorage.setItem('cachedUserDataTimestamp', Date.now().toString());
+        
+        return data;
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        return null;
+      }
+    },
     enabled: !!userId && isAuthenticated,
     staleTime: 1000,
     refetchOnMount: true
@@ -602,50 +657,122 @@ export default function ProfileSteps({
     }
   });
   
+  // Helper function to ensure we have valid user data
+  const getUserDataSafely = () => {
+    // First try the userData from the query
+    if (userData && typeof userData === 'object') {
+      console.log("Using userData from API query");
+      return userData;
+    }
+    
+    // Try to get from localStorage
+    try {
+      const cachedUserDataStr = localStorage.getItem('cachedUserData');
+      if (cachedUserDataStr) {
+        const cachedUserData = JSON.parse(cachedUserDataStr);
+        if (cachedUserData && typeof cachedUserData === 'object' && 'id' in cachedUserData) {
+          console.log("Using userData from localStorage cache");
+          return cachedUserData;
+        }
+      }
+    } catch (err) {
+      console.error("Error recovering userData from cache:", err);
+    }
+    
+    // Last resort: try direct fetch
+    if (userId) {
+      console.log("Attempting to fetch userData directly");
+      // This will happen asynchronously but at least trigger a re-render later
+      fetch(`/api/users/${userId}?directFetch=true&t=${Date.now()}`)
+        .then(res => res.json())
+        .then(data => {
+          console.log("Direct fetch successful, updating local cache");
+          localStorage.setItem('cachedUserData', JSON.stringify(data));
+          queryClient.setQueryData([`/api/users/${userId}`], data);
+        })
+        .catch(err => console.error("Direct fetch failed:", err));
+    }
+    
+    return null;
+  };
+
   // Use effect to populate form with existing data when editing
   useEffect(() => {
-    if (userData && isEditing) {
+    console.log("ProfileSteps useEffect for populating form data triggered");
+    
+    const safeUserData = getUserDataSafely();
+    
+    if (safeUserData && isEditing) {
+      console.log("Populating form with user data:", safeUserData);
+      
       // Debug services data before updating form
       console.log("Services data from API before form update:", services);
-      console.log("WhatIOffer from userData:", userData.whatIOffer);
+      console.log("WhatIOffer from userData:", safeUserData.whatIOffer);
+      
+      // Extract and prepare services data - ensure it's an array
+      const safeServices = Array.isArray(services) ? services : [];
+      
+      // Extract and prepare skills data - ensure it's an array
+      const safeSkills = Array.isArray(skills) ? skills : [];
+      
+      // Extract and prepare projects data - ensure it's an array
+      const safeProjects = Array.isArray(projects) ? projects : [];
+      
+      // Extract and prepare experiences data - ensure it's an array
+      const safeExperiences = Array.isArray(experiences) ? experiences : [];
+      
+      // Extract and prepare educations data - ensure it's an array
+      const safeEducations = Array.isArray(educations) ? educations : [];
       
       setFormData(prevData => {
         const updatedData = {
           ...prevData,
-          name: userData.name || '',
-          photoURL: userData.photoURL || null,
-          title: userData.title || '',
-          location: userData.location || '',
-          industry: userData.industry?.split(': ')[0] || '',
-          domain: userData.industry?.includes(': ') ? userData.industry.split(': ')[1] : '',
-          lookingFor: userData.lookingFor || '',
-          aboutMe: userData.aboutMe || '',
-          whatIOffer: userData.whatIOffer || '',
-          email: userData.email || '',
-          phoneNumber: userData.phoneNumber || '',
-          skills: skills || [],
-          services: services || [], // Use services from the unified endpoint
-          projects: projects || [],
-          experiences: experiences || [],
-          educations: educations || [],
+          name: safeUserData.name || '',
+          photoURL: safeUserData.photoURL || null,
+          title: safeUserData.title || '',
+          location: safeUserData.location || '',
+          industry: safeUserData.industry?.split(': ')[0] || '',
+          domain: safeUserData.industry?.includes(': ') ? safeUserData.industry.split(': ')[1] : '',
+          lookingFor: safeUserData.lookingFor || '',
+          aboutMe: safeUserData.aboutMe || '',
+          whatIOffer: safeUserData.whatIOffer || servicesWhatIOffer || '',
+          email: safeUserData.email || '',
+          phoneNumber: safeUserData.phoneNumber || '',
+          skills: safeSkills,
+          services: safeServices,
+          projects: safeProjects,
+          experiences: safeExperiences,
+          educations: safeEducations,
         };
         
         // Debug the updated form data
-        console.log("Updated form data services:", updatedData.services);
+        console.log("Updated form data with:", {
+          name: updatedData.name,
+          title: updatedData.title,
+          location: updatedData.location,
+          industry: updatedData.industry,
+          domain: updatedData.domain,
+          services: updatedData.services.length,
+          skills: updatedData.skills.length,
+          projects: updatedData.projects.length,
+          experiences: updatedData.experiences.length,
+          educations: updatedData.educations.length,
+        });
+        
         return updatedData;
       });
       
       // Set industry and domain for select components
-      if (userData.industry) {
-        if (userData.industry.includes(': ')) {
-          setSelectedIndustry(userData.industry.split(': ')[0]);
-          setSelectedDomain(userData.industry.split(': ')[1]);
+      if (safeUserData.industry) {
+        if (safeUserData.industry.includes(': ')) {
+          setSelectedIndustry(safeUserData.industry.split(': ')[0]);
+          setSelectedDomain(safeUserData.industry.split(': ')[1]);
         } else {
-          setSelectedIndustry(userData.industry);
+          setSelectedIndustry(safeUserData.industry);
         }
       }
     }
-  }, [userData, skills, services, projects, experiences, educations, isEditing, servicesWhatIOffer]);
+  }, [userData, skills, services, projects, experiences, educations, isEditing, servicesWhatIOffer, userId]);
   
   // Handle form input changes for basic fields
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
