@@ -24,52 +24,98 @@ export function useProfileServices() {
       
       console.log('useProfileServices hook - fetching data for:', userId);
       
-      // Add a cache buster to URL to ensure we get fresh data
-      const cacheBuster = `?t=${Date.now()}`;
-      const response = await fetch(`/api/users/${userId}/profile-services${cacheBuster}`, {
-        headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
-        }
-      });
-      
-      if (!response.ok) {
-        console.error('useProfileServices hook - failed to fetch data:', response.status, response.statusText);
+      try {
+        // Add a cache buster to URL to ensure we get fresh data
+        const cacheBuster = `?t=${Date.now()}`;
+        const controller = new AbortController();
         
-        // Try to recover from localStorage
-        const savedData = localStorage.getItem('profile_services_data');
-        const savedTimestamp = localStorage.getItem('profile_services_fetchedAt');
+        // Set timeout to prevent long-hanging requests
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 seconds timeout
         
-        if (savedData && savedTimestamp) {
-          const timestamp = parseInt(savedTimestamp, 10);
-          const now = Date.now();
-          const isFresh = (now - timestamp) < 1000 * 60 * 30; // 30 minutes
+        const response = await fetch(`/api/users/${userId}/profile-services${cacheBuster}`, {
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          },
+          signal: controller.signal
+        });
+        
+        // Clear the timeout as request completed
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+          console.error('useProfileServices hook - failed to fetch data:', response.status, response.statusText);
           
-          if (isFresh) {
-            console.log('useProfileServices hook - using cached data from localStorage');
-            return JSON.parse(savedData);
+          // Attempt recovery from localStorage for certain error codes that indicate server issues
+          if (response.status >= 500) {
+            console.log('useProfileServices hook - server error, attempting recovery from cache');
+            const recoveredData = recoverFromLocalStorage();
+            if (recoveredData) return recoveredData;
+          }
+          
+          throw new Error(`Failed to fetch profile services data - ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        console.log('useProfileServices hook - received data:', data);
+        
+        // If we got a valid response but there are no services, check if this looks valid
+        if (!data.services || !Array.isArray(data.services)) {
+          console.warn('useProfileServices hook - response has no services array, checking format');
+          
+          // If we have reason to believe the response is malformed, try recovery
+          if (!data.whatIOffer && Object.keys(data).length < 2) {
+            console.warn('useProfileServices hook - suspicious response, attempting recovery');
+            const recoveredData = recoverFromLocalStorage();
+            if (recoveredData) return recoveredData;
           }
         }
         
-        throw new Error('Failed to fetch profile services data');
+        // Cache in localStorage
+        localStorage.setItem('profile_services_data', JSON.stringify(data));
+        localStorage.setItem('profile_services_fetchedAt', Date.now().toString());
+        
+        return data;
+      } catch (error) {
+        console.error('useProfileServices hook - fetch error:', error);
+        
+        // Network errors (like timeout, abort, or offline) should try to use cached data
+        const recoveredData = recoverFromLocalStorage();
+        if (recoveredData) return recoveredData;
+        
+        // If we can't recover, rethrow the error
+        throw error;
       }
-      
-      const data = await response.json();
-      console.log('useProfileServices hook - received data:', data);
-      
-      // Cache in localStorage
-      localStorage.setItem('profile_services_data', JSON.stringify(data));
-      localStorage.setItem('profile_services_fetchedAt', Date.now().toString());
-      
-      return data;
     },
     enabled: !!userId,
     staleTime: 0, // Always fetch fresh data
     gcTime: 0,    // Don't keep old data in cache
     refetchOnMount: true,
-    retry: 2
+    retry: 3, // Increase retry count for better resilience
+    retryDelay: attempt => Math.min(1000 * 2 ** attempt, 30000) // Exponential backoff
   });
+  
+  // Helper function to recover data from localStorage
+  function recoverFromLocalStorage() {
+    const savedData = localStorage.getItem('profile_services_data');
+    const savedTimestamp = localStorage.getItem('profile_services_fetchedAt');
+    
+    if (savedData && savedTimestamp) {
+      const timestamp = parseInt(savedTimestamp, 10);
+      const now = Date.now();
+      const isFresh = (now - timestamp) < 1000 * 60 * 30; // 30 minutes
+      
+      if (isFresh) {
+        console.log('useProfileServices hook - recovering with cached data from localStorage');
+        return JSON.parse(savedData);
+      } else {
+        console.log('useProfileServices hook - cached data too old, not using it');
+      }
+    }
+    
+    return null; // No valid cached data
+  }
   
   const updateWhatIOfferMutation = useMutation({
     mutationFn: async (whatIOffer: string) => {
@@ -229,24 +275,37 @@ export function useProfileServices() {
     }
   });
   
-  // Extract data from the query
+  // Extract data from the query with more robust error handling
   const data = profileServicesQuery.data || {};
   
-  // Handle both string and object format for whatIOffer
+  // Handle both string and object format for whatIOffer with improved checking
   let whatIOffer = '';
-  if (typeof data.whatIOffer === 'string') {
-    whatIOffer = data.whatIOffer;
-  } else if (typeof data.whatIOffer === 'object' && data.whatIOffer && 'whatIOffer' in data.whatIOffer) {
-    whatIOffer = data.whatIOffer.whatIOffer;
+  if (typeof data === 'object' && data !== null) {
+    if (typeof data.whatIOffer === 'string') {
+      whatIOffer = data.whatIOffer;
+    } else if (typeof data.whatIOffer === 'object' && data.whatIOffer && 'whatIOffer' in data.whatIOffer) {
+      whatIOffer = data.whatIOffer.whatIOffer;
+    }
   }
   
-  // Handle services array with additional safety checks
+  // Handle services array with improved safety checks and fallback mechanisms
   let services = [];
-  if (data && 'services' in data) {
-    services = Array.isArray(data.services) ? data.services : [];
-    console.log('useProfileServices hook - services data present with length:', services.length);
-  } else {
-    console.log('useProfileServices hook - services data not found in response');
+  
+  // Try different possible paths where services might be
+  if (data && typeof data === 'object') {
+    if ('services' in data && Array.isArray(data.services)) {
+      services = data.services;
+      console.log('useProfileServices hook - services found directly:', services.length);
+    } else if ('data' in data && typeof data.data === 'object' && data.data && 'services' in data.data) {
+      // Sometimes APIs nest data one level down
+      services = Array.isArray(data.data.services) ? data.data.services : [];
+      console.log('useProfileServices hook - services found in nested data object:', services.length);
+    }
+  }
+  
+  // Log empty services as this might indicate a problem
+  if (services.length === 0) {
+    console.log('useProfileServices hook - no services found in response. Raw data:', data);
   }
   
   console.log('useProfileServices hook - processed data', { 

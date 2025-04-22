@@ -53,35 +53,106 @@ export default function Services() {
   const [services, setServices] = useState<any[]>([]);
   const [error, setError] = useState<Error | null>(null);
 
-  // Function to directly fetch the data
+  // Track refresh count to help debug and break cache
+  const [refreshCount, setRefreshCount] = useState(0);
+  
+  // Function to directly fetch the data with improved error handling
   const fetchServicesData = async () => {
     if (!userNumericId) return;
     
+    // Increment refresh count to track calls
+    setRefreshCount(prev => prev + 1);
     setIsLoading(true);
     setError(null);
     
     try {
-      console.log('Services component - direct fetch started for user ID:', userNumericId);
-      const response = await fetch(`/api/users/${userNumericId}/profile-services?t=${Date.now()}`);
+      console.log(`Services component - direct fetch #${refreshCount} started for user ID:`, userNumericId);
+      
+      // Add cache busting
+      const cacheBuster = `?t=${Date.now()}&r=${refreshCount}`;
+      
+      // Add timeout protection
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+      
+      const response = await fetch(`/api/users/${userNumericId}/profile-services${cacheBuster}`, {
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        },
+        signal: controller.signal
+      });
+      
+      // Clear timeout since request completed
+      clearTimeout(timeoutId);
       
       if (!response.ok) {
-        throw new Error(`Server responded with ${response.status}`);
+        throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
       }
       
       const data = await response.json();
-      console.log('Services component - direct fetch result:', data);
+      console.log(`Services component - direct fetch #${refreshCount} result:`, data);
       
-      // Set data
-      setWhatIOffer(data.whatIOffer || '');
-      setServices(Array.isArray(data.services) ? data.services : []);
+      // Save to localStorage as a fallback
+      try {
+        localStorage.setItem('services_data_backup', JSON.stringify(data));
+        localStorage.setItem('services_data_timestamp', Date.now().toString());
+      } catch (cacheErr) {
+        console.warn('Services component - could not cache data in localStorage:', cacheErr);
+      }
       
-      console.log('Services component - data processed:', { 
-        whatIOffer: data.whatIOffer, 
-        servicesCount: (Array.isArray(data.services) ? data.services.length : 0)
-      });
+      // Validate and set data
+      if (data && typeof data === 'object') {
+        // Handle whatIOffer field
+        if ('whatIOffer' in data && typeof data.whatIOffer === 'string') {
+          setWhatIOffer(data.whatIOffer);
+        }
+        
+        // Handle services array
+        if ('services' in data && Array.isArray(data.services)) {
+          setServices(data.services);
+          console.log(`Services component - found ${data.services.length} services in response`);
+        } else {
+          console.warn('Services component - response missing valid services array:', data);
+          // Try to keep existing services if new data is invalid
+          if (services.length > 0) {
+            console.log('Services component - keeping existing services data');
+          } else {
+            setServices([]);
+          }
+        }
+      } else {
+        console.error('Services component - response is not a valid object:', data);
+        throw new Error('Invalid response format');
+      }
     } catch (err) {
-      console.error('Services component - fetch error:', err);
+      console.error(`Services component - fetch #${refreshCount} error:`, err);
       setError(err as Error);
+      
+      // Try to recover from localStorage if it's a network error or server error
+      if (err.name === 'AbortError' || err.message.includes('Server responded with')) {
+        try {
+          const cachedData = localStorage.getItem('services_data_backup');
+          const timestamp = localStorage.getItem('services_data_timestamp');
+          
+          if (cachedData && timestamp) {
+            const parsedTimestamp = parseInt(timestamp, 10);
+            const now = Date.now();
+            const isFresh = (now - parsedTimestamp) < 1000 * 60 * 30; // 30 minutes
+            
+            if (isFresh) {
+              console.log('Services component - recovering from localStorage cache');
+              const data = JSON.parse(cachedData);
+              
+              if (data.whatIOffer) setWhatIOffer(data.whatIOffer);
+              if (Array.isArray(data.services)) setServices(data.services);
+            }
+          }
+        } catch (recoveryErr) {
+          console.error('Services component - recovery from cache failed:', recoveryErr);
+        }
+      }
     } finally {
       setIsLoading(false);
     }
