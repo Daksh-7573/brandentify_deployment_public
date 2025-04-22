@@ -4760,8 +4760,7 @@ export class MemStorage implements IStorage {
 }
 
 // Import the database connection
-import { db } from './db';
-import { eq, sql } from 'drizzle-orm';
+import { db, pool, executeWithRetry, sql } from './db';
 
 /**
  * DatabaseStorage implementation that connects to a PostgreSQL database via Drizzle ORM
@@ -4815,81 +4814,102 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    try {
-      const result = await pool.query(`
-        SELECT 
-          id, username, email, password, phone_number as "phoneNumber", 
-          name, photo_url as "photoURL", title, about_me as "aboutMe", 
-          location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer",
-          visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
-          email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
-          email_verification_expires as "emailVerificationExpires", created_at as "createdAt"
-        FROM users
-        WHERE email = $1
-      `, [email]);
-      
-      console.log(`[db.getUserByEmail] Query returned ${result.rows.length} rows`);
-      
-      if (result.rows.length > 0) {
-        return result.rows[0] as User;
+    console.log(`[db.getUserByEmail] Looking up user with email: ${email}`);
+    
+    return executeWithRetry(async () => {
+      try {
+        const result = await pool.query(`
+          SELECT 
+            id, username, email, password, phone_number as "phoneNumber", 
+            name, photo_url as "photoURL", title, about_me as "aboutMe", 
+            location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer",
+            visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
+            email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
+            email_verification_expires as "emailVerificationExpires", created_at as "createdAt"
+          FROM users
+          WHERE email = $1
+        `, [email]);
+        
+        console.log(`[db.getUserByEmail] Query returned ${result.rows.length} rows`);
+        
+        if (result.rows.length > 0) {
+          return result.rows[0] as User;
+        }
+        return undefined;
+      } catch (error) {
+        console.error(`[db.getUserByEmail] Error fetching user with email ${email}:`, error);
+        throw error; // Rethrow for retry mechanism
       }
-      return undefined;
-    } catch (error) {
-      console.error(`[db.getUserByEmail] Error fetching user with email ${email}:`, error);
-      return undefined;
-    }
+    }, 3, 800).catch(error => {
+      console.error(`[db.getUserByEmail] All retries failed for email ${email}:`, error);
+      return undefined; // Final fallback to prevent UI from breaking
+    });
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    try {
-      const result = await pool.query(`
-        SELECT 
-          id, username, email, password, phone_number as "phoneNumber", 
-          name, photo_url as "photoURL", title, about_me as "aboutMe", 
-          location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer",
-          visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
-          email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
-          email_verification_expires as "emailVerificationExpires", created_at as "createdAt"
-        FROM users
-        WHERE username = $1
-      `, [username]);
-      
-      console.log(`[db.getUserByUsername] Query returned ${result.rows.length} rows`);
-      
-      if (result.rows.length > 0) {
-        return result.rows[0] as User;
+    console.log(`[db.getUserByUsername] Looking up user with username: ${username}`);
+    
+    return executeWithRetry(async () => {
+      try {
+        const result = await pool.query(`
+          SELECT 
+            id, username, email, password, phone_number as "phoneNumber", 
+            name, photo_url as "photoURL", title, about_me as "aboutMe", 
+            location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer",
+            visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
+            email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
+            email_verification_expires as "emailVerificationExpires", created_at as "createdAt"
+          FROM users
+          WHERE username = $1
+        `, [username]);
+        
+        console.log(`[db.getUserByUsername] Query returned ${result.rows.length} rows`);
+        
+        if (result.rows.length > 0) {
+          return result.rows[0] as User;
+        }
+        return undefined;
+      } catch (error) {
+        console.error(`[db.getUserByUsername] Error fetching user with username ${username}:`, error);
+        throw error; // Rethrow for retry mechanism
       }
-      return undefined;
-    } catch (error) {
-      console.error(`[db.getUserByUsername] Error fetching user with username ${username}:`, error);
-      return undefined;
-    }
+    }, 3, 800).catch(error => {
+      console.error(`[db.getUserByUsername] All retries failed for username ${username}:`, error);
+      return undefined; // Final fallback to prevent UI from breaking
+    });
   }
 
   async getUserByPhoneNumber(phoneNumber: string): Promise<User | undefined> {
-    try {
-      const result = await pool.query(`
-        SELECT 
-          id, username, email, password, phone_number as "phoneNumber", 
-          name, photo_url as "photoURL", title, about_me as "aboutMe", 
-          location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer",
-          visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
-          email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
-          email_verification_expires as "emailVerificationExpires", created_at as "createdAt"
-        FROM users
-        WHERE phone_number = $1
-      `, [phoneNumber]);
-      
-      console.log(`[db.getUserByPhoneNumber] Query returned ${result.rows.length} rows`);
-      
-      if (result.rows.length > 0) {
-        return result.rows[0] as User;
+    console.log(`[db.getUserByPhoneNumber] Looking up user with phone number: ${phoneNumber}`);
+    
+    return executeWithRetry(async () => {
+      try {
+        const result = await pool.query(`
+          SELECT 
+            id, username, email, password, phone_number as "phoneNumber", 
+            name, photo_url as "photoURL", title, about_me as "aboutMe", 
+            location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer",
+            visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
+            email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
+            email_verification_expires as "emailVerificationExpires", created_at as "createdAt"
+          FROM users
+          WHERE phone_number = $1
+        `, [phoneNumber]);
+        
+        console.log(`[db.getUserByPhoneNumber] Query returned ${result.rows.length} rows`);
+        
+        if (result.rows.length > 0) {
+          return result.rows[0] as User;
+        }
+        return undefined;
+      } catch (error) {
+        console.error(`[db.getUserByPhoneNumber] Error fetching user with phone number ${phoneNumber}:`, error);
+        throw error; // Rethrow for retry mechanism
       }
-      return undefined;
-    } catch (error) {
-      console.error(`[db.getUserByPhoneNumber] Error fetching user with phone number ${phoneNumber}:`, error);
-      return undefined;
-    }
+    }, 3, 800).catch(error => {
+      console.error(`[db.getUserByPhoneNumber] All retries failed for phone number ${phoneNumber}:`, error);
+      return undefined; // Final fallback to prevent UI from breaking
+    });
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {

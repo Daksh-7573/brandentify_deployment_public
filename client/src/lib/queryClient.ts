@@ -37,7 +37,7 @@ export async function apiRequest(
  * Enhanced API request function with better error handling and retries
  */
 export async function apiRequest(
-  optionsOrMethod: string | { url: string; method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'; data?: unknown; retries?: number },
+  optionsOrMethod: string | { url: string; method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'; data?: unknown; retries?: number; backoffDelay?: number },
   urlOrNothing?: string,
   dataOrNothing?: unknown,
   retriesOrNothing?: number
@@ -46,7 +46,8 @@ export async function apiRequest(
   let url: string;
   let method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
   let data: unknown;
-  let retries: number = 2;
+  let retries: number = 3; // Increased default retries
+  let backoffDelay: number = 300; // Default initial backoff delay in ms
 
   if (typeof optionsOrMethod === 'string') {
     // Old signature: apiRequest(method, url, data?, retries?)
@@ -55,64 +56,155 @@ export async function apiRequest(
     data = dataOrNothing;
     if (typeof retriesOrNothing === 'number') retries = retriesOrNothing;
   } else {
-    // New signature: apiRequest({ url, method, data?, retries? })
-    ({ url, method, data, retries = 2 } = optionsOrMethod);
+    // New signature: apiRequest({ url, method, data?, retries?, backoffDelay? })
+    ({ url, method, data, retries = 3, backoffDelay = 300 } = optionsOrMethod);
   }
   
-  try {
-    // Support for passing FormData objects
-    const isFormData = data instanceof FormData;
-    
-    // Setup headers and body based on content type
-    const requestOptions: RequestInit = {
-      method: method,
-      headers: !isFormData && data ? { "Content-Type": "application/json" } : {},
-      body: isFormData ? data : data ? JSON.stringify(data) : undefined,
-      credentials: "include",
-    };
-    
-    const res = await fetch(url, requestOptions);
-    
-    // Try to handle recoverable errors
-    if (!res.ok) {
-      // Log error details for debugging
-      console.warn(`API request failed: ${method} ${url} - Status: ${res.status}`);
-      
-      // For specific API errors, maintain the response object with the error data
-      if (res.status === 413 || res.status === 429) {
-        // Parse and attach error data to response
-        try {
-          const errorData = await res.json();
-          // Attach the error data to the response object for error handlers
-          (res as any).data = errorData;
+  // Helper for sleeping between retries
+  const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+  
+  // Try to get from cache for GET requests during retries
+  const tryGetFromCache = (attemptNumber: number): Response | null => {
+    if (method === 'GET' && attemptNumber > 0) {
+      try {
+        const cacheKey = `api_cache_${url}`;
+        const cachedData = localStorage.getItem(cacheKey);
+        
+        if (cachedData) {
+          console.log(`Using cached data for ${url} (attempt ${attemptNumber})...`);
           
-          // Return the response with the error data
-          return res;
-        } catch (jsonError) {
-          // If we couldn't parse JSON, just continue with normal flow
-          console.error("Failed to parse error response:", jsonError);
+          // Create a fake Response from the cached data
+          return new Response(cachedData, {
+            status: 200,
+            headers: { 
+              'Content-Type': 'application/json',
+              'X-Cache': 'HIT'
+            }
+          });
+        }
+      } catch (e) {
+        // Ignore localStorage access errors
+        console.warn('Error accessing localStorage cache:', e);
+      }
+    }
+    return null;
+  };
+  
+  // Try to save successful GET response to cache
+  const trySaveToCache = async (response: Response): Promise<void> => {
+    if (method === 'GET' && response.ok) {
+      try {
+        const cacheKey = `api_cache_${url}`;
+        const clonedResponse = response.clone();
+        const responseText = await clonedResponse.text();
+        
+        // Only save valid JSON
+        try {
+          JSON.parse(responseText); // Verify it's valid JSON  
+          localStorage.setItem(cacheKey, responseText);
+          console.log(`Cached response for ${url}`);
+        } catch (e) {
+          // Not valid JSON, don't cache
+          console.warn(`Not caching non-JSON response for ${url}`);
+        }
+      } catch (e) {
+        // Ignore cache errors
+        console.warn('Error saving to cache:', e);
+      }
+    }
+  };
+  
+  // Execute the request with retries and exponential backoff
+  let attempt = 0;
+  let currentBackoff = backoffDelay;
+  
+  while (true) {
+    try {
+      // Check cache on retry attempts
+      if (attempt > 0) {
+        const cachedResponse = tryGetFromCache(attempt);
+        if (cachedResponse) return cachedResponse;
+        
+        // If we're retrying, apply backoff delay
+        console.log(`Waiting ${currentBackoff}ms before retry ${attempt}...`);
+        await sleep(currentBackoff);
+        
+        // Increase backoff for next attempt (exponential)
+        currentBackoff = Math.min(currentBackoff * 2, 10000); // Max 10 seconds
+      }
+      
+      // Support for passing FormData objects
+      const isFormData = data instanceof FormData;
+      
+      // Setup headers and body based on content type
+      const requestOptions: RequestInit = {
+        method: method,
+        headers: !isFormData && data ? { "Content-Type": "application/json" } : {},
+        body: isFormData ? data : data ? JSON.stringify(data) : undefined,
+        credentials: "include",
+      };
+      
+      const res = await fetch(url, requestOptions);
+      
+      // Handle response status codes
+      if (!res.ok) {
+        // Log error details for debugging
+        console.warn(`API request failed: ${method} ${url} - Status: ${res.status}`);
+        
+        // For specific API errors, maintain the response object with the error data
+        if (res.status === 413 || res.status === 429) {
+          // Parse and attach error data to response
+          try {
+            const errorData = await res.json();
+            // Attach the error data to the response object for error handlers
+            (res as any).data = errorData;
+            
+            // Return the response with the error data
+            return res;
+          } catch (jsonError) {
+            // If we couldn't parse JSON, just continue with normal flow
+            console.error("Failed to parse error response:", jsonError);
+          }
+        }
+        
+        // For network errors or server errors (5xx), retry if we have attempts left
+        if ((res.status >= 500 || res.status === 0) && attempt < retries) {
+          console.log(`Server error ${res.status}, retry ${attempt + 1}/${retries} for: ${url}`);
+          attempt++;
+          continue; // Continue to next retry attempt
         }
       }
       
-      // For network errors or server errors (5xx), retry a few times
-      if ((res.status >= 500 || res.status === 0) && retries > 0) {
-        console.log(`Retrying request (${retries} attempts left)...`);
-        return apiRequest({ url, method, data, retries: retries - 1 });
+      // Save successful responses to cache
+      await trySaveToCache(res);
+      
+      // For authorization errors or other errors, throw normally
+      await throwIfResNotOk(res);
+      return res;
+    } catch (error) {
+      // Handle network errors (e.g., when fetch itself fails)
+      if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+        if (attempt < retries) {
+          console.log(`Network error, retry ${attempt + 1}/${retries} for: ${url}`);
+          attempt++;
+          continue; // Continue to next retry attempt
+        }
+        
+        console.error("Network error during API request after all retries:", error);
+        
+        // Last attempt - check if we can serve from cache as a last resort
+        const cachedResponse = tryGetFromCache(999); // Special last-resort attempt
+        if (cachedResponse) {
+          console.warn(`All retries failed for ${url}, serving stale data from cache as fallback`);
+          return cachedResponse;
+        }
+        
+        throw new Error("Network error: Unable to connect to the server after multiple attempts. Please check your internet connection.");
       }
+      
+      // Rethrow other errors
+      throw error;
     }
-    
-    // For authorization errors or other errors, throw normally
-    await throwIfResNotOk(res);
-    return res;
-  } catch (error) {
-    // Handle network errors (e.g., when fetch itself fails)
-    if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
-      console.error("Network error during API request:", error);
-      throw new Error("Network error: Unable to connect to the server. Please check your internet connection.");
-    }
-    
-    // Rethrow other errors
-    throw error;
   }
 }
 
@@ -149,9 +241,23 @@ export const getQueryFn: <T>(options: {
       
       console.log("Fetching data from:", queryKey[0]);
       
-      // Add cache busting for GET requests
+      // Add cache busting for GET requests, but with reduced frequency for profile data
       const url = queryKey[0] as string;
-      const cacheBuster = url.includes('?') ? `&t=${Date.now()}` : `?t=${Date.now()}`;
+      
+      // Reduce cache busting frequency for profile-related endpoints to prevent network congestion
+      // Use a timestamp that changes less frequently (once per minute) for these endpoints
+      const isProfileEndpoint = url.includes('/api/users') || 
+                                url.includes('/enhanced-user') || 
+                                url.includes('/what-i-offer');
+                                
+      const cacheBusterTimestamp = isProfileEndpoint 
+        ? Math.floor(Date.now() / 60000) // Only changes once per minute for profile endpoints
+        : Date.now(); // Regular timestamp for other endpoints
+        
+      const cacheBuster = url.includes('?') 
+        ? `&t=${cacheBusterTimestamp}` 
+        : `?t=${cacheBusterTimestamp}`;
+        
       const fetchUrl = `${url}${cacheBuster}`;
       
       // Add timeout protection (only for slow endpoints)
