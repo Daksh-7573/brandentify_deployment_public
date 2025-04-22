@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import { useProfileServices } from "@/hooks/use-profile-services";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
@@ -21,7 +22,6 @@ import {
   Quote,
   AlertCircle
 } from "lucide-react";
-import { useState } from "react";
 import ServiceForm from "@/components/services/service-form";
 import {
   Dialog,
@@ -47,11 +47,55 @@ export default function Services() {
   const { user } = useAuth();
   const userNumericId = user?.id ? Number(user.id) : undefined;
   
-  // Use our new combined hook that fetches both whatIOffer and services
+  // State for directly managing data and loading states
+  const [isLoading, setIsLoading] = useState(true);
+  const [whatIOffer, setWhatIOffer] = useState('');
+  const [services, setServices] = useState<any[]>([]);
+  const [error, setError] = useState<Error | null>(null);
+
+  // Function to directly fetch the data
+  const fetchServicesData = async () => {
+    if (!userNumericId) return;
+    
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      console.log('Services component - direct fetch started for user ID:', userNumericId);
+      const response = await fetch(`/api/users/${userNumericId}/profile-services?t=${Date.now()}`);
+      
+      if (!response.ok) {
+        throw new Error(`Server responded with ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('Services component - direct fetch result:', data);
+      
+      // Set data
+      setWhatIOffer(data.whatIOffer || '');
+      setServices(Array.isArray(data.services) ? data.services : []);
+      
+      console.log('Services component - data processed:', { 
+        whatIOffer: data.whatIOffer, 
+        servicesCount: (Array.isArray(data.services) ? data.services.length : 0)
+      });
+    } catch (err) {
+      console.error('Services component - fetch error:', err);
+      setError(err as Error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  // Fetch data on component mount
+  useEffect(() => {
+    if (userNumericId) {
+      fetchServicesData();
+    }
+  }, [userNumericId]);
+  
+  // Original hook for mutation functions
   const { 
-    whatIOffer,
-    services, 
-    isLoading, 
     createService, 
     updateService, 
     deleteService, 
@@ -59,12 +103,6 @@ export default function Services() {
     isPendingUpdate,
     isPendingDelete
   } = useProfileServices();
-  
-  console.log('Services component - data received:', { 
-    whatIOffer, 
-    servicesCount: services?.length || 0,
-    isLoading 
-  });
   
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
