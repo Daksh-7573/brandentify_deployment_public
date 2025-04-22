@@ -156,7 +156,7 @@ export default function Services() {
             <div className="flex justify-center py-6">
               <Loader2 className="h-6 w-6 animate-spin text-primary" />
             </div>
-          ) : !Array.isArray(services) || services.length === 0 ? (
+          ) : !services || !Array.isArray(services) || services.length === 0 ? (
             <div className="py-6 text-center">
               <Package className="mx-auto h-10 w-10 text-muted-foreground/50" />
               <p className="mt-2 text-muted-foreground">No specific services added yet.</p>

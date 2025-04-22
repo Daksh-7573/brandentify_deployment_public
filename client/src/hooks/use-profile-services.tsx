@@ -240,8 +240,14 @@ export function useProfileServices() {
     whatIOffer = data.whatIOffer.whatIOffer;
   }
   
-  // Handle services array
-  const services = Array.isArray(data.services) ? data.services : [];
+  // Handle services array with additional safety checks
+  let services = [];
+  if (data && 'services' in data) {
+    services = Array.isArray(data.services) ? data.services : [];
+    console.log('useProfileServices hook - services data present with length:', services.length);
+  } else {
+    console.log('useProfileServices hook - services data not found in response');
+  }
   
   console.log('useProfileServices hook - processed data', { 
     whatIOffer,
