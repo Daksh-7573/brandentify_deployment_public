@@ -21,9 +21,8 @@ import { Service } from "@shared/schema";
 const formSchema = z.object({
   title: z.string().min(1, "Service title is required"),
   description: z.string().optional(),
-  category: z.string().optional().default("other"),
-  priceInr: z.string().nullable().optional(),
-  priceUsd: z.string().nullable().optional(),
+  currency: z.string().default("USD"),
+  price: z.string().nullable().optional(),
   isHourly: z.boolean().default(false),
   isActive: z.boolean().default(true),
 });
@@ -47,9 +46,9 @@ export default function ServiceForm({ service, onSubmit, isPending, existingServ
   const defaultValues = {
     title: service?.title || "",
     description: service?.description || "",
-    category: service?.category || "other",
-    priceInr: service?.priceInr || null,
-    priceUsd: service?.priceUsd || null,
+    currency: service ? (service.priceUsd ? "USD" : "INR") : "USD",
+    price: service ? (service.priceUsd ? service.priceUsd.toString() : 
+                      service.priceInr ? service.priceInr.toString() : null) : null,
     isHourly: service?.isHourly || false,
     isActive: service?.isActive !== false,
   };
@@ -61,21 +60,39 @@ export default function ServiceForm({ service, onSubmit, isPending, existingServ
   
   // Handle form submission
   const handleSubmit = (values: FormValues) => {
-    // Convert string price values to numbers if they exist
-    const priceInr = values.priceInr ? parseFloat(values.priceInr) || null : null;
-    const priceUsd = values.priceUsd ? parseFloat(values.priceUsd) || null : null;
+    // Convert price string to number
+    const priceValue = values.price ? parseFloat(values.price) || null : null;
+    
+    // Create price object based on selected currency
+    const priceInr = values.currency === 'INR' ? priceValue : null;
+    const priceUsd = values.currency === 'USD' ? priceValue : null;
+    const priceEur = values.currency === 'EUR' ? priceValue : null;
+    const priceGbp = values.currency === 'GBP' ? priceValue : null;
+    const priceJpy = values.currency === 'JPY' ? priceValue : null;
+    const priceCad = values.currency === 'CAD' ? priceValue : null;
+    const priceAud = values.currency === 'AUD' ? priceValue : null;
     
     // Transform form values to match API expectations
     const transformedData = {
       // Start with default values for all required fields
       features: [],
-      // Then add existing service values if editing (except for values we're providing explicitly)
+      // Then add existing service values if editing (except for values we're explicitly overriding)
       ...(service || {}),
-      // Override with new values from the form
-      ...values,
-      // Replace string prices with numeric values
+      // Include base form values except currency and price (we set these separately)
+      title: values.title,
+      description: values.description,
+      isHourly: values.isHourly,
+      isActive: values.isActive,
+      // Set category to "other" since we're removing it from the form
+      category: "other",
+      // Add the appropriate price field based on currency
       priceInr,
       priceUsd,
+      priceEur,
+      priceGbp,
+      priceJpy,
+      priceCad,
+      priceAud,
     };
     
     onSubmit(transformedData);
@@ -139,35 +156,6 @@ export default function ServiceForm({ service, onSubmit, isPending, existingServ
           )}
         />
         
-        <FormField
-          control={form.control}
-          name="category"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Category</FormLabel>
-              <FormDescription className="text-xs mb-2">
-                Select a category for your service.
-              </FormDescription>
-              <FormControl>
-                <select
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                  {...field}
-                >
-                  <option value="other">Other</option>
-                  <option value="consulting">Consulting</option>
-                  <option value="development">Development</option>
-                  <option value="design">Design</option>
-                  <option value="marketing">Marketing</option>
-                  <option value="writing">Writing</option>
-                  <option value="coaching">Coaching</option>
-                  <option value="teaching">Teaching</option>
-                </select>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
         {/* Rate Fields */}
         <div className="space-y-4 border rounded-lg p-4">
           <h3 className="text-base font-medium">Pricing Details</h3>
@@ -177,17 +165,23 @@ export default function ServiceForm({ service, onSubmit, isPending, existingServ
             <div>
               <FormField
                 control={form.control}
-                name="priceInr"
+                name="currency"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Rate (INR)</FormLabel>
+                    <FormLabel>Currency</FormLabel>
                     <FormControl>
-                      <Input
-                        type="text"
-                        placeholder="Amount in INR"
-                        value={field.value || ''}
-                        onChange={(e) => field.onChange(e.target.value)}
-                      />
+                      <select
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        {...field}
+                      >
+                        <option value="USD">USD (US Dollar)</option>
+                        <option value="INR">INR (Indian Rupee)</option>
+                        <option value="EUR">EUR (Euro)</option>
+                        <option value="GBP">GBP (British Pound)</option>
+                        <option value="JPY">JPY (Japanese Yen)</option>
+                        <option value="CAD">CAD (Canadian Dollar)</option>
+                        <option value="AUD">AUD (Australian Dollar)</option>
+                      </select>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -198,14 +192,14 @@ export default function ServiceForm({ service, onSubmit, isPending, existingServ
             <div>
               <FormField
                 control={form.control}
-                name="priceUsd"
+                name="price"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Rate (USD)</FormLabel>
+                    <FormLabel>Rate Amount</FormLabel>
                     <FormControl>
                       <Input
                         type="text"
-                        placeholder="Amount in USD"
+                        placeholder="Enter service price"
                         value={field.value || ''}
                         onChange={(e) => field.onChange(e.target.value)}
                       />
