@@ -672,8 +672,8 @@ export default function Profile() {
   }, [userData]);
   
   // Special query for the dedicated "What I Offer" field using our special endpoint
-  const { data: whatIOfferData } = useQuery({
-    queryKey: ['/api/users', userNumericId, 'what-i-offer', Date.now()],
+  const { data: whatIOfferData, refetch: refetchWhatIOffer } = useQuery({
+    queryKey: ['/api/users', userNumericId, 'what-i-offer'],
     queryFn: async () => {
       if (!userNumericId) return null;
       
