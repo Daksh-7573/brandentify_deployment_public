@@ -193,7 +193,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       } else if (!storedDemoMode) {
         // Only clear user if we're not in demo mode
+        console.log("Auth state changed: User signed out");
+        
+        // Clear user state
         setUser(null);
+        
+        // Clear all query cache to prevent stale data
+        queryClient.clear();
       }
       
       setIsLoading(false);
@@ -381,7 +387,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
       
+      // Clear user state explicitly before Firebase signout
+      setUser(null);
+      
+      // Clear query client cache
+      queryClient.clear();
+      
+      // Then sign out from Firebase
       await firebaseSignOut(auth);
+      
+      // Add a brief delay to allow state updates to propagate
+      setTimeout(() => {
+        // Force a page reload to ensure all auth state is cleared
+        window.location.href = "/";
+      }, 100);
+      
       toast({
         title: "Signed out successfully"
       });
