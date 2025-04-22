@@ -22,6 +22,7 @@ import { setupCareerQuestsRoutes } from "./routes-career-quests";
 import brandsOfTheDayRoutes from "./routes-brands-of-the-day";
 import enhancedUserRoutes from "./routes-enhanced-user";
 import whatIOfferRoutes from "./routes-what-i-offer";
+import profileServicesRoutes from "./routes-services-sync";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -4660,6 +4661,9 @@ ${extractedText.substring(0, 5000)}
   
   // What I Offer specialized routes
   app.use(whatIOfferRoutes);
+  
+  // Profile Services Sync routes for unified services and whatIOffer handling
+  app.use(profileServicesRoutes);
 
   app.use("/api", apiRouter);
 

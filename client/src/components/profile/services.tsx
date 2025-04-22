@@ -1,4 +1,4 @@
-import { useServices } from "@/hooks/use-services";
+import { useProfileServices } from "@/hooks/use-profile-services";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { 
@@ -21,7 +21,7 @@ import {
   Quote,
   AlertCircle
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import ServiceForm from "@/components/services/service-form";
 import {
   Dialog,
@@ -42,14 +42,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useQuery } from "@tanstack/react-query";
-import { queryClient } from "@/lib/queryClient";
 
 export default function Services() {
   const { user } = useAuth();
   const userNumericId = user?.id ? Number(user.id) : undefined;
   
+  // Use our new combined hook that fetches both whatIOffer and services
   const { 
+    whatIOffer,
     services, 
     isLoading, 
     createService, 
@@ -58,62 +58,7 @@ export default function Services() {
     isPendingCreate,
     isPendingUpdate,
     isPendingDelete
-  } = useServices();
-  
-  // Special query to get whatIOffer with our dedicated endpoint with extra cache-busting
-  const { data: whatIOffer, isLoading: isLoadingWhatIOffer } = useQuery({
-    queryKey: ['/api/users', userNumericId, 'what-i-offer', Date.now()], // Use timestamp to bust cache
-    queryFn: async () => {
-      if (!userNumericId) return null;
-      
-      console.log("Fetching whatIOffer field with dedicated endpoint in services component");
-      try {
-        // Generate a cache-busting parameter
-        const cacheBuster = `?t=${Date.now()}`;
-        
-        // Use our dedicated endpoint to get just the whatIOffer field with cacheBuster
-        const response = await fetch(`/api/users/${userNumericId}/what-i-offer${cacheBuster}`, {
-          method: 'GET',
-          headers: {
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-          }
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          console.log("Services component: Fetched whatIOffer with dedicated endpoint:", data);
-          
-          // Store in localStorage as backup with timestamp
-          if (data && data.whatIOffer) {
-            localStorage.setItem('whatIOffer_data', JSON.stringify(data));
-            localStorage.setItem('whatIOffer_fetchedAt', Date.now().toString());
-          }
-          
-          return data;
-        } else {
-          console.error("Services component: Dedicated whatIOffer endpoint failed:", response.status);
-          
-          // Try to recover from localStorage
-          const savedData = localStorage.getItem('whatIOffer_data');
-          if (savedData) {
-            console.log("Services component: Using cached whatIOffer data from localStorage");
-            return JSON.parse(savedData);
-          }
-          
-          return null;
-        }
-      } catch (error) {
-        console.error("Services component: Error fetching whatIOffer with dedicated endpoint:", error);
-        return null;
-      }
-    },
-    enabled: !!userNumericId,
-    staleTime: 0,
-    gcTime: 0,
-    refetchOnMount: "always"
-  });
+  } = useProfileServices();
   
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
