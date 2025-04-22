@@ -994,9 +994,35 @@ export default function ProfileSteps({
               // No need to invalidate the cache or handle errors - the hook does that for us
             } catch (err) {
               console.error("Error saving services:", err);
+              
+              // Implement a retry mechanism for 502 errors (server disconnections)
+              if (err.message?.includes('502') || err.status === 502) {
+                console.log("Server disconnection detected (502 error), attempting retry...");
+                
+                // Wait a moment before retrying
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                try {
+                  // Retry the syncServices operation
+                  console.log("Retrying syncServices operation after server disconnect");
+                  await syncServices({
+                    services: formData.services || [],
+                    whatIOffer: formData.whatIOffer?.trim() || ""
+                  });
+                  console.log("Retry successful!");
+                  
+                  // Update localStorage to indicate success
+                  localStorage.setItem('whatIOffer_syncSuccess', 'true');
+                  return; // Skip the fallback if retry was successful
+                } catch (retryErr) {
+                  console.error("Retry failed after server disconnect:", retryErr);
+                }
+              }
+              
+              // Show toast notification only if we get here (either non-502 error or retry failed)
               toast({
                 title: "Error saving services",
-                description: "There was a problem saving your services. Please try again.",
+                description: "There was a problem saving your services. We'll try to save partial data.",
                 variant: "destructive"
               });
               
@@ -1007,15 +1033,36 @@ export default function ProfileSteps({
                   const whatIOffer = formData.whatIOffer?.trim() || "";
                   console.log("Sync failed, attempting direct update of whatIOffer:", whatIOffer);
                   
+                  // Remove timestamp to ensure consistent query keys
                   await updateUserMutation.mutateAsync({
-                    whatIOffer: whatIOffer,
-                    _timestamp: Date.now() // Add timestamp to prevent caching
+                    whatIOffer: whatIOffer
                   });
                   
                   console.log("Direct whatIOffer update successful as fallback");
+                  toast({
+                    title: "Partial save successful",
+                    description: "Your 'What I Offer' text was saved. Services may need to be updated later.",
+                    variant: "default"
+                  });
+                  
+                  // Flag that we had a partial success
+                  localStorage.setItem('whatIOffer_partialSuccess', 'true');
                 }
               } catch (fallbackError) {
                 console.error("Fallback whatIOffer update also failed:", fallbackError);
+                
+                // As a last resort, save to localStorage for later recovery
+                localStorage.setItem('pendingServicesData', JSON.stringify({
+                  services: formData.services || [],
+                  whatIOffer: formData.whatIOffer?.trim() || "",
+                  timestamp: Date.now()
+                }));
+                
+                toast({
+                  title: "Changes saved locally",
+                  description: "We've saved your changes locally and will sync them when reconnected.",
+                  variant: "default"
+                });
               }
             }
           }

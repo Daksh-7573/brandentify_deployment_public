@@ -637,22 +637,211 @@ export class MemStorage implements IStorage {
     // Initialize Brand of the Day ID
     this.currentBrandOfTheDayId = 1;
     
-    // Demo data initialization removed
+    // Initialize with a default user for development/demo
+    this.initializeDemoData();
   }
+  
   /**
-   * Initialize demo data function removed
+   * Initialize demo data for development and testing
    */
-  private initializeDemoDataRemoved() {
-    // This function has been intentionally emptied
+  private initializeDemoData() {
+    // Create demo user with proper photoURL and other required fields
+    const demoUser: User = {
+      id: 1,
+      username: "user1",
+      email: "user1@example.com",
+      password: null,
+      phoneNumber: null,
+      name: "Senior Professional",
+      photoURL: null,
+      title: "Senior Software Engineer",
+      location: "San Francisco, CA, USA",
+      industry: "Technology",
+      lookingFor: "A Career Mentor",
+      profileCompleted: 65,
+      emailVerified: true,
+      emailVerificationToken: null,
+      emailVerificationExpires: null,
+      createdAt: new Date()
+    };
+    this.users.set(demoUser.id, demoUser);
+    this.currentUserId++;
+    
+    // Clear any existing work experiences, education, and skills for the demo user
+    this.clearDemoDataMaps();
+    
+    // No pre-created skills either
+    // Skills will be added by the user as needed
+    this.currentSkillId = 1;
+    
+    // Create default portfolio for the demo user
+    const demoPortfolio: Portfolio = {
+      id: 1,
+      userId: 1,
+      layout: "professional", // Default layout
+      customTitle: null,
+      customBio: null,
+      customizationOptions: {},
+      isPublished: false,
+      publicUrl: null,
+      featuredProjects: [],
+      featuredSkills: [], // No featured skills yet
+      featuredExperiences: [],
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    this.portfolios.set(demoPortfolio.id, demoPortfolio);
+    this.currentPortfolioId++;
+    
+    // No pre-created services for new accounts
+    // Starting service ID at 1 for the first service a user creates
+    this.currentServiceId = 1;
+    
+    // Add demo pulses for testing image carousel
+    this.createDemoPulses(demoUser.id);
+    
+    // Add demo Nowboard items
+    this.createDemoNowboardItems(demoUser.id);
+    
+    console.log(`[storage.initializeDemoData] No pre-created services - users will add their own`);
+    
   }
+  
   /**
-   * Demo data reinitialization function removed
+   * Completely reset all demo data and reinitialize with minimal values
+   * Used by the debug endpoint to wipe all existing data
    */
-  async reinitializeDemoDataRemoved(): Promise<void> {
-    // This function has been intentionally emptied
+  async reinitializeDemoData(): Promise<void> {
+    // First clear all data maps
+    this.clearDemoDataMaps();
+    
+    // Force IDs back to start
+    this.currentWorkExperienceId = 1;
+    this.currentEducationId = 1;
+    this.currentSkillId = 1;
+    this.currentPortfolioId = 1;
+    this.currentPulseId = 1;
+    this.currentPulseCommentId = 1;
+    this.currentPollVoteId = 1;
+    this.currentHashtagId = 1;
+    this.currentPulseHashtagId = 1;
+    this.currentUserHashtagFollowId = 1;
+    // Reset pulse interaction system IDs
+    this.currentPulseReactionId = 1;
+    this.currentUserReactionQuotaId = 1;
+    this.currentPulseShareId = 1;
+    // Reset News IDs
+    this.currentNewsSourceId = 1;
+    this.currentNewsArticleId = 1;
+    this.currentNewsUserPreferenceId = 1;
+    // Reset Musk Match ID
+    this.currentMuskMatchId = 1;
+    // Reset Musk suggestion IDs
+    this.currentMuskSuggestionId = 1;
+    this.currentMuskBehaviorTrackingId = 1;
+    // Reset enhanced Musk intelligence IDs
+    this.currentUserProfileIntelligenceId = 1;
+    this.currentBehaviorHeatmapId = 1;
+    this.currentContentScoringId = 1;
+    this.currentIndustryTrendsMonitorId = 1;
+    this.currentUserMilestonesId = 1;
+    this.currentSmartPostSuggestionsId = 1;
+    
+    // Reset Nowboard IDs
+    this.currentNowboardItemId = 1;
+    this.currentNowboardInspiredById = 1;
+    
+    // Reset Career Quests IDs
+    this.currentQuestDefinitionId = 1;
+    this.currentUserQuestId = 1;
+    this.currentUserXpId = 1;
+    this.currentUserBadgeId = 1;
+    this.currentXpTransactionId = 1;
+    
+    // Reset Brand of the Day ID
+    this.currentBrandOfTheDayId = 1;
+    
+    // No pre-created skills
+    
+    // Create a default portfolio for the demo user
+    const portfolio: Portfolio = {
+      id: 1,
+      userId: 1,
+      layout: "professional", // Default layout
+      customTitle: null,
+      customBio: null,
+      customizationOptions: {},
+      isPublished: false,
+      publicUrl: null,
+      featuredProjects: [],
+      featuredSkills: [], // No featured skills
+      featuredExperiences: [],
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    this.portfolios.set(portfolio.id, portfolio);
+    this.currentPortfolioId++;
+    
+    // Create sample services for the demo user
+    const service1: Service = {
+      id: 1,
+      userId: 1,
+      title: 'Web Application Development',
+      description: 'Full-stack web application development using React, Node.js, and PostgreSQL.',
+      category: 'development',
+      priceUsd: "100",  // Using string format for decimal values
+      priceInr: "8000", // Using string format for decimal values
+      isHourly: true,
+      features: ['Custom UI/UX design', 'Database integration', 'API development', 'Delivery: 2-4 weeks'],
+      imageUrl: "https://placehold.co/400x300/4f46e5/ffffff?text=Web+Development",
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      order: 1
+    };
+    this.services.set(service1.id, service1);
+    
+    const service2: Service = {
+      id: 2,
+      userId: 1,
+      title: 'Brand Identity Design',
+      description: 'Professional brand identity design including logo, color palette, and brand guidelines.',
+      category: 'design',
+      priceUsd: "500",  // Using string format for decimal values
+      priceInr: "40000", // Using string format for decimal values
+      isHourly: false,
+      features: ['Logo design', 'Brand guidelines', 'Social media assets', 'Delivery: 1-2 weeks'],
+      imageUrl: "https://placehold.co/400x300/e95800/ffffff?text=Brand+Design",
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      order: 2
+    };
+    this.services.set(service2.id, service2);
+    
+    const service3: Service = {
+      id: 3,
+      userId: 1,
+      title: 'SEO Optimization',
+      description: 'Improve your website visibility with professional SEO services.',
+      category: 'marketing',
+      priceUsd: "300",  // Using string format for decimal values
+      priceInr: "24000", // Using string format for decimal values
+      isHourly: false,
+      features: ['Keyword research', 'On-page optimization', 'Performance tracking', 'Delivery: 2-3 weeks'],
+      imageUrl: "https://placehold.co/400x300/22c55e/ffffff?text=SEO+Services",
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      order: 3
+    };
+    this.services.set(service3.id, service3);
+    this.currentServiceId = 4;
+    
+    console.log("Demo data reinitialized with minimal values, skill, portfolio, and services");
   }
-
-/**
+  
+  /**
    * Clear all work experience, education, skills, project, portfolio, and service data
    */
   private clearDemoDataMaps(): void {
@@ -1627,24 +1816,191 @@ export class MemStorage implements IStorage {
   /**
    * Create demo pulses for testing carousel/image gallery functionality
    */
-  /**
-   * Create demo pulses function removed
-   */
-  private createDemoPulsesRemoved(userId: number): void {
-    // This function has been intentionally emptied
+  private createDemoPulses(userId: number): void {
+    // Create a demo project for project-type pulse
+    const demoProject: Project = {
+      id: 1,
+      userId: userId,
+      title: "AI-Powered Career Platform",
+      description: "A professional networking platform with intelligent career guidance and portfolio showcase",
+      startDate: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 60 days ago as YYYY-MM-DD
+      projectUrl: "https://example.com/demo",
+      category: "Web Development",
+      thumbnailUrl: "/images/demo/ui-design-1.svg",
+      thumbnailFile: null,
+      mediaUrls: [
+        "/images/demo/ui-design-1.svg",
+        "/images/demo/ui-design-2.svg",
+        "/images/demo/ui-design-3.svg"
+      ],
+      createdAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000), // 60 days ago
+      updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)  // 2 days ago
+    };
+    
+    // Add project to storage
+    this.projects.set(demoProject.id, demoProject);
+    this.currentProjectId = 2; // Set next project ID
+    
+    // Create a demo media pulse with multiple images for carousel testing
+    const imagePulse: Pulse = {
+      id: 1,
+      userId: userId,
+      type: "media-pulse",
+      title: "My Latest UI Design Work",
+      content: "Showcasing some of my recent UI design work on product dashboards and analytics interfaces. I focused on creating clean, intuitive layouts with strong visual hierarchy.",
+      mediaType: "image",
+      mediaUrls: [
+        "/images/demo/ui-design-1.svg",
+        "/images/demo/ui-design-2.svg", 
+        "/images/demo/ui-design-3.svg",
+        "/images/demo/ui-design-4.svg",
+        "/images/demo/ui-design-5.svg"
+      ],
+      mediaLocalStorageKeys: [],
+      pollOptions: [],
+      projectId: null,
+      likes: 24,
+      insightfulCount: 18,
+      misinformedCount: 2,
+      shareCount: 5,
+      comments: 7,
+      isPublished: true,
+      createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
+      updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)
+    };
+    
+    // Create a poll pulse
+    const pollPulse: Pulse = {
+      id: 2,
+      userId: userId,
+      type: "poll",
+      title: "What's your preferred development stack?",
+      content: "I'm curious about what technologies other professionals are using for their projects.",
+      mediaType: null,
+      mediaUrls: [],
+      mediaLocalStorageKeys: [],
+      pollOptions: ["MERN (MongoDB, Express, React, Node)", "LAMP (Linux, Apache, MySQL, PHP)", "JAMstack", "Python + Django/Flask", ".NET Core + Angular/React"],
+      projectId: null,
+      likes: 42,
+      insightfulCount: 30,
+      misinformedCount: 3,
+      shareCount: 10,
+      comments: 18,
+      isPublished: true,
+      createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
+      updatedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000)
+    };
+    
+    // Create a video pulse
+    const videoPulse: Pulse = {
+      id: 3,
+      userId: userId,
+      type: "media-pulse",
+      title: "Quick Demo of My New App",
+      content: "A brief walkthrough of the application I've been developing for the past few months. Would love your feedback!",
+      mediaType: "video",
+      mediaUrls: ["https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"],
+      mediaLocalStorageKeys: [],
+      pollOptions: [],
+      projectId: null,
+      likes: 17,
+      insightfulCount: 12,
+      misinformedCount: 0,
+      shareCount: 3,
+      comments: 5,
+      isPublished: true,
+      createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 days ago
+      updatedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+    };
+    
+    // Create a project pulse
+    const projectPulse: Pulse = {
+      id: 4,
+      userId: userId,
+      type: "project",
+      title: "Just Launched: AI-Powered Career Platform",
+      content: "Excited to share my latest project! I've been working on a professional networking platform that uses AI to provide personalized career guidance and a sleek portfolio showcase. Looking for beta testers and feedback.",
+      mediaType: null,
+      mediaUrls: [],
+      mediaLocalStorageKeys: [],
+      pollOptions: [],
+      projectId: demoProject.id,
+      likes: 31,
+      insightfulCount: 25,
+      misinformedCount: 1,
+      shareCount: 7,
+      comments: 12,
+      isPublished: true,
+      createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
+      updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
+    };
+    
+    // Add pulses to storage
+    this.pulses.set(imagePulse.id, imagePulse);
+    this.pulses.set(pollPulse.id, pollPulse);
+    this.pulses.set(videoPulse.id, videoPulse);
+    this.pulses.set(projectPulse.id, projectPulse);
+    this.currentPulseId = 5; // Set next pulse ID
+    
+    console.log("[storage.createDemoPulses] Created demo pulses for image carousel testing");
   }
-
-/**
+  
+  /**
    * Create demo Nowboard items for testing
    */
-  /**
-   * Create demo nowboard items function removed
-   */
-  private createDemoNowboardItemsRemoved(userId: number): void {
-    // This function has been intentionally emptied
+  private createDemoNowboardItems(userId: number): void {
+    const nowboardItem1: NowboardItem = {
+      id: 1,
+      userId: userId,
+      content: "Just completed a new course on advanced React patterns. Learning never stops!",
+      category: "learning",
+      visibility: "public",
+      inspiredCount: 5,
+      relatedSkills: "React, JavaScript, Frontend Development",
+      relatedProject: null,
+      imageUrl: null,
+      createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
+      updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
+    };
+    
+    const nowboardItem2: NowboardItem = {
+      id: 2,
+      userId: userId,
+      content: "Just launched my new portfolio website! Check it out and let me know what you think.",
+      category: "launch",
+      visibility: "public",
+      inspiredCount: 12,
+      relatedSkills: "Web Design, UI/UX, Portfolio Development",
+      relatedProject: 1, // The demo project we created earlier
+      imageUrl: null,
+      createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
+      updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
+    };
+    
+    const nowboardItem3: NowboardItem = {
+      id: 3,
+      userId: userId,
+      content: "Achieved a major milestone in my current project. User engagement up by 45% after the latest update!",
+      category: "growth",
+      visibility: "public",
+      inspiredCount: 8,
+      relatedSkills: "Product Management, Analytics, Growth Hacking",
+      relatedProject: null,
+      imageUrl: null,
+      createdAt: new Date(Date.now() - 12 * 60 * 60 * 1000), // 12 hours ago
+      updatedAt: new Date(Date.now() - 12 * 60 * 60 * 1000)
+    };
+    
+    // Add Nowboard items to storage
+    this.nowboardItems.set(nowboardItem1.id, nowboardItem1);
+    this.nowboardItems.set(nowboardItem2.id, nowboardItem2);
+    this.nowboardItems.set(nowboardItem3.id, nowboardItem3);
+    this.currentNowboardItemId = 4; // Set next Nowboard item ID
+    
+    console.log("[storage.createDemoNowboardItems] Created demo Nowboard items");
   }
 
-// Pulse operations
+  // Pulse operations
   async getPulses(): Promise<Pulse[]> {
     return Array.from(this.pulses.values())
       .sort((a, b) => {
