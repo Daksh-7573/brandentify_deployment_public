@@ -18,7 +18,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { calculateOverallProfileCompletion } from "@/lib/profile-utils";
 import { useState, useEffect } from "react";
-import { Camera, FileText, Edit } from "lucide-react";
+import { Camera, FileText } from "lucide-react";
 import PersonalInfoIcon from "@/components/icons/personal-info-icon";
 import { useProfilePicture } from "@/hooks/use-profile-picture";
 import { ProfilePictureDialog } from "@/components/profile/profile-picture-dialog";
@@ -2273,55 +2273,25 @@ export default function Profile() {
                     </p>
                   )}
                   
-                  {/* What I'm All About section - Always show section with Edit button */}
-                  <div className="mt-4">
-                    <div className="flex justify-between items-center">
+                  {/* What I'm All About section */}
+                  {userData?.aboutMe && (
+                    <div className="mt-4">
                       <h3 className="text-sm font-medium text-gray-900">What I'm All About</h3>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => setShowEditBasicInfo(true)}
-                        className="flex items-center gap-1 h-7 px-2"
-                      >
-                        <Edit className="h-3 w-3" />
-                        Edit
-                      </Button>
-                    </div>
-                    {userData?.aboutMe ? (
                       <p className="mt-2 text-sm text-gray-500 whitespace-pre-line">
                         {userData.aboutMe}
                       </p>
-                    ) : (
-                      <p className="mt-2 text-sm text-gray-400 italic">
-                        Add information about yourself here
-                      </p>
-                    )}
-                  </div>
-                  
-                  {/* What I Offer section - Always show section with Edit button */}
-                  <div className="mt-4">
-                    <div className="flex justify-between items-center">
-                      <h3 className="text-sm font-medium text-gray-900">What I Offer</h3>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => setShowEditBasicInfo(true)}
-                        className="flex items-center gap-1 h-7 px-2"
-                      >
-                        <Edit className="h-3 w-3" />
-                        Edit
-                      </Button>
                     </div>
-                    {userData?.whatIOffer ? (
+                  )}
+                  
+                  {/* What I Offer section */}
+                  {userData?.whatIOffer && (
+                    <div className="mt-4">
+                      <h3 className="text-sm font-medium text-gray-900">What I Offer</h3>
                       <p className="mt-2 text-sm text-gray-500 whitespace-pre-line">
                         {userData.whatIOffer}
                       </p>
-                    ) : (
-                      <p className="mt-2 text-sm text-gray-400 italic">
-                        Add information about what you can offer here
-                      </p>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
                 {/* Skills section removed */}
               </CardContent>
