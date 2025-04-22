@@ -1589,39 +1589,207 @@ export class MemStorage implements IStorage {
   }
 
   async createService(insertService: InsertService): Promise<Service> {
-    const id = this.currentServiceId++;
-    const createdAt = new Date();
-    const service: Service = {
-      id,
-      userId: insertService.userId,
-      title: insertService.title,
-      description: insertService.description ?? null,
+    console.log(`[storage.createService] Creating service with data:`, JSON.stringify(insertService, null, 2));
+    
+    // Validate and normalize price values before database insertion
+    const normalizedInsert = { 
+      ...insertService,
+      // Set defaults if not provided
       category: insertService.category ?? "other",
-      priceInr: insertService.priceInr ?? null,
-      priceUsd: insertService.priceUsd ?? null,
       isHourly: insertService.isHourly ?? false,
       features: insertService.features ?? [],
-      imageUrl: insertService.imageUrl ?? null,
       order: insertService.order ?? 0,
-      isActive: insertService.isActive ?? true,
-      createdAt,
-      updatedAt: createdAt
+      isActive: insertService.isActive ?? true
     };
-    this.services.set(id, service);
-    return service;
+    
+    // Ensure price fields are properly formatted for the database
+    if (normalizedInsert.priceInr !== undefined) {
+      if (normalizedInsert.priceInr === null || normalizedInsert.priceInr === '') {
+        normalizedInsert.priceInr = null;
+      } else if (typeof normalizedInsert.priceInr === 'string') {
+        const parsed = parseFloat(normalizedInsert.priceInr);
+        normalizedInsert.priceInr = isNaN(parsed) ? null : parsed;
+      } else if (typeof normalizedInsert.priceInr === 'number') {
+        // Ensure it's a valid number and round to 2 decimal places
+        if (isNaN(normalizedInsert.priceInr) || !isFinite(normalizedInsert.priceInr)) {
+          normalizedInsert.priceInr = null;
+        } else {
+          normalizedInsert.priceInr = Math.round(normalizedInsert.priceInr * 100) / 100;
+        }
+      }
+    }
+    
+    if (normalizedInsert.priceUsd !== undefined) {
+      if (normalizedInsert.priceUsd === null || normalizedInsert.priceUsd === '') {
+        normalizedInsert.priceUsd = null;
+      } else if (typeof normalizedInsert.priceUsd === 'string') {
+        const parsed = parseFloat(normalizedInsert.priceUsd);
+        normalizedInsert.priceUsd = isNaN(parsed) ? null : parsed;
+      } else if (typeof normalizedInsert.priceUsd === 'number') {
+        // Ensure it's a valid number and round to 2 decimal places
+        if (isNaN(normalizedInsert.priceUsd) || !isFinite(normalizedInsert.priceUsd)) {
+          normalizedInsert.priceUsd = null;
+        } else {
+          normalizedInsert.priceUsd = Math.round(normalizedInsert.priceUsd * 100) / 100;
+        }
+      }
+    }
+    
+    console.log(`[storage.createService] Normalized service data:`, JSON.stringify(normalizedInsert, null, 2));
+    
+    try {
+      const [service] = await db.insert(services).values(normalizedInsert).returning();
+      console.log(`[storage.createService] Successfully created service with ID ${service.id}`);
+      return service;
+    } catch (error) {
+      console.error(`[storage.createService] Error creating service:`, error);
+      // If database insert fails, fall back to memory storage for development
+      const id = this.currentServiceId++;
+      const createdAt = new Date();
+      const service: Service = {
+        id,
+        userId: normalizedInsert.userId,
+        title: normalizedInsert.title,
+        description: normalizedInsert.description ?? null,
+        category: normalizedInsert.category,
+        priceInr: normalizedInsert.priceInr,
+        priceUsd: normalizedInsert.priceUsd,
+        isHourly: normalizedInsert.isHourly,
+        features: normalizedInsert.features,
+        imageUrl: normalizedInsert.imageUrl ?? null,
+        order: normalizedInsert.order,
+        isActive: normalizedInsert.isActive,
+        createdAt,
+        updatedAt: createdAt
+      };
+      this.services.set(id, service);
+      console.log(`[storage.createService] Fallback to memory storage with ID ${id}`);
+      return service;
+    }
   }
 
   async updateService(id: number, serviceData: Partial<Service>): Promise<Service | undefined> {
-    const service = this.services.get(id);
-    if (!service) return undefined;
+    console.log(`[storage.updateService] Updating service with ID ${id} with data:`, JSON.stringify(serviceData, null, 2));
     
-    const updatedService = { ...service, ...serviceData };
-    this.services.set(id, updatedService);
-    return updatedService;
+    // Get the existing service first
+    try {
+      const existingService = await db
+        .select()
+        .from(services)
+        .where(eq(services.id, id))
+        .then(rows => rows[0]);
+        
+      if (!existingService) {
+        console.log(`[storage.updateService] Service with ID ${id} not found in database`);
+        
+        // Fall back to memory storage for development
+        const service = this.services.get(id);
+        if (!service) {
+          console.log(`[storage.updateService] Service with ID ${id} not found in memory storage either`);
+          return undefined;
+        }
+        
+        const updatedService = { ...service, ...serviceData };
+        this.services.set(id, updatedService);
+        return updatedService;
+      }
+      
+      // Normalize and validate price values
+      const normalizedData = { ...serviceData };
+      
+      // Handle price fields just like in createService
+      if (normalizedData.priceInr !== undefined) {
+        if (normalizedData.priceInr === null || normalizedData.priceInr === '') {
+          normalizedData.priceInr = null;
+        } else if (typeof normalizedData.priceInr === 'string') {
+          const parsed = parseFloat(normalizedData.priceInr);
+          normalizedData.priceInr = isNaN(parsed) ? null : parsed;
+        } else if (typeof normalizedData.priceInr === 'number') {
+          if (isNaN(normalizedData.priceInr) || !isFinite(normalizedData.priceInr)) {
+            normalizedData.priceInr = null;
+          } else {
+            normalizedData.priceInr = Math.round(normalizedData.priceInr * 100) / 100;
+          }
+        }
+      }
+      
+      if (normalizedData.priceUsd !== undefined) {
+        if (normalizedData.priceUsd === null || normalizedData.priceUsd === '') {
+          normalizedData.priceUsd = null;
+        } else if (typeof normalizedData.priceUsd === 'string') {
+          const parsed = parseFloat(normalizedData.priceUsd);
+          normalizedData.priceUsd = isNaN(parsed) ? null : parsed;
+        } else if (typeof normalizedData.priceUsd === 'number') {
+          if (isNaN(normalizedData.priceUsd) || !isFinite(normalizedData.priceUsd)) {
+            normalizedData.priceUsd = null;
+          } else {
+            normalizedData.priceUsd = Math.round(normalizedData.priceUsd * 100) / 100;
+          }
+        }
+      }
+      
+      console.log(`[storage.updateService] Normalized data:`, JSON.stringify(normalizedData, null, 2));
+      
+      // Update in database
+      const [updatedService] = await db
+        .update(services)
+        .set({
+          ...normalizedData,
+          updatedAt: new Date()
+        })
+        .where(eq(services.id, id))
+        .returning();
+        
+      console.log(`[storage.updateService] Successfully updated service with ID ${id}`);
+      
+      // Also update in memory storage for backward compatibility
+      const memService = this.services.get(id);
+      if (memService) {
+        this.services.set(id, { ...memService, ...normalizedData, updatedAt: new Date() });
+      }
+      
+      return updatedService;
+    } catch (error) {
+      console.error(`[storage.updateService] Error updating service with ID ${id}:`, error);
+      
+      // Fall back to memory storage
+      const service = this.services.get(id);
+      if (!service) return undefined;
+      
+      const updatedService = { ...service, ...serviceData, updatedAt: new Date() };
+      this.services.set(id, updatedService);
+      console.log(`[storage.updateService] Fallback to memory storage for service ID ${id}`);
+      
+      return updatedService;
+    }
   }
 
   async deleteService(id: number): Promise<boolean> {
-    return this.services.delete(id);
+    console.log(`[storage.deleteService] Deleting service with ID ${id}`);
+    
+    try {
+      // First try to delete from database
+      const result = await db
+        .delete(services)
+        .where(eq(services.id, id))
+        .returning();
+      
+      const deleted = result.length > 0;
+      console.log(`[storage.deleteService] Service with ID ${id} deleted from database: ${deleted}`);
+      
+      // Also delete from memory storage for backward compatibility
+      this.services.delete(id);
+      
+      return deleted;
+    } catch (error) {
+      console.error(`[storage.deleteService] Error deleting service with ID ${id}:`, error);
+      
+      // Fall back to memory storage
+      const deleted = this.services.delete(id);
+      console.log(`[storage.deleteService] Fallback to memory storage for service ID ${id}, deleted: ${deleted}`);
+      
+      return deleted;
+    }
   }
   
   /**
