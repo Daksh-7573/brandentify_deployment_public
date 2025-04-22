@@ -1179,17 +1179,14 @@ export default function Profile() {
       // Log userData for debugging
       console.log("Current userData:", userData);
       
-      // Parse industry and domain from userData.industry if it contains a colon
-      let mainIndustry = '';
-      let domain = '';
+      // Get industry and domain directly from the userData object
+      let mainIndustry = userData.industry || '';
       
-      if (userData.industry && userData.industry.includes(': ')) {
-        const parts = userData.industry.split(': ');
-        mainIndustry = parts[0];
-        domain = parts[1];
-      } else {
-        mainIndustry = userData.industry || '';
-      }
+      // Get domain from userData.domain if it exists
+      let domain = userData.domain || '';
+      
+      // Log values for debugging
+      console.log("Initializing form with industry:", mainIndustry, "domain:", domain);
       
       setSelectedIndustry(mainIndustry);
       setSelectedDomain(domain);
