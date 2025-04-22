@@ -599,7 +599,7 @@ export default function Education() {
           variant="outline"
           size="sm"
           className="h-8 gap-1"
-          onClick={() => setIsAddModalOpen(true)}
+          onClick={handleAddEducation}
         >
           <Plus className="h-3.5 w-3.5" />
           Add Education
