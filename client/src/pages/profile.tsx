@@ -534,12 +534,57 @@ export default function Profile() {
       localStorage.removeItem('redirectToProfile');
       
       // Check if we have whatIOffer stored in localStorage
-      const storedWhatIOffer = localStorage.getItem('whatIOffer_value');
-      if (storedWhatIOffer) {
-        console.log("Found cached whatIOffer value:", storedWhatIOffer);
-        localStorage.removeItem('whatIOffer_value');
-        localStorage.removeItem('whatIOffer_pendingUpdate');
+      const storedWhatIOffer = localStorage.getItem('whatIOffer_saved');
+      const storedWhatIOfferTimestamp = localStorage.getItem('whatIOffer_savedAt');
+      let appliedCachedWhatIOffer = false;
+      
+      if (storedWhatIOffer && storedWhatIOfferTimestamp) {
+        const timestamp = parseInt(storedWhatIOfferTimestamp);
+        const timeAgo = Date.now() - timestamp;
+        const FIVE_MINUTES = 5 * 60 * 1000;
+        
+        if (timeAgo < FIVE_MINUTES) {
+          console.log("Found recent cached whatIOffer value:", storedWhatIOffer);
+          console.log(`Saved ${Math.round(timeAgo/1000)}s ago - applying to ensure consistency`);
+          
+          // Keep this value as a backup until we confirm it's properly saved in DB
+          appliedCachedWhatIOffer = true;
+          
+          // Apply this backup directly to the form data
+          setFormData(prev => ({
+            ...prev,
+            whatIOffer: storedWhatIOffer
+          }));
+          
+          // Also directly attempt to save it using our direct API
+          if (userNumericId) {
+            try {
+              console.log("Applying cached whatIOffer directly to ensure consistency");
+              fetch(`/api/users/${userNumericId}/what-i-offer`, {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Cache-Control': 'no-cache',
+                },
+                body: JSON.stringify({ 
+                  whatIOffer: storedWhatIOffer,
+                  _recovery: true 
+                }),
+              });
+            } catch (error) {
+              console.error("Error applying cached whatIOffer:", error);
+            }
+          }
+        } else {
+          console.log(`Found cached whatIOffer value but it's too old (${Math.round(timeAgo/60000)}min ago)`);
+          localStorage.removeItem('whatIOffer_saved');
+          localStorage.removeItem('whatIOffer_savedAt');
+        }
       }
+      
+      // Clear other whatIOffer related flags
+      localStorage.removeItem('whatIOffer_value');
+      localStorage.removeItem('whatIOffer_pendingUpdate');
       
       // 1. First completely clear the React Query cache
       queryClient.clear();
@@ -547,7 +592,8 @@ export default function Profile() {
       // 2. Force immediate data refetching with fresh timestamps
       const fetchFreshData = async () => {
         if (userNumericId) {
-          console.log("Executing multi-stage refresh procedure for user ID:", userNumericId);
+          console.log("Executing multi-stage refresh procedure for user ID:", userNumericId, 
+                      appliedCachedWhatIOffer ? "(with cached whatIOffer backup)" : "");
           
           try {
             // Direct fetch with cache-busting timestamp
