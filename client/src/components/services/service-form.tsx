@@ -82,14 +82,19 @@ export default function ServiceForm({ service, onSubmit, isPending, existingServ
       switch (values.currency) {
         case 'INR':
           priceData.priceInr = priceValue;
+          console.log("Service form - setting INR price:", priceValue, typeof priceValue);
           break;
         case 'USD':
         default:
           // Default to USD for all other currencies as the database only supports INR and USD
           priceData.priceUsd = priceValue;
+          console.log("Service form - setting USD price:", priceValue, typeof priceValue);
           break;
       }
     }
+    
+    // Log price data for debugging
+    console.log("Service form - final price data:", JSON.stringify(priceData));
     
     // Transform form values to match API expectations
     const transformedData = {

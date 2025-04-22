@@ -112,7 +112,7 @@ router.get("/api/users/:id/profile-services", async (req: Request, res: Response
  */
 router.post("/api/profile-services", async (req: Request, res: Response) => {
   try {
-    console.log(`[POST /api/profile-services] Received data:`, req.body);
+    console.log(`[POST /api/profile-services] Received data:`, JSON.stringify(req.body, null, 2));
     
     // Check if we have a Firebase UID instead of numeric userId
     if (typeof req.body.userId === 'string' && req.body.userId.length > 20) {
@@ -131,45 +131,72 @@ router.post("/api/profile-services", async (req: Request, res: Response) => {
       }
     }
     
+    // Ensure userId is a number - very important!
+    if (typeof req.body.userId === 'string') {
+      req.body.userId = parseInt(req.body.userId, 10);
+      if (isNaN(req.body.userId)) {
+        console.error('[POST /api/profile-services] userId could not be parsed to a number');
+        return res.status(400).json({ message: "Invalid user ID format" });
+      }
+    }
+    
     // Always ensure category is set, even if it's just "other"
     if (!req.body.category) {
+      console.log('[POST /api/profile-services] Setting default category "other"');
       req.body.category = "other";
     }
     
-    // Parse the data after making any necessary adjustments
-    const serviceData = insertServiceSchema.parse(req.body);
-    const userId = serviceData.userId;
+    // Fix price values if needed - make sure they are numbers, not strings
+    if (req.body.priceInr && typeof req.body.priceInr === 'string') {
+      req.body.priceInr = parseFloat(req.body.priceInr);
+    }
     
-    console.log(`[POST /api/profile-services] Creating new service for user ${userId}`);
+    if (req.body.priceUsd && typeof req.body.priceUsd === 'string') {
+      req.body.priceUsd = parseFloat(req.body.priceUsd);
+    }
     
-    // Create the service
-    const newService = await storage.createService(serviceData);
+    console.log(`[POST /api/profile-services] Processed data before validation:`, JSON.stringify(req.body, null, 2));
     
-    // Get all services for the user to ensure consistency
-    const allServices = await storage.getServicesByUserId(userId);
-    
-    // Get the user's whatIOffer field to include in response
-    const user = await storage.getUser(userId);
-    
-    console.log(`[POST /api/profile-services] Created service with ID ${newService.id}`);
-    
-    return res.status(201).json({
-      service: newService,
-      services: allServices,
-      whatIOffer: user?.whatIOffer || "",
-      success: true,
-      timestamp: Date.now()
-    });
+    try {
+      // Parse the data after making any necessary adjustments
+      const serviceData = insertServiceSchema.parse(req.body);
+      console.log(`[POST /api/profile-services] Data validated successfully:`, JSON.stringify(serviceData, null, 2));
+      
+      const userId = serviceData.userId;
+      
+      console.log(`[POST /api/profile-services] Creating new service for user ${userId}`);
+      
+      // Create the service
+      const newService = await storage.createService(serviceData);
+      
+      // Get all services for the user to ensure consistency
+      const allServices = await storage.getServicesByUserId(userId);
+      
+      // Get the user's whatIOffer field to include in response
+      const user = await storage.getUser(userId);
+      
+      console.log(`[POST /api/profile-services] Created service with ID ${newService.id}`);
+      
+      return res.status(201).json({
+        service: newService,
+        services: allServices,
+        whatIOffer: user?.whatIOffer || "",
+        success: true,
+        timestamp: Date.now()
+      });
+    } catch (e) {
+      console.error(`[POST /api/profile-services] Validation error:`, e);
+      if (e.name === 'ZodError') {
+        return res.status(400).json({
+          message: "Invalid service data",
+          errors: e.errors,
+          success: false
+        });
+      }
+      throw e; // Re-throw if not a ZodError to be caught by outer catch block
+    }
   } catch (error) {
     console.error(`[POST /api/profile-services] Error creating service:`, error);
-    
-    if (error.name === 'ZodError') {
-      return res.status(400).json({
-        message: "Invalid service data",
-        errors: error.errors,
-        success: false
-      });
-    }
     
     return res.status(500).json({
       message: "Error creating service",
