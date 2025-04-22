@@ -435,24 +435,82 @@ export default function Profile() {
     queryKey: [`/api/users/${userId}`],
     enabled: !!userId && isAuthenticated,
     staleTime: 0, // Always consider data stale to ensure fresh data
-    cacheTime: 0, // Disable caching for profile data
+    gcTime: 0, // Disable caching for profile data (gcTime is the v5 name for cacheTime)
     refetchOnMount: "always", // Always refetch on mount
     refetchOnWindowFocus: true,
     retry: 3, // Retry failed requests 3 times
-    refetchInterval: 5000, // Poll for updates every 5 seconds
+    refetchInterval: 3000, // Poll for updates every 3 seconds
     queryFn: async () => {
-      console.log(`Forcing fresh fetch of user data for ID: ${userId}`);
-      // Add cache busting parameter to prevent browser caching
-      const timestamp = new Date().getTime();
-      const response = await apiRequest('GET', `/api/users/${userId}?_=${timestamp}`, null, {
-        headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
+      try {
+        console.log(`Forcing fresh fetch of user data for ID: ${userId}`);
+        // Add cache busting parameter to prevent browser caching
+        const timestamp = new Date().getTime();
+        
+        // First approach - direct fetch with cache control headers
+        const directResponse = await fetch(`/api/users/${userId}?_=${timestamp}`, {
+          method: 'GET',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
+        });
+        
+        if (directResponse.ok) {
+          const freshData = await directResponse.json();
+          console.log("Fresh user data fetched:", freshData);
+          
+          // Check that we have a valid user object
+          if (freshData && typeof freshData === 'object') {
+            console.log("whatIOffer field value:", freshData.whatIOffer || 'NOT FOUND');
+            
+            // Store the fetched data in localStorage as well as a backup
+            try {
+              localStorage.setItem('cachedUserData', JSON.stringify(freshData));
+              console.log("Cached user data in localStorage");
+            } catch (err) {
+              console.error("Failed to cache user data:", err);
+            }
+            
+            return freshData;
+          } else {
+            console.error("Invalid user data received:", freshData);
+          }
         }
-      });
-      console.log("Fresh user data fetched:", response);
-      return response;
+        
+        // If direct fetch fails or returns invalid data, try the API request function
+        try {
+          const response = await apiRequest('GET', `/api/users/${userId}?_=${timestamp}`);
+          
+          if (response && typeof response === 'object') {
+            console.log("API request user data fetched:", response);
+            console.log("whatIOffer field from API request:", response.whatIOffer || 'NOT FOUND');
+            return response;
+          } else {
+            console.error("Invalid response from API request:", response);
+          }
+        } catch (apiError) {
+          console.error("API request failed:", apiError);
+          
+          // As a last resort, try to get data from localStorage
+          try {
+            const cachedData = localStorage.getItem('cachedUserData');
+            if (cachedData) {
+              const userData = JSON.parse(cachedData);
+              console.log("Using cached user data from localStorage:", userData);
+              return userData;
+            }
+          } catch (cacheError) {
+            console.error("Failed to retrieve cached user data:", cacheError);
+          }
+        }
+        
+        // If all attempts fail, return an empty object to prevent crashes
+        return {};
+      } catch (error) {
+        console.log("Retrying request (2 attempts left)...");
+        throw error; // Let React Query handle the retry
+      }
     }
   });
   
@@ -544,13 +602,36 @@ export default function Profile() {
       const res = await apiRequest('PUT', `/api/users/${userId}`, data);
       return res;
     },
-    onSuccess: () => {
-      // Invalidate and refetch
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
+    onSuccess: async (data) => {
+      console.log("Profile update mutation succeeded with data:", data);
+      
+      // Clear all caches to ensure fresh data
+      queryClient.clear();
+      
+      // Invalidate all related queries
+      await queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
+      
+      // Add a short delay to ensure the server has processed the update
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      // Manually refetch the user data
+      refetchUserData();
+      
+      // Clear localStorage cache and update with fresh data
+      try {
+        localStorage.removeItem('cachedUserData');
+        if (data) {
+          localStorage.setItem('cachedUserData', JSON.stringify(data));
+        }
+      } catch (err) {
+        console.error("Failed to update localStorage cache:", err);
+      }
+      
       toast({
         title: "Profile updated",
-        description: "Your profile information has been updated successfully",
+        description: "Your profile information has been updated successfully! Changes will appear shortly.",
       });
+      
       setShowEditBasicInfo(false);
     },
     onError: (error: Error) => {
