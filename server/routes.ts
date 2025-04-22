@@ -79,73 +79,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize the email service
   await initEmailService();
   
-  // Create detailed demo profiles with work experiences, education, skills, and projects
-  apiRouter.post("/debug/create-demo-profiles", async (req: Request, res: Response) => {
-    await handleCreateDemoProfiles(req, res, storage);
-  });
+  // Demo profile endpoints removed
   
-  // Add a special endpoint to clear all demo user profile data (for development purposes)
-  apiRouter.get("/debug/reset-demo-profile", async (req: Request, res: Response) => {
-    try {
-      console.log("Resetting all demo user profile data (experiences, education, skills)");
-      
-      // Create a tracking object for the result
-      const result = {
-        deletedExperiences: 0,
-        deletedEducation: 0,
-        deletedSkills: 0,
-        message: "Successfully reset all profile data"
-      };
-      
-      // Clear work experiences
-      const experiences = await storage.getWorkExperiencesByUserId(1);
-      for (const exp of experiences) {
-        await storage.deleteWorkExperience(exp.id);
-        result.deletedExperiences++;
-      }
-      
-      // Clear education
-      const education = await storage.getEducationsByUserId(1);
-      for (const edu of education) {
-        await storage.deleteEducation(edu.id);
-        result.deletedEducation++;
-      }
-      
-      // Clear skills
-      const skills = await storage.getSkillsByUserId(1);
-      for (const skill of skills) {
-        await storage.deleteSkill(skill.id);
-        result.deletedSkills++;
-      }
-      
-      console.log(`Reset complete! Deleted: ${result.deletedExperiences} experiences, ${result.deletedEducation} education items, ${result.deletedSkills} skills`);
-      
-      // Force a new blank initialization of data
-      await storage.reinitializeDemoData();
-      
-      res.status(200).json(result);
-    } catch (error) {
-      console.error("Error resetting demo profile:", error);
-      res.status(500).json({ message: "Failed to reset demo profile" });
-    }
-  });
-  
-  // Debug endpoint to clear all users (only for development/testing)
-  apiRouter.get("/debug/clear-all-users", async (req: Request, res: Response) => {
-    try {
-      console.log("Clearing all registered users except the demo user");
-      
-      // We'll implement this functionality in the storage layer
-      await storage.clearAllUsers();
-      
-      console.log("Successfully cleared all users");
-      
-      res.status(200).json({ message: "All users (except demo) have been cleared successfully" });
-    } catch (error) {
-      console.error("Error clearing all users:", error);
-      res.status(500).json({ message: "Failed to clear all users" });
-    }
-  });
+  // Debug endpoints removed
   
   // User routes
   apiRouter.post("/users", async (req: Request, res: Response) => {
@@ -302,21 +238,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log(`[GET /users/:id] Found user with numeric ID: ${userId}`);
       }
       
-      // Special case for Brand of the Day/Featured Professional demo
-      if (user.id === 1 && req.query.demo === 'true') {
-        // For demo purposes, enhance user data but keep existing user fields if they exist
-        const demoUser = {
-          ...user,
-          // Only use default values if the actual values don't exist
-          photoURL: user.photoURL || "/images/demo/profile-photo.jpg",
-          title: user.title || "Senior Software Engineer",
-          name: user.name || "Senior Professional", 
-          industry: user.industry || "Technology",
-          domain: user.domain || "Engineering",
-        };
-        console.log("[GET /users/:id] Returning enhanced demo user data for featured professional");
-        return res.json(demoUser);
-      }
+      // Demo mode removed
       
       // Check if domain is missing and fetch it directly from database
       if (!user.domain) {
