@@ -119,7 +119,7 @@ export async function apiRequest(
 type UnauthorizedBehavior = "returnNull" | "throw";
 
 /**
- * Enhanced query function with better error handling
+ * Enhanced query function with better error handling and robust fault tolerance
  */
 export const getQueryFn: <T>(options: {
   on401: UnauthorizedBehavior;
@@ -127,49 +127,179 @@ export const getQueryFn: <T>(options: {
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
     try {
-      const res = await fetch(queryKey[0] as string, {
-        credentials: "include",
-      });
-
-      // Special handling for auth errors
-      if (res.status === 401) {
-        console.warn("Unauthorized request to", queryKey[0]);
-        if (unauthorizedBehavior === "returnNull") {
-          return null;
+      // Validate the queryKey to prevent fetch errors
+      if (!queryKey || !queryKey[0] || typeof queryKey[0] !== 'string') {
+        console.error("Invalid queryKey:", queryKey);
+        
+        // For endpoints that should return arrays when empty, return empty array
+        if (queryKey && Array.isArray(queryKey) && queryKey[0]) {
+          const keyStr = String(queryKey[0]);
+          if (keyStr.includes('/projects') || 
+              keyStr.includes('/experiences') || 
+              keyStr.includes('/educations') || 
+              keyStr.includes('/skills') ||
+              keyStr.includes('/services')) {
+            console.log("Returning empty array for array endpoint:", keyStr);
+            return [] as unknown as T;
+          }
         }
-        throw new Error("You must be logged in to view this content");
+        
+        return null as unknown as T;
       }
       
-      // For other error responses
-      if (!res.ok) {
-        const errorDetails = await res.text().catch(() => res.statusText);
-        throw new Error(`${res.status}: ${errorDetails || 'Unknown error'}`);
-      }
-
-      // Handle successful empty responses
-      if (res.status === 204 || res.headers.get('content-length') === '0') {
-        return null;
-      }
-
-      // Parse JSON response
+      console.log("Fetching data from:", queryKey[0]);
+      
+      // Add cache busting for GET requests
+      const url = queryKey[0] as string;
+      const cacheBuster = url.includes('?') ? `&t=${Date.now()}` : `?t=${Date.now()}`;
+      const fetchUrl = `${url}${cacheBuster}`;
+      
+      // Add timeout protection
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        console.warn("Request timeout for:", url);
+        controller.abort();
+      }, 10000); // 10 second timeout
+      
       try {
-        return await res.json();
-      } catch (parseError) {
-        console.error("Error parsing response as JSON:", parseError);
-        throw new Error("Invalid response format from server");
+        const res = await fetch(fetchUrl, {
+          credentials: "include",
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          },
+          signal: controller.signal
+        });
+        
+        // Clear timeout since request completed
+        clearTimeout(timeoutId);
+
+        // Special handling for auth errors
+        if (res.status === 401) {
+          console.warn("Unauthorized request to", queryKey[0]);
+          if (unauthorizedBehavior === "returnNull") {
+            return null as unknown as T;
+          }
+          throw new Error("You must be logged in to view this content");
+        }
+        
+        // For other error responses
+        if (!res.ok) {
+          console.error(`API Error ${res.status} for ${url}`);
+          
+          // For specific endpoints that should return arrays when empty
+          if (url.includes('/projects') || 
+              url.includes('/experiences') || 
+              url.includes('/educations') || 
+              url.includes('/skills') ||
+              url.includes('/services')) {
+            console.log("Returning empty array for failed array endpoint:", url);
+            return [] as unknown as T;
+          }
+          
+          const errorDetails = await res.text().catch(() => res.statusText);
+          throw new Error(`${res.status}: ${errorDetails || 'Unknown error'}`);
+        }
+
+        // Handle successful empty responses
+        if (res.status === 204 || res.headers.get('content-length') === '0') {
+          // For endpoints that should return arrays when empty
+          if (url.includes('/projects') || 
+              url.includes('/experiences') || 
+              url.includes('/educations') || 
+              url.includes('/skills') ||
+              url.includes('/services')) {
+            return [] as unknown as T;
+          }
+          
+          return null as unknown as T;
+        }
+
+        // Parse JSON response
+        try {
+          const data = await res.json();
+          
+          // Ensure array endpoints return arrays
+          if ((url.includes('/projects') || 
+              url.includes('/experiences') || 
+              url.includes('/educations') || 
+              url.includes('/skills') ||
+              url.includes('/services')) && 
+              !Array.isArray(data)) {
+            console.warn(`Expected array but got ${typeof data} for ${url}`);
+            return [] as unknown as T;
+          }
+          
+          return data as T;
+        } catch (parseError) {
+          console.error("Error parsing response as JSON:", parseError);
+          
+          // For endpoints that should return arrays when empty
+          if (url.includes('/projects') || 
+              url.includes('/experiences') || 
+              url.includes('/educations') || 
+              url.includes('/skills') ||
+              url.includes('/services')) {
+            console.log("Returning empty array for JSON parse error on array endpoint:", url);
+            return [] as unknown as T;
+          }
+          
+          throw new Error("Invalid response format from server");
+        }
+      } finally {
+        // Ensure timeout is cleared in all cases
+        clearTimeout(timeoutId);
       }
     } catch (error) {
-      // Log the error and rethrow
+      // Handle specific error types
       if (error instanceof Error) {
         // Handle network errors specifically
-        if (error.message.includes('Failed to fetch')) {
-          console.error("Network error in query:", error);
+        if (error.message.includes('Failed to fetch') || error.name === 'AbortError') {
+          console.error("Network error in query:", error.message);
+          
+          // For specific endpoints that should return arrays when empty
+          const url = queryKey[0] as string;
+          if (url.includes('/projects') || 
+              url.includes('/experiences') || 
+              url.includes('/educations') || 
+              url.includes('/skills') ||
+              url.includes('/services')) {
+            console.log("Returning empty array for network error on array endpoint:", url);
+            return [] as unknown as T;
+          }
+          
+          // Try to recover from localStorage cache if available
+          try {
+            const cacheKey = `query_cache_${queryKey[0]}`;
+            const cachedData = localStorage.getItem(cacheKey);
+            if (cachedData) {
+              console.log("Recovering data from localStorage cache for:", queryKey[0]);
+              return JSON.parse(cachedData) as T;
+            }
+          } catch (cacheError) {
+            console.error("Error reading from cache:", cacheError);
+          }
+          
           throw new Error(`Failed to load data: Network error`);
         }
         
         // Other errors
         console.error(`Query error for ${queryKey[0]}:`, error);
       }
+      
+      // Handle array endpoints
+      const url = queryKey[0] as string;
+      if (url && (
+          url.includes('/projects') || 
+          url.includes('/experiences') || 
+          url.includes('/educations') || 
+          url.includes('/skills') ||
+          url.includes('/services'))) {
+        console.log("Returning empty array for generic error on array endpoint:", url);
+        return [] as unknown as T;
+      }
+      
       throw error;
     }
   };
