@@ -18,7 +18,7 @@ export function useProfileServices() {
   
   // Use the new combined endpoint that returns both whatIOffer and services
   const profileServicesQuery = useQuery({
-    queryKey: ['/api/users', userId, 'profile-services', Date.now()], // Add timestamp to bust cache
+    queryKey: ['/api/users', userId, 'profile-services'], // Remove timestamp to ensure consistent queryKey across components
     queryFn: async () => {
       if (!userId) return { whatIOffer: '', services: [] };
       
@@ -89,9 +89,11 @@ export function useProfileServices() {
       }
     },
     enabled: !!userId,
-    staleTime: 0, // Always fetch fresh data
-    gcTime: 0,    // Don't keep old data in cache
+    staleTime: 1000 * 60 * 5, // 5 minutes - improves performance and prevents duplicate requests
+    gcTime: 1000 * 60 * 10,   // 10 minutes - keep data in cache longer
     refetchOnMount: true,
+    refetchOnWindowFocus: false, // Don't refetch on window focus
+    refetchOnReconnect: false,   // Don't refetch on reconnect
     retry: 3, // Increase retry count for better resilience
     retryDelay: attempt => Math.min(1000 * 2 ** attempt, 30000) // Exponential backoff
   });
