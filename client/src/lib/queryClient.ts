@@ -154,12 +154,20 @@ export const getQueryFn: <T>(options: {
       const cacheBuster = url.includes('?') ? `&t=${Date.now()}` : `?t=${Date.now()}`;
       const fetchUrl = `${url}${cacheBuster}`;
       
-      // Add timeout protection
+      // Add timeout protection (only for slow endpoints)
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => {
+      
+      // Check if this is a slow endpoint that needs timeout protection
+      // Skip timeout for frequently polled endpoints (like /api/users)
+      const isFrequentlyPolledEndpoint = url.includes('/api/users') && !url.includes('/projects') && 
+                                        !url.includes('/experiences') && !url.includes('/educations') && 
+                                        !url.includes('/services') && !url.includes('/skills');
+      
+      // Only set timeout for non-frequently polled endpoints
+      const timeoutId = !isFrequentlyPolledEndpoint ? setTimeout(() => {
         console.warn("Request timeout for:", url);
-        controller.abort();
-      }, 10000); // 10 second timeout
+        controller.abort('Request timeout after 10 seconds');
+      }, 10000) : null; // 10 second timeout
       
       try {
         const res = await fetch(fetchUrl, {
@@ -172,8 +180,10 @@ export const getQueryFn: <T>(options: {
           signal: controller.signal
         });
         
-        // Clear timeout since request completed
-        clearTimeout(timeoutId);
+        // Clear timeout since request completed (if it exists)
+        if (timeoutId !== null) {
+          clearTimeout(timeoutId);
+        }
 
         // Special handling for auth errors
         if (res.status === 401) {
@@ -248,8 +258,10 @@ export const getQueryFn: <T>(options: {
           throw new Error("Invalid response format from server");
         }
       } finally {
-        // Ensure timeout is cleared in all cases
-        clearTimeout(timeoutId);
+        // Ensure timeout is cleared in all cases (if timeoutId is set)
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+        }
       }
     } catch (error) {
       // Handle specific error types
