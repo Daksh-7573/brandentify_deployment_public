@@ -328,17 +328,77 @@ export function useProfileServices() {
         whatIOffer: whatIOffer.substring(0, 30) + '...'
       });
       
-      const response = await apiRequest('PUT', `/api/users/${userId}/profile-services`, {
+      // First, save the data in localStorage as a backup/fallback
+      localStorage.setItem('profile_services_backup', JSON.stringify({
         services,
         whatIOffer,
-        _timestamp: Date.now()
-      });
+        timestamp: Date.now()
+      }));
       
-      if (!response.ok) {
-        throw new Error('Failed to sync services and "What I Offer" field');
+      // Set timeout for the request to prevent hanging
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+      
+      try {
+        // Using regular fetch instead of apiRequest to support the abort controller
+        const response = await fetch(`/api/users/${userId}/profile-services`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+          },
+          signal: controller.signal,
+          body: JSON.stringify({
+            services,
+            whatIOffer,
+            _timestamp: Date.now()
+          })
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+          console.error(`API error during sync: ${response.status} ${response.statusText}`);
+          throw new Error(`Failed to sync services: ${response.status} ${response.statusText}`);
+        }
+        
+        return response.json();
+      } catch (error: any) { // Type error as any for property access
+        console.error('Error during services sync:', error);
+        
+        // If it's a network error, try a more direct approach with fetch
+        if (error.name === 'AbortError' || 
+            (typeof error.message === 'string' && 
+              (error.message.includes('network') || error.message.includes('failed')))) {
+          console.log('Attempting direct fetch as fallback');
+          
+          try {
+            const directResponse = await fetch(`/api/users/${userId}/profile-services`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache',
+              },
+              body: JSON.stringify({
+                services,
+                whatIOffer,
+                _timestamp: Date.now(),
+                _retryAttempt: true
+              })
+            });
+            
+            if (directResponse.ok) {
+              return directResponse.json();
+            }
+          } catch (directError) {
+            console.error('Direct fetch fallback also failed:', directError);
+          }
+        }
+        
+        throw error;
       }
-      
-      return response.json();
     },
     onSuccess: (data) => {
       console.log('useProfileServices hook - services and whatIOffer synced successfully:', data);

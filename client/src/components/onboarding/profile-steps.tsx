@@ -875,12 +875,20 @@ export default function ProfileSteps({
               const { syncServices } = useProfileServices();
               console.log("Using syncServices hook to update all services and whatIOffer at once");
               
+              // Store a backup in localStorage in case the main update fails
+              const whatIOffer = formData.whatIOffer?.trim() || "";
+              localStorage.setItem('whatIOffer_value', whatIOffer);
+              localStorage.setItem('whatIOffer_timestamp', Date.now().toString());
+              
               await syncServices({
                 services: formData.services || [],
-                whatIOffer: formData.whatIOffer?.trim() || ""
+                whatIOffer: whatIOffer
               });
               
               console.log("Services and whatIOffer synced successfully");
+              
+              // Store confirmation of success to prevent unnecessary updates
+              localStorage.setItem('whatIOffer_syncSuccess', 'true');
               
               // No need to invalidate the cache or handle errors - the hook does that for us
             } catch (err) {
@@ -890,155 +898,24 @@ export default function ProfileSteps({
                 description: "There was a problem saving your services. Please try again.",
                 variant: "destructive"
               });
-            }
-          }
-          
-          // Then save the whatIOffer field separately to ensure it persists
-          const whatIOffer = formData.whatIOffer?.trim() || "";
-          
-          console.log("Saving What I Offer data:", {
-            whatIOffer: whatIOffer,
-            originalValue: formData.whatIOffer,
-            length: whatIOffer.length
-          });
-          
-          // EXTREME VERSION: Multi-layer approach to ensure data persistence
-          if (userData?.id) {
-            try {
-              // 1. Store in localStorage as backup in case of any issues
-              localStorage.setItem('whatIOffer_value', whatIOffer);
-              localStorage.setItem('whatIOffer_timestamp', Date.now().toString());
-              localStorage.setItem('whatIOffer_pendingUpdate', 'true');
-              console.log("Stored whatIOffer in localStorage as backup:", whatIOffer);
               
-              // 2. First try direct fetch for more reliability - this bypasses React Query completely
-              console.log("[CRITICAL UPDATE] Attempting direct fetch update of whatIOffer");
-              const directResponse = await fetch(`/api/users/${userData.id}`, {
-                method: 'PUT',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Cache-Control': 'no-cache, no-store, must-revalidate',
-                  'Pragma': 'no-cache',
-                },
-                body: JSON.stringify({
-                  whatIOffer: whatIOffer,
-                  _timestamp: Date.now(),
-                  _directUpdate: true
-                })
-              });
-              
-              if (directResponse.ok) {
-                const directData = await directResponse.json();
-                console.log("[CRITICAL UPDATE] Direct update response:", directData);
-                console.log("[CRITICAL UPDATE] Direct update confirmed whatIOffer value:", directData.whatIOffer);
-                
-                // Store confirmation of success
-                localStorage.setItem('whatIOffer_directUpdateSuccess', 'true');
-              } else {
-                console.error("[CRITICAL UPDATE] Direct update failed:", await directResponse.text());
-              }
-              
-              // 3. Use our mutation as a secondary approach (React Query)
-              console.log("Step 1: Executing React Query mutation");
-              await updateUserMutation.mutateAsync({
-                whatIOffer: whatIOffer,
-                _timestamp: Date.now() // Add timestamp to prevent caching
-              });
-              
-              // 3. Direct update using fetch with cache-busting
-              console.log("Step 2: Performing direct database update with cache control");
-              const cacheBuster = Date.now();
-              const response = await fetch(`/api/users/${userData.id}?_cb=${cacheBuster}`, {
-                method: 'PUT',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Cache-Control': 'no-cache, no-store, must-revalidate',
-                  'Pragma': 'no-cache',
-                  'Expires': '0'
-                },
-                body: JSON.stringify({
-                  whatIOffer: whatIOffer,
-                  _timestamp: Date.now() // Add timestamp to prevent caching
-                })
-              });
-              
-              if (response.ok) {
-                const responseData = await response.json();
-                console.log("Direct update successful, response data:", responseData);
-                
-                // Update form data with the server response
-                if (responseData && responseData.whatIOffer) {
-                  setFormData(prev => ({
-                    ...prev,
-                    whatIOffer: responseData.whatIOffer
-                  }));
-                }
-                
-                // 4. Force React Query to completely clear its cache
-                queryClient.clear();
-                
-                // 5. Verify our update actually persisted by fetching fresh data
-                console.log("Step 3: Verifying update with fresh fetch");
-                const verifyResponse = await fetch(`/api/users/${userData.id}?_cb=${Date.now()}`, {
-                  method: 'GET',
-                  headers: {
-                    'Cache-Control': 'no-cache, no-store, must-revalidate',
-                    'Pragma': 'no-cache',
-                    'Expires': '0'
-                  }
-                });
-                
-                if (verifyResponse.ok) {
-                  const latestUserData = await verifyResponse.json();
-                  console.log("Latest user data:", latestUserData);
-                  console.log("whatIOffer in latest data:", latestUserData.whatIOffer);
+              // If sync failed, at least try to save whatIOffer directly
+              // This is our fallback approach
+              try {
+                if (userData?.id) {
+                  const whatIOffer = formData.whatIOffer?.trim() || "";
+                  console.log("Sync failed, attempting direct update of whatIOffer:", whatIOffer);
                   
-                  if (latestUserData.whatIOffer !== whatIOffer) {
-                    console.warn("CRITICAL WARNING: whatIOffer mismatch between stored and fetched value!", {
-                      stored: whatIOffer,
-                      fetched: latestUserData.whatIOffer
-                    });
-                    
-                    // Final desperate attempt - trigger another direct update
-                    console.log("Step 4: Final direct update attempt");
-                    const finalUpdateResponse = await fetch(`/api/users/${userData.id}?_cb=${Date.now()}`, {
-                      method: 'PUT',
-                      headers: {
-                        'Content-Type': 'application/json',
-                        'Cache-Control': 'no-cache, no-store, must-revalidate',
-                        'Pragma': 'no-cache',
-                        'Expires': '0'
-                      },
-                      body: JSON.stringify({
-                        whatIOffer: whatIOffer,
-                        _forceUpdate: true,
-                        _timestamp: Date.now()
-                      })
-                    });
-                    
-                    if (finalUpdateResponse.ok) {
-                      console.log("Final update successful");
-                    }
-                  } else {
-                    console.log("SUCCESS: whatIOffer value correctly stored in the database");
-                    localStorage.removeItem('whatIOffer_pendingUpdate');
-                  }
+                  await updateUserMutation.mutateAsync({
+                    whatIOffer: whatIOffer,
+                    _timestamp: Date.now() // Add timestamp to prevent caching
+                  });
+                  
+                  console.log("Direct whatIOffer update successful as fallback");
                 }
-              } else {
-                console.error("Direct update failed:", await response.text());
-                toast({
-                  title: "Update Error",
-                  description: "There was a problem updating your profile. Please try again.",
-                  variant: "destructive"
-                });
+              } catch (fallbackError) {
+                console.error("Fallback whatIOffer update also failed:", fallbackError);
               }
-            } catch (error) {
-              console.error("Error during whatIOffer update process:", error);
-              toast({
-                title: "Update Error",
-                description: "There was a problem updating your profile. Please try again.",
-                variant: "destructive"
-              });
             }
           }
           break;
