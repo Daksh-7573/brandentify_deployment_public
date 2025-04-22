@@ -112,6 +112,31 @@ router.get("/api/users/:id/profile-services", async (req: Request, res: Response
  */
 router.post("/api/profile-services", async (req: Request, res: Response) => {
   try {
+    console.log(`[POST /api/profile-services] Received data:`, req.body);
+    
+    // Check if we have a Firebase UID instead of numeric userId
+    if (typeof req.body.userId === 'string' && req.body.userId.length > 20) {
+      console.log(`[POST /api/profile-services] Received Firebase UID as userId: ${req.body.userId}`);
+      
+      // Look up the numeric userId for this Firebase UID
+      const user = await storage.getUserByUsername(req.body.userId);
+      
+      if (user) {
+        console.log(`[POST /api/profile-services] Found matching user with ID: ${user.id}`);
+        // Replace the Firebase UID with the numeric userId
+        req.body.userId = user.id;
+      } else {
+        console.log(`[POST /api/profile-services] No matching user found for Firebase UID: ${req.body.userId}`);
+        return res.status(404).json({ message: "User not found" });
+      }
+    }
+    
+    // Always ensure category is set, even if it's just "other"
+    if (!req.body.category) {
+      req.body.category = "other";
+    }
+    
+    // Parse the data after making any necessary adjustments
     const serviceData = insertServiceSchema.parse(req.body);
     const userId = serviceData.userId;
     

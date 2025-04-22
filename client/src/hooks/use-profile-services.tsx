@@ -176,7 +176,19 @@ export function useProfileServices() {
   const createServiceMutation = useMutation({
     mutationFn: async (service: InsertService) => {
       console.log('useProfileServices hook - creating service:', service);
+      
+      // Make sure to set a valid category since we removed it from the form
+      if (!service.category) {
+        service = { ...service, category: "other" };
+      }
+      
       const response = await apiRequest('POST', '/api/profile-services', service);
+      
+      if (!response.ok) {
+        console.error('Service creation failed:', await response.text());
+        throw new Error('Failed to create service. Please check the data and try again.');
+      }
+      
       return response.json();
     },
     onSuccess: (data) => {

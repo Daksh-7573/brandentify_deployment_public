@@ -67,14 +67,14 @@ export default function ServiceForm({ service, onSubmit, isPending, existingServ
     console.log(`Service form - submitting with currency: ${values.currency}, price: ${priceValue}`);
     
     // Set all currency fields to null initially
-    let priceData = {
-      priceInr: null,
-      priceUsd: null,
-      priceEur: null,
-      priceGbp: null, 
-      priceJpy: null,
-      priceCad: null,
-      priceAud: null
+    const priceData = {
+      priceInr: null as number | null,
+      priceUsd: null as number | null,
+      priceEur: null as number | null,
+      priceGbp: null as number | null,
+      priceJpy: null as number | null,
+      priceCad: null as number | null,
+      priceAud: null as number | null
     };
     
     // Set only the appropriate currency price field
