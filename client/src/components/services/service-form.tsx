@@ -17,9 +17,14 @@ import {
 
 import { Service } from "@shared/schema";
 
-// Define the form schema with only required fields
+// Define the form schema with all relevant fields
 const formSchema = z.object({
   title: z.string().min(1, "Service title is required"),
+  description: z.string().optional(),
+  category: z.string().default("other"),
+  priceInr: z.number().nullable().optional(),
+  priceUsd: z.number().nullable().optional(),
+  isHourly: z.boolean().default(false),
   isActive: z.boolean().default(true),
 });
 
@@ -38,9 +43,14 @@ export default function ServiceForm({ service, onSubmit, isPending, existingServ
   const isEditing = !!service;
   const canAddService = isEditing || existingServicesCount < MAX_SERVICES;
   
-  // Prepare default values for the form - only the required fields
+  // Prepare default values for all form fields
   const defaultValues = {
     title: service?.title || "",
+    description: service?.description || "",
+    category: service?.category || "other",
+    priceInr: service?.priceInr || null,
+    priceUsd: service?.priceUsd || null,
+    isHourly: service?.isHourly || false,
     isActive: service?.isActive !== false,
   };
   
@@ -54,11 +64,8 @@ export default function ServiceForm({ service, onSubmit, isPending, existingServ
     // Transform form values to match API expectations
     const transformedData = {
       // Start with default values for all required fields
-      category: "other",
       features: [],
-      priceInr: null,
-      priceUsd: null,
-      // Then add existing service values if editing
+      // Then add existing service values if editing (except for values we're providing explicitly)
       ...(service || {}),
       // Finally override with new values from the form
       ...values,
@@ -97,6 +104,57 @@ export default function ServiceForm({ service, onSubmit, isPending, existingServ
                   placeholder="Enter your service title..."
                   {...field}
                 />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Description</FormLabel>
+              <FormDescription className="text-xs mb-2">
+                Enter a brief description of your service.
+              </FormDescription>
+              <FormControl>
+                <textarea
+                  className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  placeholder="Describe your service..."
+                  rows={3}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="category"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Category</FormLabel>
+              <FormDescription className="text-xs mb-2">
+                Select a category for your service.
+              </FormDescription>
+              <FormControl>
+                <select
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  {...field}
+                >
+                  <option value="other">Other</option>
+                  <option value="consulting">Consulting</option>
+                  <option value="development">Development</option>
+                  <option value="design">Design</option>
+                  <option value="marketing">Marketing</option>
+                  <option value="writing">Writing</option>
+                  <option value="coaching">Coaching</option>
+                  <option value="teaching">Teaching</option>
+                </select>
               </FormControl>
               <FormMessage />
             </FormItem>
