@@ -104,18 +104,42 @@ export default function EditProfilePage() {
     try {
       console.log("Profile update complete, invalidating queries and refreshing data");
       
-      // Special handling for What I Offer tab
-      if (activeTab === "what i offer") {
-        // Extract the whatIOffer value from the form
-        const formElement = document.querySelector('textarea[name="whatIOffer"]');
-        const whatIOffer = formElement ? formElement.value : null;
+      // Get all form field values to ensure we have a complete update
+      let formValues: Record<string, any> = {};
+      
+      // Extract all form values regardless of active tab to ensure complete data
+      const collectFormValues = () => {
+        // Common form fields
+        const commonFields = ['name', 'title', 'location', 'industry', 'domain', 'lookingFor', 'aboutMe', 'whatIOffer', 'email', 'phoneNumber'];
+        
+        commonFields.forEach(fieldName => {
+          const element = document.querySelector(`input[name="${fieldName}"], textarea[name="${fieldName}"], select[name="${fieldName}"]`);
+          if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement || element instanceof HTMLSelectElement) {
+            formValues[fieldName] = element.value;
+          }
+        });
+      };
+      
+      collectFormValues();
+      console.log("Collected form values for complete update:", formValues);
+      
+      // Special handling for What I Offer tab - this gets highest priority
+      if (activeTab === "what i offer" || formValues.whatIOffer) {
+        const whatIOffer = formValues.whatIOffer || null;
         
         if (whatIOffer !== null) {
-          console.log("Special handling for What I Offer tab");
+          console.log("Special handling for What I Offer field:", whatIOffer);
           const success = await handleWhatIOfferTabSubmit(whatIOffer);
           
           if (!success) {
             console.log("Falling back to regular update for What I Offer");
+          } else {
+            // Force refresh all whatIOffer queries across components
+            queryClient.invalidateQueries({ queryKey: ['/api/users', user?.id, 'what-i-offer'] });
+            
+            // Manually update local storage as backup
+            localStorage.setItem('whatIOffer_saved', whatIOffer);
+            localStorage.setItem('whatIOffer_savedAt', Date.now().toString());
           }
         }
       }
