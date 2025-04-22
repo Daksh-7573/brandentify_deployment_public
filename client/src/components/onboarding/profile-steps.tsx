@@ -332,18 +332,25 @@ export default function ProfileSteps({
     refetchOnMount: true
   });
   
-  // Fetch user skills
+  // Fetch user skills with caching improvements
   const { data: skills = [], isLoading: isLoadingSkills } = useQuery<any[]>({
     queryKey: [`/api/users/${userData?.id}/skills`],
-    enabled: !!userData?.id && isAuthenticated
+    enabled: !!userData?.id && isAuthenticated,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchOnWindowFocus: false,
+    refetchOnMount: true,
+    refetchOnReconnect: false
   });
   
-  // Fetch user services using the unified endpoint to ensure consistency
+  // Fetch user services using the unified endpoint to ensure consistency with caching
   const { data: servicesData, isLoading: isLoadingServices } = useQuery({
-    queryKey: ['/api/users', userData?.id, 'profile-services', Date.now()],
+    queryKey: ['/api/users', userData?.id, 'profile-services'],
     enabled: !!userData?.id && isAuthenticated,
     refetchOnMount: true,
-    staleTime: 0
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    gcTime: 1000 * 60 * 10 // 10 minutes
   });
   
   // Extract services array from the response

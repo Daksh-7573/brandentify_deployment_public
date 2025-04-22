@@ -322,9 +322,13 @@ export const queryClient = new QueryClient({
       queryFn: getQueryFn({ on401: "throw" }),
       refetchInterval: false,
       refetchOnWindowFocus: false,
-      staleTime: 1000 * 60 * 5, // 5 minutes instead of Infinity
-      retry: 2, // Retry failed queries
-      retryDelay: attempt => Math.min(1000 * 2 ** attempt, 30000), // Exponential backoff
+      staleTime: 1000 * 60 * 15, // 15 minutes instead of 5 minutes
+      retry: 1, // Only retry once to avoid cascading failures
+      retryDelay: attempt => Math.min(1000 * 3 ** attempt, 30000), // Slower exponential backoff
+      // Add network mode to avoid multiple simultaneous requests
+      networkMode: 'always', // Keep trying even if browser is offline
+      // Reduce query cache size to avoid memory issues
+      gcTime: 1000 * 60 * 30, // 30 minutes before garbage collection
     },
     mutations: {
       retry: 1, // Allow one retry for mutations

@@ -25,10 +25,16 @@ export default function EditProfilePage() {
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [completionPercentage, setCompletionPercentage] = useState(0);
   
-  // Fetch user data
+  // Fetch user data with optimized caching
   const { data: userData, isLoading: isLoadingUserData } = useQuery({
     queryKey: ['/api/users', user?.id],
     enabled: !!user?.id && isAuthenticated,
+    staleTime: 1000 * 60 * 10, // 10 minutes
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchInterval: false,
+    gcTime: 1000 * 60 * 15 // 15 minutes
   });
   
   // Redirect to login if not authenticated
