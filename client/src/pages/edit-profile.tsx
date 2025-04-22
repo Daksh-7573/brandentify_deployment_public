@@ -72,30 +72,80 @@ export default function EditProfilePage() {
       if ('id' in userData && 'profileCompleted' in userData) {
         const userDataTyped = userData as UserData;
         setCompletionPercentage(userDataTyped.profileCompleted || 0);
+        
+        // Cache userData in localStorage as a backup
+        try {
+          localStorage.setItem('cachedUserData', JSON.stringify(userDataTyped));
+          localStorage.setItem('cachedUserDataTimestamp', Date.now().toString());
+          console.log("Cached latest userData in localStorage");
+        } catch (err) {
+          console.error("Failed to cache userData in localStorage:", err);
+        }
       }
     }
   }, [userData]);
   
   // Handler for when editing is complete
   // Special function to specifically handle "What I Offer" field updates
+  // Helper function to check if an object is UserData with required properties
+  const isUserDataValid = (data: any): data is UserData => {
+    return data && 
+           typeof data === 'object' && 
+           'id' in data && 
+           typeof data.id === 'number';
+  };
+  
+  // Helper function to get cached userData from localStorage
+  const getCachedUserData = (): UserData | null => {
+    try {
+      const cachedUserDataStr = localStorage.getItem('cachedUserData');
+      if (cachedUserDataStr) {
+        const cachedUserData = JSON.parse(cachedUserDataStr);
+        if (isUserDataValid(cachedUserData)) {
+          console.log("Successfully retrieved cached userData from localStorage");
+          return cachedUserData;
+        }
+      }
+    } catch (err) {
+      console.error("Error retrieving cached userData:", err);
+    }
+    return null;
+  };
+  
   const handleWhatIOfferTabSubmit = async (whatIOffer: string): Promise<boolean> => {
-    if (!user || !userData) return false;
+    if (!user) {
+      console.error("No user available for WhatIOffer update");
+      return false;
+    }
     
     console.log("Directly saving What I Offer field with dedicated endpoint");
     // Use the numeric ID from userData instead of user.id (which is Firebase UID)
-    // Type check to ensure userData has an id property
-    if (!userData || typeof userData !== 'object') {
-      console.error("Error: userData is missing or not an object");
-      return false;
+    
+    let numericUserId: number;
+    
+    // Check userData validity using the type guard
+    if (!isUserDataValid(userData)) {
+      console.error("Error: userData missing or invalid for What I Offer update, trying to recover from cache");
+      
+      // Try to recover from localStorage using our helper function
+      const cachedUserData = getCachedUserData();
+      if (cachedUserData) {
+        console.log("Successfully recovered userData from localStorage for WhatIOffer update");
+        numericUserId = cachedUserData.id;
+        localStorage.setItem('whatIOffer_recovery', 'true');
+      } else {
+        console.error("Failed to recover userData from cache for WhatIOffer update");
+        return false;
+      }
+    } else {
+      numericUserId = userData.id;
     }
     
-    if (!('id' in userData)) {
-      console.error("Error: userData missing id property");
-      return false;
-    }
-    
-    const numericUserId = (userData as UserData).id;
-    console.log(`Using numeric user ID ${numericUserId} instead of Firebase UID ${user.uid}`);
+    return await saveWhatIOffer(numericUserId, whatIOffer);
+  };
+  
+  const saveWhatIOffer = async (numericUserId: number, whatIOffer: string): Promise<boolean> => {
+    console.log(`Using numeric user ID ${numericUserId} instead of Firebase UID ${user?.uid || 'not available'}`);
     
     try {
       // Generate cache buster
@@ -153,11 +203,14 @@ export default function EditProfilePage() {
       
       // Invalidate ALL related queries with various patterns to ensure cache is fully cleared
       // Use both the Firebase UID and numeric ID for invalidation to ensure cross-component compatibility
-      await queryClient.invalidateQueries({ queryKey: ['/api/users', user.uid] });
+      if (user?.uid) {
+        await queryClient.invalidateQueries({ queryKey: ['/api/users', user.uid] });
+        await queryClient.invalidateQueries({ queryKey: ['/api/users', user.uid, 'what-i-offer'] });
+        await queryClient.refetchQueries({ queryKey: ['/api/users', user.uid] });
+      }
+      
       await queryClient.invalidateQueries({ queryKey: ['/api/users', numericUserId] });
-      await queryClient.invalidateQueries({ queryKey: ['/api/users', user.uid, 'what-i-offer'] });
       await queryClient.invalidateQueries({ queryKey: ['/api/users', numericUserId, 'what-i-offer'] });
-      await queryClient.refetchQueries({ queryKey: ['/api/users', user.uid] });
       await queryClient.refetchQueries({ queryKey: ['/api/users', numericUserId] });
       
       // Store in localStorage as multiple backups
@@ -173,7 +226,7 @@ export default function EditProfilePage() {
       // Store in localStorage even on error as a fallback
       localStorage.setItem('whatIOffer_saved', whatIOffer);
       localStorage.setItem('whatIOffer_savedAt', Date.now().toString());
-      localStorage.setItem('whatIOffer_userId', (numericUserId || '').toString());
+      localStorage.setItem('whatIOffer_userId', numericUserId.toString());
       localStorage.setItem('whatIOffer_error', 'true');
       
       return false;
@@ -206,13 +259,24 @@ export default function EditProfilePage() {
       console.log("Collected form values for complete update:", formValues);
       
       // Use the numeric user ID for all operations
-      // Type check to ensure userData has an id property
-      if (!userData || !('id' in userData)) {
-        console.error("Error: userData missing or missing id property");
-        throw new Error("No numeric user ID available");
-      }
+      let numericUserId: number;
       
-      const numericUserId = (userData as UserData).id;
+      // Type check to ensure userData has an id property
+      if (!isUserDataValid(userData)) {
+        console.error("Error: userData missing or missing id property, trying to recover from localStorage");
+        
+        // Try to recover from localStorage using our helper function
+        const cachedUserData = getCachedUserData();
+        if (cachedUserData) {
+          console.log("Successfully recovered userData from localStorage cache");
+          numericUserId = cachedUserData.id;
+        } else {
+          console.error("No valid cached userData available");
+          throw new Error("No recoverable userData available");
+        }
+      } else {
+        numericUserId = userData.id;
+      }
       
       console.log(`Using numeric user ID ${numericUserId} instead of Firebase UID ${user?.uid} for all operations`);
       
