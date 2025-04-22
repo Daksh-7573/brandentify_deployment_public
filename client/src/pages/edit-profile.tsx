@@ -17,7 +17,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
 
 export default function EditProfilePage() {
-  const { user, isAuthenticated, isDemoMode } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const [_, setLocation] = useLocation();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("all about me");
@@ -39,41 +39,70 @@ export default function EditProfilePage() {
   
   // Redirect to login if not authenticated
   useEffect(() => {
-    if (!isAuthenticated && !isDemoMode) {
-      setLocation('/login');
+    if (!isAuthenticated) {
+      setLocation('/auth');
     }
-  }, [isAuthenticated, isDemoMode, setLocation]);
+  }, [isAuthenticated, setLocation]);
   
   // Define the User interface to fix type issues
   interface UserData {
-    id?: number;
-    name?: string;
-    profileCompleted?: number;
-    // Add other fields as needed
+    id: number;
+    username: string;
+    email: string | null;
+    phoneNumber: string | null;
+    name: string | null;
+    photoURL: string | null;
+    title: string | null;
+    aboutMe: string | null;
+    location: string | null;
+    industry: string | null;
+    domain: string | null;
+    lookingFor: string | null;
+    whatIOffer: string | null;
+    visitingCardType: string | null;
+    profileCompleted: number;
+    emailVerified: boolean;
+    createdAt: string;
   }
   
   // Update completion percentage based on user data
   useEffect(() => {
     if (userData && typeof userData === 'object') {
-      // Safely access profileCompleted with type assertion
-      const userDataTyped = userData as UserData;
-      setCompletionPercentage(userDataTyped.profileCompleted || 0);
+      // Ensure userData is properly cast to UserData
+      if ('id' in userData && 'profileCompleted' in userData) {
+        const userDataTyped = userData as UserData;
+        setCompletionPercentage(userDataTyped.profileCompleted || 0);
+      }
     }
   }, [userData]);
   
   // Handler for when editing is complete
   // Special function to specifically handle "What I Offer" field updates
-  const handleWhatIOfferTabSubmit = async (whatIOffer) => {
-    if (!user) return false;
+  const handleWhatIOfferTabSubmit = async (whatIOffer: string): Promise<boolean> => {
+    if (!user || !userData) return false;
     
     console.log("Directly saving What I Offer field with dedicated endpoint");
+    // Use the numeric ID from userData instead of user.id (which is Firebase UID)
+    // Type check to ensure userData has an id property
+    if (!userData || typeof userData !== 'object') {
+      console.error("Error: userData is missing or not an object");
+      return false;
+    }
+    
+    if (!('id' in userData)) {
+      console.error("Error: userData missing id property");
+      return false;
+    }
+    
+    const numericUserId = (userData as UserData).id;
+    console.log(`Using numeric user ID ${numericUserId} instead of Firebase UID ${user.uid}`);
     
     try {
       // Generate cache buster
       const cacheBuster = Date.now();
       
       // Use our special dedicated endpoint for this field with cache busting
-      const response = await fetch(`/api/users/${user.id}/what-i-offer?t=${cacheBuster}`, {
+      const response = await fetch(`/api/users/${numericUserId}/what-i-offer?t=${cacheBuster}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -96,7 +125,7 @@ export default function EditProfilePage() {
       let verifySuccess = false;
       try {
         // Fetch the value we just saved to verify it was stored correctly
-        const verifyResponse = await fetch(`/api/users/${user.id}/what-i-offer?verify=true&t=${Date.now()}`, {
+        const verifyResponse = await fetch(`/api/users/${numericUserId}/what-i-offer?verify=true&t=${Date.now()}`, {
           method: 'GET',
           headers: {
             'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -123,14 +152,18 @@ export default function EditProfilePage() {
       }
       
       // Invalidate ALL related queries with various patterns to ensure cache is fully cleared
-      await queryClient.invalidateQueries({ queryKey: ['/api/users', user.id] });
-      await queryClient.invalidateQueries({ queryKey: ['/api/users', user.id, 'what-i-offer'] });
-      await queryClient.refetchQueries({ queryKey: ['/api/users', user.id] });
-      await queryClient.refetchQueries({ queryKey: ['/api/users', user.id, 'what-i-offer'] });
+      // Use both the Firebase UID and numeric ID for invalidation to ensure cross-component compatibility
+      await queryClient.invalidateQueries({ queryKey: ['/api/users', user.uid] });
+      await queryClient.invalidateQueries({ queryKey: ['/api/users', numericUserId] });
+      await queryClient.invalidateQueries({ queryKey: ['/api/users', user.uid, 'what-i-offer'] });
+      await queryClient.invalidateQueries({ queryKey: ['/api/users', numericUserId, 'what-i-offer'] });
+      await queryClient.refetchQueries({ queryKey: ['/api/users', user.uid] });
+      await queryClient.refetchQueries({ queryKey: ['/api/users', numericUserId] });
       
       // Store in localStorage as multiple backups
       localStorage.setItem('whatIOffer_saved', whatIOffer);
       localStorage.setItem('whatIOffer_savedAt', Date.now().toString());
+      localStorage.setItem('whatIOffer_userId', numericUserId.toString());
       localStorage.setItem('whatIOffer_verified', verifySuccess.toString());
       
       return true;
@@ -140,6 +173,7 @@ export default function EditProfilePage() {
       // Store in localStorage even on error as a fallback
       localStorage.setItem('whatIOffer_saved', whatIOffer);
       localStorage.setItem('whatIOffer_savedAt', Date.now().toString());
+      localStorage.setItem('whatIOffer_userId', (numericUserId || '').toString());
       localStorage.setItem('whatIOffer_error', 'true');
       
       return false;
@@ -171,6 +205,17 @@ export default function EditProfilePage() {
       collectFormValues();
       console.log("Collected form values for complete update:", formValues);
       
+      // Use the numeric user ID for all operations
+      // Type check to ensure userData has an id property
+      if (!userData || !('id' in userData)) {
+        console.error("Error: userData missing or missing id property");
+        throw new Error("No numeric user ID available");
+      }
+      
+      const numericUserId = (userData as UserData).id;
+      
+      console.log(`Using numeric user ID ${numericUserId} instead of Firebase UID ${user?.uid} for all operations`);
+      
       // Special handling for What I Offer tab - this gets highest priority
       if (activeTab === "what i offer" || formValues.whatIOffer) {
         const whatIOffer = formValues.whatIOffer || null;
@@ -182,34 +227,54 @@ export default function EditProfilePage() {
           if (!success) {
             console.log("Falling back to regular update for What I Offer");
           } else {
-            // Force refresh all whatIOffer queries across components
-            queryClient.invalidateQueries({ queryKey: ['/api/users', user?.id, 'what-i-offer'] });
+            // Force refresh all whatIOffer queries across components - use both ID formats
+            if (user?.uid) {
+              queryClient.invalidateQueries({ queryKey: ['/api/users', user.uid, 'what-i-offer'] });
+            }
+            queryClient.invalidateQueries({ queryKey: ['/api/users', numericUserId, 'what-i-offer'] });
             
             // Manually update local storage as backup
             localStorage.setItem('whatIOffer_saved', whatIOffer);
             localStorage.setItem('whatIOffer_savedAt', Date.now().toString());
+            localStorage.setItem('whatIOffer_userId', numericUserId.toString());
           }
         }
       }
       
-      // First invalidate the query to ensure we get fresh data
-      await queryClient.invalidateQueries({ queryKey: ['/api/users', user?.id] });
+      // First invalidate the query to ensure we get fresh data - use both ID formats
+      if (user?.uid) {
+        await queryClient.invalidateQueries({ queryKey: ['/api/users', user.uid] });
+      }
+      await queryClient.invalidateQueries({ queryKey: ['/api/users', numericUserId] });
       
-      // Then force a refetch of the user data
-      if (user?.id) {
-        // Perform a direct fetch to ensure the server has the latest data
-        console.log(`Explicitly fetching latest user data for ID: ${user.id}`);
-        await fetch(`/api/users/${user.id}`, {
+      // Then force a refetch of the user data using the numeric ID
+      // Perform a direct fetch to ensure the server has the latest data
+      console.log(`Explicitly fetching latest user data for numeric ID: ${numericUserId}`);
+      await fetch(`/api/users/${numericUserId}`, {
+        method: 'GET',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+      
+      // Also fetch with Firebase UID to ensure both formats are updated
+      if (user?.uid) {
+        console.log(`Also fetching with Firebase UID: ${user.uid} for cross-compatibility`);
+        await fetch(`/api/users/${user.uid}`, {
           method: 'GET',
           headers: {
             'Cache-Control': 'no-cache',
             'Pragma': 'no-cache'
           }
         });
-        
-        // Now invalidate the query again to refresh the UI
-        await queryClient.invalidateQueries({ queryKey: ['/api/users', user.id] });
       }
+      
+      // Now invalidate the queries again to refresh the UI - both ID formats
+      if (user?.uid) {
+        await queryClient.invalidateQueries({ queryKey: ['/api/users', user.uid] });
+      }
+      await queryClient.invalidateQueries({ queryKey: ['/api/users', numericUserId] });
       
       setShowSuccessMessage(true);
       
