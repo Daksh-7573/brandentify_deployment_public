@@ -876,8 +876,23 @@ export default function ProfileSteps({
             try {
               // Force cache clearing first
               queryClient.clear();
+              
+              // Invalidate with the CORRECT query key formats
               queryClient.invalidateQueries({ queryKey: ['/api/users'] });
               queryClient.invalidateQueries({ queryKey: ['/api/users', userData.id] });
+              queryClient.invalidateQueries({ queryKey: ['/api/users', userData.id.toString()] });
+              
+              // Also invalidate profile-services queries
+              queryClient.invalidateQueries({ queryKey: ['/api/users', userData.id, 'profile-services'] });
+              queryClient.invalidateQueries({ queryKey: ['/api/users', userData.id, 'what-i-offer'] });
+              queryClient.invalidateQueries({ queryKey: ['/api/users', userData.id, 'services'] });
+              
+              // Force immediate refetch of user data
+              queryClient.refetchQueries({ queryKey: ['/api/users', userData.id] });
+              
+              // Set flags in localStorage to help with inter-page communication
+              localStorage.setItem('justEditedProfile', 'true');
+              localStorage.setItem('profileEditTimestamp', Date.now().toString());
               
               const directResponse = await fetch(`/api/users/${userData.id}?_t=${Date.now()}`, {
                 method: 'PUT',
@@ -889,7 +904,8 @@ export default function ProfileSteps({
                 body: JSON.stringify({
                   ...updateData,
                   _directUpdate: true,
-                  _forceUpdate: true
+                  _forceUpdate: true,
+                  _timestamp: Date.now()  // Add a timestamp to bust the cache
                 })
               });
               
@@ -1020,15 +1036,31 @@ export default function ProfileSteps({
           break;
       }
       
-      // Always invalidate ALL user-related queries to ensure data is refreshed
+      // Always invalidate ALL user-related queries with proper format to ensure data is refreshed
       console.log("Invalidating all user-related queries");
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
       
-      // For numeric user ID (backend), also invalidate those queries
+      // Clear the entire cache to ensure fresh data everywhere
+      queryClient.clear();
+      
+      // Then invalidate specific queries with the correct query key format
+      queryClient.invalidateQueries({ queryKey: ['/api/users'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', userId] });
+      
+      // For numeric user ID (backend), also invalidate with proper format
       if (userData?.id) {
         console.log(`Also invalidating queries for numeric user ID: ${userData.id}`);
-        queryClient.invalidateQueries({ queryKey: [`/api/users/${userData.id}`] });
+        queryClient.invalidateQueries({ queryKey: ['/api/users', userData.id] });
+        queryClient.invalidateQueries({ queryKey: ['/api/users', userData.id.toString()] });
+        
+        // Also invalidate profile-services queries
+        queryClient.invalidateQueries({ queryKey: ['/api/users', userData.id, 'profile-services'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/users', userData.id, 'what-i-offer'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/users', userData.id, 'services'] });
       }
+      
+      // Set flag for profile page to know it needs to refresh
+      localStorage.setItem('justEditedProfile', 'true');
+      localStorage.setItem('profileEditTimestamp', Date.now().toString());
       
       toast({
         title: "Changes saved",
