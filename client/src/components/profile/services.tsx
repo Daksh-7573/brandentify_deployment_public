@@ -202,20 +202,42 @@ export default function Services() {
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   
   const handleCreate = (formData: any) => {
-    if (!userNumericId) return;
+    if (!userNumericId) {
+      console.error("Services component - handleCreate: userNumericId is undefined!");
+      return;
+    }
+    
+    // Detailed logging to diagnose service creation issues
+    console.log("Services component - handleCreate called with formData:", JSON.stringify(formData));
+    console.log("Services component - userNumericId:", userNumericId, "type:", typeof userNumericId);
     
     // Always use the numeric ID for the database
-    createService({
+    const serviceData = {
       ...formData,
       userId: userNumericId
-    });
+    };
     
-    // Force a refresh after creation
-    setTimeout(() => {
-      fetchServicesData();
-    }, 1000);
+    console.log("Services component - createService submitting:", JSON.stringify(serviceData));
     
-    setIsCreateDialogOpen(false);
+    // The try-catch block helps identify errors in service creation
+    try {
+      createService(serviceData);
+      
+      console.log("Services component - createService call completed");
+      
+      // Force a refresh after creation
+      setTimeout(() => {
+        console.log("Services component - refreshing services data after creation");
+        fetchServicesData();
+      }, 1000);
+      
+      setIsCreateDialogOpen(false);
+    } catch (err) {
+      console.error("Services component - service creation error:", err);
+      
+      // Ensure dialog is closed even on error
+      setIsCreateDialogOpen(false);
+    }
   };
   
   const handleUpdate = (formData: any) => {
