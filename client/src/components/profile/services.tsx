@@ -87,10 +87,20 @@ export default function Services() {
     }
   };
   
-  // Fetch data on component mount
+  // Fetch data on component mount, and set up a regular refresh
   useEffect(() => {
     if (userNumericId) {
+      console.log('Services component - initial fetch for user ID:', userNumericId);
       fetchServicesData();
+
+      // Set up a refresh interval for continuous data sync
+      const refreshInterval = setInterval(() => {
+        console.log('Services component - refreshing data for user ID:', userNumericId);
+        fetchServicesData();
+      }, 5000); // Refresh every 5 seconds
+
+      // Clean up the interval on component unmount
+      return () => clearInterval(refreshInterval);
     }
   }, [userNumericId]);
   

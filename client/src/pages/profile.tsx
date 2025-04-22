@@ -2071,7 +2071,7 @@ export default function Profile() {
                                 educations, 
                                 skills, 
                                 projects,
-                                services
+                                profileServicesData?.services || []
                               )}%` 
                             }}
                           ></div>
@@ -2084,7 +2084,7 @@ export default function Profile() {
                               educations,
                               skills,
                               projects,
-                              services
+                              services: profileServicesData?.services || []
                             });
                             return calculateOverallProfileCompletion(
                               userData, 
@@ -2092,7 +2092,7 @@ export default function Profile() {
                               educations, 
                               skills, 
                               projects,
-                              services
+                              profileServicesData?.services || []
                             );
                           })()}%
                         </span>
