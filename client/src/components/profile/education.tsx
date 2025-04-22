@@ -248,19 +248,7 @@ const educationSchema = z.object({
   }),
   endDate: z.date({
     required_error: "End date is required",
-  }).optional().superRefine((endDate, ctx) => {
-    // Get the currently enrolled value from the parent object
-    // @ts-ignore - accessing the parent object which TypeScript doesn't recognize
-    const isCurrentlyEnrolled = ctx.parent.currentlyEnrolled;
-    
-    // If they're not currently enrolled, end date is required
-    if (!isCurrentlyEnrolled && !endDate) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "End date is required unless currently enrolled"
-      });
-    }
-  }),
+  }).optional(),
   currentlyEnrolled: z.boolean().default(false),
   skillsAcquired: z.array(z.string()).max(10, { message: "Maximum 10 skills/achievements allowed" }).optional().default([]),
   domain: z.string().optional(),
