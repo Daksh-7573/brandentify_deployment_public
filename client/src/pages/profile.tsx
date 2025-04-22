@@ -400,13 +400,13 @@ export const INDUSTRIES = [
 ];
 
 export default function Profile() {
-  const { user, isAuthenticated, isLoading, isDemoMode, signOut } = useAuth();
+  const { user, isAuthenticated, isLoading, signOut } = useAuth();
   const [_, setLocation] = useLocation();
   const { toast } = useToast();
   
   // Get user ID from authenticated user object
   // Use the Firebase UID directly, the backend will handle the conversion
-  const userId = user?.uid || (isDemoMode ? 1 : null);
+  const userId = user?.uid || null;
   
   // State for edit dialogs
   const [showEditBasicInfo, setShowEditBasicInfo] = useState(false);
@@ -517,7 +517,7 @@ export default function Profile() {
   
   // Define userNumericId based on the userData response
   // Critical: Don't use a fallback value like 0 as it might fetch wrong user's data
-  const userNumericId = isDemoMode ? 1 : (userData?.id || null);
+  const userNumericId = userData?.id || null;
   
   // Enhanced refresh logic for profile update caching issues
   // This effect runs when we return from profile editing via a browser reload

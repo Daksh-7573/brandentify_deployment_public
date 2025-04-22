@@ -203,12 +203,12 @@ export default function ProfileSteps({
   activeTab,
   onTabChange
 }: ProfileStepsProps) {
-  const { user, isAuthenticated, isDemoMode } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const [_, setLocation] = useLocation();
   const { toast } = useToast();
   
   // Get user ID
-  const userId = user?.uid || (isDemoMode ? 1 : null);
+  const userId = user?.uid || null;
   
   // State for current step
   const [currentStep, setCurrentStep] = useState(startStep || 1);
