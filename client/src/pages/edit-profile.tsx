@@ -40,7 +40,7 @@ export default function EditProfilePage() {
   
   // Update completion percentage based on user data
   useEffect(() => {
-    if (userData) {
+    if (userData && typeof userData === 'object') {
       setCompletionPercentage(userData.profileCompleted || 0);
     }
   }, [userData]);

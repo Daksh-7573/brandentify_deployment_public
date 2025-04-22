@@ -148,6 +148,7 @@ type FormData = {
   
   // Step 3: Services
   services: Array<{title: string, description: string, currency: string, rate: string, rateUnit: string}>;
+  whatIOffer: string; // Added what I offer field
   
   // Step 4: Projects
   projects: Array<{
@@ -312,6 +313,7 @@ export default function ProfileSteps({
     aboutMe: '',
     skills: [],
     services: [],
+    whatIOffer: '',
     projects: [],
     experiences: [],
     educations: [],
@@ -391,6 +393,7 @@ export default function ProfileSteps({
         domain: userData.industry?.includes(': ') ? userData.industry.split(': ')[1] : '',
         lookingFor: userData.lookingFor || '',
         aboutMe: userData.aboutMe || '',
+        whatIOffer: userData.whatIOffer || '',
         email: userData.email || '',
         phoneNumber: userData.phoneNumber || '',
         skills: skills || [],
@@ -602,6 +605,8 @@ export default function ProfileSteps({
   // Save current step data
   const saveCurrentStepData = async () => {
     try {
+      console.log(`Saving data for step ${currentStep}:`, formData);
+      
       switch (currentStep) {
         case 1: // All About Me
           await updateUserMutation.mutateAsync({
@@ -619,6 +624,12 @@ export default function ProfileSteps({
           // Skills saving logic will be implemented
           break;
           
+        case 3: // What I Offer
+          await updateUserMutation.mutateAsync({
+            whatIOffer: formData.whatIOffer
+          });
+          break;
+          
         case 7: // Personal Information
           await updateUserMutation.mutateAsync({
             email: formData.email,
@@ -627,8 +638,21 @@ export default function ProfileSteps({
           break;
           
         default:
+          // For other steps, save all the current form data to ensure nothing is missed
+          await updateUserMutation.mutateAsync({
+            ...formData
+          });
           break;
       }
+      
+      // Always invalidate the user query to ensure data is refreshed
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
+      
+      toast({
+        title: "Changes saved",
+        description: "Your profile information has been updated",
+        variant: "default",
+      });
     } catch (error) {
       console.error("Error saving data:", error);
       toast({
@@ -1130,6 +1154,14 @@ export default function ProfileSteps({
       });
     };
     
+    // Handle what I offer text change
+    const handleWhatIOfferChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setFormData(prev => ({ 
+        ...prev, 
+        whatIOffer: e.target.value 
+      }));
+    };
+    
     const rateUnits = [
       { value: 'hr', label: 'Per Hour' },
       { value: 'day', label: 'Per Day' },
@@ -1153,6 +1185,24 @@ export default function ProfileSteps({
     
     return (
       <div className="space-y-6">
+        {/* General What I Offer section */}
+        <div className="p-4 border rounded-lg bg-white mb-6">
+          <h3 className="text-sm font-medium mb-3 text-gray-900">What I Offer Summary</h3>
+          <p className="text-xs text-gray-500 mb-3">
+            Write a concise description of what you offer to clients or employers. 
+            This will be prominently displayed on your profile.
+          </p>
+          <Textarea
+            id="whatIOffer"
+            name="whatIOffer"
+            placeholder="Describe the value you bring to potential clients or employers..."
+            value={formData.whatIOffer}
+            onChange={handleWhatIOfferChange}
+            rows={4}
+            className="mb-2"
+          />
+        </div>
+      
         {/* Add new service form */}
         <div className="p-4 border rounded-lg bg-gray-50">
           <h3 className="text-sm font-medium mb-3">Add a service you offer</h3>
