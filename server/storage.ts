@@ -1123,13 +1123,13 @@ export class MemStorage implements IStorage {
     return user;
   }
 
+  // This method is now inactive as we use DatabaseStorage implementation
+  // It remains here for historical purposes only and to avoid breaking any imports
+  // All user updates should go through the DatabaseStorage.updateUser method
   async updateUser(id: number, userData: Partial<User>): Promise<User | undefined> {
-    const user = this.users.get(id);
-    if (!user) return undefined;
-    
-    const updatedUser = { ...user, ...userData };
-    this.users.set(id, updatedUser);
-    return updatedUser;
+    console.log('[WARNING] MemStorage.updateUser called but database is being used. Use DatabaseStorage.updateUser instead.');
+    // Delegate to the real implementation
+    return storage.updateUser(id, userData);
   }
 
   async getAllUsers(): Promise<User[]> {
@@ -4834,6 +4834,41 @@ export class DatabaseStorage implements IStorage {
     console.log(`[DatabaseStorage.updateUser] Update data:`, userData);
     
     try {
+      // Direct SQL query for updating user data to isolate debugging of whatIOffer
+      let updateQuery = 'UPDATE users SET ';
+      const updateValues: any[] = [];
+      const updateParts: string[] = [];
+      let paramIndex = 1;
+      
+      // Add each property to the update
+      for (const [key, value] of Object.entries(userData)) {
+        // Convert camelCase to snake_case for PostgreSQL
+        const columnName = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+        updateParts.push(`${columnName} = $${paramIndex}`);
+        updateValues.push(value);
+        paramIndex++;
+      }
+      
+      // Add WHERE clause and returning
+      updateQuery += updateParts.join(', ');
+      updateQuery += ` WHERE id = $${paramIndex} RETURNING id, username, email, password, phone_number as "phoneNumber", name, photo_url as "photoURL", title, about_me as "aboutMe", location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer", visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", email_verified as "emailVerified", email_verification_token as "emailVerificationToken", email_verification_expires as "emailVerificationExpires", created_at as "createdAt"`;
+      updateValues.push(id);
+      
+      console.log(`[DatabaseStorage.updateUser] Generated query:`, updateQuery);
+      console.log(`[DatabaseStorage.updateUser] Query params:`, updateValues);
+      
+      const result = await pool.query(updateQuery, updateValues);
+      
+      if (result.rows.length === 0) {
+        console.log(`[DatabaseStorage.updateUser] No user found with ID ${id}`);
+        return undefined;
+      }
+      
+      const updatedUser = result.rows[0];
+      console.log(`[DatabaseStorage.updateUser] Updated user successfully:`, updatedUser);
+      return updatedUser;
+      
+      /* The previous Drizzle implementation wasn't working properly
       const [updatedUser] = await db
         .update(users)
         .set(userData)
@@ -4842,6 +4877,7 @@ export class DatabaseStorage implements IStorage {
       
       console.log(`[DatabaseStorage.updateUser] Updated user successfully:`, updatedUser);
       return updatedUser || undefined;
+      */
     } catch (error) {
       console.error(`[DatabaseStorage.updateUser] Error updating user:`, error);
       throw error;
