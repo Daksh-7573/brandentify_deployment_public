@@ -624,6 +624,63 @@ export default function Profile() {
       console.log(`Using numeric user ID: ${userData.id} for data fetching`);
     }
   }, [userData]);
+  
+  // Special query for the dedicated "What I Offer" field using our special endpoint
+  const { data: whatIOfferData } = useQuery({
+    queryKey: ['/api/users', userNumericId, 'what-i-offer', Date.now()],
+    queryFn: async () => {
+      if (!userNumericId) return null;
+      
+      console.log("Fetching whatIOffer field with dedicated endpoint");
+      try {
+        // Use our dedicated endpoint to get just the whatIOffer field
+        const response = await fetch(`/api/users/${userNumericId}/what-i-offer`, {
+          method: 'GET',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Fetched whatIOffer with dedicated endpoint:", data);
+          return data;
+        } else {
+          console.error("Dedicated whatIOffer endpoint failed:", response.status);
+          return null;
+        }
+      } catch (error) {
+        console.error("Error fetching whatIOffer with dedicated endpoint:", error);
+        return null;
+      }
+    },
+    enabled: !!userNumericId,
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: "always"
+  });
+  
+  // Use the whatIOffer field from our special query if the main userData doesn't have it
+  useEffect(() => {
+    if (userData && whatIOfferData && whatIOfferData.whatIOffer) {
+      // Only update if the main userData is missing the field or it's different
+      if (!userData.whatIOffer || userData.whatIOffer !== whatIOfferData.whatIOffer) {
+        console.log("Updating whatIOffer field from dedicated endpoint:", whatIOfferData.whatIOffer);
+        
+        // Create an updated user object with the correct whatIOffer field
+        const updatedUserData = {
+          ...userData,
+          whatIOffer: whatIOfferData.whatIOffer
+        };
+        
+        // Update the React Query cache
+        queryClient.setQueryData([`/api/users/${userData.id}`], updatedUserData);
+        queryClient.setQueryData([`/api/users/${userData.id}`, Date.now()], updatedUserData);
+      }
+    }
+  }, [userData, whatIOfferData]);
 
   // Fetch user skills for the badges
   const { data: skills = [], isLoading: isLoadingSkills, refetch: refetchSkills } = useQuery<any[]>({
