@@ -17,7 +17,7 @@ import { PhoneAuth } from "@/components/auth/phone-auth";
 import { EmailAuth } from "@/components/auth/email-auth";
 
 export default function AuthPage() {
-  const { isAuthenticated, isLoading, enterDemoMode } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const [_, setLocation] = useLocation();
   const [authMethod, setAuthMethod] = useState<"email" | "phone">("email");
 
@@ -78,24 +78,7 @@ export default function AuthPage() {
               </TabsContent>
             </Tabs>
           </CardContent>
-          <CardFooter className="flex flex-col space-y-4">
-            <div className="relative w-full">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-gray-300" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white px-2 text-gray-500">or</span>
-              </div>
-            </div>
-            <Button
-              variant="outline"
-              onClick={enterDemoMode}
-              className="w-full"
-              disabled={isLoading}
-            >
-              Continue with Demo Mode
-            </Button>
-          </CardFooter>
+          {/* Footer content removed */}
         </Card>
 
         {/* Right column - Hero content */}
