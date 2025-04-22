@@ -672,15 +672,15 @@ export default function Profile() {
   }, [userData]);
   
   // Special query for the dedicated "What I Offer" field using our special endpoint
-  const { data: whatIOfferData } = useQuery({
-    queryKey: ['/api/users', userNumericId, 'what-i-offer', Date.now()],
+  const { data: whatIOfferData, refetch: refetchWhatIOffer } = useQuery({
+    queryKey: ['/api/users', userNumericId, 'what-i-offer'],  // Removed timestamp to maintain consistent cache
     queryFn: async () => {
       if (!userNumericId) return null;
       
       console.log("Fetching whatIOffer field with dedicated endpoint");
       try {
         // Use our dedicated endpoint to get just the whatIOffer field
-        const response = await fetch(`/api/users/${userNumericId}/what-i-offer`, {
+        const response = await fetch(`/api/users/${userNumericId}/what-i-offer?_t=${Date.now()}`, {  // Add timestamp here instead
           method: 'GET',
           headers: {
             'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -721,12 +721,40 @@ export default function Profile() {
           whatIOffer: whatIOfferData.whatIOffer
         };
         
-        // Update the React Query cache
-        queryClient.setQueryData([`/api/users/${userData.id}`], updatedUserData);
-        queryClient.setQueryData([`/api/users/${userData.id}`, Date.now()], updatedUserData);
+        // Update the React Query cache with consistent key formats
+        queryClient.setQueryData(['/api/users', userData.id], updatedUserData);
+        
+        // Also update if the cache used a string version of the ID
+        if (typeof userData.id === 'number') {
+          queryClient.setQueryData(['/api/users', userData.id.toString()], updatedUserData);
+        }
       }
     }
   }, [userData, whatIOfferData]);
+  
+  // Check for profile edit flag in localStorage
+  useEffect(() => {
+    const justEditedProfile = localStorage.getItem('justEditedProfile');
+    const profileEditTimestamp = localStorage.getItem('profileEditTimestamp');
+    
+    if (justEditedProfile === 'true') {
+      console.log('Detected profile edit from Edit Profile page');
+      
+      // Clear flag
+      localStorage.removeItem('justEditedProfile');
+      
+      // Force refresh all data
+      setTimeout(() => {
+        refetchUserData();
+        refetchSkills();
+        refetchExperiences();
+        refetchEducation();
+        refetchProjects();
+        refetchServices();
+        refetchWhatIOffer();
+      }, 300);
+    }
+  }, []);
 
   // Fetch user skills for the badges
   const { data: skills = [], isLoading: isLoadingSkills, refetch: refetchSkills } = useQuery<any[]>({
@@ -835,14 +863,38 @@ export default function Profile() {
       // Clear all caches to ensure fresh data
       queryClient.clear();
       
-      // Invalidate all related queries
-      await queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
+      // Invalidate all related queries using the correct query key format
+      await queryClient.invalidateQueries({ queryKey: ['/api/users'] });
+      await queryClient.invalidateQueries({ queryKey: ['/api/users', userId] });
+      
+      if (userNumericId) {
+        await queryClient.invalidateQueries({ queryKey: ['/api/users', userNumericId] });
+        await queryClient.invalidateQueries({ queryKey: ['/api/users', userNumericId, 'profile-services'] });
+        await queryClient.invalidateQueries({ queryKey: ['/api/users', userNumericId, 'what-i-offer'] });
+        await queryClient.invalidateQueries({ queryKey: ['/api/users', userNumericId, 'services'] });
+        
+        // Also invalidate nested resource endpoints
+        await queryClient.invalidateQueries({ queryKey: [`/api/users/${userNumericId}/skills`] });
+        await queryClient.invalidateQueries({ queryKey: [`/api/users/${userNumericId}/experiences`] });
+        await queryClient.invalidateQueries({ queryKey: [`/api/users/${userNumericId}/educations`] });
+        await queryClient.invalidateQueries({ queryKey: [`/api/users/${userNumericId}/projects`] });
+      }
       
       // Add a short delay to ensure the server has processed the update
       await new Promise(resolve => setTimeout(resolve, 300));
       
-      // Manually refetch the user data
+      // Set flag for cross-page synchronization
+      localStorage.setItem('justEditedProfile', 'true');
+      localStorage.setItem('profileEditTimestamp', Date.now().toString());
+      
+      // Manually refetch the user data and all related data
       refetchUserData();
+      refetchSkills();
+      refetchExperiences();
+      refetchEducation();
+      refetchProjects();
+      refetchServices();
+      refetchWhatIOffer();
       
       // Clear localStorage cache and update with fresh data
       try {
