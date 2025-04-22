@@ -348,7 +348,9 @@ export default function ProfileSteps({
   const { 
     services, 
     whatIOffer: servicesWhatIOffer, 
-    isLoading: isLoadingServices 
+    isLoading: isLoadingServices,
+    syncServices, // Extract syncServices at the top level
+    updateWhatIOffer // Also extract updateWhatIOffer function
   } = useProfileServices();
   
   // Log services for debugging
@@ -971,9 +973,7 @@ export default function ProfileSteps({
           
           if (userData?.id) {
             try {
-              // Use the dedicated syncServices function from the hook
-              // This ensures all services and whatIOffer updates happen in a single transaction
-              const { syncServices } = useProfileServices();
+              // Using the syncServices function we extracted at the top level
               console.log("Using syncServices hook to update all services and whatIOffer at once");
               
               // Store a backup in localStorage in case the main update fails
