@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useProfileServices } from "@/hooks/use-profile-services";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -353,9 +354,10 @@ export default function ProfileSteps({
   // Log services for debugging
   console.log("Edit Profile using useProfileServices hook - services:", services);
   
-  // Debug
-  console.log("Edit Profile - servicesData:", servicesData);
+  // Debug logs for services data
+  console.log("Edit Profile - services:", services);
   console.log("Edit Profile - services count:", services?.length);
+  console.log("Edit Profile - whatIOffer from useProfileServices:", servicesWhatIOffer);
   
   // Fetch user projects with improved error handling
   const { data: projects = [], isLoading: isLoadingProjects } = useQuery<any[]>({
@@ -637,7 +639,7 @@ export default function ProfileSteps({
         }
       }
     }
-  }, [userData, skills, services, projects, experiences, educations, isEditing, servicesData]);
+  }, [userData, skills, services, projects, experiences, educations, isEditing, servicesWhatIOffer]);
   
   // Handle form input changes for basic fields
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

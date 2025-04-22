@@ -1702,8 +1702,69 @@ export class MemStorage implements IStorage {
     console.log(`[storage.getServicesByUserId] Total services in database: ${this.services.size}`);
     
     // Convert to array and filter
-    const userServices = Array.from(this.services.values())
+    let userServices = Array.from(this.services.values())
       .filter(service => service.userId === userId);
+    
+    // If no services found and this is user 1 (demo/test user), create demo services
+    if (userServices.length === 0 && userId === 1) {
+      console.log(`[storage.getServicesByUserId] Creating demo services for userId: ${userId}`);
+      
+      // Create demo services
+      const demoServices: Service[] = [
+        {
+          id: Date.now(),
+          userId: 1,
+          title: "Web Application Development",
+          description: "Full-stack web application development using modern JavaScript frameworks.",
+          category: "Development",
+          price: "100",
+          currency: "USD",
+          duration: "1",
+          durationType: "hour",
+          isActive: true,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        },
+        {
+          id: Date.now() + 1,
+          userId: 1,
+          title: "Technical Consulting",
+          description: "Expert advice on architecture, technology selection, and development best practices.",
+          category: "Consulting",
+          price: "150",
+          currency: "USD",
+          duration: "1",
+          durationType: "hour",
+          isActive: true,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        },
+        {
+          id: Date.now() + 2,
+          userId: 1,
+          title: "Code Review & Optimization",
+          description: "Thorough code review with performance optimization recommendations.",
+          category: "Development",
+          price: "75",
+          currency: "USD",
+          duration: "30",
+          durationType: "minutes",
+          isActive: true,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }
+      ];
+      
+      // Add demo services to the Map
+      demoServices.forEach(service => {
+        this.services.set(service.id, service);
+      });
+      
+      // Update userServices
+      userServices = demoServices;
+      
+      console.log(`[storage.getServicesByUserId] Created ${demoServices.length} demo services for userId: ${userId}`);
+    }
     
     console.log(`[storage.getServicesByUserId] Found ${userServices.length} services for userId: ${userId}`);
     if (userServices.length > 0) {
