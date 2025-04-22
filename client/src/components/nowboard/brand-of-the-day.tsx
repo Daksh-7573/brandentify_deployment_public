@@ -50,13 +50,12 @@ export default function BrandOfTheDay() {
     const fetchUserData = async () => {
       if (brandOfTheDay) {
         try {
-          // For Brand of the Day feature only, we want to use enhanced demo data 
-          // This is isolated to this specific feature and doesn't affect profile editing
-          const response = await fetch(`/api/brands-of-the-day/user/${brandOfTheDay.userId}`);
+          // Use our dedicated endpoint for enhanced user data that doesn't affect profile editing
+          const response = await fetch(`/api/brands-of-the-day/enhanced-user/${brandOfTheDay.userId}`);
           
           if (response.ok) {
             const userData = await response.json() as User;
-            console.log("Fetched user data for Brand of the Day:", userData);
+            console.log("Fetched enhanced user data for Brand of the Day:", userData);
             setBrandWithUser({
               ...brandOfTheDay,
               userData: {
@@ -66,7 +65,8 @@ export default function BrandOfTheDay() {
               }
             });
           } else {
-            // Fallback to standard user data without demo mode if the dedicated endpoint fails
+            // Fallback to standard user data if the dedicated endpoint fails
+            console.log("Enhanced user endpoint failed, falling back to standard user data");
             const fallbackResponse = await fetch(`/api/users/${brandOfTheDay.userId}`);
             if (fallbackResponse.ok) {
               const userData = await fallbackResponse.json() as User;
@@ -74,7 +74,7 @@ export default function BrandOfTheDay() {
                 ...brandOfTheDay,
                 userData: {
                   name: userData.name,
-                  photoURL: userData.photoURL,
+                  photoURL: userData.photoURL || "/images/default-avatar.png", // Default avatar if none exists
                   title: userData.title
                 }
               });

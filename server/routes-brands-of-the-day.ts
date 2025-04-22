@@ -307,7 +307,7 @@ router.get("/api/brands-of-the-day/enhanced-user/:userId", async (req: Request, 
       return res.status(400).json({ message: "Invalid user ID" });
     }
     
-    // Get the base user data
+    // Get the base user data directly from the database to ensure we're bypassing any Brand of the Day logic
     const user = await storage.getUser(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -325,7 +325,9 @@ router.get("/api/brands-of-the-day/enhanced-user/:userId", async (req: Request, 
       domain: user.domain || "Engineering",
     };
     
-    console.log("[GET /brands-of-the-day/enhanced-user/:userId] Returning enhanced user data for Brand of the Day");
+    console.log("[GET /brands-of-the-day/enhanced-user/:userId] Returning enhanced user data:", enhancedUser.name);
+    
+    // Important: Return the enhanced USER data directly, not a brand object
     return res.json(enhancedUser);
   } catch (error) {
     console.error("[GET /brands-of-the-day/enhanced-user/:userId] Error:", error);
