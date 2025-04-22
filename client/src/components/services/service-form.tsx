@@ -60,41 +60,71 @@ export default function ServiceForm({ service, onSubmit, isPending, existingServ
   
   // Handle form submission
   const handleSubmit = (values: FormValues) => {
-    // Convert price string to number
-    const priceValue = values.price ? parseFloat(values.price) || null : null;
+    // Convert price string to number (avoid NaN issues)
+    const priceValue = values.price ? (parseFloat(values.price) || 0) : null;
     
-    // Create price object based on selected currency
-    const priceInr = values.currency === 'INR' ? priceValue : null;
-    const priceUsd = values.currency === 'USD' ? priceValue : null;
-    const priceEur = values.currency === 'EUR' ? priceValue : null;
-    const priceGbp = values.currency === 'GBP' ? priceValue : null;
-    const priceJpy = values.currency === 'JPY' ? priceValue : null;
-    const priceCad = values.currency === 'CAD' ? priceValue : null;
-    const priceAud = values.currency === 'AUD' ? priceValue : null;
+    // Log for debugging
+    console.log(`Service form - submitting with currency: ${values.currency}, price: ${priceValue}`);
+    
+    // Set all currency fields to null initially
+    let priceData = {
+      priceInr: null,
+      priceUsd: null,
+      priceEur: null,
+      priceGbp: null, 
+      priceJpy: null,
+      priceCad: null,
+      priceAud: null
+    };
+    
+    // Set only the appropriate currency price field
+    if (priceValue !== null) {
+      switch (values.currency) {
+        case 'INR':
+          priceData.priceInr = priceValue;
+          break;
+        case 'USD':
+          priceData.priceUsd = priceValue;
+          break;
+        case 'EUR':
+          priceData.priceEur = priceValue;
+          break;
+        case 'GBP':
+          priceData.priceGbp = priceValue;
+          break;
+        case 'JPY':
+          priceData.priceJpy = priceValue;
+          break;
+        case 'CAD':
+          priceData.priceCad = priceValue;
+          break;
+        case 'AUD':
+          priceData.priceAud = priceValue;
+          break;
+        default:
+          // Default to USD if something goes wrong
+          priceData.priceUsd = priceValue;
+      }
+    }
     
     // Transform form values to match API expectations
     const transformedData = {
       // Start with default values for all required fields
       features: [],
-      // Then add existing service values if editing (except for values we're explicitly overriding)
-      ...(service || {}),
-      // Include base form values except currency and price (we set these separately)
+      // Add base form values
       title: values.title,
       description: values.description,
       isHourly: values.isHourly,
       isActive: values.isActive,
       // Set category to "other" since we're removing it from the form
       category: "other",
-      // Add the appropriate price field based on currency
-      priceInr,
-      priceUsd,
-      priceEur,
-      priceGbp,
-      priceJpy,
-      priceCad,
-      priceAud,
+      // Add all pricing fields
+      ...priceData,
+      // Then add any existing service values for fields we didn't explicitly set
+      ...(service ? (({ id, userId }) => ({ id, userId }))(service) : {})
     };
     
+    console.log("Service form - submitting transformed data:", transformedData);
     onSubmit(transformedData);
   };
 
