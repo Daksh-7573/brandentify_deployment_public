@@ -20,6 +20,7 @@ import { setupShadowResumeRoutes } from "./routes-shadow-resume";
 import { setupNowboardRoutes } from "./routes-nowboard";
 import { setupCareerQuestsRoutes } from "./routes-career-quests";
 import brandsOfTheDayRoutes from "./routes-brands-of-the-day";
+import enhancedUserRoutes from "./routes-enhanced-user";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -4652,6 +4653,9 @@ ${extractedText.substring(0, 5000)}
   
   // Brands of the Day routes
   app.use(brandsOfTheDayRoutes);
+  
+  // Enhanced User data routes
+  app.use(enhancedUserRoutes);
 
   app.use("/api", apiRouter);
 

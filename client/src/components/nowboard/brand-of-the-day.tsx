@@ -51,7 +51,7 @@ export default function BrandOfTheDay() {
       if (brandOfTheDay) {
         try {
           // Use our dedicated endpoint for enhanced user data that doesn't affect profile editing
-          const response = await fetch(`/api/brands-of-the-day/enhanced-user/${brandOfTheDay.userId}`);
+          const response = await fetch(`/api/enhanced-user/${brandOfTheDay.userId}`);
           
           if (response.ok) {
             const userData = await response.json() as User;
