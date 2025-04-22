@@ -2235,8 +2235,21 @@ export default function Profile() {
                   <p className="text-sm text-gray-500 mt-1">
                     <span className="font-medium">I am:</span> {userData?.title || user?.title || 'Professional'}
                   </p>
-                  <p className="text-sm text-gray-500 mt-1">
-                    <span className="font-medium">From:</span> {userData?.location || user?.location || 'Location not specified'}
+                  <p className="text-sm text-gray-500 mt-1 flex items-center">
+                    <span className="font-medium mr-1">From:</span> 
+                    <span className="flex items-center">
+                      {userData?.location || formData.location ? (
+                        <>
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1 h-3 w-3 text-primary">
+                            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                          </svg>
+                          <span>{userData?.location || formData.location}</span>
+                        </>
+                      ) : (
+                        <span className="italic text-gray-400">Location not specified</span>
+                      )}
+                    </span>
                   </p>
                   {/* Industry and Domain - now displayed separately */}
                   {userData?.industry && (
