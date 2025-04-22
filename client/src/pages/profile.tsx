@@ -518,25 +518,95 @@ export default function Profile() {
   // Critical: Don't use a fallback value like 0 as it might fetch wrong user's data
   const userNumericId = isDemoMode ? 1 : (userData?.id || null);
   
-  // Add debug logging to troubleshoot profile completion issues
-  // Check if we're coming from edit profile page
+  // Enhanced refresh logic for profile update caching issues
+  // This effect runs when we return from profile editing via a browser reload
   useEffect(() => {
     const justEdited = localStorage.getItem('justEditedProfile');
     const editTimestamp = localStorage.getItem('profileEditTimestamp');
+    const redirectToProfile = localStorage.getItem('redirectToProfile');
     
     if (justEdited === 'true' && editTimestamp) {
-      console.log("Detected return from profile editing - forcing complete refresh");
+      console.log(`Detected return from profile editing (timestamp: ${new Date(parseInt(editTimestamp)).toLocaleTimeString()}) - executing enhanced refresh procedure`);
       
-      // Clear the flag so we don't keep refreshing
+      // Clear the flags to prevent continuous refresh
       localStorage.removeItem('justEditedProfile');
+      localStorage.removeItem('redirectToProfile');
       
-      // Ensure we're getting truly fresh data
+      // Check if we have whatIOffer stored in localStorage
+      const storedWhatIOffer = localStorage.getItem('whatIOffer_value');
+      if (storedWhatIOffer) {
+        console.log("Found cached whatIOffer value:", storedWhatIOffer);
+        localStorage.removeItem('whatIOffer_value');
+        localStorage.removeItem('whatIOffer_pendingUpdate');
+      }
+      
+      // 1. First completely clear the React Query cache
       queryClient.clear();
       
-      // Force a refresh
-      window.location.reload();
+      // 2. Force immediate data refetching with fresh timestamps
+      const fetchFreshData = async () => {
+        if (userNumericId) {
+          console.log("Executing multi-stage refresh procedure for user ID:", userNumericId);
+          
+          try {
+            // Direct fetch with cache-busting timestamp
+            const cacheBuster = Date.now();
+            console.log("Forcing fresh fetch of user data for ID:", userNumericId);
+            
+            const response = await fetch(`/api/users/${userNumericId}?_cb=${cacheBuster}`, {
+              headers: {
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+              }
+            });
+            
+            if (response.ok) {
+              const freshData = await response.json();
+              console.log("Fresh user data fetched:", freshData);
+              console.log("whatIOffer field value:", freshData.whatIOffer);
+              
+              // Store the fetched data in localStorage as well as a backup
+              try {
+                localStorage.setItem('cachedUserData', JSON.stringify(freshData));
+                console.log("Cached user data in localStorage");
+              } catch (err) {
+                console.error("Failed to cache user data in localStorage", err);
+              }
+              
+              // Update the query cache with the fresh data
+              queryClient.setQueryData([`/api/users/${userNumericId}`], freshData);
+              
+              // If we have a stored whatIOffer value from the edit page, verify it matches what we got from the server
+              if (storedWhatIOffer && storedWhatIOffer !== freshData.whatIOffer) {
+                console.warn("Mismatch between stored whatIOffer and server data:", {
+                  stored: storedWhatIOffer,
+                  server: freshData.whatIOffer
+                });
+              }
+            } else {
+              console.error("Failed to fetch fresh user data:", await response.text());
+            }
+          } catch (error) {
+            console.error("Error fetching fresh user data:", error);
+          }
+        }
+      };
+      
+      // Execute the multi-stage refresh procedure
+      fetchFreshData();
+      
+      // 3. Also use the built-in React Query refetch methods
+      setTimeout(() => {
+        // Refetch everything through the standard mechanisms too
+        refetchUserData();
+        refetchSkills();
+        refetchExperiences();
+        refetchProjects();
+        refetchEducation();
+      }, 200);
     }
-  }, []);
+  }, [queryClient, userNumericId]);
   
   // Debug logging for userData
   useEffect(() => {

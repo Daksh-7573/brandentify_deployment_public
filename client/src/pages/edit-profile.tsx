@@ -79,19 +79,21 @@ export default function EditProfilePage() {
         variant: "default",
       });
       
-      // Hide success message after a delay and redirect with a forced refresh
+      // Hide success message after a delay and perform a complete hard reload
       setTimeout(() => {
         setShowSuccessMessage(false);
         
-        // Store a flag in localStorage to indicate we're coming from edit mode
+        // Store the necessary data in localStorage to survive the refresh
         localStorage.setItem('justEditedProfile', 'true');
         localStorage.setItem('profileEditTimestamp', Date.now().toString());
+        localStorage.setItem('redirectToProfile', 'true');
         
-        // Force a complete cache clear before navigating
+        // First, clear all React Query caches
         queryClient.clear();
         
-        // Redirect to profile page
-        setLocation('/profile');
+        // Instead of using wouter navigation, force a complete page reload
+        // This is our most drastic solution to ensure all caches are cleared
+        window.location.href = '/profile';
       }, 1500);
     } catch (error) {
       console.error("Error updating profile:", error);
