@@ -61,7 +61,13 @@ const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ userData, onE
             </div>
           )}
           
-
+          {/* What I Offer - only show if value exists */}
+          {userData.whatIOffer && (
+            <div className="flex items-center gap-2">
+              <Briefcase className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm">{userData.whatIOffer}</span>
+            </div>
+          )}
           
           {/* Profile URL */}
           <div className="flex items-center gap-2">

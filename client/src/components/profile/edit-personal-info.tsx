@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { Mail, Phone, Globe } from "lucide-react";
+import { Mail, Phone, Globe, Briefcase } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -43,6 +44,7 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
   
   const [phoneCountryCode, setPhoneCountryCode] = useState(countryCode);
   const [phoneNumber, setPhoneNumber] = useState(number);
+  const [whatIOffer, setWhatIOffer] = useState(userData.whatIOffer || "");
   const [isLoading, setIsLoading] = useState(false);
   
   const handleSave = async () => {
@@ -59,7 +61,8 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
         url: `/api/users/${userData.id}`,
         method: 'PUT',
         data: {
-          phoneNumber: formattedPhoneNumber
+          phoneNumber: formattedPhoneNumber,
+          whatIOffer: whatIOffer.trim() || null
         }
       });
       
@@ -122,7 +125,23 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
         </div>
       </div>
       
-
+      {/* What I Offer */}
+      <div className="space-y-2">
+        <label htmlFor="whatIOffer" className="text-sm font-medium flex items-center gap-2">
+          <Briefcase className="h-4 w-4" />
+          What I Offer
+        </label>
+        <Textarea
+          id="whatIOffer"
+          value={whatIOffer}
+          onChange={(e) => setWhatIOffer(e.target.value)}
+          placeholder="Describe your professional services, skills, or expertise that you offer"
+          rows={4}
+        />
+        <p className="text-xs text-muted-foreground">
+          Briefly describe what skills, services, or value you bring to professional relationships
+        </p>
+      </div>
       
       {/* Profile URL (read-only) */}
       <div className="space-y-2">
