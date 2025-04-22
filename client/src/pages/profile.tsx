@@ -432,7 +432,7 @@ export default function Profile() {
   
   // Also fetch current user data for the profile with enhanced caching control
   const { data: userData, isLoading: isLoadingUser, refetch: refetchUserData } = useQuery<any>({
-    queryKey: [`/api/users/${userId}`, Date.now()], // Add timestamp to force fresh data
+    queryKey: ['/api/users', userId], // Use consistent key format with edit-profile page (no timestamp)
     enabled: !!userId && isAuthenticated,
     staleTime: 0, // Always consider data stale to ensure fresh data
     gcTime: 0, // Disable caching for profile data (gcTime is the v5 name for cacheTime)

@@ -135,11 +135,24 @@ export function useProfileServices() {
     onSuccess: (data) => {
       console.log('useProfileServices hook - whatIOffer updated successfully:', data);
       
-      // Invalidate relevant queries
+      // Store successful whatIOffer value in localStorage
+      if (typeof data.whatIOffer === 'string') {
+        localStorage.setItem('whatIOffer_saved', data.whatIOffer);
+        localStorage.setItem('whatIOffer_savedAt', Date.now().toString());
+        localStorage.setItem('whatIOffer_verified', 'true');
+      }
+      
+      // First, completely clear the cache to ensure fresh data
+      queryClient.clear();
+      
+      // Then invalidate all specific queries
       queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'profile-services'] });
       queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'what-i-offer'] });
       queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'services'] });
       queryClient.invalidateQueries({ queryKey: ['/api/users', userId] });
+      
+      // Force immediate refetch
+      queryClient.refetchQueries({ queryKey: ['/api/users', userId] });
       
       // Update localStorage cache
       localStorage.setItem('profile_services_data', JSON.stringify(data));
@@ -169,9 +182,17 @@ export function useProfileServices() {
     onSuccess: (data) => {
       console.log('useProfileServices hook - service created successfully:', data);
       
-      // Invalidate relevant queries
+      // Completely clear all queries first to ensure fresh data
+      queryClient.clear();
+      
+      // Then invalidate all specific queries
       queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'profile-services'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'what-i-offer'] });
       queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'services'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', userId] });
+      
+      // Force immediate refetch of user data
+      queryClient.refetchQueries({ queryKey: ['/api/users', userId] });
       
       // Update localStorage cache with new data
       if (data.service && data.services) {
@@ -182,6 +203,10 @@ export function useProfileServices() {
           timestamp: Date.now()
         }));
         localStorage.setItem('profile_services_fetchedAt', Date.now().toString());
+        
+        // Set flag for profile page to know it needs to refresh
+        localStorage.setItem('justEditedProfile', 'true');
+        localStorage.setItem('profileEditTimestamp', Date.now().toString());
       }
       
       toast({
@@ -208,9 +233,17 @@ export function useProfileServices() {
     onSuccess: (data) => {
       console.log('useProfileServices hook - service updated successfully:', data);
       
-      // Invalidate relevant queries
+      // Completely clear all queries first to ensure fresh data
+      queryClient.clear();
+      
+      // Then invalidate all specific queries
       queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'profile-services'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'what-i-offer'] });
       queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'services'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', userId] });
+      
+      // Force immediate refetch of user data
+      queryClient.refetchQueries({ queryKey: ['/api/users', userId] });
       
       // Update localStorage cache with new data
       if (data.service && data.services) {
@@ -221,6 +254,10 @@ export function useProfileServices() {
           timestamp: Date.now()
         }));
         localStorage.setItem('profile_services_fetchedAt', Date.now().toString());
+        
+        // Set flag for profile page to know it needs to refresh
+        localStorage.setItem('justEditedProfile', 'true');
+        localStorage.setItem('profileEditTimestamp', Date.now().toString());
       }
       
       toast({
@@ -247,9 +284,17 @@ export function useProfileServices() {
     onSuccess: (data) => {
       console.log('useProfileServices hook - service deleted successfully:', data);
       
-      // Invalidate relevant queries
+      // Completely clear all queries first to ensure fresh data
+      queryClient.clear();
+      
+      // Then invalidate all specific queries
       queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'profile-services'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'what-i-offer'] });
       queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'services'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', userId] });
+      
+      // Force immediate refetch of user data
+      queryClient.refetchQueries({ queryKey: ['/api/users', userId] });
       
       // Update localStorage cache with new data
       if (data.services) {
@@ -260,6 +305,10 @@ export function useProfileServices() {
           timestamp: Date.now()
         }));
         localStorage.setItem('profile_services_fetchedAt', Date.now().toString());
+        
+        // Set flag for profile page to know it needs to refresh
+        localStorage.setItem('justEditedProfile', 'true');
+        localStorage.setItem('profileEditTimestamp', Date.now().toString());
       }
       
       toast({
