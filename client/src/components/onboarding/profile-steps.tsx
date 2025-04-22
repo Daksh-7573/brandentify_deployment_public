@@ -342,19 +342,16 @@ export default function ProfileSteps({
     refetchOnReconnect: false
   });
   
-  // Fetch user services using the unified endpoint to ensure consistency with caching
-  const { data: servicesData, isLoading: isLoadingServices } = useQuery({
-    queryKey: ['/api/users', userData?.id, 'profile-services'],
-    enabled: !!userData?.id && isAuthenticated,
-    refetchOnMount: true,
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    gcTime: 1000 * 60 * 10 // 10 minutes
-  });
+  // Fetch user services directly using the useProfileServices hook
+  // This ensures we use the same data source as the profile page
+  const { 
+    services, 
+    whatIOffer: servicesWhatIOffer, 
+    isLoading: isLoadingServices 
+  } = useProfileServices();
   
-  // Extract services array from the response
-  const services = Array.isArray(servicesData?.services) ? servicesData?.services : [];
+  // Log services for debugging
+  console.log("Edit Profile using useProfileServices hook - services:", services);
   
   // Debug
   console.log("Edit Profile - servicesData:", servicesData);
