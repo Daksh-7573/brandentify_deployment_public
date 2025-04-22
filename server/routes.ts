@@ -4657,6 +4657,9 @@ ${extractedText.substring(0, 5000)}
   
   // Enhanced User data routes
   app.use(enhancedUserRoutes);
+  
+  // What I Offer specialized routes
+  app.use(whatIOfferRoutes);
 
   app.use("/api", apiRouter);
 
