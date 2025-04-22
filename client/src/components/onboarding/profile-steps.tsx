@@ -615,6 +615,7 @@ export default function ProfileSteps({
             location: formData.location,
             industry: formData.industry && formData.domain ? 
               `${formData.industry}: ${formData.domain}` : formData.industry,
+            domain: formData.domain || "all", // Ensure domain is always saved
             lookingFor: formData.lookingFor,
             aboutMe: formData.aboutMe
           });
@@ -625,9 +626,37 @@ export default function ProfileSteps({
           break;
           
         case 3: // What I Offer
-          await updateUserMutation.mutateAsync({
-            whatIOffer: formData.whatIOffer
+          console.log("Saving What I Offer data:", {
+            whatIOffer: formData.whatIOffer || ""
           });
+          
+          await updateUserMutation.mutateAsync({
+            whatIOffer: formData.whatIOffer || ""
+          });
+          
+          // Force a direct update to the database to ensure it's saved
+          if (userData?.id) {
+            try {
+              console.log("Performing direct database update for whatIOffer field");
+              const response = await fetch(`/api/users/${userData.id}`, {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  whatIOffer: formData.whatIOffer || ""
+                })
+              });
+              
+              if (response.ok) {
+                console.log("Direct update successful");
+              } else {
+                console.error("Direct update failed:", await response.text());
+              }
+            } catch (directUpdateError) {
+              console.error("Error during direct update:", directUpdateError);
+            }
+          }
           break;
           
         case 7: // Personal Information
@@ -645,8 +674,15 @@ export default function ProfileSteps({
           break;
       }
       
-      // Always invalidate the user query to ensure data is refreshed
+      // Always invalidate ALL user-related queries to ensure data is refreshed
+      console.log("Invalidating all user-related queries");
       queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
+      
+      // For numeric user ID (backend), also invalidate those queries
+      if (userData?.id) {
+        console.log(`Also invalidating queries for numeric user ID: ${userData.id}`);
+        queryClient.invalidateQueries({ queryKey: [`/api/users/${userData.id}`] });
+      }
       
       toast({
         title: "Changes saved",

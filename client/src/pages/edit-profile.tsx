@@ -50,8 +50,26 @@ export default function EditProfilePage() {
     setIsSaving(true);
     
     try {
-      // Use the queryClient to invalidate and refetch user data
+      console.log("Profile update complete, invalidating queries and refreshing data");
+      
+      // First invalidate the query to ensure we get fresh data
       await queryClient.invalidateQueries({ queryKey: ['/api/users', user?.id] });
+      
+      // Then force a refetch of the user data
+      if (user?.id) {
+        // Perform a direct fetch to ensure the server has the latest data
+        console.log(`Explicitly fetching latest user data for ID: ${user.id}`);
+        await fetch(`/api/users/${user.id}`, {
+          method: 'GET',
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          }
+        });
+        
+        // Now invalidate the query again to refresh the UI
+        await queryClient.invalidateQueries({ queryKey: ['/api/users', user.id] });
+      }
       
       setShowSuccessMessage(true);
       
