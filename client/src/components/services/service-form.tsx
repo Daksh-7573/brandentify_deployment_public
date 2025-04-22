@@ -21,6 +21,7 @@ import { Service } from "@shared/schema";
 const formSchema = z.object({
   title: z.string().min(1, "Service title is required"),
   description: z.string().optional(),
+  category: z.string().default("other"),
   currency: z.string().default("USD"),
   price: z.string().nullable().optional(),
   isHourly: z.boolean().default(false),
@@ -46,6 +47,7 @@ export default function ServiceForm({ service, onSubmit, isPending, existingServ
   const defaultValues = {
     title: service?.title || "",
     description: service?.description || "",
+    category: service?.category || "other",
     currency: service ? (service.priceUsd ? "USD" : "INR") : "USD",
     price: service ? (service.priceUsd ? service.priceUsd.toString() : 
                       service.priceInr ? service.priceInr.toString() : null) : null,
@@ -77,33 +79,17 @@ export default function ServiceForm({ service, onSubmit, isPending, existingServ
       priceAud: null as number | null
     };
     
-    // Set only the appropriate currency price field
+    // Set only the appropriate currency price field - Only USD and INR are supported in the DB
     if (priceValue !== null) {
       switch (values.currency) {
         case 'INR':
           priceData.priceInr = priceValue;
           break;
         case 'USD':
-          priceData.priceUsd = priceValue;
-          break;
-        case 'EUR':
-          priceData.priceEur = priceValue;
-          break;
-        case 'GBP':
-          priceData.priceGbp = priceValue;
-          break;
-        case 'JPY':
-          priceData.priceJpy = priceValue;
-          break;
-        case 'CAD':
-          priceData.priceCad = priceValue;
-          break;
-        case 'AUD':
-          priceData.priceAud = priceValue;
-          break;
         default:
-          // Default to USD if something goes wrong
+          // Default to USD for all other currencies as the database only supports INR and USD
           priceData.priceUsd = priceValue;
+          break;
       }
     }
     
@@ -116,8 +102,8 @@ export default function ServiceForm({ service, onSubmit, isPending, existingServ
       description: values.description,
       isHourly: values.isHourly,
       isActive: values.isActive,
-      // Set category to "other" since we're removing it from the form
-      category: "other",
+      // Use the selected category
+      category: values.category,
       // Add all pricing fields
       ...priceData,
       // Then add any existing service values for fields we didn't explicitly set
@@ -215,6 +201,35 @@ export default function ServiceForm({ service, onSubmit, isPending, existingServ
           )}
         />
         
+        <FormField
+          control={form.control}
+          name="category"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Category</FormLabel>
+              <FormDescription className="text-xs mb-2">
+                Select the category that best describes your service.
+              </FormDescription>
+              <FormControl>
+                <select
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  {...field}
+                >
+                  <option value="consulting">Consulting</option>
+                  <option value="development">Development</option>
+                  <option value="design">Design</option>
+                  <option value="marketing">Marketing</option>
+                  <option value="writing">Writing</option>
+                  <option value="coaching">Coaching</option>
+                  <option value="teaching">Teaching</option>
+                  <option value="other">Other</option>
+                </select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
         {/* Rate Fields */}
         <div className="space-y-4 border rounded-lg p-4">
           <h3 className="text-base font-medium">Pricing Details</h3>
@@ -235,11 +250,6 @@ export default function ServiceForm({ service, onSubmit, isPending, existingServ
                       >
                         <option value="USD">USD (US Dollar)</option>
                         <option value="INR">INR (Indian Rupee)</option>
-                        <option value="EUR">EUR (Euro)</option>
-                        <option value="GBP">GBP (British Pound)</option>
-                        <option value="JPY">JPY (Japanese Yen)</option>
-                        <option value="CAD">CAD (Canadian Dollar)</option>
-                        <option value="AUD">AUD (Australian Dollar)</option>
                       </select>
                     </FormControl>
                     <FormMessage />
