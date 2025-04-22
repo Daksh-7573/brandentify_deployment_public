@@ -438,7 +438,8 @@ export default function Profile() {
     gcTime: 0, // Disable caching for profile data (gcTime is the v5 name for cacheTime)
     refetchOnMount: "always", // Always refetch on mount
     refetchOnWindowFocus: true,
-    retry: 3, // Retry failed requests 3 times
+    retry: 5, // Increase retries for better reliability
+    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000), // Exponential backoff with max 10s
     refetchInterval: 0, // Don't poll automatically
     queryFn: async () => {
       try {

@@ -367,82 +367,85 @@ export default function ProfileSteps({
     mutationFn: async (data: any) => {
       console.log("Updating user data with:", data);
       
-      // Make a copy of the data to preserve it
+      // Remove any timestamp-related fields to avoid confusion (we'll add our own)
+      const cleanData = { ...data };
+      delete cleanData._timestamp;
+      delete cleanData._cb;
+      
+      // Add a fresh timestamp to bust cache
       const dataWithTimestamp = { 
-        ...data,
-        _timestamp: new Date().getTime() // Add timestamp to bust cache
+        ...cleanData,
+        _timestamp: new Date().getTime()
       };
       
-      const res = await apiRequest('PUT', `/api/users/${userId}`, dataWithTimestamp);
-      console.log("Server response from update:", res);
+      console.log("Sending data to server with timestamp:", dataWithTimestamp);
       
-      // Store in localStorage for backup
       try {
-        const currentCache = localStorage.getItem('cachedUserData');
-        const cachedData = currentCache ? JSON.parse(currentCache) : {};
-        const updatedCache = { ...cachedData, ...data };
-        localStorage.setItem('cachedUserData', JSON.stringify(updatedCache));
-        console.log("Updated localStorage cache with new data");
-      } catch (err) {
-        console.error("Failed to update localStorage cache:", err);
+        // Use direct fetch for more control over headers and error handling
+        const response = await fetch(`/api/users/${userId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+          },
+          body: JSON.stringify(dataWithTimestamp)
+        });
+        
+        if (!response.ok) {
+          console.error(`Server returned error status: ${response.status}`);
+          throw new Error(`Server error: ${response.status}`);
+        }
+        
+        // Parse response data
+        const responseData = await response.json();
+        console.log("Server response from update:", responseData);
+        
+        // Store successful update in localStorage for backup
+        try {
+          localStorage.setItem(`userDataUpdate_${userId}`, JSON.stringify({
+            data: cleanData,
+            timestamp: new Date().getTime(),
+            serverResponse: responseData
+          }));
+          console.log("Saved update confirmation to localStorage");
+        } catch (err) {
+          console.error("Failed to update localStorage cache:", err);
+        }
+        
+        return responseData;
+      } catch (error) {
+        console.error("Error during user update:", error);
+        throw error;
       }
-      
-      return res;
     },
     onSuccess: async (updatedData) => {
       console.log("User update successful. Updated data:", updatedData);
       
-      // Invalidate all user-related queries without clearing the cache completely
-      await queryClient.invalidateQueries({ queryKey: ['/api/users'] });
+      // Clear all caches
+      queryClient.clear();
       
-      if (userId) {
-        // Invalidate specific user queries
-        await queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
-      }
+      console.log("Cleared all query caches");
       
-      // Use window.location.reload with cache-busting
+      // Store the successful update in a synchronous localStorage record
+      localStorage.setItem(`profile_updated_${userId}`, 'true');
+      localStorage.setItem(`profile_update_timestamp_${userId}`, Date.now().toString());
+      
+      // Force a complete page reload with cache busting if in editing mode
       if (isEditing) {
-        console.log("Profile update complete, invalidating queries and refreshing data");
+        console.log("Profile update complete, preparing full page reload");
         
-        // Force browser to reload with a fresh cache
-        const reloadWithCacheBust = () => {
-          const timestamp = new Date().getTime();
-          window.location.href = `/profile?_=${timestamp}`;
+        // Use a clean reload with cache-busting URL parameter
+        const performFullReload = () => {
+          const timestamp = Date.now();
+          console.log(`Performing full page reload with timestamp: ${timestamp}`);
+          
+          // For a clean reload, use the replace method
+          window.location.replace(`/profile?nocache=${timestamp}`);
         };
         
-        // Add a slight delay to ensure server has processed the update
-        setTimeout(reloadWithCacheBust, 1000);
-      }
-      
-      // Force a refetch directly from the server
-      if (userId) {
-        try {
-          // First, invalidate all related queries
-          await queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
-          await queryClient.invalidateQueries({ queryKey: ['/api/users', userId] });
-          
-          // Then directly fetch fresh data
-          const timestamp = new Date().getTime();
-          const response = await fetch(`/api/users/${userId}?_=${timestamp}`, {
-            method: 'GET',
-            headers: {
-              'Cache-Control': 'no-cache, no-store, must-revalidate',
-              'Pragma': 'no-cache',
-            }
-          });
-          
-          if (response.ok) {
-            // Process the response to ensure it's visible in logs
-            const freshData = await response.json();
-            console.log("Force-fetched fresh user data:", freshData);
-            
-            // Invalidate again to ensure UI updates
-            await queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
-            await queryClient.invalidateQueries({ queryKey: ['/api/users', userId] });
-          }
-        } catch (err) {
-          console.error("Error force-fetching updated user data:", err);
-        }
+        // Add a slight delay to ensure server processing is complete
+        setTimeout(performFullReload, 1500);
       }
     },
     onError: (error: Error) => {
@@ -731,7 +734,34 @@ export default function ProfileSteps({
               localStorage.setItem('whatIOffer_pendingUpdate', 'true');
               console.log("Stored whatIOffer in localStorage as backup:", whatIOffer);
               
-              // 2. Use our mutation first (React Query)
+              // 2. First try direct fetch for more reliability - this bypasses React Query completely
+              console.log("[CRITICAL UPDATE] Attempting direct fetch update of whatIOffer");
+              const directResponse = await fetch(`/api/users/${userData.id}`, {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Cache-Control': 'no-cache, no-store, must-revalidate',
+                  'Pragma': 'no-cache',
+                },
+                body: JSON.stringify({
+                  whatIOffer: whatIOffer,
+                  _timestamp: Date.now(),
+                  _directUpdate: true
+                })
+              });
+              
+              if (directResponse.ok) {
+                const directData = await directResponse.json();
+                console.log("[CRITICAL UPDATE] Direct update response:", directData);
+                console.log("[CRITICAL UPDATE] Direct update confirmed whatIOffer value:", directData.whatIOffer);
+                
+                // Store confirmation of success
+                localStorage.setItem('whatIOffer_directUpdateSuccess', 'true');
+              } else {
+                console.error("[CRITICAL UPDATE] Direct update failed:", await directResponse.text());
+              }
+              
+              // 3. Use our mutation as a secondary approach (React Query)
               console.log("Step 1: Executing React Query mutation");
               await updateUserMutation.mutateAsync({
                 whatIOffer: whatIOffer,
