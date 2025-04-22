@@ -1454,9 +1454,9 @@ export default function ProfileSteps({
       <div className="space-y-6">
         {/* General What I Offer section */}
         <div className="p-4 border rounded-lg bg-white mb-6">
-          <h3 className="text-sm font-medium mb-3 text-gray-900">What I Offer Summary</h3>
+          <h3 className="text-sm font-medium mb-3 text-gray-900">What I Offer</h3>
           <p className="text-xs text-gray-500 mb-3">
-            Write a concise description of what you offer to clients or employers. 
+            Write a concise description of the skills, services, or expertise you offer professionally.
             This will be prominently displayed on your profile.
           </p>
           <Textarea

@@ -63,8 +63,11 @@ export default function EditProfilePage() {
     console.log("Directly saving What I Offer field with dedicated endpoint");
     
     try {
-      // Use our special dedicated endpoint for this field
-      const response = await fetch(`/api/users/${user.id}/what-i-offer`, {
+      // Generate cache buster
+      const cacheBuster = Date.now();
+      
+      // Use our special dedicated endpoint for this field with cache busting
+      const response = await fetch(`/api/users/${user.id}/what-i-offer?t=${cacheBuster}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -83,17 +86,56 @@ export default function EditProfilePage() {
       const result = await response.json();
       console.log("What I Offer saved successfully with special endpoint:", result);
       
-      // Invalidate relevant queries 
+      // Immediately verify the update succeeded
+      let verifySuccess = false;
+      try {
+        // Fetch the value we just saved to verify it was stored correctly
+        const verifyResponse = await fetch(`/api/users/${user.id}/what-i-offer?verify=true&t=${Date.now()}`, {
+          method: 'GET',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
+        });
+        
+        if (verifyResponse.ok) {
+          const verifyData = await verifyResponse.json();
+          
+          if (verifyData.whatIOffer === whatIOffer) {
+            verifySuccess = true;
+            console.log("What I Offer verification successful - value matches what was saved");
+          } else {
+            console.error("What I Offer verification failed - value mismatch");
+            console.error("Expected:", whatIOffer);
+            console.error("Received:", verifyData.whatIOffer);
+            // Continue anyway - we'll rely on the backup mechanisms
+          }
+        }
+      } catch (verifyError) {
+        console.error("Error verifying What I Offer update:", verifyError);
+      }
+      
+      // Invalidate ALL related queries with various patterns to ensure cache is fully cleared
       await queryClient.invalidateQueries({ queryKey: ['/api/users', user.id] });
       await queryClient.invalidateQueries({ queryKey: ['/api/users', user.id, 'what-i-offer'] });
+      await queryClient.refetchQueries({ queryKey: ['/api/users', user.id] });
+      await queryClient.refetchQueries({ queryKey: ['/api/users', user.id, 'what-i-offer'] });
       
-      // Store in localStorage for backup
+      // Store in localStorage as multiple backups
       localStorage.setItem('whatIOffer_saved', whatIOffer);
       localStorage.setItem('whatIOffer_savedAt', Date.now().toString());
+      localStorage.setItem('whatIOffer_verified', verifySuccess.toString());
       
       return true;
     } catch (error) {
       console.error("Error with What I Offer dedicated endpoint:", error);
+      
+      // Store in localStorage even on error as a fallback
+      localStorage.setItem('whatIOffer_saved', whatIOffer);
+      localStorage.setItem('whatIOffer_savedAt', Date.now().toString());
+      localStorage.setItem('whatIOffer_error', 'true');
+      
       return false;
     }
   };

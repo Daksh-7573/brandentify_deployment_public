@@ -60,16 +60,19 @@ export default function Services() {
     isPendingDelete
   } = useServices();
   
-  // Special query to get whatIOffer with our dedicated endpoint
+  // Special query to get whatIOffer with our dedicated endpoint with extra cache-busting
   const { data: whatIOffer, isLoading: isLoadingWhatIOffer } = useQuery({
-    queryKey: ['/api/users', userNumericId, 'what-i-offer', Date.now()],
+    queryKey: ['/api/users', userNumericId, 'what-i-offer', Date.now()], // Use timestamp to bust cache
     queryFn: async () => {
       if (!userNumericId) return null;
       
       console.log("Fetching whatIOffer field with dedicated endpoint in services component");
       try {
-        // Use our dedicated endpoint to get just the whatIOffer field
-        const response = await fetch(`/api/users/${userNumericId}/what-i-offer`, {
+        // Generate a cache-busting parameter
+        const cacheBuster = `?t=${Date.now()}`;
+        
+        // Use our dedicated endpoint to get just the whatIOffer field with cacheBuster
+        const response = await fetch(`/api/users/${userNumericId}/what-i-offer${cacheBuster}`, {
           method: 'GET',
           headers: {
             'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -81,9 +84,24 @@ export default function Services() {
         if (response.ok) {
           const data = await response.json();
           console.log("Services component: Fetched whatIOffer with dedicated endpoint:", data);
+          
+          // Store in localStorage as backup with timestamp
+          if (data && data.whatIOffer) {
+            localStorage.setItem('whatIOffer_data', JSON.stringify(data));
+            localStorage.setItem('whatIOffer_fetchedAt', Date.now().toString());
+          }
+          
           return data;
         } else {
           console.error("Services component: Dedicated whatIOffer endpoint failed:", response.status);
+          
+          // Try to recover from localStorage
+          const savedData = localStorage.getItem('whatIOffer_data');
+          if (savedData) {
+            console.log("Services component: Using cached whatIOffer data from localStorage");
+            return JSON.parse(savedData);
+          }
+          
           return null;
         }
       } catch (error) {

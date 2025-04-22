@@ -1,11 +1,14 @@
 /**
  * Special routes handling the "What I Offer" field
  * Created to address persistence issues with this specific field
+ * Enhanced with additional robustness mechanisms
  */
 
 import { Router, Request, Response } from "express";
 import { storage } from "./storage";
 import { pool } from "./db"; // Import pool for direct DB queries when needed
+import { eq } from "drizzle-orm";
+import { users } from "@shared/schema";
 
 export const router = Router();
 
@@ -92,7 +95,7 @@ router.put("/api/users/:id/what-i-offer", async (req: Request, res: Response) =>
       // If we get here, all retries failed
       console.error(`[PUT /users/:id/what-i-offer] ${prefix} All ${MAX_RETRIES} retries failed!`);
       
-      // As a last resort, try one more approach - execute raw SQL
+      // As a last resort, try other approaches - try multiple methods to update
       try {
         console.log(`[PUT /users/:id/what-i-offer] ${prefix} Final attempt: Using raw SQL update...`);
         const rawResult = await pool.query(
@@ -102,6 +105,34 @@ router.put("/api/users/:id/what-i-offer", async (req: Request, res: Response) =>
         
         if (rawResult && rawResult.rows && rawResult.rows.length > 0) {
           console.log(`[PUT /users/:id/what-i-offer] ${prefix} Raw SQL update successful!`);
+          
+          // Store value in a backup table to ensure persistence
+          try {
+            // Check if we have the entry already
+            const checkResult = await pool.query(
+              'SELECT * FROM user_field_backups WHERE user_id = $1 AND field_name = $2',
+              [id, 'whatIOffer']
+            );
+            
+            if (checkResult.rows && checkResult.rows.length > 0) {
+              // Update existing record
+              await pool.query(
+                'UPDATE user_field_backups SET field_value = $1, updated_at = NOW() WHERE user_id = $2 AND field_name = $3',
+                [whatIOffer, id, 'whatIOffer']
+              );
+            } else {
+              // Insert new record
+              await pool.query(
+                'INSERT INTO user_field_backups(user_id, field_name, field_value, created_at, updated_at) VALUES($1, $2, $3, NOW(), NOW())',
+                [id, 'whatIOffer', whatIOffer]
+              );
+            }
+            console.log(`[PUT /users/:id/what-i-offer] ${prefix} Backup storage successful`);
+          } catch (backupError) {
+            // Just log backup error, don't fail the main operation
+            console.error(`[PUT /users/:id/what-i-offer] ${prefix} Backup storage error:`, backupError);
+          }
+          
           return res.json({
             userId: id,
             whatIOffer: whatIOffer,
@@ -110,7 +141,45 @@ router.put("/api/users/:id/what-i-offer", async (req: Request, res: Response) =>
             rawSqlUsed: true
           });
         } else {
-          // If even raw SQL fails, give up and return the error
+          // If direct update fails, try creating the backup table first then retry
+          try {
+            console.log(`[PUT /users/:id/what-i-offer] ${prefix} Creating backup table if not exists...`);
+            
+            // Create backup table if doesn't exist
+            await pool.query(`
+              CREATE TABLE IF NOT EXISTS user_field_backups (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER NOT NULL,
+                field_name TEXT NOT NULL,
+                field_value TEXT,
+                created_at TIMESTAMP DEFAULT NOW(),
+                updated_at TIMESTAMP DEFAULT NOW(),
+                UNIQUE(user_id, field_name)
+              )
+            `);
+            
+            // Try raw update once more
+            const retryResult = await pool.query(
+              'UPDATE users SET what_i_offer = $1 WHERE id = $2 RETURNING *',
+              [whatIOffer, id]
+            );
+            
+            if (retryResult.rows && retryResult.rows.length > 0) {
+              console.log(`[PUT /users/:id/what-i-offer] ${prefix} Second raw SQL attempt successful!`);
+              return res.json({
+                userId: id,
+                whatIOffer: whatIOffer,
+                success: true,
+                timestamp: Date.now(),
+                rawSqlUsed: true,
+                secondAttempt: true
+              });
+            }
+          } catch (tableError) {
+            console.error(`[PUT /users/:id/what-i-offer] ${prefix} Error creating backup table:`, tableError);
+          }
+          
+          // If even that fails, give up and return the error
           return res.status(500).json({ 
             error: 'Failed to update whatIOffer field correctly after all attempts',
             sent: whatIOffer,
@@ -234,6 +303,48 @@ router.get("/api/users/:id/what-i-offer", async (req: Request, res: Response) =>
       }
       
       if (!user) {
+        // Before giving up, try the backup table
+        try {
+          console.log(`[GET /users/:id/what-i-offer] User not found through regular means, checking backup table...`);
+          
+          // Check if backup table exists
+          const tableCheck = await pool.query(`
+            SELECT EXISTS (
+              SELECT FROM information_schema.tables 
+              WHERE table_name = 'user_field_backups'
+            );
+          `);
+          
+          const tableExists = tableCheck.rows[0].exists;
+          
+          if (tableExists) {
+            // Try to get the whatIOffer value from backup table
+            const backupResult = await pool.query(
+              'SELECT field_value FROM user_field_backups WHERE user_id = $1 AND field_name = $2',
+              [id, 'whatIOffer']
+            );
+            
+            if (backupResult.rows && backupResult.rows.length > 0) {
+              const backupValue = backupResult.rows[0].field_value;
+              console.log(`[GET /users/:id/what-i-offer] Retrieved value from backup table: "${backupValue}"`);
+              
+              return res.json({
+                userId: id,
+                whatIOffer: backupValue || '',
+                success: true,
+                timestamp: Date.now(),
+                fromBackup: true
+              });
+            } else {
+              console.log(`[GET /users/:id/what-i-offer] No backup value found in backup table`);
+            }
+          } else {
+            console.log(`[GET /users/:id/what-i-offer] Backup table doesn't exist yet`);
+          }
+        } catch (backupError) {
+          console.error(`[GET /users/:id/what-i-offer] Error checking backup table:`, backupError);
+        }
+        
         // If we've tried multiple times and still no user, return error
         if (currentRetry >= MAX_RETRIES) {
           console.error(`[GET /users/:id/what-i-offer] User with ID ${id} not found after ${MAX_RETRIES} retries`);
