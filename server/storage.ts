@@ -4770,41 +4770,48 @@ export class DatabaseStorage implements IStorage {
   // User operations
   async getUser(id: number): Promise<User | undefined> {
     console.log(`[db.getUser] Looking up user with ID: ${id}`);
-    try {
-      // Simple query first to verify connection
-      const testQuery = await pool.query('SELECT 1 as test');
-      console.log(`[db.getUser] Test query result:`, testQuery.rows);
-      
-      // Now actual user query
-      const query = `
-        SELECT 
-          id, username, email, password, phone_number as "phoneNumber", 
-          name, photo_url as "photoURL", title, about_me as "aboutMe", 
-          location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer", 
-          visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
-          email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
-          email_verification_expires as "emailVerificationExpires", created_at as "createdAt"
-        FROM users
-        WHERE id = $1
-      `;
-      
-      console.log(`[db.getUser] Executing query: ${query.replace(/\s+/g, ' ')} with params [${id}]`);
-      
-      const result = await pool.query(query, [id]);
-      
-      console.log(`[db.getUser] Query returned ${result.rows.length} rows:`, JSON.stringify(result.rows));
-      
-      if (result.rows.length > 0) {
-        const user = result.rows[0] as User;
-        console.log(`[db.getUser] User found:`, JSON.stringify(user));
-        return user;
+    
+    // Use the retry mechanism for resilient fetching
+    return executeWithRetry(async () => {
+      try {
+        // Simple query first to verify connection
+        const testQuery = await pool.query('SELECT 1 as test');
+        console.log(`[db.getUser] Test query result:`, testQuery.rows);
+        
+        // Now actual user query
+        const query = `
+          SELECT 
+            id, username, email, password, phone_number as "phoneNumber", 
+            name, photo_url as "photoURL", title, about_me as "aboutMe", 
+            location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer", 
+            visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
+            email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
+            email_verification_expires as "emailVerificationExpires", created_at as "createdAt"
+          FROM users
+          WHERE id = $1
+        `;
+        
+        console.log(`[db.getUser] Executing query: ${query.replace(/\s+/g, ' ')} with params [${id}]`);
+        
+        const result = await pool.query(query, [id]);
+        
+        console.log(`[db.getUser] Query returned ${result.rows.length} rows:`, JSON.stringify(result.rows));
+        
+        if (result.rows.length > 0) {
+          const user = result.rows[0] as User;
+          console.log(`[db.getUser] User found:`, JSON.stringify(user));
+          return user;
+        }
+        console.log(`[db.getUser] No user found with ID ${id}`);
+        return undefined;
+      } catch (error) {
+        console.error(`[db.getUser] Error fetching user with ID ${id}:`, error);
+        throw error; // Rethrow for retry mechanism
       }
-      console.log(`[db.getUser] No user found with ID ${id}`);
-      return undefined;
-    } catch (error) {
-      console.error(`[db.getUser] Error fetching user with ID ${id}:`, error);
-      return undefined; // Return undefined instead of throwing to prevent UI from breaking
-    }
+    }, 3, 800).catch(error => {
+      console.error(`[db.getUser] All retries failed for user ID ${id}:`, error);
+      return undefined; // Final fallback to prevent UI from breaking
+    });
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
@@ -4894,55 +4901,84 @@ export class DatabaseStorage implements IStorage {
     console.log(`[DatabaseStorage.updateUser] Updating user with ID: ${id}`);
     console.log(`[DatabaseStorage.updateUser] Update data:`, userData);
     
-    try {
-      // Direct SQL query for updating user data to isolate debugging of whatIOffer
-      let updateQuery = 'UPDATE users SET ';
-      const updateValues: any[] = [];
-      const updateParts: string[] = [];
-      let paramIndex = 1;
-      
-      // Add each property to the update
-      for (const [key, value] of Object.entries(userData)) {
-        // Convert camelCase to snake_case for PostgreSQL
-        const columnName = key.replace(/([A-Z])/g, '_$1').toLowerCase();
-        updateParts.push(`${columnName} = $${paramIndex}`);
-        updateValues.push(value);
-        paramIndex++;
-      }
-      
-      // Add WHERE clause and returning
-      updateQuery += updateParts.join(', ');
-      updateQuery += ` WHERE id = $${paramIndex} RETURNING id, username, email, password, phone_number as "phoneNumber", name, photo_url as "photoURL", title, about_me as "aboutMe", location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer", visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", email_verified as "emailVerified", email_verification_token as "emailVerificationToken", email_verification_expires as "emailVerificationExpires", created_at as "createdAt"`;
-      updateValues.push(id);
-      
-      console.log(`[DatabaseStorage.updateUser] Generated query:`, updateQuery);
-      console.log(`[DatabaseStorage.updateUser] Query params:`, updateValues);
-      
-      const result = await pool.query(updateQuery, updateValues);
-      
-      if (result.rows.length === 0) {
-        console.log(`[DatabaseStorage.updateUser] No user found with ID ${id}`);
-        return undefined;
-      }
-      
-      const updatedUser = result.rows[0];
-      console.log(`[DatabaseStorage.updateUser] Updated user successfully:`, updatedUser);
-      return updatedUser;
-      
-      /* The previous Drizzle implementation wasn't working properly
-      const [updatedUser] = await db
-        .update(users)
-        .set(userData)
-        .where(eq(users.id, id))
-        .returning();
-      
-      console.log(`[DatabaseStorage.updateUser] Updated user successfully:`, updatedUser);
-      return updatedUser || undefined;
-      */
-    } catch (error) {
-      console.error(`[DatabaseStorage.updateUser] Error updating user:`, error);
-      throw error;
+    // First validate the data by removing any fields that don't match the schema
+    const validKeys = [
+      'id', 'username', 'email', 'password', 'phoneNumber', 'name', 
+      'photoURL', 'title', 'aboutMe', 'location', 'industry', 'domain', 
+      'lookingFor', 'whatIOffer', 'visitingCardType', 'profileCompleted',
+      'emailVerified', 'emailVerificationToken', 'emailVerificationExpires',
+      'createdAt'
+    ];
+    
+    // Filter out any keys that don't match our schema or start with _
+    const cleanedUserData: Partial<User> = Object.fromEntries(
+      Object.entries(userData).filter(([key]) => 
+        validKeys.includes(key) && !key.startsWith('_')
+      )
+    );
+    
+    // Log cleaned data 
+    console.log(`[DatabaseStorage.updateUser] Cleaned user data:`, cleanedUserData);
+    
+    // Skip update if no valid fields remain
+    if (Object.keys(cleanedUserData).length === 0) {
+      console.log(`[DatabaseStorage.updateUser] No valid fields to update for user ${id}`);
+      const existingUser = await this.getUser(id);
+      return existingUser;
     }
+    
+    // Use retry mechanism to handle intermittent database issues
+    return executeWithRetry(async () => {
+      try {
+        // Direct SQL query for updating user data with improved reliability
+        let updateQuery = 'UPDATE users SET ';
+        const updateValues: any[] = [];
+        const updateParts: string[] = [];
+        let paramIndex = 1;
+        
+        // Add each property to the update
+        for (const [key, value] of Object.entries(cleanedUserData)) {
+          // Convert camelCase to snake_case for PostgreSQL
+          const columnName = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+          updateParts.push(`${columnName} = $${paramIndex}`);
+          updateValues.push(value);
+          paramIndex++;
+        }
+        
+        // Add WHERE clause and returning
+        updateQuery += updateParts.join(', ');
+        updateQuery += ` WHERE id = $${paramIndex} RETURNING id, username, email, password, phone_number as "phoneNumber", name, photo_url as "photoURL", title, about_me as "aboutMe", location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer", visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", email_verified as "emailVerified", email_verification_token as "emailVerificationToken", email_verification_expires as "emailVerificationExpires", created_at as "createdAt"`;
+        updateValues.push(id);
+        
+        console.log(`[DatabaseStorage.updateUser] Generated query:`, updateQuery);
+        console.log(`[DatabaseStorage.updateUser] Query params:`, updateValues);
+        
+        const result = await pool.query(updateQuery, updateValues);
+        
+        if (result.rows.length === 0) {
+          console.log(`[DatabaseStorage.updateUser] No user found with ID ${id}`);
+          return undefined;
+        }
+        
+        const updatedUser = result.rows[0];
+        console.log(`[DatabaseStorage.updateUser] Updated user successfully:`, updatedUser);
+        
+        // Verify critical fields were updated correctly
+        for (const [key, value] of Object.entries(cleanedUserData)) {
+          // Handle null values properly
+          const updatedValue = updatedUser[key];
+          if (value !== updatedValue) {
+            console.warn(`[DatabaseStorage.updateUser] Field '${key}' may not have updated correctly.`);
+            console.warn(`Expected: ${value}, Got: ${updatedValue}`);
+          }
+        }
+        
+        return updatedUser;
+      } catch (error) {
+        console.error(`[DatabaseStorage.updateUser] Error updating user:`, error);
+        throw error;
+      }
+    }, 3, 1000); // 3 retries, starting with 1000ms delay
   }
 
   async getAllUsers(): Promise<User[]> {
