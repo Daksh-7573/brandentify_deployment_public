@@ -525,9 +525,32 @@ export default function Profile() {
     const justEdited = localStorage.getItem('justEditedProfile');
     const editTimestamp = localStorage.getItem('profileEditTimestamp');
     const redirectToProfile = localStorage.getItem('redirectToProfile');
+    const whatIOfferChanged = localStorage.getItem('whatIOffer_changed');
     
     if (justEdited === 'true' && editTimestamp) {
       console.log(`Detected return from profile editing (timestamp: ${new Date(parseInt(editTimestamp)).toLocaleTimeString()}) - executing enhanced refresh procedure`);
+      
+      // Display toast notification to inform the user
+      toast({
+        title: "Profile updated!",
+        description: "Your profile has been successfully updated.",
+        variant: "default",
+      });
+      
+      // Clear all React Query caches to ensure a fresh start
+      queryClient.clear();
+      
+      // Force comprehensive data refresh
+      setTimeout(() => {
+        // Refresh all profile data
+        if (refetchUserData) refetchUserData();
+        if (refetchWhatIOffer) refetchWhatIOffer();
+        if (refetchServices) refetchServices();
+        if (refetchSkills) refetchSkills();
+        if (refetchExperiences) refetchExperiences();
+        if (refetchProjects) refetchProjects();
+        if (refetchEducation) refetchEducation();
+      }, 300);
       
       // Clear the flags to prevent continuous refresh
       localStorage.removeItem('justEditedProfile');
@@ -537,6 +560,11 @@ export default function Profile() {
       const storedWhatIOffer = localStorage.getItem('whatIOffer_saved');
       const storedWhatIOfferTimestamp = localStorage.getItem('whatIOffer_savedAt');
       let appliedCachedWhatIOffer = false;
+      
+      // Record that we detected the edit in analytics/logs
+      console.log(`Profile edit detected with flags: justEdited=${justEdited}, 
+        redirectToProfile=${redirectToProfile}, whatIOfferChanged=${whatIOfferChanged}`);
+      
       
       if (storedWhatIOffer && storedWhatIOfferTimestamp) {
         const timestamp = parseInt(storedWhatIOfferTimestamp);
@@ -678,34 +706,102 @@ export default function Profile() {
       if (!userNumericId) return null;
       
       console.log("Fetching whatIOffer field with dedicated endpoint");
+      
+      // First, check if we have a recently saved value in localStorage
       try {
-        // Use our dedicated endpoint to get just the whatIOffer field
-        const response = await fetch(`/api/users/${userNumericId}/what-i-offer`, {
-          method: 'GET',
-          headers: {
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-          }
-        });
+        const savedValue = localStorage.getItem('whatIOffer_saved');
+        const savedTimestamp = localStorage.getItem('whatIOffer_savedAt');
+        const whatIOfferChanged = localStorage.getItem('whatIOffer_changed');
         
-        if (response.ok) {
-          const data = await response.json();
-          console.log("Fetched whatIOffer with dedicated endpoint:", data);
-          return data;
-        } else {
-          console.error("Dedicated whatIOffer endpoint failed:", response.status);
-          return null;
+        if (savedValue && savedTimestamp && whatIOfferChanged === 'true') {
+          const timestamp = parseInt(savedTimestamp);
+          const now = Date.now();
+          const timeElapsed = now - timestamp;
+          
+          // If the value was saved less than 30 seconds ago, use it
+          if (timeElapsed < 30000) {
+            console.log("Using recently saved whatIOffer value from localStorage:", savedValue);
+            localStorage.removeItem('whatIOffer_changed'); // Clear the flag so we don't always use the localStorage value
+            return { userId: userNumericId, whatIOffer: savedValue };
+          }
         }
+      } catch (localStorageError) {
+        console.error("Error accessing localStorage:", localStorageError);
+      }
+      
+      // Otherwise, fetch from API
+      try {
+        // Try 3 times with exponential backoff
+        for (let attempt = 1; attempt <= 3; attempt++) {
+          try {
+            const response = await fetch(`/api/users/${userNumericId}/what-i-offer`, {
+              method: 'GET',
+              headers: {
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+              }
+            });
+            
+            if (response.ok) {
+              const data = await response.json();
+              console.log("Fetched whatIOffer with dedicated endpoint:", data);
+              return data;
+            } else {
+              console.error(`Dedicated whatIOffer endpoint failed (attempt ${attempt}/3):`, response.status);
+              
+              if (attempt < 3) {
+                const backoff = Math.pow(2, attempt - 1) * 300; // 300ms, 600ms, 1200ms
+                console.log(`Waiting ${backoff}ms before retry ${attempt}...`);
+                await new Promise(resolve => setTimeout(resolve, backoff));
+              }
+            }
+          } catch (fetchError) {
+            console.error(`Error during fetch attempt ${attempt}/3:`, fetchError);
+            
+            if (attempt < 3) {
+              const backoff = Math.pow(2, attempt - 1) * 300;
+              console.log(`Waiting ${backoff}ms before retry ${attempt}...`);
+              await new Promise(resolve => setTimeout(resolve, backoff));
+            }
+          }
+        }
+        
+        // All fetch attempts failed, check if we have a saved value (even if not super recent)
+        const savedValue = localStorage.getItem('whatIOffer_saved');
+        if (savedValue) {
+          console.log("Fetch attempts failed. Using older saved whatIOffer value:", savedValue);
+          return { userId: userNumericId, whatIOffer: savedValue };
+        }
+        
+        // If we have userData with whatIOffer, use that as a last resort
+        if (userData && userData.whatIOffer) {
+          console.log("Using whatIOffer from main userData:", userData.whatIOffer);
+          return { userId: userNumericId, whatIOffer: userData.whatIOffer };
+        }
+        
+        return null;
       } catch (error) {
         console.error("Error fetching whatIOffer with dedicated endpoint:", error);
+        
+        // Last resort - check localStorage regardless of timestamp
+        const savedValue = localStorage.getItem('whatIOffer_saved');
+        if (savedValue) {
+          console.log("Error fetching. Using saved whatIOffer value:", savedValue);
+          return { userId: userNumericId, whatIOffer: savedValue };
+        }
+        
         return null;
       }
     },
     enabled: !!userNumericId,
-    staleTime: 0,
-    gcTime: 0,
-    refetchOnMount: "always"
+    staleTime: 10000, // 10 seconds
+    gcTime: 30000, // 30 seconds
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+    retry: false, // We handle our own retries
+    retryOnMount: true
   });
   
   // Use the whatIOffer field from our special query if the main userData doesn't have it
@@ -807,20 +903,87 @@ export default function Profile() {
     queryKey: ['/api/users', userNumericId, 'profile-services'],
     queryFn: async () => {
       if (!userNumericId) return { services: [] };
+      
+      console.log("Profile page - Fetching profile-services data");
+      
+      // Attempt to load from cache first during server transitions
       try {
-        console.log("Profile page - Fetching profile-services data");
-        const response = await apiRequest('GET', `/api/users/${userNumericId}/profile-services`);
-        console.log("Profile page - profile-services response:", response);
-        return response || { services: [] };
-      } catch (error) {
-        console.error("Error fetching profile services:", error);
-        return { services: [] };
+        const cachedServices = localStorage.getItem(`profileServices_${userNumericId}`);
+        const cachedTimestamp = localStorage.getItem(`profileServices_timestamp_${userNumericId}`);
+        
+        if (cachedServices && cachedTimestamp) {
+          const timestamp = parseInt(cachedTimestamp);
+          const now = Date.now();
+          const timeElapsed = now - timestamp;
+          
+          // Use cached data if it's less than 2 minutes old
+          if (timeElapsed < 120000) {
+            console.log("Using cached profile services from localStorage");
+            return JSON.parse(cachedServices);
+          }
+        }
+      } catch (localStorageError) {
+        console.error("Error accessing localStorage for services:", localStorageError);
       }
+      
+      // Try the API request up to 3 times with exponential backoff
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          console.log(`Profile page - Fetching profile-services data (attempt ${attempt}/3)`);
+          const response = await apiRequest('GET', `/api/users/${userNumericId}/profile-services`);
+          
+          if (response) {
+            console.log("Profile page - profile-services response:", response);
+            
+            // Cache the successful response
+            try {
+              localStorage.setItem(`profileServices_${userNumericId}`, JSON.stringify(response));
+              localStorage.setItem(`profileServices_timestamp_${userNumericId}`, Date.now().toString());
+            } catch (e) {
+              console.error("Error caching profile services:", e);
+            }
+            
+            return response;
+          } else {
+            console.error(`Empty response in attempt ${attempt}/3`);
+            
+            if (attempt < 3) {
+              const backoff = Math.pow(2, attempt - 1) * 300; // 300ms, 600ms, 1200ms
+              console.log(`Waiting ${backoff}ms before retry ${attempt}...`);
+              await new Promise(resolve => setTimeout(resolve, backoff));
+            }
+          }
+        } catch (error) {
+          console.error(`Error fetching profile services (attempt ${attempt}/3):`, error);
+          
+          if (attempt < 3) {
+            const backoff = Math.pow(2, attempt - 1) * 300;
+            console.log(`Waiting ${backoff}ms before retry ${attempt}...`);
+            await new Promise(resolve => setTimeout(resolve, backoff));
+          } else {
+            // All attempts failed, try to use cached data regardless of age
+            try {
+              const cachedServices = localStorage.getItem(`profileServices_${userNumericId}`);
+              if (cachedServices) {
+                console.log("Using older cached profile services as fallback");
+                return JSON.parse(cachedServices);
+              }
+            } catch (e) {
+              console.error("Error accessing cached profile services:", e);
+            }
+          }
+        }
+      }
+      
+      // Default empty response if all else fails
+      return { services: [] };
     },
     enabled: !!userNumericId && isAuthenticated,
-    staleTime: 0, // Always fetch fresh data
+    staleTime: 60000, // 1 minute - balance between freshness and performance
     refetchOnMount: true,
     refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+    retry: false, // We handle our own retries
   });
   
   // Mutation for updating user basic info
