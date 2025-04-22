@@ -430,13 +430,30 @@ export default function Profile() {
     whatIOffer: ''
   });
   
-  // Also fetch current user data for the profile
-  const { data: userData, isLoading: isLoadingUser } = useQuery<any>({
+  // Also fetch current user data for the profile with enhanced caching control
+  const { data: userData, isLoading: isLoadingUser, refetch: refetchUserData } = useQuery<any>({
     queryKey: [`/api/users/${userId}`],
     enabled: !!userId && isAuthenticated,
-    staleTime: 1000, // Consider data stale after 1 second to force refresh
-    refetchOnMount: true,
+    staleTime: 0, // Always consider data stale to ensure fresh data
+    cacheTime: 0, // Disable caching for profile data
+    refetchOnMount: "always", // Always refetch on mount
     refetchOnWindowFocus: true,
+    retry: 3, // Retry failed requests 3 times
+    refetchInterval: 5000, // Poll for updates every 5 seconds
+    queryFn: async () => {
+      console.log(`Forcing fresh fetch of user data for ID: ${userId}`);
+      // Add cache busting parameter to prevent browser caching
+      const timestamp = new Date().getTime();
+      const response = await apiRequest('GET', `/api/users/${userId}?_=${timestamp}`, null, {
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      });
+      console.log("Fresh user data fetched:", response);
+      return response;
+    }
   });
   
   // Define userNumericId based on the userData response
