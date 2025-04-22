@@ -56,11 +56,69 @@ export default function EditProfilePage() {
   }, [userData]);
   
   // Handler for when editing is complete
+  // Special function to specifically handle "What I Offer" field updates
+  const handleWhatIOfferTabSubmit = async (whatIOffer) => {
+    if (!user) return false;
+    
+    console.log("Directly saving What I Offer field with dedicated endpoint");
+    
+    try {
+      // Use our special dedicated endpoint for this field
+      const response = await fetch(`/api/users/${user.id}/what-i-offer`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        },
+        body: JSON.stringify({ whatIOffer }),
+      });
+      
+      if (!response.ok) {
+        console.error("Error saving What I Offer with special endpoint:", response.status);
+        throw new Error("Failed to save What I Offer");
+      }
+      
+      const result = await response.json();
+      console.log("What I Offer saved successfully with special endpoint:", result);
+      
+      // Invalidate relevant queries 
+      await queryClient.invalidateQueries({ queryKey: ['/api/users', user.id] });
+      await queryClient.invalidateQueries({ queryKey: ['/api/users', user.id, 'what-i-offer'] });
+      
+      // Store in localStorage for backup
+      localStorage.setItem('whatIOffer_saved', whatIOffer);
+      localStorage.setItem('whatIOffer_savedAt', Date.now().toString());
+      
+      return true;
+    } catch (error) {
+      console.error("Error with What I Offer dedicated endpoint:", error);
+      return false;
+    }
+  };
+  
   const handleEditingComplete = async () => {
     setIsSaving(true);
     
     try {
       console.log("Profile update complete, invalidating queries and refreshing data");
+      
+      // Special handling for What I Offer tab
+      if (activeTab === "what i offer") {
+        // Extract the whatIOffer value from the form
+        const formElement = document.querySelector('textarea[name="whatIOffer"]');
+        const whatIOffer = formElement ? formElement.value : null;
+        
+        if (whatIOffer !== null) {
+          console.log("Special handling for What I Offer tab");
+          const success = await handleWhatIOfferTabSubmit(whatIOffer);
+          
+          if (!success) {
+            console.log("Falling back to regular update for What I Offer");
+          }
+        }
+      }
       
       // First invalidate the query to ensure we get fresh data
       await queryClient.invalidateQueries({ queryKey: ['/api/users', user?.id] });
