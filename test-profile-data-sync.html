@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile Data Synchronization Test</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      line-height: 1.6;
+      color: #333;
+    }
+    h1, h2 {
+      color: #2563eb;
+    }
+    .panel {
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      font-size: 16px;
+    }
+    textarea {
+      height: 100px;
+    }
+    button {
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-right: 10px;
+    }
+    button:hover {
+      background-color: #1d4ed8;
+    }
+    .buttons {
+      display: flex;
+      margin-bottom: 20px;
+    }
+    .test-result {
+      background-color: #f3f4f6;
+      padding: 15px;
+      border-radius: 4px;
+      margin-top: 20px;
+    }
+    .success {
+      color: #059669;
+    }
+    .error {
+      color: #dc2626;
+    }
+    pre {
+      background-color: #f3f4f6;
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-size: 14px;
+      white-space: pre-wrap;
+    }
+    .status {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+    .status-success {
+      background-color: #d1fae5;
+      color: #065f46;
+    }
+    .status-error {
+      background-color: #fee2e2;
+      color: #b91c1c;
+    }
+    .warning {
+      background-color: #fef3c7;
+      color: #92400e;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Profile Data Synchronization Test</h1>
+  <p>This tool tests the synchronization between Edit Profile and the main Profile view.</p>
+  
+  <div class="warning">
+    <strong>Note:</strong> This test directly manipulates the profile data and simulates the edit-save workflow to verify data consistency.
+  </div>
+  
+  <div class="panel">
+    <h2>Current Profile Data</h2>
+    <div class="buttons">
+      <button id="fetch-profile">Fetch Current Profile</button>
+      <button id="refresh-data">Refresh Data</button>
+    </div>
+    <div id="profile-data"></div>
+  </div>
+  
+  <div class="panel">
+    <h2>Edit Profile Data</h2>
+    <div>
+      <label for="name">Name:</label>
+      <input type="text" id="name">
+      
+      <label for="title">Title:</label>
+      <input type="text" id="title">
+      
+      <label for="what-i-offer">What I Offer:</label>
+      <textarea id="what-i-offer"></textarea>
+      
+      <div class="buttons">
+        <button id="update-profile">Update Profile</button>
+        <button id="simulate-edit-complete">Simulate Edit Completion</button>
+      </div>
+      <div id="update-result" class="test-result"></div>
+    </div>
+  </div>
+  
+  <div class="panel">
+    <h2>LocalStorage State</h2>
+    <div class="buttons">
+      <button id="check-localstorage">Check LocalStorage</button>
+      <button id="clear-flags">Clear Profile Flags</button>
+    </div>
+    <pre id="localstorage-data"></pre>
+  </div>
+  
+  <div class="panel">
+    <h2>Test Log</h2>
+    <pre id="log"></pre>
+  </div>
+  
+  <script>
+    // DOM elements
+    const profileDataEl = document.getElementById('profile-data');
+    const nameInput = document.getElementById('name');
+    const titleInput = document.getElementById('title');
+    const whatIOfferInput = document.getElementById('what-i-offer');
+    const updateResultEl = document.getElementById('update-result');
+    const localStorageDataEl = document.getElementById('localstorage-data');
+    const logEl = document.getElementById('log');
+    
+    // Current user data
+    let currentUserData = null;
+    
+    // Utility functions
+    function appendLog(message, isError = false) {
+      const timestamp = new Date().toLocaleTimeString();
+      logEl.innerHTML += `[${timestamp}] ${isError ? '❌ ' : '✅ '} ${message}\n`;
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+    
+    function showUpdateResult(message, isSuccess = true) {
+      updateResultEl.innerHTML = `
+        <div class="${isSuccess ? 'success' : 'error'}">
+          ${message}
+          <div class="status ${isSuccess ? 'status-success' : 'status-error'}">
+            ${isSuccess ? 'Success' : 'Error'}
+          </div>
+        </div>
+      `;
+    }
+    
+    function displayProfileData(data) {
+      if (!data) {
+        profileDataEl.innerHTML = '<p>No profile data available</p>';
+        return;
+      }
+      
+      currentUserData = data;
+      
+      // Update input fields
+      nameInput.value = data.name || '';
+      titleInput.value = data.title || '';
+      whatIOfferInput.value = data.whatIOffer || '';
+      
+      // Display formatted data
+      profileDataEl.innerHTML = `
+        <div>
+          <p><strong>User ID:</strong> ${data.id}</p>
+          <p><strong>Name:</strong> ${data.name || 'Not set'}</p>
+          <p><strong>Title:</strong> ${data.title || 'Not set'}</p>
+          <p><strong>What I Offer:</strong> ${data.whatIOffer || 'Not set'}</p>
+          <p><strong>Last Updated:</strong> ${new Date().toLocaleTimeString()}</p>
+        </div>
+      `;
+    }
+    
+    function updateLocalStorageView() {
+      const profileRelatedKeys = [
+        'justEditedProfile',
+        'profileEditTimestamp',
+        'redirectToProfile',
+        'whatIOffer_saved',
+        'whatIOffer_savedAt',
+        'whatIOffer_changed',
+        'whatIOffer_value',
+        'whatIOffer_pendingUpdate',
+        'cachedUserData'
+      ];
+      
+      const storageData = {};
+      
+      profileRelatedKeys.forEach(key => {
+        const value = localStorage.getItem(key);
+        if (value) {
+          storageData[key] = value;
+        }
+      });
+      
+      if (Object.keys(storageData).length === 0) {
+        localStorageDataEl.innerText = 'No profile-related data in localStorage';
+      } else {
+        localStorageDataEl.innerText = JSON.stringify(storageData, null, 2);
+      }
+    }
+    
+    // API functions
+    async function fetchProfileData() {
+      try {
+        appendLog('Fetching profile data...');
+        const response = await fetch('/api/users/1');
+        
+        if (!response.ok) {
+          throw new Error(`Server responded with ${response.status}`);
+        }
+        
+        const data = await response.json();
+        appendLog(`Profile data fetched successfully for ${data.name}`);
+        displayProfileData(data);
+        return data;
+      } catch (error) {
+        appendLog(`Error fetching profile data: ${error.message}`, true);
+        return null;
+      }
+    }
+    
+    async function updateProfile() {
+      const updates = {
+        name: nameInput.value,
+        title: titleInput.value
+      };
+      
+      try {
+        appendLog(`Updating main profile fields: ${JSON.stringify(updates)}`);
+        const response = await fetch('/api/users/1', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache'
+          },
+          body: JSON.stringify(updates)
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Server responded with ${response.status}`);
+        }
+        
+        const data = await response.json();
+        appendLog('Profile fields updated successfully');
+        
+        // Update whatIOffer separately
+        const whatIOffer = whatIOfferInput.value;
+        
+        appendLog(`Updating What I Offer: "${whatIOffer}"`);
+        const whatIOfferResponse = await fetch('/api/users/1/what-i-offer', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache'
+          },
+          body: JSON.stringify({ whatIOffer })
+        });
+        
+        if (!whatIOfferResponse.ok) {
+          throw new Error(`Server responded with ${whatIOfferResponse.status}`);
+        }
+        
+        const whatIOfferData = await whatIOfferResponse.json();
+        appendLog('What I Offer field updated successfully');
+        
+        // Set local storage flags just like the edit form would
+        localStorage.setItem('whatIOffer_saved', whatIOffer);
+        localStorage.setItem('whatIOffer_savedAt', Date.now().toString());
+        localStorage.setItem('whatIOffer_changed', 'true');
+        
+        updateLocalStorageView();
+        showUpdateResult('Profile updated successfully!');
+        
+        return { ...data, whatIOffer };
+      } catch (error) {
+        appendLog(`Error updating profile: ${error.message}`, true);
+        showUpdateResult(`Error: ${error.message}`, false);
+        return null;
+      }
+    }
+    
+    // Event listeners
+    document.getElementById('fetch-profile').addEventListener('click', fetchProfileData);
+    
+    document.getElementById('refresh-data').addEventListener('click', () => {
+      fetchProfileData();
+      updateLocalStorageView();
+    });
+    
+    document.getElementById('update-profile').addEventListener('click', async () => {
+      const updatedData = await updateProfile();
+      if (updatedData) {
+        setTimeout(fetchProfileData, 500);
+      }
+    });
+    
+    document.getElementById('simulate-edit-complete').addEventListener('click', () => {
+      localStorage.setItem('justEditedProfile', 'true');
+      localStorage.setItem('profileEditTimestamp', Date.now().toString());
+      localStorage.setItem('redirectToProfile', 'true');
+      
+      appendLog('Edit completion simulated - localStorage flags set');
+      appendLog('Note: Navigate to Profile page to see the effect');
+      updateLocalStorageView();
+      showUpdateResult('Edit completion simulated! Navigate to Profile page to see effect');
+    });
+    
+    document.getElementById('check-localstorage').addEventListener('click', updateLocalStorageView);
+    
+    document.getElementById('clear-flags').addEventListener('click', () => {
+      const profileRelatedKeys = [
+        'justEditedProfile',
+        'profileEditTimestamp',
+        'redirectToProfile',
+        'whatIOffer_changed',
+        'whatIOffer_pendingUpdate'
+      ];
+      
+      profileRelatedKeys.forEach(key => {
+        localStorage.removeItem(key);
+      });
+      
+      appendLog('Profile flags cleared from localStorage');
+      updateLocalStorageView();
+    });
+    
+    // Initialize
+    (async function init() {
+      await fetchProfileData();
+      updateLocalStorageView();
+      appendLog('Test page initialized');
+    })();
+  </script>
+</body>
+</html>

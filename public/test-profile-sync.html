@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile Synchronization Test</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+      color: #333;
+    }
+    h1, h2, h3 {
+      color: #2563eb;
+    }
+    .test-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    .test-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    button {
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    button:hover {
+      background-color: #1d4ed8;
+    }
+    pre {
+      background-color: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+      padding: 12px;
+      overflow: auto;
+      font-size: 14px;
+    }
+    .success {
+      color: #22c55e;
+      font-weight: bold;
+    }
+    .error {
+      color: #ef4444;
+      font-weight: bold;
+    }
+    .test-result {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 4px;
+    }
+    .success-bg {
+      background-color: rgba(34, 197, 94, 0.1);
+    }
+    .error-bg {
+      background-color: rgba(239, 68, 68, 0.1);
+    }
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    .tab-nav {
+      display: flex;
+      border-bottom: 1px solid #e2e8f0;
+      margin-bottom: 20px;
+    }
+    .tab-button {
+      padding: 10px 20px;
+      background: none;
+      border: none;
+      color: #64748b;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .tab-button.active {
+      color: #2563eb;
+      border-bottom: 2px solid #2563eb;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <h1>Profile Synchronization Test</h1>
+  <p>This tool helps test profile data synchronization between profile views, cache invalidation, and error resilience.</p>
+
+  <div class="tab-nav">
+    <button class="tab-button active" data-tab="sync-test">Sync Test</button>
+    <button class="tab-button" data-tab="cache-test">Cache Test</button>
+    <button class="tab-button" data-tab="resilience-test">Resilience Test</button>
+    <button class="tab-button" data-tab="storage-viewer">LocalStorage Viewer</button>
+  </div>
+
+  <div id="sync-test" class="tab-content active">
+    <div class="test-card">
+      <h2>Profile Data Synchronization</h2>
+      <p>Test if changes made to profile fields are properly synchronized across views.</p>
+      
+      <div class="test-controls">
+        <button id="fetch-profile-data">Fetch Profile Data</button>
+        <button id="update-what-i-offer">Update "What I Offer" Field</button>
+        <button id="update-name">Update Name Field</button>
+        <button id="simulate-edit-complete">Simulate Edit Complete</button>
+      </div>
+      
+      <div>
+        <h3>Test Field Values</h3>
+        <label for="what-i-offer-input">What I Offer:</label>
+        <textarea id="what-i-offer-input" rows="3"></textarea>
+        
+        <label for="name-input">Name:</label>
+        <input type="text" id="name-input">
+      </div>
+      
+      <div id="sync-test-result" class="test-result"></div>
+      <pre id="sync-test-log"></pre>
+    </div>
+  </div>
+
+  <div id="cache-test" class="tab-content">
+    <div class="test-card">
+      <h2>Cache Invalidation Test</h2>
+      <p>Test if the cache is properly invalidated after profile updates.</p>
+      
+      <div class="test-controls">
+        <button id="check-cache">Check Query Cache</button>
+        <button id="clear-cache">Clear Query Cache</button>
+        <button id="simulate-cache-staleness">Simulate Cache Staleness</button>
+      </div>
+      
+      <div id="cache-test-result" class="test-result"></div>
+      <pre id="cache-test-log"></pre>
+    </div>
+  </div>
+
+  <div id="resilience-test" class="tab-content">
+    <div class="test-card">
+      <h2>Error Resilience Test</h2>
+      <p>Test how the system handles server errors and network issues.</p>
+      
+      <div class="test-controls">
+        <button id="simulate-network-error">Simulate Network Error</button>
+        <button id="simulate-server-error">Simulate Server Error</button>
+        <button id="test-recovery">Test Recovery Mechanism</button>
+      </div>
+      
+      <div id="resilience-test-result" class="test-result"></div>
+      <pre id="resilience-test-log"></pre>
+    </div>
+  </div>
+
+  <div id="storage-viewer" class="tab-content">
+    <div class="test-card">
+      <h2>LocalStorage Viewer</h2>
+      <p>View and manipulate localStorage values used for profile synchronization.</p>
+      
+      <div class="test-controls">
+        <button id="refresh-localstorage">Refresh LocalStorage</button>
+        <button id="clear-profile-flags">Clear Profile Flags</button>
+      </div>
+      
+      <div id="storage-keys"></div>
+      <pre id="storage-content"></pre>
+    </div>
+  </div>
+
+  <script>
+    // Tab navigation
+    document.querySelectorAll('.tab-button').forEach(button => {
+      button.addEventListener('click', () => {
+        // Remove active class from all buttons and content
+        document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        
+        // Add active class to clicked button and its content
+        button.classList.add('active');
+        document.getElementById(button.dataset.tab).classList.add('active');
+      });
+    });
+
+    // Utility functions
+    function logToElement(elementId, message, isError = false) {
+      const element = document.getElementById(elementId);
+      const timestamp = new Date().toLocaleTimeString();
+      element.innerHTML += `[${timestamp}] ${isError ? '❌ ' : '✅ '}${message}\n`;
+      element.scrollTop = element.scrollHeight;
+    }
+
+    function setResultMessage(elementId, message, isSuccess = true) {
+      const element = document.getElementById(elementId);
+      element.innerHTML = `<div class="${isSuccess ? 'success' : 'error'}">${message}</div>`;
+      element.className = `test-result ${isSuccess ? 'success-bg' : 'error-bg'}`;
+    }
+
+    // Sync Test Functions
+    document.getElementById('fetch-profile-data').addEventListener('click', async () => {
+      try {
+        logToElement('sync-test-log', 'Fetching profile data...');
+        const response = await fetch('/api/users/1');
+        
+        if (!response.ok) {
+          throw new Error(`Server responded with ${response.status}`);
+        }
+        
+        const userData = await response.json();
+        document.getElementById('what-i-offer-input').value = userData.whatIOffer || '';
+        document.getElementById('name-input').value = userData.name || '';
+        
+        logToElement('sync-test-log', 'Profile data fetched successfully');
+        setResultMessage('sync-test-result', 'Profile data loaded successfully!');
+      } catch (error) {
+        logToElement('sync-test-log', `Error fetching profile data: ${error.message}`, true);
+        setResultMessage('sync-test-result', 'Failed to fetch profile data', false);
+      }
+    });
+
+    document.getElementById('update-what-i-offer').addEventListener('click', async () => {
+      try {
+        const whatIOffer = document.getElementById('what-i-offer-input').value;
+        logToElement('sync-test-log', `Updating "What I Offer" field to: ${whatIOffer}`);
+        
+        const response = await fetch('/api/users/1/what-i-offer', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache'
+          },
+          body: JSON.stringify({ whatIOffer })
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Server responded with ${response.status}`);
+        }
+        
+        const result = await response.json();
+        localStorage.setItem('whatIOffer_saved', whatIOffer);
+        localStorage.setItem('whatIOffer_savedAt', Date.now().toString());
+        localStorage.setItem('whatIOffer_changed', 'true');
+        
+        logToElement('sync-test-log', 'What I Offer field updated successfully');
+        setResultMessage('sync-test-result', 'What I Offer field updated!');
+      } catch (error) {
+        logToElement('sync-test-log', `Error updating What I Offer field: ${error.message}`, true);
+        setResultMessage('sync-test-result', 'Failed to update What I Offer field', false);
+      }
+    });
+
+    document.getElementById('update-name').addEventListener('click', async () => {
+      try {
+        const name = document.getElementById('name-input').value;
+        logToElement('sync-test-log', `Updating Name field to: ${name}`);
+        
+        const response = await fetch('/api/users/1', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache'
+          },
+          body: JSON.stringify({ name })
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Server responded with ${response.status}`);
+        }
+        
+        const result = await response.json();
+        logToElement('sync-test-log', 'Name field updated successfully');
+        setResultMessage('sync-test-result', 'Name field updated!');
+      } catch (error) {
+        logToElement('sync-test-log', `Error updating Name field: ${error.message}`, true);
+        setResultMessage('sync-test-result', 'Failed to update Name field', false);
+      }
+    });
+
+    document.getElementById('simulate-edit-complete').addEventListener('click', () => {
+      localStorage.setItem('justEditedProfile', 'true');
+      localStorage.setItem('profileEditTimestamp', Date.now().toString());
+      localStorage.setItem('redirectToProfile', 'true');
+      
+      logToElement('sync-test-log', 'Edit completion simulation flags set');
+      setResultMessage('sync-test-result', 'Edit completion simulated! Navigate to Profile to see effect');
+    });
+
+    // Cache Test Functions
+    document.getElementById('check-cache').addEventListener('click', () => {
+      // This is a simulation since we can't directly access React Query cache from outside
+      const cacheFlags = {
+        'justEditedProfile': localStorage.getItem('justEditedProfile'),
+        'profileEditTimestamp': localStorage.getItem('profileEditTimestamp'),
+        'whatIOffer_saved': localStorage.getItem('whatIOffer_saved'),
+        'whatIOffer_savedAt': localStorage.getItem('whatIOffer_savedAt'),
+        'whatIOffer_changed': localStorage.getItem('whatIOffer_changed'),
+        'redirectToProfile': localStorage.getItem('redirectToProfile')
+      };
+      
+      document.getElementById('cache-test-log').innerText = JSON.stringify(cacheFlags, null, 2);
+      setResultMessage('cache-test-result', 'Cache flags retrieved');
+    });
+
+    document.getElementById('clear-cache').addEventListener('click', () => {
+      // Simulate clearing cache
+      fetch('/api/users/1?cache_bust=' + Date.now())
+        .then(response => {
+          if (!response.ok) throw new Error('Network error');
+          return response.json();
+        })
+        .then(data => {
+          logToElement('cache-test-log', 'Sent cache-busting request');
+          setResultMessage('cache-test-result', 'Cache invalidation requested');
+        })
+        .catch(error => {
+          logToElement('cache-test-log', `Error: ${error.message}`, true);
+          setResultMessage('cache-test-result', 'Failed to clear cache', false);
+        });
+    });
+
+    document.getElementById('simulate-cache-staleness').addEventListener('click', () => {
+      // Set old timestamp to simulate stale cache
+      if (localStorage.getItem('whatIOffer_saved')) {
+        const oneHourAgo = Date.now() - (60 * 60 * 1000);
+        localStorage.setItem('whatIOffer_savedAt', oneHourAgo.toString());
+        logToElement('cache-test-log', 'Cache staleness simulated (timestamp set to 1 hour ago)');
+        setResultMessage('cache-test-result', 'Cache staleness simulated');
+      } else {
+        logToElement('cache-test-log', 'No whatIOffer value in localStorage to make stale', true);
+        setResultMessage('cache-test-result', 'No data to make stale', false);
+      }
+    });
+
+    // Resilience Test Functions
+    document.getElementById('simulate-network-error').addEventListener('click', () => {
+      // Simulate network error with a non-existent endpoint
+      fetch('/api/non-existent-endpoint')
+        .then(response => {
+          logToElement('resilience-test-log', `Server responded with ${response.status}`);
+        })
+        .catch(error => {
+          logToElement('resilience-test-log', `Network error simulated: ${error.message}`);
+          setResultMessage('resilience-test-result', 'Network error simulated - check browser console for fallback mechanism');
+        });
+    });
+
+    document.getElementById('simulate-server-error').addEventListener('click', () => {
+      // Hitting an endpoint that we know will 500
+      fetch('/api/broken/deliberately-error')
+        .then(response => {
+          if (!response.ok) {
+            logToElement('resilience-test-log', `Server error simulated: ${response.status}`);
+            setResultMessage('resilience-test-result', 'Server error simulated - check browser console for fallback mechanism');
+          }
+        })
+        .catch(error => {
+          logToElement('resilience-test-log', `Error: ${error.message}`, true);
+        });
+    });
+
+    document.getElementById('test-recovery').addEventListener('click', async () => {
+      try {
+        // First, intentionally trigger an error
+        logToElement('resilience-test-log', 'Testing recovery mechanism...');
+        
+        // First a bad request that should fail
+        try {
+          await fetch('/api/non-existent-endpoint');
+        } catch (e) {
+          logToElement('resilience-test-log', 'Expected error triggered');
+        }
+        
+        // Then test if we can still fetch good data
+        const response = await fetch('/api/users/1');
+        
+        if (response.ok) {
+          logToElement('resilience-test-log', 'Successfully recovered after error');
+          setResultMessage('resilience-test-result', 'Recovery test passed!');
+        } else {
+          throw new Error(`Server responded with ${response.status}`);
+        }
+      } catch (error) {
+        logToElement('resilience-test-log', `Recovery test failed: ${error.message}`, true);
+        setResultMessage('resilience-test-result', 'Recovery test failed', false);
+      }
+    });
+
+    // LocalStorage Viewer Functions
+    function refreshLocalStorageView() {
+      const storageKeys = document.getElementById('storage-keys');
+      const storageContent = document.getElementById('storage-content');
+      
+      // Filter only profile-related entries
+      const profileKeys = [];
+      const profileData = {};
+      
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.includes('profile') || key.includes('what') || 
+            key.includes('user') || key.includes('cache')) {
+          profileKeys.push(key);
+          profileData[key] = localStorage.getItem(key);
+        }
+      }
+      
+      if (profileKeys.length === 0) {
+        storageKeys.innerHTML = '<p>No profile-related data in localStorage</p>';
+        storageContent.innerText = '';
+      } else {
+        storageKeys.innerHTML = '<p>Profile-related localStorage keys:</p><ul>' + 
+          profileKeys.map(key => `<li>${key}</li>`).join('') + 
+          '</ul>';
+        storageContent.innerText = JSON.stringify(profileData, null, 2);
+      }
+    }
+
+    document.getElementById('refresh-localstorage').addEventListener('click', refreshLocalStorageView);
+
+    document.getElementById('clear-profile-flags').addEventListener('click', () => {
+      localStorage.removeItem('justEditedProfile');
+      localStorage.removeItem('profileEditTimestamp');
+      localStorage.removeItem('redirectToProfile');
+      localStorage.removeItem('whatIOffer_changed');
+      
+      refreshLocalStorageView();
+      logToElement('storage-content', 'Profile flags cleared');
+    });
+
+    // Initialize the LocalStorage view on load
+    refreshLocalStorageView();
+  </script>
+</body>
+</html>
