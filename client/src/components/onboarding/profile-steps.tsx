@@ -848,7 +848,13 @@ export default function ProfileSteps({
       
       switch (currentStep) {
         case 1: // All About Me
-          await updateUserMutation.mutateAsync({
+          console.log("Saving All About Me data with direct approach:", {
+            name: formData.name,
+            // Rest of fields...
+          });
+          
+          // First, use the mutation so we're consistent with other code
+          const updateData = {
             name: formData.name,
             title: formData.title,
             location: formData.location,
@@ -856,8 +862,87 @@ export default function ProfileSteps({
               `${formData.industry}: ${formData.domain}` : formData.industry,
             domain: formData.domain || "all", // Ensure domain is always saved
             lookingFor: formData.lookingFor,
-            aboutMe: formData.aboutMe
-          });
+            aboutMe: formData.aboutMe,
+            _timestamp: Date.now() // Prevent caching issues
+          };
+          
+          // Save with React Query mutation
+          await updateUserMutation.mutateAsync(updateData);
+          
+          // Then make a direct fetch call to ensure the data is actually saved
+          if (userData?.id) {
+            console.log("[CRITICAL UPDATE] Making direct fetch call to update basic profile data");
+            
+            try {
+              // Force cache clearing first
+              queryClient.clear();
+              queryClient.invalidateQueries({ queryKey: ['/api/users'] });
+              queryClient.invalidateQueries({ queryKey: ['/api/users', userData.id] });
+              
+              const directResponse = await fetch(`/api/users/${userData.id}?_t=${Date.now()}`, {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Cache-Control': 'no-cache, no-store, must-revalidate',
+                  'Pragma': 'no-cache',
+                },
+                body: JSON.stringify({
+                  ...updateData,
+                  _directUpdate: true,
+                  _forceUpdate: true
+                })
+              });
+              
+              if (directResponse.ok) {
+                const directData = await directResponse.json();
+                console.log("[CRITICAL UPDATE] Direct update successful:", directData);
+                console.log("[CRITICAL UPDATE] Confirmed name value:", directData.name);
+                
+                // Verify our update immediately by fetching again
+                const verifyResponse = await fetch(`/api/users/${userData.id}?_t=${Date.now()}`, {
+                  headers: {
+                    'Cache-Control': 'no-cache, no-store, must-revalidate',
+                    'Pragma': 'no-cache',
+                  }
+                });
+                
+                if (verifyResponse.ok) {
+                  const verifiedData = await verifyResponse.json();
+                  console.log("[VERIFICATION] Latest user data:", verifiedData);
+                  
+                  if (verifiedData.name !== formData.name) {
+                    console.warn("WARNING: Name mismatch after save!", {
+                      formValue: formData.name,
+                      serverValue: verifiedData.name
+                    });
+                    
+                    // One last attempt
+                    const finalResponse = await fetch(`/api/users/${userData.id}?_t=${Date.now()}`, {
+                      method: 'PUT',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache',
+                      },
+                      body: JSON.stringify({
+                        name: formData.name,
+                        _timestamp: Date.now(),
+                        _finalAttempt: true
+                      })
+                    });
+                    
+                    console.log("Final attempt result:", await finalResponse.json());
+                  } else {
+                    console.log("Verification succeeded: Name is correctly updated");
+                  }
+                }
+              } else {
+                console.error("Direct update failed:", await directResponse.text());
+              }
+            } catch (directError) {
+              console.error("Error during direct update:", directError);
+            }
+          }
           break;
           
         case 2: // What I'm Good At
