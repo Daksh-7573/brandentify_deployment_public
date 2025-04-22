@@ -353,22 +353,145 @@ export default function ProfileSteps({
   console.log("Edit Profile - servicesData:", servicesData);
   console.log("Edit Profile - services count:", services?.length);
   
-  // Fetch user projects
+  // Fetch user projects with improved error handling
   const { data: projects = [], isLoading: isLoadingProjects } = useQuery<any[]>({
     queryKey: [`/api/users/${userData?.id}/projects`],
-    enabled: !!userData?.id && isAuthenticated
+    queryFn: async () => {
+      if (!userData?.id) return [];
+      
+      try {
+        console.log("Fetching projects data for user ID:", userData.id);
+        
+        // Add cache busting parameter
+        const cacheBuster = `?t=${Date.now()}`;
+        
+        // Add request timeout protection
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+        
+        const response = await fetch(`/api/users/${userData.id}/projects${cacheBuster}`, {
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          },
+          signal: controller.signal
+        });
+        
+        // Clear the timeout since request completed
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+          console.error(`Error fetching projects: ${response.status} ${response.statusText}`);
+          return [];
+        }
+        
+        const data = await response.json();
+        console.log("Projects data fetched successfully:", data?.length || 0, "projects");
+        return Array.isArray(data) ? data : [];
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+        return []; // Return empty array on error
+      }
+    },
+    enabled: !!userData?.id && isAuthenticated,
+    retry: 1,
+    retryDelay: 1000,
+    staleTime: 60000 // Cache for 1 minute
   });
   
-  // Fetch user experiences
+  // Fetch user experiences with improved error handling
   const { data: experiences = [], isLoading: isLoadingExperiences } = useQuery<any[]>({
     queryKey: [`/api/users/${userData?.id}/experiences`],
-    enabled: !!userData?.id && isAuthenticated
+    queryFn: async () => {
+      if (!userData?.id) return [];
+      
+      try {
+        console.log("Fetching experiences data for user ID:", userData.id);
+        
+        // Add cache busting parameter
+        const cacheBuster = `?t=${Date.now()}`;
+        
+        // Add request timeout protection
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+        
+        const response = await fetch(`/api/users/${userData.id}/experiences${cacheBuster}`, {
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          },
+          signal: controller.signal
+        });
+        
+        // Clear the timeout since request completed
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+          console.error(`Error fetching experiences: ${response.status} ${response.statusText}`);
+          return [];
+        }
+        
+        const data = await response.json();
+        console.log("Experiences data fetched successfully:", data?.length || 0, "experiences");
+        return Array.isArray(data) ? data : [];
+      } catch (error) {
+        console.error("Error fetching experiences:", error);
+        return []; // Return empty array on error
+      }
+    },
+    enabled: !!userData?.id && isAuthenticated,
+    retry: 1,
+    retryDelay: 1000,
+    staleTime: 60000 // Cache for 1 minute
   });
   
-  // Fetch user educations
+  // Fetch user educations with improved error handling
   const { data: educations = [], isLoading: isLoadingEducations } = useQuery<any[]>({
     queryKey: [`/api/users/${userData?.id}/educations`],
-    enabled: !!userData?.id && isAuthenticated
+    queryFn: async () => {
+      if (!userData?.id) return [];
+      
+      try {
+        console.log("Fetching educations data for user ID:", userData.id);
+        
+        // Add cache busting parameter
+        const cacheBuster = `?t=${Date.now()}`;
+        
+        // Add request timeout protection
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+        
+        const response = await fetch(`/api/users/${userData.id}/educations${cacheBuster}`, {
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          },
+          signal: controller.signal
+        });
+        
+        // Clear the timeout since request completed
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+          console.error(`Error fetching educations: ${response.status} ${response.statusText}`);
+          return [];
+        }
+        
+        const data = await response.json();
+        console.log("Educations data fetched successfully:", data?.length || 0, "educations");
+        return Array.isArray(data) ? data : [];
+      } catch (error) {
+        console.error("Error fetching educations:", error);
+        return []; // Return empty array on error
+      }
+    },
+    enabled: !!userData?.id && isAuthenticated,
+    retry: 1,
+    retryDelay: 1000,
+    staleTime: 60000 // Cache for 1 minute
   });
   
   // Update user mutation with enhanced cache clearing
