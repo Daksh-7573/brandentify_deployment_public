@@ -211,13 +211,9 @@ export default function MinimalistPro({
         <section className="mb-12 animate-fade-in">
           <h2 className="section-header">What I'm All About</h2>
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-            {userInfo.lookingFor || userInfo.title || userInfo.industry ? (
+            {userInfo.aboutMe ? (
               <p className="text-gray-800 leading-relaxed font-serif text-lg">
-                {userInfo.lookingFor || 
-                  `Experienced ${userInfo.title || "professional"} with a focus on ${userInfo.industry || "industry"} 
-                  solutions. I specialize in ${userInfo.domain || "my domain"} and am passionate about delivering results
-                  that exceed expectations.`
-                }
+                {userInfo.aboutMe}
               </p>
             ) : (
               <p className="text-gray-500 text-center py-4">Personal description will appear here</p>

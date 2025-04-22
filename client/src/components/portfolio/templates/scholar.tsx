@@ -476,16 +476,24 @@ export default function Scholar({
           <div className="notebook-paper fade-in-up">
             <div className="flex flex-col md:flex-row gap-6">
               <div className="flex-1 space-y-4">
-                <p className="text-gray-700 leading-relaxed font-medium">
-                  {userInfo.title || userInfo.industry 
-                    ? `As ${userInfo.title ? `a ${userInfo.title}` : ''}${userInfo.industry ? ` in the ${userInfo.industry} field` : ''}, I'm passionate about continuous learning and applying my knowledge to real-world challenges.`
-                    : "I'm passionate about continuous learning and applying my knowledge to real-world challenges. My academic journey has equipped me with both theoretical understanding and practical skills."}
-                </p>
-                <p className="text-gray-700 leading-relaxed">
-                  {userInfo.lookingFor 
-                    ? `Currently seeking ${userInfo.lookingFor.toLowerCase()}. I bring a fresh perspective, strong work ethic, and eagerness to contribute to meaningful projects.`
-                    : "I bring a fresh perspective, strong work ethic, and eagerness to contribute to meaningful projects. I'm constantly looking to expand my skills and take on new challenges."}
-                </p>
+                {userInfo.aboutMe ? (
+                  <p className="text-gray-700 leading-relaxed font-medium">
+                    {userInfo.aboutMe}
+                  </p>
+                ) : (
+                  <>
+                    <p className="text-gray-700 leading-relaxed font-medium">
+                      {userInfo.title || userInfo.industry 
+                        ? `As ${userInfo.title ? `a ${userInfo.title}` : ''}${userInfo.industry ? ` in the ${userInfo.industry} field` : ''}, I'm passionate about continuous learning and applying my knowledge to real-world challenges.`
+                        : "I'm passionate about continuous learning and applying my knowledge to real-world challenges. My academic journey has equipped me with both theoretical understanding and practical skills."}
+                    </p>
+                    <p className="text-gray-700 leading-relaxed">
+                      {userInfo.lookingFor 
+                        ? `Currently seeking ${userInfo.lookingFor.toLowerCase()}. I bring a fresh perspective, strong work ethic, and eagerness to contribute to meaningful projects.`
+                        : "I bring a fresh perspective, strong work ethic, and eagerness to contribute to meaningful projects. I'm constantly looking to expand my skills and take on new challenges."}
+                    </p>
+                  </>
+                )}
                 
                 <div className="flex items-center gap-2 text-blue-600">
                   <Lightbulb className="h-5 w-5" />
