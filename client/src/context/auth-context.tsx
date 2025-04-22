@@ -28,12 +28,10 @@ type AuthContextType = {
   user: AuthUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  isDemoMode: boolean;
   signInWithGoogle: () => Promise<void>;
   signInWithPhone: (user: User) => void; // Function for phone authentication
   signInWithEmail: (user: User) => void; // Function for email authentication
   signOut: () => Promise<void>;
-  enterDemoMode: () => void;
   refreshUserData: () => Promise<void>;
 };
 
@@ -41,12 +39,10 @@ export const AuthContext = createContext<AuthContextType>({
   user: null,
   isAuthenticated: false,
   isLoading: true,
-  isDemoMode: false,
   signInWithGoogle: async () => {},
   signInWithPhone: () => {},
   signInWithEmail: () => {},
   signOut: async () => {},
-  enterDemoMode: () => {},
   refreshUserData: async () => {},
 });
 
