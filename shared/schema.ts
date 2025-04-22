@@ -18,6 +18,7 @@ export const users = pgTable("users", {
   industry: text("industry"), // User's industry
   domain: text("domain"), // User's domain within the industry
   lookingFor: text("looking_for"), // What the user is looking for (networking type)
+  whatIOffer: text("what_i_offer"), // What skills/services the user offers - max 250 words
   visitingCardType: text("visiting_card_type"), // Type of digital visiting card
   profileCompleted: integer("profile_completed").default(0), // Percentage
   emailVerified: boolean("email_verified").default(false), // Whether email is verified

@@ -426,7 +426,8 @@ export default function Profile() {
     industry: '',
     domain: '',
     lookingFor: '',
-    aboutMe: ''
+    aboutMe: '',
+    whatIOffer: ''
   });
   
   // Also fetch current user data for the profile
@@ -1178,6 +1179,7 @@ export default function Profile() {
     if (userData) {
       // Log userData for debugging
       console.log("Current userData:", userData);
+      console.log("Form data before update:", formData);
       
       // Get industry and domain directly from the userData object
       let mainIndustry = userData.industry || '';
@@ -1185,8 +1187,19 @@ export default function Profile() {
       // Get domain from userData.domain if it exists
       let domain = userData.domain || '';
       
+      // Get lookingFor from userData
+      let lookingFor = userData.lookingFor || '';
+      
+      // Get what I offer data (if present)
+      let whatIOffer = userData.whatIOffer || '';
+      
       // Log values for debugging
-      console.log("Initializing form with industry:", mainIndustry, "domain:", domain);
+      console.log("Initializing form with:", {
+        industry: mainIndustry, 
+        domain: domain,
+        lookingFor: lookingFor,
+        whatIOffer: whatIOffer
+      });
       
       setSelectedIndustry(mainIndustry);
       setSelectedDomain(domain);
@@ -1228,8 +1241,9 @@ export default function Profile() {
         location: userData.location || '',
         industry: mainIndustry || '',
         domain: domain || '',
-        lookingFor: userData.lookingFor || '',
-        aboutMe: userData.aboutMe || ''
+        lookingFor: lookingFor || '',
+        aboutMe: userData.aboutMe || '',
+        whatIOffer: whatIOffer || ''
       });
     }
   }, [userData]);
@@ -1328,7 +1342,8 @@ export default function Profile() {
       industry: updatedFormData.industry,
       domain: updatedFormData.domain, // Send domain as a separate field
       lookingFor: updatedFormData.lookingFor,
-      aboutMe: updatedFormData.aboutMe
+      aboutMe: updatedFormData.aboutMe,
+      whatIOffer: updatedFormData.whatIOffer
     };
     
     // Log what we're sending to the server
@@ -1618,6 +1633,26 @@ export default function Profile() {
                   {formData.aboutMe?.split(/\s+/).filter(Boolean).length || 0}/350 words
                 </div>
               </div>
+              
+              {/* What I Offer section */}
+              <div className="grid gap-2">
+                <Label htmlFor="whatIOffer">What I Offer</Label>
+                <Textarea
+                  id="whatIOffer"
+                  name="whatIOffer"
+                  value={formData.whatIOffer}
+                  onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    whatIOffer: e.target.value
+                  }))}
+                  placeholder="Describe what you can offer to others in your field (max 250 words)"
+                  className="min-h-[100px]"
+                  maxLength={1500}
+                />
+                <div className="text-xs text-gray-500 text-right">
+                  {formData.whatIOffer?.split(/\s+/).filter(Boolean).length || 0}/250 words
+                </div>
+              </div>
             </div>
             <DialogFooter>
               <Button 
@@ -1829,6 +1864,16 @@ export default function Profile() {
                       <h3 className="text-sm font-medium text-gray-900">What I'm All About</h3>
                       <p className="mt-2 text-sm text-gray-500 whitespace-pre-line">
                         {userData.aboutMe}
+                      </p>
+                    </div>
+                  )}
+                  
+                  {/* What I Offer section */}
+                  {userData?.whatIOffer && (
+                    <div className="mt-4">
+                      <h3 className="text-sm font-medium text-gray-900">What I Offer</h3>
+                      <p className="mt-2 text-sm text-gray-500 whitespace-pre-line">
+                        {userData.whatIOffer}
                       </p>
                     </div>
                   )}
