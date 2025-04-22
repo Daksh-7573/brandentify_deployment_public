@@ -432,7 +432,7 @@ export default function Profile() {
   
   // Also fetch current user data for the profile with enhanced caching control
   const { data: userData, isLoading: isLoadingUser, refetch: refetchUserData } = useQuery<any>({
-    queryKey: ['/api/users', userId], // Use consistent key format with edit-profile page (no timestamp)
+    queryKey: ['/api/users', userId, Date.now()], // Add timestamp to force fresh data fetch
     enabled: !!userId && isAuthenticated,
     staleTime: 0, // Always consider data stale to ensure fresh data
     gcTime: 0, // Disable caching for profile data (gcTime is the v5 name for cacheTime)
@@ -663,11 +663,34 @@ export default function Profile() {
     }
   }, [queryClient, userNumericId]);
   
-  // Debug logging for userData
+  // Debug logging for userData with detailed field inspection
   useEffect(() => {
     console.log("Current userData:", userData);
     if (userData?.id) {
       console.log(`Using numeric user ID: ${userData.id} for data fetching`);
+      
+      // Detailed field inspection for debugging
+      console.log("PROFILE DATA INSPECTION:");
+      console.log(`- name: "${userData.name || 'MISSING'}"`);
+      console.log(`- location: "${userData.location || 'MISSING'}"`);
+      console.log(`- title: "${userData.title || 'MISSING'}"`);
+      console.log(`- aboutMe: "${userData.aboutMe || 'MISSING'}"`);
+      console.log(`- lookingFor: "${userData.lookingFor || 'MISSING'}"`);
+      console.log(`- industry: "${userData.industry || 'MISSING'}"`);
+      console.log(`- domain: "${userData.domain || 'MISSING'}"`);
+      
+      // Update form data with the latest userData
+      setFormData(prevData => ({
+        ...prevData,
+        name: userData.name || '',
+        title: userData.title || '',
+        location: userData.location || '',
+        industry: userData.industry || '',
+        domain: userData.domain || '',
+        lookingFor: userData.lookingFor || '',
+        aboutMe: userData.aboutMe || '',
+        whatIOffer: userData.whatIOffer || ''
+      }));
     }
   }, [userData]);
   
