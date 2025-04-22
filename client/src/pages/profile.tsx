@@ -837,7 +837,7 @@ export default function Profile() {
   
   // Fetch user projects for profile completion calculation
   const { data: projects = [], isLoading: isLoadingProjects, refetch: refetchProjects } = useQuery<any[]>({
-    queryKey: [`/api/users/${userNumericId}/projects`],
+    queryKey: ['/api/users', userNumericId, 'projects'], // FIXED: Use consistent array format
     queryFn: async () => {
       if (!userNumericId) return [];
       try {
@@ -898,11 +898,11 @@ export default function Profile() {
         await queryClient.invalidateQueries({ queryKey: ['/api/users', userNumericId, 'what-i-offer'] });
         await queryClient.invalidateQueries({ queryKey: ['/api/users', userNumericId, 'services'] });
         
-        // Also invalidate nested resource endpoints
-        await queryClient.invalidateQueries({ queryKey: [`/api/users/${userNumericId}/skills`] });
-        await queryClient.invalidateQueries({ queryKey: [`/api/users/${userNumericId}/experiences`] });
-        await queryClient.invalidateQueries({ queryKey: [`/api/users/${userNumericId}/educations`] });
-        await queryClient.invalidateQueries({ queryKey: [`/api/users/${userNumericId}/projects`] });
+        // Also invalidate nested resource endpoints using the consistent format
+        await queryClient.invalidateQueries({ queryKey: ['/api/users', userNumericId, 'skills'] });
+        await queryClient.invalidateQueries({ queryKey: ['/api/users', userNumericId, 'experiences'] });
+        await queryClient.invalidateQueries({ queryKey: ['/api/users', userNumericId, 'educations'] });
+        await queryClient.invalidateQueries({ queryKey: ['/api/users', userNumericId, 'projects'] });
       }
       
       // Add a short delay to ensure the server has processed the update

@@ -386,8 +386,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       console.log("Refreshing user data with ID:", userId);
       
-      // Invalidate the user data query to ensure fresh data on next fetch
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
+      // Invalidate the user data query to ensure fresh data on next fetch - using consistent array format
+      queryClient.invalidateQueries({ queryKey: ['/api/users', userId] });
       
       // Fetch latest user data from the backend
       const updatedUser = await fetchUserData(userId);
@@ -396,12 +396,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.log("Updated user state with fresh data:", updatedUser);
       }
       
-      // Also invalidate other related queries for the profile components
+      // Also invalidate other related queries for the profile components using consistent array format
       console.log("Refreshing profile data queries");
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/resume`] });
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/experiences`] });
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/educations`] });
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/skills`] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'resume'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'experiences'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'educations'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'skills'] });
       
       // Manually fetch ALL data directly using fetch API to bypass any caching
       try {
@@ -419,8 +419,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const userData = await userResponse.json();
             console.log(`Successfully fetched user data:`, userData);
             
-            // Update the user data cache
-            queryClient.setQueryData([`/api/users/${userId}`], userData);
+            // Update the user data cache with consistent array format
+            queryClient.setQueryData(['/api/users', userId], userData);
           } else {
             console.error(`Failed to fetch user data for ID ${userId}:`, userResponse.statusText);
           }
@@ -442,7 +442,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (resumeResponse.ok) {
             const resumeData = await resumeResponse.json();
             console.log(`Successfully fetched resume data:`, resumeData);
-            queryClient.setQueryData([`/api/users/${backendUserId}/resume`], resumeData);
+            queryClient.setQueryData(['/api/users', backendUserId, 'resume'], resumeData);
           }
         } catch (resumeFetchError) {
           console.error("Error fetching resume data:", resumeFetchError);
@@ -458,7 +458,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (expResponse.ok) {
             const expData = await expResponse.json();
             console.log(`Successfully fetched experiences data:`, expData);
-            queryClient.setQueryData([`/api/users/${backendUserId}/experiences`], expData);
+            queryClient.setQueryData(['/api/users', backendUserId, 'experiences'], expData);
           }
         } catch (expFetchError) {
           console.error("Error fetching experiences data:", expFetchError);
