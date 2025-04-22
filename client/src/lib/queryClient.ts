@@ -140,7 +140,9 @@ export async function apiRequest(
       const requestOptions: RequestInit = {
         method: method,
         headers: !isFormData && data ? { "Content-Type": "application/json" } : {},
-        body: isFormData ? data : data ? JSON.stringify(data) : undefined,
+        body: isFormData ? (data as FormData) : 
+              data ? JSON.stringify(data) : 
+              undefined,
         credentials: "include",
       };
       

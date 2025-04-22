@@ -23,6 +23,14 @@ export default function GlobalMuskButton() {
     queryFn: async () => {
       if (!userId) return null;
       const response = await apiRequest('GET', `/api/users/${userId}`);
+      if (response instanceof Response) {
+        try {
+          return await response.json();
+        } catch (error) {
+          console.error("Error parsing user data response:", error);
+          return null;
+        }
+      }
       return response;
     },
     enabled: !!userId && isAuthenticated
@@ -34,7 +42,15 @@ export default function GlobalMuskButton() {
     queryFn: async () => {
       if (!userId) return [];
       const response = await apiRequest('GET', `/api/users/${userId}/experiences`);
-      return response;
+      if (response instanceof Response) {
+        try {
+          return await response.json();
+        } catch (error) {
+          console.error("Error parsing experiences response:", error);
+          return [];
+        }
+      }
+      return Array.isArray(response) ? response : [];
     },
     enabled: !!userId && isAuthenticated,
     staleTime: 30000,
@@ -46,7 +62,15 @@ export default function GlobalMuskButton() {
     queryFn: async () => {
       if (!userId) return [];
       const response = await apiRequest('GET', `/api/users/${userId}/educations`);
-      return response;
+      if (response instanceof Response) {
+        try {
+          return await response.json();
+        } catch (error) {
+          console.error("Error parsing educations response:", error);
+          return [];
+        }
+      }
+      return Array.isArray(response) ? response : [];
     },
     enabled: !!userId && isAuthenticated,
     staleTime: 30000,
@@ -58,7 +82,15 @@ export default function GlobalMuskButton() {
     queryFn: async () => {
       if (!userId) return [];
       const response = await apiRequest('GET', `/api/users/${userId}/skills`);
-      return response;
+      if (response instanceof Response) {
+        try {
+          return await response.json();
+        } catch (error) {
+          console.error("Error parsing skills response:", error);
+          return [];
+        }
+      }
+      return Array.isArray(response) ? response : [];
     },
     enabled: !!userId && isAuthenticated,
     staleTime: 30000,
@@ -70,32 +102,133 @@ export default function GlobalMuskButton() {
     queryFn: async () => {
       if (!userId) return [];
       const response = await apiRequest('GET', `/api/users/${userId}/projects`);
-      return response;
+      if (response instanceof Response) {
+        try {
+          return await response.json();
+        } catch (error) {
+          console.error("Error parsing projects response:", error);
+          return [];
+        }
+      }
+      return Array.isArray(response) ? response : [];
     },
     enabled: !!userId && isAuthenticated,
     staleTime: 30000,
   });
 
-  // Update context data when user data is loaded
+  // Update context data when user data is loaded - with memoization to prevent infinite loops
   useEffect(() => {
+    // Only update when meaningful data changes and avoid infinite loops from response objects
     if (isAuthenticated && userData) {
-      // Get current page from location
-      const currentPage = location.startsWith('/') ? location.substring(1) : location;
-      const page = currentPage || 'home';
-      
-      setContextData({
-        page,
-        userId,
-        data: {
-          userData,
-          experiences: experiences || [],
-          educations: educations || [],
-          skills: skills || [],
-          projects: projects || []
-        }
-      });
+      try {
+        // Get current page from location
+        const currentPage = location.startsWith('/') ? location.substring(1) : location;
+        const page = currentPage || 'home';
+        
+        // Extract only the needed data and create stable references
+        const userDataExtract = userData && typeof userData === 'object' ? {
+          id: userData.id,
+          name: userData.name,
+          title: userData.title,
+          location: userData.location,
+          industry: userData.industry,
+          domain: userData.domain
+        } : null;
+        
+        // Create stable versions of array data
+        const stableExperiences = Array.isArray(experiences) ? experiences.map(exp => ({
+          id: exp.id,
+          title: exp.title,
+          company: exp.company,
+          startDate: exp.startDate,
+          endDate: exp.endDate
+        })) : [];
+        
+        const stableEducations = Array.isArray(educations) ? educations.map(edu => ({
+          id: edu.id,
+          institution: edu.institution,
+          degree: edu.degree,
+          startDate: edu.startDate,
+          endDate: edu.endDate
+        })) : [];
+        
+        const stableSkills = Array.isArray(skills) ? skills.map(skill => ({
+          id: skill.id,
+          name: skill.name,
+          level: skill.level
+        })) : [];
+        
+        const stableProjects = Array.isArray(projects) ? projects.map(proj => ({
+          id: proj.id,
+          title: proj.title,
+          description: proj.description,
+          category: proj.category
+        })) : [];
+        
+        // Use the stable data for the context
+        setContextData({
+          page,
+          userId,
+          data: {
+            userData: userDataExtract,
+            experiences: stableExperiences,
+            educations: stableEducations,
+            skills: stableSkills,
+            projects: stableProjects
+          }
+        });
+      } catch (error) {
+        console.error("Error processing data for GlobalMuskButton:", error);
+      }
     }
-  }, [isAuthenticated, userData, location, userId, experiences, educations, skills, projects]);
+  }, [isAuthenticated, location, userId]);
+  
+  // Separate effect to handle data updates - this prevents the infinite loop
+  // by not making the main effect dependent on all data changes
+  useEffect(() => {
+    if (isAuthenticated && userData && 
+        contextData.userId === userId && 
+        contextData.data.userData) {
+      // Update only when we have stable data and it's meaningfully changed
+      setContextData(prev => ({
+        ...prev,
+        data: {
+          ...prev.data,
+          userData: prev.data.userData ? {
+            ...prev.data.userData,
+            // Only update specific fields that might change
+            title: userData.title || prev.data.userData.title,
+            location: userData.location || prev.data.userData.location,
+          } : null,
+          experiences: Array.isArray(experiences) ? experiences.map(exp => ({
+            id: exp.id,
+            title: exp.title,
+            company: exp.company,
+            startDate: exp.startDate,
+            endDate: exp.endDate
+          })) : prev.data.experiences,
+          educations: Array.isArray(educations) ? educations.map(edu => ({
+            id: edu.id,
+            institution: edu.institution,
+            degree: edu.degree,
+            startDate: edu.startDate,
+            endDate: edu.endDate
+          })) : prev.data.educations,
+          skills: Array.isArray(skills) ? skills.map(skill => ({
+            id: skill.id,
+            name: skill.name,
+            level: skill.level
+          })) : prev.data.skills,
+          projects: Array.isArray(projects) ? projects.map(proj => ({
+            id: proj.id,
+            title: proj.title,
+            description: proj.description,
+            category: proj.category
+          })) : prev.data.projects
+        }
+      }));
+    }
+  }, [userData, experiences, educations, skills, projects]);
 
   // Don't show on auth or landing pages
   if (!isAuthenticated || location === '/' || location === '/auth' || location === '/verify-email') {
