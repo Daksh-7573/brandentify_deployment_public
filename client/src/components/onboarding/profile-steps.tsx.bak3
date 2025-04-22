@@ -87,8 +87,8 @@ const steps = [
   },
   {
     id: 3,
-    title: "Services",
-    description: "Professional services you offer",
+    title: "What I Offer",
+    description: "Services you provide professionally",
     icon: <Briefcase className="h-6 w-6 text-primary" />,
     mandatory: false
   },
@@ -966,7 +966,8 @@ export default function ProfileSteps({
         case 2: // What I'm Good At
           // Skills saving logic will be implemented
           break;
-        case 3: // Services
+          
+        case 3: // Services & What I Offer
           // Log the current services to be saved
           console.log("Saving services:", formData.services);
           
@@ -1006,7 +1007,7 @@ export default function ProfileSteps({
                   console.log("Retrying syncServices operation after server disconnect");
                   await syncServices({
                     services: formData.services || [],
-                    // whatIOffer field removed
+                    whatIOffer: formData.whatIOffer?.trim() || ""
                   });
                   console.log("Retry successful!");
                   
@@ -1040,7 +1041,7 @@ export default function ProfileSteps({
                   console.log("Direct whatIOffer update successful as fallback");
                   toast({
                     title: "Partial save successful",
-                    description: "Your services were saved. Services may need to be updated later.",
+                    description: "Your 'What I Offer' text was saved. Services may need to be updated later.",
                     variant: "default"
                   });
                   
@@ -1053,7 +1054,7 @@ export default function ProfileSteps({
                 // As a last resort, save to localStorage for later recovery
                 localStorage.setItem('pendingServicesData', JSON.stringify({
                   services: formData.services || [],
-                  // whatIOffer field removed,
+                  whatIOffer: formData.whatIOffer?.trim() || "",
                   timestamp: Date.now()
                 }));
                 
@@ -1149,7 +1150,8 @@ export default function ProfileSteps({
     
     // Calculate completed optional steps
     let completedOptional = 0;
-    // Step 3: Services
+    
+    // Step 3: What I Offer
     if (formData.services.length > 0) {
       completedOptional++;
     }
