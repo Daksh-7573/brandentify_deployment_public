@@ -75,44 +75,51 @@ export default function ServiceForm({ service, onSubmit, isPending, existingServ
     let priceValue: number | null = null;
     
     if (values.price !== undefined && values.price !== null) {
-      // If it's still a string (should be rare due to our schema), convert it
       if (typeof values.price === 'string') {
+        // If it's a string (which it shouldn't be, but just in case), parse it
         const parsed = parseFloat(values.price);
         priceValue = isNaN(parsed) ? null : parsed;
+        console.log("Service form - converted string price to number:", values.price, "→", priceValue);
       } else if (typeof values.price === 'number') {
         // It's already a number, which is what we want
-        priceValue = values.price;
+        priceValue = Number.isFinite(values.price) ? values.price : null;
+        console.log("Service form - using numeric price:", priceValue);
+      } else {
+        console.log("Service form - unexpected price type:", typeof values.price);
       }
+    } else {
+      console.log("Service form - price is undefined or null");
     }
     
     // Log for debugging
     console.log(`Service form - submitting with currency: ${values.currency}, price: ${priceValue}, price type: ${typeof priceValue}`);
     
-    // Set all currency fields to null initially
-    const priceData = {
-      priceInr: null as number | null,
-      priceUsd: null as number | null,
-      priceEur: null as number | null,
-      priceGbp: null as number | null,
-      priceJpy: null as number | null,
-      priceCad: null as number | null,
-      priceAud: null as number | null
+    // Set only the required price fields to match our database schema
+    // Strip decimal values to avoid potential database issues
+    const priceData: {priceInr: number | null, priceUsd: number | null} = {
+      priceInr: null,
+      priceUsd: null
     };
     
     // Set only the appropriate currency price field - Only USD and INR are supported in the DB
-    if (priceValue !== null) {
+    if (priceValue !== null && Number.isFinite(priceValue)) {
+      // Round to 2 decimal places to ensure clean database values
+      const roundedPrice = Math.round(priceValue * 100) / 100;
+      
       switch (values.currency) {
         case 'INR':
-          priceData.priceInr = priceValue;
-          console.log("Service form - setting INR price:", priceValue, typeof priceValue);
+          priceData.priceInr = roundedPrice;
+          console.log("Service form - setting INR price:", roundedPrice);
           break;
         case 'USD':
         default:
           // Default to USD for all other currencies as the database only supports INR and USD
-          priceData.priceUsd = priceValue;
-          console.log("Service form - setting USD price:", priceValue, typeof priceValue);
+          priceData.priceUsd = roundedPrice;
+          console.log("Service form - setting USD price:", roundedPrice);
           break;
       }
+    } else {
+      console.log("Service form - not setting any price due to invalid value");
     }
     
     // Log price data for debugging

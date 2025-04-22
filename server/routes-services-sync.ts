@@ -158,22 +158,80 @@ router.post("/api/profile-services", async (req: Request, res: Response) => {
     console.log(`[POST /api/profile-services] Processed data before validation:`, JSON.stringify(req.body, null, 2));
     
     try {
-      // Handle price values explicitly to avoid database type errors
-      if (req.body.priceInr !== undefined && req.body.priceInr !== null) {
-        // Convert string to number - this is important for database compatibility
-        const parsedPriceInr = parseFloat(req.body.priceInr);
-        req.body.priceInr = isNaN(parsedPriceInr) ? null : parsedPriceInr;
+      // Enhanced validation and cleanup for price values
+      // Price fields need special handling as they are decimal in the database
+      
+      // Detailed logging of price values and types
+      console.log(`[POST /api/profile-services] Initial price values - INR:`, 
+                 req.body.priceInr !== undefined ? `${req.body.priceInr} (${typeof req.body.priceInr})` : 'undefined',
+                 `USD:`, 
+                 req.body.priceUsd !== undefined ? `${req.body.priceUsd} (${typeof req.body.priceUsd})` : 'undefined');
+      
+      // Handle INR price
+      if (req.body.priceInr !== undefined) {
+        if (req.body.priceInr === null || req.body.priceInr === '') {
+          // Null or empty string becomes null in the database
+          req.body.priceInr = null;
+          console.log(`[POST /api/profile-services] Setting priceInr to null`);
+        } else if (typeof req.body.priceInr === 'string') {
+          // Convert string to number with proper rounding for database compatibility
+          const parsedPriceInr = parseFloat(req.body.priceInr);
+          if (isNaN(parsedPriceInr)) {
+            req.body.priceInr = null;
+            console.log(`[POST /api/profile-services] Invalid priceInr string, setting to null`);
+          } else {
+            // Round to 2 decimal places to match decimal(10,2) in database
+            req.body.priceInr = Math.round(parsedPriceInr * 100) / 100;
+            console.log(`[POST /api/profile-services] Converted priceInr string to number:`, req.body.priceInr);
+          }
+        } else if (typeof req.body.priceInr === 'number') {
+          // Round to 2 decimal places if it's already a number
+          if (isNaN(req.body.priceInr) || !isFinite(req.body.priceInr)) {
+            req.body.priceInr = null;
+            console.log(`[POST /api/profile-services] Invalid priceInr number, setting to null`);
+          } else {
+            req.body.priceInr = Math.round(req.body.priceInr * 100) / 100;
+            console.log(`[POST /api/profile-services] Rounded priceInr number:`, req.body.priceInr);
+          }
+        } else {
+          // Unknown type, set to null
+          req.body.priceInr = null;
+          console.log(`[POST /api/profile-services] Unknown priceInr type, setting to null`);
+        }
       }
       
-      if (req.body.priceUsd !== undefined && req.body.priceUsd !== null) {
-        // Convert string to number - this is important for database compatibility
-        const parsedPriceUsd = parseFloat(req.body.priceUsd);
-        req.body.priceUsd = isNaN(parsedPriceUsd) ? null : parsedPriceUsd;
+      // Handle USD price (same logic as INR)
+      if (req.body.priceUsd !== undefined) {
+        if (req.body.priceUsd === null || req.body.priceUsd === '') {
+          req.body.priceUsd = null;
+          console.log(`[POST /api/profile-services] Setting priceUsd to null`);
+        } else if (typeof req.body.priceUsd === 'string') {
+          const parsedPriceUsd = parseFloat(req.body.priceUsd);
+          if (isNaN(parsedPriceUsd)) {
+            req.body.priceUsd = null;
+            console.log(`[POST /api/profile-services] Invalid priceUsd string, setting to null`);
+          } else {
+            req.body.priceUsd = Math.round(parsedPriceUsd * 100) / 100;
+            console.log(`[POST /api/profile-services] Converted priceUsd string to number:`, req.body.priceUsd);
+          }
+        } else if (typeof req.body.priceUsd === 'number') {
+          if (isNaN(req.body.priceUsd) || !isFinite(req.body.priceUsd)) {
+            req.body.priceUsd = null;
+            console.log(`[POST /api/profile-services] Invalid priceUsd number, setting to null`);
+          } else {
+            req.body.priceUsd = Math.round(req.body.priceUsd * 100) / 100;
+            console.log(`[POST /api/profile-services] Rounded priceUsd number:`, req.body.priceUsd);
+          }
+        } else {
+          req.body.priceUsd = null;
+          console.log(`[POST /api/profile-services] Unknown priceUsd type, setting to null`);
+        }
       }
       
       // Ensure features is an array if present
       if (req.body.features !== undefined && !Array.isArray(req.body.features)) {
         req.body.features = [];
+        console.log(`[POST /api/profile-services] features is not an array, setting to empty array`);
       }
       
       console.log(`[POST /api/profile-services] Pre-validation data:`, JSON.stringify(req.body, null, 2));
