@@ -311,5 +311,123 @@ router.post("/api/users/:id/sync-profile-services", async (req: Request, res: Re
   }
 });
 
+/**
+ * Update profile services and whatIOffer in a single transaction 
+ * PUT /api/users/:id/profile-services
+ */
+router.put("/api/users/:id/profile-services", async (req: Request, res: Response) => {
+  try {
+    const userId = parseInt(req.params.id);
+    if (isNaN(userId)) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
+    
+    const { services, whatIOffer, _timestamp } = req.body;
+    
+    console.log(`[PUT /api/users/:id/profile-services] Updating services (${services?.length || 0}) and whatIOffer for user ${userId}`);
+    console.log(`[PUT /api/users/:id/profile-services] Request timestamp: ${_timestamp || 'none'}`);
+    
+    // Step 1: Update the whatIOffer field if provided
+    if (whatIOffer !== undefined) {
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      console.log(`[PUT /api/users/:id/profile-services] Updating whatIOffer: "${whatIOffer?.substring(0, 30)}..."`);
+      await storage.updateUser(userId, { whatIOffer });
+    }
+    
+    // Step 2: Handle services update if provided
+    if (Array.isArray(services)) {
+      console.log(`[PUT /api/users/:id/profile-services] Processing ${services.length} services`);
+      
+      // Get existing services to know what to keep/update/delete
+      const existingServices = await storage.getServicesByUserId(userId);
+      console.log(`[PUT /api/users/:id/profile-services] Found ${existingServices.length} existing services`);
+      
+      const existingServiceIds = new Set(existingServices.map(s => s.id));
+      const keepServiceIds = new Set();
+      
+      // Update or create services
+      for (const service of services) {
+        if (!service.title) {
+          console.warn(`[PUT /api/users/:id/profile-services] Skipping service with no title`);
+          continue;
+        }
+        
+        if (service.id && existingServiceIds.has(service.id)) {
+          // Update existing service
+          keepServiceIds.add(service.id);
+          const updatedService = {
+            title: service.title,
+            description: service.description || "",
+            category: service.category || "other",
+            priceInr: service.priceInr || null,
+            priceUsd: service.priceUsd || null,
+            isHourly: service.isHourly || false,
+            features: service.features || [],
+            imageUrl: service.imageUrl || null,
+            order: service.order || 0,
+            isActive: service.isActive !== undefined ? service.isActive : true
+          };
+          
+          console.log(`[PUT /api/users/:id/profile-services] Updating service ${service.id}: ${service.title}`);
+          await storage.updateService(service.id, updatedService);
+        } else {
+          // Create new service
+          const newService = {
+            userId,
+            title: service.title,
+            description: service.description || "",
+            category: service.category || "other",
+            priceInr: service.priceInr || null,
+            priceUsd: service.priceUsd || null,
+            isHourly: service.isHourly || false,
+            features: service.features || [],
+            imageUrl: service.imageUrl || null,
+            order: service.order || 0,
+            isActive: service.isActive !== undefined ? service.isActive : true
+          };
+          
+          console.log(`[PUT /api/users/:id/profile-services] Creating new service: ${service.title}`);
+          const createdService = await storage.createService(newService);
+          keepServiceIds.add(createdService.id);
+        }
+      }
+      
+      // Delete services that are no longer needed
+      for (const existingService of existingServices) {
+        if (!keepServiceIds.has(existingService.id)) {
+          console.log(`[PUT /api/users/:id/profile-services] Deleting service ${existingService.id}: ${existingService.title}`);
+          await storage.deleteService(existingService.id);
+        }
+      }
+    }
+    
+    // Step 3: Get the updated user and services for response
+    const updatedUser = await storage.getUser(userId);
+    const updatedServices = await storage.getServicesByUserId(userId);
+    
+    console.log(`[PUT /api/users/:id/profile-services] Response: ${updatedServices.length} services, whatIOffer: "${updatedUser?.whatIOffer?.substring(0, 30)}..."`);
+    
+    return res.json({
+      services: updatedServices,
+      whatIOffer: updatedUser?.whatIOffer || "",
+      success: true,
+      timestamp: Date.now(),
+      lastTimestamp: _timestamp
+    });
+  } catch (error) {
+    console.error(`[PUT /api/users/:id/profile-services] Error updating profile services:`, error);
+    
+    return res.status(500).json({
+      message: "Error updating profile services",
+      error: error.message,
+      success: false
+    });
+  }
+});
+
 // Export the router
 export default router;

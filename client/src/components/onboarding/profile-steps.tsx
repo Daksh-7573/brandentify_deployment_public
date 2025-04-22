@@ -868,39 +868,21 @@ export default function ProfileSteps({
           // Log the current services to be saved
           console.log("Saving services:", formData.services);
           
-          // First, save the services directly to our unified endpoint
           if (userData?.id) {
             try {
-              // Use the unified profile-services endpoint
-              const servicesResponse = await fetch(`/api/users/${userData.id}/profile-services`, {
-                method: 'PUT',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Cache-Control': 'no-cache, no-store, must-revalidate',
-                  'Pragma': 'no-cache',
-                },
-                body: JSON.stringify({
-                  services: formData.services || [],
-                  whatIOffer: formData.whatIOffer?.trim() || "",
-                  _timestamp: Date.now()
-                })
+              // Use the dedicated syncServices function from the hook
+              // This ensures all services and whatIOffer updates happen in a single transaction
+              const { syncServices } = useProfileServices();
+              console.log("Using syncServices hook to update all services and whatIOffer at once");
+              
+              await syncServices({
+                services: formData.services || [],
+                whatIOffer: formData.whatIOffer?.trim() || ""
               });
               
-              if (servicesResponse.ok) {
-                const responseData = await servicesResponse.json();
-                console.log("Services saved successfully:", responseData);
-                
-                // Force a cache refresh after saving
-                queryClient.invalidateQueries({ queryKey: ['/api/users', userData.id, 'profile-services'] });
-                queryClient.invalidateQueries({ queryKey: ['/api/users', userData.id, 'services'] });
-              } else {
-                console.error("Failed to save services:", await servicesResponse.text());
-                toast({
-                  title: "Error saving services",
-                  description: "There was a problem saving your services. Please try again.",
-                  variant: "destructive"
-                });
-              }
+              console.log("Services and whatIOffer synced successfully");
+              
+              // No need to invalidate the cache or handle errors - the hook does that for us
             } catch (err) {
               console.error("Error saving services:", err);
               toast({

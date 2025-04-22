@@ -318,6 +318,60 @@ export function useProfileServices() {
     error: profileServicesQuery.error?.message
   });
   
+  // New mutation to sync all services and whatIOffer at once
+  const syncServicesMutation = useMutation({
+    mutationFn: async ({ services, whatIOffer }: { services: Array<any>, whatIOffer: string }) => {
+      if (!userId) throw new Error('User ID is required');
+      
+      console.log('useProfileServices hook - syncing all services and whatIOffer:', {
+        servicesCount: services.length,
+        whatIOffer: whatIOffer.substring(0, 30) + '...'
+      });
+      
+      const response = await apiRequest('PUT', `/api/users/${userId}/profile-services`, {
+        services,
+        whatIOffer,
+        _timestamp: Date.now()
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to sync services and "What I Offer" field');
+      }
+      
+      return response.json();
+    },
+    onSuccess: (data) => {
+      console.log('useProfileServices hook - services and whatIOffer synced successfully:', data);
+      
+      // Clear all relevant queries to ensure fresh data
+      queryClient.clear();
+      
+      // Specifically invalidate all potential profile-related query keys
+      queryClient.invalidateQueries({ queryKey: ['/api/users'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'profile-services'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'what-i-offer'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'services'] });
+      
+      // Update localStorage cache
+      localStorage.setItem('profile_services_data', JSON.stringify(data));
+      localStorage.setItem('profile_services_fetchedAt', Date.now().toString());
+      
+      toast({
+        title: "Profile updated",
+        description: "Your services and professional offering have been updated successfully.",
+      });
+    },
+    onError: (error: Error) => {
+      console.error('useProfileServices hook - error syncing services and whatIOffer:', error);
+      toast({
+        title: "Update failed",
+        description: error.message || "There was a problem updating your profile services.",
+        variant: "destructive",
+      });
+    }
+  });
+
   return {
     whatIOffer,
     services,
@@ -328,9 +382,15 @@ export function useProfileServices() {
     createService: createServiceMutation.mutate,
     updateService: updateServiceMutation.mutate,
     deleteService: deleteServiceMutation.mutate,
+    
+    // Add new function to sync all services at once
+    syncServices: syncServicesMutation.mutate,
+    
+    // Status flags
     isPendingWhatIOffer: updateWhatIOfferMutation.isPending,
     isPendingCreate: createServiceMutation.isPending,
     isPendingUpdate: updateServiceMutation.isPending,
-    isPendingDelete: deleteServiceMutation.isPending
+    isPendingDelete: deleteServiceMutation.isPending,
+    isPendingSync: syncServicesMutation.isPending
   };
 }
