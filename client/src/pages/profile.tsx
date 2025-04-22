@@ -2273,57 +2273,25 @@ export default function Profile() {
                     </p>
                   )}
                   
-                  {/* What I'm All About section - Always shown with add/edit button */}
-                  <div className="mt-4 group relative">
-                    <div className="flex items-center justify-between">
+                  {/* What I'm All About section */}
+                  {userData?.aboutMe && (
+                    <div className="mt-4">
                       <h3 className="text-sm font-medium text-gray-900">What I'm All About</h3>
-                      <button 
-                        onClick={() => setShowEditBasicInfo(true)}
-                        className="p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                        aria-label={userData?.aboutMe ? "Edit About Me" : "Add About Me"}
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5 text-primary">
-                          <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path>
-                          <path d="m15 5 4 4"></path>
-                        </svg>
-                      </button>
-                    </div>
-                    {userData?.aboutMe ? (
                       <p className="mt-2 text-sm text-gray-500 whitespace-pre-line">
                         {userData.aboutMe}
                       </p>
-                    ) : (
-                      <p className="mt-2 text-sm text-gray-400 italic">
-                        Add a description about yourself
-                      </p>
-                    )}
-                  </div>
-                  
-                  {/* What I Offer section - Always shown with add/edit button */}
-                  <div className="mt-4 group relative">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-sm font-medium text-gray-900">What I Offer</h3>
-                      <button 
-                        onClick={() => setShowEditBasicInfo(true)}
-                        className="p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                        aria-label={userData?.whatIOffer ? "Edit What I Offer" : "Add What I Offer"}
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5 text-primary">
-                          <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path>
-                          <path d="m15 5 4 4"></path>
-                        </svg>
-                      </button>
                     </div>
-                    {userData?.whatIOffer ? (
+                  )}
+                  
+                  {/* What I Offer section */}
+                  {userData?.whatIOffer && (
+                    <div className="mt-4">
+                      <h3 className="text-sm font-medium text-gray-900">What I Offer</h3>
                       <p className="mt-2 text-sm text-gray-500 whitespace-pre-line">
                         {userData.whatIOffer}
                       </p>
-                    ) : (
-                      <p className="mt-2 text-sm text-gray-400 italic">
-                        Add details about your services and expertise
-                      </p>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
                 {/* Skills section removed */}
               </CardContent>
