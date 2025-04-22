@@ -1137,7 +1137,7 @@ export default function ProfileSteps({
                   console.log("Retrying syncServices operation after server disconnect");
                   await syncServices({
                     services: formData.services || [],
-                    // whatIOffer field removed
+                    whatIOffer: formData.whatIOffer?.trim() || ""
                   });
                   console.log("Retry successful!");
                   
@@ -1184,7 +1184,7 @@ export default function ProfileSteps({
                 // As a last resort, save to localStorage for later recovery
                 localStorage.setItem('pendingServicesData', JSON.stringify({
                   services: formData.services || [],
-                  // whatIOffer field removed,
+                  whatIOffer: formData.whatIOffer?.trim() || "",
                   timestamp: Date.now()
                 }));
                 
