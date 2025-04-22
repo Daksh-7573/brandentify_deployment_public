@@ -430,12 +430,13 @@ export default function Profile() {
     whatIOffer: ''
   });
   
-  // Also fetch current user data for the profile with enhanced caching control
+  // Also fetch current user data for the profile
+  // FIXED: Use a consistent queryKey without timestamp to work with invalidation
   const { data: userData, isLoading: isLoadingUser, refetch: refetchUserData } = useQuery<any>({
-    queryKey: ['/api/users', userId, Date.now()], // Add timestamp to force fresh data fetch
+    queryKey: ['/api/users', userId], // Removed timestamp for consistent cache key
     enabled: !!userId && isAuthenticated,
-    staleTime: 0, // Always consider data stale to ensure fresh data
-    gcTime: 0, // Disable caching for profile data (gcTime is the v5 name for cacheTime)
+    staleTime: 5000, // Consider data stale after 5 seconds
+    gcTime: 30000, // Cache for 30 seconds
     refetchOnMount: "always", // Always refetch on mount
     refetchOnWindowFocus: true,
     retry: 5, // Increase retries for better reliability
@@ -622,7 +623,8 @@ export default function Profile() {
               }
               
               // Update the query cache with the fresh data
-              queryClient.setQueryData([`/api/users/${userNumericId}`], freshData);
+              // FIXED: Use consistent query key format 
+              queryClient.setQueryData(['/api/users', userNumericId], freshData);
               
               // If we have a stored whatIOffer value from the edit page, verify it matches what we got from the server
               if (storedWhatIOffer && storedWhatIOffer !== freshData.whatIOffer) {
@@ -781,7 +783,7 @@ export default function Profile() {
 
   // Fetch user skills for the badges
   const { data: skills = [], isLoading: isLoadingSkills, refetch: refetchSkills } = useQuery<any[]>({
-    queryKey: [`/api/users/${userNumericId}/skills`],
+    queryKey: ['/api/users', userNumericId, 'skills'], // FIXED: Use consistent array format
     queryFn: async () => {
       if (!userNumericId) return [];
       const response = await apiRequest('GET', `/api/users/${userNumericId}/skills`);
@@ -795,7 +797,7 @@ export default function Profile() {
   
   // Fetch user experiences for profile completion calculation
   const { data: experiences = [], isLoading: isLoadingExperiences, refetch: refetchExperiences } = useQuery<any[]>({
-    queryKey: [`/api/users/${userNumericId}/experiences`],
+    queryKey: ['/api/users', userNumericId, 'experiences'], // FIXED: Use consistent array format
     queryFn: async () => {
       if (!userNumericId) return [];
       try {
@@ -815,7 +817,7 @@ export default function Profile() {
   
   // Fetch user educations for profile completion calculation
   const { data: educations = [], isLoading: isLoadingEducations, refetch: refetchEducation } = useQuery<any[]>({
-    queryKey: [`/api/users/${userNumericId}/educations`],
+    queryKey: ['/api/users', userNumericId, 'educations'], // FIXED: Use consistent array format
     queryFn: async () => {
       if (!userNumericId) return [];
       try {
