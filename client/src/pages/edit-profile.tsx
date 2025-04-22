@@ -38,10 +38,20 @@ export default function EditProfilePage() {
     }
   }, [isAuthenticated, isDemoMode, setLocation]);
   
+  // Define the User interface to fix type issues
+  interface UserData {
+    id?: number;
+    name?: string;
+    profileCompleted?: number;
+    // Add other fields as needed
+  }
+  
   // Update completion percentage based on user data
   useEffect(() => {
     if (userData && typeof userData === 'object') {
-      setCompletionPercentage(userData.profileCompleted || 0);
+      // Safely access profileCompleted with type assertion
+      const userDataTyped = userData as UserData;
+      setCompletionPercentage(userDataTyped.profileCompleted || 0);
     }
   }, [userData]);
   

@@ -599,11 +599,19 @@ export default function Profile() {
       // 3. Also use the built-in React Query refetch methods
       setTimeout(() => {
         // Refetch everything through the standard mechanisms too
-        refetchUserData();
-        refetchSkills();
-        refetchExperiences();
-        refetchProjects();
-        refetchEducation();
+        console.log("Executing multi-query refetch operation");
+        try {
+          refetchUserData();
+          refetchSkills();
+          refetchExperiences();
+          refetchProjects();
+          refetchEducation();
+          refetchServices();
+          
+          console.log("All refetch operations successfully triggered");
+        } catch (refetchError) {
+          console.error("Error in refetch operations:", refetchError);
+        }
       }, 200);
     }
   }, [queryClient, userNumericId]);
@@ -617,7 +625,7 @@ export default function Profile() {
   }, [userData]);
 
   // Fetch user skills for the badges
-  const { data: skills = [], isLoading: isLoadingSkills } = useQuery<any[]>({
+  const { data: skills = [], isLoading: isLoadingSkills, refetch: refetchSkills } = useQuery<any[]>({
     queryKey: [`/api/users/${userNumericId}/skills`],
     queryFn: async () => {
       if (!userNumericId) return [];
@@ -631,7 +639,7 @@ export default function Profile() {
   });
   
   // Fetch user experiences for profile completion calculation
-  const { data: experiences = [], isLoading: isLoadingExperiences } = useQuery<any[]>({
+  const { data: experiences = [], isLoading: isLoadingExperiences, refetch: refetchExperiences } = useQuery<any[]>({
     queryKey: [`/api/users/${userNumericId}/experiences`],
     queryFn: async () => {
       if (!userNumericId) return [];
@@ -645,7 +653,7 @@ export default function Profile() {
   });
   
   // Fetch user educations for profile completion calculation
-  const { data: educations = [], isLoading: isLoadingEducations } = useQuery<any[]>({
+  const { data: educations = [], isLoading: isLoadingEducations, refetch: refetchEducation } = useQuery<any[]>({
     queryKey: [`/api/users/${userNumericId}/educations`],
     queryFn: async () => {
       if (!userNumericId) return [];
@@ -659,7 +667,7 @@ export default function Profile() {
   });
   
   // Fetch user projects for profile completion calculation
-  const { data: projects = [], isLoading: isLoadingProjects } = useQuery<any[]>({
+  const { data: projects = [], isLoading: isLoadingProjects, refetch: refetchProjects } = useQuery<any[]>({
     queryKey: [`/api/users/${userNumericId}/projects`],
     queryFn: async () => {
       if (!userNumericId) return [];
@@ -673,7 +681,7 @@ export default function Profile() {
   });
   
   // Fetch user services for profile completion calculation
-  const { data: services = [], isLoading: isLoadingServices } = useQuery<any[]>({
+  const { data: services = [], isLoading: isLoadingServices, refetch: refetchServices } = useQuery<any[]>({
     queryKey: ['/api/users', userNumericId, 'services'],
     queryFn: async () => {
       if (!userNumericId) return [];
