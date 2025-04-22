@@ -626,32 +626,65 @@ export default function ProfileSteps({
           break;
           
         case 3: // What I Offer
+          const whatIOffer = formData.whatIOffer?.trim() || "";
+          
           console.log("Saving What I Offer data:", {
-            whatIOffer: formData.whatIOffer || ""
+            whatIOffer: whatIOffer,
+            originalValue: formData.whatIOffer,
+            length: whatIOffer.length
           });
           
+          // Update using mutation
           await updateUserMutation.mutateAsync({
-            whatIOffer: formData.whatIOffer || ""
+            whatIOffer: whatIOffer
           });
           
           // Force a direct update to the database to ensure it's saved
           if (userData?.id) {
             try {
               console.log("Performing direct database update for whatIOffer field");
+              
+              // First approach - using fetch directly
               const response = await fetch(`/api/users/${userData.id}`, {
                 method: 'PUT',
                 headers: {
                   'Content-Type': 'application/json',
+                  'Cache-Control': 'no-cache'
                 },
                 body: JSON.stringify({
-                  whatIOffer: formData.whatIOffer || ""
+                  whatIOffer: whatIOffer
                 })
               });
               
               if (response.ok) {
-                console.log("Direct update successful");
+                const responseData = await response.json();
+                console.log("Direct update successful, response data:", responseData);
+                
+                // Apply the response data to ensure UI is updated
+                if (responseData && responseData.whatIOffer) {
+                  setFormData(prev => ({
+                    ...prev,
+                    whatIOffer: responseData.whatIOffer
+                  }));
+                }
               } else {
                 console.error("Direct update failed:", await response.text());
+              }
+              
+              // Second approach - using a GET request to refresh the data
+              console.log("Fetching latest user data to verify update");
+              const verifyResponse = await fetch(`/api/users/${userData.id}`, {
+                method: 'GET',
+                headers: {
+                  'Cache-Control': 'no-cache',
+                  'Pragma': 'no-cache'
+                }
+              });
+              
+              if (verifyResponse.ok) {
+                const latestUserData = await verifyResponse.json();
+                console.log("Latest user data:", latestUserData);
+                console.log("whatIOffer in latest data:", latestUserData.whatIOffer);
               }
             } catch (directUpdateError) {
               console.error("Error during direct update:", directUpdateError);
@@ -1192,10 +1225,17 @@ export default function ProfileSteps({
     
     // Handle what I offer text change
     const handleWhatIOfferChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      setFormData(prev => ({ 
-        ...prev, 
-        whatIOffer: e.target.value 
-      }));
+      const newValue = e.target.value;
+      console.log("Updating whatIOffer field with value:", newValue);
+      
+      setFormData(prev => {
+        const updated = { 
+          ...prev, 
+          whatIOffer: newValue 
+        };
+        console.log("Updated form data whatIOffer:", updated.whatIOffer);
+        return updated;
+      });
     };
     
     const rateUnits = [
