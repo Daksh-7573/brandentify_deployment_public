@@ -23,6 +23,7 @@ export function FloatingIndustryIconsLoader({
   loadingMessage = "All pieces of your professional universe are aligning...",
   onComplete 
 }: FloatingIconsLoaderProps) {
+  console.log("FloatingIndustryIconsLoader component rendered with isLoading:", isLoading);
   const [progress, setProgress] = useState(0);
   const [currentMessage, setCurrentMessage] = useState(loadingMessage);
   const [icons, setIcons] = useState<Icon[]>([]);

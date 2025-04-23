@@ -983,12 +983,19 @@ export default function PortfolioBuilder() {
 
   // Render loading states
   const renderLoadingState = () => {
-    if (isAnalyzingProfile) {
+    console.log('renderLoadingState called with states:', { 
+      isAnalyzingProfile, 
+      isGenerating, 
+      isLoadingPortfolio 
+    });
+    
+    if (isGenerating) {
+      console.log('Rendering FloatingIndustryIconsLoader for isGenerating:', isGenerating);
       return (
         <>
           <FloatingIndustryIconsLoader 
-            isLoading={isAnalyzingProfile} 
-            loadingMessage="Musk AI is analyzing your profile..." 
+            isLoading={true} 
+            loadingMessage={`Creating your ${layoutOptions.find(l => l.id === form.watch("layout"))?.name?.toLowerCase() || 'personalized'} portfolio...`}
           />
           <div className="h-[500px] flex flex-col items-center justify-center space-y-4 opacity-0">
             {/* Hidden placeholder to maintain layout */}
@@ -1000,12 +1007,13 @@ export default function PortfolioBuilder() {
       );
     }
     
-    if (isGenerating) {
+    if (isAnalyzingProfile) {
+      console.log('Rendering FloatingIndustryIconsLoader for isAnalyzingProfile:', isAnalyzingProfile);
       return (
         <>
           <FloatingIndustryIconsLoader 
-            isLoading={isGenerating} 
-            loadingMessage={`Creating your ${layoutOptions.find(l => l.id === form.watch("layout"))?.name.toLowerCase() || 'personalized'} portfolio...`}
+            isLoading={true} 
+            loadingMessage="Musk AI is analyzing your profile..." 
           />
           <div className="h-[500px] flex flex-col items-center justify-center space-y-4 opacity-0">
             {/* Hidden placeholder to maintain layout */}
@@ -1040,6 +1048,22 @@ export default function PortfolioBuilder() {
                 <div>
                   <h1 className="text-3xl font-bold">Portfolio Builder</h1>
                   <p className="text-muted-foreground">Create a personalized portfolio with Musk AI</p>
+                  
+                  {/* Test button to manually trigger loading animation */}
+                  <Button 
+                    variant="outline" 
+                    className="mt-4"
+                    onClick={() => {
+                      // Toggle loading state for testing
+                      setIsGenerating(true);
+                      // Set a timeout to simulate completion of the loading
+                      setTimeout(() => {
+                        setIsGenerating(false);
+                      }, 5000);
+                    }}
+                  >
+                    Test Loading Animation
+                  </Button>
                 </div>
                 {/* Progress indicator */}
               <div className="hidden sm:flex items-center space-x-2">
