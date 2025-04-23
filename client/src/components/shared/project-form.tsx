@@ -225,8 +225,9 @@ export default function ProjectForm({
     // Check if at least one media item exists (existing or new)
     const hasExistingMedia = existingProject && 
       existingProject.mediaUrls && 
-      Array.isArray(existingProject.mediaUrls) && 
-      existingProject.mediaUrls.length > 0;
+      (Array.isArray(existingProject.mediaUrls) ? 
+        existingProject.mediaUrls.length > 0 : 
+        typeof existingProject.mediaUrls === 'string' && existingProject.mediaUrls.length > 0);
       
     if (projectImages.length === 0 && !projectVideo && !hasExistingMedia && existingMedia.length === 0) {
       newMediaErrors.general = "At least one project image or video is required";
@@ -259,147 +260,85 @@ export default function ProjectForm({
     setMediaErrors(null);
     
     try {
-      let response;
       let projectData: Project;
       
+      // First phase: Create or update the project basic data
       if (existingProject) {
-        // Update existing project
-        response = await apiRequest(
-          'PUT', 
-          `/api/projects/${existingProject.id}`, 
-          values
-        );
-        projectData = await response.json();
-        
-        // Handle additional media uploads (project images and video)
-        if (projectImages.length > 0 || projectVideo) {
-          const mediaFormData = new FormData();
+        try {
+          // Update existing project
+          const response = await apiRequest(
+            'PUT', 
+            `/api/projects/${existingProject.id}`, 
+            values
+          );
           
-          // Add project images
-          projectImages.forEach((file, index) => {
-            mediaFormData.append(`projectImage_${index}`, file);
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ message: "Failed to parse error response" }));
+            throw new Error(errorData.message || "Failed to update project");
+          }
+          
+          projectData = await response.json();
+          console.log("Project updated successfully:", projectData);
+          
+          // Second phase: Handle media uploads if needed
+          if (projectImages.length > 0 || projectVideo || featuredImageIndex >= 1000) {
+            await handleMediaUpload(projectData, projectImages, projectVideo);
+          }
+          
+          toast({
+            title: "Project updated",
+            description: "Your project has been updated successfully",
           });
-          
-          // Add project video
-          if (projectVideo) {
-            mediaFormData.append('projectVideo', projectVideo);
-          }
-          
-          mediaFormData.append('projectId', projectData.id.toString());
-          mediaFormData.append('imageCount', projectImages.length.toString());
-          mediaFormData.append('featuredImageIndex', featuredImageIndex.toString());
-          
-          // Add existing featured image URL if an existing image is selected as featured
-          const existingFeaturedImageUrl = getExistingFeaturedImageUrl();
-          if (existingFeaturedImageUrl) {
-            mediaFormData.append('existingFeaturedImageUrl', existingFeaturedImageUrl);
-          }
-          
-          // Use fetch directly for media uploads
-          const mediaUploadResponse = await fetch('/api/projects/upload-media', {
-            method: 'POST',
-            body: mediaFormData,
-          });
-          
-          if (mediaUploadResponse.ok) {
-            const mediaUploadResult = await mediaUploadResponse.json();
-            // Update the media URLs
-            if (mediaUploadResult.mediaUrls) {
-              projectData.mediaUrls = mediaUploadResult.mediaUrls;
-            }
-            // Update the thumbnail URL if one was set
-            if (mediaUploadResult.thumbnailUrl) {
-              projectData.thumbnailUrl = mediaUploadResult.thumbnailUrl;
-            }
-          } else {
-            console.error("Media upload failed:", await mediaUploadResponse.text());
-            toast({
-              title: "Warning",
-              description: "Project updated but media upload failed. You can edit the project to try again.",
-              variant: "destructive"
-            });
-          }
+        } catch (updateError) {
+          console.error("Error updating project:", updateError);
+          throw updateError; // Re-throw to be caught by the outer try/catch
         }
-        
-        toast({
-          title: "Project updated",
-          description: "Your project has been updated successfully",
-        });
       } else {
-        // Create new project
-        const newProjectData = {
-          ...values,
-          userId,
-        };
-        
-        // First create the project
-        response = await apiRequest(
-          'POST', 
-          '/api/projects', 
-          newProjectData
-        );
-        projectData = await response.json();
-        
-        // Handle additional media uploads (project images and video)
-        if (projectImages.length > 0 || projectVideo) {
-          const mediaFormData = new FormData();
+        try {
+          // Create new project
+          const newProjectData = {
+            ...values,
+            userId,
+          };
           
-          // Add project images
-          projectImages.forEach((file, index) => {
-            mediaFormData.append(`projectImage_${index}`, file);
+          const response = await apiRequest(
+            'POST', 
+            '/api/projects', 
+            newProjectData
+          );
+          
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ message: "Failed to parse error response" }));
+            throw new Error(errorData.message || "Failed to create project");
+          }
+          
+          projectData = await response.json();
+          console.log("Project created successfully:", projectData);
+          
+          // Second phase: Handle media uploads if needed
+          if (projectImages.length > 0 || projectVideo) {
+            await handleMediaUpload(projectData, projectImages, projectVideo);
+          }
+          
+          toast({
+            title: "Project created",
+            description: "Your project has been created successfully",
           });
-          
-          // Add project video
-          if (projectVideo) {
-            mediaFormData.append('projectVideo', projectVideo);
-          }
-          
-          mediaFormData.append('projectId', projectData.id.toString());
-          mediaFormData.append('imageCount', projectImages.length.toString());
-          mediaFormData.append('featuredImageIndex', featuredImageIndex.toString());
-          
-          // Add existing featured image URL if an existing image is selected as featured
-          const existingFeaturedImageUrl = getExistingFeaturedImageUrl();
-          if (existingFeaturedImageUrl) {
-            mediaFormData.append('existingFeaturedImageUrl', existingFeaturedImageUrl);
-          }
-          
-          // Use fetch directly for media uploads
-          const mediaUploadResponse = await fetch('/api/projects/upload-media', {
-            method: 'POST',
-            body: mediaFormData,
-          });
-          
-          if (mediaUploadResponse.ok) {
-            const mediaUploadResult = await mediaUploadResponse.json();
-            // Update the media URLs
-            if (mediaUploadResult.mediaUrls) {
-              projectData.mediaUrls = mediaUploadResult.mediaUrls;
-            }
-            // Update the thumbnail URL if one was set
-            if (mediaUploadResult.thumbnailUrl) {
-              projectData.thumbnailUrl = mediaUploadResult.thumbnailUrl;
-            }
-          } else {
-            console.error("Media upload failed:", await mediaUploadResponse.text());
-            toast({
-              title: "Warning",
-              description: "Project created but media upload failed. You can edit the project to try again.",
-              variant: "destructive"
-            });
-          }
+        } catch (createError) {
+          console.error("Error creating project:", createError);
+          throw createError; // Re-throw to be caught by the outer try/catch
         }
-        
-        toast({
-          title: "Project created",
-          description: "Your project has been created successfully",
-        });
       }
       
       // Invalidate queries to refresh data
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/projects`] });
+      try {
+        queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/projects`] });
+      } catch (queryError) {
+        console.error("Error invalidating queries:", queryError);
+        // Don't throw here, we still want to continue with cleanup
+      }
       
-      // Reset form
+      // Reset form and UI state
       projectForm.reset();
       setProjectImages([]);
       setProjectVideo(null);
@@ -443,19 +382,73 @@ export default function ProjectForm({
         variant: "destructive"
       });
       
-      // If we were able to create the project but failed with media uploads,
-      // let's still close the modal and refresh the data
-      if (existingProject || errorMessage.includes("media upload failed")) {
-        if (closeModal) {
-          closeModal();
-        }
-        
-        try {
-          queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/projects`] });
-        } catch (queryError) {
-          console.error("Error invalidating queries:", queryError);
-        }
+      // Don't automatically close the modal on error so the user can try again
+    }
+  };
+  
+  // Helper function to handle media uploads
+  const handleMediaUpload = async (
+    projectData: Project, 
+    images: File[], 
+    video: File | null
+  ): Promise<void> => {
+    try {
+      const mediaFormData = new FormData();
+      
+      // Add project images
+      images.forEach((file, index) => {
+        mediaFormData.append(`projectImage_${index}`, file);
+      });
+      
+      // Add project video
+      if (video) {
+        mediaFormData.append('projectVideo', video);
       }
+      
+      mediaFormData.append('projectId', projectData.id.toString());
+      mediaFormData.append('imageCount', images.length.toString());
+      mediaFormData.append('featuredImageIndex', featuredImageIndex.toString());
+      
+      // Add existing featured image URL if an existing image is selected as featured
+      const existingFeaturedImageUrl = getExistingFeaturedImageUrl();
+      if (existingFeaturedImageUrl) {
+        mediaFormData.append('existingFeaturedImageUrl', existingFeaturedImageUrl);
+      }
+      
+      console.log("Sending media upload with data:", {
+        projectId: projectData.id,
+        imageCount: images.length,
+        featuredImageIndex,
+        hasVideo: !!video,
+        existingFeaturedImageUrl: existingFeaturedImageUrl
+      });
+      
+      // Use fetch directly for media uploads
+      const mediaUploadResponse = await fetch('/api/projects/upload-media', {
+        method: 'POST',
+        body: mediaFormData,
+      });
+      
+      if (!mediaUploadResponse.ok) {
+        const errorText = await mediaUploadResponse.text();
+        console.error("Media upload failed:", errorText);
+        throw new Error(`Media upload failed: ${errorText}`);
+      }
+      
+      const mediaUploadResult = await mediaUploadResponse.json();
+      console.log("Media upload successful:", mediaUploadResult);
+      
+      // Return updated project data
+      return mediaUploadResult;
+    } catch (error) {
+      console.error("Error in handleMediaUpload:", error);
+      
+      // Show a toast but don't throw, so we don't break the whole project save
+      toast({
+        title: "Warning",
+        description: "Project saved but media upload failed. You can edit the project to try adding images again.",
+        variant: "destructive"
+      });
     }
   };
 
