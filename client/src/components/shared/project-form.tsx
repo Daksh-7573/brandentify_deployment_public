@@ -57,6 +57,7 @@ interface ProjectFormProps {
 interface MediaErrors {
   images?: string;
   video?: string;
+  general?: string;
 }
 
 export default function ProjectForm({ 
@@ -624,6 +625,9 @@ export default function ProjectForm({
                     />
                     {mediaErrors?.images && (
                       <p className="text-sm text-destructive">{mediaErrors.images}</p>
+                    )}
+                    {mediaErrors?.general && (
+                      <p className="text-sm text-destructive">{mediaErrors.general}</p>
                     )}
                   </div>
                   
