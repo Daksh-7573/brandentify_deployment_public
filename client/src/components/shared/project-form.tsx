@@ -122,6 +122,11 @@ export default function ProjectForm({
     }
   }, [existingProject]);
   
+  // Function to handle choosing featured image from existing images
+  const handleSelectFeaturedImage = (index: number) => {
+    setFeaturedImageIndex(index);
+  };
+  
   const onSubmit = async (values: ProjectFormValues) => {
     if (!userId) return;
     
@@ -417,16 +422,12 @@ export default function ProjectForm({
       
       // Reset form
       projectForm.reset();
-      setThumbnailFile(null);
-      setThumbnailError(null);
       setProjectImages([]);
       setProjectVideo(null);
       setMediaErrors(null);
+      setFeaturedImageIndex(0);
       
       // Reset all file inputs
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
       if (videoInputRef.current) {
         videoInputRef.current.value = '';
       }
@@ -674,22 +675,70 @@ export default function ProjectForm({
                           }
                           setProjectImages(files);
                           setMediaErrors(prev => ({...prev, images: undefined}));
+                          // Reset featured image index when new images are uploaded
+                          setFeaturedImageIndex(0);
                         }} 
                       />
                     </FormControl>
+                    {projectImages.length > 0 && (
+                      <div className="mt-4">
+                        <Label>Select featured image</Label>
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {projectImages.map((file, index) => (
+                            <div 
+                              key={index} 
+                              className={`relative cursor-pointer border-2 ${
+                                featuredImageIndex === index ? 'border-primary' : 'border-transparent'
+                              }`}
+                              onClick={() => handleSelectFeaturedImage(index)}
+                            >
+                              <img 
+                                src={URL.createObjectURL(file)} 
+                                alt={`New media ${index + 1}`} 
+                                className="h-16 w-16 object-cover rounded"
+                              />
+                              {featuredImageIndex === index && (
+                                <div className="absolute -top-2 -right-2 bg-primary text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                                  ★
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                        <div className="mt-2 text-xs text-muted-foreground">
+                          Click an image to select which one will be featured on your profile.
+                        </div>
+                      </div>
+                    )}
                     <FormDescription>
                       {existingProject?.mediaUrls && existingProject.mediaUrls.length > 0 ? (
                         <>
                           <span>Current media:</span>
-                          {existingProject.mediaUrls.map((url, index) => (
-                            <img 
-                              key={index}
-                              src={url} 
-                              alt={`Assignment media ${index + 1}`} 
-                              className="h-8 w-8 object-cover rounded inline-block mr-1"
-                            />
-                          ))}
-                          <span className="text-xs text-muted-foreground ml-2">(Upload new ones to replace)</span>
+                          <div className="flex flex-wrap gap-2 mt-2">
+                            {existingProject.mediaUrls.map((url, index) => (
+                              <div 
+                                key={index} 
+                                className={`relative cursor-pointer border-2 ${
+                                  featuredImageIndex === index ? 'border-primary' : 'border-transparent'
+                                }`}
+                                onClick={() => handleSelectFeaturedImage(index)}
+                              >
+                                <img 
+                                  src={url} 
+                                  alt={`Assignment media ${index + 1}`} 
+                                  className="h-16 w-16 object-cover rounded"
+                                />
+                                {featuredImageIndex === index && (
+                                  <div className="absolute -top-2 -right-2 bg-primary text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                                    ★
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                          <div className="mt-2 text-xs text-muted-foreground">
+                            Click an image to set it as the featured image. Upload new images to replace all current ones.
+                          </div>
                         </>
                       ) : (
                         "Upload up to 10 images to showcase your assignment"
