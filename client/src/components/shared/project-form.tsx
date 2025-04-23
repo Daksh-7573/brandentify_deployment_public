@@ -172,83 +172,6 @@ export default function ProjectForm({
         });
         projectData = await response.json();
         
-        // If we have a thumbnail file, upload it
-        if (thumbnailFile) {
-          try {
-            console.log("Uploading thumbnail for existing project ID:", projectData.id);
-            const formData = new FormData();
-            formData.append('thumbnail', thumbnailFile);
-            formData.append('projectId', projectData.id.toString());
-            
-            // Use fetch directly as apiRequest doesn't handle FormData
-            const uploadResponse = await fetch('/api/projects/upload-thumbnail', {
-              method: 'POST',
-              body: formData,
-            });
-            
-            if (!uploadResponse.ok) {
-              const errorText = await uploadResponse.text();
-              console.error("Thumbnail upload failed:", errorText);
-              throw new Error(`Failed to upload thumbnail: ${errorText}`);
-            }
-            
-            const uploadResult = await uploadResponse.json();
-            console.log("Thumbnail upload successful:", uploadResult);
-            
-            // Log detailed information about the response
-            console.log("Thumbnail upload details:", {
-              thumbnailUrl: uploadResult.thumbnailUrl,
-              thumbnailFile: uploadResult.thumbnailFile,
-              fullResponse: uploadResult
-            });
-            
-            // Update the thumbnail URL and file path in projectData
-            projectData.thumbnailUrl = uploadResult.thumbnailUrl;
-            // Using type assertion to handle the thumbnailFile property
-            (projectData as any).thumbnailFile = uploadResult.thumbnailFile;
-            
-            // Also update in the database to ensure persistence
-            try {
-              const patchData = { 
-                thumbnailUrl: uploadResult.thumbnailUrl,
-                thumbnailFile: uploadResult.thumbnailFile
-              };
-              
-              console.log(`Updating project ${projectData.id} with thumbnail data:`, patchData);
-              
-              // Make sure we have valid data to update
-              if (!patchData.thumbnailUrl && !patchData.thumbnailFile) {
-                console.warn("Both thumbnailUrl and thumbnailFile are empty or null, skipping database update");
-              } else {
-                const patchResponse = await apiRequest({
-                  method: 'PATCH',
-                  url: `/api/projects/${projectData.id}/thumbnail`,
-                  data: patchData
-                });
-                
-                const patchResult = await patchResponse.json();
-                console.log("Project thumbnail database update result:", patchResult);
-                
-                // Verify the update was successful by checking the response
-                if (patchResult && (patchResult.thumbnailUrl || patchResult.thumbnailFile)) {
-                  console.log("Thumbnail update confirmed in database");
-                } else {
-                  console.warn("Thumbnail update may not have been successful");
-                }
-              }
-            } catch (thumbnailUpdateError) {
-              console.error("Error updating thumbnail in database:", thumbnailUpdateError);
-            }
-          } catch (error) {
-            console.error("Error during thumbnail upload:", error);
-            toast({
-              title: "Warning",
-              description: "Project updated but thumbnail upload failed. You can edit the project to try again.",
-              variant: "destructive"
-            });
-          }
-        }
-        
         // Handle additional media uploads (project images and video)
         if (projectImages.length > 0 || projectVideo) {
           const mediaFormData = new FormData();
@@ -265,6 +188,7 @@ export default function ProjectForm({
           
           mediaFormData.append('projectId', projectData.id.toString());
           mediaFormData.append('imageCount', projectImages.length.toString());
+          mediaFormData.append('featuredImageIndex', featuredImageIndex.toString());
           
           // Use fetch directly for media uploads
           const mediaUploadResponse = await fetch('/api/projects/upload-media', {
@@ -278,6 +202,17 @@ export default function ProjectForm({
             if (mediaUploadResult.mediaUrls) {
               projectData.mediaUrls = mediaUploadResult.mediaUrls;
             }
+            // Update the thumbnail URL if one was set
+            if (mediaUploadResult.thumbnailUrl) {
+              projectData.thumbnailUrl = mediaUploadResult.thumbnailUrl;
+            }
+          } else {
+            console.error("Media upload failed:", await mediaUploadResponse.text());
+            toast({
+              title: "Warning",
+              description: "Project updated but media upload failed. You can edit the project to try again.",
+              variant: "destructive"
+            });
           }
         }
         
@@ -300,85 +235,6 @@ export default function ProjectForm({
         });
         projectData = await response.json();
         
-        // If we have a thumbnail file, upload it
-        try {
-          console.log("Uploading thumbnail for new project ID:", projectData.id);
-          const formData = new FormData();
-          formData.append('thumbnail', thumbnailFile!);
-          formData.append('projectId', projectData.id.toString());
-          
-          // Use fetch directly as apiRequest doesn't handle FormData
-          const uploadResponse = await fetch('/api/projects/upload-thumbnail', {
-            method: 'POST',
-            body: formData,
-          });
-          
-          if (!uploadResponse.ok) {
-            const errorText = await uploadResponse.text();
-            console.error("Thumbnail upload failed:", errorText);
-            throw new Error(`Failed to upload thumbnail: ${errorText}`);
-          }
-          
-          const uploadResult = await uploadResponse.json();
-          console.log("Thumbnail upload successful:", uploadResult);
-          
-          // Log detailed information about the response
-          console.log("Thumbnail upload details:", {
-            thumbnailUrl: uploadResult.thumbnailUrl,
-            thumbnailFile: uploadResult.thumbnailFile,
-            fullResponse: uploadResult
-          });
-          
-          // Check if thumbnail data is valid
-          if (!uploadResult.thumbnailUrl && !uploadResult.thumbnailFile) {
-            console.warn("Thumbnail upload response missing thumbnailUrl and thumbnailFile");
-            
-            // Try to generate fallback values if we have the raw file
-            if (thumbnailFile) {
-              const timestamp = Date.now();
-              const filename = `project_${projectData.id}_${timestamp}_${thumbnailFile.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-              console.log("Generated fallback filename:", filename);
-              
-              // Use fallback values
-              uploadResult.thumbnailFile = filename;
-              uploadResult.thumbnailUrl = `/uploads/projects/${filename}`;
-            }
-          }
-          
-          // Update the thumbnail URL and file path in projectData
-          projectData.thumbnailUrl = uploadResult.thumbnailUrl;
-          // Using type assertion to handle the thumbnailFile property
-          (projectData as any).thumbnailFile = uploadResult.thumbnailFile;
-          
-          // Also update in the database to ensure persistence
-          try {
-            const patchData = { 
-              thumbnailUrl: uploadResult.thumbnailUrl,
-              thumbnailFile: uploadResult.thumbnailFile
-            };
-            
-            console.log(`Updating project ${projectData.id} with thumbnail data:`, patchData);
-            
-            const patchResponse = await apiRequest({
-              method: 'PATCH',
-              url: `/api/projects/${projectData.id}/thumbnail`,
-              data: patchData
-            });
-            
-            const patchResult = await patchResponse.json();
-            console.log("Project thumbnail database update result:", patchResult);
-          } catch (thumbnailUpdateError) {
-            console.error("Error updating thumbnail in database:", thumbnailUpdateError);
-          }
-        } catch (error) {
-          console.error("Error during thumbnail upload:", error);
-          toast({
-            title: "Warning",
-            description: "Project created but thumbnail upload failed. You can edit the project to try again.",
-            variant: "destructive"
-          });
-        }
-        
         // Handle additional media uploads (project images and video)
         if (projectImages.length > 0 || projectVideo) {
           const mediaFormData = new FormData();
@@ -395,6 +251,7 @@ export default function ProjectForm({
           
           mediaFormData.append('projectId', projectData.id.toString());
           mediaFormData.append('imageCount', projectImages.length.toString());
+          mediaFormData.append('featuredImageIndex', featuredImageIndex.toString());
           
           // Use fetch directly for media uploads
           const mediaUploadResponse = await fetch('/api/projects/upload-media', {
@@ -408,6 +265,17 @@ export default function ProjectForm({
             if (mediaUploadResult.mediaUrls) {
               projectData.mediaUrls = mediaUploadResult.mediaUrls;
             }
+            // Update the thumbnail URL if one was set
+            if (mediaUploadResult.thumbnailUrl) {
+              projectData.thumbnailUrl = mediaUploadResult.thumbnailUrl;
+            }
+          } else {
+            console.error("Media upload failed:", await mediaUploadResponse.text());
+            toast({
+              title: "Warning",
+              description: "Project created but media upload failed. You can edit the project to try again.",
+              variant: "destructive"
+            });
           }
         }
         
@@ -427,7 +295,7 @@ export default function ProjectForm({
       setMediaErrors(null);
       setFeaturedImageIndex(0);
       
-      // Reset all file inputs
+      // Reset all file input elements
       if (videoInputRef.current) {
         videoInputRef.current.value = '';
       }
@@ -435,80 +303,80 @@ export default function ProjectForm({
         multipleImagesInputRef.current.value = '';
       }
       
-      // Call success callback if provided
-      if (onSuccess) {
-        onSuccess(projectData);
-      }
-      
-      // Close modal if provided
       if (closeModal) {
         closeModal();
       }
+      
+      if (onSuccess) {
+        onSuccess(projectData);
+      }
     } catch (error) {
-      console.error("Error saving project:", error);
+      console.error("Error submitting project:", error);
       toast({
         title: "Error",
-        description: "Failed to save your project. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to save project",
         variant: "destructive"
       });
     }
   };
+
+  // Handle image file selection
+  const handleImagesSelected = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const filesArray = Array.from(event.target.files);
+      setProjectImages(prev => [...prev, ...filesArray]);
+      setMediaErrors(prev => ({ ...prev, images: undefined }));
+    }
+  };
+  
+  // Handle video file selection
+  const handleVideoSelected = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      setProjectVideo(event.target.files[0]);
+      setMediaErrors(prev => ({ ...prev, video: undefined }));
+    }
+  };
+  
+  // Remove project image
+  const removeProjectImage = (index: number) => {
+    setProjectImages(prev => prev.filter((_, i) => i !== index));
+    if (featuredImageIndex === index) {
+      setFeaturedImageIndex(0);
+    } else if (featuredImageIndex > index) {
+      setFeaturedImageIndex(featuredImageIndex - 1);
+    }
+  };
+  
+  // Remove project video
+  const removeProjectVideo = () => {
+    setProjectVideo(null);
+    if (videoInputRef.current) {
+      videoInputRef.current.value = '';
+    }
+  };
+  
+  // Existing media from the project
+  const existingMedia = existingProject?.mediaUrls || [];
   
   return (
     <div className="space-y-6">
-      <Tabs defaultValue="details" value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-2">
-          <TabsTrigger value="details">Assignment Details</TabsTrigger>
-          <TabsTrigger value="media">Assignment Media</TabsTrigger>
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="details">Project Details</TabsTrigger>
+          <TabsTrigger value="media">Media & Attachments</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="details" className="space-y-4 pt-4">
-          <div className="mb-4 p-4 bg-muted/40 rounded-lg border border-muted">
-            <h3 className="text-base font-medium mb-1">Showcase your work and expertise</h3>
-            <p className="text-sm text-muted-foreground">Add details, images and links to demonstrate your professional skills. Assignments highlight your best work to potential employers and collaborators.</p>
-          </div>
-          <Form {...projectForm}>
-            <form onSubmit={projectForm.handleSubmit(onSubmit)} className="space-y-4">
+        <Form {...projectForm}>
+          <form onSubmit={projectForm.handleSubmit(onSubmit)} className="space-y-6">
+            <TabsContent value="details" className="space-y-6">
               <FormField
                 control={projectForm.control}
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Assignment Title*</FormLabel>
+                    <FormLabel>Title</FormLabel>
                     <FormControl>
-                      <Input placeholder="My Amazing Project" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={projectForm.control}
-                name="category"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Category</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Web Development, Design, etc." {...field} value={field.value || ''} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={projectForm.control}
-                name="industry"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Industry</FormLabel>
-                    <FormControl>
-                      <IndustryCombobox 
-                        value={field.value || ''} 
-                        onChange={field.onChange}
-                        placeholder="Select or type an industry"
-                      />
+                      <Input placeholder="Project title" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -522,11 +390,11 @@ export default function ProjectForm({
                   <FormItem>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <Textarea 
-                        placeholder="Describe your project, its goals, and your contributions" 
-                        className="resize-none" 
+                      <Textarea
+                        placeholder="Describe your project"
+                        className="min-h-[120px]"
                         {...field}
-                        value={field.value || ''} 
+                        value={field.value || ''}
                       />
                     </FormControl>
                     <FormMessage />
@@ -534,307 +402,259 @@ export default function ProjectForm({
                 )}
               />
               
-              <FormField
-                control={projectForm.control}
-                name="startDate"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Assignment Date*</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              format(new Date(field.value), "PPP")
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={new Date(field.value)}
-                          onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
-                          disabled={(date) => date > new Date()}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={projectForm.control}
-                name="projectUrl"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Assignment URL</FormLabel>
-                    <FormControl>
-                      <Input type="url" placeholder="https://example.com" {...field} value={field.value || ''} />
-                    </FormControl>
-                    <FormDescription>
-                      Link to your work (GitHub, website, portfolio, etc.)
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <div className="flex justify-end gap-2">
-                {onCancel && (
-                  <Button type="button" variant="outline" onClick={onCancel}>
-                    Cancel
-                  </Button>
-                )}
-                <Button type="button" onClick={() => setActiveTab('media')}>
-                  Next: Add Media
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </TabsContent>
-        
-        <TabsContent value="media" className="space-y-4 pt-4">
-          <div className="mb-4 p-4 bg-muted/40 rounded-lg border border-muted">
-            <h3 className="text-base font-medium mb-1">Enhance with visuals</h3>
-            <p className="text-sm text-muted-foreground">A compelling thumbnail image is required. You can also add up to 10 additional images or a short video to better demonstrate your work.</p>
-          </div>
-          <Form {...projectForm}>
-            <form onSubmit={projectForm.handleSubmit(onSubmit)} className="space-y-4">
-              <div className="space-y-6">
-                {/* Removed thumbnail field as requested */}
+              <div className="grid gap-6 md:grid-cols-2">
+                <FormField
+                  control={projectForm.control}
+                  name="category"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Category</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g., Web Development" {...field} value={field.value || ''} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 
-                <h3 className="text-base font-medium">Additional Assignment Media (Optional)</h3>
-                <p className="text-sm text-muted-foreground mb-4">Choose one of the following media types to enhance your assignment showcase</p>
-
-                <div className="flex space-x-4">
-                  <div className="flex-1">
-                    <Label className="block mb-2">Media Type</Label>
-                    <div className="flex gap-4 items-start">
-                      <div className="flex items-center space-x-2">
-                        <input 
-                          type="radio" 
-                          id="media-images" 
-                          name="media-type"
-                          checked={!projectVideo}
-                          onChange={() => {
-                            setProjectVideo(null);
-                            if (videoInputRef.current) {
-                              videoInputRef.current.value = '';
-                            }
-                          }}
-                          className="h-4 w-4" 
+                <FormField
+                  control={projectForm.control}
+                  name="industry"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Industry</FormLabel>
+                      <FormControl>
+                        <IndustryCombobox
+                          value={field.value || ''}
+                          onChange={field.onChange}
                         />
-                        <Label htmlFor="media-images" className="font-normal">Images (Max 10)</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <input 
-                          type="radio" 
-                          id="media-video" 
-                          name="media-type"
-                          checked={!!projectVideo}
-                          onChange={() => {
-                            setProjectImages([]);
-                            if (multipleImagesInputRef.current) {
-                              multipleImagesInputRef.current.value = '';
-                            }
-                          }}
-                          className="h-4 w-4" 
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              
+              <div className="grid gap-6 md:grid-cols-2">
+                <FormField
+                  control={projectForm.control}
+                  name="startDate"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Start Date</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "w-full pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value ? (
+                                format(new Date(field.value), "PPP")
+                              ) : (
+                                <span>Pick a date</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value ? new Date(field.value) : undefined}
+                            onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={projectForm.control}
+                  name="projectUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Project URL</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="https://example.com" 
+                          {...field}
+                          value={field.value || ''}
                         />
-                        <Label htmlFor="media-video" className="font-normal">Video (Max 150 sec)</Label>
-                      </div>
-                    </div>
-                  </div>
+                      </FormControl>
+                      <FormDescription>
+                        Optional link to your project
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="media" className="space-y-6">
+              {/* Project Images Section */}
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <Label className="text-base">Project Images</Label>
+                  <div className="text-sm text-muted-foreground">Max 10 images</div>
                 </div>
                 
-                {!projectVideo ? (
-                  <FormItem>
-                    <FormLabel>Assignment Images</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="file" 
-                        ref={multipleImagesInputRef}
-                        accept="image/*"
-                        multiple
-                        onChange={(e) => {
-                          const files = Array.from(e.target.files || []);
-                          if (files.length > 10) {
-                            setMediaErrors(prev => ({...prev, images: "Maximum 10 images allowed"}));
-                            return;
-                          }
-                          setProjectImages(files);
-                          setMediaErrors(prev => ({...prev, images: undefined}));
-                          // Reset featured image index when new images are uploaded
-                          setFeaturedImageIndex(0);
-                        }} 
-                      />
-                    </FormControl>
-                    {projectImages.length > 0 && (
-                      <div className="mt-4">
-                        <Label>Select featured image</Label>
-                        <div className="flex flex-wrap gap-2 mt-2">
-                          {projectImages.map((file, index) => (
-                            <div 
-                              key={index} 
-                              className={`relative cursor-pointer border-2 ${
-                                featuredImageIndex === index ? 'border-primary' : 'border-transparent'
-                              }`}
-                              onClick={() => handleSelectFeaturedImage(index)}
-                            >
-                              <img 
-                                src={URL.createObjectURL(file)} 
-                                alt={`New media ${index + 1}`} 
-                                className="h-16 w-16 object-cover rounded"
-                              />
-                              {featuredImageIndex === index && (
-                                <div className="absolute -top-2 -right-2 bg-primary text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-                                  ★
-                                </div>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                        <div className="mt-2 text-xs text-muted-foreground">
-                          Click an image to select which one will be featured on your profile.
-                        </div>
-                      </div>
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="flex flex-col gap-2">
+                    <Input
+                      ref={multipleImagesInputRef}
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleImagesSelected}
+                    />
+                    {mediaErrors?.images && (
+                      <p className="text-sm text-destructive">{mediaErrors.images}</p>
                     )}
-                    <FormDescription>
-                      {existingProject?.mediaUrls && existingProject.mediaUrls.length > 0 ? (
-                        <>
-                          <span>Current media:</span>
-                          <div className="flex flex-wrap gap-2 mt-2">
-                            {existingProject.mediaUrls.map((url, index) => (
-                              <div 
-                                key={index} 
-                                className={`relative cursor-pointer border-2 ${
-                                  featuredImageIndex === index ? 'border-primary' : 'border-transparent'
-                                }`}
+                  </div>
+                  
+                  {/* Selected images preview */}
+                  {projectImages.length > 0 && (
+                    <div className="space-y-2">
+                      <div className="text-sm font-medium">New Images:</div>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {projectImages.map((file, index) => (
+                          <div key={`new-${index}`} className="relative group">
+                            <div className={`border rounded-md overflow-hidden aspect-square ${featuredImageIndex === index ? 'ring-2 ring-primary' : ''}`}>
+                              <img
+                                src={URL.createObjectURL(file)}
+                                alt={`Preview ${index + 1}`}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition-opacity">
+                              <Button
+                                type="button"
+                                variant="destructive"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={() => removeProjectImage(index)}
+                              >
+                                ✕
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="secondary"
+                                size="icon"
+                                className="h-8 w-8"
                                 onClick={() => handleSelectFeaturedImage(index)}
                               >
-                                <img 
-                                  src={url} 
-                                  alt={`Assignment media ${index + 1}`} 
-                                  className="h-16 w-16 object-cover rounded"
-                                />
-                                {featuredImageIndex === index && (
-                                  <div className="absolute -top-2 -right-2 bg-primary text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-                                    ★
-                                  </div>
-                                )}
+                                ★
+                              </Button>
+                            </div>
+                            {featuredImageIndex === index && (
+                              <div className="absolute top-1 right-1 bg-primary text-primary-foreground rounded-full p-1">
+                                ★
                               </div>
-                            ))}
+                            )}
                           </div>
-                          <div className="mt-2 text-xs text-muted-foreground">
-                            Click an image to set it as the featured image. Upload new images to replace all current ones.
-                          </div>
-                        </>
-                      ) : (
-                        "Upload up to 10 images to showcase your assignment"
-                      )}
-                    </FormDescription>
-                    {mediaErrors?.images && <p className="text-sm font-medium text-destructive">{mediaErrors.images}</p>}
-                    <FormMessage />
-                  </FormItem>
-                ) : (
-                  <FormItem>
-                    <FormLabel>Assignment Video</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="file" 
-                        ref={videoInputRef}
-                        accept="video/*"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            // Create a temporary video element to check duration
-                            const validateVideoLength = (file: File): Promise<boolean> => {
-                              return new Promise((resolve) => {
-                                // Create a temporary video element to check duration
-                                const video = document.createElement('video');
-                                video.preload = 'metadata';
-                                
-                                video.onloadedmetadata = () => {
-                                  window.URL.revokeObjectURL(video.src);
-                                  const duration = video.duration;
-                                  
-                                  if (duration > 150) { // 150 seconds limit for Assignments
-                                    setMediaErrors(prev => ({...prev, video: `Video must be shorter than 150 seconds. Current length: ${Math.round(duration)} seconds.`}));
-                                    resolve(false);
-                                  } else {
-                                    resolve(true);
-                                  }
-                                };
-                                
-                                video.onerror = () => {
-                                  // If we can't determine length, we'll use file size as a fallback
-                                  if (file.size > 6 * 1024 * 1024) { // ~150 seconds at 320kbps
-                                    setMediaErrors(prev => ({...prev, video: "Video might exceed maximum size (max 150 seconds)"}));
-                                    resolve(false);
-                                  } else {
-                                    resolve(true);
-                                  }
-                                };
-                                
-                                video.src = URL.createObjectURL(file);
-                              });
-                            };
-                            
-                            // Check video length and only proceed if it's valid
-                            validateVideoLength(file).then(isValid => {
-                              if (isValid) {
-                                setProjectVideo(file);
-                                setMediaErrors(prev => ({...prev, video: undefined}));
-                              } else if (videoInputRef.current) {
-                                videoInputRef.current.value = '';
-                              }
-                            });
-                            return;
-                          }
-                        }} 
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Upload a short video (max 150 seconds) to demonstrate your assignment
-                      {existingProject?.mediaUrls && existingProject.mediaUrls.length > 0 && (
-                        <span className="text-xs text-muted-foreground block mt-1">(Upload a new one to replace)</span>
-                      )}
-                    </FormDescription>
-                    {mediaErrors?.video && <p className="text-sm font-medium text-destructive">{mediaErrors.video}</p>}
-                    <FormMessage />
-                  </FormItem>
-                )}
-              </div>
-              
-              <div className="flex justify-between gap-2 pt-4">
-                <Button type="button" variant="outline" onClick={() => setActiveTab('details')}>
-                  Back to Details
-                </Button>
-                <div className="space-x-2">
-                  {onCancel && (
-                    <Button type="button" variant="outline" onClick={onCancel}>
-                      Cancel
-                    </Button>
+                        ))}
+                      </div>
+                    </div>
                   )}
-                  <Button type="submit">
-                    {existingProject ? 'Update Assignment' : 'Create Assignment'}
-                  </Button>
+                  
+                  {/* Existing images preview */}
+                  {existingMedia.length > 0 && (
+                    <div className="space-y-2">
+                      <div className="text-sm font-medium">Existing Media:</div>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {existingMedia.map((url, index) => (
+                          <div key={`existing-${index}`} className="relative">
+                            {url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.mov') ? (
+                              <div className="border rounded-md overflow-hidden aspect-square flex items-center justify-center bg-muted">
+                                <Video className="h-8 w-8 opacity-50" />
+                              </div>
+                            ) : (
+                              <div className="border rounded-md overflow-hidden aspect-square">
+                                <img
+                                  src={url}
+                                  alt={`Media ${index + 1}`}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
-            </form>
-          </Form>
-        </TabsContent>
+              
+              {/* Project Video Section */}
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <Label className="text-base">Project Video</Label>
+                  <div className="text-sm text-muted-foreground">Optional (~2.5 min max)</div>
+                </div>
+                
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="flex flex-col gap-2">
+                    <Input
+                      ref={videoInputRef}
+                      type="file"
+                      accept="video/*"
+                      onChange={handleVideoSelected}
+                    />
+                    {mediaErrors?.video && (
+                      <p className="text-sm text-destructive">{mediaErrors.video}</p>
+                    )}
+                  </div>
+                  
+                  {/* Selected video preview */}
+                  {projectVideo && (
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <div className="text-sm font-medium">Selected Video:</div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={removeProjectVideo}
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                      <div className="border rounded-md p-4 flex items-center gap-3">
+                        <Video className="h-6 w-6" />
+                        <div className="truncate">
+                          {projectVideo.name} ({Math.round(projectVideo.size / 1024)}KB)
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </TabsContent>
+            
+            <div className="flex justify-end gap-3 pt-4">
+              {onCancel && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={onCancel}
+                >
+                  Cancel
+                </Button>
+              )}
+              <Button type="submit">
+                {existingProject ? 'Update Project' : 'Create Project'}
+              </Button>
+            </div>
+          </form>
+        </Form>
       </Tabs>
     </div>
   );
