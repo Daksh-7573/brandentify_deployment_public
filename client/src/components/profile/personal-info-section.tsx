@@ -1,5 +1,5 @@
 import React from "react";
-import { Mail, Phone, Globe, Briefcase, Code, Edit } from "lucide-react";
+import { Mail, Phone, Globe, Briefcase, Edit } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { UserData } from "@/types/user";
@@ -10,9 +10,7 @@ interface PersonalInfoSectionProps {
 }
 
 const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ userData, onEdit }) => {
-  // Add debug logging for domain
-  console.log("PersonalInfoSection - userData:", userData);
-  console.log("PersonalInfoSection - userData.domain:", userData.domain);
+  // Component to display contact information
   return (
     <Card className="shadow-sm">
       <CardContent className="p-6">
@@ -42,30 +40,6 @@ const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ userData, onE
             <div className="flex items-center gap-2">
               <Phone className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm">{userData.phoneNumber}</span>
-            </div>
-          )}
-          
-          {/* Company - only show if value exists */}
-          {userData.company && (
-            <div className="flex items-center gap-2">
-              <Briefcase className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm">{userData.company}</span>
-            </div>
-          )}
-          
-          {/* Domain - always show, display as "General" when value is "all" */}
-          {userData.domain && (
-            <div className="flex items-center gap-2">
-              <Code className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm">{userData.domain === "all" ? "General" : userData.domain}</span>
-            </div>
-          )}
-          
-          {/* What I Offer - only show if value exists */}
-          {userData.whatIOffer && (
-            <div className="flex items-center gap-2">
-              <Briefcase className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm">{userData.whatIOffer}</span>
             </div>
           )}
           
