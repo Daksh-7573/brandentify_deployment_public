@@ -419,12 +419,14 @@ export default function PortfolioBuilder() {
 
   // Handle creating portfolio with AI
   const handleCreatePortfolio = () => {
+    // Start the analyzing profile animation with fluid loader
     setIsAnalyzingProfile(true);
 
     // First check if we have the user's profile and portfolio related data
+    // The animation duration is set to 3 seconds in the fluid loader
     setTimeout(() => {
       setIsAnalyzingProfile(false);
-      setIsGenerating(true);
+      setIsGenerating(true); // This will trigger the second fluid loader
 
       // Directly fetch the most up-to-date data
       const fetchAllUserData = async () => {
@@ -642,7 +644,24 @@ export default function PortfolioBuilder() {
               ))}
             </div>
             
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-2">
+              <Button 
+                variant="outline"
+                onClick={() => {
+                  // Test the animation directly
+                  setIsAnalyzingProfile(true);
+                  setTimeout(() => {
+                    setIsAnalyzingProfile(false);
+                    setIsGenerating(true);
+                    setTimeout(() => {
+                      setIsGenerating(false);
+                    }, 5000);
+                  }, 3000);
+                }}
+                className="flex items-center gap-2"
+              >
+                <Loader2 className="h-4 w-4" /> Test Animation
+              </Button>
               <Button 
                 onClick={handleCreatePortfolio}
                 className="flex items-center gap-2"
