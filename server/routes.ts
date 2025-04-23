@@ -974,7 +974,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           try {
             // Update the project in the database right away
-            console.log(`[POST /projects/upload-thumbnail] Updating project ${numericProjectId} with new thumbnail`);
+            console.log(`[POST /projects/upload-thumbnail] Updating project ${numericProjectId} with new thumbnail:`, {
+              thumbnailUrl: fileUrl,
+              thumbnailFile: filename
+            });
+            
             const updateResult = await storage.updateProject(numericProjectId, {
               thumbnailUrl: fileUrl,
               thumbnailFile: filename
@@ -988,6 +992,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
               
               // Double-check the update worked
               const updatedProject = await storage.getProjectById(numericProjectId);
+              console.log(`[POST /projects/upload-thumbnail] Database verification:`, {
+                project: updatedProject,
+                thumbnailUrl: updatedProject?.thumbnailUrl,
+                thumbnailFile: updatedProject?.thumbnailFile,
+                expectedUrl: fileUrl
+              });
+              
               if (updatedProject && updatedProject.thumbnailUrl === fileUrl) {
                 console.log(`[POST /projects/upload-thumbnail] Database update verified`);
               } else {
@@ -1033,7 +1044,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           try {
             // Update the project in the database right away
-            console.log(`[POST /projects/upload-thumbnail] Updating project ${numericProjectId} with new thumbnail`);
+            console.log(`[POST /projects/upload-thumbnail] Updating project ${numericProjectId} with new thumbnail:`, {
+              thumbnailUrl: fileUrl,
+              thumbnailFile: req.file.filename
+            });
+            
             const updateResult = await storage.updateProject(numericProjectId, {
               thumbnailUrl: fileUrl,
               thumbnailFile: req.file.filename
@@ -1047,6 +1062,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
               
               // Double-check the update worked
               const updatedProject = await storage.getProjectById(numericProjectId);
+              console.log(`[POST /projects/upload-thumbnail] Database verification:`, {
+                project: updatedProject,
+                thumbnailUrl: updatedProject?.thumbnailUrl,
+                thumbnailFile: updatedProject?.thumbnailFile,
+                expectedUrl: fileUrl
+              });
+              
               if (updatedProject && updatedProject.thumbnailUrl === fileUrl) {
                 console.log(`[POST /projects/upload-thumbnail] Database update verified`);
               } else {
