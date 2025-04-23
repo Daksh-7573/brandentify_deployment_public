@@ -809,7 +809,13 @@ export default function Projects() {
         <CardContent>
           {isLoading ? (
             <div className="flex justify-center py-6">
-              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+              <FluidLoader 
+                isLoading={true} 
+                text="Loading projects"
+                size="sm"
+                theme="primary"
+                smallText={true}
+              />
             </div>
           ) : displayProjects && displayProjects.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
