@@ -570,23 +570,52 @@ export default function ProjectForm({
                     <div className="space-y-2">
                       <div className="text-sm font-medium">Existing Media:</div>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {existingMedia.map((url, index) => (
-                          <div key={`existing-${index}`} className="relative">
-                            {url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.mov') ? (
-                              <div className="border rounded-md overflow-hidden aspect-square flex items-center justify-center bg-muted">
-                                <Video className="h-8 w-8 opacity-50" />
-                              </div>
-                            ) : (
-                              <div className="border rounded-md overflow-hidden aspect-square">
-                                <img
-                                  src={url}
-                                  alt={`Media ${index + 1}`}
-                                  className="w-full h-full object-cover"
-                                />
-                              </div>
-                            )}
-                          </div>
-                        ))}
+                        {existingMedia.map((url, index) => {
+                          // Calculate the effective index for existing images by adding 1000
+                          // This ensures existing media indices don't conflict with new uploads
+                          const existingMediaIndex = index + 1000;
+                          const isExistingFeatured = featuredImageIndex === existingMediaIndex;
+                          
+                          return (
+                            <div key={`existing-${index}`} className="relative group">
+                              {url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.mov') ? (
+                                <div className="border rounded-md overflow-hidden aspect-square flex items-center justify-center bg-muted">
+                                  <Video className="h-8 w-8 opacity-50" />
+                                </div>
+                              ) : (
+                                <div className={`border rounded-md overflow-hidden aspect-square ${isExistingFeatured ? 'ring-2 ring-primary' : ''}`}>
+                                  <img
+                                    src={url}
+                                    alt={`Media ${index + 1}`}
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                              )}
+                              
+                              {/* Only show controls for images (not videos) */}
+                              {!url.endsWith('.mp4') && !url.endsWith('.webm') && !url.endsWith('.mov') && (
+                                <>
+                                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                                    <Button
+                                      type="button"
+                                      variant="secondary"
+                                      size="icon"
+                                      className="h-8 w-8"
+                                      onClick={() => handleSelectFeaturedImage(existingMediaIndex)}
+                                    >
+                                      ★
+                                    </Button>
+                                  </div>
+                                  {isExistingFeatured && (
+                                    <div className="absolute top-1 right-1 bg-primary text-primary-foreground rounded-full p-1">
+                                      ★
+                                    </div>
+                                  )}
+                                </>
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
