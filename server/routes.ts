@@ -850,7 +850,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Handle file uploads for project thumbnails
-  apiRouter.post("/projects/upload-thumbnail", (req: Request, res: Response) => {
+  apiRouter.post("/projects/upload-thumbnail", async (req: Request, res: Response) => {
     try {
       console.log(`[POST /projects/upload-thumbnail] Received upload request`);
       

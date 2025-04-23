@@ -881,15 +881,23 @@ export default function Projects() {
                           {/* Using a hidden debug span to check what image is being used */}
                           <span className="hidden">Using thumbnailUrl: {project.thumbnailUrl}</span>
                         </>
-                      ) : (project.mediaUrls && Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0) ? (
+                      ) : (project.mediaUrls && ((typeof project.mediaUrls === 'string' && project.mediaUrls.startsWith('[')) || Array.isArray(project.mediaUrls))) ? (
                         <>
                           <img 
-                            src={project.mediaUrls[0]}
+                            src={
+                              Array.isArray(project.mediaUrls) 
+                                ? project.mediaUrls[0] 
+                                : JSON.parse(project.mediaUrls)[0]
+                            }
                             alt={`${project.title} first gallery image`} 
                             className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
                           />
                           {/* Using a hidden debug span to check what image is being used */}
-                          <span className="hidden">Using mediaUrl: {project.mediaUrls[0]}</span>
+                          <span className="hidden">Using mediaUrl: {
+                            Array.isArray(project.mediaUrls) 
+                              ? project.mediaUrls[0] 
+                              : JSON.parse(project.mediaUrls)[0]
+                          }</span>
                         </>
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-muted">
