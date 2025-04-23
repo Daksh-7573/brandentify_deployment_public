@@ -11,7 +11,7 @@ import { formatDate } from "@/lib/utils";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoadingWrapper } from "@/components/ui/loading-wrapper";
+import ProfileLoadingAnimation from "@/components/ui/profile-loading-animation";
 
 // Define schema for work experience form
 const workExperienceFormSchema = z.object({
