@@ -1316,22 +1316,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const { thumbnailUrl, thumbnailFile } = req.body;
       
-      if (!thumbnailUrl) {
-        console.error(`[PATCH /projects/:id/thumbnail] Missing thumbnailUrl in request`);
+      // Allow updates with either thumbnailUrl or thumbnailFile or both, but at least one must be present
+      if (!thumbnailUrl && !thumbnailFile) {
+        console.error(`[PATCH /projects/:id/thumbnail] Missing both thumbnailUrl and thumbnailFile in request`);
         return res.status(400).json({ 
           success: false, 
-          message: "Missing thumbnailUrl in request" 
+          message: "Request must include either thumbnailUrl or thumbnailFile" 
         });
       }
       
-      // Modified validation: Accept relative paths starting with /uploads/ 
-      // as well as full URLs
-      if (!thumbnailUrl.startsWith('/uploads/') && !thumbnailUrl.startsWith('http')) {
-        console.error(`[PATCH /projects/:id/thumbnail] Invalid thumbnailUrl format: ${thumbnailUrl}`);
-        return res.status(400).json({ 
-          success: false,
-          message: "Invalid thumbnailUrl format. Must start with /uploads/ or be a valid URL." 
-        });
+      // If thumbnailUrl is provided, validate its format
+      if (thumbnailUrl) {
+        // Modified validation: Accept relative paths starting with /uploads/ 
+        // as well as full URLs
+        if (!thumbnailUrl.startsWith('/uploads/') && !thumbnailUrl.startsWith('http')) {
+          console.error(`[PATCH /projects/:id/thumbnail] Invalid thumbnailUrl format: ${thumbnailUrl}`);
+          return res.status(400).json({ 
+            success: false,
+            message: "Invalid thumbnailUrl format. Must start with /uploads/ or be a valid URL." 
+          });
+        }
+      }
+      
+      // If thumbnailFile is provided but thumbnailUrl is not, generate a URL
+      let finalThumbnailUrl = thumbnailUrl;
+      if (thumbnailFile && !thumbnailUrl) {
+        finalThumbnailUrl = `/uploads/projects/${thumbnailFile}`;
+        console.log(`[PATCH /projects/:id/thumbnail] Generated thumbnailUrl from thumbnailFile: ${finalThumbnailUrl}`);
       }
       
       console.log(`[PATCH /projects/${id}/thumbnail] Updating thumbnail:`, { thumbnailUrl, thumbnailFile });

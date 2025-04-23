@@ -878,6 +878,32 @@ export default function Projects() {
                             src={project.thumbnailUrl}
                             alt={`${project.title} thumbnail`} 
                             className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
+                            onError={(e) => {
+                              console.error(`Thumbnail URL failed to load: ${project.thumbnailUrl}`);
+                              // Hide this image
+                              (e.target as HTMLImageElement).style.display = 'none';
+                              // Try to find a fallback
+                              if (project.thumbnailFile && project.thumbnailFile !== "null") {
+                                const imgElement = document.createElement('img');
+                                imgElement.src = `/uploads/projects/${project.thumbnailFile}`;
+                                imgElement.alt = `${project.title} thumbnail fallback`;
+                                imgElement.className = "w-full h-full object-cover hover:scale-105 transition-transform duration-200";
+                                (e.target as HTMLImageElement).parentNode?.appendChild(imgElement);
+                              } else if (project.mediaUrls && 
+                                         ((Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0) || 
+                                          (typeof project.mediaUrls === 'string' && project.mediaUrls.includes('http')))) {
+                                const imgElement = document.createElement('img');
+                                const mediaUrl = Array.isArray(project.mediaUrls) 
+                                  ? project.mediaUrls[0] 
+                                  : typeof project.mediaUrls === 'string' && project.mediaUrls.startsWith('[')
+                                    ? JSON.parse(project.mediaUrls)[0]
+                                    : project.mediaUrls;
+                                imgElement.src = mediaUrl;
+                                imgElement.alt = `${project.title} media fallback`;
+                                imgElement.className = "w-full h-full object-cover hover:scale-105 transition-transform duration-200";
+                                (e.target as HTMLImageElement).parentNode?.appendChild(imgElement);
+                              }
+                            }}
                           />
                           <span className="hidden">Using thumbnailUrl: {project.thumbnailUrl}</span>
                         </>
@@ -887,11 +913,35 @@ export default function Projects() {
                             src={`/uploads/projects/${project.thumbnailFile}`}
                             alt={`${project.title} thumbnail file`} 
                             className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
+                            onError={(e) => {
+                              console.error(`Thumbnail file failed to load: ${project.thumbnailFile}`);
+                              // Hide this image
+                              (e.target as HTMLImageElement).style.display = 'none';
+                              // Try to use media URLs as fallback if available
+                              if (project.mediaUrls && 
+                                ((Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0) || 
+                                 (typeof project.mediaUrls === 'string' && project.mediaUrls.includes('http')))) {
+                                const imgElement = document.createElement('img');
+                                const mediaUrl = Array.isArray(project.mediaUrls) 
+                                  ? project.mediaUrls[0] 
+                                  : typeof project.mediaUrls === 'string' && project.mediaUrls.startsWith('[')
+                                    ? JSON.parse(project.mediaUrls)[0]
+                                    : project.mediaUrls;
+                                imgElement.src = mediaUrl;
+                                imgElement.alt = `${project.title} media fallback`;
+                                imgElement.className = "w-full h-full object-cover hover:scale-105 transition-transform duration-200";
+                                (e.target as HTMLImageElement).parentNode?.appendChild(imgElement);
+                              }
+                            }}
                           />
                           {/* Using a hidden debug span to check what image is being used */}
                           <span className="hidden">Using thumbnailFile: {project.thumbnailFile}</span>
                         </>
-                      ) : (project.mediaUrls && project.mediaUrls.length > 0) ? (
+                      ) : (project.mediaUrls && 
+                            ((Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0) || 
+                             (typeof project.mediaUrls === 'string' && (
+                               project.mediaUrls.includes('http') || 
+                               project.mediaUrls.startsWith('['))))) ? (
                         <>
                           <img 
                             src={
@@ -899,22 +949,18 @@ export default function Projects() {
                                 ? project.mediaUrls[0] 
                                 : typeof project.mediaUrls === 'string' && project.mediaUrls.startsWith('[')
                                   ? JSON.parse(project.mediaUrls)[0]
-                                  : project.mediaUrls[0]
+                                  : String(project.mediaUrls)
                             }
                             alt={`${project.title} first gallery image`} 
                             className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
                             onError={(e) => {
                               console.error("Media URL image failed to load");
+                              // Hide this image
+                              (e.target as HTMLImageElement).style.display = 'none';
                             }}
                           />
                           {/* Using a hidden debug span to check what image is being used */}
-                          <span className="hidden">Using mediaUrl: {
-                            Array.isArray(project.mediaUrls) 
-                              ? project.mediaUrls[0] 
-                              : typeof project.mediaUrls === 'string' && project.mediaUrls.startsWith('[')
-                                ? JSON.parse(project.mediaUrls)[0]
-                                : project.mediaUrls[0]
-                          }</span>
+                          <span className="hidden">Using mediaUrl</span>
                         </>
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-muted">

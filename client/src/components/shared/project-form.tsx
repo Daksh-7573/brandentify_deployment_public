@@ -342,6 +342,22 @@ export default function ProjectForm({
             fullResponse: uploadResult
           });
           
+          // Check if thumbnail data is valid
+          if (!uploadResult.thumbnailUrl && !uploadResult.thumbnailFile) {
+            console.warn("Thumbnail upload response missing thumbnailUrl and thumbnailFile");
+            
+            // Try to generate fallback values if we have the raw file
+            if (thumbnailFile) {
+              const timestamp = Date.now();
+              const filename = `project_${projectData.id}_${timestamp}_${thumbnailFile.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+              console.log("Generated fallback filename:", filename);
+              
+              // Use fallback values
+              uploadResult.thumbnailFile = filename;
+              uploadResult.thumbnailUrl = `/uploads/projects/${filename}`;
+            }
+          }
+          
           // Update the thumbnail URL and file path in projectData
           projectData.thumbnailUrl = uploadResult.thumbnailUrl;
           // Using type assertion to handle the thumbnailFile property
