@@ -1302,14 +1302,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // Validate the URL format to ensure it's a valid URL
-      try {
-        new URL(thumbnailUrl);
-      } catch (urlError) {
+      // Modified validation: Accept relative paths starting with /uploads/ 
+      // as well as full URLs
+      if (!thumbnailUrl.startsWith('/uploads/') && !thumbnailUrl.startsWith('http')) {
         console.error(`[PATCH /projects/:id/thumbnail] Invalid thumbnailUrl format: ${thumbnailUrl}`);
         return res.status(400).json({ 
           success: false,
-          message: "Invalid thumbnailUrl format. Must be a valid URL." 
+          message: "Invalid thumbnailUrl format. Must start with /uploads/ or be a valid URL." 
         });
       }
       
