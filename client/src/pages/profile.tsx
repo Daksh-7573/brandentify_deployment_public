@@ -18,7 +18,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { calculateOverallProfileCompletion } from "@/lib/profile-utils";
 import { useState, useEffect } from "react";
-import { Camera, FileText } from "lucide-react";
+import { Camera, FileText, Edit } from "lucide-react";
 import PersonalInfoIcon from "@/components/icons/personal-info-icon";
 import { useProfilePicture } from "@/hooks/use-profile-picture";
 import { ProfilePictureDialog } from "@/components/profile/profile-picture-dialog";
