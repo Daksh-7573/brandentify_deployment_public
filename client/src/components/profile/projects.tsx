@@ -302,10 +302,10 @@ export default function Projects() {
 
   const loadCollaborators = async (projectId: number) => {
     try {
-      const response = await apiRequest({
-        method: 'GET', 
-        url: `/api/projects/${projectId}/collaborators`
-      });
+      const response = await apiRequest(
+        'GET', 
+        `/api/projects/${projectId}/collaborators`
+      );
       const data = await response.json();
       setCollaborators(data);
     } catch (error) {
@@ -315,10 +315,10 @@ export default function Projects() {
 
   const loadEndorsements = async (projectId: number) => {
     try {
-      const response = await apiRequest({
-        method: 'GET', 
-        url: `/api/projects/${projectId}/endorsements`
-      });
+      const response = await apiRequest(
+        'GET', 
+        `/api/projects/${projectId}/endorsements`
+      );
       const data = await response.json();
       setEndorsements(data);
     } catch (error) {
@@ -521,14 +521,14 @@ export default function Projects() {
             projectData.thumbnailFile = uploadResult.thumbnailFile;
             
             // Also update in the database to ensure persistence
-            await apiRequest({
-              method: 'PATCH',
-              url: `/api/projects/${projectData.id}/thumbnail`,
-              data: { 
+            await apiRequest(
+              'PATCH',
+              `/api/projects/${projectData.id}/thumbnail`,
+              { 
                 thumbnailUrl: uploadResult.thumbnailUrl,
                 thumbnailFile: uploadResult.thumbnailFile
               }
-            });
+            );
             
             console.log("Project data with thumbnail updated:", projectData);
           }
@@ -609,14 +609,14 @@ export default function Projects() {
           projectData.thumbnailFile = uploadResult.thumbnailFile;
           
           // Also update in the database to ensure persistence
-          await apiRequest({
-            method: 'PATCH',
-            url: `/api/projects/${projectData.id}/thumbnail`,
-            data: { 
+          await apiRequest(
+            'PATCH',
+            `/api/projects/${projectData.id}/thumbnail`,
+            { 
               thumbnailUrl: uploadResult.thumbnailUrl,
               thumbnailFile: uploadResult.thumbnailFile
             }
-          });
+          );
           
           console.log("Project data with thumbnail updated:", projectData);
         }
@@ -707,11 +707,11 @@ export default function Projects() {
         projectId: currentProject.id,
       };
       
-      const response = await apiRequest({
-        method: 'POST', 
-        url: '/api/project-collaborators', 
-        data: collaboratorData
-      });
+      const response = await apiRequest(
+        'POST', 
+        '/api/project-collaborators', 
+        collaboratorData
+      );
       const data = await response.json();
       
       setCollaborators([...collaborators, data]);
@@ -735,10 +735,10 @@ export default function Projects() {
     if (!confirm('Are you sure you want to remove this collaborator?')) return;
     
     try {
-      await apiRequest({
-        method: 'DELETE', 
-        url: `/api/project-collaborators/${collaboratorId}`
-      });
+      await apiRequest(
+        'DELETE', 
+        `/api/project-collaborators/${collaboratorId}`
+      );
       
       setCollaborators(collaborators.filter(c => c.id !== collaboratorId));
       
@@ -769,11 +769,11 @@ export default function Projects() {
         projectId: currentProject.id,
       };
       
-      const response = await apiRequest({
-        method: 'POST', 
-        url: '/api/project-endorsements', 
-        data: endorsementData
-      });
+      const response = await apiRequest(
+        'POST', 
+        '/api/project-endorsements', 
+        endorsementData
+      );
       const data = await response.json();
       
       setEndorsements([...endorsements, data]);
@@ -797,10 +797,10 @@ export default function Projects() {
     if (!confirm('Are you sure you want to remove this endorsement?')) return;
     
     try {
-      await apiRequest({
-        method: 'DELETE', 
-        url: `/api/project-endorsements/${endorsementId}`
-      });
+      await apiRequest(
+        'DELETE', 
+        `/api/project-endorsements/${endorsementId}`
+      );
       
       setEndorsements(endorsements.filter(e => e.id !== endorsementId));
       
