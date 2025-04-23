@@ -843,7 +843,8 @@ export default function Projects() {
                 startDate: format(new Date(), 'yyyy-MM-dd'),
                 projectUrl: '',
                 category: '',
-                thumbnailUrl: ''
+                industry: null,
+                mediaUrls: null
               });
               setIsAddModalOpen(true);
             }}
