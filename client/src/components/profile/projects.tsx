@@ -359,14 +359,17 @@ export default function Projects() {
   };
   
   const handleEdit = (project: Project) => {
+    console.log("Editing project:", project);
+    
     setCurrentProject(project);
     projectForm.reset({
       title: project.title,
       description: project.description || '',
       category: project.category || '',
+      industry: project.industry || null,
       startDate: project.startDate || format(new Date(), 'yyyy-MM-dd'),
       projectUrl: project.projectUrl || '',
-      mediaUrls: project.mediaUrls || [],
+      mediaUrls: project.mediaUrls || null,
     });
     // Reset all file inputs when editing
     setThumbnailFile(null);
@@ -400,10 +403,10 @@ export default function Projects() {
     if (!confirm('Are you sure you want to delete this project?')) return;
     
     try {
-      const response = await apiRequest({
-        method: 'DELETE', 
-        url: `/api/projects/${id}`
-      });
+      const response = await apiRequest(
+        'DELETE', 
+        `/api/projects/${id}`
+      );
       
       if (response.ok) {
         // Update local state immediately for responsiveness
@@ -490,11 +493,11 @@ export default function Projects() {
       
       if (currentProject) {
         // Update existing project
-        response = await apiRequest({
-          method: 'PUT', 
-          url: `/api/projects/${currentProject.id}`, 
-          data: values
-        });
+        response = await apiRequest(
+          'PUT', 
+          `/api/projects/${currentProject.id}`, 
+          values
+        );
         projectData = await response.json();
         
         // If we have a thumbnail file, upload it
@@ -579,11 +582,11 @@ export default function Projects() {
         };
         
         // First create the project
-        response = await apiRequest({
-          method: 'POST', 
-          url: '/api/projects', 
-          data: newProjectData
-        });
+        response = await apiRequest(
+          'POST', 
+          '/api/projects', 
+          newProjectData
+        );
         projectData = await response.json();
         
         // If we have a thumbnail file, upload it (we already validated it exists above)
