@@ -134,14 +134,7 @@ export default function ProjectForm({
       // If it's an existing image (indices 1000+), return its URL
       const existingIndex = featuredImageIndex - 1000;
       if (existingMedia && existingMedia[existingIndex]) {
-        let url = existingMedia[existingIndex];
-        
-        // Convert the absolute URL back to relative URL if needed for backend
-        if (url.startsWith(window.location.origin)) {
-          url = url.substring(window.location.origin.length);
-        }
-        
-        return url;
+        return existingMedia[existingIndex];
       }
     }
     return null;
@@ -152,19 +145,13 @@ export default function ProjectForm({
     if (!existingProject?.id) return;
     
     try {
-      // Extract just the relative path if it's an absolute URL
-      let relativeMediaUrl = mediaUrl;
-      if (mediaUrl.startsWith(window.location.origin)) {
-        relativeMediaUrl = mediaUrl.substring(window.location.origin.length);
-      }
-      
       // Call the API to delete the media
       const response = await fetch(`/api/projects/${existingProject.id}/media`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ mediaUrl: relativeMediaUrl }),
+        body: JSON.stringify({ mediaUrl }),
       });
       
       if (response.ok) {
@@ -496,32 +483,7 @@ export default function ProjectForm({
   
   // Update existing media when project changes
   useEffect(() => {
-    // Handle the case where mediaUrls might be a string instead of an array
-    let mediaUrls = existingProject?.mediaUrls || [];
-    
-    // Convert to array if it's a string
-    if (typeof mediaUrls === 'string') {
-      try {
-        // Try to parse as JSON if it's a stringified array
-        const parsed = JSON.parse(mediaUrls);
-        mediaUrls = parsed;
-      } catch (e) {
-        // If parsing fails, treat as a single string URL
-        mediaUrls = mediaUrls ? [mediaUrls] : [];
-      }
-    }
-    
-    // Ensure all URLs are absolute (prepend server URL if they start with /)
-    const formattedMediaUrls = (Array.isArray(mediaUrls) ? mediaUrls : [])
-      .map(url => {
-        if (typeof url === 'string' && url.startsWith('/')) {
-          // Convert relative URL to absolute URL using the current server
-          return `${window.location.origin}${url}`;
-        }
-        return url;
-      });
-    
-    setExistingMedia(formattedMediaUrls);
+    setExistingMedia(existingProject?.mediaUrls || []);
   }, [existingProject]);
   
   return (
