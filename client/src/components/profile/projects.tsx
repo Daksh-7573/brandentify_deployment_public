@@ -76,7 +76,7 @@ interface Project {
   projectUrl: string | null;
   thumbnailUrl: string | null;
   thumbnailFile?: string | null; // Add property to store the filename separately
-  mediaUrls: string[] | null;
+  mediaUrls: string[] | string | null; // Can be string[] or a JSON string or null
   userId: number;
   createdAt?: string | null;
   updatedAt?: string | null;
@@ -886,8 +886,8 @@ export default function Projects() {
                       {project.mediaUrls && 
                             ((Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0) || 
                              (typeof project.mediaUrls === 'string' && (
-                               project.mediaUrls.includes('http') || 
-                               project.mediaUrls.startsWith('[')))) ? (
+                               project.mediaUrls.indexOf('http') >= 0 || 
+                               project.mediaUrls.indexOf('[') === 0))) ? (
                         <>
                           <img 
                             src={
@@ -941,7 +941,7 @@ export default function Projects() {
                                 (e.target as HTMLImageElement).parentNode?.appendChild(imgElement);
                               } else if (project.mediaUrls && 
                                          ((Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0) || 
-                                          (typeof project.mediaUrls === 'string' && project.mediaUrls.includes('http')))) {
+                                          (typeof project.mediaUrls === 'string' && project.mediaUrls.indexOf('http') >= 0))) {
                                 const imgElement = document.createElement('img');
                                 const mediaUrl = Array.isArray(project.mediaUrls) 
                                   ? project.mediaUrls[0] 
