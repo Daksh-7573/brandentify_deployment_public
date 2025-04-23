@@ -29,6 +29,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import { FloatingIndustryIconsLoader } from "@/components/ui/floating-industry-icons-loader";
 
 // Import our portfolio templates
 import MinimalistPro from "@/components/portfolio/templates/minimalist-pro";
@@ -984,31 +985,35 @@ export default function PortfolioBuilder() {
   const renderLoadingState = () => {
     if (isAnalyzingProfile) {
       return (
-        <div className="h-[500px] flex flex-col items-center justify-center space-y-4">
-          <div className="relative">
-            <Loader2 className="h-16 w-16 animate-spin text-primary" />
-            <Bot className="h-8 w-8 text-primary absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+        <>
+          <FloatingIndustryIconsLoader 
+            isLoading={isAnalyzingProfile} 
+            loadingMessage="Musk AI is analyzing your profile..." 
+          />
+          <div className="h-[500px] flex flex-col items-center justify-center space-y-4 opacity-0">
+            {/* Hidden placeholder to maintain layout */}
+            <div className="relative">
+              <Bot className="h-8 w-8" />
+            </div>
           </div>
-          <div className="text-center">
-            <h3 className="text-lg font-medium">Musk AI is analyzing your profile</h3>
-            <p className="text-gray-500">Gathering information from your experiences, skills, and projects...</p>
-          </div>
-        </div>
+        </>
       );
     }
     
     if (isGenerating) {
       return (
-        <div className="h-[500px] flex flex-col items-center justify-center space-y-4">
-          <div className="relative">
-            <Loader2 className="h-16 w-16 animate-spin text-primary" />
-            <Bot className="h-8 w-8 text-primary absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+        <>
+          <FloatingIndustryIconsLoader 
+            isLoading={isGenerating} 
+            loadingMessage={`Creating your ${layoutOptions.find(l => l.id === form.watch("layout"))?.name.toLowerCase() || 'personalized'} portfolio...`}
+          />
+          <div className="h-[500px] flex flex-col items-center justify-center space-y-4 opacity-0">
+            {/* Hidden placeholder to maintain layout */}
+            <div className="relative">
+              <Bot className="h-8 w-8" />
+            </div>
           </div>
-          <div className="text-center">
-            <h3 className="text-lg font-medium">Creating your personalized portfolio</h3>
-            <p className="text-gray-500">Musk AI is designing your portfolio with the {layoutOptions.find(l => l.id === form.watch("layout"))?.name.toLowerCase()} layout...</p>
-          </div>
-        </div>
+        </>
       );
     }
     
