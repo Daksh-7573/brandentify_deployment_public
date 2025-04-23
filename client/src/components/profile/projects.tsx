@@ -1970,34 +1970,75 @@ export default function Projects() {
                     {/* Project Media Carousel */}
                     {currentProject.mediaUrls && Array.isArray(currentProject.mediaUrls) && currentProject.mediaUrls.length > 0 && (
                       <div className="space-y-2 mt-4">
-                        <h3 className="text-sm font-medium">Showcase Media</h3>
-                        <div className="flex overflow-x-auto gap-3 pb-2 snap-x">
+                        <div className="flex justify-between items-center">
+                          <h3 className="text-sm font-medium">Showcase Media</h3>
+                          <div className="text-xs text-muted-foreground">
+                            {currentProject.mediaUrls.length} image{currentProject.mediaUrls.length !== 1 ? 's' : ''}
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pb-2">
                           {currentProject.mediaUrls.map((url, index) => (
                             <div 
                               key={index} 
-                              className="flex-none w-24 h-24 rounded-lg overflow-hidden bg-muted shadow-sm snap-center cursor-pointer"
-                              onClick={() => {
-                                console.log("Image clicked:", url);
-                                console.log("Current project media:", currentProject.mediaUrls);
-                                if (currentProject.mediaUrls && Array.isArray(currentProject.mediaUrls)) {
-                                  console.log("Setting lightbox images:", currentProject.mediaUrls);
-                                  // Create a new array to ensure React detects the change
-                                  const mediaImages = [...currentProject.mediaUrls];
-                                  setLightboxImages(mediaImages);
-                                  setCurrentImageIndex(index);
-                                  // Using a timeout to ensure state updates are applied
-                                  setTimeout(() => {
-                                    setIsLightboxOpen(true);
-                                    console.log("Lightbox should be open now after timeout");
-                                  }, 50);
-                                }
-                              }}
+                              className="relative group rounded-lg overflow-hidden bg-muted shadow-sm"
                             >
-                              <img 
-                                src={url} 
-                                alt={`Project media ${index + 1}`} 
-                                className="w-full h-full object-cover hover:scale-110 transition-transform duration-200"
-                              />
+                              {/* Image */}
+                              <div 
+                                className="w-full aspect-square cursor-pointer"
+                                onClick={() => {
+                                  if (currentProject.mediaUrls && Array.isArray(currentProject.mediaUrls)) {
+                                    // Create a new array to ensure React detects the change
+                                    const mediaImages = [...currentProject.mediaUrls];
+                                    setLightboxImages(mediaImages);
+                                    setCurrentImageIndex(index);
+                                    // Using a timeout to ensure state updates are applied
+                                    setTimeout(() => {
+                                      setIsLightboxOpen(true);
+                                    }, 50);
+                                  }
+                                }}
+                              >
+                                <img 
+                                  src={url} 
+                                  alt={`${currentProject.title} media ${index + 1}`} 
+                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                                />
+                              </div>
+                              
+                              {/* Control overlay */}
+                              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-between p-2">
+                                {/* Top row - Thumbnail indicator or Set as thumbnail button */}
+                                <div className="flex justify-end">
+                                  {currentProject.thumbnailUrl === url ? (
+                                    <Badge className="bg-primary text-white text-xs font-normal px-2 py-0.5">
+                                      Thumbnail
+                                    </Badge>
+                                  ) : (
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation(); // Prevent opening lightbox
+                                        handleSetAsThumbnail(url);
+                                      }}
+                                      className="bg-white/80 hover:bg-white text-black text-xs rounded-md px-2 py-1 transition-colors"
+                                    >
+                                      Set as Thumbnail
+                                    </button>
+                                  )}
+                                </div>
+                                
+                                {/* Bottom row - Delete button */}
+                                <div className="flex justify-end">
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation(); // Prevent opening lightbox
+                                      handleDeleteImage(url);
+                                    }}
+                                    className="bg-red-500/80 hover:bg-red-500 text-white text-xs rounded-md px-2 py-1 transition-colors"
+                                  >
+                                    Delete
+                                  </button>
+                                </div>
+                              </div>
                             </div>
                           ))}
                         </div>
