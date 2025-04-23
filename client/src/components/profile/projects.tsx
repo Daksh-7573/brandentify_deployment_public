@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { FluidLoader } from "@/components/ui/fluid-loader";
 import { 
   Loader2, 
   Pencil, 
