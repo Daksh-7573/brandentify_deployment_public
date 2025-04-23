@@ -280,28 +280,46 @@ export default function ServiceForm({ service, onSubmit, isPending, existingServ
                         inputMode="decimal"
                         placeholder="Enter service price"
                         value={field.value || ''}
-                        onKeyPress={(e) => {
-                          // Only allow numbers and decimal point
+                        onKeyDown={(e) => {
+                          // Only allow numbers, decimal point, and control keys (backspace, arrows, etc.)
                           const isNumber = /[0-9]/.test(e.key);
                           const isDecimalPoint = e.key === '.';
-                          const hasDecimalAlready = field.value ? String(field.value).includes('.') : false;
+                          const isControlKey = e.key === 'Backspace' || e.key === 'Delete' || 
+                                               e.key === 'ArrowLeft' || e.key === 'ArrowRight' ||
+                                               e.key === 'Tab' || e.ctrlKey || e.metaKey;
                           
-                          // Prevent input if not a number or if trying to add a second decimal point
-                          if (!isNumber && !(isDecimalPoint && !hasDecimalAlready)) {
+                          const hasDecimalAlready = e.currentTarget.value.includes('.');
+                          
+                          // Allow decimal point only if there isn't one already
+                          const isValidDecimalPoint = isDecimalPoint && !hasDecimalAlready;
+                          
+                          // Prevent input if not a number, valid decimal point, or control key
+                          if (!isNumber && !isValidDecimalPoint && !isControlKey) {
                             e.preventDefault();
                           }
                         }}
                         onChange={(e) => {
-                          // Remove any non-numeric or non-decimal characters
-                          const sanitizedValue = e.target.value.replace(/[^0-9.]/g, '');
-                          // Ensure only one decimal point
-                          const parts = sanitizedValue.split('.');
-                          const cleanValue = parts[0] + (parts.length > 1 ? '.' + parts.slice(1).join('') : '');
+                          // Ensure only one decimal point even with paste operations
+                          let value = e.target.value;
                           
-                          // Parse as number for the form
-                          const numValue = cleanValue ? parseFloat(cleanValue) : null;
-                          console.log("Price input changed:", cleanValue, "as number:", numValue);
+                          // First keep only digits and decimal points
+                          value = value.replace(/[^\d.]/g, '');
+                          
+                          // Then ensure only one decimal point
+                          const parts = value.split('.');
+                          if (parts.length > 2) {
+                            value = parts[0] + '.' + parts.slice(1).join('');
+                          }
+                          
+                          // Parse as number for the form or null if empty
+                          const numValue = value ? parseFloat(value) : null;
+                          console.log("Price input changed:", value, "as number:", numValue);
+                          
+                          // Update the form field value
                           field.onChange(numValue);
+                          
+                          // Also update the input to show the cleaned value
+                          e.target.value = value;
                         }}
                       />
                     </FormControl>
