@@ -8,6 +8,7 @@ import { useAuth } from "./hooks/use-auth";
 import { useEffect } from "react";
 import GlobalMuskButton from "@/components/musk/global-musk-button";
 import ProfileLoadingAnimation from "@/components/ui/profile-loading-animation";
+import QueryLoader from "@/components/ui/query-loader";
 
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
@@ -146,6 +147,7 @@ function App() {
         <LoadingProvider>
           <Router />
           <GlobalMuskButton />
+          <QueryLoader />
           <Toaster />
         </LoadingProvider>
       </AuthProvider>
