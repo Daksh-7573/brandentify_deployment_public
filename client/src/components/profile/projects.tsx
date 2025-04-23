@@ -867,12 +867,53 @@ export default function Projects() {
                     <div className="w-1/2 aspect-square overflow-hidden bg-muted rounded-md shadow-sm">
                       {/* 
                         Display priority:
-                        1. If thumbnailUrl exists and is valid, show that
-                        2. If thumbnailFile exists, show that
-                        3. If no thumbnailUrl but mediaUrls exist, show the first media URL
-                        4. If neither exist, show a fallback icon
+                        1. If showThumbnailInsteadOfMedia is true, use thumbnail path
+                        2. If thumbnailUrl exists and is valid, show that
+                        3. If thumbnailFile exists, show that
+                        4. If no thumbnailUrl but mediaUrls exist, show the first media URL
+                        5. If neither exist, show a fallback icon
                       */}
-                      {project.thumbnailUrl && project.thumbnailUrl !== "null" && project.thumbnailUrl !== null ? (
+                      {/* For this user's request, we're prioritizing media images instead of thumbnails */}
+                      {project.mediaUrls && 
+                            ((Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0) || 
+                             (typeof project.mediaUrls === 'string' && (
+                               project.mediaUrls.includes('http') || 
+                               project.mediaUrls.startsWith('[')))) ? (
+                        <>
+                          <img 
+                            src={
+                              Array.isArray(project.mediaUrls) 
+                                ? project.mediaUrls[0] 
+                                : typeof project.mediaUrls === 'string' && project.mediaUrls.startsWith('[')
+                                  ? JSON.parse(project.mediaUrls)[0]
+                                  : String(project.mediaUrls)
+                            }
+                            alt={`${project.title} media image`} 
+                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
+                            onError={(e) => {
+                              console.error("Media URL image failed to load");
+                              // Hide this image
+                              (e.target as HTMLImageElement).style.display = 'none';
+                              
+                              // Fall back to thumbnail if available
+                              if (project.thumbnailUrl && project.thumbnailUrl !== "null" && project.thumbnailUrl !== null) {
+                                const imgElement = document.createElement('img');
+                                imgElement.src = project.thumbnailUrl;
+                                imgElement.alt = `${project.title} thumbnail fallback`;
+                                imgElement.className = "w-full h-full object-cover hover:scale-105 transition-transform duration-200";
+                                (e.target as HTMLImageElement).parentNode?.appendChild(imgElement);
+                              } else if (project.thumbnailFile && project.thumbnailFile !== "null" && project.thumbnailFile !== null) {
+                                const imgElement = document.createElement('img');
+                                imgElement.src = `/uploads/projects/${project.thumbnailFile}`;
+                                imgElement.alt = `${project.title} thumbnail fallback`;
+                                imgElement.className = "w-full h-full object-cover hover:scale-105 transition-transform duration-200";
+                                (e.target as HTMLImageElement).parentNode?.appendChild(imgElement);
+                              }
+                            }}
+                          />
+                          <span className="hidden">Using media URL as primary</span>
+                        </>
+                      ) : project.thumbnailUrl && project.thumbnailUrl !== "null" && project.thumbnailUrl !== null ? (
                         <>
                           <img 
                             src={project.thumbnailUrl}
