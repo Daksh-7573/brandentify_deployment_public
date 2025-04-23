@@ -63,6 +63,7 @@ import {
   Mail, Linkedin, Instagram, Briefcase, Award, User,
   Code, Github, Terminal
 } from "lucide-react";
+import { FluidLoader } from "@/components/ui/fluid-loader";
 import Header from "@/components/layout/header";
 
 // Define the schema for portfolio form
@@ -999,14 +1000,13 @@ export default function PortfolioBuilder() {
     if (isGenerating) {
       return (
         <div className="h-[500px] flex flex-col items-center justify-center space-y-4">
-          <div className="relative">
-            <Loader2 className="h-16 w-16 animate-spin text-primary" />
-            <Bot className="h-8 w-8 text-primary absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
-          </div>
-          <div className="text-center">
-            <h3 className="text-lg font-medium">Creating your personalized portfolio</h3>
-            <p className="text-gray-500">Musk AI is designing your portfolio with the {layoutOptions.find(l => l.id === form.watch("layout"))?.name.toLowerCase()} layout...</p>
-          </div>
+          <FluidLoader 
+            isLoading={true} 
+            text="Creating your personalized portfolio"
+            size="lg"
+            theme="primary"
+          />
+          <p className="text-gray-500 mt-2">Musk AI is designing your portfolio with the {layoutOptions.find(l => l.id === form.watch("layout"))?.name.toLowerCase()} layout...</p>
         </div>
       );
     }
@@ -1014,7 +1014,12 @@ export default function PortfolioBuilder() {
     if (isLoadingPortfolio) {
       return (
         <div className="h-64 flex items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <FluidLoader 
+            isLoading={true} 
+            text="Loading your portfolio"
+            size="sm"
+            theme="primary"
+          />
         </div>
       );
     }
