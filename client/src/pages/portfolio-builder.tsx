@@ -985,14 +985,20 @@ export default function PortfolioBuilder() {
   const renderLoadingState = () => {
     if (isAnalyzingProfile) {
       return (
-        <div className="h-[500px] flex flex-col items-center justify-center space-y-4">
-          <div className="relative">
-            <Loader2 className="h-16 w-16 animate-spin text-primary" />
-            <Bot className="h-8 w-8 text-primary absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
-          </div>
-          <div className="text-center">
-            <h3 className="text-lg font-medium">Musk AI is analyzing your profile</h3>
-            <p className="text-gray-500">Gathering information from your experiences, skills, and projects...</p>
+        <div className="container mx-auto p-4">
+          <div className="flex flex-col space-y-6">
+            <SectionSkeleton title="Analyzing Your Profile" />
+            <div className="space-y-4">
+              <ProfileSkeleton />
+              <div className="flex flex-col items-center justify-center py-4 space-y-2">
+                <div className="relative">
+                  <Loader2 className="h-10 w-10 animate-spin text-primary" />
+                  <Bot className="h-5 w-5 text-primary absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+                </div>
+                <h3 className="text-lg font-medium">Musk AI is analyzing your profile</h3>
+                <p className="text-gray-500">Gathering information from your experiences, skills, and projects...</p>
+              </div>
+            </div>
           </div>
         </div>
       );
@@ -1000,14 +1006,20 @@ export default function PortfolioBuilder() {
     
     if (isGenerating) {
       return (
-        <div className="h-[500px] flex flex-col items-center justify-center space-y-4">
-          <div className="relative">
-            <Loader2 className="h-16 w-16 animate-spin text-primary" />
-            <Bot className="h-8 w-8 text-primary absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
-          </div>
-          <div className="text-center">
-            <h3 className="text-lg font-medium">Creating your personalized portfolio</h3>
-            <p className="text-gray-500">Musk AI is designing your portfolio with the {layoutOptions.find(l => l.id === form.watch("layout"))?.name.toLowerCase()} layout...</p>
+        <div className="container mx-auto p-4">
+          <div className="flex flex-col space-y-6">
+            <SectionSkeleton title="Creating Your Portfolio" />
+            <div className="space-y-4">
+              <ProfileSkeleton />
+              <div className="flex flex-col items-center justify-center py-4 space-y-2">
+                <div className="relative">
+                  <Loader2 className="h-10 w-10 animate-spin text-primary" />
+                  <Bot className="h-5 w-5 text-primary absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+                </div>
+                <h3 className="text-lg font-medium">Creating your personalized portfolio</h3>
+                <p className="text-gray-500">Musk AI is designing your portfolio with the {layoutOptions.find(l => l.id === form.watch("layout"))?.name.toLowerCase()} layout...</p>
+              </div>
+            </div>
           </div>
         </div>
       );
