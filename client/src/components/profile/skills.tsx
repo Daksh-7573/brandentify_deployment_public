@@ -11,6 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Loader2, Pencil, Trash2, Plus, Lightbulb } from "lucide-react";
+import { FluidLoader } from "@/components/ui/fluid-loader";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -262,7 +263,13 @@ export default function Skills() {
         <CardContent>
           {isLoading ? (
             <div className="flex justify-center py-6">
-              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+              <FluidLoader 
+                isLoading={true} 
+                text="Loading skills"
+                size="sm"
+                theme="primary"
+                smallText={true}
+              />
             </div>
           ) : skills.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">

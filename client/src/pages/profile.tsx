@@ -1765,7 +1765,12 @@ export default function Profile() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-lg">Loading...</p>
+        <FluidLoader 
+          isLoading={true} 
+          text="Loading your profile"
+          size="lg"
+          theme="primary"
+        />
       </div>
     );
   }
