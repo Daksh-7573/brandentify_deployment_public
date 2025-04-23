@@ -426,18 +426,10 @@ export default function Projects() {
         'GET', 
         `/api/projects/${projectId}/collaborators`
       );
-      
-      if (!response.ok) {
-        console.log('API Error loading collaborators:', response.status);
-        setCollaborators([]);
-        return;
-      }
-      
       const data = await response.json();
-      setCollaborators(Array.isArray(data) ? data : []);
+      setCollaborators(data);
     } catch (error) {
       console.error('Error loading collaborators:', error);
-      setCollaborators([]);
     }
   };
 
@@ -447,18 +439,10 @@ export default function Projects() {
         'GET', 
         `/api/projects/${projectId}/endorsements`
       );
-      
-      if (!response.ok) {
-        console.log('API Error loading endorsements:', response.status);
-        setEndorsements([]);
-        return;
-      }
-      
       const data = await response.json();
-      setEndorsements(Array.isArray(data) ? data : []);
+      setEndorsements(data);
     } catch (error) {
       console.error('Error loading endorsements:', error);
-      setEndorsements([]);
     }
   };
   

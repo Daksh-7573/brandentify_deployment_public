@@ -57,7 +57,6 @@ interface ProjectFormProps {
 interface MediaErrors {
   images?: string;
   video?: string;
-  general?: string;
 }
 
 export default function ProjectForm({ 
@@ -140,85 +139,12 @@ export default function ProjectForm({
     return null;
   };
   
-  // Function to handle deleting existing media
-  const handleDeleteExistingMedia = async (mediaUrl: string) => {
-    if (!existingProject?.id) return;
-    
-    try {
-      // Call the API to delete the media
-      const response = await fetch(`/api/projects/${existingProject.id}/media`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ mediaUrl }),
-      });
-      
-      if (response.ok) {
-        const result = await response.json();
-        
-        // Update the existingMedia state by filtering out the deleted media
-        setExistingMedia(prev => prev.filter(url => url !== mediaUrl));
-        
-        // Reset featured image index if the deleted media was the featured image
-        if (featuredImageIndex >= 1000) {
-          const existingIndex = featuredImageIndex - 1000;
-          if (existingMedia[existingIndex] === mediaUrl) {
-            setFeaturedImageIndex(0);
-          }
-        }
-        
-        toast({
-          title: "Media deleted",
-          description: "The media has been removed from your project",
-        });
-        
-        // Invalidate queries to refresh project data
-        queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/projects`] });
-        
-      } else {
-        const errorData = await response.json();
-        console.error("Failed to delete media:", errorData);
-        toast({
-          title: "Failed to delete media",
-          description: errorData.message || "An error occurred while deleting the media",
-          variant: "destructive"
-        });
-      }
-    } catch (error) {
-      console.error("Error deleting media:", error);
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred while deleting the media",
-        variant: "destructive"
-      });
-    }
-  };
-  
   const onSubmit = async (values: ProjectFormValues) => {
-    if (!userId) {
-      toast({
-        title: "Error",
-        description: "User ID not found. Please try logging in again.",
-        variant: "destructive"
-      });
-      return;
-    }
+    if (!userId) return;
     
     // Validate media files
     let validationFailed = false;
     const newMediaErrors: MediaErrors = {};
-    
-    // Check if at least one media item exists (existing or new)
-    const hasExistingMedia = existingProject && 
-      existingProject.mediaUrls && 
-      Array.isArray(existingProject.mediaUrls) && 
-      existingProject.mediaUrls.length > 0;
-      
-    if (projectImages.length === 0 && !projectVideo && !hasExistingMedia && existingMedia.length === 0) {
-      newMediaErrors.general = "At least one project image or video is required";
-      validationFailed = true;
-    }
     
     // Validate project images (max 10)
     if (projectImages.length > 10) {
@@ -410,39 +336,11 @@ export default function ProjectForm({
       }
     } catch (error) {
       console.error("Error submitting project:", error);
-      
-      let errorMessage = "Failed to save project. Please try again.";
-      
-      // Check if it's a network error (server disconnection)
-      if (error instanceof Error) {
-        if (error.message.includes("NetworkError") || 
-            error.message.includes("Failed to fetch") ||
-            error.message.includes("Network request failed")) {
-          errorMessage = "Network error. Please check your connection and try again.";
-        } else {
-          errorMessage = error.message;
-        }
-      }
-      
       toast({
         title: "Error",
-        description: errorMessage,
+        description: error instanceof Error ? error.message : "Failed to save project",
         variant: "destructive"
       });
-      
-      // If we were able to create the project but failed with media uploads,
-      // let's still close the modal and refresh the data
-      if (existingProject || errorMessage.includes("media upload failed")) {
-        if (closeModal) {
-          closeModal();
-        }
-        
-        try {
-          queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/projects`] });
-        } catch (queryError) {
-          console.error("Error invalidating queries:", queryError);
-        }
-      }
     }
   };
 
@@ -626,9 +524,6 @@ export default function ProjectForm({
                     {mediaErrors?.images && (
                       <p className="text-sm text-destructive">{mediaErrors.images}</p>
                     )}
-                    {mediaErrors?.general && (
-                      <p className="text-sm text-destructive">{mediaErrors.general}</p>
-                    )}
                   </div>
                   
                   {/* Selected images preview */}
@@ -722,7 +617,7 @@ export default function ProjectForm({
                               {/* Only show controls for images (not videos) */}
                               {!url.endsWith('.mp4') && !url.endsWith('.webm') && !url.endsWith('.mov') && (
                                 <>
-                                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition-opacity">
+                                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                                     <Button
                                       type="button"
                                       variant={isExistingFeatured ? "default" : "secondary"}
@@ -732,16 +627,6 @@ export default function ProjectForm({
                                       title="Set as thumbnail"
                                     >
                                       ★
-                                    </Button>
-                                    <Button
-                                      type="button"
-                                      variant="destructive"
-                                      size="icon"
-                                      className="h-8 w-8"
-                                      onClick={() => handleDeleteExistingMedia(url)}
-                                      title="Delete image"
-                                    >
-                                      ✕
                                     </Button>
                                   </div>
                                   {isExistingFeatured && (
