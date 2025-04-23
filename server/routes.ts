@@ -852,21 +852,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Handle file uploads for project thumbnails
   apiRouter.post("/projects/upload-thumbnail", (req: Request, res: Response) => {
     try {
-      console.log(`[POST /projects/upload-thumbnail] Received upload request, files:`, req.files);
-      console.log(`[POST /projects/upload-thumbnail] Request body:`, req.body);
+      console.log(`[POST /projects/upload-thumbnail] Received upload request`);
       
-      // Create the upload directory if it doesn't exist
-      const projectUploadsDir = path.join(process.cwd(), 'public', 'uploads', 'projects');
-      if (!fs.existsSync(projectUploadsDir)) {
-        console.log(`[POST /projects/upload-thumbnail] Creating uploads directory: ${projectUploadsDir}`);
-        fs.mkdirSync(projectUploadsDir, { recursive: true });
+      // Ensure all upload directories exist
+      const publicDir = path.join(process.cwd(), 'public');
+      const uploadsDir = path.join(publicDir, 'uploads');
+      const projectUploadsDir = path.join(uploadsDir, 'projects');
+      
+      if (!fs.existsSync(publicDir)) {
+        fs.mkdirSync(publicDir, { recursive: true });
+        console.log(`[POST /projects/upload-thumbnail] Created public directory: ${publicDir}`);
       }
       
-      // Validate projectId exists
+      if (!fs.existsSync(uploadsDir)) {
+        fs.mkdirSync(uploadsDir, { recursive: true });
+        console.log(`[POST /projects/upload-thumbnail] Created uploads directory: ${uploadsDir}`);
+      }
+      
+      if (!fs.existsSync(projectUploadsDir)) {
+        fs.mkdirSync(projectUploadsDir, { recursive: true });
+        console.log(`[POST /projects/upload-thumbnail] Created projects directory: ${projectUploadsDir}`);
+      }
+      
+      // Verify directories exist before proceeding
+      if (!fs.existsSync(projectUploadsDir)) {
+        console.error(`[POST /projects/upload-thumbnail] Failed to create upload directories`);
+        return res.status(500).json({ 
+          success: false,
+          message: "Server error: upload directory not available" 
+        });
+      }
+      
+      // Validate projectId exists and is a valid number
       const projectId = req.body.projectId;
       if (!projectId) {
         console.error(`[POST /projects/upload-thumbnail] Missing projectId in request`);
-        return res.status(400).json({ message: "Missing projectId in request" });
+        return res.status(400).json({ 
+          success: false,
+          message: "Missing projectId in request" 
+        });
+      }
+      
+      const numericProjectId = parseInt(projectId, 10);
+      if (isNaN(numericProjectId)) {
+        console.error(`[POST /projects/upload-thumbnail] Invalid projectId: ${projectId}`);
+        return res.status(400).json({ 
+          success: false,
+          message: "Invalid projectId. Must be a number." 
+        });
+      }
+      
+      // Check if project exists
+      try {
+        const project = await storage.getProjectById(numericProjectId);
+        if (!project) {
+          console.error(`[POST /projects/upload-thumbnail] Project not found: ${numericProjectId}`);
+          return res.status(404).json({ 
+            success: false,
+            message: "Project not found" 
+          });
+        }
+        console.log(`[POST /projects/upload-thumbnail] Found project: ${project.id} - ${project.title}`);
+      } catch (projectError) {
+        console.error(`[POST /projects/upload-thumbnail] Error verifying project: ${projectError}`);
+        // Continue anyway and attempt the upload
       }
       
       // Handle express-fileupload first (which should be active based on middleware)
@@ -876,18 +925,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // If it's an array, take the first file
         const file = Array.isArray(thumbnailFile) ? thumbnailFile[0] : thumbnailFile;
         
-        console.log(`[POST /projects/upload-thumbnail] Processing file:`, file.name);
+        console.log(`[POST /projects/upload-thumbnail] Processing file: ${file.name} (${file.mimetype}, ${file.size} bytes)`);
         
         // Validate file is an image
         if (!file.mimetype.startsWith('image/')) {
           console.error(`[POST /projects/upload-thumbnail] Invalid file type: ${file.mimetype}`);
-          return res.status(400).json({ message: "Only image files are allowed for thumbnails" });
+          return res.status(400).json({ 
+            success: false,
+            message: "Only image files are allowed for thumbnails" 
+          });
+        }
+        
+        // Validate file size (max 5MB)
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        if (file.size > maxSize) {
+          console.error(`[POST /projects/upload-thumbnail] File too large: ${file.size} bytes`);
+          return res.status(400).json({ 
+            success: false,
+            message: "File size exceeds the 5MB limit" 
+          });
         }
         
         // Generate a unique filename
         const timestamp = Date.now();
         const ext = path.extname(file.name);
-        const filename = `project_${projectId}_thumbnail_${timestamp}${ext}`;
+        const safeExt = ext.toLowerCase(); // Ensure lowercase extension for consistency
+        const filename = `project_${numericProjectId}_${timestamp}${safeExt}`;
         
         // Define the upload path
         const uploadPath = path.join(projectUploadsDir, filename);
@@ -897,32 +960,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
           if (err) {
             console.error(`[POST /projects/upload-thumbnail] File move error:`, err);
             return res.status(500).json({ 
+              success: false,
               message: `Error saving file: ${err.message}`,
-              error: err 
+              error: err.message 
             });
           }
           
-          console.log(`[POST /projects/upload-thumbnail] File saved to:`, uploadPath);
+          console.log(`[POST /projects/upload-thumbnail] File saved to: ${uploadPath}`);
           
           // Generate the public URL for the file
           const fileUrl = getFileUrl(filename);
+          console.log(`[POST /projects/upload-thumbnail] File URL: ${fileUrl}`);
           
           try {
             // Update the project in the database right away
-            console.log(`[POST /projects/upload-thumbnail] Updating project ${projectId} with new thumbnail`);
-            await storage.updateProject(parseInt(projectId), {
+            console.log(`[POST /projects/upload-thumbnail] Updating project ${numericProjectId} with new thumbnail`);
+            const updateResult = await storage.updateProject(numericProjectId, {
               thumbnailUrl: fileUrl,
               thumbnailFile: filename
             });
-            console.log(`[POST /projects/upload-thumbnail] Project ${projectId} thumbnail updated in database`);
+            
+            if (!updateResult) {
+              console.error(`[POST /projects/upload-thumbnail] Database update failed for project ${numericProjectId}`);
+              // Continue anyway as the upload was successful
+            } else {
+              console.log(`[POST /projects/upload-thumbnail] Project ${numericProjectId} thumbnail updated in database`);
+              
+              // Double-check the update worked
+              const updatedProject = await storage.getProjectById(numericProjectId);
+              if (updatedProject && updatedProject.thumbnailUrl === fileUrl) {
+                console.log(`[POST /projects/upload-thumbnail] Database update verified`);
+              } else {
+                console.warn(`[POST /projects/upload-thumbnail] Database update may not have been saved correctly`);
+              }
+            }
           } catch (dbError) {
             console.error(`[POST /projects/upload-thumbnail] Database update error:`, dbError);
             // Continue anyway as the upload was successful
           }
           
           res.status(200).json({
+            success: true,
             thumbnailFile: filename,
             thumbnailUrl: fileUrl,
+            projectId: numericProjectId,
             message: "File uploaded successfully"
           });
         });
@@ -932,40 +1013,64 @@ export async function registerRoutes(app: Express): Promise<Server> {
         projectThumbnailUpload(req, res, async (err) => {
           if (err) {
             console.error(`[POST /projects/upload-thumbnail] Multer upload error:`, err);
-            return res.status(400).json({ message: err.message });
+            return res.status(400).json({ 
+              success: false,
+              message: err.message 
+            });
           }
           
           if (!req.file) {
             console.error(`[POST /projects/upload-thumbnail] No file provided in the request`);
-            return res.status(400).json({ message: "No file uploaded" });
+            return res.status(400).json({ 
+              success: false,
+              message: "No file uploaded" 
+            });
           }
           
-          console.log(`[POST /projects/upload-thumbnail] File uploaded with multer:`, req.file.filename);
+          console.log(`[POST /projects/upload-thumbnail] File uploaded with multer: ${req.file.filename}`);
           const fileUrl = getFileUrl(req.file.filename);
+          console.log(`[POST /projects/upload-thumbnail] File URL: ${fileUrl}`);
           
           try {
             // Update the project in the database right away
-            console.log(`[POST /projects/upload-thumbnail] Updating project ${projectId} with new thumbnail`);
-            await storage.updateProject(parseInt(projectId), {
+            console.log(`[POST /projects/upload-thumbnail] Updating project ${numericProjectId} with new thumbnail`);
+            const updateResult = await storage.updateProject(numericProjectId, {
               thumbnailUrl: fileUrl,
               thumbnailFile: req.file.filename
             });
-            console.log(`[POST /projects/upload-thumbnail] Project ${projectId} thumbnail updated in database`);
+            
+            if (!updateResult) {
+              console.error(`[POST /projects/upload-thumbnail] Database update failed for project ${numericProjectId}`);
+              // Continue anyway as the upload was successful
+            } else {
+              console.log(`[POST /projects/upload-thumbnail] Project ${numericProjectId} thumbnail updated in database`);
+              
+              // Double-check the update worked
+              const updatedProject = await storage.getProjectById(numericProjectId);
+              if (updatedProject && updatedProject.thumbnailUrl === fileUrl) {
+                console.log(`[POST /projects/upload-thumbnail] Database update verified`);
+              } else {
+                console.warn(`[POST /projects/upload-thumbnail] Database update may not have been saved correctly`);
+              }
+            }
           } catch (dbError) {
             console.error(`[POST /projects/upload-thumbnail] Database update error:`, dbError);
             // Continue anyway as the upload was successful
           }
           
           res.status(200).json({ 
+            success: true,
             thumbnailFile: req.file.filename,
             thumbnailUrl: fileUrl,
-            message: "File uploaded successfully with multer" 
+            projectId: numericProjectId,
+            message: "File uploaded successfully" 
           });
         });
       }
     } catch (error) {
       console.error(`[POST /projects/upload-thumbnail] Unexpected error:`, error);
       res.status(500).json({ 
+        success: false,
         message: "Failed to process file upload",
         error: error instanceof Error ? error.message : String(error)
       });
@@ -1176,43 +1281,86 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Update only the thumbnail of a project
   apiRouter.patch("/projects/:id/thumbnail", async (req: Request, res: Response) => {
     try {
+      console.log(`[PATCH /projects/:id/thumbnail] Received request to update thumbnail:`, req.body);
+      
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
-        return res.status(400).json({ message: "Invalid project ID" });
+        console.error(`[PATCH /projects/:id/thumbnail] Invalid project ID format: ${req.params.id}`);
+        return res.status(400).json({ 
+          success: false, 
+          message: "Invalid project ID format. Must be a number." 
+        });
       }
       
       const { thumbnailUrl, thumbnailFile } = req.body;
       
       if (!thumbnailUrl) {
-        return res.status(400).json({ message: "Missing thumbnailUrl in request" });
+        console.error(`[PATCH /projects/:id/thumbnail] Missing thumbnailUrl in request`);
+        return res.status(400).json({ 
+          success: false, 
+          message: "Missing thumbnailUrl in request" 
+        });
+      }
+      
+      // Validate the URL format to ensure it's a valid URL
+      try {
+        new URL(thumbnailUrl);
+      } catch (urlError) {
+        console.error(`[PATCH /projects/:id/thumbnail] Invalid thumbnailUrl format: ${thumbnailUrl}`);
+        return res.status(400).json({ 
+          success: false,
+          message: "Invalid thumbnailUrl format. Must be a valid URL." 
+        });
       }
       
       console.log(`[PATCH /projects/${id}/thumbnail] Updating thumbnail:`, { thumbnailUrl, thumbnailFile });
       
-      // Only update the thumbnail fields, not the entire project
-      const updateData = {
-        thumbnailUrl,
-        thumbnailFile
-      };
-      
       // Get the current project to verify its existence
       const existingProject = await storage.getProjectById(id);
       if (!existingProject) {
-        return res.status(404).json({ message: "Project not found" });
+        console.error(`[PATCH /projects/:id/thumbnail] Project not found: ${id}`);
+        return res.status(404).json({ 
+          success: false, 
+          message: "Project not found" 
+        });
       }
+      
+      console.log(`[PATCH /projects/${id}/thumbnail] Found existing project: ${existingProject.title}`);
+      
+      // Only update the thumbnail fields, not the entire project
+      const updateData = {
+        thumbnailUrl,
+        thumbnailFile: thumbnailFile || null // Ensure we have a value even if not provided
+      };
       
       // Update the thumbnail fields
       const updateResult = await storage.updateProject(id, updateData);
       
       if (!updateResult) {
-        return res.status(404).json({ message: "Project not found or update failed" });
+        console.error(`[PATCH /projects/:id/thumbnail] Update operation failed for project ${id}`);
+        return res.status(500).json({ 
+          success: false, 
+          message: "Failed to update project thumbnail" 
+        });
       }
       
-      console.log(`[PATCH /projects/${id}/thumbnail] Thumbnail updated successfully`);
-      res.json(updateResult);
+      // Verify the update worked by checking the returned project
+      if (updateResult.thumbnailUrl !== thumbnailUrl) {
+        console.warn(`[PATCH /projects/${id}/thumbnail] Updated project doesn't have expected thumbnailUrl. Expected: ${thumbnailUrl}, Got: ${updateResult.thumbnailUrl}`);
+      }
+      
+      console.log(`[PATCH /projects/${id}/thumbnail] Thumbnail updated successfully for project: ${updateResult.title}`);
+      
+      // Return the updated project with success information
+      res.status(200).json({
+        success: true,
+        message: "Project thumbnail updated successfully",
+        project: updateResult
+      });
     } catch (error) {
-      console.error("Error updating project thumbnail:", error);
+      console.error(`[PATCH /projects/:id/thumbnail] Error updating project thumbnail:`, error);
       res.status(500).json({ 
+        success: false, 
         message: "Failed to update project thumbnail", 
         error: error instanceof Error ? error.message : String(error) 
       });
