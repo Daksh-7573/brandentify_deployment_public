@@ -23,6 +23,7 @@ interface CorporateExecutiveProps {
     photoURL: string | null;
     lookingFor: string | null;
     jobLevel: string | null;
+    aboutMe?: string | null;
   };
   userSkills: Skill[];
   userExperiences: WorkExperience[];
@@ -482,10 +483,10 @@ export default function CorporateExecutive({
       <div className="sticky top-0 z-50 bg-white border-b border-gray-100 py-4 shadow-sm">
         <div className="max-w-6xl mx-auto px-8">
           <div className="flex items-center justify-between">
-            {/* Name/Logo */}
+            {/* Logo - Removed name as requested */}
             <div className="flex-shrink-0">
               <h3 className="text-xl font-semibold text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>
-                {userInfo.name}
+                Portfolio
               </h3>
             </div>
             
@@ -614,33 +615,13 @@ export default function CorporateExecutive({
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-quote"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg>
                   </div>
                   <p className="text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
-                    {userInfo.lookingFor || 
-                    `Backed by 20+ years of global leadership experience in driving strategic growth and transformation. 
-                    I combine analytical rigor with innovative thinking to deliver exceptional results for organizations 
-                    navigating complex business challenges and market opportunities.`}
+                    {userInfo.aboutMe || 
+                    `I'm passionate about delivering value and achieving results through collaborative work and innovative approaches.`}
                   </p>
                 </div>
               </div>
               
-              {/* Contact/Connect */}
-              <div className="flex items-center gap-4 fade-in fade-in-delay-3">
-                {userInfo.email && (
-                  <a 
-                    href={`mailto:${userInfo.email}`} 
-                    className="text-gray-500 hover:text-[#6a0dad] transition-colors"
-                    aria-label="Email"
-                  >
-                    <Mail className="h-5 w-5" />
-                  </a>
-                )}
-                <a 
-                  href="#" 
-                  className="text-gray-500 hover:text-[#6a0dad] transition-colors"
-                  aria-label="LinkedIn"
-                >
-                  <Linkedin className="h-5 w-5" />
-                </a>
-              </div>
+              {/* Contact/Connect section removed as requested */}
             </div>
           </div>
         </div>

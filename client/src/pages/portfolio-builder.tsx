@@ -665,6 +665,9 @@ export default function PortfolioBuilder() {
           location: userData?.location || '',
           email: userData?.email || user?.email || '',
           photoURL: userData?.photoURL || user?.photoURL || null,
+          aboutMe: userData?.aboutMe || '',
+          lookingFor: userData?.lookingFor || null,
+          jobLevel: userData?.jobLevel || null,
         };
         
         // Extract skills, sorted by proficiency
@@ -779,7 +782,8 @@ export default function PortfolioBuilder() {
                   email: userData?.email || user?.email || null,
                   photoURL: userData?.photoURL || user?.photoURL || null,
                   lookingFor: userData?.lookingFor || null,
-                  jobLevel: userData?.jobLevel || null
+                  jobLevel: userData?.jobLevel || null,
+                  aboutMe: userData?.aboutMe || ''
                 }}
                 userSkills={userSkills || []}
                 userExperiences={userExperiences || []}
