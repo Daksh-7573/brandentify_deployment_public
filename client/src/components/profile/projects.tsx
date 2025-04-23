@@ -868,8 +868,9 @@ export default function Projects() {
                       {/* 
                         Display priority:
                         1. If thumbnailUrl exists and is valid, show that
-                        2. If no thumbnailUrl but mediaUrls exist, show the first media URL
-                        3. If neither exist, show a fallback icon
+                        2. If thumbnailFile exists, show that
+                        3. If no thumbnailUrl but mediaUrls exist, show the first media URL
+                        4. If neither exist, show a fallback icon
                       */}
                       {project.thumbnailUrl && project.thumbnailUrl !== "null" && project.thumbnailUrl !== null ? (
                         <>
@@ -880,6 +881,16 @@ export default function Projects() {
                           />
                           {/* Using a hidden debug span to check what image is being used */}
                           <span className="hidden">Using thumbnailUrl: {project.thumbnailUrl}</span>
+                        </>
+                      ) : project.thumbnailFile && project.thumbnailFile !== "null" && project.thumbnailFile !== null ? (
+                        <>
+                          <img 
+                            src={project.thumbnailFile}
+                            alt={`${project.title} thumbnail file`} 
+                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
+                          />
+                          {/* Using a hidden debug span to check what image is being used */}
+                          <span className="hidden">Using thumbnailFile: {project.thumbnailFile}</span>
                         </>
                       ) : (project.mediaUrls && ((typeof project.mediaUrls === 'string' && project.mediaUrls.startsWith('[')) || Array.isArray(project.mediaUrls))) ? (
                         <>
