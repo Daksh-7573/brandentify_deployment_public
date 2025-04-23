@@ -841,8 +841,15 @@ function VideoPlayer({ pulse }: { pulse: PulseWithUser }) {
       </div>
       <div className="mt-2">
         {isLoading ? (
-          <div className="h-72 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <div className="h-72 flex flex-col p-4 space-y-4">
+            {/* Carousel skeleton */}
+            <div className="h-8 w-40 bg-muted rounded mb-2 animate-pulse"></div>
+            <div className="flex-1 bg-muted rounded-lg animate-pulse"></div>
+            <div className="flex justify-center gap-2">
+              <div className="h-2 w-2 rounded-full bg-muted animate-pulse"></div>
+              <div className="h-2 w-2 rounded-full bg-muted animate-pulse"></div>
+              <div className="h-2 w-2 rounded-full bg-muted animate-pulse"></div>
+            </div>
           </div>
         ) : (
           <div className="relative group">
@@ -981,8 +988,10 @@ function ProjectDetails({ pulse }: { pulse: PulseWithUser }) {
       </div>
       <div className="rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-4 bg-gradient-to-b from-green-50/30 to-green-50/10">
         {initialLoad ? (
-          <div className="h-20 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-green-500"></div>
+          <div className="h-20 space-y-3 animate-pulse">
+            <div className="h-5 w-2/3 bg-muted rounded"></div>
+            <div className="h-4 w-full bg-muted rounded"></div>
+            <div className="h-8 w-32 bg-muted rounded mt-4"></div>
           </div>
         ) : (localProject || project) ? (
           <>
