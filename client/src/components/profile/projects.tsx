@@ -41,6 +41,16 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { 
+  AlertDialog, 
+  AlertDialogAction, 
+  AlertDialogCancel, 
+  AlertDialogContent, 
+  AlertDialogDescription, 
+  AlertDialogFooter, 
+  AlertDialogHeader, 
+  AlertDialogTitle 
+} from "@/components/ui/alert-dialog";
 
 // Define schemas for forms
 const projectSchema = z.object({
@@ -270,6 +280,110 @@ export default function Projects() {
   // Image management state
   const [isConfirmingDeleteImage, setIsConfirmingDeleteImage] = useState(false);
   const [imageToDelete, setImageToDelete] = useState<string | null>(null);
+  
+  // Image management functions
+  const handleDeleteImage = async (imageUrl: string) => {
+    setImageToDelete(imageUrl);
+    setIsConfirmingDeleteImage(true);
+  };
+  
+  const confirmDeleteImage = async () => {
+    if (!currentProject || !imageToDelete) return;
+    
+    try {
+      // Call the API to delete the image
+      const response = await apiRequest(
+        'DELETE',
+        `/api/projects/${currentProject.id}/media`,
+        { mediaUrl: imageToDelete }
+      );
+      
+      if (response.ok) {
+        const result = await response.json();
+        
+        // Update the project in state with new media URLs
+        const updatedProject = {
+          ...currentProject,
+          mediaUrls: result.mediaUrls,
+          thumbnailUrl: result.thumbnailUrl
+        };
+        
+        // Update local state
+        setCurrentProject(updatedProject);
+        setProjects(projects.map(p => p.id === updatedProject.id ? updatedProject : p));
+        
+        toast({
+          title: "Image deleted",
+          description: "The image has been removed from your project.",
+        });
+        
+        // Refresh data
+        refetch();
+      } else {
+        throw new Error("Failed to delete image");
+      }
+    } catch (error) {
+      console.error("Error deleting image:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete the image. Please try again.",
+        variant: "destructive"
+      });
+    }
+    
+    // Clean up state
+    setImageToDelete(null);
+    setIsConfirmingDeleteImage(false);
+  };
+  
+  const cancelDeleteImage = () => {
+    setImageToDelete(null);
+    setIsConfirmingDeleteImage(false);
+  };
+  
+  const handleSetAsThumbnail = async (imageUrl: string) => {
+    if (!currentProject) return;
+    
+    try {
+      // Call the API to set the thumbnail
+      const response = await apiRequest(
+        'PATCH',
+        `/api/projects/${currentProject.id}/set-thumbnail`,
+        { thumbnailUrl: imageUrl }
+      );
+      
+      if (response.ok) {
+        const result = await response.json();
+        
+        // Update the project in state with new thumbnail URL
+        const updatedProject = {
+          ...currentProject,
+          thumbnailUrl: result.thumbnailUrl
+        };
+        
+        // Update local state
+        setCurrentProject(updatedProject);
+        setProjects(projects.map(p => p.id === updatedProject.id ? updatedProject : p));
+        
+        toast({
+          title: "Thumbnail updated",
+          description: "Project thumbnail has been updated successfully.",
+        });
+        
+        // Refresh data
+        refetch();
+      } else {
+        throw new Error("Failed to update thumbnail");
+      }
+    } catch (error) {
+      console.error("Error setting thumbnail:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update the thumbnail. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
   
   // Form setup
   const projectForm = useForm<ProjectFormValues>({
@@ -2097,6 +2211,32 @@ export default function Projects() {
           )}
         </div>
       )}
+      
+      {/* Image Delete Confirmation Dialog */}
+      <AlertDialog open={isConfirmingDeleteImage} onOpenChange={setIsConfirmingDeleteImage}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Image</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this image? This action cannot be undone.
+              {currentProject?.thumbnailUrl === imageToDelete && (
+                <p className="mt-2 text-red-500 font-semibold">
+                  Warning: This is the current thumbnail image for this project.
+                </p>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={cancelDeleteImage}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDeleteImage}
+              className="bg-red-500 hover:bg-red-600"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
