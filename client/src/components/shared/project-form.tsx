@@ -139,6 +139,61 @@ export default function ProjectForm({
     return null;
   };
   
+  // Function to handle deleting existing media
+  const handleDeleteExistingMedia = async (mediaUrl: string) => {
+    if (!existingProject?.id) return;
+    
+    try {
+      // Call the API to delete the media
+      const response = await fetch(`/api/projects/${existingProject.id}/media`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ mediaUrl }),
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        
+        // Update the existingMedia state by filtering out the deleted media
+        setExistingMedia(prev => prev.filter(url => url !== mediaUrl));
+        
+        // Reset featured image index if the deleted media was the featured image
+        if (featuredImageIndex >= 1000) {
+          const existingIndex = featuredImageIndex - 1000;
+          if (existingMedia[existingIndex] === mediaUrl) {
+            setFeaturedImageIndex(0);
+          }
+        }
+        
+        toast({
+          title: "Media deleted",
+          description: "The media has been removed from your project",
+        });
+        
+        // Invalidate queries to refresh project data
+        queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/projects`] });
+        
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to delete media:", errorData);
+        toast({
+          title: "Failed to delete media",
+          description: errorData.message || "An error occurred while deleting the media",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error("Error deleting media:", error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred while deleting the media",
+        variant: "destructive"
+      });
+    }
+  };
+  
   const onSubmit = async (values: ProjectFormValues) => {
     if (!userId) return;
     
@@ -617,7 +672,7 @@ export default function ProjectForm({
                               {/* Only show controls for images (not videos) */}
                               {!url.endsWith('.mp4') && !url.endsWith('.webm') && !url.endsWith('.mov') && (
                                 <>
-                                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition-opacity">
                                     <Button
                                       type="button"
                                       variant={isExistingFeatured ? "default" : "secondary"}
@@ -627,6 +682,16 @@ export default function ProjectForm({
                                       title="Set as thumbnail"
                                     >
                                       ★
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      variant="destructive"
+                                      size="icon"
+                                      className="h-8 w-8"
+                                      onClick={() => handleDeleteExistingMedia(url)}
+                                      title="Delete image"
+                                    >
+                                      ✕
                                     </Button>
                                   </div>
                                   {isExistingFeatured && (
