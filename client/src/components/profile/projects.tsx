@@ -442,16 +442,7 @@ export default function Projects() {
     
     if (!userId) return;
     
-    // Validate thumbnail is required for new projects
-    if (!currentProject && !thumbnailFile) {
-      setThumbnailError("Project thumbnail is required");
-      toast({
-        title: "Validation Error",
-        description: "Project thumbnail is required. Please upload an image.",
-        variant: "destructive"
-      });
-      return;
-    }
+    // No longer requiring thumbnail for projects
     
     // Validate additional media files
     let validationFailed = false;
@@ -503,39 +494,7 @@ export default function Projects() {
         );
         projectData = await response.json();
         
-        // If we have a thumbnail file, upload it
-        if (thumbnailFile) {
-          const formData = new FormData();
-          formData.append('thumbnail', thumbnailFile);
-          formData.append('projectId', projectData.id.toString());
-          
-          // Use fetch directly as apiRequest doesn't handle FormData
-          const uploadResponse = await fetch('/api/projects/upload-thumbnail', {
-            method: 'POST',
-            body: formData,
-          });
-          
-          if (uploadResponse.ok) {
-            const uploadResult = await uploadResponse.json();
-            console.log("Thumbnail upload successful:", uploadResult);
-            
-            // Update the thumbnail URL
-            projectData.thumbnailUrl = uploadResult.thumbnailUrl;
-            projectData.thumbnailFile = uploadResult.thumbnailFile;
-            
-            // Also update in the database to ensure persistence
-            await apiRequest(
-              'PATCH',
-              `/api/projects/${projectData.id}/thumbnail`,
-              { 
-                thumbnailUrl: uploadResult.thumbnailUrl,
-                thumbnailFile: uploadResult.thumbnailFile
-              }
-            );
-            
-            console.log("Project data with thumbnail updated:", projectData);
-          }
-        }
+        // Thumbnail is no longer required for existing projects
         
         // Handle additional media uploads (project images and video)
         if (projectImages.length > 0 || projectVideo) {
@@ -592,37 +551,7 @@ export default function Projects() {
         );
         projectData = await response.json();
         
-        // If we have a thumbnail file, upload it (we already validated it exists above)
-        const formData = new FormData();
-        formData.append('thumbnail', thumbnailFile!);
-        formData.append('projectId', projectData.id.toString());
-        
-        // Use fetch directly as apiRequest doesn't handle FormData
-        const uploadResponse = await fetch('/api/projects/upload-thumbnail', {
-          method: 'POST',
-          body: formData,
-        });
-        
-        if (uploadResponse.ok) {
-          const uploadResult = await uploadResponse.json();
-          console.log("Thumbnail upload successful:", uploadResult);
-          
-          // Update the thumbnail URL
-          projectData.thumbnailUrl = uploadResult.thumbnailUrl;
-          projectData.thumbnailFile = uploadResult.thumbnailFile;
-          
-          // Also update in the database to ensure persistence
-          await apiRequest(
-            'PATCH',
-            `/api/projects/${projectData.id}/thumbnail`,
-            { 
-              thumbnailUrl: uploadResult.thumbnailUrl,
-              thumbnailFile: uploadResult.thumbnailFile
-            }
-          );
-          
-          console.log("Project data with thumbnail updated:", projectData);
-        }
+        // Thumbnail is no longer required for new projects
         
         // Handle additional media uploads (project images and video)
         if (projectImages.length > 0 || projectVideo) {
@@ -1520,40 +1449,7 @@ export default function Projects() {
                       )}
                     />
                     
-                    <FormItem>
-                      <FormLabel>Project Thumbnail*</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="file" 
-                          ref={fileInputRef}
-                          accept="image/*"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                              setThumbnailFile(file);
-                              setThumbnailError(null);
-                            }
-                          }} 
-                        />
-                      </FormControl>
-                      <FormDescription className="flex items-center gap-2">
-                        {currentProject.thumbnailUrl ? (
-                          <>
-                            <span>Current thumbnail:</span>
-                            <img 
-                              src={currentProject.thumbnailUrl} 
-                              alt="Current thumbnail" 
-                              className="h-8 w-8 object-cover rounded"
-                            />
-                            <span className="text-xs text-muted-foreground">(Upload a new one to replace)</span>
-                          </>
-                        ) : (
-                          "A thumbnail image is required for your project"
-                        )}
-                      </FormDescription>
-                      {thumbnailError && <p className="text-sm font-medium text-destructive">{thumbnailError}</p>}
-                      <FormMessage />
-                    </FormItem>
+
                     
                     <div className="space-y-4 border p-4 rounded-md">
                       <h3 className="text-sm font-medium">Project Media (Choose One Type)*</h3>
