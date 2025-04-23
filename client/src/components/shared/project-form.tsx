@@ -208,6 +208,13 @@ export default function ProjectForm({
             const uploadResult = await uploadResponse.json();
             console.log("Thumbnail upload successful:", uploadResult);
             
+            // Log detailed information about the response
+            console.log("Thumbnail upload details:", {
+              thumbnailUrl: uploadResult.thumbnailUrl,
+              thumbnailFile: uploadResult.thumbnailFile,
+              fullResponse: uploadResult
+            });
+            
             // Update the thumbnail URL and file path in projectData
             projectData.thumbnailUrl = uploadResult.thumbnailUrl;
             // Using type assertion to handle the thumbnailFile property
@@ -215,15 +222,21 @@ export default function ProjectForm({
             
             // Also update in the database to ensure persistence
             try {
-              await apiRequest({
+              const patchData = { 
+                thumbnailUrl: uploadResult.thumbnailUrl,
+                thumbnailFile: uploadResult.thumbnailFile
+              };
+              
+              console.log(`Updating project ${projectData.id} with thumbnail data:`, patchData);
+              
+              const patchResponse = await apiRequest({
                 method: 'PATCH',
                 url: `/api/projects/${projectData.id}/thumbnail`,
-                data: { 
-                  thumbnailUrl: uploadResult.thumbnailUrl,
-                  thumbnailFile: uploadResult.thumbnailFile
-                }
+                data: patchData
               });
-              console.log("Project thumbnail database update successful");
+              
+              const patchResult = await patchResponse.json();
+              console.log("Project thumbnail database update result:", patchResult);
             } catch (thumbnailUpdateError) {
               console.error("Error updating thumbnail in database:", thumbnailUpdateError);
             }

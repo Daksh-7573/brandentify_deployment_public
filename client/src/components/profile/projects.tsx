@@ -879,13 +879,12 @@ export default function Projects() {
                             alt={`${project.title} thumbnail`} 
                             className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
                           />
-                          {/* Using a hidden debug span to check what image is being used */}
                           <span className="hidden">Using thumbnailUrl: {project.thumbnailUrl}</span>
                         </>
                       ) : project.thumbnailFile && project.thumbnailFile !== "null" && project.thumbnailFile !== null ? (
                         <>
                           <img 
-                            src={project.thumbnailFile}
+                            src={`/uploads/projects/${project.thumbnailFile}`}
                             alt={`${project.title} thumbnail file`} 
                             className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
                           />
