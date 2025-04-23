@@ -122,9 +122,21 @@ export default function ProjectForm({
     }
   }, [existingProject]);
   
-  // Function to handle choosing featured image from existing images
+  // Function to handle choosing featured image from new or existing images
   const handleSelectFeaturedImage = (index: number) => {
     setFeaturedImageIndex(index);
+  };
+  
+  // Get existing featured image URL if an existing image is selected
+  const getExistingFeaturedImageUrl = (): string | null => {
+    if (featuredImageIndex >= 1000) {
+      // If it's an existing image (indices 1000+), return its URL
+      const existingIndex = featuredImageIndex - 1000;
+      if (existingMedia && existingMedia[existingIndex]) {
+        return existingMedia[existingIndex];
+      }
+    }
+    return null;
   };
   
   const onSubmit = async (values: ProjectFormValues) => {
