@@ -929,14 +929,47 @@ export default function Projects() {
                     <div className="w-1/2 aspect-square overflow-hidden bg-muted rounded-md shadow-sm">
                       {/* 
                         Display priority:
-                        1. If showThumbnailInsteadOfMedia is true, use thumbnail path
-                        2. If thumbnailUrl exists and is valid, show that
-                        3. If thumbnailFile exists, show that
-                        4. If no thumbnailUrl but mediaUrls exist, show the first media URL
-                        5. If neither exist, show a fallback icon
+                        1. Always use thumbnailUrl first (user-selected featured image)
+                        2. If no thumbnailUrl but mediaUrls exist, show the first media URL
+                        3. If neither exist, show a fallback icon
                       */}
-                      {/* For this user's request, we're prioritizing media images instead of thumbnails */}
-                      {project.mediaUrls && 
+                      {project.thumbnailUrl && project.thumbnailUrl !== "null" && project.thumbnailUrl !== null ? (
+                        <>
+                          <div className="relative">
+                            <img 
+                              src={project.thumbnailUrl}
+                              alt={`${project.title} thumbnail`} 
+                              className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
+                              onError={(e) => {
+                                console.error(`Thumbnail URL failed to load: ${project.thumbnailUrl}`);
+                                // Hide this image
+                                (e.target as HTMLImageElement).style.display = 'none';
+                                // Try to find a fallback
+                                if (project.mediaUrls && 
+                                   ((Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0) || 
+                                    (typeof project.mediaUrls === 'string' && (
+                                      project.mediaUrls.indexOf('http') >= 0 || 
+                                      project.mediaUrls.indexOf('[') === 0)))) {
+                                  const imgElement = document.createElement('img');
+                                  const mediaUrl = Array.isArray(project.mediaUrls) 
+                                    ? project.mediaUrls[0] 
+                                    : typeof project.mediaUrls === 'string' && project.mediaUrls.startsWith('[')
+                                      ? JSON.parse(project.mediaUrls)[0]
+                                      : String(project.mediaUrls);
+                                  
+                                  imgElement.src = mediaUrl;
+                                  imgElement.alt = `${project.title} media fallback`;
+                                  imgElement.className = "w-full h-full object-cover hover:scale-105 transition-transform duration-200";
+                                  (e.target as HTMLImageElement).parentNode?.appendChild(imgElement);
+                                }
+                              }}
+                            />
+                            <div className="absolute top-0 right-0 bg-black/60 text-white text-xs px-2 py-1 rounded-bl-md">
+                              Featured
+                            </div>
+                          </div>
+                        </>
+                      ) : project.mediaUrls && 
                             ((Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0) || 
                              (typeof project.mediaUrls === 'string' && (
                                project.mediaUrls.indexOf('http') >= 0 || 

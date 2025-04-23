@@ -560,7 +560,7 @@ export default function ProjectForm({
                               </Button>
                               <Button
                                 type="button"
-                                variant={featuredImageIndex === index ? "primary" : "secondary"}
+                                variant={featuredImageIndex === index ? "default" : "secondary"}
                                 size="icon"
                                 className="h-8 w-8"
                                 onClick={() => handleSelectFeaturedImage(index)}
@@ -620,7 +620,7 @@ export default function ProjectForm({
                                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                                     <Button
                                       type="button"
-                                      variant={isExistingFeatured ? "primary" : "secondary"}
+                                      variant={isExistingFeatured ? "default" : "secondary"}
                                       size="icon"
                                       className="h-8 w-8"
                                       onClick={() => handleSelectFeaturedImage(existingMediaIndex)}
