@@ -210,7 +210,8 @@ export default function ProjectForm({
             
             // Update the thumbnail URL and file path in projectData
             projectData.thumbnailUrl = uploadResult.thumbnailUrl;
-            projectData.thumbnailFile = uploadResult.thumbnailFile;
+            // Using type assertion to handle the thumbnailFile property
+            (projectData as any).thumbnailFile = uploadResult.thumbnailFile;
             
             // Also update in the database to ensure persistence
             try {
@@ -311,7 +312,8 @@ export default function ProjectForm({
           
           // Update the thumbnail URL and file path in projectData
           projectData.thumbnailUrl = uploadResult.thumbnailUrl;
-          projectData.thumbnailFile = uploadResult.thumbnailFile;
+          // Using type assertion to handle the thumbnailFile property
+          (projectData as any).thumbnailFile = uploadResult.thumbnailFile;
           
           // Also update in the database to ensure persistence
           try {
