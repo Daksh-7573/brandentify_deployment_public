@@ -276,50 +276,30 @@ export default function ServiceForm({ service, onSubmit, isPending, existingServ
                     <FormLabel>Rate Amount</FormLabel>
                     <FormControl>
                       <Input
-                        type="text" 
-                        inputMode="decimal"
-                        placeholder="Enter service price"
-                        value={field.value || ''}
-                        onKeyDown={(e) => {
-                          // Only allow numbers, decimal point, and control keys (backspace, arrows, etc.)
-                          const isNumber = /[0-9]/.test(e.key);
-                          const isDecimalPoint = e.key === '.';
-                          const isControlKey = e.key === 'Backspace' || e.key === 'Delete' || 
-                                               e.key === 'ArrowLeft' || e.key === 'ArrowRight' ||
-                                               e.key === 'Tab' || e.ctrlKey || e.metaKey;
-                          
-                          const hasDecimalAlready = e.currentTarget.value.includes('.');
-                          
-                          // Allow decimal point only if there isn't one already
-                          const isValidDecimalPoint = isDecimalPoint && !hasDecimalAlready;
-                          
-                          // Prevent input if not a number, valid decimal point, or control key
-                          if (!isNumber && !isValidDecimalPoint && !isControlKey) {
-                            e.preventDefault();
-                          }
-                        }}
+                        type="text"
+                        placeholder="Enter service price (e.g. 24.99)"
+                        value={field.value === null ? '' : field.value}
                         onChange={(e) => {
-                          // Ensure only one decimal point even with paste operations
-                          let value = e.target.value;
+                          // Accept the raw input value for display
+                          const rawValue = e.target.value;
                           
-                          // First keep only digits and decimal points
-                          value = value.replace(/[^\d.]/g, '');
-                          
-                          // Then ensure only one decimal point
-                          const parts = value.split('.');
-                          if (parts.length > 2) {
-                            value = parts[0] + '.' + parts.slice(1).join('');
+                          // Only proceed with validation if there's input
+                          if (rawValue === '') {
+                            field.onChange(null);
+                            return;
                           }
                           
-                          // Parse as number for the form or null if empty
-                          const numValue = value ? parseFloat(value) : null;
-                          console.log("Price input changed:", value, "as number:", numValue);
-                          
-                          // Update the form field value
-                          field.onChange(numValue);
-                          
-                          // Also update the input to show the cleaned value
-                          e.target.value = value;
+                          // Allow numbers and a single decimal point
+                          if (/^[0-9]*\.?[0-9]*$/.test(rawValue)) {
+                            // Convert to number if it's a valid decimal
+                            const numValue = parseFloat(rawValue);
+                            
+                            // Only update if it's a valid number or if it's a partial decimal (like "10." or ".")
+                            if (!isNaN(numValue) || /^\d*\.$/.test(rawValue)) {
+                              console.log("Price input changed:", rawValue);
+                              field.onChange(rawValue);
+                            }
+                          }
                         }}
                       />
                     </FormControl>
