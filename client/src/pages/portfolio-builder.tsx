@@ -985,14 +985,13 @@ export default function PortfolioBuilder() {
     if (isAnalyzingProfile) {
       return (
         <div className="h-[500px] flex flex-col items-center justify-center space-y-4">
-          <div className="relative">
-            <Loader2 className="h-16 w-16 animate-spin text-primary" />
-            <Bot className="h-8 w-8 text-primary absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
-          </div>
-          <div className="text-center">
-            <h3 className="text-lg font-medium">Musk AI is analyzing your profile</h3>
-            <p className="text-gray-500">Gathering information from your experiences, skills, and projects...</p>
-          </div>
+          <FluidLoader 
+            isLoading={true} 
+            text="Musk AI is analyzing your profile"
+            size="lg"
+            theme="primary"
+          />
+          <p className="text-gray-500 mt-2">Gathering information from your experiences, skills, and projects...</p>
         </div>
       );
     }
