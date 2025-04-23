@@ -16,7 +16,7 @@ import { Video } from 'lucide-react';
 // Internal components and utilities
 import { queryClient, apiRequest } from '@/lib/queryClient';
 import { useAuth } from '@/context/auth-context';
-import IndustryCombobox from '@/components/shared/industry-combobox';
+import { IndustryCombobox } from '@/components/ui/industry-combobox';
 
 // Project Schema
 export const projectSchema = z.object({
