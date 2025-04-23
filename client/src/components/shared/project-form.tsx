@@ -195,11 +195,29 @@ export default function ProjectForm({
   };
   
   const onSubmit = async (values: ProjectFormValues) => {
-    if (!userId) return;
+    if (!userId) {
+      toast({
+        title: "Error",
+        description: "User ID not found. Please try logging in again.",
+        variant: "destructive"
+      });
+      return;
+    }
     
     // Validate media files
     let validationFailed = false;
     const newMediaErrors: MediaErrors = {};
+    
+    // Check if at least one media item exists (existing or new)
+    const hasExistingMedia = existingProject && 
+      existingProject.mediaUrls && 
+      Array.isArray(existingProject.mediaUrls) && 
+      existingProject.mediaUrls.length > 0;
+      
+    if (projectImages.length === 0 && !projectVideo && !hasExistingMedia && existingMedia.length === 0) {
+      newMediaErrors.general = "At least one project image or video is required";
+      validationFailed = true;
+    }
     
     // Validate project images (max 10)
     if (projectImages.length > 10) {
@@ -391,11 +409,39 @@ export default function ProjectForm({
       }
     } catch (error) {
       console.error("Error submitting project:", error);
+      
+      let errorMessage = "Failed to save project. Please try again.";
+      
+      // Check if it's a network error (server disconnection)
+      if (error instanceof Error) {
+        if (error.message.includes("NetworkError") || 
+            error.message.includes("Failed to fetch") ||
+            error.message.includes("Network request failed")) {
+          errorMessage = "Network error. Please check your connection and try again.";
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to save project",
+        description: errorMessage,
         variant: "destructive"
       });
+      
+      // If we were able to create the project but failed with media uploads,
+      // let's still close the modal and refresh the data
+      if (existingProject || errorMessage.includes("media upload failed")) {
+        if (closeModal) {
+          closeModal();
+        }
+        
+        try {
+          queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/projects`] });
+        } catch (queryError) {
+          console.error("Error invalidating queries:", queryError);
+        }
+      }
     }
   };
 
