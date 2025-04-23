@@ -3,17 +3,53 @@ import fs from 'fs';
 import multer from 'multer';
 import { Request } from 'express';
 
-// Ensure upload directories exist
-const projectUploadsDir = path.join(process.cwd(), 'public', 'uploads', 'projects');
-const mediaUploadsDir = path.join(process.cwd(), 'public', 'uploads', 'media');
+// Create directories helper function with better error handling
+const ensureDirectoryExists = (dirPath: string): boolean => {
+  try {
+    if (!fs.existsSync(dirPath)) {
+      console.log(`Creating directory: ${dirPath}`);
+      fs.mkdirSync(dirPath, { recursive: true });
+      console.log(`Directory created successfully: ${dirPath}`);
+    } else {
+      console.log(`Directory already exists: ${dirPath}`);
+    }
+    
+    // Double-check the directory exists
+    const exists = fs.existsSync(dirPath);
+    if (!exists) {
+      console.error(`Failed to create directory: ${dirPath}`);
+      return false;
+    }
+    
+    // Also check write permissions
+    try {
+      const testFile = path.join(dirPath, '.test-write-access');
+      fs.writeFileSync(testFile, 'test');
+      fs.unlinkSync(testFile);
+    } catch (error) {
+      console.error(`Directory exists but not writable: ${dirPath}`, error);
+      return false;
+    }
+    
+    return true;
+  } catch (error) {
+    console.error(`Error ensuring directory exists: ${dirPath}`, error);
+    return false;
+  }
+};
 
-if (!fs.existsSync(projectUploadsDir)) {
-  fs.mkdirSync(projectUploadsDir, { recursive: true });
-}
+// Define upload directories
+const publicDir = path.join(process.cwd(), 'public');
+const uploadsDir = path.join(publicDir, 'uploads');
+const projectUploadsDir = path.join(uploadsDir, 'projects');
+const mediaUploadsDir = path.join(uploadsDir, 'media');
 
-if (!fs.existsSync(mediaUploadsDir)) {
-  fs.mkdirSync(mediaUploadsDir, { recursive: true });
-}
+// Create directory structure with better error handling
+console.log('Setting up upload directories...');
+ensureDirectoryExists(publicDir);
+ensureDirectoryExists(uploadsDir);
+ensureDirectoryExists(projectUploadsDir);
+ensureDirectoryExists(mediaUploadsDir);
 
 // Configure storage for project thumbnails
 const projectStorage = multer.diskStorage({

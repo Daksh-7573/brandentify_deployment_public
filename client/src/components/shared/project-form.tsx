@@ -187,20 +187,52 @@ export default function ProjectForm({
         
         // If we have a thumbnail file, upload it
         if (thumbnailFile) {
-          const formData = new FormData();
-          formData.append('thumbnail', thumbnailFile);
-          formData.append('projectId', projectData.id.toString());
-          
-          // Use fetch directly as apiRequest doesn't handle FormData
-          const uploadResponse = await fetch('/api/projects/upload-thumbnail', {
-            method: 'POST',
-            body: formData,
-          });
-          
-          if (uploadResponse.ok) {
+          try {
+            console.log("Uploading thumbnail for existing project ID:", projectData.id);
+            const formData = new FormData();
+            formData.append('thumbnail', thumbnailFile);
+            formData.append('projectId', projectData.id.toString());
+            
+            // Use fetch directly as apiRequest doesn't handle FormData
+            const uploadResponse = await fetch('/api/projects/upload-thumbnail', {
+              method: 'POST',
+              body: formData,
+            });
+            
+            if (!uploadResponse.ok) {
+              const errorText = await uploadResponse.text();
+              console.error("Thumbnail upload failed:", errorText);
+              throw new Error(`Failed to upload thumbnail: ${errorText}`);
+            }
+            
             const uploadResult = await uploadResponse.json();
-            // Update the thumbnail URL
+            console.log("Thumbnail upload successful:", uploadResult);
+            
+            // Update the thumbnail URL and file path in projectData
             projectData.thumbnailUrl = uploadResult.thumbnailUrl;
+            projectData.thumbnailFile = uploadResult.thumbnailFile;
+            
+            // Also update in the database to ensure persistence
+            try {
+              await apiRequest({
+                method: 'PATCH',
+                url: `/api/projects/${projectData.id}/thumbnail`,
+                data: { 
+                  thumbnailUrl: uploadResult.thumbnailUrl,
+                  thumbnailFile: uploadResult.thumbnailFile
+                }
+              });
+              console.log("Project thumbnail database update successful");
+            } catch (thumbnailUpdateError) {
+              console.error("Error updating thumbnail in database:", thumbnailUpdateError);
+            }
+          } catch (error) {
+            console.error("Error during thumbnail upload:", error);
+            toast({
+              title: "Warning",
+              description: "Project updated but thumbnail upload failed. You can edit the project to try again.",
+              variant: "destructive"
+            });
           }
         }
         
@@ -256,20 +288,52 @@ export default function ProjectForm({
         projectData = await response.json();
         
         // If we have a thumbnail file, upload it
-        const formData = new FormData();
-        formData.append('thumbnail', thumbnailFile!);
-        formData.append('projectId', projectData.id.toString());
-        
-        // Use fetch directly as apiRequest doesn't handle FormData
-        const uploadResponse = await fetch('/api/projects/upload-thumbnail', {
-          method: 'POST',
-          body: formData,
-        });
-        
-        if (uploadResponse.ok) {
+        try {
+          console.log("Uploading thumbnail for new project ID:", projectData.id);
+          const formData = new FormData();
+          formData.append('thumbnail', thumbnailFile!);
+          formData.append('projectId', projectData.id.toString());
+          
+          // Use fetch directly as apiRequest doesn't handle FormData
+          const uploadResponse = await fetch('/api/projects/upload-thumbnail', {
+            method: 'POST',
+            body: formData,
+          });
+          
+          if (!uploadResponse.ok) {
+            const errorText = await uploadResponse.text();
+            console.error("Thumbnail upload failed:", errorText);
+            throw new Error(`Failed to upload thumbnail: ${errorText}`);
+          }
+          
           const uploadResult = await uploadResponse.json();
-          // Update the thumbnail URL
+          console.log("Thumbnail upload successful:", uploadResult);
+          
+          // Update the thumbnail URL and file path in projectData
           projectData.thumbnailUrl = uploadResult.thumbnailUrl;
+          projectData.thumbnailFile = uploadResult.thumbnailFile;
+          
+          // Also update in the database to ensure persistence
+          try {
+            await apiRequest({
+              method: 'PATCH',
+              url: `/api/projects/${projectData.id}/thumbnail`,
+              data: { 
+                thumbnailUrl: uploadResult.thumbnailUrl,
+                thumbnailFile: uploadResult.thumbnailFile
+              }
+            });
+            console.log("Project thumbnail database update successful");
+          } catch (thumbnailUpdateError) {
+            console.error("Error updating thumbnail in database:", thumbnailUpdateError);
+          }
+        } catch (error) {
+          console.error("Error during thumbnail upload:", error);
+          toast({
+            title: "Warning",
+            description: "Project created but thumbnail upload failed. You can edit the project to try again.",
+            variant: "destructive"
+          });
         }
         
         // Handle additional media uploads (project images and video)
