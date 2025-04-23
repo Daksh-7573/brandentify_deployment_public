@@ -1225,17 +1225,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Handle setting the featured image as the thumbnail
       let thumbnailUrl = null;
       
-      // Case 1: Using an existing media URL as the featured image
-      if (featuredImageIndex === -1 && existingFeaturedImageUrl) {
+      // Case 1: Using the explicitly provided existing image URL as the thumbnail
+      if (existingFeaturedImageUrl) {
         thumbnailUrl = existingFeaturedImageUrl;
-        console.log(`[POST /projects/upload-media] Using existing image as thumbnail: ${thumbnailUrl}`);
+        console.log(`[POST /projects/upload-media] Using explicit existing image as thumbnail: ${thumbnailUrl}`);
       } 
-      // Case 2: Using a newly uploaded image as the featured image
-      else if (uploadedMediaUrls.length > 0) {
-        // Ensure the featured image index is valid
-        const validFeaturedIndex = Math.min(featuredImageIndex, uploadedMediaUrls.length - 1);
-        thumbnailUrl = uploadedMediaUrls[validFeaturedIndex];
-        console.log(`[POST /projects/upload-media] Setting new uploaded image as thumbnail: ${thumbnailUrl}`);
+      // Case 2: Using an existing image as the thumbnail (indices 1000+)
+      else if (featuredImageIndex >= 1000 && existingMediaUrls.length > 0) {
+        const existingIndex = featuredImageIndex - 1000;
+        if (existingIndex >= 0 && existingIndex < existingMediaUrls.length) {
+          thumbnailUrl = existingMediaUrls[existingIndex];
+          console.log(`[POST /projects/upload-media] Using existing image at index ${existingIndex} as thumbnail: ${thumbnailUrl}`);
+        }
+      }
+      // Case 3: Using a newly uploaded image as the thumbnail
+      else if (uploadedMediaUrls.length > 0 && featuredImageIndex >= 0 && featuredImageIndex < uploadedMediaUrls.length) {
+        thumbnailUrl = uploadedMediaUrls[featuredImageIndex];
+        console.log(`[POST /projects/upload-media] Setting new uploaded image at index ${featuredImageIndex} as thumbnail: ${thumbnailUrl}`);
+      }
+      // Case 4: Fallback to the first image (new or existing) if nothing else is selected
+      else if (allMediaUrls.length > 0) {
+        thumbnailUrl = allMediaUrls[0];
+        console.log(`[POST /projects/upload-media] Using fallback first image as thumbnail: ${thumbnailUrl}`);
       }
       
       // Update the thumbnailUrl field in the database
