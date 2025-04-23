@@ -11,8 +11,8 @@ import {
   CardFooter 
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { FluidLoader } from "@/components/ui/fluid-loader";
 import { 
+  Loader2, 
   PlusCircle, 
   Edit, 
   Trash2, 
@@ -324,13 +324,7 @@ export default function Services() {
           
           {isLoading ? (
             <div className="flex justify-center py-6">
-              <FluidLoader 
-                isLoading={true} 
-                text="Loading services"
-                size="sm"
-                theme="primary"
-                smallText={true}
-              />
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
             </div>
           ) : !services || !Array.isArray(services) || services.length === 0 ? (
             <div className="py-6 text-center">
@@ -447,9 +441,7 @@ export default function Services() {
             >
               {isPendingDelete ? (
                 <>
-                  <div className="mr-2 h-4 w-4">
-                    <FluidLoader isLoading={true} size="xs" theme="white" />
-                  </div>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Deleting...
                 </>
               ) : (

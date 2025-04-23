@@ -18,8 +18,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { calculateOverallProfileCompletion } from "@/lib/profile-utils";
 import { useState, useEffect } from "react";
-import { Camera, FileText, Edit, Loader2 } from "lucide-react";
-import { FluidLoader } from "@/components/ui/fluid-loader";
+import { Camera, FileText, Edit } from "lucide-react";
 import PersonalInfoIcon from "@/components/icons/personal-info-icon";
 import { useProfilePicture } from "@/hooks/use-profile-picture";
 import { ProfilePictureDialog } from "@/components/profile/profile-picture-dialog";
@@ -1765,12 +1764,7 @@ export default function Profile() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <FluidLoader 
-          isLoading={true} 
-          text="Loading your profile"
-          size="lg"
-          theme="primary"
-        />
+        <p className="text-lg">Loading...</p>
       </div>
     );
   }

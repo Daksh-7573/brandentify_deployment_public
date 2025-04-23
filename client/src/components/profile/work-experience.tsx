@@ -3,7 +3,6 @@ import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2, Edit, CalendarIcon, Building, MapPin, Briefcase, TagIcon, AlertCircle, X } from "lucide-react";
-import { FluidLoader } from "@/components/ui/fluid-loader";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -962,13 +961,9 @@ export default function WorkExperience() {
       <CardContent>
         {isLoading ? (
           <div className="flex justify-center py-6">
-            <FluidLoader 
-              isLoading={true} 
-              text="Loading work experience"
-              size="sm"
-              theme="primary"
-              smallText={true}
-            />
+            <div className="animate-spin h-6 w-6 text-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-loader-2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            </div>
           </div>
         ) : sortedExperiences.length === 0 ? (
           <div className="py-6 text-center">

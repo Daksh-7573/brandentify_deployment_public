@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { FluidLoader } from "@/components/ui/fluid-loader";
 import { 
   Loader2, 
   Pencil, 
@@ -809,13 +808,7 @@ export default function Projects() {
         <CardContent>
           {isLoading ? (
             <div className="flex justify-center py-6">
-              <FluidLoader 
-                isLoading={true} 
-                text="Loading projects"
-                size="sm"
-                theme="primary"
-                smallText={true}
-              />
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
             </div>
           ) : displayProjects && displayProjects.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

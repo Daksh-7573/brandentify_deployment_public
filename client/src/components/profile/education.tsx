@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Pencil, Plus, Trash2, Calendar as CalendarIcon, GraduationCap, Building, MapPin, BookOpen, Briefcase, AlertCircle } from "lucide-react";
-import { FluidLoader } from "@/components/ui/fluid-loader";
 import * as z from "zod";
 import { formatDate } from "@/lib/utils";
 import { useForm } from "react-hook-form";
@@ -597,15 +596,15 @@ export default function Education() {
       
       <CardContent>
         {isLoading ? (
-          <div className="flex justify-center py-6">
-            <FluidLoader 
-              isLoading={true} 
-              text="Loading education"
-              size="sm"
-              theme="primary"
-              smallText={true}
-            />
-          </div>
+          // Loading skeleton
+          Array.from({ length: 2 }).map((_, i) => (
+            <div key={i} className="mb-4">
+              <Skeleton className="h-6 w-1/3 mb-2" />
+              <Skeleton className="h-4 w-1/4 mb-1" />
+              <Skeleton className="h-4 w-1/5 mb-3" />
+              <Separator className="my-2" />
+            </div>
+          ))
         ) : educations.length === 0 ? (
           // Empty state
           <div className="py-6 text-center">
