@@ -47,9 +47,10 @@ const projectSchema = z.object({
   title: z.string().min(1, { message: "Title is required" }),
   description: z.string().min(1, { message: "Description is required" }),
   category: z.string().min(1, { message: "Category is required" }),
+  industry: z.string().nullable().optional(),
   startDate: z.string().min(1, { message: "Start date is required" }),
   projectUrl: z.string().url({ message: "Valid URL is required" }).min(1, { message: "Project URL is required" }),
-  mediaUrls: z.array(z.string()).optional(), // This is handled separately with our custom validation
+  mediaUrls: z.array(z.string()).nullable().optional(), // This is handled separately with our custom validation
 });
 
 const collaboratorSchema = z.object({
@@ -70,6 +71,7 @@ interface Project {
   title: string;
   description: string | null;
   category: string | null;
+  industry: string | null;
   startDate: string;
   projectUrl: string | null;
   thumbnailUrl: string | null;
@@ -333,9 +335,10 @@ export default function Projects() {
       title: '',
       description: '',
       category: '',
+      industry: null,
       startDate: format(new Date(), 'yyyy-MM-dd'),
       projectUrl: '',
-      mediaUrls: [],
+      mediaUrls: null,
     });
     setThumbnailFile(null);
     setThumbnailError(null);
@@ -737,7 +740,8 @@ export default function Projects() {
     try {
       await apiRequest(
         'DELETE', 
-        `/api/project-collaborators/${collaboratorId}`
+        `/api/project-collaborators/${collaboratorId}`,
+        undefined
       );
       
       setCollaborators(collaborators.filter(c => c.id !== collaboratorId));
@@ -799,7 +803,8 @@ export default function Projects() {
     try {
       await apiRequest(
         'DELETE', 
-        `/api/project-endorsements/${endorsementId}`
+        `/api/project-endorsements/${endorsementId}`,
+        undefined
       );
       
       setEndorsements(endorsements.filter(e => e.id !== endorsementId));
