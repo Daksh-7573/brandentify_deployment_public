@@ -14,6 +14,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { CustomSelect } from "@/components/ui/custom-select";
 
 import { Service } from "@shared/schema";
 
@@ -249,13 +250,16 @@ export default function ServiceForm({ service, onSubmit, isPending, existingServ
                   <FormItem>
                     <FormLabel>Currency</FormLabel>
                     <FormControl>
-                      <select
-                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                        {...field}
-                      >
-                        <option value="USD">USD (US Dollar)</option>
-                        <option value="INR">INR (Indian Rupee)</option>
-                      </select>
+                      <div className="w-full">
+                        <CustomSelect 
+                          value={field.value} 
+                          onValueChange={field.onChange}
+                          options={[
+                            { value: 'USD', label: 'USD (US Dollar)' },
+                            { value: 'INR', label: 'INR (Indian Rupee)' }
+                          ]}
+                        />
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -272,14 +276,31 @@ export default function ServiceForm({ service, onSubmit, isPending, existingServ
                     <FormLabel>Rate Amount</FormLabel>
                     <FormControl>
                       <Input
-                        type="number" 
-                        step="0.01"
+                        type="text" 
+                        inputMode="decimal"
                         placeholder="Enter service price"
                         value={field.value || ''}
+                        onKeyPress={(e) => {
+                          // Only allow numbers and decimal point
+                          const isNumber = /[0-9]/.test(e.key);
+                          const isDecimalPoint = e.key === '.';
+                          const hasDecimalAlready = field.value ? String(field.value).includes('.') : false;
+                          
+                          // Prevent input if not a number or if trying to add a second decimal point
+                          if (!isNumber && !(isDecimalPoint && !hasDecimalAlready)) {
+                            e.preventDefault();
+                          }
+                        }}
                         onChange={(e) => {
-                          // Parse number value directly to avoid string conversion issues
-                          const numValue = e.target.valueAsNumber;
-                          console.log("Price input changed:", e.target.value, "as number:", numValue);
+                          // Remove any non-numeric or non-decimal characters
+                          const sanitizedValue = e.target.value.replace(/[^0-9.]/g, '');
+                          // Ensure only one decimal point
+                          const parts = sanitizedValue.split('.');
+                          const cleanValue = parts[0] + (parts.length > 1 ? '.' + parts.slice(1).join('') : '');
+                          
+                          // Parse as number for the form
+                          const numValue = cleanValue ? parseFloat(cleanValue) : null;
+                          console.log("Price input changed:", cleanValue, "as number:", numValue);
                           field.onChange(numValue);
                         }}
                       />
