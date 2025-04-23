@@ -5083,7 +5083,20 @@ export class DatabaseStorage implements IStorage {
         
         console.log(`[db.getProjectsByUserId] Found ${result.rows.length} projects for user ${userId}`);
         
-        return result.rows;
+        // Parse mediaUrls from JSON string to array for each project
+        const projectsWithParsedMediaUrls = result.rows.map(project => {
+          try {
+            if (project.mediaUrls && typeof project.mediaUrls === 'string') {
+              project.mediaUrls = JSON.parse(project.mediaUrls);
+            }
+          } catch (parseError) {
+            console.error(`[db.getProjectsByUserId] Error parsing mediaUrls for project ${project.id}:`, parseError);
+            // Keep original string if parsing fails
+          }
+          return project;
+        });
+        
+        return projectsWithParsedMediaUrls;
       } catch (error) {
         console.error(`[db.getProjectsByUserId] Error fetching projects for user ${userId}:`, error);
         throw error; // Rethrow for retry mechanism
