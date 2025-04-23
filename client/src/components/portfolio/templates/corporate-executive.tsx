@@ -199,23 +199,6 @@ export default function CorporateExecutive({
         100% { background-position: 100% 0; }
       }
       
-      @keyframes blockRiseUp {
-        0% { 
-          opacity: 0;
-          transform: translateY(40px);
-        }
-        60% {
-          transform: translateY(-10px);
-        }
-        80% {
-          transform: translateY(5px);
-        }
-        100% { 
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-      
       .corporate-executive-template .fade-in {
         opacity: 0;
         animation: fadeIn 0.6s ease-out forwards;
@@ -279,36 +262,16 @@ export default function CorporateExecutive({
         display: none;
       }
       
-      .corporate-executive-template .skill-block {
+      .corporate-executive-template .skill-tag {
         transition: all 0.3s ease;
         border: 1px solid #e5e7eb;
-        position: relative;
-        z-index: 1;
       }
       
-      .corporate-executive-template .skill-block:hover {
+      .corporate-executive-template .skill-tag:hover {
         border-color: #6a0dad;
         background: linear-gradient(120deg, rgba(106, 13, 173, 0.05) 0%, rgba(106, 13, 173, 0.1) 100%);
-        box-shadow: 0 4px 20px rgba(106, 13, 173, 0.15);
-        transform: translateY(-10px);
-        z-index: 10;
-      }
-      
-      .corporate-executive-template .skill-column {
-        position: relative;
-      }
-      
-      .corporate-executive-template .skill-column::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 4px;
-        height: 50%;
-        background: linear-gradient(to top, #6a0dad, transparent);
-        border-radius: 4px;
-        opacity: 0.3;
+        box-shadow: 0 2px 10px rgba(106, 13, 173, 0.1);
+        transform: translateY(-2px);
       }
       
       .corporate-executive-template .profile-image-frame {
@@ -671,116 +634,42 @@ export default function CorporateExecutive({
             What I'm Good At
           </h2>
           
-          {/* Skill Building Blocks - Animated stacking blocks */}
-          <div className="skill-blocks-container min-h-[400px] relative flex items-end justify-center mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {sortedSkills.length > 0 ? (
-              <div className="flex space-x-8 pb-4">
-                {/* First column of blocks */}
-                <div className="skill-column flex flex-col-reverse items-center justify-end space-y-reverse space-y-2 pb-10">
-                  {sortedSkills.slice(0, Math.min(3, sortedSkills.length)).map((skill, index) => (
-                    <div 
-                      key={skill.id}
-                      className="skill-block bg-white rounded-lg p-4 shadow-lg border border-gray-100 w-40 h-32 flex flex-col items-center justify-center transform transition-all duration-500 hover:shadow-xl hover:-translate-y-2"
-                      style={{ 
-                        animationName: 'blockRiseUp',
-                        animationDuration: '0.8s',
-                        animationDelay: `${0.3 + index * 0.2}s`,
-                        animationFillMode: 'both',
-                        animationTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)'
-                      }}
-                    >
-                      <div className="p-3 bg-[#6a0dad]/10 rounded-full text-[#6a0dad] mb-2">
-                        {getSkillIcon(skill.name)}
-                      </div>
-                      <h3 className="text-gray-900 font-medium text-center" style={{ fontFamily: 'Inter, sans-serif' }}>
-                        {skill.name}
-                      </h3>
-                      {/* Proficiency dots */}
-                      <div className="flex items-center gap-1 mt-1">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <div 
-                            key={i} 
-                            className={`h-1.5 rounded-full ${i < (skill.proficiency || 3) ? 'bg-[#6a0dad]' : 'bg-gray-200'}`} 
-                            style={{ width: '6px' }}
-                          ></div>
-                        ))}
-                      </div>
+              sortedSkills.slice(0, 8).map((skill, index) => (
+                <div 
+                  key={skill.id} 
+                  className="skill-tag bg-white rounded-lg p-5 shadow-sm fade-in"
+                  style={{ animationDelay: `${0.1 + index * 0.1}s` }}
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="p-2 bg-gray-50 rounded-md text-[#6a0dad]">
+                      {getSkillIcon(skill.name)}
                     </div>
-                  ))}
+                    <h3 className="text-gray-900 font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>
+                      {skill.name}
+                    </h3>
+                  </div>
+                  
+                  {/* Proficiency Level */}
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <div 
+                        key={i} 
+                        className={`h-1 rounded-full ${i < (skill.proficiency || 3) ? 'bg-[#6a0dad]' : 'bg-gray-200'}`} 
+                        style={{ width: '12px' }}
+                      ></div>
+                    ))}
+                    <span className="ml-2 text-xs text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
+                      {skill.proficiency ? `${skill.proficiency}/5` : ''}
+                    </span>
+                  </div>
                 </div>
-
-                {/* Second column of blocks */}
-                <div className="skill-column flex flex-col-reverse items-center justify-end space-y-reverse space-y-2">
-                  {sortedSkills.slice(Math.min(3, sortedSkills.length), Math.min(6, sortedSkills.length)).map((skill, index) => (
-                    <div 
-                      key={skill.id}
-                      className="skill-block bg-white rounded-lg p-4 shadow-lg border border-gray-100 w-40 h-32 flex flex-col items-center justify-center transform transition-all duration-500 hover:shadow-xl hover:-translate-y-2"
-                      style={{ 
-                        animationName: 'blockRiseUp',
-                        animationDuration: '0.8s',
-                        animationDelay: `${0.5 + index * 0.2}s`,
-                        animationFillMode: 'both',
-                        animationTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)'
-                      }}
-                    >
-                      <div className="p-3 bg-[#6a0dad]/10 rounded-full text-[#6a0dad] mb-2">
-                        {getSkillIcon(skill.name)}
-                      </div>
-                      <h3 className="text-gray-900 font-medium text-center" style={{ fontFamily: 'Inter, sans-serif' }}>
-                        {skill.name}
-                      </h3>
-                      {/* Proficiency dots */}
-                      <div className="flex items-center gap-1 mt-1">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <div 
-                            key={i} 
-                            className={`h-1.5 rounded-full ${i < (skill.proficiency || 3) ? 'bg-[#6a0dad]' : 'bg-gray-200'}`} 
-                            style={{ width: '6px' }}
-                          ></div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                
-                {/* Third column of blocks */}
-                <div className="skill-column flex flex-col-reverse items-center justify-end space-y-reverse space-y-2 pb-16">
-                  {sortedSkills.slice(Math.min(6, sortedSkills.length), Math.min(9, sortedSkills.length)).map((skill, index) => (
-                    <div 
-                      key={skill.id}
-                      className="skill-block bg-white rounded-lg p-4 shadow-lg border border-gray-100 w-40 h-32 flex flex-col items-center justify-center transform transition-all duration-500 hover:shadow-xl hover:-translate-y-2"
-                      style={{ 
-                        animationName: 'blockRiseUp',
-                        animationDuration: '0.8s',
-                        animationDelay: `${0.7 + index * 0.2}s`,
-                        animationFillMode: 'both',
-                        animationTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)'
-                      }}
-                    >
-                      <div className="p-3 bg-[#6a0dad]/10 rounded-full text-[#6a0dad] mb-2">
-                        {getSkillIcon(skill.name)}
-                      </div>
-                      <h3 className="text-gray-900 font-medium text-center" style={{ fontFamily: 'Inter, sans-serif' }}>
-                        {skill.name}
-                      </h3>
-                      {/* Proficiency dots */}
-                      <div className="flex items-center gap-1 mt-1">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <div 
-                            key={i} 
-                            className={`h-1.5 rounded-full ${i < (skill.proficiency || 3) ? 'bg-[#6a0dad]' : 'bg-gray-200'}`} 
-                            style={{ width: '6px' }}
-                          ></div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              ))
             ) : (
-              <div className="text-center py-10 border border-gray-100 rounded-lg w-full">
+              <div className="col-span-full text-center py-10 border border-gray-100 rounded-lg">
                 <p className="text-gray-400" style={{ fontFamily: 'Inter, sans-serif' }}>
-                  Your expertise will be showcased here as stacking blocks
+                  Your expertise will be showcased here
                 </p>
               </div>
             )}
