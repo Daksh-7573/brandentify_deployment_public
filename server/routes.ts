@@ -1125,6 +1125,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Internal server error" });
     }
   });
+  
+  // Update only the thumbnail of a project
+  apiRouter.patch("/projects/:id/thumbnail", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid project ID" });
+      }
+      
+      const { thumbnailUrl, thumbnailFile } = req.body;
+      
+      if (!thumbnailUrl) {
+        return res.status(400).json({ message: "Missing thumbnailUrl in request" });
+      }
+      
+      console.log(`[PATCH /projects/${id}/thumbnail] Updating thumbnail:`, { thumbnailUrl, thumbnailFile });
+      
+      // Only update the thumbnail fields, not the entire project
+      const updateData = {
+        thumbnailUrl,
+        thumbnailFile
+      };
+      
+      // Get the current project to verify its existence
+      const existingProject = await storage.getProjectById(id);
+      if (!existingProject) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+      
+      // Update the thumbnail fields
+      const updateResult = await storage.updateProject(id, updateData);
+      
+      if (!updateResult) {
+        return res.status(404).json({ message: "Project not found or update failed" });
+      }
+      
+      console.log(`[PATCH /projects/${id}/thumbnail] Thumbnail updated successfully`);
+      res.json(updateResult);
+    } catch (error) {
+      console.error("Error updating project thumbnail:", error);
+      res.status(500).json({ 
+        message: "Failed to update project thumbnail", 
+        error: error instanceof Error ? error.message : String(error) 
+      });
+    }
+  });
 
   apiRouter.delete("/projects/:id", async (req: Request, res: Response) => {
     try {

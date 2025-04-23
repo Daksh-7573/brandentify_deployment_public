@@ -73,8 +73,11 @@ interface Project {
   startDate: string;
   projectUrl: string | null;
   thumbnailUrl: string | null;
+  thumbnailFile?: string | null; // Add property to store the filename separately
   mediaUrls: string[] | null;
   userId: number;
+  createdAt?: string | null;
+  updatedAt?: string | null;
 }
 
 interface Collaborator {
@@ -862,21 +865,37 @@ export default function Projects() {
                   {/* Project Thumbnail */}
                   <div className="flex justify-center items-center p-4">
                     <div className="w-1/2 aspect-square overflow-hidden bg-muted rounded-md shadow-sm">
-                      {project.thumbnailUrl ? (
-                        <img 
-                          src={project.thumbnailUrl}
-                          alt={project.title} 
-                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
-                        />
+                      {/* 
+                        Display priority:
+                        1. If thumbnailUrl exists and is valid, show that
+                        2. If no thumbnailUrl but mediaUrls exist, show the first media URL
+                        3. If neither exist, show a fallback icon
+                      */}
+                      {project.thumbnailUrl && project.thumbnailUrl !== "null" && project.thumbnailUrl !== null ? (
+                        <>
+                          <img 
+                            src={project.thumbnailUrl}
+                            alt={`${project.title} thumbnail`} 
+                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
+                          />
+                          {/* Using a hidden debug span to check what image is being used */}
+                          <span className="hidden">Using thumbnailUrl: {project.thumbnailUrl}</span>
+                        </>
                       ) : (project.mediaUrls && Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0) ? (
-                        <img 
-                          src={project.mediaUrls[0]}
-                          alt={project.title} 
-                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
-                        />
+                        <>
+                          <img 
+                            src={project.mediaUrls[0]}
+                            alt={`${project.title} first gallery image`} 
+                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
+                          />
+                          {/* Using a hidden debug span to check what image is being used */}
+                          <span className="hidden">Using mediaUrl: {project.mediaUrls[0]}</span>
+                        </>
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-muted">
                           <FolderKanban className="h-10 w-10 text-muted-foreground/40" />
+                          {/* Using a hidden debug span to check what's happening */}
+                          <span className="hidden">No images available</span>
                         </div>
                       )}
                     </div>
