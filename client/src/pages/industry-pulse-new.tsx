@@ -648,8 +648,15 @@ function ImageCarousel({ pulse }: { pulse: PulseWithUser }) {
         </div>
         <div className="mt-2">
           {isLoading ? (
-            <div className="h-72 flex items-center justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <div className="h-72 flex flex-col p-4 space-y-4">
+              {/* Carousel skeleton */}
+              <div className="h-8 w-40 bg-muted rounded mb-2 animate-pulse"></div>
+              <div className="flex-1 bg-muted rounded-lg animate-pulse"></div>
+              <div className="flex justify-center gap-2">
+                <div className="h-2 w-2 rounded-full bg-muted animate-pulse"></div>
+                <div className="h-2 w-2 rounded-full bg-muted animate-pulse"></div>
+                <div className="h-2 w-2 rounded-full bg-muted animate-pulse"></div>
+              </div>
             </div>
           ) : (
             <Carousel className="w-full" 
@@ -834,8 +841,14 @@ function VideoPlayer({ pulse }: { pulse: PulseWithUser }) {
       </div>
       <div className="rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
         {isLoading ? (
-          <div className="h-60 flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <div className="h-60 bg-gradient-to-b from-gray-50 to-gray-100 animate-pulse">
+            <div className="h-full w-full flex flex-col items-center justify-center">
+              <div className="rounded-full bg-muted w-16 h-16 mb-4"></div>
+              <div className="h-4 w-32 bg-muted rounded"></div>
+              <div className="mt-4 flex items-center justify-center w-full px-8">
+                <div className="h-4 w-full max-w-sm bg-muted rounded"></div>
+              </div>
+            </div>
           </div>
         ) : videoUrl ? (
           <video 
@@ -1080,8 +1093,40 @@ export default function IndustryPulsePage() {
                   />
                   
                   {isLoading ? (
-                    <div className="flex justify-center py-12">
-                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                    <div className="space-y-4 py-4">
+                      {/* Skeleton loaders for pulse cards */}
+                      {[1, 2, 3, 4].map((i) => (
+                        <div key={i} className="border rounded-lg overflow-hidden shadow-sm animate-pulse">
+                          <div className="p-4">
+                            {/* Header skeleton */}
+                            <div className="flex items-center justify-between mb-3">
+                              <div className="flex items-center gap-2">
+                                <div className="h-8 w-8 rounded-full bg-muted"></div>
+                                <div>
+                                  <div className="h-4 w-24 bg-muted rounded"></div>
+                                  <div className="h-3 w-16 bg-muted rounded mt-1"></div>
+                                </div>
+                              </div>
+                              <div className="h-5 w-16 bg-muted rounded"></div>
+                            </div>
+                            
+                            {/* Title and content skeleton */}
+                            <div className="h-6 w-3/4 bg-muted rounded mb-2"></div>
+                            <div className="h-4 w-full bg-muted rounded mb-2"></div>
+                            <div className="h-4 w-2/3 bg-muted rounded mb-4"></div>
+                            
+                            {/* Media placeholder skeleton */}
+                            <div className="bg-muted h-40 rounded mb-3"></div>
+                            
+                            {/* Engagement buttons skeleton */}
+                            <div className="flex flex-wrap gap-2 mt-4">
+                              <div className="h-8 w-20 bg-muted rounded"></div>
+                              <div className="h-8 w-20 bg-muted rounded"></div>
+                              <div className="h-8 w-20 bg-muted rounded"></div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   ) : filteredPulses.length === 0 ? (
                     <Card>
