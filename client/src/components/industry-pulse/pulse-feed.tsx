@@ -159,8 +159,40 @@ export default function PulseFeed() {
         
         <CardContent className="pt-4">
           {isLoading ? (
-            <div className="flex justify-center py-8">
-              <Loader2 className="h-8 w-8 animate-spin text-primary/70" />
+            <div className="space-y-4 py-4">
+              {/* Skeleton loaders for pulse cards */}
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="border rounded-lg overflow-hidden shadow-sm animate-pulse">
+                  <div className="p-4">
+                    {/* Header skeleton */}
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <div className="h-8 w-8 rounded-full bg-muted"></div>
+                        <div>
+                          <div className="h-4 w-24 bg-muted rounded"></div>
+                          <div className="h-3 w-16 bg-muted rounded mt-1"></div>
+                        </div>
+                      </div>
+                      <div className="h-5 w-16 bg-muted rounded"></div>
+                    </div>
+                    
+                    {/* Title and content skeleton */}
+                    <div className="h-6 w-3/4 bg-muted rounded mb-2"></div>
+                    <div className="h-4 w-full bg-muted rounded mb-2"></div>
+                    <div className="h-4 w-2/3 bg-muted rounded mb-4"></div>
+                    
+                    {/* Media placeholder skeleton */}
+                    <div className="bg-muted h-40 rounded mb-3"></div>
+                    
+                    {/* Engagement buttons skeleton */}
+                    <div className="flex flex-wrap gap-2 mt-4">
+                      <div className="h-8 w-20 bg-muted rounded"></div>
+                      <div className="h-8 w-20 bg-muted rounded"></div>
+                      <div className="h-8 w-20 bg-muted rounded"></div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           ) : pulseItems.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
