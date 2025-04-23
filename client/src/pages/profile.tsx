@@ -2228,11 +2228,19 @@ export default function Profile() {
                   </div>
                 </div>
                 <div className="pl-0 sm:pl-32 mt-12 sm:mt-2">
-                  <div className="flex justify-between items-center group">
+                  <div className="flex justify-between items-center group relative">
                     <h2 className="text-xl text-gray-900">
                       Hey there! <span className="font-bold text-2xl text-primary">{userData?.name || user?.name || 'User'}</span> here,
                     </h2>
-                    {/* Edit button removed, using single Edit Profile button instead */}
+                    {/* Edit button that appears on hover */}
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => setShowEditBasicInfo(true)}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity absolute -right-1 top-0"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
                   </div>
                   <p className="text-sm text-gray-500 mt-1">
                     <span className="font-medium">I am:</span> {userData?.title || user?.title || 'Professional'}
