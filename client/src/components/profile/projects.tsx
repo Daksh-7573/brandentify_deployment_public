@@ -1523,20 +1523,27 @@ export default function Projects() {
                               }} 
                             />
                           </FormControl>
-                          <FormDescription className="flex flex-wrap items-center gap-2">
-                            {currentProject.mediaUrls && currentProject.mediaUrls.length > 0 ? (
-                              <>
-                                <span>Current media:</span>
-                                {currentProject.mediaUrls.map((url, index) => (
-                                  <img 
-                                    key={index}
-                                    src={url} 
-                                    alt={`Project media ${index + 1}`} 
-                                    className="h-8 w-8 object-cover rounded"
-                                  />
-                                ))}
-                                <span className="text-xs text-muted-foreground">(Upload new ones to replace)</span>
-                              </>
+                          <FormDescription className="space-y-4">
+                            {currentProject.mediaUrls && Array.isArray(currentProject.mediaUrls) && currentProject.mediaUrls.length > 0 ? (
+                              <div className="space-y-3">
+                                <div className="font-medium">Current media:</div>
+                                <div className="flex flex-wrap gap-3">
+                                  {currentProject.mediaUrls.map((url, index) => (
+                                    <div key={index} className="relative group">
+                                      <img 
+                                        src={url} 
+                                        alt={`Project media ${index + 1}`} 
+                                        className="h-16 w-16 object-cover rounded"
+                                      />
+                                      {/* We're not implementing the deletion of individual images in this version,
+                                          as it would require backend API changes */}
+                                    </div>
+                                  ))}
+                                </div>
+                                <div className="text-sm text-muted-foreground mt-2">
+                                  Upload new images to add to your project (not replace existing ones)
+                                </div>
+                              </div>
                             ) : (
                               "Upload up to 10 images to showcase your project"
                             )}

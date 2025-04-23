@@ -1192,10 +1192,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Project not found" });
       }
       
+      // Merge existing and new media URLs
+      let existingMediaUrls: string[] = [];
+      if (project.mediaUrls) {
+        if (Array.isArray(project.mediaUrls)) {
+          existingMediaUrls = project.mediaUrls;
+        } else if (typeof project.mediaUrls === 'string') {
+          try {
+            // Try to parse if it's a JSON string
+            existingMediaUrls = JSON.parse(project.mediaUrls);
+          } catch (e) {
+            // If not a valid JSON array, treat as a single string URL
+            existingMediaUrls = [project.mediaUrls];
+          }
+        }
+      }
+      
+      console.log(`[POST /projects/upload-media] Existing media URLs:`, existingMediaUrls);
+      console.log(`[POST /projects/upload-media] New media URLs:`, uploadedMediaUrls);
+      
+      // Combine existing and new URLs
+      const allMediaUrls = [...existingMediaUrls, ...uploadedMediaUrls];
+      console.log(`[POST /projects/upload-media] Combined media URLs:`, allMediaUrls);
+      
       // Update the mediaUrls field in the database
       const updatedProject = await storage.updateProject(
         parseInt(projectId),
-        { mediaUrls: JSON.stringify(uploadedMediaUrls) }
+        { mediaUrls: JSON.stringify(allMediaUrls) }
       );
       
       // Handle setting the featured image as the thumbnail
@@ -1223,7 +1246,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       res.status(200).json({
-        mediaUrls: uploadedMediaUrls,
+        mediaUrls: allMediaUrls,
+        newMediaUrls: uploadedMediaUrls,
         thumbnailUrl: thumbnailUrl,
         message: "Media files uploaded successfully"
       });
