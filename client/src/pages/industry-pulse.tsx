@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
+import { CardSkeleton } from "@/components/ui/skeleton-loaders";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { formatDistanceToNow } from "date-fns";
 import { useAuth } from "@/context/auth-context";
@@ -1521,8 +1522,11 @@ export default function IndustryPulsePage() {
                 />
 
                 {isLoading ? (
-                  <div className="flex justify-center py-12">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                  <div className="space-y-4 py-4">
+                    {/* Skeleton loaders for pulse cards */}
+                    {[1, 2, 3, 4].map((i) => (
+                      <CardSkeleton key={i} className="h-[300px]" />
+                    ))}
                   </div>
                 ) : filteredPulses.length === 0 ? (
                   <Card>
