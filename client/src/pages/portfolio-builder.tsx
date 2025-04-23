@@ -29,7 +29,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { FloatingIndustryIconsLoader } from "@/components/ui/floating-industry-icons-loader";
 
 // Import our portfolio templates
 import MinimalistPro from "@/components/portfolio/templates/minimalist-pro";
@@ -983,45 +982,33 @@ export default function PortfolioBuilder() {
 
   // Render loading states
   const renderLoadingState = () => {
-    console.log('renderLoadingState called with states:', { 
-      isAnalyzingProfile, 
-      isGenerating, 
-      isLoadingPortfolio 
-    });
-    
-    if (isGenerating) {
-      console.log('Rendering FloatingIndustryIconsLoader for isGenerating:', isGenerating);
+    if (isAnalyzingProfile) {
       return (
-        <>
-          <FloatingIndustryIconsLoader 
-            isLoading={true} 
-            loadingMessage={`Creating your ${layoutOptions.find(l => l.id === form.watch("layout"))?.name?.toLowerCase() || 'personalized'} portfolio...`}
-          />
-          <div className="h-[500px] flex flex-col items-center justify-center space-y-4 opacity-0">
-            {/* Hidden placeholder to maintain layout */}
-            <div className="relative">
-              <Bot className="h-8 w-8" />
-            </div>
+        <div className="h-[500px] flex flex-col items-center justify-center space-y-4">
+          <div className="relative">
+            <Loader2 className="h-16 w-16 animate-spin text-primary" />
+            <Bot className="h-8 w-8 text-primary absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
           </div>
-        </>
+          <div className="text-center">
+            <h3 className="text-lg font-medium">Musk AI is analyzing your profile</h3>
+            <p className="text-gray-500">Gathering information from your experiences, skills, and projects...</p>
+          </div>
+        </div>
       );
     }
     
-    if (isAnalyzingProfile) {
-      console.log('Rendering FloatingIndustryIconsLoader for isAnalyzingProfile:', isAnalyzingProfile);
+    if (isGenerating) {
       return (
-        <>
-          <FloatingIndustryIconsLoader 
-            isLoading={true} 
-            loadingMessage="Musk AI is analyzing your profile..." 
-          />
-          <div className="h-[500px] flex flex-col items-center justify-center space-y-4 opacity-0">
-            {/* Hidden placeholder to maintain layout */}
-            <div className="relative">
-              <Bot className="h-8 w-8" />
-            </div>
+        <div className="h-[500px] flex flex-col items-center justify-center space-y-4">
+          <div className="relative">
+            <Loader2 className="h-16 w-16 animate-spin text-primary" />
+            <Bot className="h-8 w-8 text-primary absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
           </div>
-        </>
+          <div className="text-center">
+            <h3 className="text-lg font-medium">Creating your personalized portfolio</h3>
+            <p className="text-gray-500">Musk AI is designing your portfolio with the {layoutOptions.find(l => l.id === form.watch("layout"))?.name.toLowerCase()} layout...</p>
+          </div>
+        </div>
       );
     }
     
@@ -1048,22 +1035,6 @@ export default function PortfolioBuilder() {
                 <div>
                   <h1 className="text-3xl font-bold">Portfolio Builder</h1>
                   <p className="text-muted-foreground">Create a personalized portfolio with Musk AI</p>
-                  
-                  {/* Test button to manually trigger loading animation */}
-                  <Button 
-                    variant="outline" 
-                    className="mt-4"
-                    onClick={() => {
-                      // Toggle loading state for testing
-                      setIsGenerating(true);
-                      // Set a timeout to simulate completion of the loading
-                      setTimeout(() => {
-                        setIsGenerating(false);
-                      }, 5000);
-                    }}
-                  >
-                    Test Loading Animation
-                  </Button>
                 </div>
                 {/* Progress indicator */}
               <div className="hidden sm:flex items-center space-x-2">
