@@ -504,6 +504,14 @@ export default function ProjectForm({
                   <div className="text-sm text-muted-foreground">Max 10 images</div>
                 </div>
                 
+                {/* Information about thumbnails */}
+                <div className="bg-muted/50 p-3 rounded-md text-sm space-y-1">
+                  <p className="font-medium">About Thumbnails:</p>
+                  <p className="text-muted-foreground">
+                    Select one image as your project thumbnail by clicking the star icon. This image will be the main preview shown in your profile.
+                  </p>
+                </div>
+
                 <div className="grid grid-cols-1 gap-4">
                   <div className="flex flex-col gap-2">
                     <Input
@@ -520,8 +528,15 @@ export default function ProjectForm({
                   
                   {/* Selected images preview */}
                   {projectImages.length > 0 && (
-                    <div className="space-y-2">
-                      <div className="text-sm font-medium">New Images:</div>
+                    <div className="space-y-3">
+                      <div className="flex items-center">
+                        <div className="text-sm font-medium">New Images</div>
+                        {projectImages.length > 0 && 0 <= featuredImageIndex && featuredImageIndex < 1000 && (
+                          <div className="ml-2 bg-primary/10 text-primary text-xs px-2 py-0.5 rounded-full">
+                            Thumbnail selected from new images
+                          </div>
+                        )}
+                      </div>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         {projectImages.map((file, index) => (
                           <div key={`new-${index}`} className="relative group">
@@ -539,21 +554,23 @@ export default function ProjectForm({
                                 size="icon"
                                 className="h-8 w-8"
                                 onClick={() => removeProjectImage(index)}
+                                title="Remove image"
                               >
                                 ✕
                               </Button>
                               <Button
                                 type="button"
-                                variant="secondary"
+                                variant={featuredImageIndex === index ? "primary" : "secondary"}
                                 size="icon"
                                 className="h-8 w-8"
                                 onClick={() => handleSelectFeaturedImage(index)}
+                                title="Set as thumbnail"
                               >
                                 ★
                               </Button>
                             </div>
                             {featuredImageIndex === index && (
-                              <div className="absolute top-1 right-1 bg-primary text-primary-foreground rounded-full p-1">
+                              <div className="absolute top-1 right-1 bg-primary text-primary-foreground rounded-full p-1" title="Current thumbnail">
                                 ★
                               </div>
                             )}
@@ -565,8 +582,15 @@ export default function ProjectForm({
                   
                   {/* Existing images preview */}
                   {existingMedia.length > 0 && (
-                    <div className="space-y-2">
-                      <div className="text-sm font-medium">Existing Media:</div>
+                    <div className="space-y-3">
+                      <div className="flex items-center">
+                        <div className="text-sm font-medium">Existing Media</div>
+                        {existingMedia.length > 0 && featuredImageIndex >= 1000 && (
+                          <div className="ml-2 bg-primary/10 text-primary text-xs px-2 py-0.5 rounded-full">
+                            Thumbnail selected from existing images
+                          </div>
+                        )}
+                      </div>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         {existingMedia.map((url, index) => {
                           // Calculate the effective index for existing images by adding 1000
@@ -596,16 +620,17 @@ export default function ProjectForm({
                                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                                     <Button
                                       type="button"
-                                      variant="secondary"
+                                      variant={isExistingFeatured ? "primary" : "secondary"}
                                       size="icon"
                                       className="h-8 w-8"
                                       onClick={() => handleSelectFeaturedImage(existingMediaIndex)}
+                                      title="Set as thumbnail"
                                     >
                                       ★
                                     </Button>
                                   </div>
                                   {isExistingFeatured && (
-                                    <div className="absolute top-1 right-1 bg-primary text-primary-foreground rounded-full p-1">
+                                    <div className="absolute top-1 right-1 bg-primary text-primary-foreground rounded-full p-1" title="Current thumbnail">
                                       ★
                                     </div>
                                   )}
