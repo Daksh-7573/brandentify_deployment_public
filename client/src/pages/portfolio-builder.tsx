@@ -854,33 +854,30 @@ export default function PortfolioBuilder() {
               <Card className="overflow-hidden bg-black border-gray-800 shadow-lg">
                 <CardContent className="p-0">
                   <Animated 
-                    userInfo={{
-                      name: userData?.name || user?.name || '',
-                      title: userData?.title || '',
-                      industry: userData?.industry || '',
-                      domain: userData?.domain || '',
-                      location: userData?.location || '',
-                      email: userData?.email || user?.email || '',
-                      photoURL: userData?.photoURL || user?.photoURL || null,
-                      lookingFor: userData?.lookingFor || '',
-                      jobLevel: userData?.jobLevel || ''
-                    }}
-                    userSkills={userSkills || []}
-                    userServices={userServices || []}
-                    userExperiences={userExperiences || []}
-                    userEducations={userEducations || []}
-                    userProjects={userProjects?.map(p => ({
+                    name={userData?.name || user?.name || ''}
+                    title={userData?.title || ''}
+                    industry={userData?.industry || ''}
+                    domain={userData?.domain || ''}
+                    location={userData?.location || ''}
+                    email={userData?.email || user?.email || ''}
+                    photoURL={userData?.photoURL || user?.photoURL || null}
+                    lookingFor={userData?.lookingFor || ''}
+                    skills={userSkills || []}
+                    services={userServices || []}
+                    experiences={userExperiences || []}
+                    educations={userEducations || []}
+                    projects={userProjects?.map(p => ({
                       id: p.id,
                       title: p.title,
                       description: p.description,
                       userId: p.userId,
                       startDate: p.startDate,
                       createdAt: null,
-                      projectUrl: null,
-                      category: null,
-                      thumbnailUrl: null,
+                      projectUrl: p.projectUrl || null,
+                      category: p.category || null,
+                      thumbnailUrl: p.thumbnailUrl || null,
                       thumbnailFile: null,
-                      mediaUrls: [],
+                      mediaUrls: p.mediaUrls || [],
                       updatedAt: null
                     })) || []}
                   />
