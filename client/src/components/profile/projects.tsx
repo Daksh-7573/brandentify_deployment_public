@@ -1201,28 +1201,7 @@ export default function Projects() {
                     )}
                   />
                   
-                  <FormItem>
-                    <FormLabel>Project Thumbnail*</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="file" 
-                        ref={fileInputRef}
-                        accept="image/*"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            setThumbnailFile(file);
-                            setThumbnailError(null);
-                          }
-                        }} 
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Upload a preview image for your project (required)
-                    </FormDescription>
-                    {thumbnailError && <p className="text-sm font-medium text-destructive">{thumbnailError}</p>}
-                    <FormMessage />
-                  </FormItem>
+
                   
                   <div className="space-y-4 border p-4 rounded-md">
                     <h3 className="text-sm font-medium">Project Media (Choose One Type)*</h3>
