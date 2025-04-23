@@ -497,29 +497,38 @@ export default function ProjectForm({
   // Update existing media when project changes
   useEffect(() => {
     // Handle the case where mediaUrls might be a string instead of an array
-    let mediaUrls = existingProject?.mediaUrls || [];
+    let mediaUrls: string[] = [];
     
-    // Convert to array if it's a string
-    if (typeof mediaUrls === 'string') {
-      try {
-        // Try to parse as JSON if it's a stringified array
-        const parsed = JSON.parse(mediaUrls);
-        mediaUrls = parsed;
-      } catch (e) {
-        // If parsing fails, treat as a single string URL
-        mediaUrls = mediaUrls ? [mediaUrls] : [];
+    // Ensure mediaUrls is an array
+    if (existingProject?.mediaUrls) {
+      if (typeof existingProject.mediaUrls === 'string') {
+        try {
+          // Try to parse as JSON if it's a stringified array
+          const parsed = JSON.parse(existingProject.mediaUrls);
+          if (Array.isArray(parsed)) {
+            mediaUrls = parsed;
+          } else {
+            // If it's not an array, treat as a single URL
+            mediaUrls = [existingProject.mediaUrls];
+          }
+        } catch (e) {
+          // If parsing fails, treat as a single string URL
+          mediaUrls = [existingProject.mediaUrls];
+        }
+      } else if (Array.isArray(existingProject.mediaUrls)) {
+        // Already an array
+        mediaUrls = existingProject.mediaUrls;
       }
     }
     
     // Ensure all URLs are absolute (prepend server URL if they start with /)
-    const formattedMediaUrls = (Array.isArray(mediaUrls) ? mediaUrls : [])
-      .map(url => {
-        if (typeof url === 'string' && url.startsWith('/')) {
-          // Convert relative URL to absolute URL using the current server
-          return `${window.location.origin}${url}`;
-        }
-        return url;
-      });
+    const formattedMediaUrls = mediaUrls.map(url => {
+      if (typeof url === 'string' && url.startsWith('/')) {
+        // Convert relative URL to absolute URL using the current server
+        return `${window.location.origin}${url}`;
+      }
+      return url;
+    });
     
     setExistingMedia(formattedMediaUrls);
   }, [existingProject]);
@@ -760,26 +769,29 @@ export default function ProjectForm({
                               {/* Only show controls for images (not videos) */}
                               {!url.endsWith('.mp4') && !url.endsWith('.webm') && !url.endsWith('.mov') && (
                                 <>
-                                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition-opacity">
+                                  <div 
+                                    className="absolute inset-0 flex items-center justify-center gap-2"
+                                    style={{
+                                      backgroundColor: 'rgba(0, 0, 0, 0.5)'
+                                    }}
+                                  >
                                     <Button
                                       type="button"
-                                      variant={isExistingFeatured ? "default" : "secondary"}
-                                      size="icon"
-                                      className="h-8 w-8"
+                                      variant="secondary"
+                                      size="sm"
                                       onClick={() => handleSelectFeaturedImage(existingMediaIndex)}
                                       title="Set as thumbnail"
                                     >
-                                      ★
+                                      Set as Thumbnail
                                     </Button>
                                     <Button
                                       type="button"
                                       variant="destructive"
-                                      size="icon"
-                                      className="h-8 w-8"
+                                      size="sm"
                                       onClick={() => handleDeleteExistingMedia(url)}
                                       title="Delete image"
                                     >
-                                      ✕
+                                      Delete
                                     </Button>
                                   </div>
                                   {isExistingFeatured && (
