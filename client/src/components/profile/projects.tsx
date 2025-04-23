@@ -815,17 +815,27 @@ export default function Projects() {
               {displayProjects.map((project) => (
                 <div key={project.id} className="border border-gray-200 rounded-md overflow-hidden">
                   {/* Project Thumbnail */}
-                  {(project.thumbnailUrl || (project.mediaUrls && Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0)) && (
-                    <div className="flex justify-center items-center p-4">
-                      <div className="w-1/2 aspect-square overflow-hidden bg-muted rounded-md shadow-sm">
+                  <div className="flex justify-center items-center p-4">
+                    <div className="w-1/2 aspect-square overflow-hidden bg-muted rounded-md shadow-sm">
+                      {project.thumbnailUrl ? (
                         <img 
-                          src={project.thumbnailUrl || (Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0 ? project.mediaUrls[0] : undefined)}
+                          src={project.thumbnailUrl}
                           alt={project.title} 
                           className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
                         />
-                      </div>
+                      ) : (project.mediaUrls && Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0) ? (
+                        <img 
+                          src={project.mediaUrls[0]}
+                          alt={project.title} 
+                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-muted">
+                          <FolderKanban className="h-10 w-10 text-muted-foreground/40" />
+                        </div>
+                      )}
                     </div>
-                  )}
+                  </div>
                   
                   <div className="p-3">
                     <div className="flex justify-between mb-1">
@@ -1715,34 +1725,47 @@ export default function Projects() {
                   {/* Left Column - Thumbnail and Project Media */}
                   <div className="space-y-4">
                     {/* Project Thumbnail */}
-                    {currentProject.thumbnailUrl && (
-                      <div 
-                        className="w-full aspect-square rounded-xl shadow-sm overflow-hidden bg-muted cursor-pointer"
-                        onClick={() => {
-                          // Open the thumbnail in the lightbox
-                          console.log("Thumbnail clicked, currentProject:", currentProject);
-                          console.log("Thumbnail URL:", currentProject.thumbnailUrl);
-                          if (currentProject.thumbnailUrl) {
-                            console.log("Setting lightbox for thumbnail");
-                            const thumbImage = [currentProject.thumbnailUrl];
-                            setLightboxImages(thumbImage);
-                            setCurrentImageIndex(0);
-                            
-                            // Use a setTimeout to ensure state updates complete before showing lightbox
-                            setTimeout(() => {
-                              setIsLightboxOpen(true);
-                              console.log("Thumbnail lightbox should be open now");
-                            }, 50);
-                          }
-                        }}
-                      >
+                    <div 
+                      className="w-full aspect-square rounded-xl shadow-sm overflow-hidden bg-muted cursor-pointer"
+                      onClick={() => {
+                        // Open the thumbnail or first media image in the lightbox
+                        console.log("Thumbnail section clicked");
+                        const thumbnailOrMedia = currentProject.thumbnailUrl || 
+                          (currentProject.mediaUrls && Array.isArray(currentProject.mediaUrls) && 
+                           currentProject.mediaUrls.length > 0 ? currentProject.mediaUrls[0] : null);
+                          
+                        if (thumbnailOrMedia) {
+                          console.log("Setting lightbox for image:", thumbnailOrMedia);
+                          const imageToShow = [thumbnailOrMedia];
+                          setLightboxImages(imageToShow);
+                          setCurrentImageIndex(0);
+                          
+                          // Use a setTimeout to ensure state updates complete before showing lightbox
+                          setTimeout(() => {
+                            setIsLightboxOpen(true);
+                            console.log("Image lightbox should be open now");
+                          }, 50);
+                        }
+                      }}
+                    >
+                      {currentProject.thumbnailUrl ? (
                         <img 
                           src={currentProject.thumbnailUrl} 
                           alt={currentProject.title} 
                           className="w-full h-full object-cover hover:scale-[1.03] transition-all duration-300 ease-in-out"
                         />
-                      </div>
-                    )}
+                      ) : (currentProject.mediaUrls && Array.isArray(currentProject.mediaUrls) && currentProject.mediaUrls.length > 0) ? (
+                        <img 
+                          src={currentProject.mediaUrls[0]} 
+                          alt={currentProject.title} 
+                          className="w-full h-full object-cover hover:scale-[1.03] transition-all duration-300 ease-in-out"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <FolderKanban className="h-16 w-16 text-muted-foreground/30" />
+                        </div>
+                      )}
+                    </div>
                     
                     {/* Category Badge */}
                     {currentProject.category && (
