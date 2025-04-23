@@ -39,7 +39,6 @@ import CorporateExecutive from "@/components/portfolio/templates/corporate-execu
 import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innovator";
 import Animated from "@/components/portfolio/templates/animated";
 import Scholar from "@/components/portfolio/templates/scholar";
-import { FluidLoader } from "@/components/ui/fluid-loader";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -109,7 +108,6 @@ export default function PortfolioBuilder() {
     location: string | null;
     jobLevel: string | null;
     lookingFor: string | null;
-    aboutMe: string | null;
     // Add other fields as needed
   };
   
@@ -419,14 +417,12 @@ export default function PortfolioBuilder() {
 
   // Handle creating portfolio with AI
   const handleCreatePortfolio = () => {
-    // Start the analyzing profile animation with fluid loader
     setIsAnalyzingProfile(true);
 
     // First check if we have the user's profile and portfolio related data
-    // The animation duration is set to 3 seconds in the fluid loader
     setTimeout(() => {
       setIsAnalyzingProfile(false);
-      setIsGenerating(true); // This will trigger the second fluid loader
+      setIsGenerating(true);
 
       // Directly fetch the most up-to-date data
       const fetchAllUserData = async () => {
@@ -644,24 +640,7 @@ export default function PortfolioBuilder() {
               ))}
             </div>
             
-            <div className="flex justify-end gap-2">
-              <Button 
-                variant="outline"
-                onClick={() => {
-                  // Test the animation directly
-                  setIsAnalyzingProfile(true);
-                  setTimeout(() => {
-                    setIsAnalyzingProfile(false);
-                    setIsGenerating(true);
-                    setTimeout(() => {
-                      setIsGenerating(false);
-                    }, 5000);
-                  }, 3000);
-                }}
-                className="flex items-center gap-2"
-              >
-                <Loader2 className="h-4 w-4" /> Test Animation
-              </Button>
+            <div className="flex justify-end">
               <Button 
                 onClick={handleCreatePortfolio}
                 className="flex items-center gap-2"
@@ -1005,29 +984,31 @@ export default function PortfolioBuilder() {
   const renderLoadingState = () => {
     if (isAnalyzingProfile) {
       return (
-        <FluidLoader 
-          isLoading={true}
-          message="Musk AI is analyzing your profile..."
-          userName={userData?.name || user?.name || ''}
-          duration={3}
-          onComplete={() => setIsAnalyzingProfile(false)}
-        />
+        <div className="h-[500px] flex flex-col items-center justify-center space-y-4">
+          <div className="relative">
+            <Loader2 className="h-16 w-16 animate-spin text-primary" />
+            <Bot className="h-8 w-8 text-primary absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+          </div>
+          <div className="text-center">
+            <h3 className="text-lg font-medium">Musk AI is analyzing your profile</h3>
+            <p className="text-gray-500">Gathering information from your experiences, skills, and projects...</p>
+          </div>
+        </div>
       );
     }
     
     if (isGenerating) {
-      const layoutName = layoutOptions.find(l => l.id === form.watch("layout"))?.name.toLowerCase() || 'professional';
       return (
-        <FluidLoader 
-          isLoading={true}
-          message={`Creating your ${layoutName} portfolio...`}
-          userName={userData?.name || user?.name || ''}
-          duration={5}
-          onComplete={() => {
-            console.log('Fluid animation completed');
-            // Keep the state as is, the regular flow will handle this
-          }}
-        />
+        <div className="h-[500px] flex flex-col items-center justify-center space-y-4">
+          <div className="relative">
+            <Loader2 className="h-16 w-16 animate-spin text-primary" />
+            <Bot className="h-8 w-8 text-primary absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+          </div>
+          <div className="text-center">
+            <h3 className="text-lg font-medium">Creating your personalized portfolio</h3>
+            <p className="text-gray-500">Musk AI is designing your portfolio with the {layoutOptions.find(l => l.id === form.watch("layout"))?.name.toLowerCase()} layout...</p>
+          </div>
+        </div>
       );
     }
     
@@ -1046,9 +1027,6 @@ export default function PortfolioBuilder() {
   return (
     <div className="flex h-screen flex-col">
       <Header />
-      {/* Display loading animations based on state */}
-      {renderLoadingState()}
-      
       <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top (pt-16) to account for fixed header */}
         
         <div className="flex-1 overflow-auto">
