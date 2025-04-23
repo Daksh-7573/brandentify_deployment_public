@@ -86,6 +86,12 @@ export const getFileUrl = (fileName: string, type: 'project' | 'media' = 'projec
   // Use either the BASE_URL env var or construct one based on host/protocol from the replit environment
   const baseUrl = process.env.BASE_URL || '';
   
+  // If fileName is null or undefined, return empty string to avoid errors
+  if (!fileName) {
+    console.warn('getFileUrl called with null or undefined fileName');
+    return '';
+  }
+  
   switch (type) {
     case 'project':
       return `${baseUrl}/uploads/projects/${fileName}`;

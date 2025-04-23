@@ -852,7 +852,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Handle file uploads for project thumbnails
   apiRouter.post("/projects/upload-thumbnail", (req: Request, res: Response) => {
     try {
-      console.log(`[POST /projects/upload-thumbnail] Received upload request:`, req.files);
+      console.log(`[POST /projects/upload-thumbnail] Received upload request, files:`, req.files);
+      console.log(`[POST /projects/upload-thumbnail] Request body:`, req.body);
+      
+      // Create the upload directory if it doesn't exist
+      const projectUploadsDir = path.join(process.cwd(), 'public', 'uploads', 'projects');
+      if (!fs.existsSync(projectUploadsDir)) {
+        console.log(`[POST /projects/upload-thumbnail] Creating uploads directory: ${projectUploadsDir}`);
+        fs.mkdirSync(projectUploadsDir, { recursive: true });
+      }
+      
+      // Validate projectId exists
+      const projectId = req.body.projectId;
+      if (!projectId) {
+        console.error(`[POST /projects/upload-thumbnail] Missing projectId in request`);
+        return res.status(400).json({ message: "Missing projectId in request" });
+      }
       
       // Handle express-fileupload first (which should be active based on middleware)
       if (req.files && req.files.thumbnail) {
@@ -863,16 +878,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         console.log(`[POST /projects/upload-thumbnail] Processing file:`, file.name);
         
+        // Validate file is an image
+        if (!file.mimetype.startsWith('image/')) {
+          console.error(`[POST /projects/upload-thumbnail] Invalid file type: ${file.mimetype}`);
+          return res.status(400).json({ message: "Only image files are allowed for thumbnails" });
+        }
+        
         // Generate a unique filename
         const timestamp = Date.now();
         const ext = path.extname(file.name);
-        const filename = `project_${req.body.projectId || 'new'}_${timestamp}${ext}`;
+        const filename = `project_${projectId}_thumbnail_${timestamp}${ext}`;
         
         // Define the upload path
-        const uploadPath = path.join(process.cwd(), 'public', 'uploads', 'projects', filename);
+        const uploadPath = path.join(projectUploadsDir, filename);
         
         // Move the file to the upload directory
-        file.mv(uploadPath, (err) => {
+        file.mv(uploadPath, async (err) => {
           if (err) {
             console.error(`[POST /projects/upload-thumbnail] File move error:`, err);
             return res.status(500).json({ 
@@ -886,6 +907,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Generate the public URL for the file
           const fileUrl = getFileUrl(filename);
           
+          try {
+            // Update the project in the database right away
+            console.log(`[POST /projects/upload-thumbnail] Updating project ${projectId} with new thumbnail`);
+            await storage.updateProject(parseInt(projectId), {
+              thumbnailUrl: fileUrl,
+              thumbnailFile: filename
+            });
+            console.log(`[POST /projects/upload-thumbnail] Project ${projectId} thumbnail updated in database`);
+          } catch (dbError) {
+            console.error(`[POST /projects/upload-thumbnail] Database update error:`, dbError);
+            // Continue anyway as the upload was successful
+          }
+          
           res.status(200).json({
             thumbnailFile: filename,
             thumbnailUrl: fileUrl,
@@ -895,7 +929,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } 
       // Fallback to multer if express-fileupload didn't pick up the file
       else {
-        projectThumbnailUpload(req, res, (err) => {
+        projectThumbnailUpload(req, res, async (err) => {
           if (err) {
             console.error(`[POST /projects/upload-thumbnail] Multer upload error:`, err);
             return res.status(400).json({ message: err.message });
@@ -908,6 +942,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           console.log(`[POST /projects/upload-thumbnail] File uploaded with multer:`, req.file.filename);
           const fileUrl = getFileUrl(req.file.filename);
+          
+          try {
+            // Update the project in the database right away
+            console.log(`[POST /projects/upload-thumbnail] Updating project ${projectId} with new thumbnail`);
+            await storage.updateProject(parseInt(projectId), {
+              thumbnailUrl: fileUrl,
+              thumbnailFile: req.file.filename
+            });
+            console.log(`[POST /projects/upload-thumbnail] Project ${projectId} thumbnail updated in database`);
+          } catch (dbError) {
+            console.error(`[POST /projects/upload-thumbnail] Database update error:`, dbError);
+            // Continue anyway as the upload was successful
+          }
           
           res.status(200).json({ 
             thumbnailFile: req.file.filename,
