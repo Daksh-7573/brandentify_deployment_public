@@ -449,7 +449,13 @@ export default function Projects() {
     const newMediaErrors: {images?: string, video?: string, general?: string} = {};
     
     // Validate at least one media item is required (either images or video)
-    if (projectImages.length === 0 && !projectVideo) {
+    // But don't require it if editing a project that already has media
+    const hasExistingMedia = currentProject && 
+      currentProject.mediaUrls && 
+      ((Array.isArray(currentProject.mediaUrls) && currentProject.mediaUrls.length > 0) ||
+       (typeof currentProject.mediaUrls === 'string' && currentProject.mediaUrls.length > 0));
+      
+    if (projectImages.length === 0 && !projectVideo && !hasExistingMedia) {
       newMediaErrors.general = "At least one project image or video is required";
       validationFailed = true;
     }
