@@ -66,6 +66,7 @@ import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ExperienceItemSkeleton } from "@/components/ui/skeleton-loaders";
 
 // Define interface for the industry domains map
 interface IndustryDomainMap {
@@ -960,10 +961,9 @@ export default function WorkExperience() {
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <div className="flex justify-center py-6">
-            <div className="animate-spin h-6 w-6 text-primary">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-loader-2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-            </div>
+          <div className="space-y-4">
+            <ExperienceItemSkeleton />
+            <ExperienceItemSkeleton />
           </div>
         ) : sortedExperiences.length === 0 ? (
           <div className="py-6 text-center">
