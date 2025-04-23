@@ -267,6 +267,10 @@ export default function Projects() {
   const [lightboxImages, setLightboxImages] = useState<string[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
+  // Image management state
+  const [isConfirmingDeleteImage, setIsConfirmingDeleteImage] = useState(false);
+  const [imageToDelete, setImageToDelete] = useState<string | null>(null);
+  
   // Form setup
   const projectForm = useForm<ProjectFormValues>({
     resolver: zodResolver(projectSchema),
