@@ -11,7 +11,10 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Video } from 'lucide-react';
+import { Video, CalendarIcon } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { cn } from '@/lib/utils';
 
 // Internal components and utilities
 import { queryClient, apiRequest } from '@/lib/queryClient';
@@ -72,6 +75,7 @@ export default function ProjectForm({
   const [projectVideo, setProjectVideo] = useState<File | null>(null);
   const [mediaErrors, setMediaErrors] = useState<MediaErrors | null>(null);
   const [featuredImageIndex, setFeaturedImageIndex] = useState<number>(0);
+  const [existingMedia, setExistingMedia] = useState<string[]>(existingProject?.mediaUrls || []);
   
   // Refs for file inputs
   const videoInputRef = useRef<HTMLInputElement>(null);
@@ -375,8 +379,10 @@ export default function ProjectForm({
     }
   };
   
-  // Existing media from the project
-  const existingMedia = existingProject?.mediaUrls || [];
+  // Update existing media when project changes
+  useEffect(() => {
+    setExistingMedia(existingProject?.mediaUrls || []);
+  }, [existingProject]);
   
   return (
     <div className="space-y-6">
