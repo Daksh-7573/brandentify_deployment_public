@@ -128,12 +128,18 @@ export const getFileUrl = (fileName: string, type: 'project' | 'media' = 'projec
     return '';
   }
   
+  // If fileName already contains the full path (/uploads/...), return it
+  if (fileName.startsWith('/uploads/')) {
+    return fileName;
+  }
+  
+  // Otherwise construct the URL
   switch (type) {
     case 'project':
-      return `${baseUrl}/uploads/projects/${fileName}`;
+      return `/uploads/projects/${fileName}`;
     case 'media':
-      return `${baseUrl}/uploads/media/${fileName}`;
+      return `/uploads/media/${fileName}`;
     default:
-      return `${baseUrl}/uploads/${fileName}`;
+      return `/uploads/${fileName}`;
   }
 };
