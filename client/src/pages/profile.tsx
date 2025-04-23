@@ -44,6 +44,8 @@ import {
   SelectSeparator
 } from "@/components/ui/select";
 import { JobTitleCombobox } from "@/components/ui/job-title-combobox";
+import ProfileLoadingAnimation from "@/components/ui/profile-loading-animation";
+import { LoadingWrapper } from "@/components/ui/loading-wrapper";
 
 // Define "I am looking for" categories
 const LOOKING_FOR_CATEGORIES = [
@@ -1764,7 +1766,10 @@ export default function Profile() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-lg">Loading...</p>
+        <ProfileLoadingAnimation 
+          size="large" 
+          text="Assembling your professional profile..." 
+        />
       </div>
     );
   }
