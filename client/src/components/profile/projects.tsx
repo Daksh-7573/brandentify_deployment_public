@@ -506,7 +506,7 @@ export default function Projects() {
       industry: project.industry || null,
       startDate: project.startDate || format(new Date(), 'yyyy-MM-dd'),
       projectUrl: project.projectUrl || '',
-      // Omit mediaUrls as it's handled by the ProjectForm component directly
+      mediaUrls: project.mediaUrls || null,
     });
     // Reset all file inputs when editing
     setThumbnailFile(null);
