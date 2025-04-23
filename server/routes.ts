@@ -1111,8 +1111,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const projectId = req.body.projectId;
       const imageCount = parseInt(req.body.imageCount) || 0;
       const featuredImageIndex = parseInt(req.body.featuredImageIndex) || 0;
+      const existingFeaturedImageUrl = req.body.existingFeaturedImageUrl;
       
-      console.log(`[POST /projects/upload-media] Project ID: ${projectId}, Image count: ${imageCount}, Featured image index: ${featuredImageIndex}`);
+      console.log(`[POST /projects/upload-media] Project ID: ${projectId}, Image count: ${imageCount}, Featured image index: ${featuredImageIndex}, Existing featured URL: ${existingFeaturedImageUrl || 'none'}`);
       
       if (!projectId) {
         return res.status(400).json({ message: "Project ID is required" });
@@ -1197,25 +1198,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
         { mediaUrls: JSON.stringify(uploadedMediaUrls) }
       );
       
-      // Set the featured image as the thumbnail if we have images
-      if (uploadedMediaUrls.length > 0) {
+      // Handle setting the featured image as the thumbnail
+      let thumbnailUrl = null;
+      
+      // Case 1: Using an existing media URL as the featured image
+      if (featuredImageIndex === -1 && existingFeaturedImageUrl) {
+        thumbnailUrl = existingFeaturedImageUrl;
+        console.log(`[POST /projects/upload-media] Using existing image as thumbnail: ${thumbnailUrl}`);
+      } 
+      // Case 2: Using a newly uploaded image as the featured image
+      else if (uploadedMediaUrls.length > 0) {
         // Ensure the featured image index is valid
         const validFeaturedIndex = Math.min(featuredImageIndex, uploadedMediaUrls.length - 1);
-        const featuredImageUrl = uploadedMediaUrls[validFeaturedIndex];
-        
-        console.log(`[POST /projects/upload-media] Setting featured image as thumbnail: ${featuredImageUrl}`);
-        
-        // Update the thumbnailUrl field in the database to use the featured image
+        thumbnailUrl = uploadedMediaUrls[validFeaturedIndex];
+        console.log(`[POST /projects/upload-media] Setting new uploaded image as thumbnail: ${thumbnailUrl}`);
+      }
+      
+      // Update the thumbnailUrl field in the database
+      if (thumbnailUrl) {
         await storage.updateProject(
           parseInt(projectId),
-          { thumbnailUrl: featuredImageUrl }
+          { thumbnailUrl: thumbnailUrl }
         );
       }
       
       res.status(200).json({
         mediaUrls: uploadedMediaUrls,
-        thumbnailUrl: uploadedMediaUrls.length > 0 ? 
-          uploadedMediaUrls[Math.min(featuredImageIndex, uploadedMediaUrls.length - 1)] : null,
+        thumbnailUrl: thumbnailUrl,
         message: "Media files uploaded successfully"
       });
       
