@@ -6,6 +6,7 @@ import { pool } from "./db";
 import { z } from "zod";
 import crypto from "crypto";
 import path from "path";
+import fs from "fs";
 import fileUpload from "express-fileupload";
 import { projectThumbnailUpload, getFileUrl } from "./utils/upload";
 // Resume parsing functionality
@@ -1449,6 +1450,159 @@ export async function registerRoutes(app: Express): Promise<Server> {
         message: "Failed to update project thumbnail", 
         error: error instanceof Error ? error.message : String(error) 
       });
+    }
+  });
+
+  // Delete a single media file from a project
+  apiRouter.delete("/projects/:id/media", async (req: Request, res: Response) => {
+    try {
+      const projectId = parseInt(req.params.id);
+      const { mediaUrl } = req.body;
+      
+      if (isNaN(projectId)) {
+        return res.status(400).json({ message: "Invalid project ID format" });
+      }
+      
+      if (!mediaUrl) {
+        return res.status(400).json({ message: "Media URL is required" });
+      }
+      
+      console.log(`[DELETE /projects/:id/media] Removing media ${mediaUrl} from project ${projectId}`);
+      
+      // First, fetch the project to make sure it exists
+      const existingProject = await storage.getProjectById(projectId);
+      
+      if (!existingProject) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+      
+      // Process media URLs
+      let mediaUrls: string[] = [];
+      if (existingProject.mediaUrls) {
+        if (Array.isArray(existingProject.mediaUrls)) {
+          mediaUrls = existingProject.mediaUrls;
+        } else if (typeof existingProject.mediaUrls === 'string') {
+          try {
+            mediaUrls = JSON.parse(existingProject.mediaUrls);
+          } catch (e) {
+            mediaUrls = [existingProject.mediaUrls];
+          }
+        }
+      }
+      
+      console.log(`[DELETE /projects/:id/media] Current media URLs:`, mediaUrls);
+      
+      // Remove the specified media URL
+      const updatedMediaUrls = mediaUrls.filter(url => url !== mediaUrl);
+      
+      console.log(`[DELETE /projects/:id/media] Updated media URLs:`, updatedMediaUrls);
+      
+      // Check if the media URL was found and removed
+      if (updatedMediaUrls.length === mediaUrls.length) {
+        return res.status(404).json({ message: "Media URL not found in project" });
+      }
+      
+      // Update the project
+      const updateData: any = { mediaUrls: JSON.stringify(updatedMediaUrls) };
+      
+      // If the thumbnail was the removed media, update it too
+      if (existingProject.thumbnailUrl === mediaUrl) {
+        // Set thumbnail to first available media or null if none left
+        updateData.thumbnailUrl = updatedMediaUrls.length > 0 ? updatedMediaUrls[0] : null;
+        console.log(`[DELETE /projects/:id/media] Updating thumbnail URL to:`, updateData.thumbnailUrl);
+      }
+      
+      const updatedProject = await storage.updateProject(projectId, updateData);
+      
+      if (!updatedProject) {
+        return res.status(500).json({ message: "Failed to update project" });
+      }
+      
+      // Try to delete the file from the filesystem
+      // Extract the filename from the URL
+      const filename = mediaUrl.split('/').pop();
+      if (filename) {
+        const filePath = path.join(process.cwd(), 'public', 'uploads', 'projects', filename);
+        try {
+          if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+            console.log(`[DELETE /projects/:id/media] Deleted file: ${filePath}`);
+          }
+        } catch (fileError) {
+          console.error(`[DELETE /projects/:id/media] Error deleting file: ${filePath}`, fileError);
+          // We don't fail the request if file deletion fails, as the DB update succeeded
+        }
+      }
+      
+      res.status(200).json({ 
+        message: "Media deleted successfully", 
+        mediaUrls: updatedMediaUrls,
+        thumbnailUrl: updateData.thumbnailUrl || existingProject.thumbnailUrl
+      });
+    } catch (error) {
+      console.error("Error deleting project media:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Set an image as project thumbnail
+  apiRouter.patch("/projects/:id/set-thumbnail", async (req: Request, res: Response) => {
+    try {
+      const projectId = parseInt(req.params.id);
+      const { thumbnailUrl } = req.body;
+      
+      if (isNaN(projectId)) {
+        return res.status(400).json({ message: "Invalid project ID format" });
+      }
+      
+      if (!thumbnailUrl) {
+        return res.status(400).json({ message: "Thumbnail URL is required" });
+      }
+      
+      console.log(`[PATCH /projects/:id/set-thumbnail] Setting thumbnail ${thumbnailUrl} for project ${projectId}`);
+      
+      // First, fetch the project to make sure it exists
+      const existingProject = await storage.getProjectById(projectId);
+      
+      if (!existingProject) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+      
+      // Process media URLs to ensure the selected thumbnail is part of the project
+      let mediaUrls: string[] = [];
+      if (existingProject.mediaUrls) {
+        if (Array.isArray(existingProject.mediaUrls)) {
+          mediaUrls = existingProject.mediaUrls;
+        } else if (typeof existingProject.mediaUrls === 'string') {
+          try {
+            mediaUrls = JSON.parse(existingProject.mediaUrls);
+          } catch (e) {
+            mediaUrls = [existingProject.mediaUrls];
+          }
+        }
+      }
+      
+      console.log(`[PATCH /projects/:id/set-thumbnail] Project media URLs:`, mediaUrls);
+      
+      // Verify that the thumbnail URL is part of the project's media
+      if (!mediaUrls.includes(thumbnailUrl)) {
+        return res.status(400).json({ message: "Selected thumbnail is not part of the project media" });
+      }
+      
+      // Update the project with the new thumbnail
+      const updatedProject = await storage.updateProject(projectId, { thumbnailUrl });
+      
+      if (!updatedProject) {
+        return res.status(500).json({ message: "Failed to update project thumbnail" });
+      }
+      
+      res.status(200).json({ 
+        message: "Thumbnail set successfully", 
+        thumbnailUrl: thumbnailUrl
+      });
+    } catch (error) {
+      console.error("Error setting project thumbnail:", error);
+      res.status(500).json({ message: "Internal server error" });
     }
   });
 
