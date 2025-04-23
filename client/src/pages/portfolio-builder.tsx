@@ -47,6 +47,7 @@ import { z } from "zod";
 import { useAuth } from "@/hooks/use-auth";
 // Removed Sidebar import, using top navigation only
 import { apiRequest } from "@/lib/queryClient";
+import { ProfileSkeleton, SectionSkeleton } from "@/components/ui/skeleton-loaders";
 
 // Define AuthUser type to match Firebase user structure
 type AuthUser = {
@@ -1014,8 +1015,11 @@ export default function PortfolioBuilder() {
     
     if (isLoadingPortfolio) {
       return (
-        <div className="h-64 flex items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <div className="container mx-auto p-4">
+          <div className="flex flex-col space-y-6">
+            <SectionSkeleton title="Portfolio Preview" />
+            <ProfileSkeleton />
+          </div>
         </div>
       );
     }
