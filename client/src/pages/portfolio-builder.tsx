@@ -1046,6 +1046,9 @@ export default function PortfolioBuilder() {
   return (
     <div className="flex h-screen flex-col">
       <Header />
+      {/* Display loading animations based on state */}
+      {renderLoadingState()}
+      
       <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top (pt-16) to account for fixed header */}
         
         <div className="flex-1 overflow-auto">
