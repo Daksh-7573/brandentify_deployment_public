@@ -229,14 +229,26 @@ export default function ProjectForm({
               
               console.log(`Updating project ${projectData.id} with thumbnail data:`, patchData);
               
-              const patchResponse = await apiRequest({
-                method: 'PATCH',
-                url: `/api/projects/${projectData.id}/thumbnail`,
-                data: patchData
-              });
-              
-              const patchResult = await patchResponse.json();
-              console.log("Project thumbnail database update result:", patchResult);
+              // Make sure we have valid data to update
+              if (!patchData.thumbnailUrl && !patchData.thumbnailFile) {
+                console.warn("Both thumbnailUrl and thumbnailFile are empty or null, skipping database update");
+              } else {
+                const patchResponse = await apiRequest({
+                  method: 'PATCH',
+                  url: `/api/projects/${projectData.id}/thumbnail`,
+                  data: patchData
+                });
+                
+                const patchResult = await patchResponse.json();
+                console.log("Project thumbnail database update result:", patchResult);
+                
+                // Verify the update was successful by checking the response
+                if (patchResult && (patchResult.thumbnailUrl || patchResult.thumbnailFile)) {
+                  console.log("Thumbnail update confirmed in database");
+                } else {
+                  console.warn("Thumbnail update may not have been successful");
+                }
+              }
             } catch (thumbnailUpdateError) {
               console.error("Error updating thumbnail in database:", thumbnailUpdateError);
             }

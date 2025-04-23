@@ -891,22 +891,29 @@ export default function Projects() {
                           {/* Using a hidden debug span to check what image is being used */}
                           <span className="hidden">Using thumbnailFile: {project.thumbnailFile}</span>
                         </>
-                      ) : (project.mediaUrls && ((typeof project.mediaUrls === 'string' && project.mediaUrls.startsWith('[')) || Array.isArray(project.mediaUrls))) ? (
+                      ) : (project.mediaUrls && project.mediaUrls.length > 0) ? (
                         <>
                           <img 
                             src={
                               Array.isArray(project.mediaUrls) 
                                 ? project.mediaUrls[0] 
-                                : JSON.parse(project.mediaUrls)[0]
+                                : typeof project.mediaUrls === 'string' && project.mediaUrls.startsWith('[')
+                                  ? JSON.parse(project.mediaUrls)[0]
+                                  : project.mediaUrls[0]
                             }
                             alt={`${project.title} first gallery image`} 
                             className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
+                            onError={(e) => {
+                              console.error("Media URL image failed to load");
+                            }}
                           />
                           {/* Using a hidden debug span to check what image is being used */}
                           <span className="hidden">Using mediaUrl: {
                             Array.isArray(project.mediaUrls) 
                               ? project.mediaUrls[0] 
-                              : JSON.parse(project.mediaUrls)[0]
+                              : typeof project.mediaUrls === 'string' && project.mediaUrls.startsWith('[')
+                                ? JSON.parse(project.mediaUrls)[0]
+                                : project.mediaUrls[0]
                           }</span>
                         </>
                       ) : (
