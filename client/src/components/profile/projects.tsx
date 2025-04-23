@@ -150,7 +150,7 @@ export default function Projects() {
         const freshData = await response.json();
         console.log("Projects - Got direct fetch data:", freshData);
         
-        // Force update
+        // Force update (only if there are actual changes)
         if (freshData && Array.isArray(freshData)) {
           // Normalize data to ensure mediaUrls is always an array
           const normalizedData = freshData.map(project => {
@@ -166,10 +166,18 @@ export default function Projects() {
             return project;
           });
           
-          console.log("Projects received updated data:", normalizedData);
-          setProjects([...normalizedData]);
-          // Update the ref as well
-          latestProjectsRef.current = [...normalizedData];
+          // Check if there are meaningful changes before updating state
+          const currentProjectsStr = JSON.stringify(projects);
+          const newProjectsStr = JSON.stringify(normalizedData);
+          
+          if (currentProjectsStr !== newProjectsStr) {
+            console.log("Projects direct fetch found changes, updating state");
+            setProjects([...normalizedData]);
+            // Update the ref as well
+            latestProjectsRef.current = [...normalizedData];
+          } else {
+            console.log("Projects direct fetch found no changes, skipping update");
+          }
         }
       } catch (error) {
         console.error("Error during direct projects fetch:", error);
@@ -181,7 +189,7 @@ export default function Projects() {
     // Poll every second
     const interval = setInterval(directFetch, 1000);
     return () => clearInterval(interval);
-  }, [userId]); // Only re-run when userId changes
+  }, [userId, projects]); // Depend on both userId and projects state
   
   // Initialize projects from serverProjects on first load
   useEffect(() => {
@@ -225,13 +233,20 @@ export default function Projects() {
       
       console.log("Projects received updated data:", normalizedData);
       
-      // Always update our reference with the latest data
-      latestProjectsRef.current = [...normalizedData];
-      
-      // Update the state too to trigger re-renders
-      setProjects([...normalizedData]);
+      // Check if this update has any meaningful differences before replacing state
+      const hasChanges = JSON.stringify(normalizedData) !== JSON.stringify(projects);
+      if (hasChanges) {
+        console.log("Projects data has changes, updating state");
+        // Always update our reference with the latest data
+        latestProjectsRef.current = [...normalizedData];
+        
+        // Update the state too to trigger re-renders
+        setProjects([...normalizedData]);
+      } else {
+        console.log("Projects data unchanged, skipping state update");
+      }
     }
-  }, [serverProjects]);
+  }, [serverProjects, projects]);
   
   // Always use the latest data for display, using direct ref access as a fallback
   const displayProjects = projects.length > 0 ? projects : 
@@ -493,8 +508,23 @@ export default function Projects() {
           
           if (uploadResponse.ok) {
             const uploadResult = await uploadResponse.json();
+            console.log("Thumbnail upload successful:", uploadResult);
+            
             // Update the thumbnail URL
             projectData.thumbnailUrl = uploadResult.thumbnailUrl;
+            projectData.thumbnailFile = uploadResult.thumbnailFile;
+            
+            // Also update in the database to ensure persistence
+            await apiRequest({
+              method: 'PATCH',
+              url: `/api/projects/${projectData.id}/thumbnail`,
+              data: { 
+                thumbnailUrl: uploadResult.thumbnailUrl,
+                thumbnailFile: uploadResult.thumbnailFile
+              }
+            });
+            
+            console.log("Project data with thumbnail updated:", projectData);
           }
         }
         
@@ -566,8 +596,23 @@ export default function Projects() {
         
         if (uploadResponse.ok) {
           const uploadResult = await uploadResponse.json();
+          console.log("Thumbnail upload successful:", uploadResult);
+          
           // Update the thumbnail URL
           projectData.thumbnailUrl = uploadResult.thumbnailUrl;
+          projectData.thumbnailFile = uploadResult.thumbnailFile;
+          
+          // Also update in the database to ensure persistence
+          await apiRequest({
+            method: 'PATCH',
+            url: `/api/projects/${projectData.id}/thumbnail`,
+            data: { 
+              thumbnailUrl: uploadResult.thumbnailUrl,
+              thumbnailFile: uploadResult.thumbnailFile
+            }
+          });
+          
+          console.log("Project data with thumbnail updated:", projectData);
         }
         
         // Handle additional media uploads (project images and video)
