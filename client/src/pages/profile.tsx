@@ -2036,25 +2036,7 @@ export default function Profile() {
                 </div>
               </div>
               
-              {/* What I Offer section */}
-              <div className="grid gap-2">
-                <Label htmlFor="whatIOffer">What I Offer</Label>
-                <Textarea
-                  id="whatIOffer"
-                  name="whatIOffer"
-                  value={formData.whatIOffer}
-                  onChange={(e) => setFormData(prev => ({
-                    ...prev,
-                    whatIOffer: e.target.value
-                  }))}
-                  placeholder="Describe what you can offer to others in your field (max 250 words)"
-                  className="min-h-[100px]"
-                  maxLength={1500}
-                />
-                <div className="text-xs text-gray-500 text-right">
-                  {formData.whatIOffer?.split(/\s+/).filter(Boolean).length || 0}/250 words
-                </div>
-              </div>
+
             </div>
             <DialogFooter>
               <Button 
@@ -2291,15 +2273,7 @@ export default function Profile() {
                     </div>
                   )}
                   
-                  {/* What I Offer section */}
-                  {userData?.whatIOffer && (
-                    <div className="mt-4">
-                      <h3 className="text-sm font-medium text-gray-900">What I Offer</h3>
-                      <p className="mt-2 text-sm text-gray-500 whitespace-pre-line">
-                        {userData.whatIOffer}
-                      </p>
-                    </div>
-                  )}
+
                 </div>
                 {/* Skills section removed */}
               </CardContent>
