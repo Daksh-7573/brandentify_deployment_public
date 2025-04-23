@@ -94,7 +94,8 @@ export default function Skills() {
   const levelOptions = [
     { value: 'Beginner', label: 'Beginner' },
     { value: 'Intermediate', label: 'Intermediate' },
-    { value: 'Advanced', label: 'Advanced' }
+    { value: 'Advanced', label: 'Advanced' },
+    { value: 'Expert', label: 'Expert' }
   ];
   
   const handleOpenAddModal = () => {
