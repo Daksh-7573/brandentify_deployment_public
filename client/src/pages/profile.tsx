@@ -44,6 +44,7 @@ import {
   SelectSeparator
 } from "@/components/ui/select";
 import { JobTitleCombobox } from "@/components/ui/job-title-combobox";
+import { ProfilePageSkeleton } from "@/components/ui/skeleton-loaders";
 
 // Define "I am looking for" categories
 const LOOKING_FOR_CATEGORIES = [
@@ -1760,11 +1761,15 @@ export default function Profile() {
     return null;
   }
 
-  // Loading state
+  
+  // Loading state with skeleton UI
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-lg">Loading...</p>
+      <div className="flex h-screen flex-col relative">
+        <Header />
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-16 max-w-7xl">
+          <ProfilePageSkeleton />
+        </div>
       </div>
     );
   }
