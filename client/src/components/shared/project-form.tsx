@@ -72,14 +72,12 @@ export default function ProjectForm({
   
   // Media state
   const [activeTab, setActiveTab] = useState<string>('details');
-  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
-  const [thumbnailError, setThumbnailError] = useState<string | null>(null);
   const [projectImages, setProjectImages] = useState<File[]>([]);
   const [projectVideo, setProjectVideo] = useState<File | null>(null);
   const [mediaErrors, setMediaErrors] = useState<{images?: string, video?: string} | null>(null);
+  const [featuredImageIndex, setFeaturedImageIndex] = useState<number>(0);
   
   // Refs for file inputs
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
   const multipleImagesInputRef = useRef<HTMLInputElement>(null);
   
@@ -110,16 +108,12 @@ export default function ProjectForm({
     });
     
     // Reset all file state
-    setThumbnailFile(null);
-    setThumbnailError(null);
     setProjectImages([]);
     setProjectVideo(null);
     setMediaErrors(null);
+    setFeaturedImageIndex(0);
     
     // Reset all file input elements
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
     if (videoInputRef.current) {
       videoInputRef.current.value = '';
     }
@@ -131,18 +125,7 @@ export default function ProjectForm({
   const onSubmit = async (values: ProjectFormValues) => {
     if (!userId) return;
     
-    // Validate thumbnail is required for new projects
-    if (!existingProject && !thumbnailFile) {
-      setThumbnailError("Project thumbnail is required");
-      toast({
-        title: "Validation Error",
-        description: "Project thumbnail is required. Please upload an image.",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    // Validate additional media files
+    // Validate media files
     let validationFailed = false;
     const newMediaErrors: {images?: string, video?: string} = {};
     
@@ -152,9 +135,9 @@ export default function ProjectForm({
       validationFailed = true;
     }
     
-    // Validate video file size for 120 seconds max (rough estimate - 2MB per minute as a baseline check)
-    if (projectVideo && projectVideo.size > 4 * 1024 * 1024) {
-      newMediaErrors.video = "Video exceeds maximum size (max ~120 seconds)";
+    // Validate video file size for 150 seconds max
+    if (projectVideo && projectVideo.size > 6 * 1024 * 1024) {
+      newMediaErrors.video = "Video exceeds maximum size (max ~150 seconds)";
       validationFailed = true;
     }
     
@@ -169,7 +152,6 @@ export default function ProjectForm({
     }
     
     // Clear any previous errors
-    setThumbnailError(null);
     setMediaErrors(null);
     
     try {
@@ -630,28 +612,7 @@ export default function ProjectForm({
           <Form {...projectForm}>
             <form onSubmit={projectForm.handleSubmit(onSubmit)} className="space-y-4">
               <div className="space-y-6">
-                <FormItem className="mb-6 pb-4 border-b">
-                  <FormLabel>Assignment Thumbnail*</FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="file" 
-                      ref={fileInputRef}
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          setThumbnailFile(file);
-                          setThumbnailError(null);
-                        }
-                      }} 
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Upload a thumbnail image for your assignment (required)
-                  </FormDescription>
-                  {thumbnailError && <p className="text-sm font-medium text-destructive">{thumbnailError}</p>}
-                  <FormMessage />
-                </FormItem>
+                {/* Removed thumbnail field as requested */}
                 
                 <h3 className="text-base font-medium">Additional Assignment Media (Optional)</h3>
                 <p className="text-sm text-muted-foreground mb-4">Choose one of the following media types to enhance your assignment showcase</p>
