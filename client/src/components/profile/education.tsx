@@ -597,15 +597,11 @@ export default function Education() {
       
       <CardContent>
         {isLoading ? (
-          // Loading skeleton
-          Array.from({ length: 2 }).map((_, i) => (
-            <div key={i} className="mb-4">
-              <Skeleton className="h-6 w-1/3 mb-2" />
-              <Skeleton className="h-4 w-1/4 mb-1" />
-              <Skeleton className="h-4 w-1/5 mb-3" />
-              <Separator className="my-2" />
-            </div>
-          ))
+          // Loading skeleton with improved components
+          <div className="space-y-4">
+            <ExperienceItemSkeleton />
+            <ExperienceItemSkeleton />
+          </div>
         ) : educations.length === 0 ? (
           // Empty state
           <div className="py-6 text-center">
