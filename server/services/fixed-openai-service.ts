@@ -26,44 +26,80 @@ const CLAUDE_MODEL = "claude-3-7-sonnet-20250219";
 /**
  * Generate a complete resume improvement prompt based on target role/industry
  */
+/**
+ * Generate a comprehensive resume improvement prompt based on the detailed reading framework
+ * This framework follows the step-by-step reading strategy and section-by-section analysis approach
+ * for providing structured, actionable feedback on resumes
+ */
 function generateCompleteResumeImprovementPrompt(targetRole?: string, targetIndustry?: string): string {
   return `
-  Please analyze my resume and provide detailed, personalized feedback for improvements.
+  Please analyze my resume and provide detailed, personalized feedback for improvements using the following structured approach:
   
   ${targetRole ? `I'm targeting a role as: ${targetRole}` : ''}
   ${targetIndustry ? `I'm targeting the ${targetIndustry} industry` : ''}
 
-  Include these sections in your feedback:
-  
   # Resume Analysis & Improvement Plan
   
-  ## Overall Assessment
-  [Provide an overall evaluation of the resume's strengths and weaknesses]
+  ## 1. First Impression (High-Level Overview)
+  Provide a concise evaluation table with these categories:
+  - Design/Layout
+  - Readability
+  - Content Quality
+  - Professionalism
+  - ATS Compatibility
   
-  ## Content Enhancement Opportunities
-  - Bullet point improvements (active language, metrics, achievements)
-  - Work experience optimization
-  - Skills section refinement
-  - Summary/profile statement upgrade
+  ## 2. Section-By-Section Analysis
   
-  ## Format & Structure Recommendations
-  - Visual organization
-  - ATS compatibility
-  - Length and conciseness
+  ### Header & Contact Information
+  - Review completeness and professional presentation
+  - Suggest improvements for personal branding
   
-  ## Industry-Specific Recommendations
-  ${targetRole || targetIndustry ? 
-    `[Provide specific guidance for positioning for ${targetRole || ''} ${targetIndustry ? 'in the ' + targetIndustry : ''} market]` : 
-    '[Suggest potential target roles based on experience and qualifications]'}
+  ### Professional Summary/Objective
+  - Analyze for clarity, impact, and alignment with target role
+  - Check if it's personalized and value-focused, not generic
+  - Provide a specific rewrite if needed
   
-  ## Before/After Examples
-  [Provide 2-3 specific examples from the resume showing:
-  - Before: Original text from resume
-  - After: Enhanced version with improvements
-  - Why it works: Brief explanation of the improvement]
+  ### Work Experience
+  - Evaluate balance between responsibilities vs achievements
+  - Look for quantifiable metrics and impact
+  - Check for active language and power verbs
+  - Highlight opportunities to demonstrate career progression
   
-  ## 7-Day Transformation Plan
-  [A step-by-step plan to implement all the recommended changes]
+  ### Skills Section
+  - Assess relevance to the target role/industry
+  - Suggest reorganization by categories (technical, soft, etc.)
+  - Recommend proficiency indicators where appropriate
+  
+  ### Projects (if included)
+  - Review for clear scope, tools used, and outcomes
+  - Suggest improvements for highlighting technical proficiency
+  
+  ### Education
+  - Evaluate whether it supports the career path
+  - Check for relevant highlights (honors, certifications)
+  
+  ## 3. Key Improvement Opportunities
+  
+  ### Before/After Examples
+  Provide 3 specific examples from the resume showing:
+  - ❌ Before: Original text from resume
+  - ✅ After: Enhanced version with improvements
+  - 🔍 Why it works: Brief explanation of the improvement
+  
+  ### Red Flags to Address
+  Identify any issues like:
+  - Unexplained gaps
+  - Vague language or lack of specificity
+  - Inconsistent formatting
+  - Missing key sections
+  
+  ### ATS Optimization
+  - Keyword recommendations based on ${targetRole ? `the ${targetRole} role` : 'target roles'}
+  - Format improvements for better parsing
+  
+  ## 4. Implementation Plan
+  - 5-7 specific, prioritized action items to improve the resume
+  - Tangible steps that can be completed within one week
   
   Be extremely specific in your feedback, referencing exact sections and content from my resume. Provide actionable advice that I can apply immediately to improve my chances of landing interviews for ${targetRole || 'target roles'}.
   `;
@@ -91,7 +127,28 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
   let resumeText: string;
   let isBase64Value = isBase64;
   let isDirectTextInput = false;
-  let systemPrompt = `You are an AI expert in resume analysis and improvement. You provide deeply personalized resume feedback by analyzing text content and suggesting specific improvements. Your analysis is detailed, actionable, and tailored to each individual's background and career goals. Always use the person's name and reference specific sections of their resume.`;
+  let systemPrompt = `You are Musk, an AI expert in resume analysis and improvement with a deep understanding of how recruiters and hiring managers read CVs/resumes. You follow a systematic approach to provide deeply personalized resume feedback:
+
+1. First Impression (Initial Scan):
+   - You analyze header information (name, role/title, contact info)
+   - You review the professional summary for clarity and alignment with target roles
+   - You check design readability and ATS compatibility
+
+2. Section-by-Section Deep Analysis:
+   - You evaluate experience sections, focusing on responsibilities vs. achievements and quantifiable impact
+   - You assess skills sections for relevance to the target role/industry
+   - You review projects (scope, tools, outcomes) and education (relevance, honors)
+
+3. Complex CV Handling:
+   - You can analyze modern, graphical CVs by focusing on substance over style
+   - You ensure logical flow and information hierarchy is maintained
+   - You check for ATS compatibility and proper formatting
+
+Your feedback is always:
+- Deeply personalized and references the person's name and specific resume content
+- Action-oriented with clear before/after examples
+- Formatted with consistent, scannable sections
+- Tailored to the individual's background, industry, and career goals`;
   let userPrompt = "";
   
   // Handle different parameter types
@@ -302,33 +359,64 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
         console.error("Error processing base64 data:", error);
         systemPrompt += " I cannot directly process this resume file, but I can provide comprehensive, detailed guidance for resume improvement similar to what an expert resume coach would offer.";
         userPrompt = `
-        I couldn't properly process the resume file you uploaded. Please provide a comprehensive, actionable guide to help users improve their resumes using the following structured format:
+        I couldn't properly process the resume file, but I'll provide comprehensive resume improvement guidance using my structured analysis framework:
       
-        # Resume Upgrade Guidelines
+        # Resume Analysis & Improvement Framework
         
-        ## 1. Power-Up Your Professional Profile
-        - ✅ [Add Quantifiable Achievements]: Transform "Managed project team" to "Led 7-person team delivering project 15% under budget"
-        - ✅ [Showcase Technical Expertise]: Replace vague terms with specific tools, platforms, and methodologies
-        - ✅ [Demonstrate Career Growth]: Highlight increasing responsibilities and leadership development
+        ## 1. First Impression Optimization
         
-        ## 2. Transform Common Weaknesses
-        - 🔹 [Generic Summary Statements]:
-          - Before: "Dedicated professional with experience in marketing"
-          - After: "Digital Marketing Strategist who increased e-commerce conversions by 37% through data-driven campaign optimization and AI-powered audience segmentation"
-          - Why it works: Specific expertise, quantifiable results, and technical skills in one statement
+        ### Header & Contact Information
+        - ✅ Make your name stand out with a slightly larger font
+        - ✅ Include LinkedIn URL (customized, e.g., linkedin.com/in/yourname)
+        - ✅ Use a professional email address (firstname.lastname@gmail.com)
+        - ✅ Only include city/state for location, not full address
         
-        - 🔹 [Duty-Focused Experience]:
-          - Before: "Responsible for customer service and handling complaints"
-          - After: "Resolved 200+ monthly customer inquiries with 98% satisfaction rate, implementing feedback system that reduced repeat issues by 42%"
-          - Why it works: Shows scale, success metrics, and strategic thinking
+        ### Professional Summary Enhancement
+        - 🔹 Before: "Dedicated professional with experience in marketing"
+        - 🔹 After: "Digital Marketing Strategist who increased e-commerce conversions by 37% through data-driven campaign optimization and AI-powered audience segmentation"
+        - 🔹 Why it works: Specific expertise, quantifiable results, and technical skills in one statement
         
-        ## 3. Bullet Point Transformation Formula
-        - 📝 [Action Verb + Specific Task + Method + Result/Impact]:
-          - Before: "Updated the company website"
-          - After: "Redesigned company e-commerce platform using React and Node.js, increasing mobile conversions by 59% and reducing bounce rate by 23%"
+        ## 2. Section-By-Section Improvement
         
-        - 📝 [Achievement + Scale + Benefit]:
-          - Before: "Trained new employees"
+        ### Work Experience Transformation
+        - 📊 Quantify Achievements:
+          - Before: "Managed customer service team"
+          - After: "Led 8-person customer service team that improved satisfaction scores by 27% and reduced response time from 24 hours to 4 hours"
+        
+        - 🎯 Focus on Impact, Not Just Tasks:
+          - Before: "Responsible for social media accounts"
+          - After: "Grew Instagram following from 5K to 25K in 6 months through targeted content strategy, resulting in 43% increase in website traffic"
+        
+        - 🔄 Show Progression and Growth:
+          - Highlight promotions or increasing responsibility
+          - Demonstrate how earlier roles built foundations for later achievements
+        
+        ### Skills Section Organization
+        - 🔸 Group skills logically by category:
+          - Technical Skills: Programming languages, tools, platforms
+          - Soft Skills: Leadership, communication, problem-solving
+          - Industry-Specific: Specialized knowledge areas
+        
+        - 🔸 Tailor to job descriptions:
+          - Place most relevant skills first
+          - Match terminology used in target job postings
+        
+        ## 3. ATS Optimization Strategies
+        
+        - 📝 Use standard section headings (Experience, Skills, Education)
+        - 📝 Incorporate relevant keywords from job descriptions
+        - 📝 Avoid tables, columns, and images in digital submissions
+        - 📝 Use standard fonts (Arial, Calibri, Times New Roman)
+        
+        ## 4. Before & After Examples
+        
+        ### Example 1: Technical Professional
+        - Before: "Developed software applications for clients"
+        - After: "Architected and implemented cloud-based SaaS solutions using React, Node.js and AWS, reducing client operational costs by 35% and increasing system reliability to 99.9% uptime"
+        
+        ### Example 2: Marketing Professional
+        - Before: "Created content for social media"
+        - After: "Developed and executed cross-platform content strategy across Instagram, TikTok, and LinkedIn, generating 250K+ organic impressions monthly and driving 15% conversion rate on campaign landing pages"
           - After: "Developed and implemented standardized onboarding program for 35+ new hires annually, reducing time-to-productivity by 40% and improving 90-day retention by 25%"
         
         ## 4. Headline & Summary Makeover
@@ -396,33 +484,64 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
         console.error("Error processing text resume:", error);
         systemPrompt += " I cannot directly process this resume text, but I can provide comprehensive, detailed guidance for resume improvement similar to what an expert resume coach would offer.";
         userPrompt = `
-        I couldn't properly process the resume text you provided. Please provide a comprehensive, actionable guide to help users improve their resumes using the following structured format:
+        I couldn't properly process the resume text, but I'll provide comprehensive resume improvement guidance using my structured analysis framework:
       
-        # Resume Upgrade Guidelines
+        # Resume Analysis & Improvement Framework
         
-        ## 1. Power-Up Your Professional Profile
-        - ✅ [Add Quantifiable Achievements]: Transform "Managed project team" to "Led 7-person team delivering project 15% under budget"
-        - ✅ [Showcase Technical Expertise]: Replace vague terms with specific tools, platforms, and methodologies
-        - ✅ [Demonstrate Career Growth]: Highlight increasing responsibilities and leadership development
+        ## 1. First Impression Optimization
         
-        ## 2. Transform Common Weaknesses
-        - 🔹 [Generic Summary Statements]:
-          - Before: "Dedicated professional with experience in marketing"
-          - After: "Digital Marketing Strategist who increased e-commerce conversions by 37% through data-driven campaign optimization and AI-powered audience segmentation"
-          - Why it works: Specific expertise, quantifiable results, and technical skills in one statement
+        ### Header & Contact Information
+        - ✅ Make your name stand out with a slightly larger font
+        - ✅ Include LinkedIn URL (customized, e.g., linkedin.com/in/yourname)
+        - ✅ Use a professional email address (firstname.lastname@gmail.com)
+        - ✅ Only include city/state for location, not full address
         
-        - 🔹 [Duty-Focused Experience]:
-          - Before: "Responsible for customer service and handling complaints"
-          - After: "Resolved 200+ monthly customer inquiries with 98% satisfaction rate, implementing feedback system that reduced repeat issues by 42%"
-          - Why it works: Shows scale, success metrics, and strategic thinking
+        ### Professional Summary Enhancement
+        - 🔹 Before: "Dedicated professional with experience in marketing"
+        - 🔹 After: "Digital Marketing Strategist who increased e-commerce conversions by 37% through data-driven campaign optimization and AI-powered audience segmentation"
+        - 🔹 Why it works: Specific expertise, quantifiable results, and technical skills in one statement
         
-        ## 3. Bullet Point Transformation Formula
-        - 📝 [Action Verb + Specific Task + Method + Result/Impact]:
-          - Before: "Updated the company website"
-          - After: "Redesigned company e-commerce platform using React and Node.js, increasing mobile conversions by 59% and reducing bounce rate by 23%"
+        ## 2. Section-By-Section Improvement
         
-        - 📝 [Achievement + Scale + Benefit]:
-          - Before: "Trained new employees"
+        ### Work Experience Transformation
+        - 📊 Quantify Achievements:
+          - Before: "Managed customer service team"
+          - After: "Led 8-person customer service team that improved satisfaction scores by 27% and reduced response time from 24 hours to 4 hours"
+        
+        - 🎯 Focus on Impact, Not Just Tasks:
+          - Before: "Responsible for social media accounts"
+          - After: "Grew Instagram following from 5K to 25K in 6 months through targeted content strategy, resulting in 43% increase in website traffic"
+        
+        - 🔄 Show Progression and Growth:
+          - Highlight promotions or increasing responsibility
+          - Demonstrate how earlier roles built foundations for later achievements
+        
+        ### Skills Section Organization
+        - 🔸 Group skills logically by category:
+          - Technical Skills: Programming languages, tools, platforms
+          - Soft Skills: Leadership, communication, problem-solving
+          - Industry-Specific: Specialized knowledge areas
+        
+        - 🔸 Tailor to job descriptions:
+          - Place most relevant skills first
+          - Match terminology used in target job postings
+        
+        ## 3. ATS Optimization Strategies
+        
+        - 📝 Use standard section headings (Experience, Skills, Education)
+        - 📝 Incorporate relevant keywords from job descriptions
+        - 📝 Avoid tables, columns, and images in digital submissions
+        - 📝 Use standard fonts (Arial, Calibri, Times New Roman)
+        
+        ## 4. Before & After Examples
+        
+        ### Example 1: Technical Professional
+        - Before: "Developed software applications for clients"
+        - After: "Architected and implemented cloud-based SaaS solutions using React, Node.js and AWS, reducing client operational costs by 35% and increasing system reliability to 99.9% uptime"
+        
+        ### Example 2: Marketing Professional
+        - Before: "Created content for social media"
+        - After: "Developed and executed cross-platform content strategy across Instagram, TikTok, and LinkedIn, generating 250K+ organic impressions monthly and driving 15% conversion rate on campaign landing pages"
           - After: "Developed and implemented standardized onboarding program for 35+ new hires annually, reducing time-to-productivity by 40% and improving 90-day retention by 25%"
         
         ## 4. Headline & Summary Makeover
