@@ -47,7 +47,10 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
       setIsLoading(false);
     }, 1500); // 1.5 seconds delay to simulate loading of profile details
     
-    return () => clearTimeout(timer);
+    // Cleanup function to clear the timeout
+    return () => {
+      clearTimeout(timer);
+    };
   }, []);
   
   // Handle tab change
@@ -62,13 +65,7 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
     setIsSaving(true);
     try {
       // Save the selected card type to the user profile
-      await apiRequest({
-        url: `/users/${userData.id}`,
-        method: 'PUT',
-        data: { visitingCardType: activeTab },
-        headers: { 'Content-Type': 'application/json' },
-        customConfig: {}
-      });
+      await apiRequest('PUT', `/api/users/${userData.id}`, { visitingCardType: activeTab });
       
       setIsFinalized(true);
       toast({

@@ -27,19 +27,14 @@ const QuantumCard: React.FC<QuantumCardProps> = ({ userData, isLoading = false }
         {/* Card content */}
         <div className="relative flex flex-col h-full w-full z-30 p-4">
           
-          {/* Liquid loading effect overlay */}
+          {/* Subtle loading indicator instead of full overlay */}
           {isLoading && (
-            <div className="absolute inset-0 z-50 bg-gradient-to-r from-[#0A0F2C]/40 to-[#1F1B44]/40 backdrop-blur-sm flex flex-col justify-center items-center">
-              <div className="p-2 backdrop-blur-md bg-blue-500/10 rounded-lg border border-blue-400/30">
-                <div className="liquid-loading">
-                  <div className="liquid-loading-bar"></div>
-                  <div className="liquid-loading-bar"></div>
-                  <div className="liquid-loading-bar"></div>
-                  <div className="liquid-loading-bar"></div>
-                  <div className="liquid-loading-bar"></div>
-                </div>
+            <div className="absolute top-2 right-2 z-50 p-2 backdrop-blur-md bg-blue-500/10 rounded-lg border border-blue-400/30">
+              <div className="liquid-loading" style={{ height: "20px" }}>
+                <div className="liquid-loading-bar"></div>
+                <div className="liquid-loading-bar"></div>
+                <div className="liquid-loading-bar"></div>
               </div>
-              <p className="text-cyan-400 text-xs mt-3 animate-pulse">Loading Quantum Data...</p>
             </div>
           )}
           
