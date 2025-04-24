@@ -16,7 +16,9 @@ interface VisitingCardPreviewProps {
 const CardWrapper: React.FC<{children: React.ReactNode}> = ({children}) => {
   return (
     <div className="visiting-card-preview w-full max-w-[360px] mx-auto aspect-[2/3.5]">
-      {children}
+      <div className="w-full h-full">
+        {children}
+      </div>
     </div>
   );
 };

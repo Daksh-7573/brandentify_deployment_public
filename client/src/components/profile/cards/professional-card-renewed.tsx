@@ -24,7 +24,7 @@ const ProfessionalCardRenewed: React.FC<ProfessionalCardRenewedProps> = ({
   const profileURL = `brandentifier.com/${userData.name?.replace(/\s+/g, '').toLowerCase() || 'myprofile'}`;
   
   return (
-    <div className="professional-card bg-white dark:bg-slate-800 w-full rounded-xl overflow-hidden shadow-lg border border-gray-200 dark:border-gray-700 aspect-[2/3.5] flex flex-col">
+    <div className="professional-card bg-white dark:bg-slate-800 w-full h-full rounded-xl overflow-visible shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col">
       {/* Card Header with Profile Photo */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 h-28 relative">
         {/* Profile Photo */}

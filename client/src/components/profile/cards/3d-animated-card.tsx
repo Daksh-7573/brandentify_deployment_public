@@ -147,16 +147,14 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
   };
 
   return (
-    <div className="w-full" style={{ perspective: "1200px" }}>
+    <div className="w-full h-full" style={{ perspective: "1200px" }}>
       {/* Main Card Container */}
       <div
         ref={cardRef}
-        className="w-full aspect-[2/3.5] rounded-lg overflow-hidden relative cursor-pointer"
+        className="w-full h-full rounded-lg overflow-hidden relative cursor-pointer"
         style={{
           width: "100%",
-          maxWidth: "360px",
           height: "100%",
-          aspectRatio: "2/3.5",
           margin: "0 auto",
           transformStyle: "preserve-3d",
           transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
@@ -210,7 +208,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
         </div>
         
         {/* Card Content Container */}
-        <div className="absolute inset-0 p-6 flex flex-col z-10">
+        <div className="absolute inset-0 p-6 flex flex-col z-10 overflow-visible">
           {/* Profile Picture Section */}
           <div 
             className="flex justify-center mb-6 relative"
@@ -438,7 +436,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
                 boxShadow: `0 0 20px ${colors.electricBlue}10`,
                 height: contactExpanded ? "auto" : "40px",
                 maxHeight: contactExpanded ? "150px" : "40px",
-                overflowY: contactExpanded ? "auto" : "hidden",
+                overflowY: "visible",
               }}
             >
               {/* Contact Header */}
