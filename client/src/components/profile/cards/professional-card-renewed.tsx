@@ -138,11 +138,8 @@ const ProfessionalCardRenewed: React.FC<ProfessionalCardRenewedProps> = ({
         </div>
       </div>
       
-      {/* Card Footer */}
+      {/* Card Footer - Empty */}
       <div className="bg-gray-50 dark:bg-gray-900 py-2 px-4 text-center">
-        <p className="text-xs text-gray-500 dark:text-gray-400">
-          Quantum Card
-        </p>
       </div>
     </div>
   );
