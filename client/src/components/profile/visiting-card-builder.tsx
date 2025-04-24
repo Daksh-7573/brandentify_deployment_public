@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -34,7 +34,21 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
   const [activeTab, setActiveTab] = useState(selectedCardType || "professional-renewed");
   const [isSaving, setIsSaving] = useState(false);
   const [isFinalized, setIsFinalized] = useState(selectedCardType === userData.visitingCardType);
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+  
+  // Set up a loading effect when first mounting the component
+  useEffect(() => {
+    // Start with loading state
+    setIsLoading(true);
+    
+    // Simulate progressive loading with a staged timeout
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500); // 1.5 seconds delay to simulate loading of profile details
+    
+    return () => clearTimeout(timer);
+  }, []);
   
   // Handle tab change
   const handleTabChange = (value: string) => {
@@ -236,6 +250,7 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
               <VisitingCardPreview
                 userData={userData}
                 cardType={activeTab}
+                isLoading={isLoading}
               />
             </div>
           </div>

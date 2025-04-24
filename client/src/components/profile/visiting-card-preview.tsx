@@ -12,6 +12,7 @@ import QuantumCard from "./cards/quantum-card";
 interface VisitingCardPreviewProps {
   userData: UserData;
   cardType: string;
+  isLoading?: boolean;
 }
 
 const CardWrapper: React.FC<{children: React.ReactNode}> = ({children}) => {
@@ -27,6 +28,7 @@ const CardWrapper: React.FC<{children: React.ReactNode}> = ({children}) => {
 const VisitingCardPreview: React.FC<VisitingCardPreviewProps> = ({
   userData,
   cardType,
+  isLoading = false,
 }) => {
   // Format profile link
   const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;
@@ -94,7 +96,7 @@ const VisitingCardPreview: React.FC<VisitingCardPreviewProps> = ({
       <CardWrapper>
         <QuantumCard 
           userData={userData}
-          isLoading={false} // Set to true when loading
+          isLoading={isLoading}
         />
       </CardWrapper>
     );
