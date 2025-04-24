@@ -516,27 +516,7 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
               </div>
             </div>
             
-            {/* Share Button */}
-            <div className="mt-5 flex justify-center">
-              <button 
-                className="flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium"
-                style={{
-                  background: `linear-gradient(45deg, ${creativeColors.indigo}, ${creativeColors.violet})`,
-                  color: "white",
-                  boxShadow: hoveredSection === 'share' 
-                    ? '0 4px 12px rgba(0, 0, 0, 0.2)' 
-                    : '0 2px.8px rgba(0, 0, 0, 0.15)',
-                  transform: hoveredSection === 'share' ? 'translateY(-2px)' : 'translateY(0)',
-                  transition: "all 0.2s ease"
-                }}
-                onClick={() => copyToClipboard(`https://${profileLink}`, "Profile link")}
-                onMouseEnter={() => setHoveredSection('share')}
-                onMouseLeave={() => setHoveredSection(null)}
-              >
-                <Share2 className="h-4 w-4" />
-                <span>Share Profile</span>
-              </button>
-            </div>
+
           </div>
         </div>
       </div>

@@ -426,14 +426,14 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
             data-layer="1"
           >
             <div 
-              className={`w-full rounded-md overflow-hidden transition-all duration-300`}
+              className={`w-full rounded-md overflow-visible transition-all duration-300`}
               style={{
                 background: `linear-gradient(135deg, ${colors.charcoalBlack}80, ${colors.charcoalBlack}60)`,
                 backdropFilter: "blur(10px)",
                 border: `1px solid ${colors.electricBlue}20`,
                 boxShadow: `0 0 20px ${colors.electricBlue}10`,
                 height: contactExpanded ? "auto" : "40px",
-                maxHeight: contactExpanded ? "150px" : "40px",
+                maxHeight: contactExpanded ? "none" : "40px",
                 overflowY: "visible",
               }}
             >
