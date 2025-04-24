@@ -527,38 +527,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
               </div>
             </div>
             
-            {/* View Full Profile Button */}
-            <button
-              className="w-full mt-3 px-4 py-2 rounded-md text-sm font-medium transition-transform duration-300 hover:translate-y-[-2px]"
-              style={{
-                background: `linear-gradient(90deg, ${colors.electricBlue}, ${colors.neonPurple})`,
-                color: "white",
-                boxShadow: `0 5px 15px ${colors.electricBlue}30`,
-                animation: "rise 0.5s ease-out",
-              }}
-            >
-              <span className="flex items-center justify-center gap-1">
-                View Full Profile 
-                <ExternalLink className="h-3.5 w-3.5" />
-              </span>
-            </button>
-            
-            {/* Powered by Musk Tag */}
-            <div 
-              className="absolute bottom-3 right-3 px-2 py-1 rounded text-xs flex items-center gap-1"
-              style={{
-                background: `linear-gradient(90deg, ${colors.charcoalBlack}70, ${colors.charcoalBlack}50)`,
-                backdropFilter: "blur(5px)",
-                border: `1px solid ${colors.electricBlue}20`,
-                color: colors.silverGray,
-                animation: "hueRotate 10s infinite alternate",
-              }}
-            >
-              <span className="opacity-70">Powered by</span>
-              <span className="font-bold" style={{ color: colors.electricBlue }}>
-                Musk
-              </span>
-            </div>
+            {/* Removed View Full Profile and Powered by Musk sections */}
           </div>
         </div>
         
