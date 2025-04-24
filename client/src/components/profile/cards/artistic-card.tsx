@@ -655,28 +655,6 @@ const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
               </div>
             </div>
             
-            {/* View Portfolio / Gallery Button */}
-            <div className="mt-4 flex justify-center">
-              <button 
-                className="flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium"
-                style={{
-                  backgroundColor: "white",
-                  color: artisticColors.inkBlack,
-                  border: `1px solid ${artisticColors.wheat}`,
-                  boxShadow: hoveredSection === 'portfolio' 
-                    ? '0 4px 12px rgba(0, 0, 0, 0.15)' 
-                    : '0 2px 6px rgba(0, 0, 0, 0.08)',
-                  transform: hoveredSection === 'portfolio' ? 'translateY(-2px)' : 'translateY(0)',
-                  transition: "all 0.2s ease"
-                }}
-                onClick={() => copyToClipboard(`https://${profileLink}`, "Profile link")}
-                onMouseEnter={() => setHoveredSection('portfolio')}
-                onMouseLeave={() => setHoveredSection(null)}
-              >
-                <Brush className="h-4 w-4" style={{ color: artisticColors.burgundy }} />
-                <span>View Gallery</span>
-              </button>
-            </div>
           </div>
         </div>
       </div>
