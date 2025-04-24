@@ -345,78 +345,68 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
           }}
         />
         
-        {/* Industry Tags Section */}
-        {industryTags.length > 0 && (
-          <div className="mb-5">
-            <div className="flex flex-wrap justify-center gap-2">
-              {industryTags.slice(0, 3).map((tag, index) => (
-                <div 
-                  key={index}
-                  className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium"
-                  style={{
-                    backgroundColor: `${colors.bgNavy}`,
-                    color: index === 0 ? colors.teal : index === 1 ? colors.cyberBlue : colors.magenta,
-                    border: `1px solid ${index === 0 ? colors.teal : index === 1 ? colors.cyberBlue : colors.magenta}40`,
-                    boxShadow: `0 0 8px ${index === 0 ? colors.teal : index === 1 ? colors.cyberBlue : colors.magenta}30`,
-                    transform: `translateY(${hoveredSection === `tag-${index}` ? '-2px' : '0'})`,
-                    transition: "all 0.2s ease",
-                  }}
-                  onMouseEnter={() => setHoveredSection(`tag-${index}`)}
-                  onMouseLeave={() => setHoveredSection(null)}
-                >
-                  <Hash className="h-3 w-3 mr-1 opacity-70" />
-                  {tag.trim()}
-                </div>
-              ))}
-              
-              {industryTags.length > 3 && (
-                <div 
-                  className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium"
-                  style={{
-                    backgroundColor: colors.bgNavy,
-                    color: colors.textMuted,
-                    border: `1px solid ${colors.border}`,
-                  }}
-                >
-                  +{industryTags.length - 3} more
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-        
-        {/* Domain, Company and Location */}
-        <div className="mb-auto space-y-3">
-          {/* Domain */}
-          {userData.domain && (
-            <div 
-              className="flex items-center gap-2 px-3 py-2 rounded-md"
-              style={{
-                backgroundColor: colors.panelBg,
-                borderLeft: `2px solid ${colors.teal}`,
-                transform: `translateX(${hoveredSection === 'domain' ? '3px' : '0'})`,
-                transition: "transform 0.3s ease",
-              }}
-              onMouseEnter={() => setHoveredSection('domain')}
-              onMouseLeave={() => setHoveredSection(null)}
-            >
-              <Globe 
-                className="h-4 w-4 flex-shrink-0"
+        {/* Industry & Domain Tags Section */}
+        <div className="mb-5">
+          <div className="flex flex-wrap justify-center gap-2">
+            {/* Industry Tags */}
+            {industryTags.length > 0 && industryTags.slice(0, 2).map((tag, index) => (
+              <div 
+                key={`industry-${index}`}
+                className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium"
                 style={{
-                  color: colors.teal,
-                  filter: `drop-shadow(0 0 3px ${colors.teal}80)`,
+                  backgroundColor: `${colors.bgNavy}`,
+                  color: index === 0 ? colors.teal : colors.cyberBlue,
+                  border: `1px solid ${index === 0 ? colors.teal : colors.cyberBlue}40`,
+                  boxShadow: `0 0 8px ${index === 0 ? colors.teal : colors.cyberBlue}30`,
+                  transform: `translateY(${hoveredSection === `tag-${index}` ? '-2px' : '0'})`,
+                  transition: "all 0.2s ease",
                 }}
-              />
-              <span 
-                className="text-sm capitalize"
+                onMouseEnter={() => setHoveredSection(`tag-${index}`)}
+                onMouseLeave={() => setHoveredSection(null)}
+              >
+                <Hash className="h-3 w-3 mr-1 opacity-70" />
+                {tag.trim()}
+              </div>
+            ))}
+            
+            {/* Domain Tag */}
+            {userData.domain && (
+              <div 
+                className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium"
                 style={{
-                  color: colors.textSecondary,
+                  backgroundColor: `${colors.bgNavy}`,
+                  color: colors.magenta,
+                  border: `1px solid ${colors.magenta}40`,
+                  boxShadow: `0 0 8px ${colors.magenta}30`,
+                  transform: `translateY(${hoveredSection === 'domain-tag' ? '-2px' : '0'})`,
+                  transition: "all 0.2s ease",
+                }}
+                onMouseEnter={() => setHoveredSection('domain-tag')}
+                onMouseLeave={() => setHoveredSection(null)}
+              >
+                <Globe className="h-3 w-3 mr-1 opacity-70" />
+                {userData.domain}
+              </div>
+            )}
+            
+            {/* More industries indicator */}
+            {industryTags.length > 2 && (
+              <div 
+                className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium"
+                style={{
+                  backgroundColor: colors.bgNavy,
+                  color: colors.textMuted,
+                  border: `1px solid ${colors.border}`,
                 }}
               >
-                {userData.domain}
-              </span>
-            </div>
-          )}
+                +{industryTags.length - 2} more
+              </div>
+            )}
+          </div>
+        </div>
+        
+        {/* Company and Location */}
+        <div className="mb-auto space-y-3">
           
           {/* Company */}
           {userData.company && (
