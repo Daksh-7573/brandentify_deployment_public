@@ -24,6 +24,7 @@ import brandsOfTheDayRoutes from "./routes-brands-of-the-day";
 import enhancedUserRoutes from "./routes-enhanced-user";
 import whatIOfferRoutes from "./routes-what-i-offer";
 import profileServicesRoutes from "./routes-services-sync";
+import { resumeTestRoutes } from "./routes-resume-test";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -5172,6 +5173,9 @@ ${extractedText.substring(0, 5000)}
   
   // Profile Services Sync routes for unified services and whatIOffer handling
   app.use(profileServicesRoutes);
+  
+  // Resume test routes for testing enhanced resume analysis
+  app.use(resumeTestRoutes);
 
   app.use("/api", apiRouter);
 
