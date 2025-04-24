@@ -530,7 +530,9 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
                 className="p-1 rounded hover:bg-black/20 transition-colors"
                 onClick={(e) => {
                   e.stopPropagation();
-                  copyToClipboard(userData.email, "Email");
+                  if (userData.email) {
+                    copyToClipboard(userData.email, "Email");
+                  }
                 }}
                 title="Copy email"
               >
@@ -576,7 +578,9 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
                   className="p-1 rounded hover:bg-black/20 transition-colors"
                   onClick={(e) => {
                     e.stopPropagation();
-                    copyToClipboard(userData.phoneNumber, "Phone");
+                    if (userData.phoneNumber) {
+                      copyToClipboard(userData.phoneNumber, "Phone");
+                    }
                   }}
                   title="Copy phone"
                 >
@@ -618,19 +622,6 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
               </div>
               
               <div className="flex gap-1">
-                <button
-                  className="p-1 rounded hover:bg-black/20 transition-colors"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    copyToClipboard(`https://${profileLink}`, "Link");
-                  }}
-                  title="Copy link"
-                >
-                  <Copy 
-                    className="h-3.5 w-3.5" 
-                    style={{ color: colors.textMuted }}
-                  />
-                </button>
                 <button
                   className="p-1 rounded hover:bg-black/20 transition-colors"
                   onClick={(e) => {
