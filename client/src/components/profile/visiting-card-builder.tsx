@@ -80,8 +80,12 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
 
   // Handle card sharing
   const handleShare = () => {
-    // Generate a sharable link with the numeric user ID
-    const shareUrl = `${window.location.origin}/profile/card/${userData.id}`; 
+    // Always use numeric ID for sharing to ensure consistency
+    // The numeric ID is more reliable for sharing as it's the database primary key
+    const numericId = typeof userData.id === 'number' ? userData.id : parseInt(userData.id as string, 10);
+    
+    // Generate sharable link using numeric ID (not Firebase UID)
+    const shareUrl = `${window.location.origin}/profile/card/${numericId}`;
     console.log("Generated sharable link:", shareUrl);
     
     // Display alert with the URL

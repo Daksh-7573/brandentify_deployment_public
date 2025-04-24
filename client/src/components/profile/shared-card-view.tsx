@@ -20,18 +20,38 @@ const SharedCardView: React.FC<SharedCardViewProps> = ({ userId }) => {
       try {
         setLoading(true);
         console.log("Fetching user data for shared card with ID:", userId);
-        // Get the full user profile data with experiences, education, etc.
-        const response = await apiRequest({
-          url: `/api/users/${userId}`,
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' },
-          customConfig: {}
-        });
+        
+        // First try to get the user by fetching their basic profile using numeric ID
+        // If that fails, fall back to the Firebase UID approach
+        let response;
+        try {
+          // First attempt - numeric ID (for shared links)
+          response = await apiRequest({
+            url: `/api/users/${userId}`,
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            customConfig: {},
+            retries: 0 // Don't retry for first attempt
+          });
+        } catch (initialError) {
+          console.log("Initial fetch failed, trying alternate endpoint", initialError);
+          
+          // Second attempt - try standard users endpoint which supports Firebase UIDs
+          response = await apiRequest({
+            url: `/api/users/${userId}`,
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            customConfig: {}
+          });
+        }
+        
         console.log("Shared card user data:", response);
+        
         // Handle empty response
         if (!response || typeof response !== 'object' || Object.keys(response).length === 0) {
           throw new Error("Received empty user data");
         }
+        
         setUserData(response as UserData);
         setLoading(false);
       } catch (err) {
