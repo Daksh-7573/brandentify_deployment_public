@@ -409,7 +409,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
           
           {/* Contact Information with Glass Effect */}
           <div 
-            className="mt-auto"
+            className="mt-auto mb-7"
             data-layer="1"
           >
             <div 
@@ -422,7 +422,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
                 height: contactExpanded ? "auto" : "40px",
                 maxHeight: contactExpanded ? "none" : "40px",
                 overflowY: "visible",
-                marginBottom: contactExpanded ? "10px" : "0",
+                marginBottom: contactExpanded ? "20px" : "0",
               }}
             >
               {/* Contact Header */}
@@ -449,7 +449,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
               
               {/* Contact Details - Only shown when expanded */}
               {contactExpanded && (
-                <div className="px-4 py-3 pb-5 space-y-3">
+                <div className="px-4 py-3 pb-8 space-y-3">
                   {/* Email */}
                   <div className="flex items-center">
                     <div className="flex items-center gap-2">
