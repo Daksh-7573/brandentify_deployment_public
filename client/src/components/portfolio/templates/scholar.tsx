@@ -410,14 +410,14 @@ export default function Scholar({
               <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-white shadow-md transition-transform hover:scale-105 relative">
                 <div className="absolute inset-0 rounded-full border-2 border-dashed border-blue-300 z-10 opacity-50"></div>
                 <Avatar className="w-full h-full">
-                  <AvatarImage src={userInfo.photoURL || ''} alt={userInfo.name} />
+                  <AvatarImage src={userInfo && userInfo.photoURL ? userInfo.photoURL : ''} alt={userInfo && userInfo.name ? userInfo.name : 'User'} />
                   <AvatarFallback className="bg-blue-100 text-blue-800 text-xl">
-                    {userInfo.name.split(' ').map(n => n[0]).join('')}
+                    {userInfo && userInfo.name ? userInfo.name.split(' ').map(n => n[0]).join('') : 'U'}
                   </AvatarFallback>
                 </Avatar>
               </div>
               
-              {userInfo.lookingFor && (
+              {userInfo && userInfo.lookingFor && (
                 <Badge className="absolute -bottom-2 right-0 bg-blue-600 hover:bg-blue-700">
                   {userInfo.lookingFor}
                 </Badge>
@@ -427,16 +427,16 @@ export default function Scholar({
             {/* Name and Academic Info */}
             <div className="text-center md:text-left flex-1">
               <h1 className="text-3xl md:text-4xl font-serif font-bold text-gray-800 mb-1 fade-in-up">
-                {userInfo.name}
+                {userInfo && userInfo.name ? userInfo.name : "Scholar"}
               </h1>
               
               <div className="mb-2 text-blue-700 font-serif text-lg fade-in-up delay-100">
                 <span className="font-medium typewriter-cursor">
-                  {text || userInfo.title || "Academic Scholar"}
+                  {text || (userInfo && userInfo.title) || "Academic Scholar"}
                 </span>
               </div>
 
-              {userInfo.location && (
+              {userInfo && userInfo.location && (
                 <div className="flex items-center justify-center md:justify-start text-gray-600 mb-3 fade-in-up delay-200">
                   <MapPin className="h-4 w-4 mr-1" />
                   <span>{userInfo.location}</span>
@@ -445,19 +445,19 @@ export default function Scholar({
 
               {/* Domain/Industry/Institution Pills */}
               <div className="flex flex-wrap gap-2 justify-center md:justify-start mb-4 fade-in-up delay-300">
-                {userInfo.industry && (
+                {userInfo && userInfo.industry && (
                   <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 py-1 px-3">
                     <School className="w-3.5 h-3.5 mr-1.5" />
                     {userInfo.industry}
                   </Badge>
                 )}
-                {userInfo.domain && (
+                {userInfo && userInfo.domain && (
                   <Badge variant="outline" className="bg-indigo-50 text-indigo-700 border-indigo-200 py-1 px-3">
                     <Bookmark className="w-3.5 h-3.5 mr-1.5" />
                     {userInfo.domain}
                   </Badge>
                 )}
-                {userInfo.title && (
+                {userInfo && userInfo.title && (
                   <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200 py-1 px-3">
                     <GraduationCap className="w-3.5 h-3.5 mr-1.5" />
                     {userInfo.title}
@@ -480,19 +480,19 @@ export default function Scholar({
           <div className="notebook-paper fade-in-up">
             <div className="flex flex-col md:flex-row gap-6">
               <div className="flex-1 space-y-4">
-                {userInfo.aboutMe ? (
+                {userInfo && userInfo.aboutMe ? (
                   <p className="text-gray-700 leading-relaxed font-medium">
                     {userInfo.aboutMe}
                   </p>
                 ) : (
                   <>
                     <p className="text-gray-700 leading-relaxed font-medium">
-                      {userInfo.title || userInfo.industry 
+                      {userInfo && (userInfo.title || userInfo.industry)
                         ? `As ${userInfo.title ? `a ${userInfo.title}` : ''}${userInfo.industry ? ` in the ${userInfo.industry} field` : ''}, I'm passionate about continuous learning and applying my knowledge to real-world challenges.`
                         : "I'm passionate about continuous learning and applying my knowledge to real-world challenges. My academic journey has equipped me with both theoretical understanding and practical skills."}
                     </p>
                     <p className="text-gray-700 leading-relaxed">
-                      {userInfo.lookingFor 
+                      {userInfo && userInfo.lookingFor 
                         ? `Currently seeking ${userInfo.lookingFor.toLowerCase()}. I bring a fresh perspective, strong work ethic, and eagerness to contribute to meaningful projects.`
                         : "I bring a fresh perspective, strong work ethic, and eagerness to contribute to meaningful projects. I'm constantly looking to expand my skills and take on new challenges."}
                     </p>
@@ -505,7 +505,7 @@ export default function Scholar({
                 </div>
                 <div className="pl-7 border-l-2 border-blue-100">
                   <p className="text-gray-700">
-                    {userInfo.domain 
+                    {userInfo && userInfo.domain 
                       ? `Specializing in ${userInfo.domain} with a focus on practical applications and innovative approaches.`
                       : "Combining theoretical knowledge with practical applications, I focus on creating meaningful solutions to real-world problems."}
                   </p>
