@@ -121,9 +121,9 @@ const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
   };
   
   return (
-    <div className="artistic-card relative w-full aspect-[2/3.5] select-none">
+    <div className="artistic-card relative w-full h-full select-none">
       {/* Main Card Container */}
-      <div className="w-full h-full relative">
+      <div className="w-full h-full relative overflow-visible">
         {/* Organic shape card with paper texture */}
         <div 
           className="absolute inset-0 rounded-2xl overflow-hidden"
@@ -166,7 +166,7 @@ const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
                style={{ animation: "float 9s 3s infinite ease-in-out" }} />
           
           {/* Content Container */}
-          <div className="absolute inset-0 z-10 p-5 flex flex-col overflow-auto">
+          <div className="absolute inset-0 z-10 p-5 flex flex-col overflow-visible">
             {/* TOP SECTION - Visual Identity */}
             <div className="relative mb-4">
               <div className="flex items-start">
