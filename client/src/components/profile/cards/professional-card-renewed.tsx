@@ -26,11 +26,11 @@ const ProfessionalCardRenewed: React.FC<ProfessionalCardRenewedProps> = ({
   return (
     <div className="professional-card bg-white dark:bg-slate-800 w-full max-w-[360px] mx-auto rounded-xl overflow-hidden shadow-lg border border-gray-200 dark:border-gray-700 aspect-[2/3.5] min-h-[520px] flex flex-col">
       {/* Card Header with Profile Photo */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 h-28 relative">
+      <div className="bg-gradient-to-r from-blue-600 to-blue-800 h-24 relative">
         {/* Profile Photo */}
-        <div className="absolute left-1/2 transform -translate-x-1/2 top-14">
+        <div className="absolute left-1/2 transform -translate-x-1/2 top-12">
           <div className="relative">
-            <div className="h-24 w-24 rounded-full border-4 border-white dark:border-slate-800 bg-white dark:bg-slate-700 overflow-hidden">
+            <div className="h-22 w-22 rounded-full border-4 border-white dark:border-slate-800 bg-white dark:bg-slate-700 overflow-hidden">
               {userData.photoURL ? (
                 <img 
                   src={userData.photoURL} 
