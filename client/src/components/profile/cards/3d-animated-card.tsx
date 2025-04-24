@@ -435,6 +435,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
                 height: contactExpanded ? "auto" : "40px",
                 maxHeight: contactExpanded ? "none" : "40px",
                 overflowY: "visible",
+                marginBottom: contactExpanded ? "10px" : "0",
               }}
             >
               {/* Contact Header */}
@@ -459,61 +460,42 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
                 </div>
               </div>
               
-              {/* Contact Details */}
-              <div className="px-4 py-3 space-y-3">
-                {/* Email */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Mail className="h-4 w-4 text-gray-400" />
-                    <span className="text-sm text-gray-300 truncate max-w-[180px]">
-                      {userData.email}
-                    </span>
-                  </div>
-                  <button
-                    className="p-1.5 rounded-full hover:bg-white/10 transition-colors"
-                    onClick={() => copyToClipboard(userData.email, "Email")}
-                    title="Copy email"
-                  >
-                    <Copy className="h-3.5 w-3.5 text-gray-400" />
-                  </button>
-                </div>
-                
-                {/* Phone Number */}
-                {userData.phoneNumber && (
-                  <div className="flex items-center justify-between">
+              {/* Contact Details - Only shown when expanded */}
+              {contactExpanded && (
+                <div className="px-4 py-3 space-y-3">
+                  {/* Email */}
+                  <div className="flex items-center">
                     <div className="flex items-center gap-2">
-                      <Phone className="h-4 w-4 text-gray-400" />
-                      <span className="text-sm text-gray-300 truncate max-w-[180px]">
-                        {userData.phoneNumber}
+                      <Mail className="h-4 w-4 text-gray-400" />
+                      <span className="text-sm text-gray-300 truncate max-w-[220px]">
+                        {userData.email}
                       </span>
                     </div>
-                    <button
-                      className="p-1.5 rounded-full hover:bg-white/10 transition-colors"
-                      onClick={() => copyToClipboard(userData.phoneNumber || "", "Phone")}
-                      title="Copy phone"
-                    >
-                      <Copy className="h-3.5 w-3.5 text-gray-400" />
-                    </button>
                   </div>
-                )}
-                
-                {/* Profile Link */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Globe className="h-4 w-4 text-gray-400" />
-                    <span className="text-sm text-gray-300 truncate max-w-[180px]">
-                      {profileLink}
-                    </span>
+                  
+                  {/* Phone Number */}
+                  {userData.phoneNumber && (
+                    <div className="flex items-center">
+                      <div className="flex items-center gap-2">
+                        <Phone className="h-4 w-4 text-gray-400" />
+                        <span className="text-sm text-gray-300 truncate max-w-[220px]">
+                          {userData.phoneNumber}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Profile Link */}
+                  <div className="flex items-center">
+                    <div className="flex items-center gap-2">
+                      <Globe className="h-4 w-4 text-gray-400" />
+                      <span className="text-sm text-gray-300 truncate max-w-[220px]">
+                        {profileLink}
+                      </span>
+                    </div>
                   </div>
-                  <button
-                    className="p-1.5 rounded-full hover:bg-white/10 transition-colors"
-                    onClick={() => copyToClipboard(profileLink, "Profile link")}
-                    title="Copy profile link"
-                  >
-                    <Copy className="h-3.5 w-3.5 text-gray-400" />
-                  </button>
                 </div>
-              </div>
+              )}
             </div>
             
             {/* Removed View Full Profile and Powered by Musk sections */}
