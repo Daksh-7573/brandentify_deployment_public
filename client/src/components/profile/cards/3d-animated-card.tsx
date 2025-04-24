@@ -151,15 +151,14 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
       {/* Main Card Container */}
       <div
         ref={cardRef}
-        className={`w-full rounded-lg overflow-hidden relative cursor-pointer ${!contactExpanded ? 'aspect-[2/3.5]' : ''}`}
+        className="w-full aspect-[2/3.5] rounded-lg overflow-hidden relative cursor-pointer"
         style={{
           width: "100%",
           maxWidth: "360px",
           margin: "0 auto",
-          minHeight: contactExpanded ? "680px" : "auto",
           transformStyle: "preserve-3d",
           transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
-          transition: "transform 0.1s ease-out, height 0.3s ease-out",
+          transition: "transform 0.1s ease-out",
           boxShadow: isHovered 
             ? `0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 15px 2px ${colors.electricBlue}30`
             : "0 10px 30px -5px rgba(0, 0, 0, 0.3)",
