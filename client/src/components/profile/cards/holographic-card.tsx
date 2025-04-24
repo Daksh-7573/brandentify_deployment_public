@@ -8,7 +8,8 @@ import {
   Hash,
   ExternalLink,
   Copy,
-  ScanLine
+  ScanLine,
+  Globe
 } from "lucide-react";
 
 interface HolographicCardProps {
@@ -323,6 +324,26 @@ const HolographicCard: React.FC<HolographicCardProps> = ({ userData }) => {
               </div>
               <span className="text-sm text-white">
                 {userData.company}
+              </span>
+            </div>
+          )}
+          
+          {/* Domain with glowing icon */}
+          {userData.domain && (
+            <div className="flex items-center justify-center gap-3 mb-3">
+              <div 
+                className="flex items-center justify-center w-8 h-8 rounded-full overflow-hidden"
+                style={{
+                  background: "rgba(56, 189, 248, 0.15)",
+                  border: "1px solid rgba(56, 189, 248, 0.2)",
+                  boxShadow: isHovered ? "0 0 10px rgba(56, 189, 248, 0.3)" : "none",
+                  transition: "box-shadow 0.3s ease"
+                }}
+              >
+                <Globe className="h-4 w-4 text-cyan-400" />
+              </div>
+              <span className="text-sm text-white capitalize">
+                {userData.domain}
               </span>
             </div>
           )}

@@ -384,6 +384,30 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
             </div>
           )}
           
+          {/* Domain with Orbital Style */}
+          {userData.domain && (
+            <div 
+              className="flex justify-center mb-3"
+              data-layer="2"
+            >
+              <div 
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full"
+                style={{
+                  background: `linear-gradient(90deg, ${colors.charcoalBlack}80, ${colors.charcoalBlack}50)`,
+                  border: `1px solid ${colors.electricBlue}30`,
+                  boxShadow: `0 0 10px ${colors.electricBlue}10`,
+                  animation: "orbit 10s infinite linear",
+                  animationDelay: "0.5s",
+                }}
+              >
+                <Globe className="h-3 w-3 text-gray-300" />
+                <span className="text-xs text-gray-300 capitalize">
+                  {userData.domain}
+                </span>
+              </div>
+            </div>
+          )}
+          
           {/* Location with Orbital Style */}
           {userData.location && (
             <div 
