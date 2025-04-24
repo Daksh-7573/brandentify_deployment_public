@@ -155,12 +155,19 @@ function Router() {
 }
 
 function App() {
+  // Add a root-level Suspense boundary to ensure we never show a white screen
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <Router />
-        <GlobalMuskButton />
-        <Toaster />
+        <Suspense fallback={
+          <div className="min-h-screen flex items-center justify-center bg-background">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          </div>
+        }>
+          <Router />
+          <GlobalMuskButton />
+          <Toaster />
+        </Suspense>
       </AuthProvider>
     </QueryClientProvider>
   );
