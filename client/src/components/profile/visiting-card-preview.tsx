@@ -13,6 +13,14 @@ interface VisitingCardPreviewProps {
   cardType: string;
 }
 
+const CardWrapper: React.FC<{children: React.ReactNode}> = ({children}) => {
+  return (
+    <div className="visiting-card-preview w-full max-w-[360px] mx-auto aspect-[2/3.5]">
+      {children}
+    </div>
+  );
+};
+
 const VisitingCardPreview: React.FC<VisitingCardPreviewProps> = ({
   userData,
   cardType,
@@ -23,64 +31,64 @@ const VisitingCardPreview: React.FC<VisitingCardPreviewProps> = ({
   // For 3D animated card style, use the specialized component
   if (cardType === "3d-animated") {
     return (
-      <div className="visiting-card-preview">
+      <CardWrapper>
         <ThreeDAnimatedCard userData={userData} />
-      </div>
+      </CardWrapper>
     );
   }
   
   // For holographic card style, use the specialized component
   if (cardType === "holographic") {
     return (
-      <div className="visiting-card-preview">
+      <CardWrapper>
         <HolographicCard userData={userData} />
-      </div>
+      </CardWrapper>
     );
   }
   
   // For NeoGlow card style, use the specialized component
   if (cardType === "neoglow" || cardType === "clay-paper") {
     return (
-      <div className="visiting-card-preview">
+      <CardWrapper>
         <NeoGlowCard userData={userData} />
-      </div>
+      </CardWrapper>
     );
   }
   
   // For creative card style, use the specialized component
   if (cardType === "creative") {
     return (
-      <div className="visiting-card-preview">
+      <CardWrapper>
         <CreativeCard userData={userData} />
-      </div>
+      </CardWrapper>
     );
   }
   
   // For artistic card style, use the specialized component
   if (cardType === "artistic") {
     return (
-      <div className="visiting-card-preview">
+      <CardWrapper>
         <ArtisticCard userData={userData} />
-      </div>
+      </CardWrapper>
     );
   }
   
   // For professional card style, use the redesigned component
   if (cardType === "professional-renewed") {
     return (
-      <div className="visiting-card-preview">
+      <CardWrapper>
         <ProfessionalCardRenewed 
           userData={userData} 
           isIndustryLeader={userData.username === "elonmusk"} 
         />
-      </div>
+      </CardWrapper>
     );
   }
   
   // Simple card preview that simulates different styles
   return (
-    <div className="visiting-card-preview">
-      <div className={`w-full aspect-[2/3.5] rounded-lg overflow-hidden shadow-lg flex flex-col 
+    <CardWrapper>
+      <div className={`w-full rounded-lg overflow-hidden shadow-lg flex flex-col 
         ${cardType === "creative" ? "bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 text-white" :
           cardType === "artistic" ? "bg-gradient-to-br from-teal-400 to-indigo-500 text-white" :
           "bg-white dark:bg-slate-900 border border-gray-200 dark:border-gray-800"}
@@ -195,7 +203,7 @@ const VisitingCardPreview: React.FC<VisitingCardPreviewProps> = ({
           <span className="text-xs text-white font-light">Quantum Card</span>
         </div>
       </div>
-    </div>
+    </CardWrapper>
   );
 };
 
