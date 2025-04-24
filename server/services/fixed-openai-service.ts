@@ -33,17 +33,25 @@ const CLAUDE_MODEL = "claude-3-7-sonnet-20250219";
  */
 function generateCompleteResumeImprovementPrompt(targetRole?: string, targetIndustry?: string): string {
   return `
-  Please analyze my resume and provide detailed, personalized feedback for improvements using the following structured approach:
+  Please analyze my resume and provide detailed, personalized feedback for improvements using the following structured approach. For complex, design-heavy resumes (like those made with Canva), follow special handling instructions in the sections below.
   
   ${targetRole ? `I'm targeting a role as: ${targetRole}` : ''}
   ${targetIndustry ? `I'm targeting the ${targetIndustry} industry` : ''}
 
   # Resume Analysis & Improvement Plan
   
+  ## 0. Special Instructions for Design-Heavy Resumes
+  For resumes with complex designs, graphics, and non-standard layouts:
+  - First ignore design elements (colors, shapes, icons, background patterns) - focus purely on content
+  - Identify ALL key sections wherever they appear in the layout (scattered or not)
+  - Spot and consolidate redundant information that might be duplicated across various design elements
+  - Mentally reorganize information into a logical flow before providing analysis
+  - Identify potentially problematic elements for ATS systems (text in graphics, tables, complex layouts)
+  
   ## 1. First Impression (High-Level Overview)
   Provide a concise evaluation table with these categories:
-  - Design/Layout
-  - Readability
+  - Design/Layout (and whether it helps or hinders the content)
+  - Readability (both human and ATS machine readability)
   - Content Quality
   - Professionalism
   - ATS Compatibility
@@ -53,6 +61,7 @@ function generateCompleteResumeImprovementPrompt(targetRole?: string, targetIndu
   ### Header & Contact Information
   - Review completeness and professional presentation
   - Suggest improvements for personal branding
+  - Check if essential contact details are in text format (not graphics)
   
   ### Professional Summary/Objective
   - Analyze for clarity, impact, and alignment with target role
@@ -64,10 +73,12 @@ function generateCompleteResumeImprovementPrompt(targetRole?: string, targetIndu
   - Look for quantifiable metrics and impact
   - Check for active language and power verbs
   - Highlight opportunities to demonstrate career progression
+  - If split across different visual sections, suggest consolidation
   
   ### Skills Section
   - Assess relevance to the target role/industry
   - Suggest reorganization by categories (technical, soft, etc.)
+  - If presented as graphics or percentages (e.g., "Communication 94%"), recommend better alternatives
   - Recommend proficiency indicators where appropriate
   
   ### Projects (if included)
@@ -129,20 +140,39 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
   let isDirectTextInput = false;
   let systemPrompt = `You are Musk, an AI expert in resume analysis and improvement with a deep understanding of how recruiters and hiring managers read CVs/resumes. You follow a systematic approach to provide deeply personalized resume feedback:
 
-1. First Impression (Initial Scan):
-   - You analyze header information (name, role/title, contact info)
-   - You review the professional summary for clarity and alignment with target roles
-   - You check design readability and ATS compatibility
+1. First Impression - Ignore Design, Focus on Content:
+   - You mentally strip away colors, shapes, icons, and background patterns
+   - You focus on finding key sections: Name, Title, Contact, Summary, Experience, Skills, Education
+   - You establish a logical reading order based on content flow, not visual layout
+   - You analyze header information, summary clarity, and overall first impression
 
-2. Section-by-Section Deep Analysis:
+2. Identify Redundancies & Distractions:
+   - You spot duplicated sections that could be consolidated
+   - You identify irrelevant visual elements (like arbitrary skill percentage graphs)
+   - You recognize when icons or design elements don't add value
+   - You evaluate whether each section genuinely helps understand the candidate's value
+
+3. Mentally Reconstruct Linear Flow:
+   - You reconstruct scattered information into a standard resume order:
+     * Header & Contact
+     * Summary/Profile
+     * Skills (categorized properly)
+     * Work Experience (in chronological order)
+     * Projects
+     * Education
+     * Extras
+   - This helps you assess story flow and compare to job requirements
+
+4. Section-by-Section Deep Analysis:
    - You evaluate experience sections, focusing on responsibilities vs. achievements and quantifiable impact
    - You assess skills sections for relevance to the target role/industry
    - You review projects (scope, tools, outcomes) and education (relevance, honors)
+   - You focus on quantifiable and action-oriented content in each section
 
-3. Complex CV Handling:
-   - You can analyze modern, graphical CVs by focusing on substance over style
-   - You ensure logical flow and information hierarchy is maintained
-   - You check for ATS compatibility and proper formatting
+5. ATS Compatibility Check:
+   - You identify potential ATS issues (text in graphics, complex layouts, etc.)
+   - You suggest improvements for content that might not be machine-readable
+   - You recommend best practices for ensuring resume content is parsed correctly by ATS systems
 
 Your feedback is always:
 - Deeply personalized and references the person's name and specific resume content

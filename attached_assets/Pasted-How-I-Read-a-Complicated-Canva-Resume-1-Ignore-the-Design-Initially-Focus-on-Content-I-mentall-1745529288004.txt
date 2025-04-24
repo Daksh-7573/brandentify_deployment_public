@@ -1,0 +1,102 @@
+How I Read a Complicated Canva Resume
+🔹 1. Ignore the Design Initially – Focus on Content
+I mentally strip away colors, shapes, icons, and background patterns.
+
+I look for key sections: Name, Title, Contact, Summary, Experience, Skills, Education.
+
+If things are scattered visually, I find the reading order based on logical flow, not visuals.
+
+Think of it like reading a magazine layout—scan top-left to bottom-right, identifying the story.
+
+🔹 2. Identify Redundancies & Distractions
+Design-heavy resumes often include:
+
+Duplicated sections (as in your resume)
+
+Irrelevant graphs (e.g., “Teamwork 94%” – subjective)
+
+Icons that don’t communicate much (e.g., speech bubble ≠ communication)
+
+Overloaded sidebars with fluff
+
+I evaluate: “Does this section help me understand the candidate’s value? If not, remove or reword it.”
+
+🔹 3. Manually Reconstruct Linear Flow
+Since Canva resumes are often not in a traditional top-down layout, I mentally (or literally) reconstruct the flow into a standard order:
+
+Header & Contact
+
+Summary / Profile
+
+Skills
+
+Work Experience
+
+Projects (if any)
+
+Education
+
+Extras
+
+This helps me:
+
+Compare it to job descriptions
+
+Scan for keywords
+
+Assess storytelling
+
+🔹 4. Check for ATS Compatibility
+Many Canva resumes are not ATS-friendly because:
+
+Text may be in text boxes (ATS systems can’t read them)
+
+Icons, lines, and graphics may confuse scanners
+
+Some use tables or images for text
+
+So I copy-paste sections into a blank document to test if it’s real readable text.
+
+🔹 5. Focus on Quantifiable & Action-Oriented Content
+Even in a complex layout, I ask:
+
+Are job roles described with impact or just duties?
+
+Are there numbers (e.g., “Trained 10 team members”, “Reduced errors by 25%”)?
+
+Are verbs powerful? (e.g., "Led", "Improved", "Implemented")
+
+If not, I rewrite or guide candidates to do so.
+
+🔍 Example: Reading Your Canva Resume (What I Did)
+Let’s tie this back to Dhvani’s CV:
+
+
+Canva Layout Element	My Approach
+Experience was listed twice (split into boxes)	I combined and reconstructed into one clear timeline
+Circular “skills with % bars”	Ignored, replaced with categorized text-based skills
+Visual elements on the left (contact, soft skills)	Pulled all essential info into a simpler, scannable section
+Summary written in a block of small font	Rewrote it into a targeted, impact-based summary
+Sections with low contrast or confusing icons	Focused only on words and key outcomes, ignoring visuals
+🛠 Pro Tip: How You Can Do It Too
+If you're evaluating your own or someone else's Canva CV:
+
+✅ What to Do
+Read top-down, left-right, ignoring the shapes
+
+Extract key sections and paste into a blank doc to see what’s “real” text
+
+Translate visuals (graphs, icons) into readable data
+
+Reorder content in your head (or on paper) into a standard resume structure
+
+Check for consistency in fonts, colors, and spacing
+
+🚫 What to Avoid
+Relying on pretty visuals to carry weak content
+
+Using non-standard fonts or unreadable layouts
+
+Placing critical content in sidebars or narrow boxes
+
+Including non-actionable or vague information (like “94% Communication”)
