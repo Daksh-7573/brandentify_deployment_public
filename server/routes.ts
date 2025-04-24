@@ -1111,10 +1111,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get project ID and other metadata
       const projectId = req.body.projectId;
       const imageCount = parseInt(req.body.imageCount) || 0;
+      
+      // Read the thumbnailIndex from request (this is used when user selects an image as thumbnail)
+      const thumbnailIndex = parseInt(req.body.thumbnailIndex) || -1;
       const featuredImageIndex = parseInt(req.body.featuredImageIndex) || 0;
       const existingFeaturedImageUrl = req.body.existingFeaturedImageUrl;
       
-      console.log(`[POST /projects/upload-media] Project ID: ${projectId}, Image count: ${imageCount}, Featured image index: ${featuredImageIndex}, Existing featured URL: ${existingFeaturedImageUrl || 'none'}`);
+      console.log(`[POST /projects/upload-media] Project ID: ${projectId}, Image count: ${imageCount}, Thumbnail index: ${thumbnailIndex}, Featured image index: ${featuredImageIndex}, Existing featured URL: ${existingFeaturedImageUrl || 'none'}`);
       
       if (!projectId) {
         return res.status(400).json({ message: "Project ID is required" });
@@ -1222,7 +1225,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         { mediaUrls: JSON.stringify(allMediaUrls) }
       );
       
-      // Handle setting the featured image as the thumbnail
+      // Handle setting the image as the thumbnail
       let thumbnailUrl = null;
       
       // Case 1: Using the explicitly provided existing image URL as the thumbnail
@@ -1230,7 +1233,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         thumbnailUrl = existingFeaturedImageUrl;
         console.log(`[POST /projects/upload-media] Using explicit existing image as thumbnail: ${thumbnailUrl}`);
       } 
-      // Case 2: Using an existing image as the thumbnail (indices 1000+)
+      // Case 2: Using the thumbnailIndex from the new form for a newly uploaded image
+      else if (thumbnailIndex >= 0 && thumbnailIndex < uploadedMediaUrls.length) {
+        thumbnailUrl = uploadedMediaUrls[thumbnailIndex];
+        console.log(`[POST /projects/upload-media] Using thumbnailIndex ${thumbnailIndex} to set new uploaded image as thumbnail: ${thumbnailUrl}`);
+      }
+      // Case 3: Using an existing image as the thumbnail (indices 1000+)
       else if (featuredImageIndex >= 1000 && existingMediaUrls.length > 0) {
         const existingIndex = featuredImageIndex - 1000;
         if (existingIndex >= 0 && existingIndex < existingMediaUrls.length) {
@@ -1238,12 +1246,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.log(`[POST /projects/upload-media] Using existing image at index ${existingIndex} as thumbnail: ${thumbnailUrl}`);
         }
       }
-      // Case 3: Using a newly uploaded image as the thumbnail
+      // Case 4: Using a newly uploaded image as the thumbnail with featuredImageIndex
       else if (uploadedMediaUrls.length > 0 && featuredImageIndex >= 0 && featuredImageIndex < uploadedMediaUrls.length) {
         thumbnailUrl = uploadedMediaUrls[featuredImageIndex];
         console.log(`[POST /projects/upload-media] Setting new uploaded image at index ${featuredImageIndex} as thumbnail: ${thumbnailUrl}`);
       }
-      // Case 4: Fallback to the first image (new or existing) if nothing else is selected
+      // Case 5: Fallback to the first image (new or existing) if nothing else is selected
       else if (allMediaUrls.length > 0) {
         thumbnailUrl = allMediaUrls[0];
         console.log(`[POST /projects/upload-media] Using fallback first image as thumbnail: ${thumbnailUrl}`);
