@@ -889,19 +889,23 @@ export default function PortfolioBuilder() {
               <Card className="overflow-hidden bg-white border-gray-200 shadow-lg">
                 <CardContent className="p-0">
                   <Scholar 
-                    name={userData?.name || user?.name || ''}
-                    title={userData?.title || ''}
-                    industry={userData?.industry || ''}
-                    domain={userData?.domain || ''}
-                    location={userData?.location || ''}
-                    email={userData?.email || user?.email || ''}
-                    photoURL={userData?.photoURL || user?.photoURL || null}
-                    lookingFor={userData?.lookingFor || ''}
-                    skills={userSkills || []}
-                    services={userServices || []}
-                    experiences={userExperiences || []}
-                    educations={userEducations || []}
-                    projects={userProjects || []}
+                    userInfo={{
+                      name: userData?.name || user?.name || '',
+                      title: userData?.title || '',
+                      industry: userData?.industry || '',
+                      domain: userData?.domain || '',
+                      location: userData?.location || '',
+                      email: userData?.email || user?.email || '',
+                      photoURL: userData?.photoURL || user?.photoURL || null,
+                      lookingFor: userData?.lookingFor || '',
+                      jobLevel: userData?.jobLevel || '',
+                      aboutMe: userData?.aboutMe || ''
+                    }}
+                    userSkills={userSkills || []}
+                    userServices={userServices || []}
+                    userExperiences={userExperiences || []}
+                    userEducations={userEducations || []}
+                    userProjects={userProjects || []}
                   />
                 </CardContent>
               </Card>
