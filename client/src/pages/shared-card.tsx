@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { ArrowLeft, Check, Copy, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'wouter';
@@ -38,10 +38,12 @@ const SharedCardPage: React.FC<SharedCardPageProps> = ({ userId }) => {
   const [isCopied, setIsCopied] = useState(false);
 
   useEffect(() => {
+    // Create an AbortController to cancel fetch if component unmounts
+    const controller = new AbortController();
+    const signal = controller.signal;
+    
     const fetchUserData = async () => {
       try {
-        console.log("Original userId from URL:", userId);
-        
         // Check if userId is valid
         if (!userId || userId === 'undefined' || userId === 'null') {
           setError("Invalid user ID provided");
@@ -49,23 +51,60 @@ const SharedCardPage: React.FC<SharedCardPageProps> = ({ userId }) => {
           return;
         }
         
+        // Set a timeout for the fetch to prevent long loading times
+        const timeoutId = setTimeout(() => {
+          if (loading) {
+            controller.abort();
+            setError("Request took too long to complete. Please try again.");
+            setLoading(false);
+          }
+        }, 8000); // 8 second timeout
+        
         // Trim any whitespace and unwanted characters
         const cleaned = userId.trim();
-        console.log("Processing shared card for ID:", cleaned);
         
-        // Direct fetch to the shared card API endpoint
         try {
-          console.log("Fetching from dedicated shared card endpoint:", cleaned);
+          // Pre-fill placeholder data structure to improve perceived loading time
+          const placeholderData: UserDataType = {
+            id: parseInt(cleaned, 10) || 0,
+            username: '',
+            email: '',
+            name: 'Loading...',
+            phoneNumber: '',
+            photoURL: '',
+            title: 'Professional',
+            aboutMe: '',
+            location: '',
+            industry: '',
+            domain: '',
+            lookingFor: null,
+            whatIOffer: null,
+            visitingCardType: 'professional-renewed', // Default for initial load
+            profileCompleted: false,
+            createdAt: new Date(),
+          };
+          
+          // Create placeholder to reduce the visual switch
+          setUserData(placeholderData);
           
           // Use the dedicated shared-card endpoint with better handling
-          const response = await fetch(`/api/shared-card/${cleaned}`);
+          const response = await fetch(`/api/shared-card/${cleaned}`, {
+            method: 'GET',
+            signal,
+            headers: {
+              'Cache-Control': 'no-cache',
+              'Pragma': 'no-cache'
+            }
+          });
+          
+          // Clear the timeout since we got a response
+          clearTimeout(timeoutId);
           
           if (!response.ok) {
             throw new Error(`Failed to fetch shared card data: ${response.status}`);
           }
           
           const data = await response.json();
-          console.log("Shared card data received:", data);
           
           // Validate the data
           if (!data || typeof data !== 'object' || !data.id || !data.name) {
@@ -95,14 +134,19 @@ const SharedCardPage: React.FC<SharedCardPageProps> = ({ userId }) => {
             createdAt: data.createdAt ? new Date(data.createdAt) : null,
           };
           
+          // Update with real data
           setUserData(mappedUserData);
           setLoading(false);
-          return;
           
-        } catch (err) {
-          console.error("Error fetching from shared card endpoint:", err);
-          setError("Could not load this Quantum Card. It may not exist or has been removed.");
-          setLoading(false);
+        } catch (err: any) {
+          // Handle aborted requests differently
+          if (err.name === 'AbortError') {
+            console.warn('Request was aborted due to timeout');
+          } else {
+            console.error("Error fetching from shared card endpoint:", err);
+            setError("Could not load this Quantum Card. It may not exist or has been removed.");
+            setLoading(false);
+          }
         }
       } catch (err) {
         console.error("Error processing shared card request:", err);
@@ -112,9 +156,16 @@ const SharedCardPage: React.FC<SharedCardPageProps> = ({ userId }) => {
     };
     
     fetchUserData();
+    
+    // Cleanup function to abort fetch if component unmounts
+    return () => {
+      controller.abort();
+    };
   }, [userId]);
 
-  if (loading) {
+  // Don't show a separate loading screen since we're using placeholders
+  // This improves perceived performance by instantly showing a shell
+  if (loading && !userData) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center">
         <div className="text-center">
@@ -173,15 +224,22 @@ const SharedCardPage: React.FC<SharedCardPageProps> = ({ userId }) => {
           </div>
 
           <div className="flex flex-col items-center justify-center">
-            {/* Use the same VisitingCardPreview component used in edit mode */}
-            <div style={{ 
+            {/* Create a preloaded card container to avoid loading flashes */}
+            <div className="visiting-card-container" style={{ 
               width: "280px", 
-              margin: "0 auto"
+              margin: "0 auto",
+              position: "relative" 
             }}>
-              <VisitingCardPreview
-                userData={userData}
-                cardType={userData.visitingCardType || 'professional-renewed'}
-              />
+              <Suspense fallback={
+                <div className="p-4 flex items-center justify-center" style={{height: "490px"}}>
+                  <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+                </div>
+              }>
+                <VisitingCardPreview
+                  userData={userData}
+                  cardType={userData.visitingCardType || 'professional-renewed'}
+                />
+              </Suspense>
             </div>
             
             {/* Share link box */}
