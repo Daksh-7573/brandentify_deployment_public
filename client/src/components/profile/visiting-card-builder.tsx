@@ -79,80 +79,114 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
   };
 
   // Handle card sharing
-  const handleShare = () => {
-    // Always use numeric ID for sharing to ensure consistency
-    // The numeric ID is more reliable for sharing as it's the database primary key
-    const numericId = typeof userData.id === 'number' ? userData.id : parseInt(userData.id as string, 10);
-    
-    // Generate sharable link using numeric ID (not Firebase UID)
-    const shareUrl = `${window.location.origin}/profile/card/${numericId}`;
-    console.log("Generated sharable link:", shareUrl);
-    
-    // Display alert with the URL
-    const alertUser = (success: boolean) => {
-      if (success) {
-        // Show the link was copied successfully
-        toast({
-          title: "Link copied to clipboard!",
-          description: (
-            <div className="mt-2">
-              <p className="mb-2">Share this link to show others your Quantum Card:</p>
-              <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded text-sm break-all">
-                {shareUrl}
-              </div>
-            </div>
-          ),
-          variant: "default",
-          duration: 5000,
-        });
-      } else {
-        // Show fallback with the URL so they can copy it manually
-        toast({
-          title: "Couldn't copy automatically",
-          description: (
-            <div className="mt-2">
-              <p className="mb-2">Copy this link manually to share your Quantum Card:</p>
-              <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded text-sm break-all">
-                {shareUrl}
-              </div>
-            </div>
-          ),
-          variant: "destructive",
-          duration: 5000,
-        });
+  const handleShare = async () => {
+    try {
+      // Extract user ID with validation
+      let userId: string | number = '';
+      
+      if (userData.id === undefined || userData.id === null) {
+        throw new Error("User ID is missing");
       }
-    };
-    
-    // Check if the browser supports the Clipboard API
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(shareUrl)
-        .then(() => {
+      
+      // Always prefer the numeric ID for sharing
+      if (typeof userData.id === 'number') {
+        userId = userData.id;
+        console.log("Using numeric ID for share card:", userId);
+      } else if (typeof userData.id === 'string') {
+        // Try to parse as number if it looks numeric
+        if (/^\d+$/.test(userData.id)) {
+          userId = parseInt(userData.id, 10);
+          console.log("Parsed numeric ID from string:", userId);
+        } else {
+          // Use as is if it's a Firebase UID
+          userId = userData.id;
+          console.log("Using Firebase UID for share card:", userId);
+        }
+      } else {
+        throw new Error("Invalid user ID format");
+      }
+      
+      // Verify the ID is valid (can be a number or a string)
+      if (!userId && userId !== 0) {
+        throw new Error("Could not determine valid user ID for sharing");
+      }
+      
+      // Generate sharable link - use the native ID format detected above
+      const shareUrl = `${window.location.origin}/profile/card/${userId}`;
+      console.log("Sharable link:", shareUrl);
+      
+      // Display alert with the URL
+      const alertUser = (success: boolean) => {
+        if (success) {
+          // Show the link was copied successfully
+          toast({
+            title: "Link copied to clipboard!",
+            description: (
+              <div className="mt-2">
+                <p className="mb-2">Share this link to show others your Quantum Card:</p>
+                <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded text-sm break-all">
+                  {shareUrl}
+                </div>
+              </div>
+            ),
+            variant: "default",
+            duration: 5000,
+          });
+        } else {
+          // Show fallback with the URL so they can copy it manually
+          toast({
+            title: "Couldn't copy automatically",
+            description: (
+              <div className="mt-2">
+                <p className="mb-2">Copy this link manually to share your Quantum Card:</p>
+                <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded text-sm break-all">
+                  {shareUrl}
+                </div>
+              </div>
+            ),
+            variant: "destructive", 
+            duration: 5000,
+          });
+        }
+      };
+      
+      // Check if the browser supports the Clipboard API
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(shareUrl);
           alertUser(true);
-          // Also alert the user with the URL
-          console.log("Sharable link:", shareUrl);
-        })
-        .catch(err => {
+        } catch (err) {
           console.error("Failed to copy link:", err);
           alertUser(false);
-        });
-    } else {
-      // Fallback for browsers that don't support the Clipboard API
-      const textArea = document.createElement("textarea");
-      textArea.value = shareUrl;
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
-      
-      try {
-        const success = document.execCommand('copy');
-        alertUser(success);
-        console.log("Sharable link:", shareUrl);
-      } catch (err) {
-        console.error("Fallback: Failed to copy link:", err);
-        alertUser(false);
+        }
+      } else {
+        // Fallback for browsers that don't support the Clipboard API
+        const textArea = document.createElement("textarea");
+        textArea.value = shareUrl;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        textArea.style.top = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        try {
+          const success = document.execCommand('copy');
+          alertUser(success);
+        } catch (err) {
+          console.error("Fallback: Failed to copy link:", err);
+          alertUser(false);
+        } finally {
+          document.body.removeChild(textArea);
+        }
       }
-      
-      document.body.removeChild(textArea);
+    } catch (error) {
+      console.error("Error generating share link:", error);
+      toast({
+        title: "Error generating share link",
+        description: "There was a problem generating your share link. Please try again later.",
+        variant: "destructive",
+      });
     }
   };
 

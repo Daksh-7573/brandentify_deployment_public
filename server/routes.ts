@@ -261,6 +261,93 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Internal server error" });
     }
   });
+  
+  // NEW: Special endpoint for shared card view with reliability enhancements 
+  apiRouter.get("/shared-card/:id", async (req: Request, res: Response) => {
+    try {
+      const idParam = req.params.id;
+      console.log(`[GET /shared-card/:id] Fetching user for shared card with ID: ${idParam}`);
+      
+      let user;
+      
+      // First try: Use direct numeric ID query if it looks numeric
+      if (/^\d+$/.test(idParam)) {
+        const userId = parseInt(idParam);
+        console.log(`[GET /shared-card/:id] ID appears to be numeric: ${userId}`);
+        
+        try {
+          // First check using storage
+          user = await storage.getUser(userId);
+          
+          if (!user) {
+            // Try direct database query as fallback
+            console.log(`[GET /shared-card/:id] User not found via storage, trying direct DB query`);
+            const result = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
+            
+            if (result.rows && result.rows.length > 0) {
+              user = result.rows[0];
+              console.log(`[GET /shared-card/:id] Found user via direct DB query: ${user.id}`);
+            }
+          } else {
+            console.log(`[GET /shared-card/:id] Found user via storage: ${user.id}`);
+          }
+        } catch (err) {
+          console.error(`[GET /shared-card/:id] Error fetching user by numeric ID:`, err);
+        }
+      }
+      
+      // Second try: Use Firebase UID if the user wasn't found yet
+      if (!user && idParam.length > 15) {
+        console.log(`[GET /shared-card/:id] ID might be a Firebase UID, trying username lookup: ${idParam}`);
+        
+        try {
+          user = await storage.getUserByUsername(idParam);
+          
+          if (user) {
+            console.log(`[GET /shared-card/:id] Found user via Firebase UID: ${user.id}`);
+          } else {
+            console.log(`[GET /shared-card/:id] User not found via Firebase UID`);
+          }
+        } catch (err) {
+          console.error(`[GET /shared-card/:id] Error fetching user by Firebase UID:`, err);
+        }
+      }
+      
+      // Return 404 if user still not found after all attempts
+      if (!user) {
+        console.log(`[GET /shared-card/:id] User not found after all attempts for ID: ${idParam}`);
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Enhance the response with missing domain if needed
+      if (!user.domain) {
+        try {
+          console.log(`[GET /shared-card/:id] Fetching missing domain for user ${user.id}`);
+          const result = await pool.query('SELECT domain FROM users WHERE id = $1', [user.id]);
+          if (result.rows.length > 0 && result.rows[0].domain) {
+            user.domain = result.rows[0].domain;
+          }
+        } catch (error) {
+          console.error(`[GET /shared-card/:id] Error fetching domain:`, error);
+        }
+      }
+      
+      // Enhance visiting card data for better display if missing info
+      const enhancedUser = {
+        ...user,
+        // Provide default values only if missing, used particularly for the public view
+        title: user.title || "Professional",
+        location: user.location || "",
+        visitingCardType: user.visitingCardType || "professional-renewed"
+      };
+      
+      console.log(`[GET /shared-card/:id] Returning enhanced user data for shared card`);
+      return res.json(enhancedUser);
+    } catch (error) {
+      console.error("Error in shared card endpoint:", error);
+      res.status(500).json({ message: "Internal server error fetching shared card" });
+    }
+  });
 
   apiRouter.put("/users/:id", async (req: Request, res: Response) => {
     try {

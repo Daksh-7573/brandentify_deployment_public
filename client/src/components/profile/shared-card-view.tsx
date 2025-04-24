@@ -21,8 +21,36 @@ const SharedCardView: React.FC<SharedCardViewProps> = ({ userId }) => {
         setLoading(true);
         console.log("Fetching user data for shared card with ID:", userId);
         
+        // Use the new dedicated shared card endpoint that has enhanced reliability
+        // This endpoint handles both numeric IDs and Firebase UIDs with multiple fallback strategies
+        try {
+          console.log("Using dedicated shared card endpoint with ID:", userId);
+          const response = await apiRequest({
+            url: `/api/shared-card/${userId}`,
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            customConfig: {},
+            retries: 3 // Increase retries for shared cards to improve reliability
+          });
+          
+          console.log("Shared card endpoint succeeded:", response);
+          
+          // Validate the response
+          if (!response || typeof response !== 'object' || Object.keys(response).length === 0) {
+            throw new Error("Received empty user data from shared card endpoint");
+          }
+          
+          setUserData(response as UserData);
+          setLoading(false);
+          return;
+        } catch (err) {
+          console.error("Shared card endpoint failed:", err);
+        }
+        
+        // If the dedicated endpoint failed, fall back to legacy approaches
+        console.log("Falling back to legacy approaches...");
+        
         // Determine what kind of ID we have (numeric or Firebase UID)
-        // and use the appropriate strategy to fetch the data
         let numericId: number | null = null;
         let firebaseUid: string | null = null;
         
