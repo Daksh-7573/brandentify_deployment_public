@@ -72,7 +72,7 @@ const ProfessionalCardRenewed: React.FC<ProfessionalCardRenewedProps> = ({
           </p>
         </div>
 
-        {/* Info List */}
+        {/* Professional Info List */}
         <div className="space-y-3 mb-4">
           {/* Industry */}
           {userData.industry && (
@@ -103,37 +103,46 @@ const ProfessionalCardRenewed: React.FC<ProfessionalCardRenewedProps> = ({
               </span>
             </div>
           )}
+        </div>
+        
+        {/* Contact Information Section */}
+        <div className="mt-6 mb-4">
+          <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-3 border-b border-gray-200 dark:border-gray-700 pb-1">
+            Contact Information
+          </h3>
           
-          {/* Email */}
-          <div className="flex items-center text-sm">
-            <Mail className="h-4 w-4 text-blue-500 mr-2 flex-shrink-0" />
-            <a 
-              href={`mailto:${userData.email}`} 
-              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 truncate"
-            >
-              {userData.email}
-            </a>
-          </div>
-          
-          {/* Phone */}
-          {userData.phoneNumber && (
+          <div className="space-y-3">
+            {/* Email */}
             <div className="flex items-center text-sm">
-              <Phone className="h-4 w-4 text-blue-500 mr-2 flex-shrink-0" />
+              <Mail className="h-4 w-4 text-blue-500 mr-2 flex-shrink-0" />
               <a 
-                href={`tel:${userData.phoneNumber}`} 
+                href={`mailto:${userData.email}`} 
                 className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 truncate"
               >
-                {userData.phoneNumber}
+                {userData.email}
               </a>
             </div>
-          )}
-          
-          {/* Profile Link */}
-          <div className="flex items-center text-sm">
-            <Globe className="h-4 w-4 text-blue-500 mr-2 flex-shrink-0" />
-            <span className="text-blue-600 dark:text-blue-400 truncate">
-              {profileURL}
-            </span>
+            
+            {/* Phone */}
+            {userData.phoneNumber && (
+              <div className="flex items-center text-sm">
+                <Phone className="h-4 w-4 text-blue-500 mr-2 flex-shrink-0" />
+                <a 
+                  href={`tel:${userData.phoneNumber}`} 
+                  className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 truncate"
+                >
+                  {userData.phoneNumber}
+                </a>
+              </div>
+            )}
+            
+            {/* Profile Link */}
+            <div className="flex items-center text-sm">
+              <Globe className="h-4 w-4 text-blue-500 mr-2 flex-shrink-0" />
+              <span className="text-blue-600 dark:text-blue-400 truncate">
+                {profileURL}
+              </span>
+            </div>
           </div>
         </div>
       </div>
