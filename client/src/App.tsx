@@ -28,7 +28,9 @@ import FeedTestPage from "@/pages/feed-test";
 import CareerQuestsPage from "@/pages/career-quests";
 import OnboardingPage from "@/pages/onboarding";
 import EditProfilePage from "@/pages/edit-profile";
-import SharedCardPage from "@/pages/shared-card";
+// Lazy load the SharedCardPage to improve performance and show loader immediately
+import { lazy, Suspense } from "react";
+const SharedCardPage = lazy(() => import("@/pages/shared-card"));
 // Brand of the Day is now integrated into Nowboard
 
 // Redirect component to handle page redirects
@@ -131,7 +133,20 @@ function Router() {
       </Route>
       {/* Shared Quantum Card View route */}
       <Route path="/profile/card/:userId">
-        {(params) => <SharedCardPage userId={params.userId} />}
+        {(params) => (
+          <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center">
+              <div className="animate-pulse rounded-lg overflow-hidden shadow-lg">
+                <div className="h-24 bg-gray-300 dark:bg-gray-700 relative"></div>
+                <div className="bg-white dark:bg-gray-800 h-64 flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                </div>
+              </div>
+            </div>
+          }>
+            <SharedCardPage userId={params.userId} />
+          </Suspense>
+        )}
       </Route>
       {/* Brand of the Day is now integrated into Nowboard panel */}
       <Route component={NotFound} />
