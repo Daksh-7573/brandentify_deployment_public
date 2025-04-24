@@ -3,28 +3,28 @@ import {
   Mail, 
   Phone, 
   MapPin, 
-  Building2, 
-  Copy, 
-  Share2,
+  Copy,
   Sparkles,
   Palette,
   Briefcase,
   TrendingUp,
-  Headphones
+  Headphones,
+  Building2
 } from "lucide-react";
 import { UserData } from "@/types/user";
 
-// Creative Color Palette
+// Creative Color Palette - Updated with pastel tones
 const creativeColors = {
-  // Primary colors
-  coral: "#ff6b6b",
-  mint: "#4ed8c0",
-  indigo: "#6c5ce7",
-  peach: "#fdcb6e",
-  skyBlue: "#74b9ff",
+  // Primary pastel colors
+  mint: "#98d8c6",      // Pastel mint
+  coral: "#ff9a8b",     // Pastel coral
+  lavender: "#d4bbff",  // Pastel lavender
+  lemon: "#fff0a8",     // Pastel lemon
+  peach: "#fdcb9e",     // Pastel peach
+  skyBlue: "#a8e1ff",   // Pastel sky blue
   
   // Background colors
-  cream: "#fdfaf1",
+  cream: "#fdfaf5",
   charcoal: "#2d3436",
   
   // Text colors
@@ -32,9 +32,9 @@ const creativeColors = {
   lightText: "#f9f9f9",
   
   // Accent colors
-  magenta: "#e84393",
-  violet: "#a29bfe",
-  amber: "#feca57",
+  magenta: "#f7a8d8",   // Soft magenta
+  violet: "#c4b5fd",    // Soft violet
+  teal: "#5eead4",      // Soft teal
 };
 
 interface CreativeCardProps {
@@ -73,12 +73,13 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
     const colors = [
       creativeColors.coral, 
       creativeColors.mint, 
-      creativeColors.indigo, 
+      creativeColors.lavender, 
       creativeColors.peach, 
       creativeColors.skyBlue,
       creativeColors.magenta,
       creativeColors.violet,
-      creativeColors.amber
+      creativeColors.lemon,
+      creativeColors.teal
     ];
     return colors[index % colors.length];
   };
@@ -139,30 +140,42 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
           <div className="absolute inset-0 z-10 p-4 flex flex-col overflow-visible">
             {/* TOP SECTION - Visual Identity */}
             <div className="relative mb-4">
-              {/* Profile Image with Paint Splash */}
+              {/* Profile Image with Watercolor Splash Border */}
               <div className="relative mb-2">
-                {/* Paint splash background */}
+                {/* Paint splash background - outer glow */}
                 <div 
-                  className="absolute -top-1 -left-3 w-24 h-24 rounded-full"
+                  className="absolute -top-2 -left-2 w-[90px] h-[90px] rounded-full"
                   style={{
-                    background: `linear-gradient(45deg, ${creativeColors.indigo}, ${creativeColors.violet})`,
-                    filter: "blur(10px)",
-                    opacity: 0.7,
-                    transform: "rotate(-5deg) scale(1.1)",
-                    animation: "pulse 5s infinite alternate ease-in-out"
+                    background: `radial-gradient(circle, ${creativeColors.lavender}90, ${creativeColors.skyBlue}40)`,
+                    filter: "blur(8px)",
+                    opacity: 0.8,
+                    transform: "scale(1.1)",
+                    animation: "pulse 6s infinite alternate ease-in-out"
                   }}
                 />
                 
-                {/* Profile image with polaroid frame */}
+                {/* Watercolor border - SVG-based painted circle */}
                 <div 
-                  className="relative w-20 h-20 rounded-lg overflow-hidden"
+                  className="absolute -top-1 -left-1 w-[80px] h-[80px]"
                   style={{
-                    padding: "3px",
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' width='200' height='200'%3E%3Cpath fill='none' stroke='%23${creativeColors.coral.replace('#', '')}' stroke-width='8' stroke-linecap='round' d='M27.8,99.4c0-39.7,32.1-72.1,71.6-72.1c17.2,0,33.3,6.3,45.6,16.7c12.6,10.6,22.6,25.7,23,43c0.2,8.6-1.6,17.1-5.3,24.9c-3.7,7.8-9.1,14.9-16.1,20.2c-13.9,10.6-32.4,15.6-50.6,12.7c-18.5-2.9-35.7-14.2-45.6-30.4C41.5,99.9,36.3,80,41,61.5' opacity='0.6' filter='blur(0.5px)' transform='rotate(76, 100, 100) translate(3, 0)'/%3E%3C/svg%3E")`,
+                    backgroundSize: "cover",
+                    transform: "rotate(23deg)",
+                    animation: "spin 20s infinite linear",
+                    opacity: 0.85
+                  }}
+                />
+                
+                {/* Profile image with circular frame */}
+                <div 
+                  className="relative w-[70px] h-[70px] rounded-full overflow-hidden"
+                  style={{
+                    padding: "0px",
                     background: "white",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05)",
-                    transform: "rotate(-3deg)",
-                    animation: hoveredSection === 'profile' ? 'tiltRight 3s infinite alternate ease-in-out' : 'none',
-                    transition: "transform 0.3s ease",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                    animation: hoveredSection === 'profile' ? 'float 3s infinite alternate ease-in-out' : 'none',
+                    transition: "all 0.3s ease",
+                    border: `3px solid white`
                   }}
                   onMouseEnter={() => setHoveredSection('profile')}
                   onMouseLeave={() => setHoveredSection(null)}
@@ -171,7 +184,7 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
                     <img 
                       src={userData.photoURL} 
                       alt={userData.name || "Profile"}
-                      className="h-full w-full object-cover rounded"
+                      className="h-full w-full object-cover"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src = "https://ui-avatars.com/api/?name=" + (userData.name || "User") + "&background=e6e6e6&color=5a5a5a";
@@ -181,54 +194,63 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
                     <img 
                       src={`https://ui-avatars.com/api/?name=${userData.name || "User"}&background=e6e6e6&color=5a5a5a`}
                       alt={userData.name || "Profile"} 
-                      className="h-full w-full object-cover rounded"
+                      className="h-full w-full object-cover"
                     />
                   )}
                 </div>
               </div>
               
-              {/* Name & Title with Styled Underline */}
-              <div className="relative">
-                {/* Colored Tape for Name */}
+              {/* Name & Title with Artistic Styling */}
+              <div className="relative ml-1 mt-2">
+                {/* Watercolor background for name */}
                 <div 
-                  className="absolute top-[10px] left-[-4px] right-[40%] h-[18px] rounded-sm z-0"
+                  className="absolute top-[3px] left-[-10px] right-[20%] h-[28px] z-0"
                   style={{
-                    background: creativeColors.amber,
-                    transform: "rotate(-1deg) skewX(-5deg)",
+                    background: `linear-gradient(90deg, ${creativeColors.lemon}80, ${creativeColors.peach}60)`,
+                    borderRadius: "4px",
+                    transform: "rotate(-1deg)",
+                    opacity: 0.7,
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.05)"
                   }}
                 />
                 
                 <h2 
-                  className="text-xl font-bold z-10 relative mb-1 px-1"
+                  className="text-xl font-bold z-10 relative mb-1.5 pl-2"
                   style={{
-                    fontFamily: "DM Serif Display, serif",
+                    fontFamily: "Playfair Display, serif",
                     color: creativeColors.darkText,
                     transform: "translateY(0)",
                     textShadow: "1px 1px 0 rgba(255, 255, 255, 0.8)",
+                    letterSpacing: "0.02em"
                   }}
                 >
                   {userData.name || "Your Name"}
                 </h2>
                 
-                {/* Colored Label for Title */}
+                {/* Artistic Badge for Job Title */}
                 <div 
-                  className="relative inline-block px-1 py-1 mt-1"
+                  className="relative inline-block px-2 py-1 mt-1 ml-4 overflow-visible"
                   style={{
-                    transform: "rotate(-1deg) translateX(5px)",
+                    transform: "rotate(-1deg)",
                   }}
                 >
+                  {/* Paint splatter behind title */}
                   <div 
-                    className="absolute inset-0 bg-opacity-30"
+                    className="absolute -left-1 -top-1 -right-1 -bottom-1 rounded-lg"
                     style={{
-                      backgroundColor: creativeColors.indigo,
-                      transform: "skewX(-5deg)",
-                      borderRadius: "2px",
+                      background: `radial-gradient(circle at 30% 50%, ${creativeColors.mint}95, ${creativeColors.skyBlue}50)`,
+                      opacity: 0.7,
+                      transform: "scale(1.1) rotate(2deg)",
+                      filter: "blur(2px)"
                     }}
                   />
+                  
                   <p 
-                    className="text-xs relative z-10 font-medium px-1"
+                    className="text-sm relative z-10 font-medium"
                     style={{
-                      color: creativeColors.darkText,
+                      fontFamily: "Poppins, sans-serif",
+                      color: "#444",
+                      textShadow: "0.5px 0.5px 0 rgba(255, 255, 255, 0.8)"
                     }}
                   >
                     {userData.title || "Add your designation"}
@@ -237,31 +259,69 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
               </div>
             </div>
             
-            {/* INDUSTRY & DOMAIN TAGS - Paint Stroke Badges */}
+            {/* INDUSTRY TAGS - Illustrated Icon Badge Style */}
             {industryTags.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mb-3">
+              <div className="flex flex-wrap gap-2 mb-3 mt-1">
                 {industryTags.map((tag, index) => (
                   <div 
                     key={index}
-                    className="flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium"
+                    className="flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-medium"
                     style={{
                       backgroundColor: getRandomColor(index),
-                      borderRadius: "3px",
+                      borderRadius: "16px",
                       transform: `rotate(${Math.random() * 2 - 1}deg)`,
                       color: "white",
-                      boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-                      opacity: hoveredSection === `tag-${index}` ? 1 : 0.85,
-                      transition: "all 0.2s ease",
+                      boxShadow: `0 2px 5px ${getRandomColor(index)}50, inset 0 1px 2px rgba(255,255,255,0.3)`,
+                      opacity: hoveredSection === `tag-${index}` ? 1 : 0.9,
+                      transition: "all 0.2s ease-in-out",
+                      border: "1px solid rgba(255,255,255,0.4)"
                     }}
                     onMouseEnter={() => setHoveredSection(`tag-${index}`)}
                     onMouseLeave={() => setHoveredSection(null)}
                   >
-                    <span className="mr-1">
+                    <div className="mr-1 p-1 bg-white bg-opacity-30 rounded-full flex items-center justify-center">
                       {getIndustryIcon(tag)}
-                    </span>
-                    {tag.trim()}
+                    </div>
+                    <span className="tracking-wide">{tag.trim()}</span>
                   </div>
                 ))}
+              </div>
+            )}
+            
+            {/* DOMAIN - Chip Style Tag with Glow */}
+            {userData.domain && (
+              <div className="mb-3">
+                <div 
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium"
+                  style={{
+                    backgroundColor: creativeColors.teal,
+                    color: "white",
+                    boxShadow: `0 2px 8px ${creativeColors.teal}80`,
+                    transform: hoveredSection === 'domain' ? 'translateY(-2px)' : 'translateY(0)',
+                    transition: "all 0.3s ease",
+                    border: "1px solid rgba(255,255,255,0.3)"
+                  }}
+                  onMouseEnter={() => setHoveredSection('domain')}
+                  onMouseLeave={() => setHoveredSection(null)}
+                >
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    viewBox="0 0 24 24" 
+                    width="14" 
+                    height="14" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="2" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
+                    <path d="M2 12h20"></path>
+                  </svg>
+                  
+                  <span>{userData.domain}</span>
+                </div>
               </div>
             )}
             
