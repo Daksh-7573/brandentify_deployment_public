@@ -5140,6 +5140,11 @@ ${extractedText.substring(0, 5000)}
   apiRouter.post("/musk/pitchdeck-upload", async (req: Request, res: Response) => {
     await handlePitchDeckUpload(req, res);
   });
+  
+  // Route for analyzing resume text directly (no file upload)
+  apiRouter.post("/musk/analyze-resume", async (req: Request, res: Response) => {
+    await handleAnalyzeResume(req, res);
+  });
 
   // Decision Engine routes for Smart Connect feature
   apiRouter.post("/smart-connect", handleSmartConnect);

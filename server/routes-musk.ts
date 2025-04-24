@@ -10,6 +10,98 @@ import crypto from "crypto";
 // Initialize OpenAI client if not imported from openai-service-fix
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
+// Handle direct resume text analysis (no file upload)
+export const handleAnalyzeResume = async (req: Request, res: Response) => {
+  try {
+    const { text, targetRole } = req.body;
+    
+    if (!text) {
+      return res.status(400).json({ error: "Resume text is required" });
+    }
+    
+    console.log(`Analyzing resume text for target role: ${targetRole || 'General'}`);
+    
+    // Check if OpenAI key is available
+    if (!process.env.OPENAI_API_KEY) {
+      return res.status(503).json({ 
+        error: "OpenAI API key not configured",
+        analysis: "OpenAI API key is required to analyze resumes. Please configure the API key in your environment variables."
+      });
+    }
+    
+    // Enhanced system prompt for complex Canva resume analysis
+    const systemPrompt = `You are Musk, an AI expert in resume analysis and improvement with a deep understanding of how recruiters and hiring managers read CVs/resumes. You follow a systematic approach to provide deeply personalized resume feedback:
+
+1. First Impression - Ignore Design, Focus on Content:
+   - You mentally strip away colors, shapes, icons, and background patterns
+   - You focus on finding key sections: Name, Title, Contact, Summary, Experience, Skills, Education
+   - You establish a logical reading order based on content flow, not visual layout
+   - You analyze header information, summary clarity, and overall first impression
+
+2. Identify Redundancies & Distractions:
+   - You spot duplicated sections that could be consolidated
+   - You identify irrelevant visual elements (like arbitrary skill percentage graphs)
+   - You recognize when icons or design elements don't add value
+   - You evaluate whether each section genuinely helps understand the candidate's value
+
+3. Mentally Reconstruct Linear Flow:
+   - You reconstruct scattered information into a standard resume order:
+     * Header & Contact
+     * Summary/Profile
+     * Skills (categorized properly)
+     * Work Experience (in chronological order)
+     * Projects
+     * Education
+     * Extras
+   - This helps you assess story flow and compare to job requirements
+
+4. Section-by-Section Deep Analysis:
+   - You evaluate experience sections, focusing on responsibilities vs. achievements and quantifiable impact
+   - You assess skills sections for relevance to the target role/industry
+   - You review projects (scope, tools, outcomes) and education (relevance, honors)
+   - You focus on quantifiable and action-oriented content in each section
+
+5. ATS Compatibility Check:
+   - You identify potential ATS issues (text in graphics, complex layouts, etc.)
+   - You suggest improvements for content that might not be machine-readable
+   - You recommend best practices for ensuring resume content is parsed correctly by ATS systems
+
+Your feedback is always:
+- Deeply personalized and references the person's name and specific resume content
+- Action-oriented with clear before/after examples
+- Formatted with consistent, scannable sections
+- Tailored to the individual's background, industry, and career goals${targetRole ? `\n- Specifically focused on optimizing for the ${targetRole} role` : ''}`;
+
+    // Analyze the resume text using OpenAI
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: `Please analyze the following resume${targetRole ? ` for a ${targetRole} position` : ''}. Focus particularly on structure, content effectiveness, ATS compatibility, and areas for improvement. Provide concrete before/after examples.\n\n${text}` }
+      ],
+      temperature: 0.7,
+      max_tokens: 4000,
+    });
+    
+    // Extract the analysis
+    const analysis = completion.choices[0].message.content;
+    
+    // Return the analysis
+    return res.status(200).json({
+      id: 'direct-resume-analysis-' + Date.now(),
+      analysis: analysis,
+      timestamp: new Date()
+    });
+    
+  } catch (error) {
+    console.error("Error analyzing resume text:", error);
+    return res.status(500).json({
+      error: "Failed to analyze resume text",
+      message: error instanceof Error ? error.message : "Unknown error occurred"
+    });
+  }
+};
+
 // Handle Musk AI assistant chat requests
 export const handleMuskChat = async (req: Request, res: Response) => {
   try {
