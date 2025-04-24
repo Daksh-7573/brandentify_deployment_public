@@ -293,20 +293,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
             >
               {userData.name || "Your Name"}
               
-              {/* Light reflection on text */}
-              <span 
-                className="absolute inset-0 block overflow-hidden"
-                style={{
-                  background: "linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%)",
-                  WebkitBackgroundClip: "text",
-                  backgroundClip: "text",
-                  color: "transparent",
-                  animation: "textSweep 5s infinite ease-in-out",
-                  animationDelay: "0.5s",
-                }}
-              >
-                {userData.name || "Your Name"}
-              </span>
+              {/* Removed light reflection animation on text */}
             </h2>
             
             {/* Job Title */}
@@ -462,7 +449,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
               
               {/* Contact Details - Only shown when expanded */}
               {contactExpanded && (
-                <div className="px-4 py-3 space-y-3">
+                <div className="px-4 py-3 pb-5 space-y-3">
                   {/* Email */}
                   <div className="flex items-center">
                     <div className="flex items-center gap-2">
@@ -563,19 +550,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
           100% { opacity: 0; transform: translate(-50%, -10px); }
         }
         
-        @keyframes reflectionSweep {
-          0% { transform: translateX(-100%) rotate(-45deg); }
-          50% { transform: translateX(100%) rotate(-45deg); }
-          50.1% { opacity: 0; }
-          100% { opacity: 0; }
-        }
-        
-        @keyframes textSweep {
-          0% { transform: translateX(-100%); }
-          40% { transform: translateX(100%); }
-          40.1% { opacity: 0; }
-          100% { opacity: 0; }
-        }
+        /* Removed animations that were causing distracting background effects */
         
         @keyframes rise {
           0% { transform: translateY(20px); opacity: 0; }
