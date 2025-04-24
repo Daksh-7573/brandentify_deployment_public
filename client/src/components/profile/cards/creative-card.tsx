@@ -445,16 +445,8 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
               </div>
             )}
             
-            {/* Jagged torn paper edge before contact section */}
-            <div className="relative py-1 mb-2">
-              <div 
-                className="absolute left-0 right-0 h-[8px]"
-                style={{
-                  backgroundImage: `url("data:image/svg+xml,%3Csvg width='100%25' height='10' viewBox='0 0 100 10' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0 L4 3 L7 1 L10 4 L13 2 L16 5 L20 0 L24 3 L28 1 L32 5 L36 3 L40 6 L43 2 L46 5 L50 1 L54 4 L57 2 L60 6 L63 0 L66 3 L69 1 L73 5 L77 2 L81 6 L85 3 L88 7 L92 2 L96 6 L100 3 L100 10 L0 10 Z' fill='${creativeColors.cream.replace('#', '%23')}' /%3E%3C/svg%3E")`,
-                  top: 0
-                }}
-              />
-            </div>
+            {/* Small spacing between location and contact section */}
+            <div className="py-1 mb-0.5"></div>
             
             {/* CONTACT SECTION - With animated icons */}
             <div className="space-y-1.5 mt-auto">
