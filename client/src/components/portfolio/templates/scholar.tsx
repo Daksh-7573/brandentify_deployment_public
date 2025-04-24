@@ -350,27 +350,28 @@ export default function Scholar({
     }
   };
 
-  // Group skills by category
+  // Group skills by category with safety checks
+  const safeSkills = userSkills || [];
   const skillCategories = {
-    technical: userSkills.filter(skill => 
-      skill.name.toLowerCase().includes('programming') || 
-      skill.name.toLowerCase().includes('technical') ||
-      skill.name.toLowerCase().includes('coding') ||
-      skill.name.toLowerCase().includes('development')
+    technical: safeSkills.filter(skill => 
+      skill && skill.name && skill.name.toLowerCase().includes('programming') || 
+      (skill && skill.name && skill.name.toLowerCase().includes('technical')) ||
+      (skill && skill.name && skill.name.toLowerCase().includes('coding')) ||
+      (skill && skill.name && skill.name.toLowerCase().includes('development'))
     ),
-    soft: userSkills.filter(skill => 
-      skill.name.toLowerCase().includes('communication') || 
-      skill.name.toLowerCase().includes('leadership') ||
-      skill.name.toLowerCase().includes('teamwork') ||
-      skill.name.toLowerCase().includes('collaboration')
+    soft: safeSkills.filter(skill => 
+      skill && skill.name && skill.name.toLowerCase().includes('communication') || 
+      (skill && skill.name && skill.name.toLowerCase().includes('leadership')) ||
+      (skill && skill.name && skill.name.toLowerCase().includes('teamwork')) ||
+      (skill && skill.name && skill.name.toLowerCase().includes('collaboration'))
     ),
-    tools: userSkills.filter(skill => 
-      skill.name.toLowerCase().includes('tool') || 
-      skill.name.toLowerCase().includes('software') ||
-      skill.name.toLowerCase().includes('platform')
+    tools: safeSkills.filter(skill => 
+      skill && skill.name && skill.name.toLowerCase().includes('tool') || 
+      (skill && skill.name && skill.name.toLowerCase().includes('software')) ||
+      (skill && skill.name && skill.name.toLowerCase().includes('platform'))
     ),
-    other: userSkills.filter(skill => 
-      !skill.name.toLowerCase().includes('programming') && 
+    other: safeSkills.filter(skill => 
+      skill && skill.name && !skill.name.toLowerCase().includes('programming') && 
       !skill.name.toLowerCase().includes('technical') &&
       !skill.name.toLowerCase().includes('coding') &&
       !skill.name.toLowerCase().includes('development') &&
@@ -384,10 +385,12 @@ export default function Scholar({
     )
   };
 
-  // Sort educations by date (most recent first)
-  const sortedEducations = [...userEducations].sort((a, b) => 
-    new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
-  );
+  // Sort educations by date (most recent first) with safety check
+  const sortedEducations = userEducations && userEducations.length > 0 
+    ? [...userEducations].sort((a, b) => 
+        new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+      )
+    : [];
 
   // Check if we have any data sections to display
   const hasSkills = userSkills && userSkills.length > 0;
@@ -916,12 +919,10 @@ export default function Scholar({
               
               <div>
                 <PortfolioCtaButtons 
-                  userInfo={userInfo}
+                  userEmail={userInfo?.email}
+                  userName={userInfo?.name}
                   variant="creative"
-                  btnClass="group flex items-center gap-2 text-sm py-2 px-4 rounded-md transition-all transform hover:translate-x-1 shadow-sm"
-                  mentorBtnClass="bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 hover:text-blue-800"
-                  resumeBtnClass="bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 hover:text-indigo-800"
-                  connectBtnClass="bg-indigo-600 hover:bg-indigo-700 text-white"
+                  className="space-x-3"
                 />
               </div>
             </div>
