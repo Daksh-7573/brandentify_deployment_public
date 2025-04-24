@@ -150,13 +150,29 @@ export default function Projects() {
     refetchInterval: 1000, // Poll every second to keep data fresh
   });
   
-  // Force a direct fetch every time the component renders
+  // Enhanced direct fetch with retry mechanism
   useEffect(() => {
-    async function directFetch() {
+    // Get the numeric user ID if available from auth context
+    const userNumericId = user?.id || 2;
+    console.log("Projects component - Using userNumericId:", userNumericId);
+    
+    // Track if component is mounted to prevent state updates after unmount
+    let isMounted = true;
+    const MAX_RETRIES = 3;
+    const RETRY_DELAY = 1000; // 1 second between retries
+    const POLL_INTERVAL = 1000; // 1 second polling interval
+    
+    async function directFetch(retryCount = 0) {
       const timestamp = new Date().getTime(); // Add timestamp to prevent caching
-      console.log(`Projects - Directly fetching latest projects data (${timestamp})`);
+      console.log(`Projects - Directly fetching latest projects data (${timestamp}), attempt: ${retryCount + 1}`);
+      
       try {
-        const response = await fetch(`/api/users/${userId}/projects?_=${timestamp}`, {
+        // Try numeric ID first if available
+        const endpointUrl = userNumericId 
+          ? `/api/users/${userNumericId}/projects?_=${timestamp}` 
+          : `/api/users/${userId}/projects?_=${timestamp}`;
+        
+        const response = await fetch(endpointUrl, {
           method: 'GET',
           headers: { 
             'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -164,11 +180,17 @@ export default function Projects() {
             'Expires': '0'
           }
         });
+        
+        // Check if response is OK
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
         const freshData = await response.json();
         console.log("Projects - Got direct fetch data:", freshData);
         
-        // Force update (only if there are actual changes)
-        if (freshData && Array.isArray(freshData)) {
+        // Only process if component is still mounted and data is valid
+        if (isMounted && freshData && Array.isArray(freshData)) {
           // Normalize data to ensure mediaUrls is always an array
           const normalizedData = freshData.map(project => {
             // If mediaUrls is a string (JSON), parse it into an array
@@ -188,25 +210,78 @@ export default function Projects() {
           const newProjectsStr = JSON.stringify(normalizedData);
           
           if (currentProjectsStr !== newProjectsStr) {
-            console.log("Projects direct fetch found changes, updating state");
-            setProjects([...normalizedData]);
-            // Update the ref as well
-            latestProjectsRef.current = [...normalizedData];
+            console.log("Projects received updated data:", normalizedData);
+            console.log("Projects data has changes, updating state");
+            
+            if (isMounted) {
+              setProjects([...normalizedData]);
+              // Update the ref as well
+              latestProjectsRef.current = [...normalizedData];
+            }
           } else {
-            console.log("Projects direct fetch found no changes, skipping update");
+            console.log("Projects data unchanged, skipping state update");
           }
         }
       } catch (error) {
-        console.error("Error during direct projects fetch:", error);
+        console.error(`Error fetching projects (attempt ${retryCount + 1}):`, error);
+        
+        // Try alternative endpoint on error if we're using firebaseUid
+        if (userId !== userNumericId && retryCount === 0) {
+          console.log("Projects - Trying alternative endpoint with numeric ID");
+          try {
+            const fallbackResponse = await fetch(`/api/users/${userNumericId}/projects?_=${timestamp}`, {
+              method: 'GET',
+              headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' }
+            });
+            
+            if (fallbackResponse.ok) {
+              const fallbackData = await fallbackResponse.json();
+              console.log("Projects - Got fallback data with numeric ID:", fallbackData);
+              
+              if (isMounted && fallbackData && Array.isArray(fallbackData)) {
+                // Process the data the same way as above
+                const normalizedData = fallbackData.map(project => {
+                  if (project.mediaUrls && typeof project.mediaUrls === 'string') {
+                    try {
+                      project.mediaUrls = JSON.parse(project.mediaUrls);
+                    } catch (error) {
+                      console.error("Error parsing mediaUrls:", error);
+                      project.mediaUrls = [];
+                    }
+                  }
+                  return project;
+                });
+                
+                setProjects([...normalizedData]);
+                latestProjectsRef.current = [...normalizedData];
+                return; // Success with fallback, no need to retry
+              }
+            }
+          } catch (fallbackError) {
+            console.error("Error with fallback projects endpoint:", fallbackError);
+          }
+        }
+        
+        // Retry logic
+        if (retryCount < MAX_RETRIES && isMounted) {
+          console.log(`Projects - Retrying fetch in ${RETRY_DELAY}ms (${retryCount + 1}/${MAX_RETRIES})`);
+          setTimeout(() => directFetch(retryCount + 1), RETRY_DELAY);
+        }
       }
     }
     
+    // Initial fetch
     directFetch();
     
-    // Poll every second
-    const interval = setInterval(directFetch, 1000);
-    return () => clearInterval(interval);
-  }, [userId, projects]); // Depend on both userId and projects state
+    // Set up polling with a more reasonable interval
+    const interval = setInterval(() => directFetch(), POLL_INTERVAL);
+    
+    // Cleanup function to prevent memory leaks
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, [userId, user?.id, projects]); // Include userNumericId in dependencies
   
   // Initialize projects from serverProjects on first load
   useEffect(() => {

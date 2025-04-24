@@ -653,15 +653,19 @@ export default function CorporateExecutive({
                   
                   {/* Proficiency Level */}
                   <div className="flex items-center gap-1">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <div 
-                        key={i} 
-                        className={`h-1 rounded-full ${i < (skill.proficiency || 3) ? 'bg-[#6a0dad]' : 'bg-gray-200'}`} 
-                        style={{ width: '12px' }}
-                      ></div>
-                    ))}
+                    {Array.from({ length: 5 }).map((_, i) => {
+                      // Convert percentage (0-100) to 5-star scale (0-5)
+                      const proficiencyLevel = skill.proficiency ? Math.ceil((skill.proficiency / 100) * 5) : 3;
+                      return (
+                        <div 
+                          key={i} 
+                          className={`h-1 rounded-full ${i < proficiencyLevel ? 'bg-[#6a0dad]' : 'bg-gray-200'}`} 
+                          style={{ width: '12px' }}
+                        ></div>
+                      );
+                    })}
                     <span className="ml-2 text-xs text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
-                      {skill.proficiency ? `${skill.proficiency}/5` : ''}
+                      {skill.proficiency ? `${Math.ceil((skill.proficiency / 100) * 5)}/5` : ''}
                     </span>
                   </div>
                 </div>

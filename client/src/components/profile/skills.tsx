@@ -47,13 +47,24 @@ export default function Skills() {
     refetchInterval: 1000, // Poll every second to keep data fresh
   });
   
-  // Force a direct fetch every time the component renders
+  // Enhanced direct fetch with retry mechanism
   useEffect(() => {
-    async function directFetch() {
+    // Track if component is mounted to prevent state updates after unmount
+    let isMounted = true;
+    const MAX_RETRIES = 3;
+    const RETRY_DELAY = 1000; // 1 second between retries
+    
+    async function directFetch(retryCount = 0) {
       const timestamp = new Date().getTime(); // Add timestamp to prevent caching
-      console.log(`Skills - Directly fetching latest skills data (${timestamp})`);
+      console.log(`Skills - Directly fetching latest skills data (${timestamp}), attempt: ${retryCount + 1}`);
+      
       try {
-        const response = await fetch(`/api/users/${userId}/skills?_=${timestamp}`, {
+        // Try numeric ID first if available
+        const endpointUrl = userNumericId 
+          ? `/api/users/${userNumericId}/skills?_=${timestamp}` 
+          : `/api/users/${userId}/skills?_=${timestamp}`;
+        
+        const response = await fetch(endpointUrl, {
           method: 'GET',
           headers: { 
             'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -61,18 +72,59 @@ export default function Skills() {
             'Expires': '0'
           }
         });
+        
+        // Check if response is OK
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
         const freshData = await response.json();
         console.log("Skills - Got direct fetch data:", freshData);
-        // Force update
-        if (freshData && Array.isArray(freshData)) {
+        
+        // Only update state if component is still mounted
+        if (isMounted && freshData && Array.isArray(freshData)) {
           setSkills(freshData);
         }
       } catch (error) {
-        console.error("Error fetching skills:", error);
+        console.error(`Error fetching skills (attempt ${retryCount + 1}):`, error);
+        
+        // Try alternative endpoint on error if we're using firebaseUid
+        if (userId !== userNumericId && retryCount === 0) {
+          console.log("Skills - Trying alternative endpoint with numeric ID");
+          try {
+            const fallbackResponse = await fetch(`/api/users/${userNumericId}/skills?_=${timestamp}`, {
+              method: 'GET',
+              headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' }
+            });
+            
+            if (fallbackResponse.ok) {
+              const fallbackData = await fallbackResponse.json();
+              console.log("Skills - Got fallback data with numeric ID:", fallbackData);
+              if (isMounted && fallbackData && Array.isArray(fallbackData)) {
+                setSkills(fallbackData);
+                return; // Success with fallback, no need to retry
+              }
+            }
+          } catch (fallbackError) {
+            console.error("Error with fallback skills endpoint:", fallbackError);
+          }
+        }
+        
+        // Retry logic
+        if (retryCount < MAX_RETRIES && isMounted) {
+          console.log(`Skills - Retrying fetch in ${RETRY_DELAY}ms (${retryCount + 1}/${MAX_RETRIES})`);
+          setTimeout(() => directFetch(retryCount + 1), RETRY_DELAY);
+        }
       }
     }
+    
     directFetch();
-  }, [userId]);
+    
+    // Cleanup function to prevent memory leaks
+    return () => {
+      isMounted = false;
+    };
+  }, [userId, userNumericId]);
   
   const [skills, setSkills] = useState<SkillItem[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
