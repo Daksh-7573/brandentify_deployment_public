@@ -4,7 +4,7 @@ import { Mail, Phone, Globe, Briefcase, MapPin, Code, Building2 } from "lucide-r
 import ThreeDAnimatedCard from "./cards/3d-animated-card";
 import HolographicCard from "./cards/holographic-card";
 import NeoGlowCard from "./cards/neoglow-card";
-import CreativeCard from "./cards/creative-card";
+import CreativeCard from "./cards/creative-card-new";
 import ArtisticCard from "./cards/artistic-card";
 import ProfessionalCardRenewed from "./cards/professional-card-renewed";
 

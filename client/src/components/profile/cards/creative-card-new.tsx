@@ -1,18 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { 
   Mail, 
-  Phone, 
   MapPin, 
   Building2, 
-  Copy, 
-  Share2,
   Sparkles,
   Palette,
   Briefcase,
   TrendingUp,
   Headphones,
   FileBadge,
-  Clipboard,
   GraduationCap,
   Link2
 } from "lucide-react";
@@ -69,9 +65,6 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
   const [hoveredSection, setHoveredSection] = useState<string | null>(null);
   const [copySuccess, setCopySuccess] = useState<string | null>(null);
   
-  // Format profile link
-  const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : (userData.username || 'user')}`;
-  
   // Define industry icons and tags
   const getIndustryIcon = (tag: string) => {
     const lowerTag = tag.toLowerCase();
@@ -86,7 +79,7 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
     return <Headphones className="w-3 h-3" />;
   };
   
-  const industryTags = userData.industry ? userData.industry.split(/,\\s*/) : [];
+  const industryTags = userData.industry ? userData.industry.split(/,\s*/) : [];
   if (!industryTags.length && userData.industry) {
     industryTags.push(userData.industry);
   }
@@ -140,8 +133,8 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
     }
   }, [particles.length]);
   
-  // Define custom animation keyframes
-  const animationKeyframes = `
+  // Custom animations
+  const customAnimations = `
     @keyframes fadeInOut {
       0% { opacity: 0; transform: translateY(10px); }
       20% { opacity: 1; transform: translateY(0); }
@@ -179,11 +172,10 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
   
   return (
     <div className="creative-card relative w-full h-full select-none">
-      {/* Add animation keyframes */}
-      <style dangerouslySetInnerHTML={{ __html: animationKeyframes }} />
-      {/* Main Card Container */}
+      <style dangerouslySetInnerHTML={{ __html: customAnimations }} />
+      
       <div className="w-full h-full relative">
-        {/* Card */}
+        {/* Card Background */}
         <div 
           className="absolute inset-0 rounded-xl overflow-hidden"
           style={{
@@ -196,6 +188,7 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
             className="absolute inset-0 opacity-80 pointer-events-none"
             style={{
               background: creativeColors.primary.gradient,
+              backgroundSize: "200% 200%",
               mixBlendMode: "soft-light",
               animation: "gradient-shift 15s ease infinite alternate"
             }}
@@ -365,7 +358,7 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
                       className="flex items-center gap-1 px-3 py-1 rounded-full"
                       style={{
                         backgroundColor: getRandomColor(index),
-                        transform: `rotate(${Math.random() * 2 - 1}deg)`,
+                        transform: `rotate(${(Math.random() * 2 - 1)}deg)`,
                         color: "white",
                         boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
                         border: "1px solid rgba(255,255,255,0.2)",
@@ -546,155 +539,6 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
                 View Portfolio
               </button>
             </div>
-            
-            {/* Copy notification popup */}
-            {copySuccess && (
-              <div 
-                className="absolute bottom-4 left-1/2 transform -translate-x-1/2 px-3 py-1 rounded-full text-xs font-medium bg-black bg-opacity-80 text-white"
-                style={{
-                  animation: "fadeInOut 2s forwards",
-                  zIndex: 20
-                }}
-              >
-                {copySuccess}
-              </div>
-            )}
-              
-              {/* Email with envelope animation */}
-              <div 
-                className="flex items-center justify-between px-2 py-1.5 rounded-lg"
-                style={{
-                  backgroundColor: "white",
-                  border: "1px solid rgba(0,0,0,0.05)",
-                  boxShadow: "0 2px 5px rgba(0,0,0,0.05)",
-                  transform: hoveredSection === 'email' ? 'translateX(3px)' : 'translateX(0)',
-                  transition: "transform 0.3s ease",
-                }}
-                onMouseEnter={() => setHoveredSection('email')}
-                onMouseLeave={() => setHoveredSection(null)}
-              >
-                <div className="flex items-center gap-2">
-                  <div 
-                    className="w-6 h-6 rounded-full flex items-center justify-center"
-                    style={{
-                      backgroundColor: creativeColors.coral,
-                      animation: hoveredSection === 'email' ? 'pulse 1.5s infinite' : 'none'
-                    }}
-                  >
-                    <Mail className="h-3 w-3 text-white" />
-                  </div>
-                  <span className="text-xs truncate max-w-[140px] font-medium">
-                    {userData.email}
-                  </span>
-                </div>
-                <button
-                  className="p-1 rounded hover:bg-gray-100 transition-colors"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    copyToClipboard(userData.email, "Email");
-                  }}
-                >
-                  <Copy className="h-3 w-3 text-gray-600" />
-                </button>
-              </div>
-              
-              {/* Phone with pulse animation */}
-              {userData.phoneNumber && (
-                <div 
-                  className="flex items-center justify-between px-2 py-1.5 rounded-lg"
-                  style={{
-                    backgroundColor: "white",
-                    border: "1px solid rgba(0,0,0,0.05)",
-                    boxShadow: "0 2px 5px rgba(0,0,0,0.05)",
-                    transform: hoveredSection === 'phone' ? 'translateX(3px)' : 'translateX(0)',
-                    transition: "transform 0.3s ease",
-                  }}
-                  onMouseEnter={() => setHoveredSection('phone')}
-                  onMouseLeave={() => setHoveredSection(null)}
-                >
-                  <div className="flex items-center gap-2">
-                    <div 
-                      className="w-6 h-6 rounded-full flex items-center justify-center"
-                      style={{
-                        backgroundColor: creativeColors.indigo,
-                        animation: hoveredSection === 'phone' ? 'buzz 0.3s infinite' : 'none'
-                      }}
-                    >
-                      <Phone className="h-3 w-3 text-white" />
-                    </div>
-                    <span className="text-xs truncate max-w-[140px] font-medium">
-                      {userData.phoneNumber}
-                    </span>
-                  </div>
-                  <button
-                    className="p-1 rounded hover:bg-gray-100 transition-colors"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      copyToClipboard(userData.phoneNumber || "", "Phone");
-                    }}
-                  >
-                    <Copy className="h-3 w-3 text-gray-600" />
-                  </button>
-                </div>
-              )}
-              
-              {/* Website/Profile Link */}
-              <div 
-                className="flex items-center justify-between px-2 py-1.5 rounded-lg"
-                style={{
-                  backgroundColor: "white",
-                  border: "1px solid rgba(0,0,0,0.05)",
-                  boxShadow: "0 2px 5px rgba(0,0,0,0.05)",
-                  transform: hoveredSection === 'website' ? 'translateX(3px)' : 'translateX(0)',
-                  transition: "transform 0.3s ease",
-                }}
-                onMouseEnter={() => setHoveredSection('website')}
-                onMouseLeave={() => setHoveredSection(null)}
-              >
-                <div className="flex items-center gap-2">
-                  <div 
-                    className="w-6 h-6 rounded-full flex items-center justify-center"
-                    style={{
-                      backgroundColor: creativeColors.skyBlue,
-                    }}
-                  >
-                    <svg 
-                      xmlns="http://www.w3.org/2000/svg" 
-                      width="12" 
-                      height="12" 
-                      viewBox="0 0 24 24" 
-                      fill="none" 
-                      stroke="currentColor" 
-                      strokeWidth="2" 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round"
-                      className="text-white"
-                      style={{
-                        animation: hoveredSection === 'website' ? 'spin 4s linear infinite' : 'none'
-                      }}
-                    >
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <line x1="2" y1="12" x2="22" y2="12"></line>
-                      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                    </svg>
-                  </div>
-                  <span className="text-xs truncate max-w-[140px] font-medium">
-                    {profileLink}
-                  </span>
-                </div>
-                <button
-                  className="p-1 rounded hover:bg-gray-100 transition-colors"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    copyToClipboard(`https://${profileLink}`, "Link");
-                  }}
-                >
-                  <Copy className="h-3 w-3 text-gray-600" />
-                </button>
-              </div>
-            </div>
-            
-
           </div>
         </div>
       </div>
@@ -702,80 +546,14 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
       {/* Copy Success Message */}
       {copySuccess && (
         <div 
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gray-800 text-white px-3 py-1 rounded-full text-xs z-50"
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black bg-opacity-80 text-white px-3 py-1.5 rounded-full text-xs z-50"
           style={{
-            boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
             animation: "fadeInOut 2s forwards"
           }}
         >
           {copySuccess}
         </div>
       )}
-      
-      {/* Animations */}
-      <style>
-        {`
-          @keyframes fadeInOut {
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
-            15% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            85% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
-          }
-          
-          @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-          }
-          
-          @keyframes buzz {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-1px); }
-            50% { transform: translateX(0); }
-            75% { transform: translateX(1px); }
-            100% { transform: translateX(0); }
-          }
-          
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-          
-          @keyframes tiltRight {
-            0% { transform: rotate(-3deg); }
-            100% { transform: rotate(0deg); }
-          }
-          
-          @keyframes tiltLeft {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(-5px) rotate(-1deg); }
-          }
-          
-          /* Font imports */
-          @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;700&display=swap');
-          
-          /* Print styles */
-          @media print {
-            body * {
-              visibility: hidden;
-            }
-            .creative-card, .creative-card * {
-              visibility: visible;
-              transform: none !important;
-              animation: none !important;
-            }
-            .creative-card {
-              position: absolute;
-              left: 0;
-              top: 0;
-              width: 100%;
-              height: 100%;
-              -webkit-print-color-adjust: exact !important;
-              print-color-adjust: exact !important;
-            }
-          }
-        `}
-      </style>
     </div>
   );
 };
