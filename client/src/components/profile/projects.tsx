@@ -24,7 +24,8 @@ import {
   CheckCircle, 
   Clock,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Image
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -654,6 +655,11 @@ export default function Projects() {
             mediaFormData.append('projectVideo', projectVideo);
           }
           
+          // Add selected thumbnail index if available
+          if (selectedThumbnailIndex >= 0 && selectedThumbnailIndex < projectImages.length) {
+            mediaFormData.append('thumbnailIndex', selectedThumbnailIndex.toString());
+          }
+          
           mediaFormData.append('projectId', projectData.id.toString());
           mediaFormData.append('imageCount', projectImages.length.toString());
           
@@ -711,6 +717,11 @@ export default function Projects() {
             mediaFormData.append('projectVideo', projectVideo);
           }
           
+          // Add selected thumbnail index if available
+          if (selectedThumbnailIndex >= 0 && selectedThumbnailIndex < projectImages.length) {
+            mediaFormData.append('thumbnailIndex', selectedThumbnailIndex.toString());
+          }
+          
           mediaFormData.append('projectId', projectData.id.toString());
           mediaFormData.append('imageCount', projectImages.length.toString());
           
@@ -746,6 +757,7 @@ export default function Projects() {
       setProjectImages([]);
       setProjectVideo(null);
       setMediaErrors(null);
+      setSelectedThumbnailIndex(-1);
       
       // Reset all file input elements
       if (fileInputRef.current) {
@@ -871,7 +883,7 @@ export default function Projects() {
   };
 
   const handleDeleteEndorsement = async (endorsementId: number) => {
-    if (!confirm('Are you sure you want to remove this endorsement?')) return;
+    if (!confirm('Are you sure you want to remove this client endorsement?')) return;
     
     try {
       await apiRequest(
@@ -884,474 +896,410 @@ export default function Projects() {
       
       toast({
         title: "Success",
-        description: "Endorsement removed successfully!",
+        description: "Client endorsement removed successfully!",
       });
     } catch (error) {
-      console.error('Error removing endorsement:', error);
+      console.error('Error removing client endorsement:', error);
       toast({
         title: "Error",
-        description: "Failed to remove endorsement. Please try again.",
+        description: "Failed to remove client endorsement. Please try again.",
         variant: "destructive",
       });
     }
   };
   
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return 'Present';
-    try {
-      return format(new Date(dateString), 'MMM yyyy');
-    } catch (error) {
-      return dateString;
-    }
+  // Lightbox functions
+  const openLightbox = (mediaUrls: string[], startIndex = 0) => {
+    if (!mediaUrls || mediaUrls.length === 0) return;
+    setLightboxImages(mediaUrls);
+    setCurrentImageIndex(startIndex);
+    setIsLightboxOpen(true);
+  };
+  
+  const closeLightbox = () => {
+    setIsLightboxOpen(false);
+  };
+  
+  const goToPrevious = () => {
+    setCurrentImageIndex((prevIndex) => (prevIndex - 1 + lightboxImages.length) % lightboxImages.length);
+  };
+  
+  const goToNext = () => {
+    setCurrentImageIndex((prevIndex) => (prevIndex + 1) % lightboxImages.length);
   };
 
   return (
-    <>
-      <Card className="mb-6">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <div>
-            <CardTitle className="text-xl font-bold">Showcase</CardTitle>
-            <CardDescription>Showcase your professional projects and collaborations</CardDescription>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 gap-1"
-            onClick={() => {
-              projectForm.reset({
-                title: '',
-                description: '',
-                startDate: format(new Date(), 'yyyy-MM-dd'),
-                projectUrl: '',
-                category: '',
-                industry: null,
-                mediaUrls: null
-              });
-              setIsAddModalOpen(true);
-            }}
-          >
-            <Plus className="h-3.5 w-3.5" />
+    <Card className="flex-1">
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <CardTitle>Project Showcase</CardTitle>
+        <div className="flex items-center gap-2">
+          <Button onClick={handleAdd} variant="outline" size="sm" className="h-8 gap-1">
+            <Plus className="w-4 h-4" />
             Add Project
           </Button>
-        </CardHeader>
-        
-        <CardContent>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
           {isLoading ? (
-            <div className="flex justify-center py-6">
-              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            <div className="flex items-center justify-center h-40">
+              <div className="flex flex-col items-center">
+                <Loader2 className="w-6 h-6 text-primary animate-spin mb-2" />
+                <p className="text-sm text-muted-foreground">Loading your project showcase...</p>
+              </div>
             </div>
           ) : displayProjects && displayProjects.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {displayProjects.map((project) => (
-                <div key={project.id} className="border border-gray-200 rounded-md overflow-hidden">
+                <div key={project.id} className="border rounded-lg overflow-hidden shadow-sm group relative">
                   {/* Project Thumbnail */}
-                  <div className="flex justify-center items-center p-4">
-                    <div className="w-1/2 aspect-square overflow-hidden bg-muted rounded-md shadow-sm">
-                      {/* 
-                        Display priority:
-                        1. Always use thumbnailUrl first (user-selected featured image)
-                        2. If no thumbnailUrl but mediaUrls exist, show the first media URL
-                        3. If neither exist, show a fallback icon
-                      */}
-                      {project.thumbnailUrl && project.thumbnailUrl !== "null" && project.thumbnailUrl !== null ? (
-                        <>
-                          <div className="relative">
-                            <img 
-                              src={project.thumbnailUrl}
-                              alt={`${project.title} thumbnail`} 
-                              className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
-                              onError={(e) => {
-                                console.error(`Thumbnail URL failed to load: ${project.thumbnailUrl}`);
-                                // Hide this image
-                                (e.target as HTMLImageElement).style.display = 'none';
-                                // Try to find a fallback
-                                if (project.mediaUrls && 
-                                   ((Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0) || 
-                                    (typeof project.mediaUrls === 'string' && (
-                                      project.mediaUrls.indexOf('http') >= 0 || 
-                                      project.mediaUrls.indexOf('[') === 0)))) {
-                                  const imgElement = document.createElement('img');
-                                  const mediaUrl = Array.isArray(project.mediaUrls) 
-                                    ? project.mediaUrls[0] 
-                                    : typeof project.mediaUrls === 'string' && project.mediaUrls.startsWith('[')
-                                      ? JSON.parse(project.mediaUrls)[0]
-                                      : String(project.mediaUrls);
-                                  
-                                  imgElement.src = mediaUrl;
-                                  imgElement.alt = `${project.title} media fallback`;
-                                  imgElement.className = "w-full h-full object-cover hover:scale-105 transition-transform duration-200";
-                                  (e.target as HTMLImageElement).parentNode?.appendChild(imgElement);
-                                }
-                              }}
-                            />
-                            <div className="absolute top-0 right-0 bg-black/60 text-white text-xs px-2 py-1 rounded-bl-md">
-                              Featured
-                            </div>
-                          </div>
-                        </>
-                      ) : project.mediaUrls && 
-                            ((Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0) || 
-                             (typeof project.mediaUrls === 'string' && (
-                               project.mediaUrls.indexOf('http') >= 0 || 
-                               project.mediaUrls.indexOf('[') === 0))) ? (
-                        <>
-                          <img 
-                            src={
-                              Array.isArray(project.mediaUrls) 
-                                ? project.mediaUrls[0] 
-                                : typeof project.mediaUrls === 'string' && project.mediaUrls.startsWith('[')
-                                  ? JSON.parse(project.mediaUrls)[0]
-                                  : String(project.mediaUrls)
+                  <div className="relative w-full h-48 bg-muted flex items-center justify-center overflow-hidden">
+                    {project.thumbnailUrl ? (
+                      <img 
+                        src={
+                          project.thumbnailUrl.startsWith('/uploads/') 
+                            ? project.thumbnailUrl 
+                            : project.thumbnailUrl
+                        }
+                        alt={project.title} 
+                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
+                        onError={(e) => {
+                          console.error("Thumbnail image failed to load");
+                          (e.target as HTMLImageElement).style.display = 'none';
+                        }}
+                      />
+                    ) : project.mediaUrls && (
+                      (Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0) || 
+                      (typeof project.mediaUrls === 'string' && 
+                       (project.mediaUrls.indexOf('http') >= 0 || 
+                        project.mediaUrls.indexOf('[') === 0))) ? (
+                      <>
+                        <img 
+                          src={
+                            Array.isArray(project.mediaUrls) 
+                              ? project.mediaUrls[0] 
+                              : typeof project.mediaUrls === 'string' && project.mediaUrls.startsWith('[')
+                                ? JSON.parse(project.mediaUrls)[0]
+                                : String(project.mediaUrls)
+                          }
+                          alt={`${project.title} media image`} 
+                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
+                          onError={(e) => {
+                            console.error("Media URL image failed to load");
+                            // Hide this image
+                            (e.target as HTMLImageElement).style.display = 'none';
+                            
+                            // Fall back to thumbnail if available
+                            if (project.thumbnailUrl && project.thumbnailUrl !== "null" && project.thumbnailUrl !== null) {
+                              const imgElement = document.createElement('img');
+                              imgElement.src = project.thumbnailUrl;
+                              imgElement.alt = `${project.title} thumbnail fallback`;
+                              imgElement.className = "w-full h-full object-cover hover:scale-105 transition-transform duration-200";
+                              (e.target as HTMLImageElement).parentNode?.appendChild(imgElement);
+                            } else if (project.thumbnailFile && project.thumbnailFile !== "null" && project.thumbnailFile !== null) {
+                              const imgElement = document.createElement('img');
+                              imgElement.src = `/uploads/projects/${project.thumbnailFile}`;
+                              imgElement.alt = `${project.title} thumbnail fallback`;
+                              imgElement.className = "w-full h-full object-cover hover:scale-105 transition-transform duration-200";
+                              (e.target as HTMLImageElement).parentNode?.appendChild(imgElement);
                             }
-                            alt={`${project.title} media image`} 
-                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
-                            onError={(e) => {
-                              console.error("Media URL image failed to load");
-                              // Hide this image
-                              (e.target as HTMLImageElement).style.display = 'none';
-                              
-                              // Fall back to thumbnail if available
-                              if (project.thumbnailUrl && project.thumbnailUrl !== "null" && project.thumbnailUrl !== null) {
-                                const imgElement = document.createElement('img');
-                                imgElement.src = project.thumbnailUrl;
-                                imgElement.alt = `${project.title} thumbnail fallback`;
-                                imgElement.className = "w-full h-full object-cover hover:scale-105 transition-transform duration-200";
-                                (e.target as HTMLImageElement).parentNode?.appendChild(imgElement);
-                              } else if (project.thumbnailFile && project.thumbnailFile !== "null" && project.thumbnailFile !== null) {
-                                const imgElement = document.createElement('img');
-                                imgElement.src = `/uploads/projects/${project.thumbnailFile}`;
-                                imgElement.alt = `${project.title} thumbnail fallback`;
-                                imgElement.className = "w-full h-full object-cover hover:scale-105 transition-transform duration-200";
-                                (e.target as HTMLImageElement).parentNode?.appendChild(imgElement);
-                              }
-                            }}
-                          />
-                          <span className="hidden">Using media URL as primary</span>
-                        </>
-                      ) : project.thumbnailUrl && project.thumbnailUrl !== "null" && project.thumbnailUrl !== null ? (
-                        <>
-                          <img 
-                            src={project.thumbnailUrl}
-                            alt={`${project.title} thumbnail`} 
-                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
-                            onError={(e) => {
-                              console.error(`Thumbnail URL failed to load: ${project.thumbnailUrl}`);
-                              // Hide this image
-                              (e.target as HTMLImageElement).style.display = 'none';
-                              // Try to find a fallback
-                              if (project.thumbnailFile && project.thumbnailFile !== "null") {
-                                const imgElement = document.createElement('img');
-                                imgElement.src = `/uploads/projects/${project.thumbnailFile}`;
-                                imgElement.alt = `${project.title} thumbnail fallback`;
-                                imgElement.className = "w-full h-full object-cover hover:scale-105 transition-transform duration-200";
-                                (e.target as HTMLImageElement).parentNode?.appendChild(imgElement);
-                              } else if (project.mediaUrls && 
-                                         ((Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0) || 
-                                          (typeof project.mediaUrls === 'string' && project.mediaUrls.indexOf('http') >= 0))) {
-                                const imgElement = document.createElement('img');
-                                const mediaUrl = Array.isArray(project.mediaUrls) 
-                                  ? project.mediaUrls[0] 
-                                  : typeof project.mediaUrls === 'string' && project.mediaUrls.startsWith('[')
-                                    ? JSON.parse(project.mediaUrls)[0]
-                                    : project.mediaUrls;
-                                imgElement.src = mediaUrl;
-                                imgElement.alt = `${project.title} media fallback`;
-                                imgElement.className = "w-full h-full object-cover hover:scale-105 transition-transform duration-200";
-                                (e.target as HTMLImageElement).parentNode?.appendChild(imgElement);
-                              }
-                            }}
-                          />
-                          <span className="hidden">Using thumbnailUrl: {project.thumbnailUrl}</span>
-                        </>
-                      ) : project.thumbnailFile && project.thumbnailFile !== "null" && project.thumbnailFile !== null ? (
-                        <>
-                          <img 
-                            src={`/uploads/projects/${project.thumbnailFile}`}
-                            alt={`${project.title} thumbnail file`} 
-                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
-                            onError={(e) => {
-                              console.error(`Thumbnail file failed to load: ${project.thumbnailFile}`);
-                              // Hide this image
-                              (e.target as HTMLImageElement).style.display = 'none';
-                              // Try to use media URLs as fallback if available
-                              if (project.mediaUrls && 
-                                ((Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0) || 
-                                 (typeof project.mediaUrls === 'string' && project.mediaUrls.includes('http')))) {
-                                const imgElement = document.createElement('img');
-                                const mediaUrl = Array.isArray(project.mediaUrls) 
-                                  ? project.mediaUrls[0] 
-                                  : typeof project.mediaUrls === 'string' && project.mediaUrls.startsWith('[')
-                                    ? JSON.parse(project.mediaUrls)[0]
-                                    : project.mediaUrls;
-                                imgElement.src = mediaUrl;
-                                imgElement.alt = `${project.title} media fallback`;
-                                imgElement.className = "w-full h-full object-cover hover:scale-105 transition-transform duration-200";
-                                (e.target as HTMLImageElement).parentNode?.appendChild(imgElement);
-                              }
-                            }}
-                          />
-                          {/* Using a hidden debug span to check what image is being used */}
-                          <span className="hidden">Using thumbnailFile: {project.thumbnailFile}</span>
-                        </>
-                      ) : (project.mediaUrls && 
-                            ((Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0) || 
-                             (typeof project.mediaUrls === 'string' && (
-                               project.mediaUrls.includes('http') || 
-                               project.mediaUrls.startsWith('['))))) ? (
-                        <>
-                          <img 
-                            src={
-                              Array.isArray(project.mediaUrls) 
-                                ? project.mediaUrls[0] 
-                                : typeof project.mediaUrls === 'string' && project.mediaUrls.startsWith('[')
-                                  ? JSON.parse(project.mediaUrls)[0]
-                                  : String(project.mediaUrls)
-                            }
-                            alt={`${project.title} first gallery image`} 
-                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
-                            onError={(e) => {
-                              console.error("Media URL image failed to load");
-                              // Hide this image
-                              (e.target as HTMLImageElement).style.display = 'none';
-                            }}
-                          />
-                          {/* Using a hidden debug span to check what image is being used */}
-                          <span className="hidden">Using mediaUrl</span>
-                        </>
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-muted">
-                          <FolderKanban className="h-10 w-10 text-muted-foreground/40" />
-                          {/* Using a hidden debug span to check what's happening */}
-                          <span className="hidden">No images available</span>
-                        </div>
-                      )}
+                          }}
+                        />
+                      </>
+                    ) : (
+                      <div className="flex items-center justify-center text-muted-foreground">
+                        <FolderKanban className="w-10 h-10" />
+                      </div>
+                    )}
+                    
+                    {/* Action buttons overlay */}
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
+                      <div className="flex gap-2">
+                        <Button 
+                          onClick={() => handleView(project)} 
+                          variant="secondary" 
+                          size="sm"
+                          className="bg-white/90 hover:bg-white text-black"
+                        >
+                          View
+                        </Button>
+                        <Button 
+                          onClick={() => handleEdit(project)} 
+                          variant="secondary" 
+                          size="sm"
+                          className="bg-white/90 hover:bg-white text-black"
+                        >
+                          Edit
+                        </Button>
+                        <Button 
+                          onClick={() => handleDelete(project.id)} 
+                          variant="destructive" 
+                          size="sm"
+                          className="bg-destructive/90"
+                        >
+                          Delete
+                        </Button>
+                      </div>
                     </div>
                   </div>
                   
-                  <div className="p-3">
-                    <div className="flex justify-between mb-1">
-                      <div>
-                        <span className="text-sm font-medium text-gray-700">{project.title}</span>
-                        {project.category && (
-                          <Badge variant="outline" className="ml-2 text-xs">
-                            {project.category}
-                          </Badge>
-                        )}
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <button 
-                          className="text-gray-400 hover:text-gray-600 focus:outline-none"
-                          onClick={() => handleEdit(project)}
-                        >
-                          <Pencil className="h-3.5 w-3.5" />
-                        </button>
-                        <button 
-                          className="text-gray-400 hover:text-gray-600 focus:outline-none"
-                          onClick={() => handleDelete(project.id)}
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
+                  {/* Project Info */}
+                  <div className="p-4">
+                    <h3 className="font-medium text-lg truncate">{project.title}</h3>
+                    <div className="flex items-center text-sm text-muted-foreground mb-2">
+                      <CalendarIcon className="w-3.5 h-3.5 mr-1" />
+                      <span>{new Date(project.startDate).toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'short'
+                      })}</span>
+                      
+                      {project.projectUrl && (
+                        <>
+                          <span className="mx-1">•</span>
+                          <ExternalLinkIcon className="w-3.5 h-3.5 mr-1" />
+                          <a 
+                            href={project.projectUrl} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="hover:text-primary text-xs truncate max-w-[120px] inline-block align-bottom"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            {new URL(project.projectUrl).hostname}
+                          </a>
+                        </>
+                      )}
                     </div>
                     
-                    {project.description && (
-                      <p className="text-xs text-gray-500 line-clamp-2 mb-2">{project.description}</p>
+                    {project.category && (
+                      <Badge variant="outline" className="mb-2">
+                        {project.category}
+                      </Badge>
                     )}
                     
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center text-xs text-gray-500">
-                        <CalendarIcon className="h-3 w-3 mr-1" />
-                        <span>{formatDate(project.startDate)}</span>
-                      </div>
-                      
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="h-7 text-xs px-2" 
-                        onClick={() => handleView(project)}
-                      >
-                        View Details
-                      </Button>
-                    </div>
+                    <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
+                      {project.description}
+                    </p>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="py-6 text-center">
-              <FolderKanban className="mx-auto h-10 w-10 text-muted-foreground/50" />
-              <p className="mt-2 text-muted-foreground">No showcase items added yet.</p>
+            <div className="flex flex-col items-center justify-center h-40 p-6 text-center border rounded-lg border-dashed">
+              <FolderKanban className="w-10 h-10 mb-4 text-muted-foreground" />
+              <h3 className="text-lg font-medium mb-1">No projects yet</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Create your first project showcase to highlight your work
+              </p>
+              <Button onClick={handleAdd} className="gap-1">
+                <Plus className="w-4 h-4" />
+                Add New Project
+              </Button>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </CardContent>
       
       {/* Add Project Modal */}
       <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
         <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Add New Showcase</DialogTitle>
+            <DialogTitle>Add Showcase</DialogTitle>
           </DialogHeader>
           
           <Form {...projectForm}>
             <form onSubmit={projectForm.handleSubmit(onProjectSubmit)} className="space-y-4">
-              <Tabs defaultValue="details" className="w-full" onValueChange={setActiveTab} value={activeTab}>
-                <TabsList className="grid w-full grid-cols-3">
-                  <TabsTrigger value="details">Details</TabsTrigger>
-                  <TabsTrigger value="team">Team</TabsTrigger>
-                  <TabsTrigger value="endorsements">Endorsements</TabsTrigger>
+              <Tabs defaultValue="details" value={activeTab} onValueChange={setActiveTab}>
+                <TabsList className="w-full">
+                  <TabsTrigger value="details" className="flex-1">Details</TabsTrigger>
+                  <TabsTrigger value="media" className="flex-1">Media</TabsTrigger>
+                  <TabsTrigger value="team" className="flex-1">Team</TabsTrigger>
+                  <TabsTrigger value="endorsements" className="flex-1">Clients</TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="details" className="space-y-4 pt-4">
-                  <FormField
-                    control={projectForm.control}
-                    name="title"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Project Title*</FormLabel>
-                        <FormControl>
-                          <Input placeholder="My Amazing Project" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={projectForm.control}
-                    name="category"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Category*</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Web Development, Design, etc." {...field} value={field.value || ''} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={projectForm.control}
-                    name="description"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Description*</FormLabel>
-                        <FormControl>
-                          <Textarea 
-                            placeholder="Describe your project, its goals, and your contributions" 
-                            className="resize-none" 
-                            {...field} 
-                            value={field.value || ''} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={projectForm.control}
-                    name="startDate"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel>Project Date*</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant={"outline"}
-                                className={cn(
-                                  "pl-3 text-left font-normal",
-                                  !field.value && "text-muted-foreground"
-                                )}
-                              >
-                                {field.value ? (
-                                  format(new Date(field.value), "PPP")
-                                ) : (
-                                  <span>Pick a date</span>
-                                )}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                              mode="single"
-                              selected={new Date(field.value)}
-                              onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
-                              disabled={(date) => date > new Date()}
-                              initialFocus
+                  <div className="space-y-4">
+                    <FormField
+                      control={projectForm.control}
+                      name="title"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Title*</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Project title" {...field} />
+                          </FormControl>
+                          <FormDescription>
+                            Enter a clear, descriptive title for your project
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={projectForm.control}
+                      name="description"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Description*</FormLabel>
+                          <FormControl>
+                            <Textarea 
+                              placeholder="Describe your project, its objectives, and outcome" 
+                              {...field}
+                              className="min-h-[120px]"
                             />
-                          </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={projectForm.control}
-                    name="projectUrl"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Project URL*</FormLabel>
-                        <FormControl>
-                          <Input type="url" placeholder="https://example.com" {...field} value={field.value || ''} />
-                        </FormControl>
-                        <FormDescription>
-                          Link to your project (GitHub, website, etc.)
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-
-                  
-                  <div className="space-y-4 border p-4 rounded-md">
-                    <h3 className="text-sm font-medium">Project Media (Choose One Type)*</h3>
-                    {mediaErrors?.general && (
-                      <p className="text-sm font-medium text-destructive">{mediaErrors.general}</p>
-                    )}
-                    <div className="flex items-center gap-2 mb-4">
-                      <div className="flex items-center">
-                        <input
-                          type="radio"
-                          id="media-type-images"
-                          name="media-type"
-                          className="h-4 w-4 border-gray-300 text-primary focus:ring-primary"
-                          checked={!projectVideo}
-                          onChange={() => {
-                            setProjectVideo(null);
-                            if (videoInputRef.current) {
-                              videoInputRef.current.value = '';
-                            }
-                            setMediaErrors(prev => ({...prev, video: undefined}));
-                          }}
-                        />
-                        <label htmlFor="media-type-images" className="ml-2 text-sm font-medium">
-                          Images (Max 10)
-                        </label>
-                      </div>
-                      <div className="flex items-center ml-6">
-                        <input
-                          type="radio"
-                          id="media-type-video"
-                          name="media-type"
-                          className="h-4 w-4 border-gray-300 text-primary focus:ring-primary"
-                          checked={!!projectVideo}
-                          onChange={() => {
-                            setProjectImages([]);
-                            if (multipleImagesInputRef.current) {
-                              multipleImagesInputRef.current.value = '';
-                            }
-                            setMediaErrors(prev => ({...prev, images: undefined}));
-                          }}
-                        />
-                        <label htmlFor="media-type-video" className="ml-2 text-sm font-medium">
-                          Video (Max 120 sec)
-                        </label>
+                          </FormControl>
+                          <FormDescription>
+                            Provide details about your project (max 500 characters)
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={projectForm.control}
+                        name="category"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Category*</FormLabel>
+                            <FormControl>
+                              <Input placeholder="e.g. Web Development" {...field} />
+                            </FormControl>
+                            <FormDescription>
+                              Project category or type
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={projectForm.control}
+                        name="industry"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Industry</FormLabel>
+                            <FormControl>
+                              <Input placeholder="e.g. Healthcare" {...field} value={field.value || ''} />
+                            </FormControl>
+                            <FormDescription>
+                              Industry the project belongs to
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={projectForm.control}
+                        name="startDate"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Date*</FormLabel>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <FormControl>
+                                  <Button
+                                    variant={"outline"}
+                                    className={cn(
+                                      "pl-3 text-left font-normal",
+                                      !field.value && "text-muted-foreground"
+                                    )}
+                                  >
+                                    {field.value ? (
+                                      format(field.value, "PPP")
+                                    ) : (
+                                      <span>Pick a date</span>
+                                    )}
+                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                  </Button>
+                                </FormControl>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar
+                                  mode="single"
+                                  selected={new Date(field.value)}
+                                  onSelect={(date) => field.onChange(format(date || new Date(), 'yyyy-MM-dd'))}
+                                  disabled={(date) =>
+                                    date > new Date() || date < new Date("1900-01-01")
+                                  }
+                                  initialFocus
+                                />
+                              </PopoverContent>
+                            </Popover>
+                            <FormDescription>
+                              When was the project completed?
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={projectForm.control}
+                        name="projectUrl"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Project URL*</FormLabel>
+                            <FormControl>
+                              <Input placeholder="https://example.com" {...field} />
+                            </FormControl>
+                            <FormDescription>
+                              Link to the live project or repository
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="media" className="space-y-4 pt-4">
+                  <div className="space-y-8">
+                    {/* Media Type Selection */}
+                    <div className="space-y-2">
+                      <Label>Media Type</Label>
+                      <div className="flex space-x-4">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id="media-type-images"
+                            name="media-type"
+                            className="h-4 w-4 border-gray-300 text-primary focus:ring-primary"
+                            checked={!projectVideo}
+                            onChange={() => {
+                              setProjectVideo(null);
+                              if (videoInputRef.current) {
+                                videoInputRef.current.value = '';
+                              }
+                            }}
+                          />
+                          <label htmlFor="media-type-images" className="ml-2 text-sm font-medium">
+                            Images (Up to 10)
+                          </label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id="media-type-video"
+                            name="media-type"
+                            className="h-4 w-4 border-gray-300 text-primary focus:ring-primary"
+                            checked={!!projectVideo}
+                            onChange={() => {
+                              setProjectImages([]);
+                              if (multipleImagesInputRef.current) {
+                                multipleImagesInputRef.current.value = '';
+                              }
+                            }}
+                          />
+                          <label htmlFor="media-type-video" className="ml-2 text-sm font-medium">
+                            Video (Max 120 sec)
+                          </label>
+                        </div>
                       </div>
                     </div>
 
@@ -1606,169 +1554,344 @@ export default function Projects() {
             
             <Form {...projectForm}>
               <form onSubmit={projectForm.handleSubmit(onProjectSubmit)} className="space-y-4">
-                <Tabs defaultValue="details" className="w-full" onValueChange={setActiveTab} value={activeTab}>
-                  <TabsList className="grid w-full grid-cols-3">
-                    <TabsTrigger value="details">Details</TabsTrigger>
-                    <TabsTrigger value="team">Team</TabsTrigger>
-                    <TabsTrigger value="endorsements">Endorsements</TabsTrigger>
+                {/* Similar form fields as Add Project, but with current values */}
+                <Tabs defaultValue="details" value={activeTab} onValueChange={setActiveTab}>
+                  <TabsList className="w-full">
+                    <TabsTrigger value="details" className="flex-1">Details</TabsTrigger>
+                    <TabsTrigger value="media" className="flex-1">Media</TabsTrigger>
+                    <TabsTrigger value="team" className="flex-1">Team</TabsTrigger>
+                    <TabsTrigger value="endorsements" className="flex-1">Clients</TabsTrigger>
                   </TabsList>
                   
                   <TabsContent value="details" className="space-y-4 pt-4">
-                    <FormField
-                      control={projectForm.control}
-                      name="title"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Project Title*</FormLabel>
-                          <FormControl>
-                            <Input placeholder="My Amazing Project" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={projectForm.control}
-                      name="category"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Category</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Web Development, Design, etc." {...field} value={field.value || ''} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={projectForm.control}
-                      name="description"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Description</FormLabel>
-                          <FormControl>
-                            <Textarea 
-                              placeholder="Describe your project, its goals, and your contributions" 
-                              className="resize-none" 
-                              {...field}
-                              value={field.value || ''}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={projectForm.control}
-                      name="startDate"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-col">
-                          <FormLabel>Project Date*</FormLabel>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <FormControl>
-                                <Button
-                                  variant={"outline"}
-                                  className={cn(
-                                    "pl-3 text-left font-normal",
-                                    !field.value && "text-muted-foreground"
-                                  )}
-                                >
-                                  {field.value ? (
-                                    format(new Date(field.value), "PPP")
-                                  ) : (
-                                    <span>Pick a date</span>
-                                  )}
-                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                </Button>
-                              </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
-                              <Calendar
-                                mode="single"
-                                selected={field.value ? new Date(field.value) : undefined}
-                                onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
-                                disabled={(date) => date > new Date()}
-                                initialFocus
+                    {/* Same fields as add form */}
+                    <div className="space-y-4">
+                      <FormField
+                        control={projectForm.control}
+                        name="title"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Title*</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Project title" {...field} />
+                            </FormControl>
+                            <FormDescription>
+                              Enter a clear, descriptive title for your project
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={projectForm.control}
+                        name="description"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Description*</FormLabel>
+                            <FormControl>
+                              <Textarea 
+                                placeholder="Describe your project, its objectives, and outcome" 
+                                {...field}
+                                className="min-h-[120px]"
                               />
-                            </PopoverContent>
-                          </Popover>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={projectForm.control}
-                      name="projectUrl"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Project URL*</FormLabel>
-                          <FormControl>
-                            <Input type="url" placeholder="https://example.com" {...field} value={field.value || ''} />
-                          </FormControl>
-                          <FormDescription>
-                            Link to your project (GitHub, website, etc.)
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-
-                    
-                    <div className="space-y-4 border p-4 rounded-md">
-                      <h3 className="text-sm font-medium">Project Media (Choose One Type)*</h3>
-                      {mediaErrors?.general && (
-                        <p className="text-sm font-medium text-destructive">{mediaErrors.general}</p>
-                      )}
-                      <div className="flex items-center gap-2 mb-4">
-                        <div className="flex items-center">
-                          <input
-                            type="radio"
-                            id="media-type-images-edit"
-                            name="media-type-edit"
-                            className="h-4 w-4 border-gray-300 text-primary focus:ring-primary"
-                            checked={!projectVideo}
-                            onChange={() => {
-                              setProjectVideo(null);
-                              if (videoInputRef.current) {
-                                videoInputRef.current.value = '';
-                              }
-                              setMediaErrors(prev => ({...prev, video: undefined}));
-                            }}
-                          />
-                          <label htmlFor="media-type-images-edit" className="ml-2 text-sm font-medium">
-                            Images (Max 10)
-                          </label>
+                            </FormControl>
+                            <FormDescription>
+                              Provide details about your project (max 500 characters)
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={projectForm.control}
+                          name="category"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Category*</FormLabel>
+                              <FormControl>
+                                <Input placeholder="e.g. Web Development" {...field} />
+                              </FormControl>
+                              <FormDescription>
+                                Project category or type
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={projectForm.control}
+                          name="industry"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Industry</FormLabel>
+                              <FormControl>
+                                <Input placeholder="e.g. Healthcare" {...field} value={field.value || ''} />
+                              </FormControl>
+                              <FormDescription>
+                                Industry the project belongs to
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={projectForm.control}
+                          name="startDate"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Date*</FormLabel>
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <FormControl>
+                                    <Button
+                                      variant={"outline"}
+                                      className={cn(
+                                        "pl-3 text-left font-normal",
+                                        !field.value && "text-muted-foreground"
+                                      )}
+                                    >
+                                      {field.value ? (
+                                        format(new Date(field.value), "PPP")
+                                      ) : (
+                                        <span>Pick a date</span>
+                                      )}
+                                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                    </Button>
+                                  </FormControl>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                  <Calendar
+                                    mode="single"
+                                    selected={new Date(field.value)}
+                                    onSelect={(date) => field.onChange(format(date || new Date(), 'yyyy-MM-dd'))}
+                                    disabled={(date) =>
+                                      date > new Date() || date < new Date("1900-01-01")
+                                    }
+                                    initialFocus
+                                  />
+                                </PopoverContent>
+                              </Popover>
+                              <FormDescription>
+                                When was the project completed?
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={projectForm.control}
+                          name="projectUrl"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Project URL*</FormLabel>
+                              <FormControl>
+                                <Input placeholder="https://example.com" {...field} />
+                              </FormControl>
+                              <FormDescription>
+                                Link to the live project or repository
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="media" className="space-y-4 pt-4">
+                    <div className="space-y-8">
+                      {/* Existing Media Preview (if available) */}
+                      {currentProject.mediaUrls && (
+                        <div className="space-y-4">
+                          <h3 className="text-sm font-medium">Current Media</h3>
+                          <div className="grid grid-cols-3 md:grid-cols-4 gap-2">
+                            {Array.isArray(currentProject.mediaUrls) ? (
+                              currentProject.mediaUrls.map((url, index) => (
+                                <div key={index} className="relative group">
+                                  <img 
+                                    src={url} 
+                                    alt={`Project Image ${index + 1}`} 
+                                    className={`h-24 w-full object-cover rounded-md border
+                                      ${currentProject.thumbnailUrl === url ? 'ring-2 ring-primary ring-offset-1' : ''}
+                                    `}
+                                    onClick={() => openLightbox(
+                                      Array.isArray(currentProject.mediaUrls) 
+                                        ? currentProject.mediaUrls as string[] 
+                                        : [], 
+                                      index
+                                    )}
+                                  />
+                                  <div className="absolute top-1 right-1 hidden group-hover:flex gap-1">
+                                    <button
+                                      type="button"
+                                      onClick={() => handleSetAsThumbnail(url)}
+                                      className={`bg-primary text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity
+                                        ${currentProject.thumbnailUrl === url ? 'opacity-100' : ''}
+                                      `}
+                                      aria-label="Set as thumbnail"
+                                      title="Set as thumbnail"
+                                    >
+                                      <Image className="h-3 w-3" />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleDeleteImage(url)}
+                                      className="bg-destructive text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                      aria-label="Remove image"
+                                    >
+                                      <X className="h-3 w-3" />
+                                    </button>
+                                  </div>
+                                  {currentProject.thumbnailUrl === url && (
+                                    <div className="absolute bottom-1 left-1 bg-primary/80 text-white text-xs px-2 py-0.5 rounded-sm">
+                                      Thumbnail
+                                    </div>
+                                  )}
+                                </div>
+                              ))
+                            ) : typeof currentProject.mediaUrls === 'string' ? (
+                              // Handle string case (assume it's a JSON string or single URL)
+                              <>
+                                {currentProject.mediaUrls.startsWith('[') ? (
+                                  // It's a JSON string array, parse it
+                                  JSON.parse(currentProject.mediaUrls).map((url: string, index: number) => (
+                                    <div key={index} className="relative group">
+                                      <img 
+                                        src={url} 
+                                        alt={`Project Image ${index + 1}`} 
+                                        className={`h-24 w-full object-cover rounded-md border
+                                          ${currentProject.thumbnailUrl === url ? 'ring-2 ring-primary ring-offset-1' : ''}
+                                        `}
+                                        onClick={() => openLightbox(JSON.parse(currentProject.mediaUrls as string), index)}
+                                      />
+                                      <div className="absolute top-1 right-1 hidden group-hover:flex gap-1">
+                                        <button
+                                          type="button"
+                                          onClick={() => handleSetAsThumbnail(url)}
+                                          className={`bg-primary text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity
+                                            ${currentProject.thumbnailUrl === url ? 'opacity-100' : ''}
+                                          `}
+                                          aria-label="Set as thumbnail"
+                                          title="Set as thumbnail"
+                                        >
+                                          <Image className="h-3 w-3" />
+                                        </button>
+                                        <button
+                                          type="button"
+                                          onClick={() => handleDeleteImage(url)}
+                                          className="bg-destructive text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                          aria-label="Remove image"
+                                        >
+                                          <X className="h-3 w-3" />
+                                        </button>
+                                      </div>
+                                      {currentProject.thumbnailUrl === url && (
+                                        <div className="absolute bottom-1 left-1 bg-primary/80 text-white text-xs px-2 py-0.5 rounded-sm">
+                                          Thumbnail
+                                        </div>
+                                      )}
+                                    </div>
+                                  ))
+                                ) : (
+                                  // It's a single URL
+                                  <div className="relative group">
+                                    <img 
+                                      src={currentProject.mediaUrls} 
+                                      alt="Project Image" 
+                                      className={`h-24 w-full object-cover rounded-md border
+                                        ${currentProject.thumbnailUrl === currentProject.mediaUrls ? 'ring-2 ring-primary ring-offset-1' : ''}
+                                      `}
+                                      onClick={() => openLightbox([currentProject.mediaUrls as string], 0)}
+                                    />
+                                    <div className="absolute top-1 right-1 hidden group-hover:flex gap-1">
+                                      <button
+                                        type="button"
+                                        onClick={() => handleSetAsThumbnail(currentProject.mediaUrls as string)}
+                                        className={`bg-primary text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity
+                                          ${currentProject.thumbnailUrl === currentProject.mediaUrls ? 'opacity-100' : ''}
+                                        `}
+                                        aria-label="Set as thumbnail"
+                                        title="Set as thumbnail"
+                                      >
+                                        <Image className="h-3 w-3" />
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => handleDeleteImage(currentProject.mediaUrls as string)}
+                                        className="bg-destructive text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        aria-label="Remove image"
+                                      >
+                                        <X className="h-3 w-3" />
+                                      </button>
+                                    </div>
+                                    {currentProject.thumbnailUrl === currentProject.mediaUrls && (
+                                      <div className="absolute bottom-1 left-1 bg-primary/80 text-white text-xs px-2 py-0.5 rounded-sm">
+                                        Thumbnail
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+                              </>
+                            ) : null}
+                          </div>
                         </div>
-                        <div className="flex items-center ml-6">
-                          <input
-                            type="radio"
-                            id="media-type-video-edit"
-                            name="media-type-edit"
-                            className="h-4 w-4 border-gray-300 text-primary focus:ring-primary"
-                            checked={!!projectVideo}
-                            onChange={() => {
-                              setProjectImages([]);
-                              if (multipleImagesInputRef.current) {
-                                multipleImagesInputRef.current.value = '';
-                              }
-                              setMediaErrors(prev => ({...prev, images: undefined}));
-                            }}
-                          />
-                          <label htmlFor="media-type-video-edit" className="ml-2 text-sm font-medium">
-                            Video (Max 120 sec)
-                          </label>
+                      )}
+                      
+                      {/* Media Type Selection */}
+                      <div className="space-y-2">
+                        <Label>Add Media</Label>
+                        <div className="flex space-x-4">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="radio"
+                              id="edit-media-type-images"
+                              name="edit-media-type"
+                              className="h-4 w-4 border-gray-300 text-primary focus:ring-primary"
+                              checked={!projectVideo}
+                              onChange={() => {
+                                setProjectVideo(null);
+                                if (videoInputRef.current) {
+                                  videoInputRef.current.value = '';
+                                }
+                              }}
+                            />
+                            <label htmlFor="edit-media-type-images" className="ml-2 text-sm font-medium">
+                              Images (Up to 10)
+                            </label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="radio"
+                              id="edit-media-type-video"
+                              name="edit-media-type"
+                              className="h-4 w-4 border-gray-300 text-primary focus:ring-primary"
+                              checked={!!projectVideo}
+                              onChange={() => {
+                                setProjectImages([]);
+                                if (multipleImagesInputRef.current) {
+                                  multipleImagesInputRef.current.value = '';
+                                }
+                              }}
+                            />
+                            <label htmlFor="edit-media-type-video" className="ml-2 text-sm font-medium">
+                              Video (Max 120 sec)
+                            </label>
+                          </div>
                         </div>
                       </div>
-
+                      
+                      {/* Input fields similar to Add Project */}
                       {!projectVideo ? (
                         <FormItem>
-                          <FormLabel>Project Images</FormLabel>
+                          <FormLabel>Add More Images</FormLabel>
                           <FormControl>
                             <Input 
                               type="file" 
@@ -1786,47 +1909,74 @@ export default function Projects() {
                               }} 
                             />
                           </FormControl>
-                          <FormDescription className="space-y-4">
-                            {currentProject.mediaUrls && Array.isArray(currentProject.mediaUrls) && currentProject.mediaUrls.length > 0 ? (
-                              <div className="space-y-3">
-                                <div className="font-medium">Current media:</div>
-                                <div className="flex flex-wrap gap-3">
-                                  {currentProject.mediaUrls.map((url, index) => (
-                                    <div key={index} className="relative group">
-                                      <img 
-                                        src={url} 
-                                        alt={`Project media ${index + 1}`} 
-                                        className="h-16 w-16 object-cover rounded"
-                                      />
-                                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center gap-1 transition-opacity p-1">
-                                        <button
-                                          type="button"
-                                          className="bg-white/80 hover:bg-white text-black text-xs rounded-md px-2 py-1 transition-colors w-full"
-                                          onClick={(e) => {
-                                            e.preventDefault();
-                                            handleSetAsThumbnail(url);
-                                          }}
-                                        >
-                                          Set as Thumbnail
-                                        </button>
-                                      </div>
-                                      {currentProject.thumbnailUrl === url && (
-                                        <div className="absolute top-0 right-0 bg-primary text-white text-xs px-1 py-0.5 rounded-bl-md">
-                                          Thumbnail
-                                        </div>
-                                      )}
-                                    </div>
-                                  ))}
-                                </div>
-                                <div className="text-sm text-muted-foreground mt-2">
-                                  Upload new images to add to your project (not replace existing ones)
-                                </div>
-                              </div>
-                            ) : (
-                              "Upload up to 10 images to showcase your project"
-                            )}
+                          <FormDescription>
+                            Add up to 10 more images to your project showcase
                           </FormDescription>
                           {mediaErrors?.images && <p className="text-sm font-medium text-destructive">{mediaErrors.images}</p>}
+                          
+                          {/* Image Previews - similar to Add Project */}
+                          {projectImages.length > 0 && (
+                            <div className="mt-4">
+                              <p className="text-sm font-medium mb-2">New Image Previews:</p>
+                              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                                {projectImages.map((file, index) => (
+                                  <div 
+                                    key={index} 
+                                    className={`relative group ${selectedThumbnailIndex === index ? 'ring-2 ring-primary ring-offset-1' : ''}`}
+                                  >
+                                    <img 
+                                      src={URL.createObjectURL(file)} 
+                                      alt={`Preview ${index + 1}`}
+                                      className="h-24 w-full object-cover rounded-md border" 
+                                    />
+                                    <div className="absolute top-1 right-1 flex gap-1">
+                                      <button
+                                        type="button"
+                                        onClick={() => handleSelectThumbnail(index)}
+                                        className={`bg-primary text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity ${selectedThumbnailIndex === index ? 'opacity-100' : ''}`}
+                                        aria-label="Set as thumbnail"
+                                        title="Set as thumbnail"
+                                      >
+                                        <Image className="h-3 w-3" />
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const newImages = [...projectImages];
+                                          newImages.splice(index, 1);
+                                          setProjectImages(newImages);
+                                          
+                                          // If this was the selected thumbnail, reset the selection
+                                          if (selectedThumbnailIndex === index) {
+                                            setSelectedThumbnailIndex(-1);
+                                            setThumbnailFile(null);
+                                          } else if (selectedThumbnailIndex > index) {
+                                            // Adjust the index if we're removing an image before the selected one
+                                            setSelectedThumbnailIndex(selectedThumbnailIndex - 1);
+                                          }
+                                        }}
+                                        className="bg-destructive text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        aria-label="Remove image"
+                                      >
+                                        <X className="h-3 w-3" />
+                                      </button>
+                                    </div>
+                                    {selectedThumbnailIndex === index && (
+                                      <div className="absolute bottom-1 left-1 bg-primary/80 text-white text-xs px-2 py-0.5 rounded-sm">
+                                        New Thumbnail
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                              {selectedThumbnailIndex !== -1 && (
+                                <p className="text-xs text-muted-foreground mt-2">
+                                  Image {selectedThumbnailIndex + 1} will be used as the project thumbnail
+                                </p>
+                              )}
+                            </div>
+                          )}
+                          
                           <FormMessage />
                         </FormItem>
                       ) : (
@@ -1840,7 +1990,7 @@ export default function Projects() {
                               onChange={(e) => {
                                 const file = e.target.files?.[0];
                                 if (file) {
-                                  // Check approximate video size (2MB/min is a rough estimate for decent quality)
+                                  // Check approximate video size
                                   if (file.size > 4 * 1024 * 1024) {
                                     setMediaErrors(prev => ({...prev, video: "Video exceeds maximum size (max ~120 seconds)"}));
                                     return;
@@ -1852,9 +2002,37 @@ export default function Projects() {
                             />
                           </FormControl>
                           <FormDescription>
-                            Upload a short video (max 120 seconds) to demonstrate your project
+                            Replace with a new video (max 120 seconds)
                           </FormDescription>
                           {mediaErrors?.video && <p className="text-sm font-medium text-destructive">{mediaErrors.video}</p>}
+                          
+                          {/* Video Preview - similar to Add Project */}
+                          {projectVideo && (
+                            <div className="mt-4">
+                              <p className="text-sm font-medium mb-2">New Video Preview:</p>
+                              <div className="relative w-full">
+                                <video 
+                                  src={URL.createObjectURL(projectVideo)} 
+                                  controls
+                                  className="w-full h-auto rounded-md border max-h-[200px]"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setProjectVideo(null);
+                                    if (videoInputRef.current) {
+                                      videoInputRef.current.value = '';
+                                    }
+                                  }}
+                                  className="absolute top-2 right-2 bg-destructive text-white rounded-full p-1"
+                                  aria-label="Remove video"
+                                >
+                                  <X className="h-4 w-4" />
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                          
                           <FormMessage />
                         </FormItem>
                       )}
@@ -1863,162 +2041,160 @@ export default function Projects() {
                   
                   <TabsContent value="team" className="space-y-4 pt-4">
                     <div className="space-y-4">
-                      <h3 className="text-sm font-medium">Add Team Member</h3>
-                      <Form {...collaboratorForm}>
-                        <form onSubmit={collaboratorForm.handleSubmit(handleAddCollaborator)} className="space-y-4">
-                          <div className="space-y-4 border rounded-lg p-4">
-                            <FormField
-                              control={collaboratorForm.control}
-                              name="profileLink"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Profile Link*</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="https://brandentifier.replit.app/profile/username" {...field} />
-                                  </FormControl>
-                                  <FormDescription>
-                                    Add Brandentifier profile link to connect with users
-                                  </FormDescription>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <Button type="submit" size="sm" className="mt-2">
-                              Add Team Member
-                            </Button>
-                          </div>
-                        </form>
-                      </Form>
+                      <h3 className="text-sm font-medium">Team Members</h3>
                       
                       {collaborators.length > 0 ? (
-                        <div className="border rounded-lg p-4 space-y-4">
-                          <h3 className="text-sm font-medium">Current Team Members</h3>
-                          <div className="space-y-2">
-                            {collaborators.map((collaborator) => (
-                              <div key={collaborator.id} className="flex items-center justify-between p-2 bg-muted rounded">
-                                <div>
-                                  <div className="font-medium">Team Member</div>
-                                  <div className="text-xs text-muted-foreground">
-                                    <a href={collaborator.profileLink || '#'} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                                      {collaborator.profileLink || 'No profile link'}
-                                    </a>
-                                  </div>
-                                </div>
-                                <Button 
-                                  size="icon" 
-                                  variant="ghost" 
-                                  onClick={() => handleDeleteCollaborator(collaborator.id)}
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
+                        <div className="space-y-2">
+                          {collaborators.map((collaborator) => (
+                            <div key={collaborator.id} className="flex items-center justify-between p-3 border rounded-lg">
+                              <div>
+                                <p className="font-medium">{collaborator.name}</p>
+                                <p className="text-sm text-muted-foreground">{collaborator.role}</p>
+                                {collaborator.profileLink && (
+                                  <a 
+                                    href={collaborator.profileLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-xs text-primary hover:underline flex items-center gap-1 mt-1"
+                                  >
+                                    <ExternalLink className="h-3 w-3" />
+                                    View Profile
+                                  </a>
+                                )}
                               </div>
-                            ))}
-                          </div>
+                              <Button 
+                                variant="ghost" 
+                                size="icon"
+                                onClick={() => handleDeleteCollaborator(collaborator.id)}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          ))}
                         </div>
                       ) : (
-                        <div className="text-center p-4 text-muted-foreground">
-                          No team members added yet
-                        </div>
+                        <p className="text-sm text-muted-foreground">No team members yet.</p>
                       )}
+                      
+                      <div className="pt-4">
+                        <h3 className="text-sm font-medium mb-2">Add Team Member</h3>
+                        <Form {...collaboratorForm}>
+                          <form onSubmit={collaboratorForm.handleSubmit(handleAddCollaborator)} className="space-y-4">
+                            <div className="space-y-4 border rounded-lg p-4">
+                              <FormField
+                                control={collaboratorForm.control}
+                                name="profileLink"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Profile Link*</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="https://brandentifier.replit.app/profile/username" {...field} value={field.value || ''} />
+                                    </FormControl>
+                                    <FormDescription>
+                                      Add Brandentifier profile link to connect with users
+                                    </FormDescription>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <Button type="submit" size="sm" className="mt-2">
+                                Add Team Member
+                              </Button>
+                            </div>
+                          </form>
+                        </Form>
+                      </div>
                     </div>
                   </TabsContent>
                   
                   <TabsContent value="endorsements" className="space-y-4 pt-4">
                     <div className="space-y-4">
-                      <h3 className="text-sm font-medium">Add Client</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Add a client's profile link to invite them to endorse your project.
-                      </p>
-                      <Form {...endorsementForm}>
-                        <form onSubmit={endorsementForm.handleSubmit(handleAddEndorsement)} className="space-y-4">
-                          <div className="space-y-4 border rounded-lg p-4">
-                            <FormField
-                              control={endorsementForm.control}
-                              name="profileLink"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Client Profile Link*</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="https://brandentifier.replit.app/profile/username" {...field} />
-                                  </FormControl>
-                                  <FormDescription>
-                                    Add Brandentifier profile link of your client
-                                  </FormDescription>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <Button type="submit" size="sm" className="mt-2">
-                              Invite Client
-                            </Button>
-                          </div>
-                        </form>
-                      </Form>
+                      <h3 className="text-sm font-medium">Client Endorsements</h3>
                       
                       {endorsements.length > 0 ? (
-                        <div className="border rounded-lg p-4 space-y-4">
-                          <h3 className="text-sm font-medium">Client Status</h3>
-                          <div className="space-y-2">
-                            {endorsements.map((endorsement) => (
-                              <div key={endorsement.id} className="p-3 bg-muted rounded">
-                                <div className="flex items-center justify-between">
-                                  <div>
-                                    <div className="font-medium">{endorsement.clientName}</div>
-                                    {endorsement.isVerified ? (
-                                      <div className="flex items-center text-green-600 text-xs">
-                                        <CheckCircle className="h-3.5 w-3.5 mr-1" />
-                                        <span>Verified</span>
-                                      </div>
-                                    ) : (
-                                      <div className="flex items-center text-amber-600 text-xs">
-                                        <Clock className="h-3.5 w-3.5 mr-1" />
-                                        <span>Pending Verification</span>
-                                      </div>
-                                    )}
+                        <div className="space-y-2">
+                          {endorsements.map((endorsement) => (
+                            <div key={endorsement.id} className="p-3 border rounded-lg">
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <div className="flex items-center gap-1">
+                                    <p className="font-medium">{endorsement.clientName}</p>
                                     {endorsement.isVerified && (
-                                      <>
-                                        <div className="text-xs text-muted-foreground mt-1">
-                                          {endorsement.clientTitle && `${endorsement.clientTitle}`}
-                                          {endorsement.clientTitle && endorsement.clientCompany && ` at `}
-                                          {endorsement.clientCompany && `${endorsement.clientCompany}`}
-                                        </div>
-                                        {endorsement.rating && (
-                                          <div className="flex items-center mt-1">
-                                            {[...Array(5)].map((_, index) => (
-                                              <span 
-                                                key={index} 
-                                                className={`text-sm ${index < (endorsement.rating || 0) ? 'text-yellow-500' : 'text-gray-300'}`}
-                                              >
-                                                ★
-                                              </span>
-                                            ))}
-                                          </div>
-                                        )}
-                                      </>
+                                      <CheckCircle className="h-3.5 w-3.5 text-green-500" />
+                                    )}
+                                    {!endorsement.isVerified && (
+                                      <Clock className="h-3.5 w-3.5 text-amber-500" />
                                     )}
                                   </div>
-                                  <Button 
-                                    size="icon" 
-                                    variant="ghost" 
-                                    onClick={() => handleDeleteEndorsement(endorsement.id)}
-                                  >
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
+                                  {endorsement.clientTitle && endorsement.clientCompany && (
+                                    <p className="text-sm text-muted-foreground">
+                                      {endorsement.clientTitle}, {endorsement.clientCompany}
+                                    </p>
+                                  )}
                                 </div>
-                                {endorsement.isVerified && endorsement.message && (
-                                  <div className="mt-2 text-sm italic">"{endorsement.message}"</div>
-                                )}
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon"
+                                  onClick={() => handleDeleteEndorsement(endorsement.id)}
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
                               </div>
-                            ))}
-                          </div>
+                              {endorsement.message && (
+                                <p className="text-sm mt-2 italic">"{endorsement.message}"</p>
+                              )}
+                              {endorsement.rating && (
+                                <div className="flex items-center mt-2">
+                                  {Array.from({ length: 5 }).map((_, i) => (
+                                    <Star
+                                      key={i}
+                                      className={`h-4 w-4 ${i < endorsement.rating! ? 'text-amber-400 fill-amber-400' : 'text-gray-300'}`}
+                                    />
+                                  ))}
+                                </div>
+                              )}
+                              {!endorsement.isVerified && (
+                                <p className="text-xs text-muted-foreground mt-2">
+                                  Waiting for client verification
+                                </p>
+                              )}
+                            </div>
+                          ))}
                         </div>
                       ) : (
-                        <div className="text-center p-4 text-muted-foreground">
-                          No clients added yet
-                        </div>
+                        <p className="text-sm text-muted-foreground">No client endorsements yet.</p>
                       )}
+                      
+                      <div className="pt-4">
+                        <h3 className="text-sm font-medium mb-2">Add Client</h3>
+                        <Form {...endorsementForm}>
+                          <form onSubmit={endorsementForm.handleSubmit(handleAddEndorsement)} className="space-y-4">
+                            <div className="space-y-4 border rounded-lg p-4">
+                              <FormField
+                                control={endorsementForm.control}
+                                name="profileLink"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Client Profile Link*</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="https://brandentifier.replit.app/profile/username" {...field} value={field.value || ''} />
+                                    </FormControl>
+                                    <FormDescription>
+                                      Add Brandentifier profile link of your client
+                                    </FormDescription>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <Button type="submit" size="sm" className="mt-2">
+                                Add Client
+                              </Button>
+                            </div>
+                          </form>
+                        </Form>
+                      </div>
                     </div>
                   </TabsContent>
                 </Tabs>
@@ -2028,7 +2204,7 @@ export default function Projects() {
                     Cancel
                   </Button>
                   <Button type="submit">
-                    Update Project
+                    Update Showcase
                   </Button>
                 </DialogFooter>
               </form>
@@ -2037,407 +2213,467 @@ export default function Projects() {
         </Dialog>
       )}
       
-      {/* View Showcase Details Modal */}
+      {/* Detail View Modal */}
       {currentProject && (
         <Dialog open={isDetailModalOpen} onOpenChange={setIsDetailModalOpen}>
-          <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto p-0">
-            {/* Header with close button and edit button */}
-            <div className="p-6 pb-2">
-              <div className="flex justify-between items-center">
-                <DialogTitle className="text-2xl font-bold">{currentProject.title}</DialogTitle>
-                <div className="flex space-x-1">
-                  <Button 
-                    size="icon" 
-                    variant="ghost" 
-                    className="h-8 w-8" 
-                    onClick={() => {
-                      setIsDetailModalOpen(false);
-                      handleEdit(currentProject);
-                    }}
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <DialogClose className="h-8 w-8 rounded-full flex items-center justify-center hover:bg-muted">
-                    <X className="h-4 w-4" />
-                  </DialogClose>
-                </div>
+          <DialogContent className="sm:max-w-[650px] max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-xl">{currentProject.title}</DialogTitle>
+              <div className="flex items-center text-sm text-muted-foreground">
+                <CalendarIcon className="w-3.5 h-3.5 mr-1" />
+                <span>{new Date(currentProject.startDate).toLocaleDateString('en-US', { 
+                  year: 'numeric', 
+                  month: 'long'
+                })}</span>
+                
+                {currentProject.projectUrl && (
+                  <>
+                    <span className="mx-1">•</span>
+                    <ExternalLinkIcon className="w-3.5 h-3.5 mr-1" />
+                    <a 
+                      href={currentProject.projectUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="hover:text-primary"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      Project Link
+                    </a>
+                  </>
+                )}
               </div>
-            </div>
+            </DialogHeader>
             
-            <Tabs defaultValue="details" className="w-full" onValueChange={setActiveTab} value={activeTab}>
-              <TabsList className="grid w-full grid-cols-3 px-6">
-                <TabsTrigger value="details">Details</TabsTrigger>
-                <TabsTrigger value="team">Team</TabsTrigger>
-                <TabsTrigger value="endorsements">Endorsements</TabsTrigger>
+            <Tabs defaultValue="details" value={activeTab} onValueChange={setActiveTab}>
+              <TabsList className="w-full">
+                <TabsTrigger value="details" className="flex-1">Details</TabsTrigger>
+                <TabsTrigger value="team" className="flex-1">Team</TabsTrigger>
+                <TabsTrigger value="endorsements" className="flex-1">Clients</TabsTrigger>
               </TabsList>
               
-              <TabsContent value="details" className="p-6 pt-4 animate-in fade-in-50">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Left Column - Thumbnail and Project Media */}
-                  <div className="space-y-4">
-                    {/* Project Thumbnail */}
-                    <div 
-                      className="w-full aspect-square rounded-xl shadow-sm overflow-hidden bg-muted cursor-pointer"
-                      onClick={() => {
-                        // Open the thumbnail or first media image in the lightbox
-                        console.log("Thumbnail section clicked");
-                        const thumbnailOrMedia = currentProject.thumbnailUrl || 
-                          (currentProject.mediaUrls && Array.isArray(currentProject.mediaUrls) && 
-                           currentProject.mediaUrls.length > 0 ? currentProject.mediaUrls[0] : null);
-                          
-                        if (thumbnailOrMedia) {
-                          console.log("Setting lightbox for image:", thumbnailOrMedia);
-                          const imageToShow = [thumbnailOrMedia];
-                          setLightboxImages(imageToShow);
-                          setCurrentImageIndex(0);
-                          
-                          // Use a setTimeout to ensure state updates complete before showing lightbox
-                          setTimeout(() => {
-                            setIsLightboxOpen(true);
-                            console.log("Image lightbox should be open now");
-                          }, 50);
-                        }
-                      }}
-                    >
-                      {currentProject.thumbnailUrl ? (
-                        <img 
-                          src={currentProject.thumbnailUrl} 
-                          alt={currentProject.title} 
-                          className="w-full h-full object-cover hover:scale-[1.03] transition-all duration-300 ease-in-out"
-                        />
-                      ) : (currentProject.mediaUrls && Array.isArray(currentProject.mediaUrls) && currentProject.mediaUrls.length > 0) ? (
-                        <img 
-                          src={currentProject.mediaUrls[0]} 
-                          alt={currentProject.title} 
-                          className="w-full h-full object-cover hover:scale-[1.03] transition-all duration-300 ease-in-out"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <FolderKanban className="h-16 w-16 text-muted-foreground/30" />
-                        </div>
-                      )}
-                    </div>
-                    
-                    {/* Category Badge */}
-                    {currentProject.category && (
-                      <div className="flex items-center">
-                        <Badge className="px-3 py-1 text-sm rounded-full font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
-                          {currentProject.category}
-                        </Badge>
-                      </div>
-                    )}
-                    
-                    {/* Project Media Carousel */}
-                    {currentProject.mediaUrls && Array.isArray(currentProject.mediaUrls) && currentProject.mediaUrls.length > 0 && (
-                      <div className="space-y-2 mt-4">
-                        <div className="flex justify-between items-center">
-                          <h3 className="text-sm font-medium">Showcase Media</h3>
-                          <div className="text-xs text-muted-foreground">
-                            {currentProject.mediaUrls.length} image{currentProject.mediaUrls.length !== 1 ? 's' : ''}
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pb-2">
-                          {currentProject.mediaUrls.map((url, index) => (
-                            <div 
-                              key={index} 
-                              className="relative group rounded-lg overflow-hidden bg-muted shadow-sm"
-                            >
-                              {/* Image */}
-                              <div 
-                                className="w-full aspect-square cursor-pointer"
-                                onClick={() => {
-                                  if (currentProject.mediaUrls && Array.isArray(currentProject.mediaUrls)) {
-                                    // Create a new array to ensure React detects the change
-                                    const mediaImages = [...currentProject.mediaUrls];
-                                    setLightboxImages(mediaImages);
-                                    setCurrentImageIndex(index);
-                                    // Using a timeout to ensure state updates are applied
-                                    setTimeout(() => {
-                                      setIsLightboxOpen(true);
-                                    }, 50);
-                                  }
+              <TabsContent value="details" className="space-y-6 mt-4">
+                {/* Project Media Showcase */}
+                <div className="space-y-4">
+                  {currentProject.mediaUrls && (
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                      {Array.isArray(currentProject.mediaUrls) ? (
+                        currentProject.mediaUrls.slice(0, 6).map((url, index) => (
+                          <div key={index} className="relative group">
+                            <img 
+                              src={url} 
+                              alt={`Project Image ${index + 1}`} 
+                              className={`aspect-square w-full object-cover rounded-md border cursor-pointer hover:opacity-95
+                                ${currentProject.thumbnailUrl === url ? 'ring-2 ring-primary ring-offset-1' : ''}
+                              `}
+                              onClick={() => openLightbox(
+                                Array.isArray(currentProject.mediaUrls) 
+                                  ? currentProject.mediaUrls as string[] 
+                                  : [], 
+                                index
+                              )}
+                            />
+                            <div className="absolute top-1 right-1 hidden group-hover:flex gap-1">
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleSetAsThumbnail(url);
                                 }}
+                                className={`bg-primary text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity
+                                  ${currentProject.thumbnailUrl === url ? 'opacity-100' : ''}
+                                `}
+                                aria-label="Set as thumbnail"
+                                title="Set as thumbnail"
                               >
+                                <Image className="h-3 w-3" />
+                              </button>
+                            </div>
+                            {currentProject.thumbnailUrl === url && (
+                              <div className="absolute bottom-1 left-1 bg-primary/80 text-white text-xs px-2 py-0.5 rounded-sm">
+                                Thumbnail
+                              </div>
+                            )}
+                          </div>
+                        ))
+                      ) : typeof currentProject.mediaUrls === 'string' ? (
+                        // Handle string case (assume it's a JSON string or single URL)
+                        <>
+                          {currentProject.mediaUrls.startsWith('[') ? (
+                            // It's a JSON string array, parse it
+                            JSON.parse(currentProject.mediaUrls).slice(0, 6).map((url: string, index: number) => (
+                              <div key={index} className="relative group">
                                 <img 
                                   src={url} 
-                                  alt={`${currentProject.title} media ${index + 1}`} 
-                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                                  alt={`Project Image ${index + 1}`} 
+                                  className={`aspect-square w-full object-cover rounded-md border cursor-pointer hover:opacity-95
+                                    ${currentProject.thumbnailUrl === url ? 'ring-2 ring-primary ring-offset-1' : ''}
+                                  `}
+                                  onClick={() => openLightbox(JSON.parse(currentProject.mediaUrls as string), index)}
                                 />
-                              </div>
-                              
-                              {/* Control overlay */}
-                              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-between p-2">
-                                {/* Top row - Thumbnail indicator or Set as thumbnail button */}
-                                <div className="flex justify-end">
-                                  {currentProject.thumbnailUrl === url ? (
-                                    <Badge className="bg-primary text-white text-xs font-normal px-2 py-0.5">
-                                      Thumbnail
-                                    </Badge>
-                                  ) : (
-                                    <button
-                                      onClick={(e) => {
-                                        e.stopPropagation(); // Prevent opening lightbox
-                                        handleSetAsThumbnail(url);
-                                      }}
-                                      className="bg-white/80 hover:bg-white text-black text-xs rounded-md px-2 py-1 transition-colors"
-                                    >
-                                      Set as Thumbnail
-                                    </button>
-                                  )}
-                                </div>
-                                
-                                {/* Bottom row - Delete button */}
-                                <div className="flex justify-end">
+                                <div className="absolute top-1 right-1 hidden group-hover:flex gap-1">
                                   <button
+                                    type="button"
                                     onClick={(e) => {
-                                      e.stopPropagation(); // Prevent opening lightbox
-                                      handleDeleteImage(url);
+                                      e.stopPropagation();
+                                      handleSetAsThumbnail(url);
                                     }}
-                                    className="bg-red-500/80 hover:bg-red-500 text-white text-xs rounded-md px-2 py-1 transition-colors"
+                                    className={`bg-primary text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity
+                                      ${currentProject.thumbnailUrl === url ? 'opacity-100' : ''}
+                                    `}
+                                    aria-label="Set as thumbnail"
+                                    title="Set as thumbnail"
                                   >
-                                    Delete
+                                    <Image className="h-3 w-3" />
                                   </button>
                                 </div>
+                                {currentProject.thumbnailUrl === url && (
+                                  <div className="absolute bottom-1 left-1 bg-primary/80 text-white text-xs px-2 py-0.5 rounded-sm">
+                                    Thumbnail
+                                  </div>
+                                )}
                               </div>
+                            ))
+                          ) : (
+                            // It's a single URL
+                            <div className="relative group col-span-2">
+                              <img 
+                                src={currentProject.mediaUrls} 
+                                alt="Project Image" 
+                                className={`aspect-video w-full object-cover rounded-md border cursor-pointer hover:opacity-95
+                                  ${currentProject.thumbnailUrl === currentProject.mediaUrls ? 'ring-2 ring-primary ring-offset-1' : ''}
+                                `}
+                                onClick={() => openLightbox([currentProject.mediaUrls as string], 0)}
+                              />
+                              <div className="absolute top-1 right-1 hidden group-hover:flex gap-1">
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleSetAsThumbnail(currentProject.mediaUrls as string);
+                                  }}
+                                  className={`bg-primary text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity
+                                    ${currentProject.thumbnailUrl === currentProject.mediaUrls ? 'opacity-100' : ''}
+                                  `}
+                                  aria-label="Set as thumbnail"
+                                  title="Set as thumbnail"
+                                >
+                                  <Image className="h-3 w-3" />
+                                </button>
+                              </div>
+                              {currentProject.thumbnailUrl === currentProject.mediaUrls && (
+                                <div className="absolute bottom-1 left-1 bg-primary/80 text-white text-xs px-2 py-0.5 rounded-sm">
+                                  Thumbnail
+                                </div>
+                              )}
                             </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+                          )}
+                        </>
+                      ) : null}
+                      
+                      {/* View All button if more than 6 images */}
+                      {Array.isArray(currentProject.mediaUrls) && currentProject.mediaUrls.length > 6 && (
+                        <button
+                          type="button"
+                          onClick={() => openLightbox(currentProject.mediaUrls as string[], 0)}
+                          className="aspect-square w-full flex items-center justify-center bg-muted rounded-md border hover:bg-muted/80"
+                        >
+                          <span className="text-sm font-medium">
+                            View All ({currentProject.mediaUrls.length})
+                          </span>
+                        </button>
+                      )}
+                      
+                      {typeof currentProject.mediaUrls === 'string' && 
+                        currentProject.mediaUrls.startsWith('[') && 
+                        JSON.parse(currentProject.mediaUrls).length > 6 && (
+                        <button
+                          type="button"
+                          onClick={() => openLightbox(JSON.parse(currentProject.mediaUrls as string), 0)}
+                          className="aspect-square w-full flex items-center justify-center bg-muted rounded-md border hover:bg-muted/80"
+                        >
+                          <span className="text-sm font-medium">
+                            View All ({JSON.parse(currentProject.mediaUrls).length})
+                          </span>
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+                
+                {/* Project Details */}
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-1">Category</h3>
+                    <p>{currentProject.category || 'Not specified'}</p>
                   </div>
                   
-                  {/* Right Column - Project Details */}
-                  <div className="space-y-6">
-                    {/* Project Date */}
-                    <div className="text-sm text-muted-foreground">
-                      <CalendarIcon className="inline-block h-4 w-4 mr-1 -mt-0.5" />
-                      {formatDate(currentProject.startDate)}
-                    </div>
-                    
-                    {/* Project Description */}
+                  {currentProject.industry && (
                     <div>
-                      <h3 className="text-base font-semibold mb-2">About this showcase</h3>
-                      <div className="text-muted-foreground space-y-2">
-                        {currentProject.description?.split('\n').map((paragraph, i) => (
-                          <p key={i}>{paragraph}</p>
-                        )) || "No description provided."}
-                      </div>
+                      <h3 className="text-sm font-medium text-muted-foreground mb-1">Industry</h3>
+                      <p>{currentProject.industry}</p>
                     </div>
-                    
-                    {/* Project URL Button */}
-                    {currentProject.projectUrl && (
-                      <div className="mt-4">
-                        <Button 
-                          variant="outline" 
-                          className="gap-2 w-full sm:w-auto"
-                          onClick={() => window.open(currentProject.projectUrl ?? '', '_blank', 'noopener,noreferrer')}
-                        >
-                          <ExternalLinkIcon className="h-4 w-4" />
-                          Visit Site
-                          <span className="sr-only">(opens in a new tab)</span>
-                        </Button>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {currentProject.projectUrl}
-                        </p>
-                      </div>
-                    )}
+                  )}
+                  
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-1">Description</h3>
+                    <p className="whitespace-pre-line">{currentProject.description}</p>
                   </div>
                 </div>
               </TabsContent>
               
-              <TabsContent value="team" className="space-y-4 pt-4">
+              <TabsContent value="team" className="space-y-6 mt-4">
                 {collaborators.length > 0 ? (
-                  <div className="grid gap-3">
+                  <div className="space-y-4">
                     {collaborators.map((collaborator) => (
-                      <div key={collaborator.id} className="p-3 bg-muted rounded-md flex justify-between items-start">
-                        <div>
-                          <div className="font-medium">Team Member</div>
-                          {collaborator.profileLink ? (
-                            <a 
-                              href={collaborator.profileLink || '#'}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-sm text-primary hover:underline flex items-center mt-1"
+                      <div key={collaborator.id} className="p-4 border rounded-lg">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between">
+                          <div>
+                            <h3 className="font-medium">{collaborator.name}</h3>
+                            <p className="text-sm text-muted-foreground">{collaborator.role}</p>
+                          </div>
+                          
+                          <div className="mt-2 sm:mt-0 flex items-center gap-2">
+                            {collaborator.profileLink && (
+                              <a 
+                                href={collaborator.profileLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-xs text-primary hover:underline flex items-center gap-1"
+                              >
+                                <ExternalLink className="h-3 w-3" />
+                                View Profile
+                              </a>
+                            )}
+                            
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              className="h-7 text-xs text-destructive hover:text-destructive/90"
+                              onClick={() => handleDeleteCollaborator(collaborator.id)}
                             >
-                              <ExternalLinkIcon className="h-3 w-3 mr-1" />
-                              {collaborator.profileLink}
-                            </a>
-                          ) : (
-                            <span className="text-sm text-muted-foreground mt-1">No profile link provided</span>
-                          )}
+                              Remove
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center p-4 text-muted-foreground">
-                    No team members added yet
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground">No team members added yet.</p>
+                    <p className="text-sm mt-2">
+                      Add team members to showcase collaboration on this project.
+                    </p>
                   </div>
                 )}
+                
+                <div className="pt-4">
+                  <Form {...collaboratorForm}>
+                    <form onSubmit={collaboratorForm.handleSubmit(handleAddCollaborator)} className="space-y-4">
+                      <div className="space-y-4 border rounded-lg p-4">
+                        <h3 className="text-sm font-medium">Add Team Member</h3>
+                        <FormField
+                          control={collaboratorForm.control}
+                          name="profileLink"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Profile Link*</FormLabel>
+                              <FormControl>
+                                <Input placeholder="https://brandentifier.replit.app/profile/username" {...field} value={field.value || ''} />
+                              </FormControl>
+                              <FormDescription>
+                                Add Brandentifier profile link to connect with users
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <Button type="submit" size="sm" className="mt-2">
+                          Add Team Member
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                </div>
               </TabsContent>
               
-              <TabsContent value="endorsements" className="space-y-4 pt-4">
+              <TabsContent value="endorsements" className="space-y-6 mt-4">
                 {endorsements.length > 0 ? (
-                  <div className="grid gap-4">
-                    {endorsements.filter(e => e.isVerified).length > 0 ? (
-                      endorsements.filter(e => e.isVerified).map((endorsement) => (
-                        <div key={endorsement.id} className="p-4 bg-muted rounded-md">
-                          <div className="flex justify-between items-start mb-2">
-                            <div>
-                              <div className="font-medium">{endorsement.clientName}</div>
-                              <div className="text-sm text-muted-foreground">
-                                {endorsement.clientTitle && `${endorsement.clientTitle}`}
-                                {endorsement.clientTitle && endorsement.clientCompany && ` at `}
-                                {endorsement.clientCompany && `${endorsement.clientCompany}`}
-                              </div>
+                  <div className="space-y-4">
+                    {endorsements.map((endorsement) => (
+                      <div key={endorsement.id} className="p-4 border rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="flex items-center gap-1">
+                              <h3 className="font-medium">{endorsement.clientName}</h3>
+                              {endorsement.isVerified && (
+                                <CheckCircle className="h-3.5 w-3.5 text-green-500" />
+                              )}
+                              {!endorsement.isVerified && (
+                                <Clock className="h-3.5 w-3.5 text-amber-500" />
+                              )}
                             </div>
-                            <div className="flex items-center">
-                              {[...Array(5)].map((_, index) => (
-                                <span 
-                                  key={index} 
-                                  className={`text-sm ${index < (endorsement.rating || 0) ? 'text-yellow-500' : 'text-gray-300'}`}
-                                >
-                                  ★
-                                </span>
-                              ))}
-                            </div>
+                            {endorsement.clientTitle && endorsement.clientCompany && (
+                              <p className="text-sm text-muted-foreground">
+                                {endorsement.clientTitle}, {endorsement.clientCompany}
+                              </p>
+                            )}
                           </div>
-                          {endorsement.message && (
-                            <div className="text-sm italic mt-2 pl-4 border-l-2 border-muted-foreground/20">
-                              "{endorsement.message}"
-                            </div>
-                          )}
-                          <div className="mt-2 flex items-center text-xs text-green-600">
-                            <CheckCircle className="h-3.5 w-3.5 mr-1" />
-                            <span>Verified Endorsement</span>
+                          
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            className="h-7 text-xs text-destructive hover:text-destructive/90"
+                            onClick={() => handleDeleteEndorsement(endorsement.id)}
+                          >
+                            Remove
+                          </Button>
+                        </div>
+                        
+                        {endorsement.message && (
+                          <p className="text-sm mt-4 italic">"{endorsement.message}"</p>
+                        )}
+                        
+                        {endorsement.rating && (
+                          <div className="flex items-center mt-3">
+                            {Array.from({ length: 5 }).map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`h-4 w-4 ${i < endorsement.rating! ? 'text-amber-400 fill-amber-400' : 'text-gray-300'}`}
+                              />
+                            ))}
                           </div>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="text-center p-4 text-muted-foreground">
-                        No verified endorsements yet
+                        )}
+                        
+                        {!endorsement.isVerified && (
+                          <p className="text-xs text-muted-foreground mt-3">
+                            Waiting for client verification
+                          </p>
+                        )}
                       </div>
-                    )}
-                    
-                    {/* Show a count of pending endorsements if there are any */}
-                    {endorsements.filter(e => !e.isVerified).length > 0 && (
-                      <div className="p-3 bg-muted/50 rounded-md border border-amber-200">
-                        <div className="flex items-center text-amber-600 text-sm">
-                          <Clock className="h-4 w-4 mr-2" />
-                          <span>{endorsements.filter(e => !e.isVerified).length} pending client {endorsements.filter(e => !e.isVerified).length === 1 ? 'verification' : 'verifications'}</span>
-                        </div>
-                      </div>
-                    )}
+                    ))}
                   </div>
                 ) : (
-                  <div className="text-center p-4 text-muted-foreground">
-                    No endorsements added yet
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground">No client endorsements yet.</p>
+                    <p className="text-sm mt-2">
+                      Invite clients to endorse your work on this project.
+                    </p>
                   </div>
                 )}
+                
+                <div className="pt-4">
+                  <Form {...endorsementForm}>
+                    <form onSubmit={endorsementForm.handleSubmit(handleAddEndorsement)} className="space-y-4">
+                      <div className="space-y-4 border rounded-lg p-4">
+                        <h3 className="text-sm font-medium">Add Client</h3>
+                        <FormField
+                          control={endorsementForm.control}
+                          name="profileLink"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Client Profile Link*</FormLabel>
+                              <FormControl>
+                                <Input placeholder="https://brandentifier.replit.app/profile/username" {...field} value={field.value || ''} />
+                              </FormControl>
+                              <FormDescription>
+                                Add Brandentifier profile link of your client
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <Button type="submit" size="sm" className="mt-2">
+                          Add Client
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                </div>
               </TabsContent>
             </Tabs>
             
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setIsDetailModalOpen(false)}>
-                Close
+            <DialogFooter className="mt-6">
+              <Button variant="outline" onClick={() => setIsDetailModalOpen(false)}>Close</Button>
+              <Button onClick={() => {
+                setIsDetailModalOpen(false);
+                handleEdit(currentProject);
+              }}>
+                Edit Project
               </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
       )}
       
-      {/* Lightbox for images */}
-      {console.log("Rendering lightbox component, isLightboxOpen:", isLightboxOpen)}
-      {isLightboxOpen && lightboxImages.length > 0 && (
-        <div 
-          className="fixed inset-0 z-[9999] bg-black bg-opacity-90 flex items-center justify-center p-4"
-          onClick={() => {
-            console.log("Lightbox background clicked, closing");
-            setIsLightboxOpen(false);
-          }}
-        >
-          {/* Close button */}
-          <button 
-            className="absolute top-4 right-4 p-2 bg-black bg-opacity-50 rounded-full text-white hover:bg-opacity-70"
-            onClick={() => setIsLightboxOpen(false)}
-          >
-            <X className="w-6 h-6" />
-          </button>
-          
-          {/* Image container */}
-          <div className="relative max-w-4xl max-h-[80vh] flex items-center justify-center">
+      {/* Lightbox for Images */}
+      {isLightboxOpen && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center">
+          <div className="max-w-4xl mx-auto p-4 relative">
             <img 
               src={lightboxImages[currentImageIndex]} 
-              alt={`Showcase image ${currentImageIndex + 1}`}
-              className="max-h-full max-w-full object-contain rounded-md"
-              onClick={(e) => e.stopPropagation()}
+              alt={`Lightbox image ${currentImageIndex + 1}`} 
+              className="max-h-[80vh] max-w-full object-contain" 
             />
-          </div>
-          
-          {/* Navigation buttons */}
-          {lightboxImages.length > 1 && (
-            <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-4">
-              <button 
-                className="p-2 rounded-full bg-black bg-opacity-50 text-white hover:bg-opacity-80"
-                onClick={(e) => { 
-                  e.stopPropagation(); 
-                  setCurrentImageIndex(prev => 
-                    prev === 0 ? lightboxImages.length - 1 : prev - 1
-                  ); 
-                }}
-                aria-label="Previous image"
+            
+            <div className="absolute top-1/2 left-2 transform -translate-y-1/2">
+              <Button 
+                onClick={goToPrevious} 
+                variant="outline" 
+                size="icon" 
+                className="bg-white/10 hover:bg-white/20 rounded-full"
               >
-                <ChevronLeft className="w-8 h-8" />
-              </button>
-              <button 
-                className="p-2 rounded-full bg-black bg-opacity-50 text-white hover:bg-opacity-80"
-                onClick={(e) => { 
-                  e.stopPropagation(); 
-                  setCurrentImageIndex(prev => 
-                    prev === lightboxImages.length - 1 ? 0 : prev + 1
-                  ); 
-                }}
-                aria-label="Next image"
-              >
-                <ChevronRight className="w-8 h-8" />
-              </button>
+                <ChevronLeft className="h-4 w-4 text-white" />
+              </Button>
             </div>
-          )}
-          
-          {/* Image counter */}
-          {lightboxImages.length > 1 && (
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black bg-opacity-50 rounded-full px-3 py-1 text-white text-sm">
+            
+            <div className="absolute top-1/2 right-2 transform -translate-y-1/2">
+              <Button 
+                onClick={goToNext} 
+                variant="outline" 
+                size="icon" 
+                className="bg-white/10 hover:bg-white/20 rounded-full"
+              >
+                <ChevronRight className="h-4 w-4 text-white" />
+              </Button>
+            </div>
+            
+            <div className="absolute top-2 right-2">
+              <Button 
+                onClick={closeLightbox} 
+                variant="outline" 
+                size="icon" 
+                className="bg-white/10 hover:bg-white/20 rounded-full"
+              >
+                <X className="h-4 w-4 text-white" />
+              </Button>
+            </div>
+            
+            <div className="absolute bottom-2 left-0 right-0 text-center text-sm text-white">
               {currentImageIndex + 1} / {lightboxImages.length}
             </div>
-          )}
+          </div>
         </div>
       )}
       
-      {/* Image Delete Confirmation Dialog */}
+      {/* Confirm Delete Image Dialog */}
       <AlertDialog open={isConfirmingDeleteImage} onOpenChange={setIsConfirmingDeleteImage}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Image</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this image? This action cannot be undone.
-              {currentProject?.thumbnailUrl === imageToDelete && (
-                <p className="mt-2 text-red-500 font-semibold">
-                  Warning: This is the current thumbnail image for this project.
-                </p>
-              )}
+              Are you sure you want to delete this image?
+              This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={cancelDeleteImage}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDeleteImage}
-              className="bg-red-500 hover:bg-red-600"
-            >
-              Delete
-            </AlertDialogAction>
+            <AlertDialogAction onClick={confirmDeleteImage} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
+    </Card>
   );
 }
