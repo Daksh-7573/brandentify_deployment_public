@@ -163,15 +163,89 @@ const SharedCardPage: React.FC<SharedCardPageProps> = ({ userId }) => {
     };
   }, [userId]);
 
-  // Don't show a separate loading screen since we're using placeholders
-  // This improves perceived performance by instantly showing a shell
+  // Show a page skeleton instead of just a loader
   if (loading && !userData) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="h-12 w-12 animate-spin text-blue-500 mx-auto mb-4" />
-          <h2 className="text-xl font-medium">Loading Quantum Card...</h2>
-          <p className="text-gray-500 mt-2">Please wait while we prepare this professional's card</p>
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950 py-12 px-4">
+        <div className="max-w-4xl mx-auto">
+          {/* Skeleton header */}
+          <div className="flex items-center mb-8">
+            <div className="w-24 h-10 bg-gray-300 dark:bg-gray-700 rounded-md animate-pulse"></div>
+            <div className="ml-auto">
+              <div className="w-24 h-10 bg-gray-300 dark:bg-gray-700 rounded-md animate-pulse"></div>
+            </div>
+          </div>
+          
+          {/* Main content skeleton */}
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 animate-pulse">
+            {/* Title skeleton */}
+            <div className="flex flex-col items-center mb-8">
+              <div className="h-8 bg-gray-300 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
+              <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-1/2"></div>
+            </div>
+            
+            {/* Card skeleton */}
+            <div className="flex flex-col items-center justify-center">
+              <div className="rounded-lg overflow-hidden shadow-lg" 
+                   style={{height: "490px", width: "280px"}}>
+                {/* Card header skeleton */}
+                <div className="h-24 bg-gray-300 dark:bg-gray-700 relative">
+                  <div className="absolute left-1/2 transform -translate-x-1/2 top-12">
+                    <div className="h-20 w-20 rounded-full border-4 border-white dark:border-slate-900 bg-gray-400 dark:bg-gray-600"></div>
+                  </div>
+                </div>
+                
+                {/* Card content skeleton */}
+                <div className="bg-white dark:bg-gray-800 pt-14 pb-4 px-4 flex-1 h-[400px]">
+                  {/* Name and title placeholders */}
+                  <div className="flex flex-col items-center space-y-2 mb-3">
+                    <div className="h-6 bg-gray-300 dark:bg-gray-700 rounded w-3/4"></div>
+                    <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-1/2"></div>
+                  </div>
+                  
+                  {/* Fields placeholders */}
+                  <div className="space-y-3 mt-6">
+                    <div className="flex items-center gap-2">
+                      <div className="h-4 w-4 rounded-full bg-gray-300 dark:bg-gray-700"></div>
+                      <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-3/4"></div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="h-4 w-4 rounded-full bg-gray-300 dark:bg-gray-700"></div>
+                      <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-3/4"></div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="h-4 w-4 rounded-full bg-gray-300 dark:bg-gray-700"></div>
+                      <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-3/4"></div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="h-4 w-4 rounded-full bg-gray-300 dark:bg-gray-700"></div>
+                      <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-3/4"></div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="h-4 w-4 rounded-full bg-gray-300 dark:bg-gray-700"></div>
+                      <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-3/4"></div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Card footer skeleton */}
+                <div className="h-6 bg-gray-300 dark:bg-gray-700 flex items-center justify-center">
+                  <div className="h-3 bg-gray-400 dark:bg-gray-600 rounded w-1/3"></div>
+                </div>
+              </div>
+              
+              {/* Share box skeleton */}
+              <div className="mt-8 w-full max-w-md mx-auto">
+                <div className="bg-gray-300 dark:bg-gray-700 rounded-md h-12"></div>
+              </div>
+              
+              {/* Bottom CTA skeleton */}
+              <div className="mt-8 text-center">
+                <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-3/4 mx-auto mb-4"></div>
+                <div className="h-10 bg-gray-400 dark:bg-gray-600 rounded-md w-48 mx-auto"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -224,15 +298,59 @@ const SharedCardPage: React.FC<SharedCardPageProps> = ({ userId }) => {
           </div>
 
           <div className="flex flex-col items-center justify-center">
-            {/* Create a preloaded card container to avoid loading flashes */}
+            {/* Create a preloaded card container with liquid skeleton loading */}
             <div className="visiting-card-container" style={{ 
               width: "280px", 
               margin: "0 auto",
               position: "relative" 
             }}>
               <Suspense fallback={
-                <div className="p-4 flex items-center justify-center" style={{height: "490px"}}>
-                  <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+                <div className="animate-pulse rounded-lg overflow-hidden shadow-lg" 
+                     style={{height: "490px", width: "280px"}}>
+                  {/* Liquid skeleton header */}
+                  <div className="h-24 bg-gray-300 dark:bg-gray-700 relative">
+                    <div className="absolute left-1/2 transform -translate-x-1/2 top-12">
+                      <div className="h-20 w-20 rounded-full border-4 border-white dark:border-slate-900 bg-gray-400 dark:bg-gray-600"></div>
+                    </div>
+                  </div>
+                  
+                  {/* Liquid skeleton main content */}
+                  <div className="bg-white dark:bg-gray-800 pt-14 pb-4 px-4 flex-1 h-[400px]">
+                    {/* Name and title placeholders */}
+                    <div className="flex flex-col items-center space-y-2 mb-3">
+                      <div className="h-6 bg-gray-300 dark:bg-gray-700 rounded w-3/4"></div>
+                      <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-1/2"></div>
+                    </div>
+                    
+                    {/* Fields placeholders */}
+                    <div className="space-y-3 mt-6">
+                      <div className="flex items-center gap-2">
+                        <div className="h-4 w-4 rounded-full bg-gray-300 dark:bg-gray-700"></div>
+                        <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-3/4"></div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="h-4 w-4 rounded-full bg-gray-300 dark:bg-gray-700"></div>
+                        <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-3/4"></div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="h-4 w-4 rounded-full bg-gray-300 dark:bg-gray-700"></div>
+                        <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-3/4"></div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="h-4 w-4 rounded-full bg-gray-300 dark:bg-gray-700"></div>
+                        <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-3/4"></div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="h-4 w-4 rounded-full bg-gray-300 dark:bg-gray-700"></div>
+                        <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-3/4"></div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Liquid skeleton footer */}
+                  <div className="h-6 bg-gray-300 dark:bg-gray-700 flex items-center justify-center">
+                    <div className="h-3 bg-gray-400 dark:bg-gray-600 rounded w-1/3"></div>
+                  </div>
                 </div>
               }>
                 <VisitingCardPreview
