@@ -590,7 +590,7 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
             
             {/* Profile Link */}
             <div 
-              className="flex items-center justify-between px-3 py-2 rounded-md"
+              className="flex items-center justify-between px-3 py-1 rounded-md"
               style={{
                 backgroundColor: colors.panelBg,
                 transform: `translateY(${hoveredSection === 'profile-link' ? '-2px' : '0'})`,
