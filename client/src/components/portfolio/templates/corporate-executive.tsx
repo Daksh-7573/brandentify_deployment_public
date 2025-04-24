@@ -651,38 +651,24 @@ export default function CorporateExecutive({
                     </h3>
                   </div>
                   
-                  {/* Proficiency Level - Enhanced with percentage and progress bar */}
+                  {/* Proficiency Level - Enhanced with percentage progress bar */}
                   <div className="space-y-2">
-                    {/* Dot indicators and text level */}
-                    <div className="flex items-center gap-1">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <div 
-                          key={i} 
-                          className={`h-1 rounded-full ${i < (skill.proficiency || 3) ? 'bg-[#6a0dad]' : 'bg-gray-200'}`} 
-                          style={{ width: '12px' }}
-                        ></div>
-                      ))}
-                      <span className="ml-2 text-xs text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
-                        {skill.proficiency ? `${skill.proficiency}/5` : ''}
-                      </span>
-                    </div>
-                    
                     {/* Progress bar with percentage */}
-                    <div className="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
+                    <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
                       <div 
                         className="h-full bg-gradient-to-r from-[#6a0dad] to-[#9c27b0]" 
                         style={{ 
-                          width: `${skill.proficiency ? (skill.proficiency / 5) * 100 : 60}%`,
+                          width: `${skill.proficiency ? skill.proficiency : 0}%`,
                           transition: 'width 1s ease-in-out'
                         }}
                       ></div>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-xs text-[#6a0dad] font-medium">
-                        {skill.proficiency ? `${Math.round((skill.proficiency / 5) * 100)}%` : ''}
+                        {skill.proficiency ? `${skill.proficiency}%` : '0%'}
                       </span>
-                      <span className="text-xs text-gray-400">
-                        {skill.years ? `${skill.years} ${skill.years === 1 ? 'year' : 'years'}` : ''}
+                      <span className="text-xs text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        {skill.level || ''}
                       </span>
                     </div>
                   </div>
