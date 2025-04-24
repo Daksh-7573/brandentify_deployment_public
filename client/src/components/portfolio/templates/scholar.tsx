@@ -300,10 +300,10 @@ export default function Scholar({
   }, []);
   // Set up animated typewriter text based on user info
   const phrases = [
-    userInfo.title || "Student & Lifelong Learner",
-    userInfo.industry ? `Specializing in ${userInfo.industry}` : "Knowledge Seeker",
-    userInfo.domain ? `Focused on ${userInfo.domain}` : "Passionate about Learning",
-    userInfo.lookingFor ? `Looking for ${userInfo.lookingFor}` : "Open to Opportunities"
+    userInfo && userInfo.title ? userInfo.title : "Student & Lifelong Learner",
+    userInfo && userInfo.industry ? `Specializing in ${userInfo.industry}` : "Knowledge Seeker",
+    userInfo && userInfo.domain ? `Focused on ${userInfo.domain}` : "Passionate about Learning",
+    userInfo && userInfo.lookingFor ? `Looking for ${userInfo.lookingFor}` : "Open to Opportunities"
   ];
 
   const [text] = useTypewriter({
