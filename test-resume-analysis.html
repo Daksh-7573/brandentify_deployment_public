@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resume Analysis Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    h1, h2 {
+      color: #333;
+    }
+    .container {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    textarea {
+      width: 100%;
+      height: 300px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+      font-family: monospace;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .results {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 20px;
+      background-color: #f9f9f9;
+      margin-top: 20px;
+      white-space: pre-wrap;
+    }
+    .panel {
+      flex: 1;
+    }
+    .loading {
+      display: none;
+      margin-top: 10px;
+      color: #666;
+    }
+    .tab-container {
+      margin-bottom: 20px;
+    }
+    .tab {
+      overflow: hidden;
+      border: 1px solid #ccc;
+      background-color: #f1f1f1;
+      border-radius: 4px 4px 0 0;
+    }
+    .tab button {
+      background-color: inherit;
+      float: left;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      padding: 10px 16px;
+      transition: 0.3s;
+      color: #333;
+      margin: 0;
+    }
+    .tab button:hover {
+      background-color: #ddd;
+    }
+    .tab button.active {
+      background-color: #4CAF50;
+      color: white;
+    }
+    .tabcontent {
+      display: none;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-top: none;
+      border-radius: 0 0 4px 4px;
+    }
+    .visible {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <h1>Enhanced Resume Analysis Tester</h1>
+  <p>This page helps test the enhanced resume analysis API endpoints with the new Canva resume handling instructions.</p>
+
+  <div class="tab-container">
+    <div class="tab">
+      <button class="tablinks active" onclick="openTab(event, 'standard')">Standard Resume</button>
+      <button class="tablinks" onclick="openTab(event, 'canva')">Canva Resume</button>
+    </div>
+
+    <div id="standard" class="tabcontent visible">
+      <h2>Standard Resume Analysis</h2>
+      <div class="container">
+        <div class="panel">
+          <h3>Enter Resume Text:</h3>
+          <textarea id="standardResumeText">John Doe
+Software Engineer with 5+ years of experience
+Email: john@example.com | Phone: (123) 456-7890
+
+SUMMARY
+Experienced software engineer specializing in web development and cloud architecture.
+Passionate about creating scalable applications and mentoring junior developers.
+
+EXPERIENCE
+Senior Software Engineer, Tech Solutions Inc. (2021-Present)
+- Developed and maintained web applications using React, Node.js, and AWS
+- Led a team of 3 developers on a major client project
+- Implemented CI/CD pipelines that reduced deployment time by 40%
+
+Software Developer, Digital Innovations (2018-2021)
+- Built RESTful APIs using Express.js and MongoDB
+- Collaborated with UX designers to implement responsive interfaces
+- Reduced application load time by 30% through code optimization
+
+EDUCATION
+Bachelor of Science in Computer Science
+University of Technology (2014-2018)
+
+SKILLS
+Programming: JavaScript, TypeScript, Python, SQL
+Frameworks: React, Node.js, Express
+Tools: Git, Docker, AWS, CI/CD
+Soft Skills: Team leadership, Communication, Problem-solving</textarea>
+          <button onclick="analyzeStandardResume()">Analyze Standard Resume</button>
+          <div id="standardLoading" class="loading">Analyzing resume... (this may take up to 30 seconds)</div>
+        </div>
+        <div class="panel">
+          <h3>Analysis Results:</h3>
+          <div id="standardResults" class="results">Results will appear here...</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="canva" class="tabcontent">
+      <h2>Canva Resume Analysis</h2>
+      <div class="container">
+        <div class="panel">
+          <h3>Enter Canva Resume Text:</h3>
+          <textarea id="canvaResumeText">SOPHIA MARTINEZ
+UX/UI DESIGNER & FRONTEND DEVELOPER
+sophia@example.com | (555) 123-4567 | linkedin.com/in/sophiam | portfolio: sophia-designs.com
+
+PROFILE                                                   SKILLS
+Creative and user-focused designer with                  UX/UI Design ●●●●●
+4+ years of experience crafting beautiful,               Wireframing ●●●●○
+accessible interfaces. Combines strong                   User Research ●●●●○
+design sensibilities with frontend                       HTML/CSS ●●●●●
+development skills to create seamless                    JavaScript ●●●○○
+user experiences.                                        React ●●●●○
+                                                        Figma ●●●●●
+                                                        Adobe XD ●●●●○
+WORK EXPERIENCE                                          User Testing ●●●○○
+                                                        Responsive Design ●●●●●
+Senior UX/UI Designer                                    Typography ●●●●○
+CREATIVE SOLUTIONS INC.
+2021 - PRESENT
+• Led redesign of primary banking app used by 50,000+ customers, resulting in 35% improvement in user satisfaction and 28% reduction in support tickets
+• Collaborated with product managers and developers to implement design system that reduced design inconsistencies by 75%
+• Conducted 30+ user interviews and usability tests to validate design decisions
+• Mentored 3 junior designers on best practices and design principles
+
+UX Designer
+TECH INNOVATIONS
+2019 - 2021
+• Created wireframes, prototypes, and high-fidelity designs for e-commerce platform
+• Increased conversion rates by 22% through A/B testing and iterative design improvements
+• Developed responsive web interfaces using HTML, CSS, and JavaScript
+• Implemented accessibility standards to ensure WCAG 2.1 AA compliance
+
+EDUCATION                                               CERTIFICATIONS
+Bachelor of Fine Arts                                   • Google UX Design Professional Certificate
+Graphic Design                                          • Advanced React Development
+DESIGN UNIVERSITY                                       • Accessibility in Web Design
+2015 - 2019
+Graduated with Honors                                   LANGUAGES
+GPA: 3.8/4.0                                           • English (Native)
+                                                       • Spanish (Fluent)
+
+PROJECTS
+HEALTHCARE APP REDESIGN
+• Simplified patient scheduling workflow reducing booking time by 45%
+• Improved information architecture to help users find relevant information faster
+• Created design system with 200+ reusable components
+
+FINANCIAL DASHBOARD
+• Designed intuitive data visualization tools for complex financial information
+• Conducted card sorting exercises to optimize dashboard organization
+• Increased user engagement by 40% through improved UX</textarea>
+          <button onclick="analyzeCanvaResume()">Analyze Canva Resume</button>
+          <div id="canvaLoading" class="loading">Analyzing resume... (this may take up to 60 seconds)</div>
+        </div>
+        <div class="panel">
+          <h3>Analysis Results:</h3>
+          <div id="canvaResults" class="results">Results will appear here...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openTab(evt, tabName) {
+      // Hide all tab content
+      const tabcontent = document.getElementsByClassName("tabcontent");
+      for (let i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].classList.remove("visible");
+      }
+      
+      // Remove active class from all tab buttons
+      const tablinks = document.getElementsByClassName("tablinks");
+      for (let i = 0; i < tablinks.length; i++) {
+        tablinks[i].classList.remove("active");
+      }
+      
+      // Show the current tab and add active class to the button
+      document.getElementById(tabName).classList.add("visible");
+      evt.currentTarget.classList.add("active");
+    }
+    
+    async function analyzeStandardResume() {
+      const resumeText = document.getElementById('standardResumeText').value;
+      const resultsContainer = document.getElementById('standardResults');
+      const loadingIndicator = document.getElementById('standardLoading');
+      
+      if (!resumeText.trim()) {
+        resultsContainer.textContent = "Please enter resume text.";
+        return;
+      }
+      
+      loadingIndicator.style.display = 'block';
+      resultsContainer.textContent = "Processing...";
+      
+      try {
+        const response = await fetch('/api/test-resume-analysis', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ resumeText }),
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          resultsContainer.textContent = data.analysis;
+        } else {
+          resultsContainer.textContent = `Error: ${data.error}`;
+        }
+      } catch (error) {
+        resultsContainer.textContent = `An error occurred: ${error.message}`;
+      } finally {
+        loadingIndicator.style.display = 'none';
+      }
+    }
+    
+    async function analyzeCanvaResume() {
+      const resumeText = document.getElementById('canvaResumeText').value;
+      const resultsContainer = document.getElementById('canvaResults');
+      const loadingIndicator = document.getElementById('canvaLoading');
+      
+      if (!resumeText.trim()) {
+        resultsContainer.textContent = "Please enter resume text.";
+        return;
+      }
+      
+      loadingIndicator.style.display = 'block';
+      resultsContainer.textContent = "Processing... (this might take a minute)";
+      
+      try {
+        const response = await fetch('/api/test-canva-resume-analysis', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ resumeText }),
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          resultsContainer.textContent = data.analysis;
+        } else {
+          resultsContainer.textContent = `Error: ${data.error}`;
+        }
+      } catch (error) {
+        resultsContainer.textContent = `An error occurred: ${error.message}`;
+      } finally {
+        loadingIndicator.style.display = 'none';
+      }
+    }
+  </script>
+</body>
+</html>
