@@ -7,6 +7,28 @@ import path from "path";
 import fs from "fs";
 import crypto from "crypto";
 
+// Define types for resume context storage
+interface ResumeContext {
+  resumeText: string;
+  detectedRole: string | null;
+  skills: string[];
+  detectedIndustry: string | null;
+  uploadDate: string;
+  fileName: string;
+}
+
+// Global storage for resume contexts - persists between requests
+declare global {
+  var resumeContexts: {
+    [userId: string]: ResumeContext;
+  };
+}
+
+// Initialize the global resume contexts storage
+if (!global.resumeContexts) {
+  global.resumeContexts = {};
+}
+
 // Handle Musk AI assistant chat requests
 export const handleMuskChat = async (req: Request, res: Response) => {
   try {
@@ -18,6 +40,24 @@ export const handleMuskChat = async (req: Request, res: Response) => {
     
     // Enrich context with user data if userId is provided
     let enrichedContext = context || {};
+    
+    // Add session to context so it can be used to retrieve resume data
+    enrichedContext.req = req;
+    
+    // Check global storage for resume context (alternative to session)
+    if (!global.resumeContexts) {
+      global.resumeContexts = {};
+    }
+    
+    // If we're missing session support, check if there is a resume context stored globally
+    if (req.session?.resumeContexts?.[userId]) {
+      console.log(`Found resume context in session for user ${userId}`);
+    } else if (global.resumeContexts[userId]) {
+      console.log(`Found resume context in global storage for user ${userId}`);
+    } else {
+      console.log(`No resume context found for user ${userId}`);
+    }
+    
     if (userId) {
       enrichedContext = await enrichContextWithUserData(userId, enrichedContext);
     }
@@ -29,7 +69,12 @@ export const handleMuskChat = async (req: Request, res: Response) => {
     return res.status(200).json({
       id: 'response-' + Date.now(),
       message: response,
-      timestamp: new Date()
+      timestamp: new Date(),
+      contextUsed: {
+        dataSource: enrichedContext.dataSource || 'profile',
+        hasResumeData: !!enrichedContext.resumeData,
+        detectedRole: enrichedContext.resumeData?.detectedRole || null
+      }
     });
   } catch (error) {
     console.error("Error in Musk chat handler:", error);
@@ -58,8 +103,8 @@ async function enrichContextWithUserData(userId: number, context?: any) {
     // Get user's projects/assignments
     const projects = await storage.getProjectsByUserId(userId);
     
-    // Create enriched context with user data
-    const enrichedContext = {
+    // Create base context with user data
+    const baseContext = {
       ...context,
       userData: {
         profile: {
@@ -74,6 +119,33 @@ async function enrichContextWithUserData(userId: number, context?: any) {
         projects: projects || []
       }
     };
+    
+    // Check if we have a resume context stored in the session
+    let enrichedContext = baseContext;
+    if (context?.req?.session?.resumeContexts?.[userId]) {
+      const resumeContext = context.req.session.resumeContexts[userId];
+      console.log(`Found stored resume context for user ${userId}: `, resumeContext);
+      
+      // Add resume context information
+      enrichedContext = {
+        ...baseContext,
+        resumeData: resumeContext,
+        // Signal to Musk that it should use resume data with higher priority
+        dataSource: 'resume',
+        lastUploaded: resumeContext.uploadDate
+      };
+    } else if (global.resumeContexts && global.resumeContexts[userId]) {
+      // Alternative storage mechanism if session is not available
+      const resumeContext = global.resumeContexts[userId];
+      console.log(`Found global resume context for user ${userId}: `, resumeContext);
+      
+      enrichedContext = {
+        ...baseContext,
+        resumeData: resumeContext,
+        dataSource: 'resume',
+        lastUploaded: resumeContext.uploadDate
+      };
+    }
     
     return enrichedContext;
   } catch (error) {
@@ -110,13 +182,27 @@ As Musk, your goal is to provide deeply personalized, context-aware career guida
 # User Context
 ${JSON.stringify(context.userData || {}, null, 2)}
 
+${context.resumeData ? `# Resume Context
+The user has uploaded a resume recently with the following information:
+- Detected Role: ${context.resumeData.detectedRole || 'Not detected'}
+- Skills Mentioned: ${context.resumeData.skills?.join(', ') || 'None detected'} 
+- Industry: ${context.resumeData.detectedIndustry || 'Not detected'}
+- Filename: ${context.resumeData.fileName || 'Unknown'}
+- Upload Date: ${context.resumeData.uploadDate || 'Unknown'}
+
+You must prioritize this resume data over the user profile data when responding to queries about the user's career, skills, or resume. When tailoring the resume for a specific role, focus on the role mentioned in the uploaded resume, not the role in the user profile.
+` : ''}
+
+# Data Source Priority
+${context.dataSource === 'resume' ? '**IMPORTANT: You must prioritize the resume data over profile data in your responses.**' : 'Use the profile data for personalization.'}
+
 # Response Requirements
-1. Analyze the user's profile data to provide truly personalized advice
+1. ${context.resumeData ? 'Prioritize the resume context for all career advice and use it as the primary source of information about the user.' : 'Analyze the user\'s profile data to provide truly personalized advice'}
 2. Highlight platform features when relevant (e.g. "You could showcase this project in your Brandentifier portfolio")
 3. Keep responses concise but valuable (3-4 paragraphs maximum)
 4. Always end with: "Quick Response Options: " followed by 3-4 quoted options like "Option 1", "Option 2"
-5. When discussing skills, reference actual skills from their profile
-6. When discussing career paths, reference their actual work experience
+5. When discussing skills, reference actual skills from ${context.resumeData ? 'their uploaded resume' : 'their profile'}
+6. When discussing career paths, reference their actual work experience from ${context.resumeData ? 'their uploaded resume' : 'their profile'}
 
 # Formatting Guidelines
 - Use proper Markdown headers (# Main Header, ## Subheader, ### Section title) for clear structure
@@ -130,8 +216,8 @@ ${JSON.stringify(context.userData || {}, null, 2)}
   - ⚠️ for warnings/cautions
   - 💡 for insights/tips
   - 📝 for action items
-- Use \`code formatting\` for technical terms, code snippets, or commands
-- Use ```code blocks``` for multi-line code examples or detailed instructions
+- Use \\\`code formatting\\\` for technical terms, code snippets, or commands
+- Use \\\`\\\`\\\`code blocks\\\`\\\`\\\` for multi-line code examples or detailed instructions
 - Use checkboxes [x] for completed items and [ ] for action items
 - Add horizontal rules (---) between major sections
 - Structure responses with clear headers, concise paragraphs and visual separation
@@ -235,12 +321,63 @@ export const handleResumeUpload = async (req: Request, res: Response) => {
       isLink: false
     });
     
-    // Return the analysis
+    // Extract key resume metadata for context preservation
+    let resumeContext = null;
+    try {
+      // Extract role information using a simple regex pattern
+      const rolePattern = /(\b(Product Manager|Software Engineer|Data Scientist|UX Designer|Project Manager|Marketing Manager|Sales Representative|Business Analyst|Financial Analyst|Human Resources Manager|Operations Manager|Customer Service Representative|Administrative Assistant|Executive Assistant|Research Scientist|Content Writer|Graphic Designer|Web Developer|Frontend Developer|Backend Developer|Full Stack Developer|DevOps Engineer|System Administrator|Network Engineer|IT Support Specialist|Quality Assurance Engineer|Test Engineer|Security Engineer|Database Administrator|Solutions Architect|Technical Lead|Engineering Manager|Director of Engineering|Chief Technology Officer|Chief Information Officer|Chief Executive Officer|Founder|Co-Founder)\b)/i;
+      
+      // Try to find a role in the analysis result
+      const roleMatch = analysisResult.match(rolePattern);
+      const detectedRole = roleMatch ? roleMatch[1] : null;
+      
+      // Extract skills mentioned
+      const skillsPattern = /\b(React|JavaScript|TypeScript|Node\.js|Express|HTML|CSS|Python|Java|C\#|C\+\+|SQL|PostgreSQL|MongoDB|AWS|Azure|Git|Docker|Kubernetes|Product Management|UX Research|UI Design|Agile|Scrum|Kanban|Marketing|Sales|Finance|Leadership|Communication|Problem Solving|Critical Thinking|Team Building)\b/gi;
+      const skills = [...new Set(analysisResult.match(skillsPattern) || [])];
+      
+      // Extract industry if mentioned
+      const industryPattern = /\b(Technology|Healthcare|Finance|Education|Retail|Manufacturing|Media|Entertainment|Government|Transportation|Energy|Agriculture|Telecom|Hospitality|Real Estate|Construction)\b/i;
+      const industryMatch = analysisResult.match(industryPattern);
+      const detectedIndustry = industryMatch ? industryMatch[1] : null;
+      
+      resumeContext = {
+        resumeText: resumeText.substring(0, 5000), // Store a portion of the resume text for context
+        detectedRole,
+        skills,
+        detectedIndustry,
+        uploadDate: new Date().toISOString(),
+        fileName: resumeFile.name
+      };
+      
+      // Store resume context in global storage
+      global.resumeContexts[userId.toString()] = resumeContext;
+      
+      console.log(`Stored resume context for user ${userId} in global storage: ${JSON.stringify(resumeContext, null, 2)}`);
+      
+      // Try to store in session if available (as a backup)
+      try {
+        if (req.session && typeof req.session === 'object') {
+          if (!req.session.resumeContexts) {
+            req.session.resumeContexts = {};
+          }
+          req.session.resumeContexts[userId] = resumeContext;
+          console.log(`Also stored resume context in session for user ${userId}`);
+        }
+      } catch (sessionError) {
+        console.log("Session storage not available, using only global storage");
+      }
+    } catch (contextError) {
+      console.error("Error extracting resume context:", contextError);
+      // Continue even if context extraction fails
+    }
+    
+    // Return the analysis with context
     return res.status(200).json({
       id: 'resume-analysis-' + Date.now(),
       message: analysisResult,
       timestamp: new Date(),
-      filename: uniqueFilename
+      filename: uniqueFilename,
+      resumeContext: resumeContext
     });
     
   } catch (error) {
