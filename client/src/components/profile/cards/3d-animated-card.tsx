@@ -136,10 +136,11 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
       {/* Main Card Container */}
       <div
         ref={cardRef}
-        className="w-full aspect-[2/3.5] rounded-lg overflow-hidden relative cursor-pointer"
+        className="w-full aspect-[2/4.2] rounded-lg overflow-visible relative cursor-pointer"
         style={{
           width: "100%",
           maxWidth: "360px",
+          minHeight: "780px", /* Set a minimum height to ensure content fits */
           margin: "0 auto",
           transformStyle: "preserve-3d",
           transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
@@ -192,8 +193,8 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
           />
         </div>
         
-        {/* Card Content Container */}
-        <div className="absolute inset-0 p-6 flex flex-col z-10">
+        {/* Card Content Container - Made Scrollable */}
+        <div className="absolute inset-0 p-6 flex flex-col z-10 overflow-y-auto">
           {/* Profile Picture Section */}
           <div 
             className="flex justify-center mb-6 relative"
@@ -532,7 +533,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
       </div>
       
       {/* CSS Animations */}
-      <style jsx>{`
+      <style>{`
         @keyframes spin {
           from { transform: rotate(0deg) scale(1.15); }
           to { transform: rotate(360deg) scale(1.15); }
