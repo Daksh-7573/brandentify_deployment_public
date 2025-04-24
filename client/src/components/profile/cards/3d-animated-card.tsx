@@ -10,9 +10,7 @@ import {
   Copy,
   Hash,
   Building2,
-  Sparkles,
-  Volume2,
-  VolumeX
+  Sparkles
 } from "lucide-react";
 
 interface ThreeDAnimatedCardProps {
@@ -25,8 +23,8 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
   const [rotateY, setRotateY] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [copySuccess, setCopySuccess] = useState<string | null>(null);
-  const [contactExpanded, setContactExpanded] = useState(false);
-  const [soundEnabled, setSoundEnabled] = useState(false);
+  // Contact information is always shown
+  const [contactExpanded] = useState(true);
   const [layers, setLayers] = useState<HTMLElement[]>([]);
   
   // Refs
@@ -69,12 +67,9 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
     }
   }, []);
   
-  // Handle sound effects
+  // Handle sound effects (disabled)
   const playSound = () => {
-    if (soundEnabled && audioRef.current) {
-      audioRef.current.currentTime = 0;
-      audioRef.current.play().catch(e => console.error("Error playing sound:", e));
-    }
+    // Sound effects have been disabled
   };
   
   // Handle 3D tilt effect
@@ -134,17 +129,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
       });
   };
   
-  // Handle contact info expansion
-  const toggleContactInfo = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setContactExpanded(!contactExpanded);
-  };
-  
-  // Toggle sound effects
-  const toggleSound = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setSoundEnabled(!soundEnabled);
-  };
+  // Contact info is always shown so no toggle needed
 
   return (
     <div className="w-full" style={{ perspective: "1200px" }}>
@@ -434,26 +419,25 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
                 backdropFilter: "blur(10px)",
                 border: `1px solid ${colors.electricBlue}20`,
                 boxShadow: `0 0 20px ${colors.electricBlue}10`,
-                height: contactExpanded ? "auto" : "40px",
+                height: "auto", // Always show expanded to prevent details from being cut off
               }}
             >
               {/* Contact Header */}
               <div 
-                className="flex items-center justify-between px-4 py-2 cursor-pointer"
-                onClick={toggleContactInfo}
+                className="flex items-center justify-between px-4 py-2"
                 style={{
-                  borderBottom: contactExpanded ? `1px solid ${colors.electricBlue}20` : "none",
+                  borderBottom: `1px solid ${colors.electricBlue}20`,
                 }}
               >
                 <h3 
                   className="text-sm font-medium"
-                  style={{ color: contactExpanded ? colors.electricBlue : colors.silverGray }}
+                  style={{ color: colors.electricBlue }}
                 >
                   Contact Information
                 </h3>
                 <div className="flex items-center gap-2">
                   <Sparkles 
-                    className={`h-4 w-4 transition-opacity duration-500 ${contactExpanded ? 'opacity-100' : 'opacity-0'}`}
+                    className="h-4 w-4"
                     style={{ color: colors.electricBlue }}
                   />
                 </div>
