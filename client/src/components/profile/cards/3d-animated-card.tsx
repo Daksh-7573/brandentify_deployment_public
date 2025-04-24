@@ -206,7 +206,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
         </div>
         
         {/* Card Content Container */}
-        <div className="absolute inset-0 p-6 flex flex-col z-10 overflow-visible">
+        <div className="absolute inset-0 p-6 pb-16 flex flex-col z-10 overflow-visible">
           {/* Profile Picture Section */}
           <div 
             className="flex justify-center mb-6 relative"
@@ -409,7 +409,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
           
           {/* Contact Information with Glass Effect */}
           <div 
-            className="mt-auto mb-7"
+            className="mt-auto mb-12"
             data-layer="1"
           >
             <div 
@@ -449,37 +449,31 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
               
               {/* Contact Details - Only shown when expanded */}
               {contactExpanded && (
-                <div className="px-4 py-3 pb-8 space-y-3">
+                <div className="px-4 py-3 pb-10 space-y-3" style={{ marginBottom: "25px" }}>
                   {/* Email */}
-                  <div className="flex items-center">
-                    <div className="flex items-center gap-2">
-                      <Mail className="h-4 w-4 text-gray-400" />
-                      <span className="text-sm text-gray-300 truncate max-w-[220px]">
-                        {userData.email}
-                      </span>
-                    </div>
+                  <div className="flex items-start">
+                    <Mail className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
+                    <span className="text-sm text-gray-300 ml-2 break-all">
+                      {userData.email}
+                    </span>
                   </div>
                   
                   {/* Phone Number */}
                   {userData.phoneNumber && (
-                    <div className="flex items-center">
-                      <div className="flex items-center gap-2">
-                        <Phone className="h-4 w-4 text-gray-400" />
-                        <span className="text-sm text-gray-300 truncate max-w-[220px]">
-                          {userData.phoneNumber}
-                        </span>
-                      </div>
+                    <div className="flex items-start">
+                      <Phone className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
+                      <span className="text-sm text-gray-300 ml-2 break-all">
+                        {userData.phoneNumber}
+                      </span>
                     </div>
                   )}
                   
                   {/* Profile Link */}
-                  <div className="flex items-center">
-                    <div className="flex items-center gap-2">
-                      <Globe className="h-4 w-4 text-gray-400" />
-                      <span className="text-sm text-gray-300 truncate max-w-[220px]">
-                        {profileLink}
-                      </span>
-                    </div>
+                  <div className="flex items-start">
+                    <Globe className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
+                    <span className="text-sm text-gray-300 ml-2 break-all">
+                      {profileLink}
+                    </span>
                   </div>
                 </div>
               )}
