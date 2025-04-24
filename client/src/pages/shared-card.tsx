@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import SharedCardView from '@/components/profile/shared-card-view';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { ArrowLeft, Check, Copy, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'wouter';
 import VisitingCardPreview from '@/components/profile/visiting-card-preview';
+import { useToast } from '@/hooks/use-toast';
+import type { UserData as UserDataType } from '@/types/user';
 
 interface SharedCardPageProps {
   userId: string;
 }
 
-// Define the user data interface
-interface UserData {
+// Define mapping interface for our API data
+interface UserDataAPI {
   id: number;
   username: string;
   name: string;
@@ -25,14 +27,16 @@ interface UserData {
   lookingFor: string | null;
   whatIOffer: string | null;
   visitingCardType: string;
-  profileCompleted: number;
-  createdAt: Date | null;
+  profileCompleted: number | boolean; // Handle both types
+  createdAt: string | Date | null;
 }
 
 const SharedCardPage: React.FC<SharedCardPageProps> = ({ userId }) => {
-  const [userData, setUserData] = useState<UserData | null>(null);
+  const [userData, setUserData] = useState<UserDataType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
+  const [isCopied, setIsCopied] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -69,8 +73,8 @@ const SharedCardPage: React.FC<SharedCardPageProps> = ({ userId }) => {
             throw new Error("Received invalid user data");
           }
           
-          // Map the data to our UserData type
-          const mappedUserData: UserData = {
+          // Map the API data to our UserDataType
+          const mappedUserData: UserDataType = {
             id: data.id,
             username: data.username || '',
             email: data.email || '',
@@ -85,7 +89,10 @@ const SharedCardPage: React.FC<SharedCardPageProps> = ({ userId }) => {
             lookingFor: data.lookingFor || null,
             whatIOffer: data.whatIOffer || null,
             visitingCardType: data.visitingCardType || 'professional-renewed',
-            profileCompleted: data.profileCompleted || 0,
+            // Convert the profileCompleted to boolean if needed
+            profileCompleted: typeof data.profileCompleted === 'number' 
+              ? Boolean(data.profileCompleted) 
+              : Boolean(data.profileCompleted),
             createdAt: data.createdAt ? new Date(data.createdAt) : null,
           };
           
@@ -167,14 +174,52 @@ const SharedCardPage: React.FC<SharedCardPageProps> = ({ userId }) => {
           </div>
 
           <div className="flex flex-col items-center justify-center">
-            <div className="w-full max-w-[350px]">
-              <VisitingCardPreview
-                userData={userData}
-                cardType={userData.visitingCardType || 'professional-renewed'}
-              />
+            {/* Card container with exact same aspect ratio as in editing view */}
+            <div className="w-full mx-auto" style={{ maxWidth: "420px" }}>
+              <div className="relative aspect-[2/3.5] overflow-hidden rounded-lg shadow-lg">
+                <VisitingCardPreview
+                  userData={userData}
+                  cardType={userData.visitingCardType || 'professional-renewed'}
+                />
+              </div>
+            </div>
+            
+            {/* Share link box */}
+            <div className="mt-8 w-full max-w-md mx-auto">
+              <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md p-3 flex items-center justify-between">
+                <div className="flex-1 truncate text-sm px-2">
+                  <span className="font-medium">{window.location.href}</span>
+                </div>
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  onClick={() => {
+                    navigator.clipboard.writeText(window.location.href);
+                    setIsCopied(true);
+                    toast({
+                      title: "Link Copied!",
+                      description: "The link has been copied to clipboard.",
+                      duration: 3000,
+                    });
+                    setTimeout(() => setIsCopied(false), 2000);
+                  }}
+                >
+                  {isCopied ? (
+                    <>
+                      <Check className="h-4 w-4 mr-1" />
+                      Copied!
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-4 w-4 mr-1" />
+                      Copy Link
+                    </>
+                  )}
+                </Button>
+              </div>
             </div>
 
-            <div className="mt-12 text-center">
+            <div className="mt-8 text-center">
               <p className="text-gray-500 dark:text-gray-400 mb-4">
                 Create your own professional Quantum Card in minutes
               </p>
