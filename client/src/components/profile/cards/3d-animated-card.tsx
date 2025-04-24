@@ -445,19 +445,43 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
               {contactExpanded && (
                 <div className="px-4 py-2 space-y-2 text-center" style={{ marginBottom: "5px" }}>
                   {/* Email */}
-                  <div className="text-sm text-gray-300 overflow-hidden mx-auto">
+                  <div 
+                    className="text-sm text-gray-300 overflow-hidden mx-auto cursor-pointer hover:text-gray-100 hover:underline transition-colors duration-200"
+                    onClick={() => {
+                      navigator.clipboard.writeText(userData.email);
+                      setCopySuccess('Email copied to clipboard!');
+                      setTimeout(() => setCopySuccess(''), 2000);
+                    }}
+                    title="Click to copy"
+                  >
                     <div className="break-words">{userData.email}</div>
                   </div>
                   
                   {/* Phone Number */}
                   {userData.phoneNumber && (
-                    <div className="text-sm text-gray-300 overflow-hidden mx-auto">
+                    <div 
+                      className="text-sm text-gray-300 overflow-hidden mx-auto cursor-pointer hover:text-gray-100 hover:underline transition-colors duration-200"
+                      onClick={() => {
+                        navigator.clipboard.writeText(userData.phoneNumber || '');
+                        setCopySuccess('Phone number copied to clipboard!');
+                        setTimeout(() => setCopySuccess(''), 2000);
+                      }}
+                      title="Click to copy"
+                    >
                       <div className="break-words">{userData.phoneNumber}</div>
                     </div>
                   )}
                   
                   {/* Profile Link */}
-                  <div className="text-sm text-gray-300 overflow-hidden mx-auto">
+                  <div 
+                    className="text-sm text-gray-300 overflow-hidden mx-auto cursor-pointer hover:text-gray-100 hover:underline transition-colors duration-200"
+                    onClick={() => {
+                      navigator.clipboard.writeText(profileLink);
+                      setCopySuccess('Profile link copied to clipboard!');
+                      setTimeout(() => setCopySuccess(''), 2000);
+                    }}
+                    title="Click to copy"
+                  >
                     <div className="break-words">{profileLink}</div>
                   </div>
                 </div>
