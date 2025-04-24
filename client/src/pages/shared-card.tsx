@@ -19,8 +19,12 @@ const OptimizedCardDisplay: React.FC<OptimizedCardDisplayProps> = ({ userData, c
   console.log("Rendering card with type:", cardType);
   console.log("User data visiting card type:", userData.visitingCardType);
   
+  // Convert the card type to a normalized format for comparison
+  const normalizedCardType = String(cardType).toLowerCase().trim();
+  console.log("Normalized card type:", normalizedCardType);
+  
   // For holographic card style (transparent glass effect)
-  if (cardType === "holographic") {
+  if (normalizedCardType === "holographic") {
     return (
       <div className="w-full h-full rounded-lg overflow-hidden shadow-lg flex flex-col"
         style={{
@@ -134,7 +138,7 @@ const OptimizedCardDisplay: React.FC<OptimizedCardDisplayProps> = ({ userData, c
   }
   
   // For neoglow card style (dark theme with neon elements)
-  if (cardType === "neoglow") {
+  if (normalizedCardType === "neoglow") {
     return (
       <div className="w-full h-full rounded-lg overflow-hidden shadow-lg flex flex-col"
         style={{
@@ -236,7 +240,7 @@ const OptimizedCardDisplay: React.FC<OptimizedCardDisplayProps> = ({ userData, c
   }
   
   // For 3D animated card style
-  if (cardType === "3d-animated") {
+  if (normalizedCardType === "3d-animated") {
     return (
       <div className="w-full h-full rounded-lg overflow-hidden shadow-lg flex flex-col transform"
         style={{
