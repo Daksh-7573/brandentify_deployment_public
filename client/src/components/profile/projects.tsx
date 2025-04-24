@@ -1745,8 +1745,23 @@ export default function Projects() {
                                         alt={`Project media ${index + 1}`} 
                                         className="h-16 w-16 object-cover rounded"
                                       />
-                                      {/* We're not implementing the deletion of individual images in this version,
-                                          as it would require backend API changes */}
+                                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center gap-1 transition-opacity p-1">
+                                        <button
+                                          type="button"
+                                          className="bg-white/80 hover:bg-white text-black text-xs rounded-md px-2 py-1 transition-colors w-full"
+                                          onClick={(e) => {
+                                            e.preventDefault();
+                                            handleSetAsThumbnail(url);
+                                          }}
+                                        >
+                                          Set as Thumbnail
+                                        </button>
+                                      </div>
+                                      {currentProject.thumbnailUrl === url && (
+                                        <div className="absolute top-0 right-0 bg-primary text-white text-xs px-1 py-0.5 rounded-bl-md">
+                                          Thumbnail
+                                        </div>
+                                      )}
                                     </div>
                                   ))}
                                 </div>
