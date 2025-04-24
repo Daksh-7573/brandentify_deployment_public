@@ -14,7 +14,10 @@ import {
   Brush,
   Image,
   Eye,
-  Globe
+  Globe,
+  PenTool,
+  Monitor,
+  Award
 } from "lucide-react";
 import { UserData } from "@/types/user";
 
@@ -75,14 +78,14 @@ const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
   const getIndustryIcon = (tag: string) => {
     const lowerTag = tag.toLowerCase();
     if (lowerTag.includes('tech') || lowerTag.includes('software') || lowerTag.includes('develop'))
-      return <Sparkles className="w-3 h-3" />;
+      return <Monitor className="w-3 h-3" />;
     if (lowerTag.includes('design') || lowerTag.includes('creative') || lowerTag.includes('art'))
-      return <Palette className="w-3 h-3" />;
+      return <PenTool className="w-3 h-3" />;
     if (lowerTag.includes('business') || lowerTag.includes('manage') || lowerTag.includes('admin'))
       return <Briefcase className="w-3 h-3" />;
     if (lowerTag.includes('market') || lowerTag.includes('growth') || lowerTag.includes('sales'))
       return <TrendingUp className="w-3 h-3" />;
-    return <Headphones className="w-3 h-3" />;
+    return <Award className="w-3 h-3" />;
   };
   
   const industryTags = userData.industry ? userData.industry.split(/,\s*/) : [];
@@ -399,11 +402,11 @@ const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
                       <div 
                         className="h-5 w-5 rounded-full flex items-center justify-center mt-0.5"
                         style={{
-                          backgroundColor: artisticColors.teal,
+                          backgroundColor: artisticColors.emerald,
                           boxShadow: "0 1px 2px rgba(0,0,0,0.2)",
                         }}
                       >
-                        <Globe className="h-3 w-3 text-white" />
+                        <PenTool className="h-3 w-3 text-white" />
                       </div>
                       
                       <div className="relative">
@@ -411,7 +414,7 @@ const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
                         <div 
                           className="absolute inset-0 opacity-10"
                           style={{
-                            backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='20' viewBox='0 0 40 20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='10' cy='10' r='8' fill='%23${artisticColors.teal.slice(1)}' opacity='0.5' /%3E%3Ccircle cx='30' cy='10' r='8' fill='%23${artisticColors.mint.slice(1)}' opacity='0.3' /%3E%3C/svg%3E")`,
+                            backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='20' viewBox='0 0 40 20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='10' cy='10' r='8' fill='%23${artisticColors.emerald.slice(1)}' opacity='0.5' /%3E%3Ccircle cx='30' cy='10' r='8' fill='%23${artisticColors.mint.slice(1)}' opacity='0.3' /%3E%3C/svg%3E")`,
                             backgroundRepeat: "no-repeat",
                             backgroundSize: "cover",
                           }}
@@ -428,56 +431,55 @@ const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
                         </span>
                       </div>
                     </div>
-                  </div>
-                )}
-                
-                {/* Location - Mini map style */}
-                {userData.location && (
-                  <div 
-                    className="relative inline-flex mt-1"
-                    style={{
-                      transform: hoveredSection === 'location' 
-                        ? 'translateY(-1px)' 
-                        : 'translateY(0)',
-                      transition: "transform 0.3s ease",
-                    }}
-                    onMouseEnter={() => setHoveredSection('location')}
-                    onMouseLeave={() => setHoveredSection(null)}
-                  >
-                    <div className="flex items-start gap-1">
-                      {/* Map pin */}
+                    
+                    {/* Location - Added under domain */}
+                    {userData.location && (
                       <div 
-                        className="h-5 w-5 rounded-full flex items-center justify-center mt-0.5"
+                        className="flex items-start gap-1 mt-1.5 ml-6"
                         style={{
-                          backgroundColor: artisticColors.burgundy,
-                          boxShadow: "0 1px 2px rgba(0,0,0,0.2)",
+                          transform: hoveredSection === 'location' 
+                            ? 'translateY(-1px)' 
+                            : 'translateY(0)',
+                          transition: "transform 0.3s ease",
                         }}
+                        onMouseEnter={() => setHoveredSection('location')}
+                        onMouseLeave={() => setHoveredSection(null)}
                       >
-                        <MapPin className="h-3 w-3 text-white" />
-                      </div>
-                      
-                      <div className="relative">
-                        {/* Subtle map sketch */}
+                        {/* Map pin */}
                         <div 
-                          className="absolute inset-0 opacity-8"
+                          className="h-4 w-4 rounded-full flex items-center justify-center"
                           style={{
-                            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='30' viewBox='0 0 60 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 5 L15 5 L25 10 L35 5 L45 15 L55 5' stroke='%23d3d3d3' fill='none' stroke-width='0.5' /%3E%3Cpath d='M5 15 L15 20 L25 15 L35 20 L45 10 L55 15' stroke='%23d3d3d3' fill='none' stroke-width='0.5' /%3E%3Cpath d='M5 25 L15 15 L25 25 L35 15 L45 25 L55 20' stroke='%23d3d3d3' fill='none' stroke-width='0.5' /%3E%3C/svg%3E")`,
-                            backgroundRepeat: "no-repeat",
-                            backgroundSize: "cover",
-                          }}
-                        />
-                        
-                        <span 
-                          className="relative z-10 text-xs font-medium ml-1"
-                          style={{
-                            color: artisticColors.darkGray,
-                            fontFamily: "'Caveat', cursive",
+                            backgroundColor: artisticColors.burgundy,
+                            boxShadow: "0 1px 2px rgba(0,0,0,0.2)",
                           }}
                         >
-                          {userData.location}
-                        </span>
+                          <MapPin className="h-2 w-2 text-white" />
+                        </div>
+                        
+                        <div className="relative">
+                          {/* Subtle map sketch */}
+                          <div 
+                            className="absolute inset-0 opacity-8"
+                            style={{
+                              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='30' viewBox='0 0 60 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 5 L15 5 L25 10 L35 5 L45 15 L55 5' stroke='%23d3d3d3' fill='none' stroke-width='0.5' /%3E%3Cpath d='M5 15 L15 20 L25 15 L35 20 L45 10 L55 15' stroke='%23d3d3d3' fill='none' stroke-width='0.5' /%3E%3Cpath d='M5 25 L15 15 L25 25 L35 15 L45 25 L55 20' stroke='%23d3d3d3' fill='none' stroke-width='0.5' /%3E%3C/svg%3E")`,
+                              backgroundRepeat: "no-repeat",
+                              backgroundSize: "cover",
+                            }}
+                          />
+                          
+                          <span 
+                            className="relative z-10 text-xs font-medium ml-1"
+                            style={{
+                              color: artisticColors.darkGray,
+                              fontFamily: "'Caveat', cursive",
+                              fontSize: "0.7rem"
+                            }}
+                          >
+                            {userData.location}
+                          </span>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 )}
               </div>
