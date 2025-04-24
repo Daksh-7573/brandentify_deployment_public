@@ -499,17 +499,17 @@ export default function Scholar({
                   </>
                 )}
                 
-                <div className="flex items-center gap-2 text-blue-600">
-                  <Lightbulb className="h-5 w-5" />
-                  <span className="font-medium">My academic focus:</span>
-                </div>
-                <div className="pl-7 border-l-2 border-blue-100">
-                  <p className="text-gray-700">
-                    {userInfo && userInfo.domain 
-                      ? `Specializing in ${userInfo.domain} with a focus on practical applications and innovative approaches.`
-                      : "Combining theoretical knowledge with practical applications, I focus on creating meaningful solutions to real-world problems."}
-                  </p>
-                </div>
+                {userInfo && userInfo.domain && (
+                  <>
+                    <div className="flex items-center gap-2 text-blue-600">
+                      <Lightbulb className="h-5 w-5" />
+                      <span className="font-medium">My academic focus:</span>
+                    </div>
+                    <div className="pl-7 border-l-2 border-blue-100">
+                      <p className="text-gray-700">{userInfo.domain}</p>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
