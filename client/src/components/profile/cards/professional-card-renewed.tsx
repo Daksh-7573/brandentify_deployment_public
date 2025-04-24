@@ -34,7 +34,9 @@ const ProfessionalCardRenewed: React.FC<ProfessionalCardRenewedProps> = ({
   }
   
   // Handle copying to clipboard
-  const copyToClipboard = (text: string, fieldName: string) => {
+  const copyToClipboard = (text: string | null, fieldName: string) => {
+    if (!text) return; // Guard against null values
+    
     navigator.clipboard.writeText(text)
       .then(() => {
         setCopiedField(fieldName);
@@ -80,7 +82,7 @@ const ProfessionalCardRenewed: React.FC<ProfessionalCardRenewedProps> = ({
     <div 
       className="professional-card w-full aspect-[2/3.5] relative rounded-[16px] overflow-hidden shadow-lg"
       style={{
-        maxWidth: "360px",
+        maxWidth: "400px", // Increased from 360px to 400px
         margin: "0 auto",
         backgroundColor: "var(--card-bg, white)",
         transition: "all 0.3s ease",
@@ -266,7 +268,7 @@ const ProfessionalCardRenewed: React.FC<ProfessionalCardRenewedProps> = ({
               >
                 <Mail className="h-4 w-4" />
               </div>
-              <span className="text-sm text-slate-700 dark:text-slate-300 max-w-[180px] truncate">
+              <span className="text-sm text-slate-700 dark:text-slate-300 max-w-[220px] truncate">
                 {userData.email}
               </span>
             </div>
@@ -303,8 +305,7 @@ const ProfessionalCardRenewed: React.FC<ProfessionalCardRenewedProps> = ({
                 >
                   <Phone className="h-4 w-4" />
                 </div>
-                <span className="text-sm text-slate-700 dark:text-slate-300 max-w-[180px] truncate">
-                  {/* Show only partial number if not needed to be fully visible */}
+                <span className="text-sm text-slate-700 dark:text-slate-300 max-w-[220px] truncate">
                   {userData.phoneNumber}
                 </span>
               </div>
@@ -349,7 +350,7 @@ const ProfessionalCardRenewed: React.FC<ProfessionalCardRenewedProps> = ({
       </div>
       
       {/* CSS Animations */}
-      <style jsx>{`
+      <style>{`
         @keyframes pulse {
           0% { transform: scale(1); opacity: 0.8; }
           50% { transform: scale(1.05); opacity: 1; }
