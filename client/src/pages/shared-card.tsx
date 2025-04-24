@@ -15,6 +15,10 @@ const OptimizedCardDisplay: React.FC<OptimizedCardDisplayProps> = ({ userData, c
   // Format profile link
   const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;
   
+  // Debug card type
+  console.log("Rendering card with type:", cardType);
+  console.log("User data visiting card type:", userData.visitingCardType);
+  
   // For holographic card style (transparent glass effect)
   if (cardType === "holographic") {
     return (
