@@ -173,10 +173,10 @@ const SharedCardPage: React.FC<SharedCardPageProps> = ({ userId }) => {
           </div>
 
           <div className="flex flex-col items-center justify-center">
-            {/* Fixed size card with hardcoded dimensions */}
-            <div style={{ 
-              width: "420px", 
-              height: "735px",
+            {/* Match exactly the size used in edit mode (280px width) */}
+            <div style={{
+              width: "280px",
+              height: "490px", /* 280px * (3.5/2) */
               margin: "0 auto"
             }}>
               <FixedSizeSharedCard
