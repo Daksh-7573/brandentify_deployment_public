@@ -282,31 +282,51 @@ const HolographicCard: React.FC<HolographicCardProps> = ({ userData }) => {
         
         {/* Career Snapshot Section with industry tags */}
         <div className="mb-4">
-          {/* Industry/Domain tags */}
-          {industryTags.length > 0 && (
-            <div className="flex flex-wrap justify-center gap-2 mb-4">
-              {industryTags.map((tag, index) => (
-                <div 
-                  key={index}
-                  className="flex items-center px-3 py-1 rounded-full text-xs"
-                  style={{
-                    background: `linear-gradient(135deg, 
-                      rgba(56, 189, 248, 0.2) ${mousePosition.x * 100}%, 
-                      rgba(168, 85, 247, 0.2))`,
-                    border: "1px solid rgba(56, 189, 248, 0.4)",
-                    boxShadow: "0 0 10px rgba(56, 189, 248, 0.2)",
-                    color: "#a5f3fc",
-                    transition: "transform 0.2s ease",
-                    transform: isHovered ? "translateY(-2px)" : "translateY(0)",
-                    textShadow: "0 0 2px rgba(56, 189, 248, 0.5)"
-                  }}
-                >
-                  <Hash className="h-3 w-3 mr-1 text-cyan-400" />
-                  {tag.trim()}
-                </div>
-              ))}
-            </div>
-          )}
+          {/* Industry & Domain tags */}
+          <div className="flex flex-wrap justify-center gap-2 mb-4">
+            {/* Industry Tags */}
+            {industryTags.length > 0 && industryTags.map((tag, index) => (
+              <div 
+                key={`industry-${index}`}
+                className="flex items-center px-3 py-1 rounded-full text-xs"
+                style={{
+                  background: `linear-gradient(135deg, 
+                    rgba(56, 189, 248, 0.2) ${mousePosition.x * 100}%, 
+                    rgba(168, 85, 247, 0.2))`,
+                  border: "1px solid rgba(56, 189, 248, 0.4)",
+                  boxShadow: "0 0 10px rgba(56, 189, 248, 0.2)",
+                  color: "#a5f3fc",
+                  transition: "transform 0.2s ease",
+                  transform: isHovered ? "translateY(-2px)" : "translateY(0)",
+                  textShadow: "0 0 2px rgba(56, 189, 248, 0.5)"
+                }}
+              >
+                <Hash className="h-3 w-3 mr-1 text-cyan-400" />
+                {tag.trim()}
+              </div>
+            ))}
+            
+            {/* Domain Tag */}
+            {userData.domain && (
+              <div 
+                className="flex items-center px-3 py-1 rounded-full text-xs"
+                style={{
+                  background: `linear-gradient(135deg, 
+                    rgba(168, 85, 247, 0.2) ${mousePosition.x * 100}%, 
+                    rgba(56, 189, 248, 0.2))`,
+                  border: "1px solid rgba(168, 85, 247, 0.4)",
+                  boxShadow: "0 0 10px rgba(168, 85, 247, 0.2)",
+                  color: "#e9d5ff",
+                  transition: "transform 0.2s ease",
+                  transform: isHovered ? "translateY(-2px)" : "translateY(0)",
+                  textShadow: "0 0 2px rgba(168, 85, 247, 0.5)"
+                }}
+              >
+                <Hash className="h-3 w-3 mr-1 text-purple-400" />
+                {userData.domain}
+              </div>
+            )}
+          </div>
           
           {/* Company with glowing building icon */}
           {userData.company && (
@@ -328,25 +348,7 @@ const HolographicCard: React.FC<HolographicCardProps> = ({ userData }) => {
             </div>
           )}
           
-          {/* Domain with glowing icon */}
-          {userData.domain && (
-            <div className="flex items-center justify-center gap-3 mb-3">
-              <div 
-                className="flex items-center justify-center w-8 h-8 rounded-full overflow-hidden"
-                style={{
-                  background: "rgba(56, 189, 248, 0.15)",
-                  border: "1px solid rgba(56, 189, 248, 0.2)",
-                  boxShadow: isHovered ? "0 0 10px rgba(56, 189, 248, 0.3)" : "none",
-                  transition: "box-shadow 0.3s ease"
-                }}
-              >
-                <Globe className="h-4 w-4 text-cyan-400" />
-              </div>
-              <span className="text-sm text-white capitalize">
-                {userData.domain}
-              </span>
-            </div>
-          )}
+
           
           {/* Location with grid line effect */}
           {userData.location && (
