@@ -13,7 +13,8 @@ import {
   Headphones,
   Brush,
   Image,
-  Eye
+  Eye,
+  Globe
 } from "lucide-react";
 import { UserData } from "@/types/user";
 
@@ -377,6 +378,56 @@ const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
                         boxShadow: "0 1px 2px rgba(0,0,0,0.2)",
                       }}
                     />
+                  </div>
+                )}
+                
+                {/* Domain - Artistic palette style */}
+                {userData.domain && (
+                  <div 
+                    className="relative inline-flex mt-1"
+                    style={{
+                      transform: hoveredSection === 'domain' 
+                        ? 'translateY(-1px)' 
+                        : 'translateY(0)',
+                      transition: "transform 0.3s ease",
+                    }}
+                    onMouseEnter={() => setHoveredSection('domain')}
+                    onMouseLeave={() => setHoveredSection(null)}
+                  >
+                    <div className="flex items-start gap-1">
+                      {/* Domain icon */}
+                      <div 
+                        className="h-5 w-5 rounded-full flex items-center justify-center mt-0.5"
+                        style={{
+                          backgroundColor: artisticColors.teal,
+                          boxShadow: "0 1px 2px rgba(0,0,0,0.2)",
+                        }}
+                      >
+                        <Globe className="h-3 w-3 text-white" />
+                      </div>
+                      
+                      <div className="relative">
+                        {/* Artistic background */}
+                        <div 
+                          className="absolute inset-0 opacity-10"
+                          style={{
+                            backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='20' viewBox='0 0 40 20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='10' cy='10' r='8' fill='%23${artisticColors.teal.slice(1)}' opacity='0.5' /%3E%3Ccircle cx='30' cy='10' r='8' fill='%23${artisticColors.mint.slice(1)}' opacity='0.3' /%3E%3C/svg%3E")`,
+                            backgroundRepeat: "no-repeat",
+                            backgroundSize: "cover",
+                          }}
+                        />
+                        
+                        <span 
+                          className="relative z-10 text-xs font-medium ml-1 capitalize"
+                          style={{
+                            color: artisticColors.darkGray,
+                            fontFamily: "'Caveat', cursive",
+                          }}
+                        >
+                          {userData.domain}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 )}
                 
