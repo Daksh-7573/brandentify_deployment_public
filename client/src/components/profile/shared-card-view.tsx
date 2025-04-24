@@ -21,28 +21,89 @@ const SharedCardView: React.FC<SharedCardViewProps> = ({ userId }) => {
         setLoading(true);
         console.log("Fetching user data for shared card with ID:", userId);
         
-        // First try to get the user by fetching their basic profile using numeric ID
-        // If that fails, fall back to the Firebase UID approach
+        // Determine what kind of ID we have (numeric or Firebase UID)
+        // and use the appropriate strategy to fetch the data
+        let numericId: number | null = null;
+        let firebaseUid: string | null = null;
+        
+        // Check if the ID is already numeric
+        if (!isNaN(Number(userId))) {
+          numericId = parseInt(userId as string, 10);
+          firebaseUid = null;
+          console.log("Using numeric ID for shared card:", numericId);
+        } else {
+          // Assume it's a Firebase UID
+          firebaseUid = userId as string;
+          numericId = null;
+          console.log("Using Firebase UID for shared card:", firebaseUid);
+        }
+        
+        // Try different approaches to fetch the user data
         let response;
-        try {
-          // First attempt - numeric ID (for shared links)
-          response = await apiRequest({
-            url: `/api/users/${userId}`,
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-            customConfig: {},
-            retries: 0 // Don't retry for first attempt
-          });
-        } catch (initialError) {
-          console.log("Initial fetch failed, trying alternate endpoint", initialError);
-          
-          // Second attempt - try standard users endpoint which supports Firebase UIDs
-          response = await apiRequest({
-            url: `/api/users/${userId}`,
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-            customConfig: {}
-          });
+        let fetchSuccessful = false;
+        let fetchErrors = [];
+        
+        // First try: Use numeric ID directly
+        if (numericId !== null) {
+          try {
+            console.log("Attempt 1: Fetching with numeric ID:", numericId);
+            response = await apiRequest({
+              url: `/api/users/${numericId}`,
+              method: 'GET',
+              headers: { 'Content-Type': 'application/json' },
+              customConfig: {},
+              retries: 1
+            });
+            console.log("Numeric ID fetch succeeded:", response);
+            fetchSuccessful = true;
+          } catch (err) {
+            console.log("Numeric ID fetch failed:", err);
+            fetchErrors.push({ method: "numeric", error: err });
+          }
+        }
+        
+        // Second try: Use Firebase UID directly
+        if (!fetchSuccessful && firebaseUid !== null) {
+          try {
+            console.log("Attempt 2: Fetching with Firebase UID:", firebaseUid);
+            response = await apiRequest({
+              url: `/api/users/${firebaseUid}`,
+              method: 'GET',
+              headers: { 'Content-Type': 'application/json' },
+              customConfig: {},
+              retries: 1
+            });
+            console.log("Firebase UID fetch succeeded:", response);
+            fetchSuccessful = true;
+          } catch (err) {
+            console.log("Firebase UID fetch failed:", err);
+            fetchErrors.push({ method: "firebase", error: err });
+          }
+        }
+        
+        // Third try: Use a different endpoint structure if both previous attempts failed
+        if (!fetchSuccessful) {
+          try {
+            const idToUse = numericId !== null ? numericId : firebaseUid;
+            console.log("Attempt 3: Fetching with alternative endpoint structure:", idToUse);
+            response = await apiRequest({
+              url: `/api/enhanced-user/${idToUse}`,
+              method: 'GET',
+              headers: { 'Content-Type': 'application/json' },
+              customConfig: {},
+              retries: 1
+            });
+            console.log("Alternative endpoint fetch succeeded:", response);
+            fetchSuccessful = true;
+          } catch (err) {
+            console.log("Alternative endpoint fetch failed:", err);
+            fetchErrors.push({ method: "alternative", error: err });
+          }
+        }
+        
+        if (!fetchSuccessful) {
+          console.error("All fetch attempts failed:", fetchErrors);
+          throw new Error("Could not fetch user data after multiple attempts");
         }
         
         console.log("Shared card user data:", response);
