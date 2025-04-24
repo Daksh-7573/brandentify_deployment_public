@@ -384,20 +384,20 @@ const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
                   </div>
                 )}
                 
-                {/* Domain - Artistic palette style */}
-                {userData.domain && (
-                  <div 
-                    className="relative inline-flex mt-1"
-                    style={{
-                      transform: hoveredSection === 'domain' 
-                        ? 'translateY(-1px)' 
-                        : 'translateY(0)',
-                      transition: "transform 0.3s ease",
-                    }}
-                    onMouseEnter={() => setHoveredSection('domain')}
-                    onMouseLeave={() => setHoveredSection(null)}
-                  >
-                    <div className="flex items-start gap-1">
+                {/* Domain with Location underneath - Artistic palette style */}
+                <div className="space-y-1.5 mt-1">
+                  {userData.domain && (
+                    <div 
+                      className="flex items-start gap-1"
+                      style={{
+                        transform: hoveredSection === 'domain' 
+                          ? 'translateY(-1px)' 
+                          : 'translateY(0)',
+                        transition: "transform 0.3s ease",
+                      }}
+                      onMouseEnter={() => setHoveredSection('domain')}
+                      onMouseLeave={() => setHoveredSection(null)}
+                    >
                       {/* Domain icon */}
                       <div 
                         className="h-5 w-5 rounded-full flex items-center justify-center mt-0.5"
@@ -431,57 +431,57 @@ const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
                         </span>
                       </div>
                     </div>
-                    
-                    {/* Location - Added under domain */}
-                    {userData.location && (
+                  )}
+                  
+                  {/* Location - Directly underneath domain */}
+                  {userData.location && (
+                    <div 
+                      className="flex items-start gap-1 ml-7"
+                      style={{
+                        transform: hoveredSection === 'location' 
+                          ? 'translateY(-1px)' 
+                          : 'translateY(0)',
+                        transition: "transform 0.3s ease",
+                      }}
+                      onMouseEnter={() => setHoveredSection('location')}
+                      onMouseLeave={() => setHoveredSection(null)}
+                    >
+                      {/* Map pin */}
                       <div 
-                        className="flex items-start gap-1 mt-1.5 ml-6"
+                        className="h-4 w-4 rounded-full flex items-center justify-center"
                         style={{
-                          transform: hoveredSection === 'location' 
-                            ? 'translateY(-1px)' 
-                            : 'translateY(0)',
-                          transition: "transform 0.3s ease",
+                          backgroundColor: artisticColors.burgundy,
+                          boxShadow: "0 1px 2px rgba(0,0,0,0.2)",
                         }}
-                        onMouseEnter={() => setHoveredSection('location')}
-                        onMouseLeave={() => setHoveredSection(null)}
                       >
-                        {/* Map pin */}
+                        <MapPin className="h-2 w-2 text-white" />
+                      </div>
+                      
+                      <div className="relative">
+                        {/* Subtle map sketch */}
                         <div 
-                          className="h-4 w-4 rounded-full flex items-center justify-center"
+                          className="absolute inset-0 opacity-8"
                           style={{
-                            backgroundColor: artisticColors.burgundy,
-                            boxShadow: "0 1px 2px rgba(0,0,0,0.2)",
+                            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='30' viewBox='0 0 60 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 5 L15 5 L25 10 L35 5 L45 15 L55 5' stroke='%23d3d3d3' fill='none' stroke-width='0.5' /%3E%3Cpath d='M5 15 L15 20 L25 15 L35 20 L45 10 L55 15' stroke='%23d3d3d3' fill='none' stroke-width='0.5' /%3E%3Cpath d='M5 25 L15 15 L25 25 L35 15 L45 25 L55 20' stroke='%23d3d3d3' fill='none' stroke-width='0.5' /%3E%3C/svg%3E")`,
+                            backgroundRepeat: "no-repeat",
+                            backgroundSize: "cover",
+                          }}
+                        />
+                        
+                        <span 
+                          className="relative z-10 text-xs font-medium ml-1"
+                          style={{
+                            color: artisticColors.darkGray,
+                            fontFamily: "'Caveat', cursive",
+                            fontSize: "0.7rem"
                           }}
                         >
-                          <MapPin className="h-2 w-2 text-white" />
-                        </div>
-                        
-                        <div className="relative">
-                          {/* Subtle map sketch */}
-                          <div 
-                            className="absolute inset-0 opacity-8"
-                            style={{
-                              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='30' viewBox='0 0 60 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 5 L15 5 L25 10 L35 5 L45 15 L55 5' stroke='%23d3d3d3' fill='none' stroke-width='0.5' /%3E%3Cpath d='M5 15 L15 20 L25 15 L35 20 L45 10 L55 15' stroke='%23d3d3d3' fill='none' stroke-width='0.5' /%3E%3Cpath d='M5 25 L15 15 L25 25 L35 15 L45 25 L55 20' stroke='%23d3d3d3' fill='none' stroke-width='0.5' /%3E%3C/svg%3E")`,
-                              backgroundRepeat: "no-repeat",
-                              backgroundSize: "cover",
-                            }}
-                          />
-                          
-                          <span 
-                            className="relative z-10 text-xs font-medium ml-1"
-                            style={{
-                              color: artisticColors.darkGray,
-                              fontFamily: "'Caveat', cursive",
-                              fontSize: "0.7rem"
-                            }}
-                          >
-                            {userData.location}
-                          </span>
-                        </div>
+                          {userData.location}
+                        </span>
                       </div>
-                    )}
-                  </div>
-                )}
+                    </div>
+                  )}
+                </div>
               </div>
               
               {/* Brush stroke separator */}
