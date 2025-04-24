@@ -5,11 +5,10 @@ import Header from "@/components/layout/header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Separator } from "@/components/ui/separator";
 import PersonalInfoSection from "@/components/profile/personal-info-section";
 import EditPersonalInfo from "@/components/profile/edit-personal-info";
 import VisitingCardBuilder from "@/components/profile/visiting-card-builder";
-import { ArrowLeft, Edit } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useLocation } from "wouter";
 import { UserData } from "@/types/user";
 import { apiRequest } from "@/lib/queryClient";
@@ -102,11 +101,11 @@ const PersonalDetailsPage: React.FC = () => {
           <h1 className="text-2xl font-semibold">Personal Details</h1>
         </div>
         
-        <Card className="mb-6">
+        <Card>
           <CardHeader>
-            <CardTitle>Contact Information</CardTitle>
+            <CardTitle>Profile Information</CardTitle>
             <CardDescription>
-              Your contact details visible to your connections and network
+              Your contact details and quantum card settings
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -125,34 +124,6 @@ const PersonalDetailsPage: React.FC = () => {
                 />
               </>
             )}
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle>Privacy Settings</CardTitle>
-            <CardDescription>
-              Control who can see your personal information
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-medium">Phone Number Visibility</h3>
-                  <p className="text-sm text-gray-500">Who can see your phone number</p>
-                </div>
-                <Button variant="outline" size="sm">Connections Only</Button>
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-medium">Email Visibility</h3>
-                  <p className="text-sm text-gray-500">Who can see your email address</p>
-                </div>
-                <Button variant="outline" size="sm">Public</Button>
-              </div>
-            </div>
           </CardContent>
         </Card>
       </div>
