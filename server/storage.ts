@@ -4771,7 +4771,36 @@ export class DatabaseStorage implements IStorage {
         // Add each property to the update
         for (const [key, value] of Object.entries(cleanedUserData)) {
           // Convert camelCase to snake_case for PostgreSQL
-          const columnName = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+          let columnName = "";
+          
+          // Handle special cases like photoURL -> photo_url (not photo_u_r_l)
+          if (key === "photoURL") {
+            columnName = "photo_url";
+          } else if (key === "phoneNumber") {
+            columnName = "phone_number";
+          } else if (key === "aboutMe") {
+            columnName = "about_me";
+          } else if (key === "whatIOffer") {
+            columnName = "what_i_offer";
+          } else if (key === "lookingFor") {
+            columnName = "looking_for";
+          } else if (key === "visitingCardType") {
+            columnName = "visiting_card_type";
+          } else if (key === "profileCompleted") {
+            columnName = "profile_completed";
+          } else if (key === "emailVerified") {
+            columnName = "email_verified";
+          } else if (key === "emailVerificationToken") {
+            columnName = "email_verification_token";
+          } else if (key === "emailVerificationExpires") {
+            columnName = "email_verification_expires";
+          } else if (key === "createdAt") {
+            columnName = "created_at";
+          } else {
+            // Standard camelCase to snake_case for other fields
+            columnName = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+          }
+          
           updateParts.push(`${columnName} = $${paramIndex}`);
           updateValues.push(value);
           paramIndex++;
