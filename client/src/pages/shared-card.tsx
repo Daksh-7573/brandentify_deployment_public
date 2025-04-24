@@ -64,6 +64,9 @@ const SharedCardPage: React.FC<SharedCardPageProps> = ({ userId }) => {
         const cleaned = userId.trim();
         
         try {
+          // Always show skeleton for at least 2 seconds to ensure we see it
+          setLoading(true);
+          
           // Pre-fill placeholder data structure to improve perceived loading time
           const placeholderData: UserDataType = {
             id: parseInt(cleaned, 10) || 0,
@@ -86,6 +89,10 @@ const SharedCardPage: React.FC<SharedCardPageProps> = ({ userId }) => {
           
           // Create placeholder to reduce the visual switch
           setUserData(placeholderData);
+          
+          // Artificially delay the fetch to ensure loading state is visible
+          // REMOVE THIS DELAY IN PRODUCTION - only here to demo the skeleton
+          await new Promise(resolve => setTimeout(resolve, 2000));
           
           // Use the dedicated shared-card endpoint with better handling
           const response = await fetch(`/api/shared-card/${cleaned}`, {
