@@ -452,17 +452,6 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
                   Contact Information
                 </h3>
                 <div className="flex items-center gap-2">
-                  <button
-                    className="p-1 rounded hover:bg-white/10"
-                    onClick={toggleSound}
-                    title={soundEnabled ? "Disable sound effects" : "Enable sound effects"}
-                  >
-                    {soundEnabled ? (
-                      <Volume2 className="h-3.5 w-3.5 text-gray-400" />
-                    ) : (
-                      <VolumeX className="h-3.5 w-3.5 text-gray-400" />
-                    )}
-                  </button>
                   <Sparkles 
                     className={`h-4 w-4 transition-opacity duration-500 ${contactExpanded ? 'opacity-100' : 'opacity-0'}`}
                     style={{ color: colors.electricBlue }}
