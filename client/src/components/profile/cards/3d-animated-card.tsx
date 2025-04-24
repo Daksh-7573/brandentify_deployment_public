@@ -10,7 +10,9 @@ import {
   Copy,
   Hash,
   Building2,
-  Sparkles
+  Sparkles,
+  Volume2,
+  VolumeX
 } from "lucide-react";
 
 interface ThreeDAnimatedCardProps {
@@ -23,8 +25,8 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
   const [rotateY, setRotateY] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [copySuccess, setCopySuccess] = useState<string | null>(null);
-  // Contact information is always shown
-  const [contactExpanded] = useState(true);
+  const [contactExpanded, setContactExpanded] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(false);
   const [layers, setLayers] = useState<HTMLElement[]>([]);
   
   // Refs
@@ -67,9 +69,12 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
     }
   }, []);
   
-  // Handle sound effects (disabled)
+  // Handle sound effects
   const playSound = () => {
-    // Sound effects have been disabled
+    if (soundEnabled && audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch(e => console.error("Error playing sound:", e));
+    }
   };
   
   // Handle 3D tilt effect
@@ -129,18 +134,27 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
       });
   };
   
-  // Contact info is always shown so no toggle needed
+  // Handle contact info expansion
+  const toggleContactInfo = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setContactExpanded(!contactExpanded);
+  };
+  
+  // Toggle sound effects
+  const toggleSound = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSoundEnabled(!soundEnabled);
+  };
 
   return (
     <div className="w-full" style={{ perspective: "1200px" }}>
       {/* Main Card Container */}
       <div
         ref={cardRef}
-        className="w-full aspect-[2/4.2] rounded-lg overflow-visible relative cursor-pointer"
+        className="w-full aspect-[2/3.5] rounded-lg overflow-hidden relative cursor-pointer"
         style={{
           width: "100%",
           maxWidth: "360px",
-          minHeight: "780px", /* Set a minimum height to ensure content fits */
           margin: "0 auto",
           transformStyle: "preserve-3d",
           transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
@@ -193,8 +207,8 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
           />
         </div>
         
-        {/* Card Content Container - Made Scrollable */}
-        <div className="absolute inset-0 p-6 flex flex-col z-10 overflow-y-auto">
+        {/* Card Content Container */}
+        <div className="absolute inset-0 p-6 flex flex-col z-10">
           {/* Profile Picture Section */}
           <div 
             className="flex justify-center mb-6 relative"
@@ -420,25 +434,26 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
                 backdropFilter: "blur(10px)",
                 border: `1px solid ${colors.electricBlue}20`,
                 boxShadow: `0 0 20px ${colors.electricBlue}10`,
-                height: "auto", // Always show expanded to prevent details from being cut off
+                height: contactExpanded ? "auto" : "40px",
               }}
             >
               {/* Contact Header */}
               <div 
-                className="flex items-center justify-between px-4 py-2"
+                className="flex items-center justify-between px-4 py-2 cursor-pointer"
+                onClick={toggleContactInfo}
                 style={{
-                  borderBottom: `1px solid ${colors.electricBlue}20`,
+                  borderBottom: contactExpanded ? `1px solid ${colors.electricBlue}20` : "none",
                 }}
               >
                 <h3 
                   className="text-sm font-medium"
-                  style={{ color: colors.electricBlue }}
+                  style={{ color: contactExpanded ? colors.electricBlue : colors.silverGray }}
                 >
                   Contact Information
                 </h3>
                 <div className="flex items-center gap-2">
                   <Sparkles 
-                    className="h-4 w-4"
+                    className={`h-4 w-4 transition-opacity duration-500 ${contactExpanded ? 'opacity-100' : 'opacity-0'}`}
                     style={{ color: colors.electricBlue }}
                   />
                 </div>
@@ -533,7 +548,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
       </div>
       
       {/* CSS Animations */}
-      <style>{`
+      <style jsx>{`
         @keyframes spin {
           from { transform: rotate(0deg) scale(1.15); }
           to { transform: rotate(360deg) scale(1.15); }
