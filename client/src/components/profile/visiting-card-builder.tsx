@@ -157,20 +157,7 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
                       <h5 className="font-medium mb-2">{type.name}</h5>
                       <p className="text-sm text-gray-600 dark:text-gray-400">{type.description}</p>
                       
-                      <ul className="mt-4 space-y-2 text-sm">
-                        <li className="flex items-center text-gray-600 dark:text-gray-400">
-                          <BadgeCheck className="h-4 w-4 text-green-500 mr-2" />
-                          Optimized for mobile devices
-                        </li>
-                        <li className="flex items-center text-gray-600 dark:text-gray-400">
-                          <BadgeCheck className="h-4 w-4 text-green-500 mr-2" />
-                          Shareable via link or QR code
-                        </li>
-                        <li className="flex items-center text-gray-600 dark:text-gray-400">
-                          <BadgeCheck className="h-4 w-4 text-green-500 mr-2" />
-                          Auto-updates with your profile
-                        </li>
-                      </ul>
+                      {/* Card features section removed as requested */}
                       
                       {/* Finalize card button */}
                       {type.id === activeTab && (
