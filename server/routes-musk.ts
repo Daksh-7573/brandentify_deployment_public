@@ -7,6 +7,9 @@ import path from "path";
 import fs from "fs";
 import crypto from "crypto";
 
+// Initialize OpenAI client if not imported from openai-service-fix
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
 // Handle Musk AI assistant chat requests
 export const handleMuskChat = async (req: Request, res: Response) => {
   try {
