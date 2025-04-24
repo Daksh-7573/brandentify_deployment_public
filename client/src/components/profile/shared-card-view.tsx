@@ -21,7 +21,9 @@ const SharedCardView: React.FC<SharedCardViewProps> = ({ userId }) => {
         setLoading(true);
         const response = await apiRequest({
           url: `/users/${userId}`,
-          method: 'GET'
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+          customConfig: {}
         });
         setUserData(response as UserData);
         setLoading(false);

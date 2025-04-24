@@ -51,7 +51,8 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
         url: `/users/${userData.id}`,
         method: 'PUT',
         data: { visitingCardType: activeTab },
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        customConfig: {}
       });
       
       setIsFinalized(true);
@@ -82,23 +83,52 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
     // Generate a sharable link with the user ID
     const shareUrl = `${window.location.origin}/profile/card/${userData.id}`;
     
+    // Display alert with the URL
+    const alertUser = (success: boolean) => {
+      if (success) {
+        // Show the link was copied successfully
+        toast({
+          title: "Link copied to clipboard!",
+          description: (
+            <div className="mt-2">
+              <p className="mb-2">Share this link to show others your Quantum Card:</p>
+              <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded text-sm break-all">
+                {shareUrl}
+              </div>
+            </div>
+          ),
+          variant: "default",
+          duration: 5000,
+        });
+      } else {
+        // Show fallback with the URL so they can copy it manually
+        toast({
+          title: "Couldn't copy automatically",
+          description: (
+            <div className="mt-2">
+              <p className="mb-2">Copy this link manually to share your Quantum Card:</p>
+              <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded text-sm break-all">
+                {shareUrl}
+              </div>
+            </div>
+          ),
+          variant: "destructive",
+          duration: 5000,
+        });
+      }
+    };
+    
     // Check if the browser supports the Clipboard API
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(shareUrl)
         .then(() => {
-          toast({
-            title: "Link copied to clipboard!",
-            description: "Share this link to show others your Quantum Card.",
-            variant: "default",
-          });
+          alertUser(true);
+          // Also alert the user with the URL
+          console.log("Sharable link:", shareUrl);
         })
         .catch(err => {
           console.error("Failed to copy link:", err);
-          toast({
-            title: "Couldn't copy link",
-            description: "Please try again or manually copy the link.",
-            variant: "destructive",
-          });
+          alertUser(false);
         });
     } else {
       // Fallback for browsers that don't support the Clipboard API
@@ -109,19 +139,12 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
       textArea.select();
       
       try {
-        document.execCommand('copy');
-        toast({
-          title: "Link copied to clipboard!",
-          description: "Share this link to show others your Quantum Card.",
-          variant: "default",
-        });
+        const success = document.execCommand('copy');
+        alertUser(success);
+        console.log("Sharable link:", shareUrl);
       } catch (err) {
         console.error("Fallback: Failed to copy link:", err);
-        toast({
-          title: "Couldn't copy link",
-          description: "Please try again or manually copy the link.",
-          variant: "destructive",
-        });
+        alertUser(false);
       }
       
       document.body.removeChild(textArea);
@@ -210,14 +233,25 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
                       {type.id === activeTab && (
                         <div className="mt-6">
                           {isFinalized ? (
-                            <div className="flex flex-col items-center justify-center p-3 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 rounded-lg">
-                              <div className="flex items-center mb-1 text-green-600 dark:text-green-400">
-                                <Check className="h-4 w-4 mr-1" />
-                                <span className="text-sm font-medium">Quantum Card Finalized</span>
+                            <div className="space-y-3">
+                              <div className="flex flex-col items-center justify-center p-3 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 rounded-lg">
+                                <div className="flex items-center mb-1 text-green-600 dark:text-green-400">
+                                  <Check className="h-4 w-4 mr-1" />
+                                  <span className="text-sm font-medium">Quantum Card Finalized</span>
+                                </div>
+                                <p className="text-xs text-green-600/80 dark:text-green-400/80 text-center">
+                                  This card style is set as your public Quantum Card
+                                </p>
                               </div>
-                              <p className="text-xs text-green-600/80 dark:text-green-400/80 text-center">
-                                This card style is set as your public Quantum Card
-                              </p>
+                              
+                              {/* Prominent share button for finalized cards */}
+                              <Button 
+                                className="w-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center"
+                                onClick={handleShare}
+                              >
+                                <Share2 className="h-4 w-4 mr-2" />
+                                Share this Quantum Card
+                              </Button>
                             </div>
                           ) : (
                             <Button 
