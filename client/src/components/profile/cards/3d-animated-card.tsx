@@ -323,7 +323,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
           {/* Industry Tags Section */}
           {industryTags.length > 0 && (
             <div 
-              className="flex flex-wrap justify-center gap-2 mb-6"
+              className="flex flex-wrap justify-center gap-2 mb-3"
               data-layer="3"
             >
               {industryTags.slice(0, 3).map((tag, index) => (
@@ -387,11 +387,11 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
           {/* Location with Orbital Style */}
           {userData.location && (
             <div 
-              className="flex justify-center mb-6"
+              className="flex justify-center mb-3"
               data-layer="2"
             >
               <div 
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full"
                 style={{
                   background: `linear-gradient(90deg, ${colors.charcoalBlack}80, ${colors.charcoalBlack}50)`,
                   border: `1px solid ${colors.neonPurple}30`,
@@ -399,8 +399,8 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
                   animation: "orbit 10s infinite linear",
                 }}
               >
-                <MapPin className="h-4 w-4 text-gray-300" />
-                <span className="text-sm text-gray-300">
+                <MapPin className="h-3 w-3 text-gray-300" />
+                <span className="text-xs text-gray-300">
                   {userData.location}
                 </span>
               </div>
