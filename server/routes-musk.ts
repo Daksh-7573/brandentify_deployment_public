@@ -30,6 +30,83 @@ if (!global.resumeContexts) {
 }
 
 // Handle Musk AI assistant chat requests
+// Provide a meaningful fallback response when OpenAI is unavailable
+function generateFallbackResponse(message: string, context: any): string {
+  // Extract user data if available
+  const userName = context?.userData?.profile?.name || "there";
+  const userTitle = context?.userData?.profile?.title || "professional";
+  
+  // Check for resume-related queries
+  if (message.toLowerCase().includes("resume") || 
+      message.toLowerCase().includes("cv")) {
+    return `# Resume Analysis
+
+**I apologize, but I'm currently unable to access my AI services to analyze your resume in detail.**
+
+I understand that getting quality feedback on your resume is important. Here are some general tips that might help:
+
+- Make sure your resume highlights quantifiable achievements, not just responsibilities
+- Tailor your resume for each specific job application
+- Keep your resume concise (1-2 pages maximum)
+- Have a clean, professional format with consistent styling
+- Include keywords from the job description to pass ATS systems
+
+✅ **Once my services are back online, I'll be able to provide you with personalized resume analysis and improvement suggestions.**
+
+Quick Response Options:
+"What makes a good resume summary?"
+"How can I showcase my skills effectively?"
+"What common resume mistakes should I avoid?"
+"How should I format my work experience section?"`;
+  }
+  
+  // Check for career advice queries
+  if (message.toLowerCase().includes("career") || 
+      message.toLowerCase().includes("job") || 
+      message.toLowerCase().includes("interview")) {
+    return `# Career Guidance
+
+**Hi ${userName}, I'm currently experiencing some technical difficulties accessing my AI services.**
+
+As a ${userTitle}, there are several paths you might consider for career growth:
+
+- Specializing in a high-demand area of your field
+- Taking on leadership roles in projects to build management experience
+- Networking with professionals in your target companies or industries
+- Developing complementary skills that increase your market value
+
+✅ **I'll be able to provide more personalized career guidance once my services are back online.**
+
+Quick Response Options:
+"What skills are most in-demand in my industry?"
+"How can I prepare for a job interview?"
+"What should I focus on for career growth?"
+"How can I build my professional network?"`;
+  }
+  
+  // Default fallback response
+  return `# Hello ${userName}!
+
+**I apologize, but I'm currently experiencing some technical difficulties with my AI service.**
+
+I'm usually able to provide personalized career advice and professional insights based on your profile data and questions. However, I'm temporarily limited in my capabilities.
+
+💡 **Once my services are fully restored, I'll be able to assist you with:**
+- Resume analysis and improvement suggestions
+- Career path recommendations
+- Skill development guidance
+- Industry-specific insights
+- Professional networking strategies
+
+Feel free to check back soon!
+
+Quick Response Options:
+"What can Musk help me with?"
+"What features does Brandentifier offer?"
+"How can I improve my profile?"
+"Can I upload my resume for analysis?"`;
+}
+
 export const handleMuskChat = async (req: Request, res: Response) => {
   try {
     const { userId, message, context } = req.body;
@@ -49,13 +126,23 @@ export const handleMuskChat = async (req: Request, res: Response) => {
       global.resumeContexts = {};
     }
     
-    // If we're missing session support, check if there is a resume context stored globally
-    if (req.session?.resumeContexts?.[userId]) {
-      console.log(`Found resume context in session for user ${userId}`);
-    } else if (global.resumeContexts[userId]) {
+    // Check for resume context in global storage first since it's most reliable
+    const userIdStr = userId.toString();
+    if (global.resumeContexts[userIdStr]) {
       console.log(`Found resume context in global storage for user ${userId}`);
     } else {
-      console.log(`No resume context found for user ${userId}`);
+      // Only try session if the above fails
+      try {
+        if (req.session?.resumeContexts?.[userIdStr]) {
+          console.log(`Found resume context in session for user ${userId}`);
+          // Copy from session to global for future consistency
+          global.resumeContexts[userIdStr] = req.session.resumeContexts[userIdStr];
+        } else {
+          console.log(`No resume context found for user ${userId}`);
+        }
+      } catch (e) {
+        console.log(`Session not available, no resume context found for user ${userId}`);
+      }
     }
     
     if (userId) {
@@ -120,28 +207,35 @@ async function enrichContextWithUserData(userId: number, context?: any) {
       }
     };
     
-    // Check if we have a resume context stored in the session
+    // Check for resume context in global storage (our primary storage method)
     let enrichedContext = baseContext;
-    if (context?.req?.session?.resumeContexts?.[userId]) {
-      const resumeContext = context.req.session.resumeContexts[userId];
-      console.log(`Found stored resume context for user ${userId}: `, resumeContext);
+    const userIdStr = userId.toString();
+    
+    // Prioritize global storage
+    if (global.resumeContexts && global.resumeContexts[userIdStr]) {
+      const resumeContext = global.resumeContexts[userIdStr];
+      console.log(`Found global resume context for user ${userId}: `, resumeContext);
+      
+      enrichedContext = {
+        ...baseContext,
+        resumeData: resumeContext,
+        dataSource: 'resume',
+        lastUploaded: resumeContext.uploadDate
+      };
+    } 
+    // Fall back to session storage if needed
+    else if (context?.req?.session?.resumeContexts?.[userIdStr]) {
+      const resumeContext = context.req.session.resumeContexts[userIdStr];
+      console.log(`Found session resume context for user ${userId}: `, resumeContext);
+      
+      // Mirror to global storage for future consistency
+      global.resumeContexts[userIdStr] = resumeContext;
       
       // Add resume context information
       enrichedContext = {
         ...baseContext,
         resumeData: resumeContext,
         // Signal to Musk that it should use resume data with higher priority
-        dataSource: 'resume',
-        lastUploaded: resumeContext.uploadDate
-      };
-    } else if (global.resumeContexts && global.resumeContexts[userId]) {
-      // Alternative storage mechanism if session is not available
-      const resumeContext = global.resumeContexts[userId];
-      console.log(`Found global resume context for user ${userId}: `, resumeContext);
-      
-      enrichedContext = {
-        ...baseContext,
-        resumeData: resumeContext,
         dataSource: 'resume',
         lastUploaded: resumeContext.uploadDate
       };
@@ -467,6 +561,43 @@ export const handlePitchDeckUpload = async (req: Request, res: Response) => {
     });
   }
 };
+
+// Create a fallback response for pitch deck analysis
+function generatePitchDeckFallbackResponse(): string {
+  return `## 🎯 Musk's Pitch Deck Analysis
+
+### 📊 Overall Assessment
+- Overall Deck Score: Not available at this time
+- Investor Readiness: Analysis Service Unavailable
+
+I apologize, but I'm currently experiencing difficulties accessing my AI analysis services. Here's some general pitch deck advice that applies to most startups:
+
+### ⚠️ Common Pitch Deck Weaknesses:
+- Too much text on slides (aim for visual communication)
+- Unclear problem statement and market opportunity
+- Weak competitive differentiation
+- Unrealistic financial projections
+- Missing or vague go-to-market strategy
+
+### 🔍 Essential Pitch Deck Components:
+1. Problem Slide: Clear, urgent problem with market validation
+2. Solution Slide: Unique approach that solves the stated problem
+3. Market Size: Realistic TAM/SAM/SOM breakdown with sources
+4. Business Model: Simple explanation of how you make money
+5. Competition: Honest assessment of alternatives and your advantages
+6. Traction: Key metrics showing growth and validation
+7. Team: Why you're uniquely qualified to execute this vision
+8. Ask: Clear funding request and use of funds
+
+### 🔧 General Improvement Plan:
+- Limit each slide to a single key point
+- Use visuals over text (charts, images, icons)
+- Include customer testimonials or case studies
+- Ensure financial projections follow industry benchmarks
+- Have an experienced founder or investor review it before pitching
+
+Please try uploading your pitch deck again later when our analysis service is fully available.`;
+}
 
 // Analyze pitch deck text with OpenAI
 async function analyzePitchDeck(pitchDeckText: string): Promise<string> {
