@@ -4,9 +4,10 @@ import { Mail, Phone, Globe, Briefcase, MapPin, Code, Building2, Share2, Zap } f
 
 interface QuantumCardProps {
   userData: UserData;
+  isLoading?: boolean;
 }
 
-const QuantumCard: React.FC<QuantumCardProps> = ({ userData }) => {
+const QuantumCard: React.FC<QuantumCardProps> = ({ userData, isLoading = false }) => {
   // Format profile link
   const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;
 
@@ -26,6 +27,22 @@ const QuantumCard: React.FC<QuantumCardProps> = ({ userData }) => {
         {/* Card content */}
         <div className="relative flex flex-col h-full w-full z-30 p-4">
           
+          {/* Liquid loading effect overlay */}
+          {isLoading && (
+            <div className="absolute inset-0 z-50 bg-gradient-to-r from-[#0A0F2C]/40 to-[#1F1B44]/40 backdrop-blur-sm flex flex-col justify-center items-center">
+              <div className="p-2 backdrop-blur-md bg-blue-500/10 rounded-lg border border-blue-400/30">
+                <div className="liquid-loading">
+                  <div className="liquid-loading-bar"></div>
+                  <div className="liquid-loading-bar"></div>
+                  <div className="liquid-loading-bar"></div>
+                  <div className="liquid-loading-bar"></div>
+                  <div className="liquid-loading-bar"></div>
+                </div>
+              </div>
+              <p className="text-cyan-400 text-xs mt-3 animate-pulse">Loading Quantum Data...</p>
+            </div>
+          )}
+          
           {/* Header section with holographic profile picture */}
           <div className="flex flex-col items-center mb-6 mt-4">
             {/* Hexagonal profile picture frame with glow */}
@@ -37,7 +54,7 @@ const QuantumCard: React.FC<QuantumCardProps> = ({ userData }) => {
                     <img 
                       src={userData.photoURL} 
                       alt={userData.name || "Profile"} 
-                      className="h-full w-full object-cover mix-blend-lighten"
+                      className={`h-full w-full object-cover mix-blend-lighten ${isLoading ? 'opacity-50' : ''}`}
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src = "https://ui-avatars.com/api/?name=" + (userData.name || "User") + "&background=0D1117&color=60A5FA";
@@ -47,7 +64,7 @@ const QuantumCard: React.FC<QuantumCardProps> = ({ userData }) => {
                     <img 
                       src={`https://ui-avatars.com/api/?name=${userData.name || "User"}&background=0D1117&color=60A5FA`}
                       alt={userData.name || "Profile"}
-                      className="h-full w-full object-cover"
+                      className={`h-full w-full object-cover ${isLoading ? 'opacity-50' : ''}`}
                     />
                   )}
                 </div>
@@ -56,66 +73,84 @@ const QuantumCard: React.FC<QuantumCardProps> = ({ userData }) => {
             
             {/* Name and title */}
             <h2 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-blue-100 text-center">
-              {userData.name || "Your Name"}
+              {isLoading ? (
+                <span className="inline-block w-32 h-6 bg-blue-300/20 rounded animate-pulse"></span>
+              ) : (
+                userData.name || "Your Name"
+              )}
             </h2>
             
             {/* Job title as a glowing neon chip */}
             <div className="mt-1 px-3 py-1 rounded-full bg-blue-900/50 border border-blue-500/30 text-cyan-400 text-xs font-medium inline-flex items-center">
               <Zap className="h-3 w-3 mr-1 text-cyan-400" />
-              <span>{userData.title || "Add your designation"}</span>
+              {isLoading ? (
+                <span className="inline-block w-24 h-3 bg-blue-300/20 rounded animate-pulse"></span>
+              ) : (
+                <span>{userData.title || "Add your designation"}</span>
+              )}
             </div>
           </div>
           
           {/* Main content */}
           <div className="flex-1 space-y-3 text-sm">
             {/* Domain tag with animated pulse */}
-            {userData.domain && (
+            {(userData.domain || isLoading) && (
               <div className="flex items-center gap-2 mb-2">
-                <div className="flex items-center gap-2 py-1 px-2 bg-purple-900/20 border border-purple-500/30 rounded-md">
-                  <span className="flex h-2 w-2 relative">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-500 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-400"></span>
-                  </span>
-                  <span className="text-purple-300 text-xs">
-                    #{userData.domain === "all" ? "General" : userData.domain}
-                  </span>
-                </div>
+                {isLoading ? (
+                  <div className="w-28 h-6 bg-purple-900/20 border border-purple-500/30 rounded-md animate-pulse"></div>
+                ) : (
+                  <div className="flex items-center gap-2 py-1 px-2 bg-purple-900/20 border border-purple-500/30 rounded-md">
+                    <span className="flex h-2 w-2 relative">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-500 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-400"></span>
+                    </span>
+                    <span className="text-purple-300 text-xs">
+                      #{userData.domain === "all" ? "General" : userData.domain}
+                    </span>
+                  </div>
+                )}
               </div>
             )}
             
             {/* Industry with holographic chip */}
-            {userData.industry && (
+            {(userData.industry || isLoading) && (
               <div className="flex items-center gap-2 py-1">
                 <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30">
                   <Building2 className="h-3 w-3 text-blue-400" />
                 </div>
-                <span className="text-white/80">
-                  {userData.industry}
-                </span>
+                {isLoading ? (
+                  <span className="w-24 h-3 bg-blue-300/20 rounded animate-pulse"></span>
+                ) : (
+                  <span className="text-white/80">{userData.industry}</span>
+                )}
               </div>
             )}
             
             {/* Company */}
-            {userData.company && (
+            {(userData.company || isLoading) && (
               <div className="flex items-center gap-2 py-1">
                 <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30">
                   <Briefcase className="h-3 w-3 text-blue-400" />
                 </div>
-                <span className="text-white/80">
-                  {userData.company}
-                </span>
+                {isLoading ? (
+                  <span className="w-28 h-3 bg-blue-300/20 rounded animate-pulse"></span>
+                ) : (
+                  <span className="text-white/80">{userData.company}</span>
+                )}
               </div>
             )}
             
             {/* Location with pin */}
-            {userData.location && (
+            {(userData.location || isLoading) && (
               <div className="flex items-center gap-2 py-1">
                 <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30">
                   <MapPin className="h-3 w-3 text-blue-400" />
                 </div>
-                <span className="text-white/80">
-                  {userData.location}
-                </span>
+                {isLoading ? (
+                  <span className="w-32 h-3 bg-blue-300/20 rounded animate-pulse"></span>
+                ) : (
+                  <span className="text-white/80">{userData.location}</span>
+                )}
               </div>
             )}
 
@@ -126,9 +161,11 @@ const QuantumCard: React.FC<QuantumCardProps> = ({ userData }) => {
                 <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30">
                   <Mail className="h-3 w-3 text-blue-400" />
                 </div>
-                <span className="text-white/80 text-xs">
-                  {userData.email}
-                </span>
+                {isLoading ? (
+                  <span className="w-36 h-3 bg-blue-300/20 rounded animate-pulse"></span>
+                ) : (
+                  <span className="text-white/80 text-xs">{userData.email}</span>
+                )}
               </div>
               
               {/* Phone */}
@@ -136,9 +173,11 @@ const QuantumCard: React.FC<QuantumCardProps> = ({ userData }) => {
                 <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30">
                   <Phone className="h-3 w-3 text-blue-400" />
                 </div>
-                <span className="text-white/80 text-xs">
-                  {userData.phoneNumber || "Add phone number"}
-                </span>
+                {isLoading ? (
+                  <span className="w-28 h-3 bg-blue-300/20 rounded animate-pulse"></span>
+                ) : (
+                  <span className="text-white/80 text-xs">{userData.phoneNumber || "Add phone number"}</span>
+                )}
               </div>
               
               {/* Profile Link with barcode-style */}
@@ -146,16 +185,18 @@ const QuantumCard: React.FC<QuantumCardProps> = ({ userData }) => {
                 <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30">
                   <Globe className="h-3 w-3 text-blue-400" />
                 </div>
-                <span className="text-cyan-400 text-xs">
-                  {profileLink}
-                </span>
+                {isLoading ? (
+                  <span className="w-32 h-3 bg-blue-300/20 rounded animate-pulse"></span>
+                ) : (
+                  <span className="text-cyan-400 text-xs">{profileLink}</span>
+                )}
               </div>
             </div>
           </div>
           
           {/* Footer with share button */}
           <div className="mt-4 mb-2 flex justify-center">
-            <div className="px-4 py-1 rounded-full bg-blue-900/30 text-cyan-400 text-xs font-medium inline-flex items-center border border-blue-500/20 hover:bg-blue-800/40 transition-colors cursor-pointer">
+            <div className={`px-4 py-1 rounded-full bg-blue-900/30 text-cyan-400 text-xs font-medium inline-flex items-center border border-blue-500/20 ${isLoading ? 'opacity-50' : 'hover:bg-blue-800/40 transition-colors cursor-pointer'}`}>
               <Share2 className="h-3 w-3 mr-1 text-cyan-400" />
               <span>Share Quantum Card</span>
             </div>

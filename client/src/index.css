@@ -4,6 +4,57 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Quantum Card Animations */
+@layer components {
+  /* Liquid Loading Animation */
+  .liquid-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 3px;
+    height: 30px;
+  }
+  
+  .liquid-loading-bar {
+    width: 3px;
+    height: 20px;
+    background: linear-gradient(to bottom, #60A5FA, #7C3AED);
+    border-radius: 3px;
+    animation: liquid-loading 1.2s ease-in-out infinite;
+  }
+  
+  .liquid-loading-bar:nth-child(1) { animation-delay: 0s; }
+  .liquid-loading-bar:nth-child(2) { animation-delay: 0.2s; }
+  .liquid-loading-bar:nth-child(3) { animation-delay: 0.4s; }
+  .liquid-loading-bar:nth-child(4) { animation-delay: 0.6s; }
+  .liquid-loading-bar:nth-child(5) { animation-delay: 0.8s; }
+  
+  @keyframes liquid-loading {
+    0%, 100% {
+      height: 8px;
+      opacity: 0.5;
+    }
+    50% {
+      height: 20px;
+      opacity: 1;
+    }
+  }
+  
+  /* Glow Border Animation */
+  .glow-border {
+    animation: border-glow 3s ease-in-out infinite;
+  }
+  
+  @keyframes border-glow {
+    0%, 100% {
+      border-color: rgba(8, 145, 178, 0.2); /* cyan-600 20% */
+    }
+    50% {
+      border-color: rgba(79, 70, 229, 0.3); /* indigo-600 30% */
+    }
+  }
+}
+
 /* Scholar theme notebook styling */
 .scholar-template {
   font-family: 'Nunito Sans', sans-serif;

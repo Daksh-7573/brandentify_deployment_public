@@ -92,7 +92,10 @@ const VisitingCardPreview: React.FC<VisitingCardPreviewProps> = ({
   if (cardType === "quantum") {
     return (
       <CardWrapper>
-        <QuantumCard userData={userData} />
+        <QuantumCard 
+          userData={userData}
+          isLoading={false} // Set to true when loading
+        />
       </CardWrapper>
     );
   }
