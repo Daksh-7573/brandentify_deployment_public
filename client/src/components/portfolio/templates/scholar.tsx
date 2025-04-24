@@ -534,13 +534,16 @@ export default function Scholar({
                       <div key={skill.id} className="w-full mb-4">
                         <div className="flex justify-between mb-1">
                           <span className="text-sm font-medium">{skill.name}</span>
-                          <div className="flex">
-                            {Array.from({ length: 5 }).map((_, i) => (
-                              <Star
-                                key={i}
-                                className={`h-4 w-4 ${i < Math.round(skill.proficiency / 20) ? 'text-blue-600 fill-blue-600' : 'text-gray-300'}`}
-                              />
-                            ))}
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-medium text-blue-700">{skill.proficiency}%</span>
+                            <div className="flex">
+                              {Array.from({ length: 5 }).map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className={`h-4 w-4 ${i < Math.round(skill.proficiency / 20) ? 'text-blue-600 fill-blue-600' : 'text-gray-300'}`}
+                                />
+                              ))}
+                            </div>
                           </div>
                         </div>
                         <div className="progress-bar">
@@ -568,7 +571,7 @@ export default function Scholar({
                         variant="outline"
                         className={`text-sm py-2 px-3 skill-badge ${getSkillColor(skill.name)}`}
                       >
-                        {skill.name}
+                        {skill.name} {skill.proficiency && <span className="ml-1 text-xs font-semibold">({skill.proficiency}%)</span>}
                       </Badge>
                     ))}
                   </div>
@@ -588,7 +591,7 @@ export default function Scholar({
                         variant="outline"
                         className="bg-purple-50 text-purple-700 border-purple-200 skill-badge"
                       >
-                        {skill.name}
+                        {skill.name} {skill.proficiency && <span className="ml-1 text-xs font-semibold">({skill.proficiency}%)</span>}
                       </Badge>
                     ))}
                   </div>
@@ -608,7 +611,7 @@ export default function Scholar({
                         variant="outline"
                         className={`text-sm py-2 px-3 skill-badge ${getSkillColor(skill.name)}`}
                       >
-                        {skill.name}
+                        {skill.name} {skill.proficiency && <span className="ml-1 text-xs font-semibold">({skill.proficiency}%)</span>}
                       </Badge>
                     ))}
                   </div>
