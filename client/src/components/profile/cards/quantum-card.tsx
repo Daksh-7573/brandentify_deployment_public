@@ -1,565 +1,354 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
+import { UserData } from "@/types/user";
 import { 
-  MapPin, 
   Mail, 
   Phone, 
+  Globe, 
+  Briefcase, 
+  Satellite, 
+  Code, 
   Copy, 
-  Zap, 
-  Brain, 
-  Cpu, 
-  Satellite
+  Check,
+  Zap
 } from "lucide-react";
-import { UserData } from "@/types/user";
+import { motion } from "framer-motion";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 interface QuantumCardProps {
   userData: UserData;
 }
 
 const QuantumCard: React.FC<QuantumCardProps> = ({ userData }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const [copySuccess, setCopySuccess] = useState("");
-  const [dataLoaded, setDataLoaded] = useState(false);
-  const profileLink = `brandentifier.com/${userData.name?.replace(/\s+/g, '').toLowerCase() || 'myprofile'}`;
+  const [copiedFields, setCopiedFields] = useState<Record<string, boolean>>({});
   
-  // Futuristic tech color scheme
-  const colors = {
-    darkBlue: "#0A0F2C",
-    purpleBlue: "#1F1B44",
-    neonPurple: "#B026FF",
-    neonBlue: "#4D4DFF",
-    neonTeal: "#05D9E8",
-    neonGreen: "#01C38D",
-    glassWhite: "rgba(255, 255, 255, 0.1)",
-    glassBlack: "rgba(0, 0, 0, 0.2)",
+  // Helpers
+  const formatProfileLink = () => {
+    return `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;
   };
   
-  // Load fields one-by-one with animation
-  useEffect(() => {
-    setDataLoaded(true);
-  }, []);
+  const handleCopy = async (text: string, field: string) => {
+    if (navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(text);
+        setCopiedFields({ ...copiedFields, [field]: true });
+        
+        // Reset the copied state after 2 seconds
+        setTimeout(() => {
+          setCopiedFields({ ...copiedFields, [field]: false });
+        }, 2000);
+      } catch (err) {
+        console.error("Failed to copy:", err);
+      }
+    }
+  };
+
+  // Animations
+  const pulseAnimation = {
+    animate: {
+      scale: [1, 1.05, 1],
+      opacity: [0.8, 1, 0.8],
+      transition: {
+        duration: 2,
+        repeat: Infinity,
+        ease: "easeInOut"
+      }
+    }
+  };
+  
+  const hoverAnimation = {
+    rest: { scale: 1 },
+    hover: { scale: 1.05, transition: { duration: 0.3 } }
+  };
   
   return (
-    <div
-      className="quantum-card w-full h-full flex flex-col relative overflow-hidden"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      style={{
-        perspective: "1000px",
-        transform: isHovered ? "scale(1.02)" : "scale(1)",
-        transition: "transform 0.3s ease",
-      }}
-    >
-      {/* Main Card Container */}
-      <div
-        className="card-container relative w-full h-full rounded-xl overflow-hidden flex flex-col"
-        style={{
-          background: `linear-gradient(135deg, ${colors.darkBlue}, ${colors.purpleBlue})`,
-          boxShadow: isHovered 
-            ? `0 0 25px ${colors.neonPurple}40, 0 0 15px ${colors.neonBlue}30, inset 0 0 10px ${colors.neonTeal}20`
-            : `0 0 15px rgba(0, 0, 0, 0.5)`,
-          transition: "all 0.3s ease",
-          transformStyle: "preserve-3d",
-          transform: isHovered ? "rotateY(5deg) rotateX(2deg)" : "rotateY(0) rotateX(0)",
-        }}
-      >
-        {/* Background Grid Animation */}
-        <div 
-          className="absolute inset-0 w-full h-full z-0"
-          style={{
-            background: `
-              linear-gradient(90deg, ${colors.glassWhite} 1px, transparent 1px),
-              linear-gradient(0deg, ${colors.glassWhite} 1px, transparent 1px)
-            `,
-            backgroundSize: "20px 20px",
-            opacity: 0.1,
-          }}
-        />
-        
-        {/* Animated Pulse Effects */}
-        <div className="absolute z-0 w-full h-full">
-          <div 
-            className="absolute rounded-full"
-            style={{
-              width: "150px",
-              height: "150px",
-              background: `radial-gradient(circle, ${colors.neonPurple}10 0%, transparent 70%)`,
-              top: "10%",
-              left: "20%",
-              animation: "pulse 8s infinite ease-in-out",
-            }}
-          />
-          <div 
-            className="absolute rounded-full"
-            style={{
-              width: "200px",
-              height: "200px",
-              background: `radial-gradient(circle, ${colors.neonBlue}10 0%, transparent 70%)`,
-              bottom: "10%",
-              right: "10%",
-              animation: "pulse 10s infinite ease-in-out",
-            }}
-          />
-        </div>
-        
-        {/* Angled Edge Overlays */}
-        <div 
-          className="absolute top-0 left-0 w-full h-20 z-10"
-          style={{
-            background: `linear-gradient(170deg, ${colors.neonPurple}20, transparent)`,
-          }}
-        />
-        <div 
-          className="absolute bottom-0 right-0 w-full h-20 z-10"
-          style={{
-            background: `linear-gradient(350deg, ${colors.neonBlue}20, transparent)`,
-          }}
-        />
-        
-        {/* Main Content Container */}
-        <div className="z-20 flex flex-col p-6 h-full">
-          {/* Top Section with Name, Title, Photo */}
-          <div 
-            className="flex items-center mb-6"
-            style={{
-              animation: dataLoaded ? "fadeInSlideUp 0.5s ease forwards" : "none",
-              opacity: 0,
-            }}
-          >
-            {/* Holographic Profile Image */}
-            <div className="mr-4 relative">
-              <div
-                className="relative rounded-full overflow-hidden"
-                style={{
-                  width: "80px",
-                  height: "80px",
-                  background: colors.glassBlack,
-                  border: `2px solid ${colors.neonPurple}40`,
-                  boxShadow: isHovered 
-                    ? `0 0 15px ${colors.neonTeal}40`
-                    : `0 0 5px ${colors.neonTeal}20`,
-                  transition: "all 0.3s ease",
+    <div className="w-full h-full quantum-card aspect-[2/3.5] rounded-lg overflow-hidden relative">
+      {/* Background with quantum-inspired gradient and pulse grid */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0A0F2C] to-[#1F1B44] z-0">
+        {/* Pulse grid animation */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="grid grid-cols-8 grid-rows-12 h-full w-full">
+            {Array.from({ length: 96 }).map((_, index) => (
+              <motion.div
+                key={index}
+                className="border-[0.5px] border-blue-400/10"
+                animate={{
+                  opacity: [
+                    0.1,
+                    Math.random() * 0.5 + 0.1,
+                    0.1
+                  ],
                 }}
-              >
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    background: `linear-gradient(45deg, ${colors.neonPurple}20, ${colors.neonBlue}20, transparent)`,
-                    animation: "holographicShimmer 3s infinite linear",
-                    mixBlendMode: "overlay",
-                    zIndex: 2,
-                  }}
-                />
-                <div className="w-full h-full">
-                  {userData.photoURL ? (
-                    <img 
-                      src={userData.photoURL} 
-                      alt={userData.name || "Profile"} 
-                      className="h-full w-full object-cover"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = `https://ui-avatars.com/api/?name=${userData.name || "User"}&background=0A0F2C&color=01C38D`;
-                      }}
-                    />
-                  ) : (
-                    <img 
-                      src={`https://ui-avatars.com/api/?name=${userData.name || "User"}&background=0A0F2C&color=01C38D`}
-                      alt={userData.name || "Profile"}
-                      className="h-full w-full object-cover"
-                    />
-                  )}
-                </div>
-              </div>
-              
-              {/* Hexagonal Frame Animation */}
-              <div 
-                className="absolute top-0 left-0 right-0 bottom-0"
-                style={{
-                  animation: "rotate 10s infinite linear",
-                }}
-              >
-                <div
-                  style={{
-                    position: "absolute",
-                    width: "86px",
-                    height: "86px",
-                    top: "-3px",
-                    left: "-3px",
-                    background: "transparent",
-                    borderRadius: "50%",
-                    boxShadow: `0 0 0 2px ${colors.neonBlue}80`,
-                    clipPath: "polygon(50% 0%, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%)",
-                  }}
-                />
-              </div>
-            </div>
-            
-            {/* Name and Title */}
-            <div>
-              <h2 
-                className="text-xl font-bold mb-1"
-                style={{
-                  color: "#FFFFFF",
-                  fontFamily: "'Orbitron', sans-serif",
-                  textShadow: `0 0 10px ${colors.neonPurple}80`,
-                }}
-              >
-                {userData.name || "Your Name"}
-              </h2>
-              
-              {/* Job Title Chip */}
-              {userData.title && (
-                <div 
-                  className="px-3 py-1 inline-block rounded-md"
-                  style={{
-                    background: colors.glassBlack,
-                    border: `1px solid ${colors.neonGreen}`,
-                    boxShadow: `0 0 10px ${colors.neonGreen}40`,
-                  }}
-                >
-                  <span 
-                    className="text-sm font-medium"
-                    style={{
-                      color: colors.neonGreen,
-                      fontFamily: "'Rajdhani', sans-serif",
-                    }}
-                  >
-                    {userData.title}
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-          
-          {/* Middle Section - Tags and Location */}
-          <div className="mb-6 space-y-4">
-            {/* Location with Satellite Icon */}
-            {userData.location && (
-              <div 
-                className="flex items-center"
-                style={{
-                  animation: dataLoaded ? "fadeInSlideUp 0.7s ease forwards" : "none",
-                  opacity: 0,
-                }}
-              >
-                <div 
-                  className="rounded-full p-1 mr-2"
-                  style={{
-                    background: colors.glassBlack,
-                    border: `1px solid ${colors.neonTeal}40`,
-                  }}
-                >
-                  <Satellite 
-                    size={16} 
-                    className="text-white"
-                    style={{
-                      filter: `drop-shadow(0 0 2px ${colors.neonTeal})`,
-                    }}
-                  />
-                </div>
-                <span 
-                  className="text-sm"
-                  style={{
-                    color: "#FFFFFF",
-                    fontFamily: "'Rajdhani', sans-serif",
-                  }}
-                >
-                  {userData.location}
-                </span>
-              </div>
-            )}
-            
-            {/* Industry and Domain Tags */}
-            <div 
-              className="flex flex-wrap gap-2"
-              style={{
-                animation: dataLoaded ? "fadeInSlideUp 0.9s ease forwards" : "none",
-                opacity: 0,
-              }}
-            >
-              {/* Industry Holographic Chip */}
-              {userData.industry && (
-                <div 
-                  className="px-3 py-1.5 rounded-lg flex items-center"
-                  style={{
-                    background: `linear-gradient(135deg, ${colors.neonPurple}20, ${colors.neonBlue}10)`,
-                    backdropFilter: "blur(4px)",
-                    border: `1px solid ${colors.neonPurple}40`,
-                    boxShadow: `0 0 10px ${colors.neonPurple}20`,
-                  }}
-                >
-                  <Cpu 
-                    size={14} 
-                    className="mr-1.5"
-                    style={{
-                      color: colors.neonPurple,
-                      filter: `drop-shadow(0 0 2px ${colors.neonPurple})`,
-                    }}
-                  />
-                  <span 
-                    className="text-xs font-medium"
-                    style={{
-                      color: "#FFFFFF",
-                      fontFamily: "'Rajdhani', sans-serif",
-                      textShadow: `0 0 5px ${colors.neonPurple}80`,
-                    }}
-                  >
-                    {userData.industry}
-                  </span>
-                </div>
-              )}
-              
-              {/* Domain Pulse Tag */}
-              {userData.domain && (
-                <div 
-                  className="px-3 py-1.5 rounded-lg flex items-center"
-                  style={{
-                    background: `linear-gradient(135deg, ${colors.neonBlue}20, ${colors.neonTeal}10)`,
-                    backdropFilter: "blur(4px)",
-                    border: `1px solid ${colors.neonTeal}40`,
-                    boxShadow: `0 0 10px ${colors.neonTeal}20`,
-                    animation: "pulse 2s infinite ease-in-out",
-                  }}
-                >
-                  <Brain 
-                    size={14} 
-                    className="mr-1.5" 
-                    style={{
-                      color: colors.neonTeal,
-                      filter: `drop-shadow(0 0 2px ${colors.neonTeal})`,
-                    }}
-                  />
-                  <span 
-                    className="text-xs font-medium"
-                    style={{
-                      color: "#FFFFFF",
-                      fontFamily: "'Rajdhani', sans-serif",
-                      textShadow: `0 0 5px ${colors.neonTeal}80`,
-                    }}
-                  >
-                    {userData.domain}
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-          
-          {/* Bottom Section - Contact */}
-          <div 
-            className="mt-auto space-y-3 mb-1"
-            style={{
-              animation: dataLoaded ? "fadeInSlideUp 1.1s ease forwards" : "none",
-              opacity: 0,
-            }}
-          >
-            {/* Section Heading with Divider */}
-            <div className="flex items-center mb-3">
-              <div 
-                className="flex-grow h-px mr-3"
-                style={{
-                  background: `linear-gradient(to right, transparent, ${colors.neonBlue}40)`,
+                transition={{
+                  duration: 3 + Math.random() * 3,
+                  repeat: Infinity,
+                  delay: Math.random() * 2,
                 }}
               />
-              <span 
-                className="text-xs font-medium"
-                style={{
-                  color: colors.neonBlue,
-                  fontFamily: "'Orbitron', sans-serif",
-                  letterSpacing: "1px",
-                }}
-              >
-                CONTACT GATEWAY
-              </span>
-              <div 
-                className="flex-grow h-px ml-3"
-                style={{
-                  background: `linear-gradient(to left, transparent, ${colors.neonBlue}40)`,
-                }}
-              />
-            </div>
-            
-            {/* Email */}
-            <div 
-              className="flex items-center rounded-md p-2 cursor-pointer"
-              style={{
-                background: colors.glassBlack,
-                border: `1px solid ${colors.neonBlue}30`,
-                transition: "all 0.3s ease",
-              }}
-              onClick={() => {
-                navigator.clipboard.writeText(userData.email);
-                setCopySuccess('Email copied!');
-                setTimeout(() => setCopySuccess(''), 2000);
-              }}
-            >
-              <Mail 
-                size={16} 
-                className="mr-3"
-                style={{
-                  color: colors.neonBlue,
-                  filter: `drop-shadow(0 0 2px ${colors.neonBlue})`,
-                }}
-              />
-              <span 
-                className="text-sm flex-1 truncate"
-                style={{
-                  color: "#FFFFFF",
-                  fontFamily: "'Rajdhani', sans-serif",
-                }}
-              >
-                {userData.email}
-              </span>
-              <Copy 
-                size={14} 
-                style={{
-                  color: colors.neonTeal,
-                  opacity: 0.7,
-                }}
-              />
-            </div>
-            
-            {/* Phone Number */}
-            {userData.phoneNumber && (
-              <div 
-                className="flex items-center rounded-md p-2 cursor-pointer"
-                style={{
-                  background: colors.glassBlack,
-                  border: `1px solid ${colors.neonPurple}30`,
-                  transition: "all 0.3s ease",
-                }}
-                onClick={() => {
-                  navigator.clipboard.writeText(userData.phoneNumber || '');
-                  setCopySuccess('Phone copied!');
-                  setTimeout(() => setCopySuccess(''), 2000);
-                }}
-              >
-                <Phone 
-                  size={16} 
-                  className="mr-3"
-                  style={{
-                    color: colors.neonPurple,
-                    filter: `drop-shadow(0 0 2px ${colors.neonPurple})`,
-                  }}
-                />
-                <span 
-                  className="text-sm flex-1 truncate"
-                  style={{
-                    color: "#FFFFFF",
-                    fontFamily: "'Rajdhani', sans-serif",
-                  }}
-                >
-                  {userData.phoneNumber}
-                </span>
-                <Copy 
-                  size={14} 
-                  style={{
-                    color: colors.neonTeal,
-                    opacity: 0.7,
-                  }}
-                />
-              </div>
-            )}
-            
-            {/* Profile URL as Barcode-style */}
-            <div 
-              className="flex items-center rounded-md p-2 cursor-pointer"
-              style={{
-                background: colors.glassBlack,
-                border: `1px solid ${colors.neonGreen}30`,
-                transition: "all 0.3s ease",
-              }}
-              onClick={() => {
-                navigator.clipboard.writeText(profileLink);
-                setCopySuccess('URL copied!');
-                setTimeout(() => setCopySuccess(''), 2000);
-              }}
-            >
-              <div 
-                className="mr-3 h-4 w-10"
-                style={{
-                  background: `repeating-linear-gradient(90deg, ${colors.neonGreen}, ${colors.neonGreen} 2px, transparent 2px, transparent 4px)`,
-                }}
-              />
-              <span 
-                className="text-sm flex-1 truncate"
-                style={{
-                  color: "#FFFFFF",
-                  fontFamily: "'Rajdhani', sans-serif",
-                }}
-              >
-                {profileLink}
-              </span>
-              <Copy 
-                size={14} 
-                style={{
-                  color: colors.neonTeal,
-                  opacity: 0.7,
-                }}
-              />
-            </div>
+            ))}
           </div>
         </div>
         
-        {/* Quantum Edge Effect */}
-        <div 
-          className="absolute inset-0 rounded-xl pointer-events-none"
-          style={{
-            boxShadow: isHovered 
-              ? `inset 0 0 2px ${colors.neonTeal}40, inset 0 0 1px ${colors.neonBlue}40` 
-              : `inset 0 0 1px ${colors.neonPurple}30`,
-            transition: "box-shadow 0.3s ease",
-          }}
-        />
-        
-        {/* Copy Success Message */}
-        {copySuccess && (
-          <div 
-            className="absolute top-4 left-1/2 transform -translate-x-1/2 px-3 py-1 rounded-full z-50 text-xs"
-            style={{
-              background: colors.neonTeal,
-              color: "#FFFFFF",
-              boxShadow: `0 0 10px ${colors.neonTeal}50`,
-              animation: "fadeInOut 2s forwards",
-              fontFamily: "'Rajdhani', sans-serif",
-            }}
-          >
-            {copySuccess}
-          </div>
-        )}
+        {/* Tech circuit lines */}
+        <div className="absolute inset-0 opacity-10">
+          <svg width="100%" height="100%" viewBox="0 0 300 500" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0,100 C150,80 150,120 300,100" stroke="#4F46E5" strokeWidth="0.5" fill="none" />
+            <path d="M0,200 C150,180 150,220 300,200" stroke="#4F46E5" strokeWidth="0.5" fill="none" />
+            <path d="M0,300 C150,280 150,320 300,300" stroke="#4F46E5" strokeWidth="0.5" fill="none" />
+            <path d="M0,400 C150,380 150,420 300,400" stroke="#4F46E5" strokeWidth="0.5" fill="none" />
+            <path d="M100,0 C80,150 120,150 100,500" stroke="#4F46E5" strokeWidth="0.5" fill="none" />
+            <path d="M200,0 C180,150 220,150 200,500" stroke="#4F46E5" strokeWidth="0.5" fill="none" />
+          </svg>
+        </div>
       </div>
       
-      {/* CSS Animations */}
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@400;500;600;700&display=swap');
+      {/* Card Content with futuristic styling */}
+      <div className="relative z-10 flex flex-col h-full p-5">
+        {/* Header with holographic profile image */}
+        <div className="flex flex-col items-center mb-5">
+          {/* Hexagonal profile photo frame with holographic effect */}
+          <div className="relative mb-4">
+            <div className="w-24 h-24 mx-auto clip-hex bg-gradient-to-br from-indigo-600/30 to-purple-600/30 backdrop-blur-sm p-[2px] rounded-full overflow-hidden">
+              <div className="w-full h-full rounded-full overflow-hidden bg-gradient-to-br from-indigo-500/20 to-purple-500/20 p-[1px]">
+                {userData.photoURL ? (
+                  <img 
+                    src={userData.photoURL} 
+                    alt={userData.name || "Profile"}
+                    className="w-full h-full object-cover rounded-full"
+                    style={{
+                      boxShadow: "0 0 15px rgba(123, 97, 255, 0.5)",
+                    }}
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = `https://ui-avatars.com/api/?name=${userData.name || "User"}&background=0A0F2C&color=fff`;
+                    }}
+                  />
+                ) : (
+                  <img 
+                    src={`https://ui-avatars.com/api/?name=${userData.name || "User"}&background=0A0F2C&color=fff`}
+                    alt={userData.name || "Profile"}
+                    className="w-full h-full object-cover rounded-full"
+                    style={{
+                      boxShadow: "0 0 15px rgba(123, 97, 255, 0.5)",
+                    }}
+                  />
+                )}
+              </div>
+            </div>
+            
+            {/* Glowing orb effect */}
+            <motion.div 
+              className="absolute -inset-0.5 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 opacity-30 blur-sm"
+              variants={pulseAnimation}
+              animate="animate"
+            />
+          </div>
+          
+          {/* Name in futuristic bold font */}
+          <h2 className="text-xl font-bold text-white tracking-wider mb-1 text-center"
+            style={{ textShadow: "0 0 10px rgba(255, 255, 255, 0.3)" }}>
+            {userData.name || "Quantum Professional"}
+          </h2>
+          
+          {/* Title in neon chip */}
+          <div className="bg-indigo-900/50 backdrop-blur-sm border border-indigo-500/30 text-indigo-300 px-3 py-1 text-sm rounded-full mb-1">
+            <span className="relative">
+              <span className="mr-1.5">○</span>
+              {userData.title || "Tech Professional"}
+            </span>
+          </div>
+        </div>
         
-        @keyframes fadeInSlideUp {
-          0% { opacity: 0; transform: translateY(10px); }
-          100% { opacity: 1; transform: translateY(0); }
-        }
+        {/* Main content - Professional details with interactive elements */}
+        <div className="flex-1 space-y-3 text-sm">
+          {/* Industry as chip */}
+          {userData.industry && (
+            <motion.div 
+              className="flex items-center group"
+              variants={hoverAnimation}
+              initial="rest"
+              whileHover="hover"
+            >
+              <div className="flex items-center gap-2.5">
+                <span className="w-6 h-6 flex items-center justify-center bg-blue-900/40 rounded-full">
+                  <Briefcase className="h-3.5 w-3.5 text-blue-400" />
+                </span>
+                <div className="bg-blue-900/20 backdrop-blur-sm border border-blue-500/20 rounded-md px-2 py-0.5 text-blue-300 mr-1">
+                  {userData.industry}
+                </div>
+              </div>
+            </motion.div>
+          )}
+          
+          {/* Domain as animated pulse-tag */}
+          {userData.domain && (
+            <motion.div 
+              className="flex items-center group"
+              variants={hoverAnimation}
+              initial="rest"
+              whileHover="hover"
+            >
+              <div className="flex items-center gap-2.5">
+                <span className="w-6 h-6 flex items-center justify-center bg-indigo-900/40 rounded-full">
+                  <Code className="h-3.5 w-3.5 text-indigo-400" />
+                </span>
+                <motion.div 
+                  className="bg-indigo-900/20 backdrop-blur-sm border border-indigo-500/20 rounded-md px-2 py-0.5 text-indigo-300 relative overflow-hidden"
+                  variants={pulseAnimation}
+                  animate="animate"
+                >
+                  <span className="relative z-10">#{userData.domain === "all" ? "General" : userData.domain}</span>
+                  <motion.div 
+                    className="absolute inset-0 bg-indigo-500/10" 
+                    animate={{ 
+                      x: ['-100%', '100%'],
+                    }}
+                    transition={{ 
+                      repeat: Infinity, 
+                      duration: 3, 
+                      ease: "linear" 
+                    }}
+                  />
+                </motion.div>
+              </div>
+            </motion.div>
+          )}
+          
+          {/* Location with satellite icon */}
+          {userData.location && (
+            <div className="flex items-center gap-2.5 group cursor-pointer"
+              onClick={() => handleCopy(userData.location!, 'location')}>
+              <span className="w-6 h-6 flex items-center justify-center bg-purple-900/40 rounded-full group-hover:bg-purple-800/60 transition-colors">
+                <Satellite className="h-3.5 w-3.5 text-purple-400" />
+              </span>
+              <span className="text-purple-300 flex-1">{userData.location}</span>
+              <motion.button 
+                className="h-5 w-5 flex items-center justify-center text-purple-400/70 hover:text-purple-300 transition-colors"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleCopy(userData.location!, 'location');
+                }}
+              >
+                {copiedFields['location'] ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+              </motion.button>
+            </div>
+          )}
+          
+          {/* Company */}
+          {userData.company && (
+            <div className="flex items-center gap-2.5 group cursor-pointer"
+              onClick={() => handleCopy(userData.company!, 'company')}>
+              <span className="w-6 h-6 flex items-center justify-center bg-cyan-900/40 rounded-full group-hover:bg-cyan-800/60 transition-colors">
+                <Zap className="h-3.5 w-3.5 text-cyan-400" />
+              </span>
+              <span className="text-cyan-300 flex-1">{userData.company}</span>
+              <motion.button 
+                className="h-5 w-5 flex items-center justify-center text-cyan-400/70 hover:text-cyan-300 transition-colors"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleCopy(userData.company!, 'company');
+                }}
+              >
+                {copiedFields['company'] ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+              </motion.button>
+            </div>
+          )}
+          
+          {/* Email */}
+          <div className="flex items-center gap-2.5 group cursor-pointer"
+            onClick={() => handleCopy(userData.email, 'email')}>
+            <span className="w-6 h-6 flex items-center justify-center bg-blue-900/40 rounded-full group-hover:bg-blue-800/60 transition-colors">
+              <Mail className="h-3.5 w-3.5 text-blue-400" />
+            </span>
+            <span className="text-blue-300 flex-1 truncate">{userData.email}</span>
+            <motion.button 
+              className="h-5 w-5 flex items-center justify-center text-blue-400/70 hover:text-blue-300 transition-colors"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleCopy(userData.email, 'email');
+              }}
+            >
+              {copiedFields['email'] ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+            </motion.button>
+          </div>
+          
+          {/* Phone */}
+          {userData.phoneNumber && (
+            <div className="flex items-center gap-2.5 group cursor-pointer"
+              onClick={() => handleCopy(userData.phoneNumber!, 'phone')}>
+              <span className="w-6 h-6 flex items-center justify-center bg-green-900/40 rounded-full group-hover:bg-green-800/60 transition-colors">
+                <Phone className="h-3.5 w-3.5 text-green-400" />
+              </span>
+              <span className="text-green-300 flex-1">{userData.phoneNumber}</span>
+              <motion.button 
+                className="h-5 w-5 flex items-center justify-center text-green-400/70 hover:text-green-300 transition-colors"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleCopy(userData.phoneNumber!, 'phone');
+                }}
+              >
+                {copiedFields['phone'] ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+              </motion.button>
+            </div>
+          )}
+        </div>
         
-        @keyframes pulse {
-          0% { opacity: 0.7; transform: scale(1); }
-          50% { opacity: 1; transform: scale(1.05); }
-          100% { opacity: 0.7; transform: scale(1); }
-        }
+        {/* Footer with barcode-style profile link */}
+        <div className="mt-4">
+          <div className="flex items-center gap-2.5 group cursor-pointer"
+            onClick={() => handleCopy(formatProfileLink(), 'profile')}>
+            <span className="w-6 h-6 flex items-center justify-center bg-purple-900/40 rounded-full group-hover:bg-purple-800/60 transition-colors">
+              <Globe className="h-3.5 w-3.5 text-purple-400" />
+            </span>
+            <div className="flex-1 overflow-hidden flex items-center">
+              <div className="h-5 overflow-hidden">
+                {/* Barcode-style design with URL */}
+                <div className="flex items-center gap-0.5">
+                  {Array.from({ length: 20 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className={cn(
+                        "w-0.5 h-5",
+                        i % 3 === 0 ? "h-4 bg-purple-500/80" : "bg-purple-400/50"
+                      )}
+                      style={{
+                        height: `${Math.max(8, Math.floor(Math.random() * 20))}px`,
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+              <span className="text-purple-300 ml-2 text-xs truncate">{formatProfileLink()}</span>
+            </div>
+            <motion.button 
+              className="h-5 w-5 flex items-center justify-center text-purple-400/70 hover:text-purple-300 transition-colors"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleCopy(formatProfileLink(), 'profile');
+              }}
+            >
+              {copiedFields['profile'] ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+            </motion.button>
+          </div>
+        </div>
         
-        @keyframes rotate {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-        
-        @keyframes holographicShimmer {
-          0% { opacity: 0.3; transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-          50% { opacity: 0.5; }
-          100% { opacity: 0.3; transform: translateX(100%) translateY(100%) rotate(45deg); }
-        }
-        
-        @keyframes fadeInOut {
-          0% { opacity: 0; transform: translate(-50%, -10px); }
-          10% { opacity: 1; transform: translate(-50%, 0); }
-          90% { opacity: 1; transform: translate(-50%, 0); }
-          100% { opacity: 0; transform: translate(-50%, -10px); }
-        }
-      `}</style>
+        {/* Quantum Card label */}
+        <div className="absolute bottom-3 right-3">
+          <div className="text-xs text-indigo-400/70 bg-indigo-900/30 backdrop-blur-sm rounded-full px-2 py-0.5 border border-indigo-500/20">
+            Quantum Card
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

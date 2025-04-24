@@ -250,7 +250,7 @@ const SharedCardView: React.FC<SharedCardViewProps> = ({ userId }) => {
 
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold">{userData.name}'s Quantum Card</h1>
+            <h1 className="text-2xl font-bold">{userData.name}'s {userData.visitingCardType === 'quantum' ? 'Quantum Tech' : 'Quantum'} Card</h1>
             <p className="text-gray-500 dark:text-gray-400 mt-2">
               View this professional's digital visiting card
             </p>
