@@ -456,12 +456,32 @@ interface UserDataAPI {
   createdAt: string | Date | null;
 }
 
+// Inline loading component to display immediately
+const InstantLoadingIndicator = () => (
+  <div className="fixed inset-0 flex items-center justify-center bg-white dark:bg-gray-900 z-50">
+    <div className="text-center space-y-4">
+      <div className="inline-block w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+      <p className="text-gray-600 dark:text-gray-300">Loading Quantum Card...</p>
+    </div>
+  </div>
+);
+
 const SharedCardPage: React.FC<SharedCardPageProps> = ({ userId }) => {
   const [userData, setUserData] = useState<UserDataType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const [isCopied, setIsCopied] = useState(false);
+  const [instantLoading, setInstantLoading] = useState(true);
+
+  // Show immediate loading indicator
+  useEffect(() => {
+    // Hide the instant loader after a short delay to show main content
+    const timer = setTimeout(() => {
+      setInstantLoading(false);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -570,6 +590,11 @@ const SharedCardPage: React.FC<SharedCardPageProps> = ({ userId }) => {
         </div>
       </div>
     );
+  }
+
+  // Show the instant loading indicator first
+  if (instantLoading) {
+    return <InstantLoadingIndicator />;
   }
 
   // Render the card directly here, don't use the component that might add additional complexity
