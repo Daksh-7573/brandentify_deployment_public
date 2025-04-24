@@ -155,6 +155,8 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
         style={{
           width: "100%",
           maxWidth: "360px",
+          minHeight: "520px",
+          height: "100%",
           margin: "0 auto",
           transformStyle: "preserve-3d",
           transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
@@ -435,6 +437,8 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
                 border: `1px solid ${colors.electricBlue}20`,
                 boxShadow: `0 0 20px ${colors.electricBlue}10`,
                 height: contactExpanded ? "auto" : "40px",
+                maxHeight: contactExpanded ? "220px" : "40px",
+                overflowY: contactExpanded ? "auto" : "hidden",
               }}
             >
               {/* Contact Header */}
@@ -548,7 +552,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
       </div>
       
       {/* CSS Animations */}
-      <style jsx>{`
+      <style>{`
         @keyframes spin {
           from { transform: rotate(0deg) scale(1.15); }
           to { transform: rotate(360deg) scale(1.15); }
