@@ -585,7 +585,9 @@ export default function Projects() {
       industry: project.industry || null,
       startDate: project.startDate || format(new Date(), 'yyyy-MM-dd'),
       projectUrl: project.projectUrl || '',
-      mediaUrls: project.mediaUrls || null,
+      mediaUrls: (Array.isArray(project.mediaUrls) ? project.mediaUrls : 
+                  typeof project.mediaUrls === 'string' ? JSON.parse(project.mediaUrls) : 
+                  []) as string[],
     });
     // Reset all file inputs when editing
     setThumbnailFile(null);

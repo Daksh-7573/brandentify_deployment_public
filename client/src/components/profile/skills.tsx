@@ -113,7 +113,9 @@ export default function Skills() {
         // Retry logic
         if (retryCount < MAX_RETRIES && isMounted) {
           console.log(`Skills - Retrying fetch in ${RETRY_DELAY}ms (${retryCount + 1}/${MAX_RETRIES})`);
-          setTimeout(() => directFetch(retryCount + 1), RETRY_DELAY);
+          setTimeout(() => {
+            if (isMounted) directFetch(retryCount + 1);
+          }, RETRY_DELAY);
         }
       }
     }
