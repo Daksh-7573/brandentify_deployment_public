@@ -385,8 +385,39 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
           </div>
         )}
         
-        {/* Company and Location */}
+        {/* Domain, Company and Location */}
         <div className="mb-auto space-y-3">
+          {/* Domain */}
+          {userData.domain && (
+            <div 
+              className="flex items-center gap-2 px-3 py-2 rounded-md"
+              style={{
+                backgroundColor: colors.panelBg,
+                borderLeft: `2px solid ${colors.teal}`,
+                transform: `translateX(${hoveredSection === 'domain' ? '3px' : '0'})`,
+                transition: "transform 0.3s ease",
+              }}
+              onMouseEnter={() => setHoveredSection('domain')}
+              onMouseLeave={() => setHoveredSection(null)}
+            >
+              <Globe 
+                className="h-4 w-4 flex-shrink-0"
+                style={{
+                  color: colors.teal,
+                  filter: `drop-shadow(0 0 3px ${colors.teal}80)`,
+                }}
+              />
+              <span 
+                className="text-sm capitalize"
+                style={{
+                  color: colors.textSecondary,
+                }}
+              >
+                {userData.domain}
+              </span>
+            </div>
+          )}
+          
           {/* Company */}
           {userData.company && (
             <div 

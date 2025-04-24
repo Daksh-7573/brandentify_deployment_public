@@ -87,8 +87,8 @@ const ProfessionalCardRenewed: React.FC<ProfessionalCardRenewedProps> = ({
           {/* Domain */}
           {userData.domain && (
             <div className="flex items-center text-sm">
-              <Hash className="h-4 w-4 text-blue-500 mr-2 flex-shrink-0" />
-              <span className="text-gray-700 dark:text-gray-300 truncate">
+              <Globe className="h-4 w-4 text-blue-500 mr-2 flex-shrink-0" />
+              <span className="text-gray-700 dark:text-gray-300 truncate capitalize">
                 {userData.domain}
               </span>
             </div>
