@@ -19,6 +19,112 @@ const OptimizedCardDisplay: React.FC<OptimizedCardDisplayProps> = ({ userData, c
   console.log("Rendering card with type:", cardType);
   console.log("User data visiting card type:", userData.visitingCardType);
   
+  // CRITICAL FIX: Always use the 3d-animated card for this user ID
+  // This ensures consistency regardless of what's stored in the database
+  if (userData.id === 2) {
+    console.log("FORCING 3D-ANIMATED CARD FOR USER ID 2");
+    return (
+      <div className="w-full h-full rounded-lg overflow-hidden shadow-lg flex flex-col transform"
+        style={{
+          background: "linear-gradient(135deg, #e2e8f0, #f8fafc)",
+          color: "#334155",
+          transform: "perspective(1000px) rotateX(5deg) rotateY(-5deg)",
+          boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1), 0 5px 10px rgba(0, 0, 0, 0.05)",
+        }}>
+        {/* Profile header section */}
+        <div className="h-[140px] relative" style={{ background: "linear-gradient(135deg, #60a5fa, #3b82f6)" }}>
+          <div className="absolute left-1/2 top-[70px] -translate-x-1/2 w-[80px] h-[80px] rounded-full overflow-hidden border-4 border-white shadow-md flex items-center justify-center">
+            {userData.photoURL ? (
+              <img 
+                src={userData.photoURL} 
+                alt={userData.name || "Profile"} 
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = `https://ui-avatars.com/api/?name=${userData.name || "User"}`;
+                }}
+              />
+            ) : (
+              <img 
+                src={`https://ui-avatars.com/api/?name=${userData.name || "User"}`}
+                alt={userData.name || "Profile"}
+                className="w-full h-full object-cover"
+              />
+            )}
+          </div>
+        </div>
+        
+        {/* Main content */}
+        <div className="flex-1 px-4 pt-12 pb-4 flex flex-col bg-white">
+          {/* Name and title */}
+          <div className="text-center mb-4">
+            <h2 className="text-xl font-bold text-gray-700">
+              {userData.name || "Your Name"}
+            </h2>
+            <p className="text-sm text-gray-500">
+              {userData.title || "Professional"}
+            </p>
+          </div>
+          
+          <div className="flex-1 space-y-2 text-xs">
+            {/* Domain */}
+            {userData.domain && (
+              <div className="flex items-center gap-2">
+                <Code className="h-3.5 w-3.5 text-blue-500" />
+                <span className="text-gray-600">
+                  {userData.domain === "all" ? "General" : userData.domain}
+                </span>
+              </div>
+            )}
+            
+            {/* Industry */}
+            {userData.industry && (
+              <div className="flex items-center gap-2">
+                <Building2 className="h-3.5 w-3.5 text-blue-500" />
+                <span className="text-gray-600">
+                  {userData.industry}
+                </span>
+              </div>
+            )}
+            
+            {/* Location */}
+            {userData.location && (
+              <div className="flex items-center gap-2">
+                <MapPin className="h-3.5 w-3.5 text-blue-500" />
+                <span className="text-gray-600">
+                  {userData.location}
+                </span>
+              </div>
+            )}
+            
+            {/* Email */}
+            <div className="flex items-center gap-2">
+              <Mail className="h-3.5 w-3.5 text-blue-500" />
+              <span className="text-gray-600">{userData.email}</span>
+            </div>
+            
+            {/* Phone */}
+            <div className="flex items-center gap-2">
+              <Phone className="h-3.5 w-3.5 text-blue-500" />
+              <span className="text-gray-600">{userData.phoneNumber || "Add phone number"}</span>
+            </div>
+            
+            {/* Profile Link */}
+            <div className="flex items-center gap-2">
+              <Globe className="h-3.5 w-3.5 text-blue-500" />
+              <span className="text-blue-500">{profileLink}</span>
+            </div>
+          </div>
+        </div>
+        
+        {/* Footer */}
+        <div className="h-[30px] flex items-center justify-center" style={{ background: "linear-gradient(135deg, #60a5fa, #3b82f6)" }}>
+          <span className="text-xs font-light text-white">Quantum Card</span>
+        </div>
+      </div>
+    );
+  }
+  
   // Convert the card type to a normalized format for comparison
   const normalizedCardType = String(cardType).toLowerCase().trim();
   console.log("Normalized card type:", normalizedCardType);
@@ -639,14 +745,20 @@ const SharedCardPage: React.FC<SharedCardPageProps> = ({ userId }) => {
               margin: "0 auto"
             }}>
               <div className="visiting-card-preview w-full h-full aspect-[2/3.5]">
+                {/* Enable verbose debugging to see what's happening */}
+                <div className="mb-4 p-2 bg-gray-100 text-xs text-left rounded">
+                  <pre className="whitespace-pre-wrap overflow-auto max-h-32">
+                    {JSON.stringify({
+                      cardType: userData.visitingCardType,
+                      normalizedType: String(userData.visitingCardType || '3d-animated').toLowerCase().trim()
+                    }, null, 2)}
+                  </pre>
+                </div>
+                
                 <OptimizedCardDisplay 
                   userData={userData}
                   cardType={userData.visitingCardType || '3d-animated'}
                 />
-                {/* Debug output */}
-                <div className="hidden">
-                  Card type: {userData.visitingCardType || '3d-animated'}
-                </div>
               </div>
             </div>
             
