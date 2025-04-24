@@ -121,7 +121,21 @@ Your feedback is always:
 
 ${resumeText}
 
-Focus on specific improvements to highlight achievements, quantify impact, optimize for ATS, and position for senior roles.`;
+Focus on specific improvements to highlight achievements, quantify impact, optimize for ATS, and position for senior roles.
+
+FORMAT YOUR RESPONSE USING THESE GUIDELINES:
+- Use bold for section headers (e.g., "**First Impression**")
+- Use italic for emphasis or important points
+- Use bullet points for lists of suggestions
+- Include emojis like ✅ 📝 🔍 for visual guidance
+- Provide before/after examples in code blocks
+- Structure your analysis into clear sections:
+  1. First Impression
+  2. Content Analysis
+  3. Design Evaluation
+  4. Specific Improvement Suggestions
+  5. ATS Optimization Tips
+  6. Next Steps`;
 
     // Make the direct OpenAI API call with a shorter response (for testing purposes)
     const completion = await openai.chat.completions.create({
@@ -263,7 +277,22 @@ Your feedback should be deeply personalized, referencing specific elements from 
 
 ${resumeText}
 
-First, ignore the design elements and extract the core content. Then analyze the content quality, focusing on achievements, specificity, and ATS compatibility. Finally, evaluate how the design helps or hinders communication of the person's value.`;
+First, ignore the design elements and extract the core content. Then analyze the content quality, focusing on achievements, specificity, and ATS compatibility. Finally, evaluate how the design helps or hinders communication of the person's value.
+
+FORMAT YOUR RESPONSE USING THESE GUIDELINES:
+- Use bold for section headers (e.g., "**First Impression**")
+- Use italic for emphasis or important points
+- Use bullet points for lists of suggestions
+- Include emojis like ✅ 📝 🔍 for visual guidance
+- Provide before/after examples in code blocks
+- Structure your analysis into clear sections:
+  1. Content Extraction
+  2. Skills & Qualifications Analysis
+  3. Experience & Achievements Review
+  4. Design Evaluation
+  5. ATS Compatibility Assessment
+  6. Improvement Recommendations
+  7. Next Steps`;
 
     // Make the direct OpenAI API call
     const completion = await openai.chat.completions.create({
