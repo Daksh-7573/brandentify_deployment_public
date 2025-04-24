@@ -10,13 +10,22 @@
 <body class="font-sans bg-gray-50 text-gray-800 min-h-screen">
   <!-- Pre-render loading state that appears before React even loads -->
   <div id="app-loader" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background-color: #f9fafb; z-index: 9999;">
-    <div style="width: 48px; height: 48px; border-radius: 50%; border: 3px solid #e5e7eb; border-top-color: #3b82f6; animation: loader-spin 1s linear infinite;">
+    <!-- Skeleton card loader that matches the one used in the React app -->
+    <div style="width: 280px; height: 490px; aspect-ratio: 2/3.5; overflow: hidden; border-radius: 0.5rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);">
+      <div style="height: 24%; background-color: #e5e7eb; position: relative; animation: pulse 2s infinite ease-in-out;"></div>
+      <div style="background-color: white; height: 76%; display: flex; flex-direction: column; gap: 16px; padding: 20px;">
+        <div style="height: 20px; width: 70%; background-color: #e5e7eb; border-radius: 4px; animation: pulse 2s infinite ease-in-out;"></div>
+        <div style="height: 16px; width: 50%; background-color: #e5e7eb; border-radius: 4px; animation: pulse 2s infinite ease-in-out;"></div>
+        <div style="height: 100px; width: 100%; background-color: #e5e7eb; border-radius: 4px; animation: pulse 2s infinite ease-in-out;"></div>
+        <div style="height: 16px; width: 80%; background-color: #e5e7eb; border-radius: 4px; animation: pulse 2s infinite ease-in-out;"></div>
+        <div style="height: 16px; width: 60%; background-color: #e5e7eb; border-radius: 4px; animation: pulse 2s infinite ease-in-out;"></div>
+      </div>
     </div>
   </div>
   <style>
-    @keyframes loader-spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
     }
   </style>
   

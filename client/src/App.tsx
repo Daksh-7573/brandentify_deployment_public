@@ -136,10 +136,14 @@ function Router() {
         {(params) => (
           <Suspense fallback={
             <div className="min-h-screen flex items-center justify-center">
-              <div className="animate-pulse rounded-lg overflow-hidden shadow-lg">
-                <div className="h-24 bg-gray-300 dark:bg-gray-700 relative"></div>
-                <div className="bg-white dark:bg-gray-800 h-64 flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+              <div className="w-[280px] aspect-[2/3.5] rounded-lg overflow-hidden shadow-lg">
+                <div className="h-[24%] bg-gray-300 dark:bg-gray-700 relative animate-pulse"></div>
+                <div className="bg-white dark:bg-gray-800 h-[76%] p-5 flex flex-col gap-4">
+                  <div className="h-5 w-[70%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+                  <div className="h-4 w-[50%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+                  <div className="h-24 w-full bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+                  <div className="h-4 w-[80%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+                  <div className="h-4 w-[60%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
                 </div>
               </div>
             </div>
@@ -161,7 +165,16 @@ function App() {
       <AuthProvider>
         <Suspense fallback={
           <div className="min-h-screen flex items-center justify-center bg-background">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            <div className="w-[280px] aspect-[2/3.5] rounded-lg overflow-hidden shadow-lg">
+              <div className="h-[24%] bg-gray-300 dark:bg-gray-700 relative animate-pulse"></div>
+              <div className="bg-white dark:bg-gray-800 h-[76%] p-5 flex flex-col gap-4">
+                <div className="h-5 w-[70%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+                <div className="h-4 w-[50%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+                <div className="h-24 w-full bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+                <div className="h-4 w-[80%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+                <div className="h-4 w-[60%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+              </div>
+            </div>
           </div>
         }>
           <Router />
