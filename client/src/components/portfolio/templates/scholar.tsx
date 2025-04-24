@@ -487,8 +487,8 @@ export default function Scholar({
                 ) : (
                   <>
                     <p className="text-gray-700 leading-relaxed font-medium">
-                      {userInfo && (userInfo.title || userInfo.industry)
-                        ? `As ${userInfo.title ? `a ${userInfo.title}` : ''}${userInfo.industry ? ` in the ${userInfo.industry} field` : ''}, I'm passionate about continuous learning and applying my knowledge to real-world challenges.`
+                      {userInfo && (userInfo.title || userInfo.industry || userInfo.domain)
+                        ? `As ${userInfo.title ? `a ${userInfo.title}` : ''}${userInfo.industry ? ` in the ${userInfo.industry} field` : ''}${userInfo.domain ? ` focusing on ${userInfo.domain}` : ''}, I'm passionate about continuous learning and applying my knowledge to real-world challenges.`
                         : "I'm passionate about continuous learning and applying my knowledge to real-world challenges. My academic journey has equipped me with both theoretical understanding and practical skills."}
                     </p>
                     <p className="text-gray-700 leading-relaxed">
@@ -496,18 +496,6 @@ export default function Scholar({
                         ? `Currently seeking ${userInfo.lookingFor.toLowerCase()}. I bring a fresh perspective, strong work ethic, and eagerness to contribute to meaningful projects.`
                         : "I bring a fresh perspective, strong work ethic, and eagerness to contribute to meaningful projects. I'm constantly looking to expand my skills and take on new challenges."}
                     </p>
-                  </>
-                )}
-                
-                {userInfo && userInfo.domain && (
-                  <>
-                    <div className="flex items-center gap-2 text-blue-600">
-                      <Lightbulb className="h-5 w-5" />
-                      <span className="font-medium">My academic focus:</span>
-                    </div>
-                    <div className="pl-7 border-l-2 border-blue-100">
-                      <p className="text-gray-700">{userInfo.domain}</p>
-                    </div>
                   </>
                 )}
               </div>
