@@ -98,7 +98,7 @@ const MinimalistCard: React.FC<MinimalistCardProps> = ({ userData }) => {
       
       {/* Footer */}
       <div className="h-6 bg-gradient-to-r from-blue-600 to-blue-800 flex items-center justify-center">
-        <span className="text-xs text-white font-light">Digital Visiting Card</span>
+        <span className="text-xs text-white font-light">Quantum Card</span>
       </div>
     </div>
   );
