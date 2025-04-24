@@ -413,7 +413,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
             data-layer="1"
           >
             <div 
-              className={`w-full rounded-md overflow-visible transition-all duration-300`}
+              className={`w-[95%] mx-auto rounded-md overflow-visible transition-all duration-300`}
               style={{
                 background: `linear-gradient(135deg, ${colors.charcoalBlack}80, ${colors.charcoalBlack}60)`,
                 backdropFilter: "blur(10px)",
@@ -453,27 +453,27 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
                   {/* Email */}
                   <div className="flex items-start">
                     <Mail className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
-                    <span className="text-sm text-gray-300 ml-2 break-all">
-                      {userData.email}
-                    </span>
+                    <div className="text-sm text-gray-300 ml-2 overflow-hidden w-[200px]">
+                      <div className="break-words">{userData.email}</div>
+                    </div>
                   </div>
                   
                   {/* Phone Number */}
                   {userData.phoneNumber && (
                     <div className="flex items-start">
                       <Phone className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
-                      <span className="text-sm text-gray-300 ml-2 break-all">
-                        {userData.phoneNumber}
-                      </span>
+                      <div className="text-sm text-gray-300 ml-2 overflow-hidden w-[200px]">
+                        <div className="break-words">{userData.phoneNumber}</div>
+                      </div>
                     </div>
                   )}
                   
                   {/* Profile Link */}
                   <div className="flex items-start">
                     <Globe className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
-                    <span className="text-sm text-gray-300 ml-2 break-all">
-                      {profileLink}
-                    </span>
+                    <div className="text-sm text-gray-300 ml-2 overflow-hidden w-[200px]">
+                      <div className="break-words">{profileLink}</div>
+                    </div>
                   </div>
                 </div>
               )}
