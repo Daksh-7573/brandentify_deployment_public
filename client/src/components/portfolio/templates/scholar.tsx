@@ -535,7 +535,9 @@ export default function Scholar({
                         <div className="flex justify-between mb-1">
                           <span className="text-sm font-medium">{skill.name}</span>
                           <div className="flex items-center gap-2">
-                            <span className="text-xs font-medium text-blue-700">{skill.proficiency}%</span>
+                            <span className="text-xs font-medium px-2 py-1 rounded-md bg-blue-50 text-blue-700">
+                              {skill.level} - {skill.proficiency}%
+                            </span>
                             <div className="flex">
                               {Array.from({ length: 5 }).map((_, i) => (
                                 <Star
@@ -571,7 +573,7 @@ export default function Scholar({
                         variant="outline"
                         className={`text-sm py-2 px-3 skill-badge ${getSkillColor(skill.name)}`}
                       >
-                        {skill.name} {skill.proficiency && <span className="ml-1 text-xs font-semibold">({skill.proficiency}%)</span>}
+                        {skill.name} {skill.level && <span className="ml-1 text-xs bg-indigo-50 px-2 py-1 rounded-md text-indigo-700">{skill.level} - {skill.proficiency}%</span>}
                       </Badge>
                     ))}
                   </div>
@@ -591,7 +593,7 @@ export default function Scholar({
                         variant="outline"
                         className="bg-purple-50 text-purple-700 border-purple-200 skill-badge"
                       >
-                        {skill.name} {skill.proficiency && <span className="ml-1 text-xs font-semibold">({skill.proficiency}%)</span>}
+                        {skill.name} {skill.level && <span className="ml-1 text-xs bg-purple-100 px-2 py-1 rounded-md text-purple-700">{skill.level} - {skill.proficiency}%</span>}
                       </Badge>
                     ))}
                   </div>
@@ -611,7 +613,7 @@ export default function Scholar({
                         variant="outline"
                         className={`text-sm py-2 px-3 skill-badge ${getSkillColor(skill.name)}`}
                       >
-                        {skill.name} {skill.proficiency && <span className="ml-1 text-xs font-semibold">({skill.proficiency}%)</span>}
+                        {skill.name} {skill.level && <span className="ml-1 text-xs bg-green-50 px-2 py-1 rounded-md text-green-700">{skill.level} - {skill.proficiency}%</span>}
                       </Badge>
                     ))}
                   </div>
