@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shared Card Test</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: 2rem;
+      line-height: 1.5;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .card {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 0.75rem;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+    .success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+    .button {
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .button:hover {
+      background-color: #2563eb;
+    }
+    .result {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Shared Card Test</h1>
+  
+  <div class="card">
+    <h2>Test Shared Card Endpoint</h2>
+    <p>This test verifies that the shared card endpoint is working correctly.</p>
+    <button id="run-test" class="button">Run Test</button>
+    
+    <div id="test-result" class="result" style="display:none;"></div>
+  </div>
+  
+  <div class="card">
+    <h2>Test Shared Card Link</h2>
+    <p>Click the button below to test the shared card link directly.</p>
+    <div id="link-container"></div>
+  </div>
+  
+  <div class="card">
+    <h2>Raw Response</h2>
+    <pre id="response"></pre>
+  </div>
+
+  <script>
+    document.getElementById("run-test").addEventListener("click", async function() {
+      const resultElement = document.getElementById("test-result");
+      const responseElement = document.getElementById("response");
+      const linkContainer = document.getElementById("link-container");
+      
+      resultElement.style.display = "block";
+      resultElement.innerHTML = "Running test...";
+      resultElement.className = "result";
+      
+      try {
+        // Generate a test URL using ID 2
+        const shareUrl = `${window.location.origin}/profile/card/2`;
+        
+        // Fetch the data from our shared-card endpoint
+        const response = await fetch("/api/shared-card/2");
+        if (!response.ok) {
+          throw new Error(`Shared card API failed with status: ${response.status}`);
+        }
+        
+        const userData = await response.json();
+        
+        // Display results
+        resultElement.innerHTML = "SUCCESS: Shared card endpoint is working properly";
+        resultElement.className = "result success";
+        
+        // Display share link
+        linkContainer.innerHTML = `
+          <a href="${shareUrl}" target="_blank" class="button" style="display:inline-block;margin-top:0.5rem;">
+            Open Shared Card Link
+          </a>
+          <p style="margin-top:0.5rem;">URL: ${shareUrl}</p>
+        `;
+        
+        // Display raw response
+        responseElement.textContent = JSON.stringify(userData, null, 2);
+        
+      } catch (error) {
+        resultElement.innerHTML = `ERROR: ${error.message}`;
+        resultElement.className = "result error";
+        responseElement.textContent = error.stack || error.message;
+      }
+    });
+  </script>
+  
+</body>
+</html>

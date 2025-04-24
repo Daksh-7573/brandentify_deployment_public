@@ -30,18 +30,33 @@ const SharedCardPage: React.FC<SharedCardPageProps> = ({ userId }) => {
         const cleaned = userId.trim();
         console.log("Cleaned userId:", cleaned);
         
-        // Verify it's either a valid numeric ID or a Firebase UID
+        // Accept a broader range of ID formats for enhanced compatibility
+        // 1. Simple numeric IDs (most common for DB primary keys)
         const isNumeric = /^\d+$/.test(cleaned);
-        const isFirebaseUID = cleaned.length > 20 && /[A-Za-z0-9_-]+/.test(cleaned);
         
-        if (!isNumeric && !isFirebaseUID) {
-          console.error("User ID is neither numeric nor a valid Firebase UID:", cleaned);
+        // 2. Firebase UIDs (longer alphanumeric strings)
+        const isFirebaseUID = cleaned.length > 15 && /[A-Za-z0-9_-]+/.test(cleaned);
+        
+        // 3. Shortened UIDs (for compatibility with shortened links)
+        const isShortenedUID = cleaned.length >= 8 && /[A-Za-z0-9_-]+/.test(cleaned);
+        
+        if (!isNumeric && !isFirebaseUID && !isShortenedUID) {
+          console.error("User ID doesn't match any supported format:", cleaned);
           setError("Invalid user ID format");
           setLoading(false);
           return;
         }
         
-        // Set the sanitized user ID
+        // Log the recognized format for debugging
+        if (isNumeric) {
+          console.log("Recognized numeric ID format:", cleaned);
+        } else if (isFirebaseUID) {
+          console.log("Recognized Firebase UID format:", cleaned);
+        } else if (isShortenedUID) {
+          console.log("Recognized shortened UID format:", cleaned);
+        }
+        
+        // Set the sanitized user ID - our shared card endpoint should handle all formats
         setSanitizedUserId(cleaned);
         setLoading(false);
       } catch (err) {
