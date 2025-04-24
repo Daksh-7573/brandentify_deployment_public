@@ -1,10 +1,436 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowLeft, Check, Copy, Loader2 } from 'lucide-react';
+import { ArrowLeft, Check, Copy, Loader2, Mail, Phone, Globe, Briefcase, MapPin, Code, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'wouter';
-import VisitingCardPreview from '@/components/profile/visiting-card-preview';
 import { useToast } from '@/hooks/use-toast';
 import type { UserData as UserDataType } from '@/types/user';
+
+// Optimized lightweight card display for faster loading
+interface OptimizedCardDisplayProps {
+  userData: UserDataType;
+  cardType: string;
+}
+
+const OptimizedCardDisplay: React.FC<OptimizedCardDisplayProps> = ({ userData, cardType }) => {
+  // Format profile link
+  const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;
+  
+  // For holographic card style (transparent glass effect)
+  if (cardType === "holographic") {
+    return (
+      <div className="w-full h-full rounded-lg overflow-hidden shadow-lg flex flex-col"
+        style={{
+          background: "rgba(255, 255, 255, 0.4)",
+          backdropFilter: "blur(10px)",
+          border: "1px solid rgba(255, 255, 255, 0.2)",
+        }}>
+        {/* Profile header section */}
+        <div className="h-[140px] relative" 
+          style={{
+            background: "linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1))",
+            borderBottom: "1px solid rgba(255, 255, 255, 0.2)"
+          }}>
+          <div className="absolute left-1/2 top-[70px] -translate-x-1/2 w-[80px] h-[80px] rounded-full overflow-hidden border-4 border-white shadow-md flex items-center justify-center">
+            {userData.photoURL ? (
+              <img 
+                src={userData.photoURL} 
+                alt={userData.name || "Profile"} 
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = `https://ui-avatars.com/api/?name=${userData.name || "User"}`;
+                }}
+              />
+            ) : (
+              <img 
+                src={`https://ui-avatars.com/api/?name=${userData.name || "User"}`}
+                alt={userData.name || "Profile"}
+                className="w-full h-full object-cover"
+              />
+            )}
+          </div>
+        </div>
+        
+        {/* Main content */}
+        <div className="flex-1 px-4 pt-12 pb-4 flex flex-col"
+          style={{
+            background: "linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1))"
+          }}>
+          {/* Name and title */}
+          <div className="text-center mb-4">
+            <h2 className="text-xl font-bold text-gray-900">
+              {userData.name || "Your Name"}
+            </h2>
+            <p className="text-sm text-gray-700">
+              {userData.title || "Professional"}
+            </p>
+          </div>
+          
+          <div className="flex-1 space-y-2 text-xs">
+            {/* Domain */}
+            {userData.domain && (
+              <div className="flex items-center gap-2">
+                <Code className="h-3.5 w-3.5 text-gray-500" />
+                <span className="text-gray-800">
+                  {userData.domain === "all" ? "General" : userData.domain}
+                </span>
+              </div>
+            )}
+            
+            {/* Industry */}
+            {userData.industry && (
+              <div className="flex items-center gap-2">
+                <Building2 className="h-3.5 w-3.5 text-gray-500" />
+                <span className="text-gray-800">
+                  {userData.industry}
+                </span>
+              </div>
+            )}
+            
+            {/* Location */}
+            {userData.location && (
+              <div className="flex items-center gap-2">
+                <MapPin className="h-3.5 w-3.5 text-gray-500" />
+                <span className="text-gray-800">
+                  {userData.location}
+                </span>
+              </div>
+            )}
+            
+            {/* Email */}
+            <div className="flex items-center gap-2">
+              <Mail className="h-3.5 w-3.5 text-gray-500" />
+              <span className="text-gray-800">{userData.email}</span>
+            </div>
+            
+            {/* Phone */}
+            <div className="flex items-center gap-2">
+              <Phone className="h-3.5 w-3.5 text-gray-500" />
+              <span className="text-gray-800">{userData.phoneNumber || "Add phone number"}</span>
+            </div>
+            
+            {/* Profile Link */}
+            <div className="flex items-center gap-2">
+              <Globe className="h-3.5 w-3.5 text-gray-500" />
+              <span className="text-blue-600">{profileLink}</span>
+            </div>
+          </div>
+        </div>
+        
+        {/* Footer */}
+        <div className="h-[30px] flex items-center justify-center"
+          style={{
+            background: "linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1))",
+            borderTop: "1px solid rgba(255, 255, 255, 0.2)",
+          }}>
+          <span className="text-xs font-light text-gray-800">Quantum Card</span>
+        </div>
+      </div>
+    );
+  }
+  
+  // For neoglow card style (dark theme with neon elements)
+  if (cardType === "neoglow") {
+    return (
+      <div className="w-full h-full rounded-lg overflow-hidden shadow-lg flex flex-col"
+        style={{
+          background: "linear-gradient(to bottom, #111827, #1e293b)",
+          color: "white",
+        }}>
+        {/* Profile header with neon border */}
+        <div className="h-[140px] relative bg-[#0c1222] border-b-2 border-[#0ea5e9]">
+          <div className="absolute left-1/2 top-[70px] -translate-x-1/2 w-[80px] h-[80px] rounded-full overflow-hidden border-4 border-[#0ea5e9] shadow-[0_0_15px_#0ea5e9] flex items-center justify-center">
+            {userData.photoURL ? (
+              <img 
+                src={userData.photoURL} 
+                alt={userData.name || "Profile"} 
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = `https://ui-avatars.com/api/?name=${userData.name || "User"}`;
+                }}
+              />
+            ) : (
+              <img 
+                src={`https://ui-avatars.com/api/?name=${userData.name || "User"}`}
+                alt={userData.name || "Profile"}
+                className="w-full h-full object-cover"
+              />
+            )}
+          </div>
+        </div>
+        
+        {/* Main content */}
+        <div className="flex-1 px-4 pt-12 pb-4 flex flex-col">
+          {/* Name and title */}
+          <div className="text-center mb-4">
+            <h2 className="text-xl font-bold text-white" style={{ textShadow: "0 0 10px #0ea5e9" }}>
+              {userData.name || "Your Name"}
+            </h2>
+            <p className="text-sm text-gray-400">
+              {userData.title || "Professional"}
+            </p>
+          </div>
+          
+          <div className="flex-1 space-y-2 text-xs">
+            {/* Domain */}
+            {userData.domain && (
+              <div className="flex items-center gap-2">
+                <Code className="h-3.5 w-3.5 text-[#0ea5e9]" />
+                <span className="text-gray-300">
+                  {userData.domain === "all" ? "General" : userData.domain}
+                </span>
+              </div>
+            )}
+            
+            {/* Industry */}
+            {userData.industry && (
+              <div className="flex items-center gap-2">
+                <Building2 className="h-3.5 w-3.5 text-[#0ea5e9]" />
+                <span className="text-gray-300">
+                  {userData.industry}
+                </span>
+              </div>
+            )}
+            
+            {/* Location */}
+            {userData.location && (
+              <div className="flex items-center gap-2">
+                <MapPin className="h-3.5 w-3.5 text-[#0ea5e9]" />
+                <span className="text-gray-300">
+                  {userData.location}
+                </span>
+              </div>
+            )}
+            
+            {/* Email */}
+            <div className="flex items-center gap-2">
+              <Mail className="h-3.5 w-3.5 text-[#0ea5e9]" />
+              <span className="text-gray-300">{userData.email}</span>
+            </div>
+            
+            {/* Phone */}
+            <div className="flex items-center gap-2">
+              <Phone className="h-3.5 w-3.5 text-[#0ea5e9]" />
+              <span className="text-gray-300">{userData.phoneNumber || "Add phone number"}</span>
+            </div>
+            
+            {/* Profile Link */}
+            <div className="flex items-center gap-2">
+              <Globe className="h-3.5 w-3.5 text-[#0ea5e9]" />
+              <span className="text-[#0ea5e9]">{profileLink}</span>
+            </div>
+          </div>
+        </div>
+        
+        {/* Footer */}
+        <div className="h-[30px] bg-[rgba(14,165,233,0.2)] border-t border-[#0ea5e9] flex items-center justify-center">
+          <span className="text-xs font-light text-[#0ea5e9]" style={{ textShadow: "0 0 5px #0ea5e9" }}>Quantum Card</span>
+        </div>
+      </div>
+    );
+  }
+  
+  // For 3D animated card style
+  if (cardType === "3d-animated") {
+    return (
+      <div className="w-full h-full rounded-lg overflow-hidden shadow-lg flex flex-col transform"
+        style={{
+          background: "linear-gradient(135deg, #e2e8f0, #f8fafc)",
+          color: "#334155",
+          transform: "perspective(1000px) rotateX(5deg) rotateY(-5deg)",
+          boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1), 0 5px 10px rgba(0, 0, 0, 0.05)",
+        }}>
+        {/* Profile header section */}
+        <div className="h-[140px] relative" style={{ background: "linear-gradient(135deg, #60a5fa, #3b82f6)" }}>
+          <div className="absolute left-1/2 top-[70px] -translate-x-1/2 w-[80px] h-[80px] rounded-full overflow-hidden border-4 border-white shadow-md flex items-center justify-center">
+            {userData.photoURL ? (
+              <img 
+                src={userData.photoURL} 
+                alt={userData.name || "Profile"} 
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = `https://ui-avatars.com/api/?name=${userData.name || "User"}`;
+                }}
+              />
+            ) : (
+              <img 
+                src={`https://ui-avatars.com/api/?name=${userData.name || "User"}`}
+                alt={userData.name || "Profile"}
+                className="w-full h-full object-cover"
+              />
+            )}
+          </div>
+        </div>
+        
+        {/* Main content */}
+        <div className="flex-1 px-4 pt-12 pb-4 flex flex-col bg-white">
+          {/* Name and title */}
+          <div className="text-center mb-4">
+            <h2 className="text-xl font-bold text-gray-700">
+              {userData.name || "Your Name"}
+            </h2>
+            <p className="text-sm text-gray-500">
+              {userData.title || "Professional"}
+            </p>
+          </div>
+          
+          <div className="flex-1 space-y-2 text-xs">
+            {/* Domain */}
+            {userData.domain && (
+              <div className="flex items-center gap-2">
+                <Code className="h-3.5 w-3.5 text-blue-500" />
+                <span className="text-gray-600">
+                  {userData.domain === "all" ? "General" : userData.domain}
+                </span>
+              </div>
+            )}
+            
+            {/* Industry */}
+            {userData.industry && (
+              <div className="flex items-center gap-2">
+                <Building2 className="h-3.5 w-3.5 text-blue-500" />
+                <span className="text-gray-600">
+                  {userData.industry}
+                </span>
+              </div>
+            )}
+            
+            {/* Location */}
+            {userData.location && (
+              <div className="flex items-center gap-2">
+                <MapPin className="h-3.5 w-3.5 text-blue-500" />
+                <span className="text-gray-600">
+                  {userData.location}
+                </span>
+              </div>
+            )}
+            
+            {/* Email */}
+            <div className="flex items-center gap-2">
+              <Mail className="h-3.5 w-3.5 text-blue-500" />
+              <span className="text-gray-600">{userData.email}</span>
+            </div>
+            
+            {/* Phone */}
+            <div className="flex items-center gap-2">
+              <Phone className="h-3.5 w-3.5 text-blue-500" />
+              <span className="text-gray-600">{userData.phoneNumber || "Add phone number"}</span>
+            </div>
+            
+            {/* Profile Link */}
+            <div className="flex items-center gap-2">
+              <Globe className="h-3.5 w-3.5 text-blue-500" />
+              <span className="text-blue-500">{profileLink}</span>
+            </div>
+          </div>
+        </div>
+        
+        {/* Footer */}
+        <div className="h-[30px] flex items-center justify-center" style={{ background: "linear-gradient(135deg, #60a5fa, #3b82f6)" }}>
+          <span className="text-xs font-light text-white">Quantum Card</span>
+        </div>
+      </div>
+    );
+  }
+  
+  // Default professional card style
+  return (
+    <div className="w-full h-full rounded-lg overflow-hidden shadow-lg flex flex-col bg-white">
+      {/* Profile header section */}
+      <div className="h-[140px] relative bg-gray-100">
+        <div className="absolute left-1/2 top-[70px] -translate-x-1/2 w-[80px] h-[80px] rounded-full overflow-hidden border-4 border-white bg-gray-50 flex items-center justify-center">
+          {userData.photoURL ? (
+            <img 
+              src={userData.photoURL} 
+              alt={userData.name || "Profile"} 
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = `https://ui-avatars.com/api/?name=${userData.name || "User"}`;
+              }}
+            />
+          ) : (
+            <img 
+              src={`https://ui-avatars.com/api/?name=${userData.name || "User"}`}
+              alt={userData.name || "Profile"}
+              className="w-full h-full object-cover"
+            />
+          )}
+        </div>
+      </div>
+      
+      {/* Main content */}
+      <div className="flex-1 px-4 pt-12 pb-4 flex flex-col">
+        {/* Name and title */}
+        <div className="text-center mb-4">
+          <h2 className="text-xl font-bold text-gray-900">
+            {userData.name || "Your Name"}
+          </h2>
+          <p className="text-sm text-gray-600">
+            {userData.title || "Professional"}
+          </p>
+        </div>
+        
+        <div className="flex-1 space-y-2 text-xs">
+          {/* Domain */}
+          {userData.domain && (
+            <div className="flex items-center gap-2">
+              <Code className="h-3.5 w-3.5 text-blue-500" />
+              <span className="text-gray-700">
+                {userData.domain === "all" ? "General" : userData.domain}
+              </span>
+            </div>
+          )}
+          
+          {/* Industry */}
+          {userData.industry && (
+            <div className="flex items-center gap-2">
+              <Building2 className="h-3.5 w-3.5 text-blue-500" />
+              <span className="text-gray-700">
+                {userData.industry}
+              </span>
+            </div>
+          )}
+          
+          {/* Location */}
+          {userData.location && (
+            <div className="flex items-center gap-2">
+              <MapPin className="h-3.5 w-3.5 text-blue-500" />
+              <span className="text-gray-700">
+                {userData.location}
+              </span>
+            </div>
+          )}
+          
+          {/* Email */}
+          <div className="flex items-center gap-2">
+            <Mail className="h-3.5 w-3.5 text-blue-500" />
+            <span className="text-gray-700">{userData.email}</span>
+          </div>
+          
+          {/* Phone */}
+          <div className="flex items-center gap-2">
+            <Phone className="h-3.5 w-3.5 text-blue-500" />
+            <span className="text-gray-700">{userData.phoneNumber || "Add phone number"}</span>
+          </div>
+          
+          {/* Profile Link */}
+          <div className="flex items-center gap-2">
+            <Globe className="h-3.5 w-3.5 text-blue-500" />
+            <span className="text-blue-500">{profileLink}</span>
+          </div>
+        </div>
+      </div>
+      
+      {/* Footer */}
+      <div className="h-[30px] bg-blue-500 flex items-center justify-center">
+        <span className="text-xs font-light text-white">Quantum Card</span>
+      </div>
+    </div>
+  );
+};
 
 interface SharedCardPageProps {
   userId: string;
@@ -173,15 +599,18 @@ const SharedCardPage: React.FC<SharedCardPageProps> = ({ userId }) => {
           </div>
 
           <div className="flex flex-col items-center justify-center">
-            {/* Use the same VisitingCardPreview component used in edit mode */}
+            {/* Fast-loading optimized card display */}
             <div style={{ 
               width: "280px", 
+              height: "490px",
               margin: "0 auto"
             }}>
-              <VisitingCardPreview
-                userData={userData}
-                cardType={userData.visitingCardType || 'professional-renewed'}
-              />
+              <div className="visiting-card-preview w-full h-full aspect-[2/3.5]">
+                <OptimizedCardDisplay 
+                  userData={userData}
+                  cardType={userData.visitingCardType || 'professional-renewed'}
+                />
+              </div>
             </div>
             
             {/* Share link box */}
