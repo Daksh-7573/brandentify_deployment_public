@@ -248,9 +248,8 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
               onValueChange={handleTabChange}
               className="w-full"
             >
-              <TabsList className="grid grid-cols-4 mb-6">
+              <TabsList className="grid grid-cols-3 mb-6">
                 <TabsTrigger value="professional-renewed">Professional</TabsTrigger>
-                <TabsTrigger value="quantum">Quantum Tech</TabsTrigger>
                 <TabsTrigger value="3d-animated">3D</TabsTrigger>
                 <TabsTrigger value="holographic">Holographic</TabsTrigger>
               </TabsList>
@@ -258,6 +257,9 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
                 <TabsTrigger value="neoglow">NeoGlow</TabsTrigger>
                 <TabsTrigger value="creative">Creative</TabsTrigger>
                 <TabsTrigger value="artistic">Artistic</TabsTrigger>
+              </TabsList>
+              <TabsList className="grid grid-cols-3 mb-6">
+                <TabsTrigger value="quantum">Quantum Tech</TabsTrigger>
               </TabsList>
               
               {/* Individual tab contents for more details on each style */}

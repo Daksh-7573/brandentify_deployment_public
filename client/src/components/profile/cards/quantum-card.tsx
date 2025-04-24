@@ -1,565 +1,202 @@
-import React, { useState, useEffect } from "react";
-import { 
-  MapPin, 
-  Mail, 
-  Phone, 
-  Copy, 
-  Zap, 
-  Brain, 
-  Cpu, 
-  Satellite
-} from "lucide-react";
+import React from "react";
 import { UserData } from "@/types/user";
+import { Mail, Phone, Globe, Briefcase, MapPin, Code, Building2, Share2, Zap } from "lucide-react";
 
 interface QuantumCardProps {
   userData: UserData;
 }
 
 const QuantumCard: React.FC<QuantumCardProps> = ({ userData }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const [copySuccess, setCopySuccess] = useState("");
-  const [dataLoaded, setDataLoaded] = useState(false);
-  const profileLink = `brandentifier.com/${userData.name?.replace(/\s+/g, '').toLowerCase() || 'myprofile'}`;
-  
-  // Futuristic tech color scheme
-  const colors = {
-    darkBlue: "#0A0F2C",
-    purpleBlue: "#1F1B44",
-    neonPurple: "#B026FF",
-    neonBlue: "#4D4DFF",
-    neonTeal: "#05D9E8",
-    neonGreen: "#01C38D",
-    glassWhite: "rgba(255, 255, 255, 0.1)",
-    glassBlack: "rgba(0, 0, 0, 0.2)",
-  };
-  
-  // Load fields one-by-one with animation
-  useEffect(() => {
-    setDataLoaded(true);
-  }, []);
-  
+  // Format profile link
+  const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;
+
   return (
-    <div
-      className="quantum-card w-full h-full flex flex-col relative overflow-hidden"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      style={{
-        perspective: "1000px",
-        transform: isHovered ? "scale(1.02)" : "scale(1)",
-        transition: "transform 0.3s ease",
-      }}
-    >
-      {/* Main Card Container */}
-      <div
-        className="card-container relative w-full h-full rounded-xl overflow-hidden flex flex-col"
-        style={{
-          background: `linear-gradient(135deg, ${colors.darkBlue}, ${colors.purpleBlue})`,
-          boxShadow: isHovered 
-            ? `0 0 25px ${colors.neonPurple}40, 0 0 15px ${colors.neonBlue}30, inset 0 0 10px ${colors.neonTeal}20`
-            : `0 0 15px rgba(0, 0, 0, 0.5)`,
-          transition: "all 0.3s ease",
-          transformStyle: "preserve-3d",
-          transform: isHovered ? "rotateY(5deg) rotateX(2deg)" : "rotateY(0) rotateX(0)",
-        }}
-      >
-        {/* Background Grid Animation */}
-        <div 
-          className="absolute inset-0 w-full h-full z-0"
-          style={{
-            background: `
-              linear-gradient(90deg, ${colors.glassWhite} 1px, transparent 1px),
-              linear-gradient(0deg, ${colors.glassWhite} 1px, transparent 1px)
-            `,
-            backgroundSize: "20px 20px",
-            opacity: 0.1,
-          }}
-        />
-        
-        {/* Animated Pulse Effects */}
-        <div className="absolute z-0 w-full h-full">
-          <div 
-            className="absolute rounded-full"
-            style={{
-              width: "150px",
-              height: "150px",
-              background: `radial-gradient(circle, ${colors.neonPurple}10 0%, transparent 70%)`,
-              top: "10%",
-              left: "20%",
-              animation: "pulse 8s infinite ease-in-out",
-            }}
-          />
-          <div 
-            className="absolute rounded-full"
-            style={{
-              width: "200px",
-              height: "200px",
-              background: `radial-gradient(circle, ${colors.neonBlue}10 0%, transparent 70%)`,
-              bottom: "10%",
-              right: "10%",
-              animation: "pulse 10s infinite ease-in-out",
-            }}
-          />
-        </div>
-        
-        {/* Angled Edge Overlays */}
-        <div 
-          className="absolute top-0 left-0 w-full h-20 z-10"
-          style={{
-            background: `linear-gradient(170deg, ${colors.neonPurple}20, transparent)`,
-          }}
-        />
-        <div 
-          className="absolute bottom-0 right-0 w-full h-20 z-10"
-          style={{
-            background: `linear-gradient(350deg, ${colors.neonBlue}20, transparent)`,
-          }}
-        />
-        
-        {/* Main Content Container */}
-        <div className="z-20 flex flex-col p-6 h-full">
-          {/* Top Section with Name, Title, Photo */}
-          <div 
-            className="flex items-center mb-6"
-            style={{
-              animation: dataLoaded ? "fadeInSlideUp 0.5s ease forwards" : "none",
-              opacity: 0,
-            }}
-          >
-            {/* Holographic Profile Image */}
-            <div className="mr-4 relative">
-              <div
-                className="relative rounded-full overflow-hidden"
-                style={{
-                  width: "80px",
-                  height: "80px",
-                  background: colors.glassBlack,
-                  border: `2px solid ${colors.neonPurple}40`,
-                  boxShadow: isHovered 
-                    ? `0 0 15px ${colors.neonTeal}40`
-                    : `0 0 5px ${colors.neonTeal}20`,
-                  transition: "all 0.3s ease",
-                }}
-              >
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    background: `linear-gradient(45deg, ${colors.neonPurple}20, ${colors.neonBlue}20, transparent)`,
-                    animation: "holographicShimmer 3s infinite linear",
-                    mixBlendMode: "overlay",
-                    zIndex: 2,
-                  }}
-                />
-                <div className="w-full h-full">
+    <div className="quantum-card w-full h-full aspect-[2/3.5] relative overflow-hidden rounded-xl">
+      {/* Background gradient with tech-inspired dark background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#0A0F2C] to-[#1F1B44] z-0">
+        {/* Grid pattern overlay */}
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAwIDEwIEwgNDAgMTAgTSAxMCAwIEwgMTAgNDAgTSAwIDIwIEwgNDAgMjAgTSAyMCAwIEwgMjAgNDAgTSAwIDMwIEwgNDAgMzAgTSAzMCAwIEwgMzAgNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzJBMkE0NCIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIiAvPjwvc3ZnPg==')] opacity-20"></div>
+      </div>
+
+      {/* Glassmorphism card container with angled edges */}
+      <div className="absolute inset-0 m-2 bg-white/5 backdrop-blur-sm rounded-lg shadow-xl border border-white/10 z-10 overflow-hidden transform" style={{clipPath: "polygon(0 0, 100% 0, 95% 100%, 5% 100%)"}}>
+        {/* Glowing border effect */}
+        <div className="absolute inset-0 border-2 border-cyan-500/20 rounded-lg z-20 pointer-events-none glow-border"></div>
+      
+        {/* Card content */}
+        <div className="relative flex flex-col h-full w-full z-30 p-4">
+          
+          {/* Header section with holographic profile picture */}
+          <div className="flex flex-col items-center mb-6 mt-4">
+            {/* Hexagonal profile picture frame with glow */}
+            <div className="relative mb-3">
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-purple-500 blur-md rounded-full"></div>
+              <div className="h-24 w-24 rounded-full p-1 bg-gradient-to-r from-cyan-400 to-purple-500 relative">
+                <div className="h-full w-full rounded-full bg-gradient-to-r from-purple-900 to-blue-900 flex items-center justify-center overflow-hidden">
                   {userData.photoURL ? (
                     <img 
                       src={userData.photoURL} 
                       alt={userData.name || "Profile"} 
-                      className="h-full w-full object-cover"
+                      className="h-full w-full object-cover mix-blend-lighten"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
-                        target.src = `https://ui-avatars.com/api/?name=${userData.name || "User"}&background=0A0F2C&color=01C38D`;
+                        target.src = "https://ui-avatars.com/api/?name=" + (userData.name || "User") + "&background=0D1117&color=60A5FA";
                       }}
                     />
                   ) : (
                     <img 
-                      src={`https://ui-avatars.com/api/?name=${userData.name || "User"}&background=0A0F2C&color=01C38D`}
+                      src={`https://ui-avatars.com/api/?name=${userData.name || "User"}&background=0D1117&color=60A5FA`}
                       alt={userData.name || "Profile"}
                       className="h-full w-full object-cover"
                     />
                   )}
                 </div>
               </div>
-              
-              {/* Hexagonal Frame Animation */}
-              <div 
-                className="absolute top-0 left-0 right-0 bottom-0"
-                style={{
-                  animation: "rotate 10s infinite linear",
-                }}
-              >
-                <div
-                  style={{
-                    position: "absolute",
-                    width: "86px",
-                    height: "86px",
-                    top: "-3px",
-                    left: "-3px",
-                    background: "transparent",
-                    borderRadius: "50%",
-                    boxShadow: `0 0 0 2px ${colors.neonBlue}80`,
-                    clipPath: "polygon(50% 0%, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%)",
-                  }}
-                />
-              </div>
             </div>
             
-            {/* Name and Title */}
-            <div>
-              <h2 
-                className="text-xl font-bold mb-1"
-                style={{
-                  color: "#FFFFFF",
-                  fontFamily: "'Orbitron', sans-serif",
-                  textShadow: `0 0 10px ${colors.neonPurple}80`,
-                }}
-              >
-                {userData.name || "Your Name"}
-              </h2>
-              
-              {/* Job Title Chip */}
-              {userData.title && (
-                <div 
-                  className="px-3 py-1 inline-block rounded-md"
-                  style={{
-                    background: colors.glassBlack,
-                    border: `1px solid ${colors.neonGreen}`,
-                    boxShadow: `0 0 10px ${colors.neonGreen}40`,
-                  }}
-                >
-                  <span 
-                    className="text-sm font-medium"
-                    style={{
-                      color: colors.neonGreen,
-                      fontFamily: "'Rajdhani', sans-serif",
-                    }}
-                  >
-                    {userData.title}
-                  </span>
-                </div>
-              )}
+            {/* Name and title */}
+            <h2 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-blue-100 text-center">
+              {userData.name || "Your Name"}
+            </h2>
+            
+            {/* Job title as a glowing neon chip */}
+            <div className="mt-1 px-3 py-1 rounded-full bg-blue-900/50 border border-blue-500/30 text-cyan-400 text-xs font-medium inline-flex items-center">
+              <Zap className="h-3 w-3 mr-1 text-cyan-400" />
+              <span>{userData.title || "Add your designation"}</span>
             </div>
           </div>
           
-          {/* Middle Section - Tags and Location */}
-          <div className="mb-6 space-y-4">
-            {/* Location with Satellite Icon */}
-            {userData.location && (
-              <div 
-                className="flex items-center"
-                style={{
-                  animation: dataLoaded ? "fadeInSlideUp 0.7s ease forwards" : "none",
-                  opacity: 0,
-                }}
-              >
-                <div 
-                  className="rounded-full p-1 mr-2"
-                  style={{
-                    background: colors.glassBlack,
-                    border: `1px solid ${colors.neonTeal}40`,
-                  }}
-                >
-                  <Satellite 
-                    size={16} 
-                    className="text-white"
-                    style={{
-                      filter: `drop-shadow(0 0 2px ${colors.neonTeal})`,
-                    }}
-                  />
+          {/* Main content */}
+          <div className="flex-1 space-y-3 text-sm">
+            {/* Domain tag with animated pulse */}
+            {userData.domain && (
+              <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-center gap-2 py-1 px-2 bg-purple-900/20 border border-purple-500/30 rounded-md">
+                  <span className="flex h-2 w-2 relative">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-500 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-400"></span>
+                  </span>
+                  <span className="text-purple-300 text-xs">
+                    #{userData.domain === "all" ? "General" : userData.domain}
+                  </span>
                 </div>
-                <span 
-                  className="text-sm"
-                  style={{
-                    color: "#FFFFFF",
-                    fontFamily: "'Rajdhani', sans-serif",
-                  }}
-                >
+              </div>
+            )}
+            
+            {/* Industry with holographic chip */}
+            {userData.industry && (
+              <div className="flex items-center gap-2 py-1">
+                <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30">
+                  <Building2 className="h-3 w-3 text-blue-400" />
+                </div>
+                <span className="text-white/80">
+                  {userData.industry}
+                </span>
+              </div>
+            )}
+            
+            {/* Company */}
+            {userData.company && (
+              <div className="flex items-center gap-2 py-1">
+                <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30">
+                  <Briefcase className="h-3 w-3 text-blue-400" />
+                </div>
+                <span className="text-white/80">
+                  {userData.company}
+                </span>
+              </div>
+            )}
+            
+            {/* Location with pin */}
+            {userData.location && (
+              <div className="flex items-center gap-2 py-1">
+                <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30">
+                  <MapPin className="h-3 w-3 text-blue-400" />
+                </div>
+                <span className="text-white/80">
                   {userData.location}
                 </span>
               </div>
             )}
-            
-            {/* Industry and Domain Tags */}
-            <div 
-              className="flex flex-wrap gap-2"
-              style={{
-                animation: dataLoaded ? "fadeInSlideUp 0.9s ease forwards" : "none",
-                opacity: 0,
-              }}
-            >
-              {/* Industry Holographic Chip */}
-              {userData.industry && (
-                <div 
-                  className="px-3 py-1.5 rounded-lg flex items-center"
-                  style={{
-                    background: `linear-gradient(135deg, ${colors.neonPurple}20, ${colors.neonBlue}10)`,
-                    backdropFilter: "blur(4px)",
-                    border: `1px solid ${colors.neonPurple}40`,
-                    boxShadow: `0 0 10px ${colors.neonPurple}20`,
-                  }}
-                >
-                  <Cpu 
-                    size={14} 
-                    className="mr-1.5"
-                    style={{
-                      color: colors.neonPurple,
-                      filter: `drop-shadow(0 0 2px ${colors.neonPurple})`,
-                    }}
-                  />
-                  <span 
-                    className="text-xs font-medium"
-                    style={{
-                      color: "#FFFFFF",
-                      fontFamily: "'Rajdhani', sans-serif",
-                      textShadow: `0 0 5px ${colors.neonPurple}80`,
-                    }}
-                  >
-                    {userData.industry}
-                  </span>
+
+            {/* Contact section */}
+            <div className="mt-4 pt-4 border-t border-white/10">
+              {/* Email */}
+              <div className="flex items-center gap-2 py-1 transition-transform hover:translate-x-1">
+                <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30">
+                  <Mail className="h-3 w-3 text-blue-400" />
                 </div>
-              )}
+                <span className="text-white/80 text-xs">
+                  {userData.email}
+                </span>
+              </div>
               
-              {/* Domain Pulse Tag */}
-              {userData.domain && (
-                <div 
-                  className="px-3 py-1.5 rounded-lg flex items-center"
-                  style={{
-                    background: `linear-gradient(135deg, ${colors.neonBlue}20, ${colors.neonTeal}10)`,
-                    backdropFilter: "blur(4px)",
-                    border: `1px solid ${colors.neonTeal}40`,
-                    boxShadow: `0 0 10px ${colors.neonTeal}20`,
-                    animation: "pulse 2s infinite ease-in-out",
-                  }}
-                >
-                  <Brain 
-                    size={14} 
-                    className="mr-1.5" 
-                    style={{
-                      color: colors.neonTeal,
-                      filter: `drop-shadow(0 0 2px ${colors.neonTeal})`,
-                    }}
-                  />
-                  <span 
-                    className="text-xs font-medium"
-                    style={{
-                      color: "#FFFFFF",
-                      fontFamily: "'Rajdhani', sans-serif",
-                      textShadow: `0 0 5px ${colors.neonTeal}80`,
-                    }}
-                  >
-                    {userData.domain}
-                  </span>
+              {/* Phone */}
+              <div className="flex items-center gap-2 py-1 transition-transform hover:translate-x-1">
+                <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30">
+                  <Phone className="h-3 w-3 text-blue-400" />
                 </div>
-              )}
+                <span className="text-white/80 text-xs">
+                  {userData.phoneNumber || "Add phone number"}
+                </span>
+              </div>
+              
+              {/* Profile Link with barcode-style */}
+              <div className="flex items-center gap-2 py-1 transition-transform hover:translate-x-1">
+                <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30">
+                  <Globe className="h-3 w-3 text-blue-400" />
+                </div>
+                <span className="text-cyan-400 text-xs">
+                  {profileLink}
+                </span>
+              </div>
             </div>
           </div>
           
-          {/* Bottom Section - Contact */}
-          <div 
-            className="mt-auto space-y-3 mb-1"
-            style={{
-              animation: dataLoaded ? "fadeInSlideUp 1.1s ease forwards" : "none",
-              opacity: 0,
-            }}
-          >
-            {/* Section Heading with Divider */}
-            <div className="flex items-center mb-3">
-              <div 
-                className="flex-grow h-px mr-3"
-                style={{
-                  background: `linear-gradient(to right, transparent, ${colors.neonBlue}40)`,
-                }}
-              />
-              <span 
-                className="text-xs font-medium"
-                style={{
-                  color: colors.neonBlue,
-                  fontFamily: "'Orbitron', sans-serif",
-                  letterSpacing: "1px",
-                }}
-              >
-                CONTACT GATEWAY
-              </span>
-              <div 
-                className="flex-grow h-px ml-3"
-                style={{
-                  background: `linear-gradient(to left, transparent, ${colors.neonBlue}40)`,
-                }}
-              />
+          {/* Footer with share button */}
+          <div className="mt-4 mb-2 flex justify-center">
+            <div className="px-4 py-1 rounded-full bg-blue-900/30 text-cyan-400 text-xs font-medium inline-flex items-center border border-blue-500/20 hover:bg-blue-800/40 transition-colors cursor-pointer">
+              <Share2 className="h-3 w-3 mr-1 text-cyan-400" />
+              <span>Share Quantum Card</span>
             </div>
-            
-            {/* Email */}
-            <div 
-              className="flex items-center rounded-md p-2 cursor-pointer"
-              style={{
-                background: colors.glassBlack,
-                border: `1px solid ${colors.neonBlue}30`,
-                transition: "all 0.3s ease",
-              }}
-              onClick={() => {
-                navigator.clipboard.writeText(userData.email);
-                setCopySuccess('Email copied!');
-                setTimeout(() => setCopySuccess(''), 2000);
-              }}
-            >
-              <Mail 
-                size={16} 
-                className="mr-3"
-                style={{
-                  color: colors.neonBlue,
-                  filter: `drop-shadow(0 0 2px ${colors.neonBlue})`,
-                }}
-              />
-              <span 
-                className="text-sm flex-1 truncate"
-                style={{
-                  color: "#FFFFFF",
-                  fontFamily: "'Rajdhani', sans-serif",
-                }}
-              >
-                {userData.email}
-              </span>
-              <Copy 
-                size={14} 
-                style={{
-                  color: colors.neonTeal,
-                  opacity: 0.7,
-                }}
-              />
-            </div>
-            
-            {/* Phone Number */}
-            {userData.phoneNumber && (
-              <div 
-                className="flex items-center rounded-md p-2 cursor-pointer"
-                style={{
-                  background: colors.glassBlack,
-                  border: `1px solid ${colors.neonPurple}30`,
-                  transition: "all 0.3s ease",
-                }}
-                onClick={() => {
-                  navigator.clipboard.writeText(userData.phoneNumber || '');
-                  setCopySuccess('Phone copied!');
-                  setTimeout(() => setCopySuccess(''), 2000);
-                }}
-              >
-                <Phone 
-                  size={16} 
-                  className="mr-3"
-                  style={{
-                    color: colors.neonPurple,
-                    filter: `drop-shadow(0 0 2px ${colors.neonPurple})`,
-                  }}
-                />
-                <span 
-                  className="text-sm flex-1 truncate"
-                  style={{
-                    color: "#FFFFFF",
-                    fontFamily: "'Rajdhani', sans-serif",
-                  }}
-                >
-                  {userData.phoneNumber}
-                </span>
-                <Copy 
-                  size={14} 
-                  style={{
-                    color: colors.neonTeal,
-                    opacity: 0.7,
-                  }}
-                />
-              </div>
-            )}
-            
-            {/* Profile URL as Barcode-style */}
-            <div 
-              className="flex items-center rounded-md p-2 cursor-pointer"
-              style={{
-                background: colors.glassBlack,
-                border: `1px solid ${colors.neonGreen}30`,
-                transition: "all 0.3s ease",
-              }}
-              onClick={() => {
-                navigator.clipboard.writeText(profileLink);
-                setCopySuccess('URL copied!');
-                setTimeout(() => setCopySuccess(''), 2000);
-              }}
-            >
-              <div 
-                className="mr-3 h-4 w-10"
-                style={{
-                  background: `repeating-linear-gradient(90deg, ${colors.neonGreen}, ${colors.neonGreen} 2px, transparent 2px, transparent 4px)`,
-                }}
-              />
-              <span 
-                className="text-sm flex-1 truncate"
-                style={{
-                  color: "#FFFFFF",
-                  fontFamily: "'Rajdhani', sans-serif",
-                }}
-              >
-                {profileLink}
-              </span>
-              <Copy 
-                size={14} 
-                style={{
-                  color: colors.neonTeal,
-                  opacity: 0.7,
-                }}
-              />
-            </div>
+          </div>
+          
+          {/* Decorative tech elements */}
+          <div className="absolute top-0 right-0 h-16 w-16 opacity-20">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90 90" fill="none">
+              <circle cx="45" cy="45" r="44" stroke="url(#circuitGradient)" strokeWidth="2" />
+              <path d="M45 1C45 1 35 15 35 45C35 75 45 89 45 89" stroke="url(#circuitGradient)" strokeWidth="2" />
+              <path d="M45 1C45 1 55 15 55 45C55 75 45 89 45 89" stroke="url(#circuitGradient)" strokeWidth="2" />
+              <path d="M1 45C1 45 15 35 45 35C75 35 89 45 89 45" stroke="url(#circuitGradient)" strokeWidth="2" />
+              <path d="M1 45C1 45 15 55 45 55C75 55 89 45 89 45" stroke="url(#circuitGradient)" strokeWidth="2" />
+              <defs>
+                <linearGradient id="circuitGradient" x1="0" y1="0" x2="90" y2="90" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="#4F46E5" />
+                  <stop offset="1" stopColor="#06B6D4" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          
+          <div className="absolute bottom-0 left-0 h-16 w-16 opacity-20">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
+              <rect x="1" y="1" width="78" height="78" rx="4" stroke="url(#chipGradient)" strokeWidth="2" />
+              <path d="M20 1V80" stroke="url(#chipGradient)" strokeWidth="2" />
+              <path d="M40 1V80" stroke="url(#chipGradient)" strokeWidth="2" />
+              <path d="M60 1V80" stroke="url(#chipGradient)" strokeWidth="2" />
+              <path d="M1 20H80" stroke="url(#chipGradient)" strokeWidth="2" />
+              <path d="M1 40H80" stroke="url(#chipGradient)" strokeWidth="2" />
+              <path d="M1 60H80" stroke="url(#chipGradient)" strokeWidth="2" />
+              <defs>
+                <linearGradient id="chipGradient" x1="0" y1="0" x2="80" y2="80" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="#06B6D4" />
+                  <stop offset="1" stopColor="#8B5CF6" />
+                </linearGradient>
+              </defs>
+            </svg>
           </div>
         </div>
-        
-        {/* Quantum Edge Effect */}
-        <div 
-          className="absolute inset-0 rounded-xl pointer-events-none"
-          style={{
-            boxShadow: isHovered 
-              ? `inset 0 0 2px ${colors.neonTeal}40, inset 0 0 1px ${colors.neonBlue}40` 
-              : `inset 0 0 1px ${colors.neonPurple}30`,
-            transition: "box-shadow 0.3s ease",
-          }}
-        />
-        
-        {/* Copy Success Message */}
-        {copySuccess && (
-          <div 
-            className="absolute top-4 left-1/2 transform -translate-x-1/2 px-3 py-1 rounded-full z-50 text-xs"
-            style={{
-              background: colors.neonTeal,
-              color: "#FFFFFF",
-              boxShadow: `0 0 10px ${colors.neonTeal}50`,
-              animation: "fadeInOut 2s forwards",
-              fontFamily: "'Rajdhani', sans-serif",
-            }}
-          >
-            {copySuccess}
-          </div>
-        )}
       </div>
-      
-      {/* CSS Animations */}
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@400;500;600;700&display=swap');
-        
-        @keyframes fadeInSlideUp {
-          0% { opacity: 0; transform: translateY(10px); }
-          100% { opacity: 1; transform: translateY(0); }
-        }
-        
-        @keyframes pulse {
-          0% { opacity: 0.7; transform: scale(1); }
-          50% { opacity: 1; transform: scale(1.05); }
-          100% { opacity: 0.7; transform: scale(1); }
-        }
-        
-        @keyframes rotate {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-        
-        @keyframes holographicShimmer {
-          0% { opacity: 0.3; transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-          50% { opacity: 0.5; }
-          100% { opacity: 0.3; transform: translateX(100%) translateY(100%) rotate(45deg); }
-        }
-        
-        @keyframes fadeInOut {
-          0% { opacity: 0; transform: translate(-50%, -10px); }
-          10% { opacity: 1; transform: translate(-50%, 0); }
-          90% { opacity: 1; transform: translate(-50%, 0); }
-          100% { opacity: 0; transform: translate(-50%, -10px); }
-        }
-      `}</style>
     </div>
   );
 };
