@@ -7,6 +7,7 @@ import NeoGlowCard from "./cards/neoglow-card";
 import CreativeCard from "./cards/creative-card";
 import ArtisticCard from "./cards/artistic-card";
 import ProfessionalCardRenewed from "./cards/professional-card-renewed";
+import QuantumCard from "./cards/quantum-card";
 
 interface VisitingCardPreviewProps {
   userData: UserData;
@@ -83,6 +84,15 @@ const VisitingCardPreview: React.FC<VisitingCardPreviewProps> = ({
           userData={userData} 
           isIndustryLeader={userData.username === "elonmusk"} 
         />
+      </CardWrapper>
+    );
+  }
+  
+  // For quantum card style, use the specialized component
+  if (cardType === "quantum") {
+    return (
+      <CardWrapper>
+        <QuantumCard userData={userData} />
       </CardWrapper>
     );
   }

@@ -11,6 +11,7 @@ import { apiRequest } from "@/lib/queryClient";
 // Card type options
 const CARD_TYPES = [
   { id: "professional-renewed", name: "Professional", description: "Modern professional design with sleek UI elements" },
+  { id: "quantum", name: "Quantum Tech", description: "Futuristic tech-inspired holographic design for tech professionals" },
   { id: "3d-animated", name: "3D Animated", description: "Interactive 3D hover effects" },
   { id: "holographic", name: "Holographic Glass", description: "Modern transparent design" },
   { id: "neoglow", name: "NeoGlow", description: "Dark mode design with electric neon elements" },
@@ -247,8 +248,9 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
               onValueChange={handleTabChange}
               className="w-full"
             >
-              <TabsList className="grid grid-cols-3 mb-6">
+              <TabsList className="grid grid-cols-4 mb-6">
                 <TabsTrigger value="professional-renewed">Professional</TabsTrigger>
+                <TabsTrigger value="quantum">Quantum Tech</TabsTrigger>
                 <TabsTrigger value="3d-animated">3D</TabsTrigger>
                 <TabsTrigger value="holographic">Holographic</TabsTrigger>
               </TabsList>
