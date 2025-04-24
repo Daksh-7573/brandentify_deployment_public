@@ -20,8 +20,8 @@ const ProfessionalCardRenewed: React.FC<ProfessionalCardRenewedProps> = ({
   userData,
   isIndustryLeader = false
 }) => {
-  // Format profile URL based on current window location
-  const profileURL = `${window.location.hostname}/@${userData.username || userData.name?.replace(/\s+/g, '').toLowerCase() || 'user'}`;
+  // Use the branded domain as requested
+  const profileURL = `brandentifier.com/${userData.name?.replace(/\s+/g, '').toLowerCase() || 'myprofile'}`;
   
   return (
     <div className="professional-card bg-white dark:bg-slate-800 w-full max-w-[360px] mx-auto rounded-xl overflow-hidden shadow-lg border border-gray-200 dark:border-gray-700">
