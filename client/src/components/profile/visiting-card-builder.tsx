@@ -80,8 +80,9 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
 
   // Handle card sharing
   const handleShare = () => {
-    // Generate a sharable link with the user ID
-    const shareUrl = `${window.location.origin}/profile/card/${userData.id}`;
+    // Generate a sharable link with the numeric user ID
+    const shareUrl = `${window.location.origin}/profile/card/${userData.id}`; 
+    console.log("Generated sharable link:", shareUrl);
     
     // Display alert with the URL
     const alertUser = (success: boolean) => {

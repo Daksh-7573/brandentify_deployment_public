@@ -19,16 +19,23 @@ const SharedCardView: React.FC<SharedCardViewProps> = ({ userId }) => {
     const fetchUserData = async () => {
       try {
         setLoading(true);
+        console.log("Fetching user data for shared card with ID:", userId);
+        // Get the full user profile data with experiences, education, etc.
         const response = await apiRequest({
-          url: `/users/${userId}`,
+          url: `/api/users/${userId}`,
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
           customConfig: {}
         });
+        console.log("Shared card user data:", response);
+        // Handle empty response
+        if (!response || typeof response !== 'object' || Object.keys(response).length === 0) {
+          throw new Error("Received empty user data");
+        }
         setUserData(response as UserData);
         setLoading(false);
       } catch (err) {
-        console.error("Error fetching user data:", err);
+        console.error("Error fetching user data for shared card:", err);
         setError("Could not load this Quantum Card. It may not exist or has been removed.");
         setLoading(false);
       }
