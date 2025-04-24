@@ -436,7 +436,7 @@ const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
                   {/* Location - Directly underneath domain */}
                   {userData.location && (
                     <div 
-                      className="flex items-start gap-1 ml-7"
+                      className="flex items-center gap-1 ml-7"
                       style={{
                         transform: hoveredSection === 'location' 
                           ? 'translateY(-1px)' 
@@ -448,13 +448,13 @@ const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
                     >
                       {/* Map pin */}
                       <div 
-                        className="h-4 w-4 rounded-full flex items-center justify-center"
+                        className="h-5 w-5 rounded-full flex items-center justify-center"
                         style={{
                           backgroundColor: artisticColors.burgundy,
                           boxShadow: "0 1px 2px rgba(0,0,0,0.2)",
                         }}
                       >
-                        <MapPin className="h-2 w-2 text-white" />
+                        <MapPin className="h-3 w-3 text-white" />
                       </div>
                       
                       <div className="relative">
@@ -473,7 +473,6 @@ const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
                           style={{
                             color: artisticColors.darkGray,
                             fontFamily: "'Caveat', cursive",
-                            fontSize: "0.7rem"
                           }}
                         >
                           {userData.location}
