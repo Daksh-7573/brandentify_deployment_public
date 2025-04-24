@@ -67,28 +67,8 @@ const SharedCardPage: React.FC<SharedCardPageProps> = ({ userId }) => {
           // Always show skeleton for at least 2 seconds to ensure we see it
           setLoading(true);
           
-          // Pre-fill placeholder data structure to improve perceived loading time
-          const placeholderData: UserDataType = {
-            id: parseInt(cleaned, 10) || 0,
-            username: '',
-            email: '',
-            name: 'Loading...',
-            phoneNumber: '',
-            photoURL: '',
-            title: 'Professional',
-            aboutMe: '',
-            location: '',
-            industry: '',
-            domain: '',
-            lookingFor: null,
-            whatIOffer: null,
-            visitingCardType: 'professional-renewed', // Default for initial load
-            profileCompleted: false,
-            createdAt: new Date(),
-          };
-          
-          // Create placeholder to reduce the visual switch
-          setUserData(placeholderData);
+          // Don't pre-fill any placeholder data that could cause wrong card to show
+          // Let the skeleton loader handle the loading state
           
           // Artificially delay the fetch to ensure loading state is visible
           // REMOVE THIS DELAY IN PRODUCTION - only here to demo the skeleton
@@ -170,8 +150,30 @@ const SharedCardPage: React.FC<SharedCardPageProps> = ({ userId }) => {
     };
   }, [userId]);
 
-  // Show a page skeleton instead of just a loader
-  if (loading && !userData) {
+  // Error state takes precedence
+  if (error) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center">
+        <div className="text-center max-w-md px-4">
+          <div className="rounded-full bg-red-100 p-3 w-12 h-12 mx-auto mb-4 flex items-center justify-center">
+            <span className="text-red-500 text-2xl font-bold">!</span>
+          </div>
+          <h2 className="text-xl font-medium">Card Not Found</h2>
+          <p className="text-gray-500 mt-2">{error || "Could not load this Quantum Card. It may not exist or has been removed."}</p>
+          <Button asChild className="mt-6">
+            <Link href="/">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Return to Home
+            </Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
+  
+  // Loading state (includes initial loading with no userData)
+  if (loading || !userData) {
+    console.log('Showing skeleton loading state');  // For debugging
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950 py-12 px-4">
         <div className="max-w-4xl mx-auto">
@@ -253,26 +255,6 @@ const SharedCardPage: React.FC<SharedCardPageProps> = ({ userId }) => {
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error || !userData) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center">
-        <div className="text-center max-w-md px-4">
-          <div className="rounded-full bg-red-100 p-3 w-12 h-12 mx-auto mb-4 flex items-center justify-center">
-            <span className="text-red-500 text-2xl font-bold">!</span>
-          </div>
-          <h2 className="text-xl font-medium">Card Not Found</h2>
-          <p className="text-gray-500 mt-2">{error || "Could not load this Quantum Card. It may not exist or has been removed."}</p>
-          <Button asChild className="mt-6">
-            <Link href="/">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Return to Home
-            </Link>
-          </Button>
         </div>
       </div>
     );
