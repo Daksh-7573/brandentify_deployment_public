@@ -238,7 +238,7 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
                 />
                 
                 <h2 
-                  className="text-xl font-bold z-10 relative mb-1.5 pl-2"
+                  className="text-xl font-bold z-10 relative mb-0.5 pl-2"
                   style={{
                     fontFamily: "Playfair Display, serif",
                     color: creativeColors.darkText,
@@ -250,41 +250,27 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
                   {userData.name || "Your Name"}
                 </h2>
                 
-                {/* Artistic Badge for Job Title */}
-                <div 
-                  className="relative inline-block px-2 py-1 mt-1 ml-4 overflow-visible"
-                  style={{
-                    transform: "rotate(-1deg)",
-                  }}
-                >
-                  {/* Paint splatter behind title */}
-                  <div 
-                    className="absolute -left-1 -top-1 -right-1 -bottom-1 rounded-lg"
-                    style={{
-                      background: `radial-gradient(circle at 30% 50%, ${creativeColors.mint}95, ${creativeColors.skyBlue}50)`,
-                      opacity: 0.7,
-                      transform: "scale(1.1) rotate(2deg)",
-                      filter: "blur(2px)"
-                    }}
-                  />
-                  
-                  <p 
-                    className="text-sm relative z-10 font-medium"
-                    style={{
-                      fontFamily: "Poppins, sans-serif",
-                      color: "#444",
-                      textShadow: "0.5px 0.5px 0 rgba(255, 255, 255, 0.8)"
-                    }}
-                  >
-                    {userData.title || "Add your designation"}
-                  </p>
-                </div>
+                {/* Title right below name */}
+                {userData.title && (
+                  <div className="relative z-10 pl-2 mb-1">
+                    <p 
+                      className="text-sm italic font-medium"
+                      style={{
+                        fontFamily: "Poppins, sans-serif",
+                        color: creativeColors.teal,
+                        textShadow: "0.5px 0.5px 0 rgba(255, 255, 255, 0.8)"
+                      }}
+                    >
+                      {userData.title}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
             
             {/* INDUSTRY TAGS - Illustrated Icon Badge Style */}
             {industryTags.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-3 mt-1">
+              <div className="flex flex-wrap gap-2 mb-3 mt-2">
                 {industryTags.map((tag, index) => (
                   <div 
                     key={index}
