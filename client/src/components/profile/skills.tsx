@@ -204,10 +204,8 @@ export default function Skills() {
     try {
       console.log("Deleting skill with ID:", skillId);
       
-      await apiRequest({
-        method: 'DELETE', 
-        url: `/api/skills/${skillId}`
-      });
+      // Explicitly passing undefined as the data parameter to satisfy the type requirements
+      await apiRequest('DELETE', `/api/skills/${skillId}`, undefined);
       
       setSkills(prev => prev.filter(skill => skill.id !== skillId));
       
@@ -262,11 +260,8 @@ export default function Skills() {
       
       console.log("Saving skill with data:", data);
       
-      await apiRequest({
-        method,
-        url,
-        data
-      });
+      // Call apiRequest with the proper signature (method, url, data)
+      await apiRequest(method, url, data);
       
       toast({
         title: newSkill.id ? "Skill updated" : "Skill added",

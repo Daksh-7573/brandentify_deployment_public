@@ -654,18 +654,27 @@ export default function CorporateExecutive({
                   {/* Proficiency Level */}
                   <div className="flex items-center gap-1">
                     {Array.from({ length: 5 }).map((_, i) => {
-                      // Convert percentage (0-100) to 5-star scale (0-5)
-                      const proficiencyLevel = skill.proficiency ? Math.ceil((skill.proficiency / 100) * 5) : 3;
+                      // Convert percentage (0-100) to 5-star scale (0-5) more accurately
+                      // Using Math.round to get a more balanced conversion (1-20% → 1 star, 21-40% → 2 stars, etc.)
+                      const proficiencyLevel = skill.proficiency 
+                        ? Math.round((skill.proficiency / 100) * 5) 
+                        : 3; // Default to 3 if no proficiency value
+                      
+                      // Make sure we have at least 1 bar for any skill with proficiency > 0
+                      const adjustedLevel = skill.proficiency && skill.proficiency > 0 && proficiencyLevel === 0 
+                        ? 1 
+                        : proficiencyLevel;
+                        
                       return (
                         <div 
                           key={i} 
-                          className={`h-1 rounded-full ${i < proficiencyLevel ? 'bg-[#6a0dad]' : 'bg-gray-200'}`} 
+                          className={`h-1 rounded-full ${i < adjustedLevel ? 'bg-[#6a0dad]' : 'bg-gray-200'}`} 
                           style={{ width: '12px' }}
                         ></div>
                       );
                     })}
                     <span className="ml-2 text-xs text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
-                      {skill.proficiency ? `${Math.ceil((skill.proficiency / 100) * 5)}/5` : ''}
+                      {skill.proficiency ? `${Math.round((skill.proficiency / 100) * 5)}/5` : ''}
                     </span>
                   </div>
                 </div>
