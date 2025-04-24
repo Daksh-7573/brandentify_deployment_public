@@ -40,7 +40,30 @@ const SharedCardView: React.FC<SharedCardViewProps> = ({ userId }) => {
             throw new Error("Received empty user data from shared card endpoint");
           }
           
-          setUserData(response as UserData);
+          // Handle the response type safely
+          const responseData = await response.json();
+          const userData: UserData = {
+            id: responseData.id,
+            username: responseData.username || '',
+            email: responseData.email || '',
+            name: responseData.name || 'Anonymous User',
+            phoneNumber: responseData.phoneNumber || '',
+            photoURL: responseData.photoURL || '',
+            title: responseData.title || 'Professional',
+            aboutMe: responseData.aboutMe || '',
+            location: responseData.location || '',
+            industry: responseData.industry || '',
+            domain: responseData.domain || '',
+            lookingFor: responseData.lookingFor || null,
+            whatIOffer: responseData.whatIOffer || null,
+            visitingCardType: responseData.visitingCardType || 'professional-renewed',
+            profileCompleted: responseData.profileCompleted || 0,
+            createdAt: responseData.createdAt ? new Date(responseData.createdAt) : null,
+            // Add other properties as needed
+          };
+          
+          console.log("Using mapped user data:", userData);
+          setUserData(userData);
           setLoading(false);
           return;
         } catch (err) {
@@ -141,7 +164,28 @@ const SharedCardView: React.FC<SharedCardViewProps> = ({ userId }) => {
           throw new Error("Received empty user data");
         }
         
-        setUserData(response as UserData);
+        // Also handle the response type safely in the fallback flow
+        const userData: UserData = {
+          id: response.id,
+          username: response.username || '',
+          email: response.email || '',
+          name: response.name || 'Anonymous User',
+          phoneNumber: response.phoneNumber || '',
+          photoURL: response.photoURL || '',
+          title: response.title || 'Professional',
+          aboutMe: response.aboutMe || '',
+          location: response.location || '',
+          industry: response.industry || '',
+          domain: response.domain || '',
+          lookingFor: response.lookingFor || null,
+          whatIOffer: response.whatIOffer || null,
+          visitingCardType: response.visitingCardType || 'professional-renewed',
+          profileCompleted: response.profileCompleted || 0,
+          createdAt: response.createdAt ? new Date(response.createdAt) : null,
+        };
+        
+        console.log("Using mapped user data from fallback:", userData);
+        setUserData(userData);
         setLoading(false);
       } catch (err) {
         console.error("Error fetching user data for shared card:", err);

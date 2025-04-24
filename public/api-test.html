@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Shared Card API Test</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto; padding: 20px; }
+    button { padding: 10px; margin: 10px 0; }
+    pre { background: #f5f5f5; padding: 15px; overflow-x: auto; }
+    .success { color: green; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+  <h1>Shared Card API Test</h1>
+  
+  <button id="test-api">Test API</button>
+  <div id="result"></div>
+  
+  <button id="open-card">Open Shared Card</button>
+  
+  <script>
+    document.getElementById('test-api').addEventListener('click', async () => {
+      const result = document.getElementById('result');
+      result.innerHTML = 'Testing...';
+      
+      try {
+        const response = await fetch('/api/shared-card/2');
+        const data = await response.json();
+        
+        result.innerHTML = '<p class="success">Success!</p><pre>' + 
+          JSON.stringify(data, null, 2) + '</pre>';
+      } catch (error) {
+        result.innerHTML = '<p class="error">Error: ' + error.message + '</p>';
+      }
+    });
+    
+    document.getElementById('open-card').addEventListener('click', () => {
+      window.open('/profile/card/2', '_blank');
+    });
+  </script>
+</body>
+</html>
