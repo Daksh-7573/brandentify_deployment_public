@@ -96,16 +96,39 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
       });
   };
   
+  // Track mouse movement for 3D effect
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    const x = (e.clientX - left) / width - 0.5;
+    const y = (e.clientY - top) / height - 0.5;
+    setMousePosition({ x, y });
+  };
+
   return (
-    <div className="creative-card relative w-full h-full select-none">
+    <div 
+      className="creative-card relative w-full h-full select-none" 
+      onMouseMove={handleMouseMove}
+      onMouseLeave={() => setMousePosition({ x: 0, y: 0 })}
+    >
       {/* Main Card Container */}
-      <div className="w-full h-full relative">
+      <div 
+        className="w-full h-full relative transition-transform duration-200 ease-out"
+        style={{
+          transform: `perspective(1000px) 
+                     rotateY(${mousePosition.x * 10}deg) 
+                     rotateX(${-mousePosition.y * 10}deg)
+                     translateZ(10px)`,
+          transformStyle: "preserve-3d"
+        }}
+      >
         {/* Card */}
         <div 
           className="absolute inset-0 rounded-xl overflow-hidden"
           style={{
             backgroundColor: creativeColors.cream,
             boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+            transform: "translateZ(0)",
           }}
         >
           {/* Background Paper Texture */}
@@ -498,7 +521,7 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
                     <div 
                       className="w-6 h-6 rounded-full flex items-center justify-center"
                       style={{
-                        backgroundColor: creativeColors.indigo,
+                        backgroundColor: creativeColors.violet,
                         animation: hoveredSection === 'phone' ? 'buzz 0.3s infinite' : 'none'
                       }}
                     >
@@ -631,6 +654,12 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
           @keyframes tiltLeft {
             0% { transform: translateY(0); }
             100% { transform: translateY(-5px) rotate(-1deg); }
+          }
+          
+          @keyframes float {
+            0% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-5px) scale(1.02); }
+            100% { transform: translateY(0) scale(1); }
           }
           
           /* Font imports */
