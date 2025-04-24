@@ -117,7 +117,7 @@ const PersonalDetailsPage: React.FC = () => {
                   onEdit={() => setShowEditPersonalInfo(true)}
                 />
                 
-                {/* Visiting Card Builder Component */}
+                {/* Quantum Card Builder Component */}
                 <VisitingCardBuilder 
                   userData={userData}
                   selectedCardType={userData.visitingCardType || selectedCardType}
