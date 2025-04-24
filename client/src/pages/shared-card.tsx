@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ArrowLeft, Check, Copy, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'wouter';
-import FixedSizeSharedCard from '@/components/profile/fixed-size-shared-card';
+import VisitingCardPreview from '@/components/profile/visiting-card-preview';
 import { useToast } from '@/hooks/use-toast';
 import type { UserData as UserDataType } from '@/types/user';
 
@@ -173,13 +173,12 @@ const SharedCardPage: React.FC<SharedCardPageProps> = ({ userId }) => {
           </div>
 
           <div className="flex flex-col items-center justify-center">
-            {/* Match exactly the size used in edit mode (280px width) */}
-            <div style={{
-              width: "280px",
-              height: "490px", /* 280px * (3.5/2) */
+            {/* Use the same VisitingCardPreview component used in edit mode */}
+            <div style={{ 
+              width: "280px", 
               margin: "0 auto"
             }}>
-              <FixedSizeSharedCard
+              <VisitingCardPreview
                 userData={userData}
                 cardType={userData.visitingCardType || 'professional-renewed'}
               />
