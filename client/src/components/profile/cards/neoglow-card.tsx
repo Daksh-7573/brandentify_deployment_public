@@ -384,7 +384,7 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
                 onMouseEnter={() => setHoveredSection('domain-tag')}
                 onMouseLeave={() => setHoveredSection(null)}
               >
-                <Globe className="h-3 w-3 mr-1 opacity-70" />
+                <Hash className="h-3 w-3 mr-1 opacity-70" />
                 {userData.domain}
               </div>
             )}
