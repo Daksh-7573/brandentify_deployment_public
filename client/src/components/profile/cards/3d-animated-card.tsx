@@ -409,11 +409,11 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
           
           {/* Contact Information with Glass Effect */}
           <div 
-            className="mt-auto mb-6"
+            className="mt-auto mb-4"
             data-layer="1"
           >
             <div 
-              className={`w-[90%] mx-auto rounded-md overflow-hidden transition-all duration-300`}
+              className={`w-[95%] mx-auto rounded-md overflow-hidden transition-all duration-300`}
               style={{
                 background: `linear-gradient(135deg, ${colors.charcoalBlack}80, ${colors.charcoalBlack}60)`,
                 backdropFilter: "blur(10px)",
@@ -449,7 +449,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
               
               {/* Contact Details - Only shown when expanded */}
               {contactExpanded && (
-                <div className="px-4 py-3 space-y-3" style={{ marginBottom: "10px" }}>
+                <div className="px-4 py-2 space-y-2" style={{ marginBottom: "5px" }}>
                   {/* Email */}
                   <div className="flex items-start">
                     <Mail className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
