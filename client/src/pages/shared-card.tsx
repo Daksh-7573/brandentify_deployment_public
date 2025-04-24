@@ -641,8 +641,12 @@ const SharedCardPage: React.FC<SharedCardPageProps> = ({ userId }) => {
               <div className="visiting-card-preview w-full h-full aspect-[2/3.5]">
                 <OptimizedCardDisplay 
                   userData={userData}
-                  cardType={userData.visitingCardType || 'professional-renewed'}
+                  cardType={userData.visitingCardType || '3d-animated'}
                 />
+                {/* Debug output */}
+                <div className="hidden">
+                  Card type: {userData.visitingCardType || '3d-animated'}
+                </div>
               </div>
             </div>
             

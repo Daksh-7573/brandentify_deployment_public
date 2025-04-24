@@ -333,14 +333,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Enhance visiting card data for better display if missing info
+      // Handle the conversion from snake_case in DB to camelCase in API
       const enhancedUser = {
         ...user,
         // Provide default values only if missing, used particularly for the public view
         title: user.title || "Professional",
         location: user.location || "",
-        visitingCardType: user.visitingCardType || "professional-renewed"
+        visitingCardType: user.visiting_card_type || user.visitingCardType || "3d-animated"
       };
       
+      console.log(`[GET /shared-card/:id] Selected card type: ${enhancedUser.visitingCardType}`);
       console.log(`[GET /shared-card/:id] Returning enhanced user data for shared card`);
       return res.json(enhancedUser);
     } catch (error) {
