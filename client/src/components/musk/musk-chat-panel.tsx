@@ -589,14 +589,31 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
                   </div>
                 ) : (
                   <div 
-                    className="text-sm whitespace-pre-wrap leading-relaxed prose prose-sm max-w-none"
+                    className="text-sm whitespace-pre-wrap leading-relaxed prose prose-sm max-w-none dark:prose-invert prose-headings:mb-2 prose-headings:mt-4 prose-h3:text-base prose-h2:text-lg prose-h1:text-xl prose-li:my-0 prose-p:my-2 first:prose-headings:mt-0"
                     dangerouslySetInnerHTML={{ 
                       __html: message.content
-                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold text
-                        .replace(/\*(.*?)\*/g, '<em>$1</em>') // Italic text
-                        .replace(/`([^`]+)`/g, '<code>$1</code>') // Code blocks
+                        // Headers
+                        .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+                        .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+                        .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+                        // Bold and Italic
+                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                        // Sections with emoji headers
+                        .replace(/(^|[^\w])([🔍📊📈🎯🧠⚠️💡✅❓📝📌]+) (.*?):/gm, '$1<h3 class="flex items-center gap-2"><span class="text-xl">$2</span> $3:</h3>')
+                        // Code formatting
+                        .replace(/```([^`]+)```/gm, '<pre><code>$1</code></pre>') // Multi-line code blocks
+                        .replace(/`([^`]+)`/g, '<code>$1</code>') // Inline code
+                        // Bullet lists
                         .replace(/^- (.*)/gm, '<li>$1</li>') // List items
-                        .replace(/<li>/g, '<ul><li>').replace(/<\/li>\s*(?!<li>|<\/ul>)/g, '</li></ul>') // Complete lists
+                        .replace(/<li>/g, '<ul class="list-disc pl-5 my-2"><li>').replace(/<\/li>\s*(?!<li>|<\/ul>)/g, '</li></ul>') // Complete lists
+                        // Checkboxes
+                        .replace(/^\[x\] (.*)/gm, '<div class="flex items-start gap-2 my-1"><div class="rounded-sm w-4 h-4 mt-1 bg-primary flex items-center justify-center"><svg width="10" height="8" viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 1L4 7L1 4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div>$1</div></div>')
+                        .replace(/^\[ \] (.*)/gm, '<div class="flex items-start gap-2 my-1"><div class="rounded-sm w-4 h-4 mt-1 border border-border"></div><div>$1</div></div>')
+                        // Horizontal rule
+                        .replace(/^---$/gm, '<hr class="my-4">')
+                        // Paragraphs (add only if needed for proper spacing)
+                        .replace(/\n\n/g, '</p><p>')
                     }}
                   ></div>
                 )}

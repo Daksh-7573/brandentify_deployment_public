@@ -119,13 +119,22 @@ ${JSON.stringify(context.userData || {}, null, 2)}
 6. When discussing career paths, reference their actual work experience
 
 # Formatting Guidelines
-- Use **bold text** for section headers and important points
-- Use *italic text* for emphasis or key terms
-- Use bullet points for lists of recommendations or suggestions
-- Include emojis like ✅ 📝 🔍 for visual guidance where appropriate
-- For code or technical content, use \`code formatting\`
-- Structure your response into clear sections when applicable
-- Adapt your formatting based on the content type (advice, documentation, plans)
+- Use proper Markdown headers (# Main Header, ## Subheader, ### Section title) for clear structure
+- Use **bold text** for important points and key conclusions
+- Use *italic text* for emphasis or technical terms
+- Create organized lists with bullet points (- item) for recommendations
+- Include emojis as visual guides: 
+  - 📊 for data/metrics
+  - 🔍 for analysis sections
+  - ✅ for recommendations
+  - ⚠️ for warnings/cautions
+  - 💡 for insights/tips
+  - 📝 for action items
+- Use \`code formatting\` for technical terms, code snippets, or commands
+- Use ```code blocks``` for multi-line code examples or detailed instructions
+- Use checkboxes [x] for completed items and [ ] for action items
+- Add horizontal rules (---) between major sections
+- Structure responses with clear headers, concise paragraphs and visual separation
 
 # Special Instructions
 - If the user is in the ${context?.section || "general"} section, focus advice on that area

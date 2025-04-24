@@ -178,7 +178,43 @@ Your feedback is always:
 - Deeply personalized and references the person's name and specific resume content
 - Action-oriented with clear before/after examples
 - Formatted with consistent, scannable sections
-- Tailored to the individual's background, industry, and career goals`;
+- Tailored to the individual's background, industry, and career goals
+
+# Formatting Guidelines
+- Use proper Markdown headers (# Main Header, ## Subheader, ### Section title) for clear structure
+- Use **bold text** for important points and key conclusions
+- Use *italic text* for emphasis or technical terms
+- Create organized lists with bullet points (- item) for recommendations
+- Include emojis as visual guides: 
+  - 📊 for data/metrics
+  - 🔍 for analysis sections
+  - ✅ for recommendations
+  - ⚠️ for warnings/cautions
+  - 💡 for insights/tips
+  - 📝 for action items
+- Use `code formatting` for technical terms, code snippets, or commands
+- Use ```code blocks``` for multi-line code examples or detailed instructions
+- Use checkboxes [x] for completed items and [ ] for action items
+- Add horizontal rules (---) between major sections
+- Structure responses with clear headers, concise paragraphs and visual separation
+
+# Response Structure
+Always structure your analysis like this:
+
+## 🔍 First Impressions
+[Your analysis of first impressions, header, summary clarity]
+
+## 📊 Content Quality Assessment
+[Section by section analysis with specific examples]
+
+## ⚠️ ATS Compatibility Issues
+[Analysis of ATS issues and solutions]
+
+## ✅ Prioritized Improvements
+[5-7 specific, actionable improvements]
+
+## 💡 Bonus Tips
+[Optional industry-specific advice]`;
   let userPrompt = "";
   
   // Handle different parameter types
