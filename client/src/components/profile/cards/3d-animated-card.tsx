@@ -427,7 +427,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
             >
               {/* Contact Header */}
               <div 
-                className="flex items-center justify-between px-4 py-2 cursor-pointer"
+                className="flex items-center justify-center px-4 py-2 cursor-pointer text-center"
                 onClick={toggleContactInfo}
                 style={{
                   borderBottom: contactExpanded ? `1px solid ${colors.electricBlue}20` : "none",
@@ -439,41 +439,26 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
                 >
                   Contact Information
                 </h3>
-                <div className="flex items-center gap-2">
-                  <Sparkles 
-                    className={`h-4 w-4 transition-opacity duration-500 ${contactExpanded ? 'opacity-100' : 'opacity-0'}`}
-                    style={{ color: colors.electricBlue }}
-                  />
-                </div>
               </div>
               
               {/* Contact Details - Only shown when expanded */}
               {contactExpanded && (
-                <div className="px-4 py-2 space-y-2" style={{ marginBottom: "5px" }}>
+                <div className="px-4 py-2 space-y-2 text-center" style={{ marginBottom: "5px" }}>
                   {/* Email */}
-                  <div className="flex items-start">
-                    <Mail className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
-                    <div className="text-sm text-gray-300 ml-2 overflow-hidden w-[220px]">
-                      <div className="break-words">{userData.email}</div>
-                    </div>
+                  <div className="text-sm text-gray-300 overflow-hidden mx-auto">
+                    <div className="break-words">{userData.email}</div>
                   </div>
                   
                   {/* Phone Number */}
                   {userData.phoneNumber && (
-                    <div className="flex items-start">
-                      <Phone className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
-                      <div className="text-sm text-gray-300 ml-2 overflow-hidden w-[220px]">
-                        <div className="break-words">{userData.phoneNumber}</div>
-                      </div>
+                    <div className="text-sm text-gray-300 overflow-hidden mx-auto">
+                      <div className="break-words">{userData.phoneNumber}</div>
                     </div>
                   )}
                   
                   {/* Profile Link */}
-                  <div className="flex items-start">
-                    <Globe className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
-                    <div className="text-sm text-gray-300 ml-2 overflow-hidden w-[220px]">
-                      <div className="break-words">{profileLink}</div>
-                    </div>
+                  <div className="text-sm text-gray-300 overflow-hidden mx-auto">
+                    <div className="break-words">{profileLink}</div>
                   </div>
                 </div>
               )}
