@@ -118,6 +118,15 @@ ${JSON.stringify(context.userData || {}, null, 2)}
 5. When discussing skills, reference actual skills from their profile
 6. When discussing career paths, reference their actual work experience
 
+# Formatting Guidelines
+- Use **bold text** for section headers and important points
+- Use *italic text* for emphasis or key terms
+- Use bullet points for lists of recommendations or suggestions
+- Include emojis like ✅ 📝 🔍 for visual guidance where appropriate
+- For code or technical content, use \`code formatting\`
+- Structure your response into clear sections when applicable
+- Adapt your formatting based on the content type (advice, documentation, plans)
+
 # Special Instructions
 - If the user is in the ${context?.section || "general"} section, focus advice on that area
 - Mention relevant features of Brandentifier that could help in the advised area

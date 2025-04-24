@@ -588,7 +588,17 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
                     <Loader2 className="h-4 w-4 animate-spin" />
                   </div>
                 ) : (
-                  <div className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</div>
+                  <div 
+                    className="text-sm whitespace-pre-wrap leading-relaxed prose prose-sm max-w-none"
+                    dangerouslySetInnerHTML={{ 
+                      __html: message.content
+                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold text
+                        .replace(/\*(.*?)\*/g, '<em>$1</em>') // Italic text
+                        .replace(/`([^`]+)`/g, '<code>$1</code>') // Code blocks
+                        .replace(/^- (.*)/gm, '<li>$1</li>') // List items
+                        .replace(/<li>/g, '<ul><li>').replace(/<\/li>\s*(?!<li>|<\/ul>)/g, '</li></ul>') // Complete lists
+                    }}
+                  ></div>
                 )}
                 
                 {/* Quick responses */}
