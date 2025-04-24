@@ -151,10 +151,8 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
       {/* Main Card Container */}
       <div
         ref={cardRef}
-        className="w-full h-full rounded-lg overflow-hidden relative cursor-pointer"
+        className="w-full h-full rounded-lg overflow-visible relative cursor-pointer"
         style={{
-          width: "100%",
-          height: "100%",
           margin: "0 auto",
           transformStyle: "preserve-3d",
           transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
