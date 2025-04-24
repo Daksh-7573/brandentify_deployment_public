@@ -490,7 +490,7 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
           
           {/* Contact Content */}
           <div
-            className="space-y-3 overflow-hidden"
+            className="space-y-1 overflow-hidden"
             style={{
               maxHeight: isContactExpanded ? '200px' : '0',
               opacity: isContactExpanded ? 1 : 0,
@@ -499,7 +499,7 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
           >
             {/* Email */}
             <div 
-              className="flex items-center justify-between px-3 py-2 rounded-md"
+              className="flex items-center justify-between px-3 py-1 rounded-md"
               style={{
                 backgroundColor: colors.panelBg,
                 transform: `translateY(${hoveredSection === 'email' ? '-2px' : '0'})`,
@@ -544,7 +544,7 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
             {/* Phone */}
             {userData.phoneNumber && (
               <div 
-                className="flex items-center justify-between px-3 py-2 rounded-md"
+                className="flex items-center justify-between px-3 py-1 rounded-md"
                 style={{
                   backgroundColor: colors.panelBg,
                   transform: `translateY(${hoveredSection === 'phone' ? '-2px' : '0'})`,
