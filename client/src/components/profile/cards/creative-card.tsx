@@ -96,7 +96,7 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
   };
   
   return (
-    <div className="creative-card relative w-full aspect-[2/3.5] select-none">
+    <div className="creative-card relative w-full h-full select-none">
       {/* Main Card Container */}
       <div className="w-full h-full relative">
         {/* Card */}
@@ -136,7 +136,7 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
           />
           
           {/* Content Container */}
-          <div className="absolute inset-0 z-10 p-4 flex flex-col overflow-auto">
+          <div className="absolute inset-0 z-10 p-4 flex flex-col overflow-visible">
             {/* TOP SECTION - Visual Identity */}
             <div className="relative mb-4">
               {/* Profile Image with Paint Splash */}
