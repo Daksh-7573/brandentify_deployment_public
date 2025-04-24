@@ -174,8 +174,12 @@ const SharedCardPage: React.FC<SharedCardPageProps> = ({ userId }) => {
           </div>
 
           <div className="flex flex-col items-center justify-center">
-            {/* Card container that directly uses the original component's sizing */}
-            <div className="w-full mx-auto">
+            {/* Force card dimensions with fixed width and height */}
+            <div style={{ 
+              width: "420px", 
+              height: "735px",  /* 420 × (3.5/2) = 735 to maintain aspect ratio */
+              margin: "0 auto"
+            }}>
               <VisitingCardPreview
                 userData={userData}
                 cardType={userData.visitingCardType || 'professional-renewed'}
