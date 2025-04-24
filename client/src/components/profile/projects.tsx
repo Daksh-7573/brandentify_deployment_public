@@ -1359,6 +1359,37 @@ export default function Projects() {
                           Upload up to 10 images to showcase your project
                         </FormDescription>
                         {mediaErrors?.images && <p className="text-sm font-medium text-destructive">{mediaErrors.images}</p>}
+                        
+                        {/* Image Previews */}
+                        {projectImages.length > 0 && (
+                          <div className="mt-4">
+                            <p className="text-sm font-medium mb-2">Image Previews:</p>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                              {projectImages.map((file, index) => (
+                                <div key={index} className="relative group">
+                                  <img 
+                                    src={URL.createObjectURL(file)} 
+                                    alt={`Preview ${index + 1}`}
+                                    className="h-24 w-full object-cover rounded-md border" 
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const newImages = [...projectImages];
+                                      newImages.splice(index, 1);
+                                      setProjectImages(newImages);
+                                    }}
+                                    className="absolute top-1 right-1 bg-destructive text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                    aria-label="Remove image"
+                                  >
+                                    <X className="h-3 w-3" />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        
                         <FormMessage />
                       </FormItem>
                     ) : (
@@ -1387,6 +1418,34 @@ export default function Projects() {
                           Upload a short video (max 120 seconds) to demonstrate your project
                         </FormDescription>
                         {mediaErrors?.video && <p className="text-sm font-medium text-destructive">{mediaErrors.video}</p>}
+                        
+                        {/* Video Preview */}
+                        {projectVideo && (
+                          <div className="mt-4">
+                            <p className="text-sm font-medium mb-2">Video Preview:</p>
+                            <div className="relative w-full">
+                              <video 
+                                src={URL.createObjectURL(projectVideo)} 
+                                controls
+                                className="w-full h-auto rounded-md border max-h-[200px]"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setProjectVideo(null);
+                                  if (videoInputRef.current) {
+                                    videoInputRef.current.value = '';
+                                  }
+                                }}
+                                className="absolute top-2 right-2 bg-destructive text-white rounded-full p-1"
+                                aria-label="Remove video"
+                              >
+                                <X className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                        
                         <FormMessage />
                       </FormItem>
                     )}
