@@ -28,6 +28,7 @@ import FeedTestPage from "@/pages/feed-test";
 import CareerQuestsPage from "@/pages/career-quests";
 import OnboardingPage from "@/pages/onboarding";
 import EditProfilePage from "@/pages/edit-profile";
+import SharedCardPage from "@/pages/shared-card";
 // Brand of the Day is now integrated into Nowboard
 
 // Redirect component to handle page redirects
@@ -127,6 +128,10 @@ function Router() {
       </Route>
       <Route path="/edit-profile">
         <ProtectedRoute path="/edit-profile" component={EditProfilePage} />
+      </Route>
+      {/* Shared Quantum Card View route */}
+      <Route path="/profile/card/:userId">
+        {(params) => <SharedCardPage userId={params.userId} />}
       </Route>
       {/* Brand of the Day is now integrated into Nowboard panel */}
       <Route component={NotFound} />

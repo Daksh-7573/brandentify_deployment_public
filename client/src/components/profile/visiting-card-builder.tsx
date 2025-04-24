@@ -50,7 +50,8 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
       await apiRequest({
         url: `/users/${userData.id}`,
         method: 'PUT',
-        data: { visitingCardType: activeTab }
+        data: { visitingCardType: activeTab },
+        headers: { 'Content-Type': 'application/json' }
       });
       
       setIsFinalized(true);
@@ -76,9 +77,55 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
     alert("Download functionality will be implemented in the next update!");
   };
 
-  // Handle card sharing (placeholder functionality)
+  // Handle card sharing
   const handleShare = () => {
-    alert("Sharing functionality will be implemented in the next update!");
+    // Generate a sharable link with the user ID
+    const shareUrl = `${window.location.origin}/profile/card/${userData.id}`;
+    
+    // Check if the browser supports the Clipboard API
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(shareUrl)
+        .then(() => {
+          toast({
+            title: "Link copied to clipboard!",
+            description: "Share this link to show others your Quantum Card.",
+            variant: "default",
+          });
+        })
+        .catch(err => {
+          console.error("Failed to copy link:", err);
+          toast({
+            title: "Couldn't copy link",
+            description: "Please try again or manually copy the link.",
+            variant: "destructive",
+          });
+        });
+    } else {
+      // Fallback for browsers that don't support the Clipboard API
+      const textArea = document.createElement("textarea");
+      textArea.value = shareUrl;
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      
+      try {
+        document.execCommand('copy');
+        toast({
+          title: "Link copied to clipboard!",
+          description: "Share this link to show others your Quantum Card.",
+          variant: "default",
+        });
+      } catch (err) {
+        console.error("Fallback: Failed to copy link:", err);
+        toast({
+          title: "Couldn't copy link",
+          description: "Please try again or manually copy the link.",
+          variant: "destructive",
+        });
+      }
+      
+      document.body.removeChild(textArea);
+    }
   };
 
   return (
