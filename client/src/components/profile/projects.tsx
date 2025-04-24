@@ -131,6 +131,7 @@ export default function Projects() {
   const [projectImages, setProjectImages] = useState<File[]>([]);
   const [projectVideo, setProjectVideo] = useState<File | null>(null);
   const [mediaErrors, setMediaErrors] = useState<{images?: string, video?: string, general?: string} | null>(null);
+  const [selectedThumbnailIndex, setSelectedThumbnailIndex] = useState<number>(-1); // -1 means no image selected as thumbnail
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
   const multipleImagesInputRef = useRef<HTMLInputElement>(null);
@@ -385,6 +386,23 @@ export default function Projects() {
     }
   };
   
+  // Function to handle selecting a thumbnail from newly uploaded images
+  const handleSelectThumbnail = (index: number) => {
+    setSelectedThumbnailIndex(index);
+    
+    // Set the thumbnail file from the selected image
+    if (index >= 0 && index < projectImages.length) {
+      setThumbnailFile(projectImages[index]);
+      
+      toast({
+        title: "Thumbnail selected",
+        description: "This image will be set as the project thumbnail.",
+      });
+    } else {
+      setThumbnailFile(null);
+    }
+  };
+  
   // Form setup
   const projectForm = useForm<ProjectFormValues>({
     resolver: zodResolver(projectSchema),
@@ -463,6 +481,7 @@ export default function Projects() {
     setProjectImages([]);
     setProjectVideo(null);
     setMediaErrors(null);
+    setSelectedThumbnailIndex(-1);
     
     // Reset all file inputs
     if (fileInputRef.current) {
@@ -498,6 +517,7 @@ export default function Projects() {
     setProjectImages([]);
     setProjectVideo(null);
     setMediaErrors(null);
+    setSelectedThumbnailIndex(-1);
     
     // Reset all file input elements
     if (fileInputRef.current) {
@@ -1366,27 +1386,60 @@ export default function Projects() {
                             <p className="text-sm font-medium mb-2">Image Previews:</p>
                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
                               {projectImages.map((file, index) => (
-                                <div key={index} className="relative group">
+                                <div 
+                                  key={index} 
+                                  className={`relative group ${selectedThumbnailIndex === index ? 'ring-2 ring-primary ring-offset-1' : ''}`}
+                                >
                                   <img 
                                     src={URL.createObjectURL(file)} 
                                     alt={`Preview ${index + 1}`}
                                     className="h-24 w-full object-cover rounded-md border" 
                                   />
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      const newImages = [...projectImages];
-                                      newImages.splice(index, 1);
-                                      setProjectImages(newImages);
-                                    }}
-                                    className="absolute top-1 right-1 bg-destructive text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                                    aria-label="Remove image"
-                                  >
-                                    <X className="h-3 w-3" />
-                                  </button>
+                                  <div className="absolute top-1 right-1 flex gap-1">
+                                    <button
+                                      type="button"
+                                      onClick={() => handleSelectThumbnail(index)}
+                                      className={`bg-primary text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity ${selectedThumbnailIndex === index ? 'opacity-100' : ''}`}
+                                      aria-label="Set as thumbnail"
+                                      title="Set as thumbnail"
+                                    >
+                                      <Image className="h-3 w-3" />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const newImages = [...projectImages];
+                                        newImages.splice(index, 1);
+                                        setProjectImages(newImages);
+                                        
+                                        // If this was the selected thumbnail, reset the selection
+                                        if (selectedThumbnailIndex === index) {
+                                          setSelectedThumbnailIndex(-1);
+                                          setThumbnailFile(null);
+                                        } else if (selectedThumbnailIndex > index) {
+                                          // Adjust the index if we're removing an image before the selected one
+                                          setSelectedThumbnailIndex(selectedThumbnailIndex - 1);
+                                        }
+                                      }}
+                                      className="bg-destructive text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                      aria-label="Remove image"
+                                    >
+                                      <X className="h-3 w-3" />
+                                    </button>
+                                  </div>
+                                  {selectedThumbnailIndex === index && (
+                                    <div className="absolute bottom-1 left-1 bg-primary/80 text-white text-xs px-2 py-0.5 rounded-sm">
+                                      Thumbnail
+                                    </div>
+                                  )}
                                 </div>
                               ))}
                             </div>
+                            {selectedThumbnailIndex !== -1 && (
+                              <p className="text-xs text-muted-foreground mt-2">
+                                Image {selectedThumbnailIndex + 1} will be used as the project thumbnail
+                              </p>
+                            )}
                           </div>
                         )}
                         
