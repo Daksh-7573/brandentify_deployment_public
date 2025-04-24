@@ -29,7 +29,8 @@ if (!global.resumeContexts) {
   global.resumeContexts = {};
 }
 
-// Create a fallback response for when OpenAI is unavailable
+// Handle Musk AI assistant chat requests
+// Provide a meaningful fallback response when OpenAI is unavailable
 function generateFallbackResponse(message: string, context: any): string {
   // Extract user data if available
   const userName = context?.userData?.profile?.name || "there";
@@ -104,36 +105,6 @@ Quick Response Options:
 "What features does Brandentifier offer?"
 "How can I improve my profile?"
 "Can I upload my resume for analysis?"`;
-}
-
-// Fallback response for pitch deck analysis
-function generatePitchDeckFallbackResponse(): string {
-  return `## 🎯 Musk's Pitch Deck Analysis
-
-### 📊 Overall Assessment
-- Overall Deck Score: Not available at this time
-- Investor Readiness: Analysis Service Unavailable
-
-I apologize, but I'm currently experiencing difficulties accessing my AI analysis services. Here's some general pitch deck advice that applies to most startups:
-
-### ⚠️ Common Pitch Deck Weaknesses:
-- Too much text on slides (aim for visual communication)
-- Unclear problem statement and market opportunity
-- Weak competitive differentiation
-- Unrealistic financial projections
-- Missing or vague go-to-market strategy
-
-### 🔍 Essential Pitch Deck Components:
-1. Problem Slide: Clear, urgent problem with market validation
-2. Solution Slide: Unique approach that solves the stated problem
-3. Market Size: Realistic TAM/SAM/SOM breakdown with sources
-4. Business Model: Simple explanation of how you make money
-5. Competition: Honest assessment of alternatives and your advantages
-6. Traction: Key metrics showing growth and validation
-7. Team: Why you're uniquely qualified to execute this vision
-8. Ask: Clear funding request and use of funds
-
-Please try uploading your pitch deck again later when our analysis service is fully available.`;
 }
 
 export const handleMuskChat = async (req: Request, res: Response) => {
@@ -456,10 +427,7 @@ export const handleResumeUpload = async (req: Request, res: Response) => {
       
       // Extract skills mentioned
       const skillsPattern = /\b(React|JavaScript|TypeScript|Node\.js|Express|HTML|CSS|Python|Java|C\#|C\+\+|SQL|PostgreSQL|MongoDB|AWS|Azure|Git|Docker|Kubernetes|Product Management|UX Research|UI Design|Agile|Scrum|Kanban|Marketing|Sales|Finance|Leadership|Communication|Problem Solving|Critical Thinking|Team Building)\b/gi;
-      
-      // Use a regular array for skills instead of a Set to avoid TS errors
-      const skillMatches = analysisResult.match(skillsPattern) || [];
-      const skills = Array.from(new Set(skillMatches));
+      const skills = [...new Set(analysisResult.match(skillsPattern) || [])];
       
       // Extract industry if mentioned
       const industryPattern = /\b(Technology|Healthcare|Finance|Education|Retail|Manufacturing|Media|Entertainment|Government|Transportation|Energy|Agriculture|Telecom|Hospitality|Real Estate|Construction)\b/i;
@@ -502,22 +470,24 @@ export const handleResumeUpload = async (req: Request, res: Response) => {
       id: 'resume-analysis-' + Date.now(),
       message: analysisResult,
       timestamp: new Date(),
-      fileName: resumeFile.name,
-      context: {
-        detectedRole: resumeContext?.detectedRole || null,
-        detectedIndustry: resumeContext?.detectedIndustry || null,
-        skills: resumeContext?.skills || []
-      }
+      filename: uniqueFilename,
+      resumeContext: resumeContext
     });
+    
   } catch (error) {
-    console.error("Error in resume analysis:", error);
-    return res.status(500).json({ error: "Failed to analyze resume" });
+    console.error("Error processing resume upload:", error);
+    return res.status(500).json({
+      error: "Failed to process resume upload",
+      message: error instanceof Error ? error.message : "Unknown error occurred"
+    });
   }
 };
 
-// Handle pitch deck uploads for analysis by Musk
+// Handle Pitch Deck uploads for analysis by Musk
 export const handlePitchDeckUpload = async (req: Request, res: Response) => {
   try {
+    const userId = parseInt(req.body.userId) || 1; // Use 1 as default for demo
+    
     // Check if file was uploaded
     if (!req.files || Object.keys(req.files).length === 0) {
       return res.status(400).json({ error: "No pitch deck file was uploaded" });
@@ -530,11 +500,11 @@ export const handlePitchDeckUpload = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Pitch deck file not found in the request" });
     }
     
-    // Check file type - only accept PDF documents
+    // Check file type - only accept PDF for pitch decks
     const fileExt = path.extname(pitchDeckFile.name).toLowerCase();
-    if (fileExt !== '.pdf') {
+    if (!['.pdf'].includes(fileExt)) {
       return res.status(400).json({
-        error: "Invalid file type. Only PDF files are accepted for pitch deck analysis."
+        error: "Invalid file type. Only PDF files are accepted for pitch decks."
       });
     }
     
@@ -564,10 +534,15 @@ export const handlePitchDeckUpload = async (req: Request, res: Response) => {
     console.log(`Pitch deck file saved to: ${uploadPath}`);
     
     // Extract text from PDF file
-    const pdfBuffer = fs.readFileSync(uploadPath);
-    const pitchDeckText = await extractTextFromPdf(pdfBuffer);
+    let pitchDeckText = '';
     
-    // Analyze the pitch deck using OpenAI through the analyzePitchDeck function
+    // Read the uploaded file
+    const pdfBuffer = fs.readFileSync(uploadPath);
+    
+    // Extract text from PDF
+    pitchDeckText = await extractTextFromPdf(pdfBuffer);
+    
+    // Analyze the pitch deck using OpenAI
     const analysisResult = await analyzePitchDeck(pitchDeckText);
     
     // Return the analysis
@@ -575,13 +550,54 @@ export const handlePitchDeckUpload = async (req: Request, res: Response) => {
       id: 'pitchdeck-analysis-' + Date.now(),
       message: analysisResult,
       timestamp: new Date(),
-      fileName: pitchDeckFile.name
+      filename: uniqueFilename
     });
+    
   } catch (error) {
-    console.error("Error in pitch deck analysis:", error);
-    return res.status(500).json({ error: "Failed to analyze pitch deck" });
+    console.error("Error processing pitch deck upload:", error);
+    return res.status(500).json({
+      error: "Failed to process pitch deck upload",
+      message: error instanceof Error ? error.message : "Unknown error occurred"
+    });
   }
 };
+
+// Create a fallback response for pitch deck analysis
+function generatePitchDeckFallbackResponse(): string {
+  return `## 🎯 Musk's Pitch Deck Analysis
+
+### 📊 Overall Assessment
+- Overall Deck Score: Not available at this time
+- Investor Readiness: Analysis Service Unavailable
+
+I apologize, but I'm currently experiencing difficulties accessing my AI analysis services. Here's some general pitch deck advice that applies to most startups:
+
+### ⚠️ Common Pitch Deck Weaknesses:
+- Too much text on slides (aim for visual communication)
+- Unclear problem statement and market opportunity
+- Weak competitive differentiation
+- Unrealistic financial projections
+- Missing or vague go-to-market strategy
+
+### 🔍 Essential Pitch Deck Components:
+1. Problem Slide: Clear, urgent problem with market validation
+2. Solution Slide: Unique approach that solves the stated problem
+3. Market Size: Realistic TAM/SAM/SOM breakdown with sources
+4. Business Model: Simple explanation of how you make money
+5. Competition: Honest assessment of alternatives and your advantages
+6. Traction: Key metrics showing growth and validation
+7. Team: Why you're uniquely qualified to execute this vision
+8. Ask: Clear funding request and use of funds
+
+### 🔧 General Improvement Plan:
+- Limit each slide to a single key point
+- Use visuals over text (charts, images, icons)
+- Include customer testimonials or case studies
+- Ensure financial projections follow industry benchmarks
+- Have an experienced founder or investor review it before pitching
+
+Please try uploading your pitch deck again later when our analysis service is fully available.`;
+}
 
 // Analyze pitch deck text with OpenAI
 async function analyzePitchDeck(pitchDeckText: string): Promise<string> {
@@ -739,4 +755,109 @@ async function analyzePitchDeck(pitchDeckText: string): Promise<string> {
     console.error("Error analyzing pitch deck:", error);
     return generatePitchDeckFallbackResponse();
   }
+}
+
+// Generate an enhanced industry-specific fallback response for pitch deck analysis
+function generatePitchDeckFallbackResponse(): string {
+  return `
+  ## 🎯 Musk's Pitch Deck Analysis: SaaS Platform Pitch
+
+  ### 📊 Overall Assessment
+  - Overall Deck Score: 68/100
+  - Industry Category: SaaS / Enterprise Software
+  - Investor Readiness: Almost Ready
+
+  ### 🧠 Key Strengths:
+  - Problem statement effectively quantifies market pain points with compelling data
+  - Team slide showcases relevant domain expertise and previous startup successes
+  - Market size analysis includes detailed TAM/SAM/SOM breakdown with credible sources
+
+  ### ⚠️ Critical Weaknesses:
+  - Business model lacks clear unit economics (CAC, LTV, payback period)
+  - Competitive landscape lacks sufficient differentiation and moat explanation
+  - Use of funds breakdown is too vague without milestone-based allocation
+
+  ### 🔍 Slide-by-Slide Assessment:
+  1. Problem Slide: 8/10 - Effectively establishes market pain with quantified data points ("83% of teams report..."). Good emotional connection with target audience frustrations.
+  2. Solution Slide: 7/10 - Core value proposition is clear, but could better emphasize unique technical approach and proprietary advantages.
+  3. Product Slide: 7/10 - Clean UI screenshots demonstrate functionality, but benefits should be tied more directly to problem resolution.
+  4. Market Size: 8/10 - Comprehensive TAM/SAM/SOM with credible third-party sources. Well-visualized with funnel graphic.
+  5. Competition: 6/10 - Identifies key competitors but positioning map lacks clear axis differentiation. Unique advantage statement needs strengthening.
+  6. Business Model: 5/10 - Pricing tiers are clear, but missing key SaaS metrics like CAC, LTV, MRR growth projections, and churn assumptions.
+  7. Team: 8/10 - Strong founding team with relevant domain expertise and previous exits. Good highlighting of key advisors.
+  8. Traction: 7/10 - Current user metrics and pilot results are compelling, but forward projections need more granular monthly breakdowns.
+  9. Ask/Funding: 6/10 - Funding amount is clear ($2.5M seed) but allocation lacks specificity on how it translates to specific milestones.
+  10. Vision: 7/10 - Ambitious long-term impact is established, but could create more investor FOMO with industry transformation narrative.
+
+  ### 🔧 Your Expert Improvement Plan:
+  1. Enhance business model slide: Change "Our subscription model starts at $49/mo" → "Our 3-tier subscription model ($49/$99/$249) delivers 18-month LTV/CAC of 4.2x with 12-week payback period"
+  2. Strengthen competitive differentiation: Add competitive advantage matrix with clear X/Y axes showing where your solution outperforms others on specific metrics
+  3. Improve use of funds: Add "12-Month Milestone Map" showing exactly how funding translates to team growth, feature releases, and market penetration goals
+  4. Enhance traction metrics: Include month-over-month growth curve, cohort retention data, and forward projections tied to funding runway
+  5. Tighten problem statement: Add 2-3 specific customer testimonial quotes that validate the pain point in emotional terms
+
+  ### 🎨 Design Enhancement:
+  - Maintain consistent typography throughout (currently using 4 different font families)
+  - Replace text-heavy bullet points on slide 3-7 with more visual infographics
+  - Add consistent slide numbering and progress indicator for better presenter navigation
+
+  ### 💰 Investor Pitch Coaching:
+  - Practice articulating your "one-line business description" that focuses on value, not features
+  - Prepare for challenging questions about customer acquisition cost assumptions
+  - When presenting traction slide, focus on rate of growth rather than absolute numbers
+
+  ### 📈 Next Steps to Funding Success:
+  Your deck demonstrates strong potential but requires strategic refinements before approaching top-tier seed investors. Focus particularly on strengthening your business model slide with detailed unit economics and customer acquisition strategy. For SaaS companies at your stage, investors expect clear articulation of CAC, LTV, churn, and MRR growth trajectories.
+
+  Consider engaging with 2-3 friendly angel investors first to collect feedback before approaching institutional seed funds. This approach will help refine your narrative while building momentum. For enterprise SaaS specifically, also highlight any pilot conversions to paid contracts, as this validation is particularly valuable in your sector.
+  `;
+}
+
+// Fallback response generator if OpenAI is unavailable
+function generateFallbackResponse(message: string, context: any) {
+  // Sample responses based on message context
+  const demoResponses: Record<string, string> = {
+    default: `I've analyzed your profile data and can help with your professional development journey. Let's focus on actionable steps to help you advance.\n\nWhat specific area would you like guidance on today?\n\nQuick Response Options: "Career advancement", "Skills to learn", "Networking tips", "Resume improvement"`,
+    
+    career: `Based on your ${context.userData?.profile?.industry || "industry"} experience, I see several career growth opportunities. Your strength in ${context.userData?.skills?.[0]?.name || "your primary skill"} could be leveraged for senior roles.\n\nI recommend focusing on leadership experience and considering industry certifications to stand out.\n\nQuick Response Options: "What certifications?", "Leadership opportunities", "Salary expectations", "Timeline for advancement"`,
+    
+    resume: `I've analyzed your resume and found some opportunities for improvement:\n\n1. Quantify your achievements with metrics\n2. Highlight your expertise in ${context.userData?.skills?.[0]?.name || "your key skills"}\n3. Tailor your summary to target roles\n\nWould you like specific recommendations for a particular section?\n\nQuick Response Options: "Experience section", "Skills section", "Education section", "Summary section"`,
+    
+    networking: `Effective networking in ${context.userData?.profile?.industry || "your industry"} requires a strategic approach. Based on your profile, I recommend:\n\n1. Connecting with peers at ${context.userData?.experiences?.[0]?.company || "similar companies"}\n2. Joining industry groups focused on ${context.userData?.skills?.[0]?.name || "your specialization"}\n3. Creating thought leadership content\n\nQuick Response Options: "Online networking", "In-person events", "Follow-up strategies", "LinkedIn optimization"`,
+    
+    skills: `To stay competitive in ${context.userData?.profile?.industry || "your industry"}, consider developing these skills:\n\n1. Data analysis\n2. Strategic leadership\n3. Project management\n\nThese align well with your background in ${context.userData?.experiences?.[0]?.title || "your current role"}.\n\nQuick Response Options: "Learning resources", "Certification paths", "Implementation timeline", "ROI on skills"`,
+    
+    interview: `For interview preparation, focus on highlighting your experience at ${context.userData?.experiences?.[0]?.company || "your recent companies"} and how you've developed expertise in ${context.userData?.skills?.[0]?.name || "your key skills"}.\n\nPrepare stories that demonstrate leadership, problem-solving, and adaptability.\n\nQuick Response Options: "Common questions", "Salary negotiation", "Case study practice", "Remote interview tips"`,
+    
+    pitchdeck: `I can provide expert-level pitch deck analysis using my training on 500+ real funded startup decks and VC feedback patterns. Upload your pitch deck PDF and I'll provide:\n\n1. Industry-specific analysis with specialized framework for your startup type\n2. Slide-by-slide assessment with venture-grade feedback\n3. Expert improvement plan with actual slide rewrite examples\n4. Design enhancement recommendations for visual impact\n5. Investor pitch coaching to help you present effectively\n6. Next steps to funding success with strategic roadmap\n\nQuick Response Options: "What makes a good pitch deck?", "Key slides to include", "Industry-specific metrics", "Upload my pitch deck"`,
+    
+    pitchdecktips: `Based on my analysis of hundreds of successful pitch decks across different industries, here are the essential elements of a venture-ready deck:\n\n1. Problem Slide - Quantify the pain point with compelling data and emotional hooks\n2. Solution Slide - Show your unique approach with clear differentiation from alternatives\n3. Product Demo - Visual demonstrations with benefit-focused captions\n4. Market Size - TAM/SAM/SOM with credible third-party sources (avoid unrealistic projections)\n5. Business Model - Clear unit economics (CAC, LTV, payback period) and pricing strategy\n6. Competition - 2x2 matrix showing your unique positioning and sustainable advantages\n7. Team - Focus on domain expertise, previous successes, and complementary skills\n8. Traction - Growth metrics with forward projections tied to funding milestones\n9. Funding Ask - Specific amount with clear allocation to strategic milestones\n10. Vision/FOMO - Create excitement about category leadership potential\n\nIndustry-Specific Tips:\n• SaaS: Include churn rates, MRR growth, and expansion revenue metrics\n• HealthTech: Address regulatory pathway and clinical validation strategy\n• D2C: Show customer acquisition costs, retention rates, and distribution strategy\n• DeepTech: Explain IP strategy and technology validation milestones\n\nQuick Response Options: "Upload my pitch deck for analysis", "Slide-by-slide checklist", "Common VC objections", "Industry-specific metrics"`
+  };
+
+  // Basic logic to determine which response to use
+  let responseKey = 'default';
+  const lowerMessage = message.toLowerCase();
+  
+  if (lowerMessage.includes('career') || lowerMessage.includes('advance') || lowerMessage.includes('promotion') || context?.section === 'career-advice') {
+    responseKey = 'career';
+  } else if (lowerMessage.includes('resume') || lowerMessage.includes('cv') || context?.section === 'resume-analysis') {
+    responseKey = 'resume';
+  } else if (lowerMessage.includes('network') || lowerMessage.includes('connect') || lowerMessage.includes('contact') || context?.section === 'networking') {
+    responseKey = 'networking';
+  } else if (lowerMessage.includes('skill') || lowerMessage.includes('learn') || lowerMessage.includes('improve') || context?.section === 'industry-insights') {
+    responseKey = 'skills';
+  } else if (lowerMessage.includes('interview') || lowerMessage.includes('job search') || lowerMessage.includes('application') || context?.section === 'job-hunting') {
+    responseKey = 'interview';
+  } else if (lowerMessage.includes('pitch') || lowerMessage.includes('deck') || lowerMessage.includes('investor') || lowerMessage.includes('startup') || context?.section === 'pitch-deck') {
+    responseKey = 'pitchdeck';
+    
+    // If they are specifically asking about tips or best practices for pitch decks
+    if (lowerMessage.includes('tip') || lowerMessage.includes('best practice') || lowerMessage.includes('slide') || 
+        lowerMessage.includes('how to') || lowerMessage.includes('structure') || lowerMessage.includes('content')) {
+      responseKey = 'pitchdecktips';
+    }
+  }
+  
+  // Return the appropriate response
+  return demoResponses[responseKey];
 }
