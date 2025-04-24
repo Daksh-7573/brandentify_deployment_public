@@ -407,22 +407,34 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
             </div>
           )}
           
-          {/* Contact Information with Glass Effect */}
+          {/* Removed Content - Space for other card elements */}
+          <div className="flex-grow"></div>
+          
+          {/* Contact Information with Glass Effect - Positioned at bottom */}
           <div 
-            className="mt-auto mb-4"
+            className="mt-auto w-full"
             data-layer="1"
+            style={{
+              position: "absolute",
+              bottom: "16px",
+              left: "0",
+              right: "0",
+              padding: "0 24px",
+            }}
           >
             <div 
-              className={`w-[98%] mx-auto rounded-md overflow-hidden transition-all duration-300`}
+              className={`w-full mx-auto rounded-md overflow-hidden transition-all duration-300`}
               style={{
-                background: `linear-gradient(135deg, ${colors.charcoalBlack}80, ${colors.charcoalBlack}60)`,
+                background: `linear-gradient(135deg, ${colors.charcoalBlack}90, ${colors.charcoalBlack}70)`,
                 backdropFilter: "blur(10px)",
-                border: `1px solid ${colors.electricBlue}20`,
-                boxShadow: `0 0 20px ${colors.electricBlue}10`,
+                border: `1px solid ${colors.electricBlue}30`,
+                boxShadow: contactExpanded 
+                  ? `0 0 25px ${colors.electricBlue}30` 
+                  : `0 0 15px ${colors.electricBlue}15`,
                 height: contactExpanded ? "auto" : "40px",
-                maxHeight: contactExpanded ? "none" : "40px",
-                overflowY: "hidden",
-                marginBottom: contactExpanded ? "0" : "0",
+                transform: contactExpanded ? "translateY(0)" : "translateY(0)",
+                opacity: 1,
+                transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
               }}
             >
               {/* Contact Header */}
@@ -430,7 +442,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
                 className="flex items-center justify-center px-4 py-2 cursor-pointer text-center"
                 onClick={toggleContactInfo}
                 style={{
-                  borderBottom: contactExpanded ? `1px solid ${colors.electricBlue}20` : "none",
+                  borderBottom: contactExpanded ? `1px solid ${colors.electricBlue}30` : "none",
                 }}
               >
                 <h3 
@@ -441,51 +453,56 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
                 </h3>
               </div>
               
-              {/* Contact Details - Only shown when expanded */}
-              {contactExpanded && (
-                <div className="px-4 py-2 space-y-2 text-center" style={{ marginBottom: "5px" }}>
-                  {/* Email */}
-                  <div 
-                    className="text-sm text-gray-300 overflow-hidden mx-auto cursor-pointer hover:text-gray-100 hover:underline transition-colors duration-200"
-                    onClick={() => {
-                      navigator.clipboard.writeText(userData.email);
-                      setCopySuccess('Email copied to clipboard!');
-                      setTimeout(() => setCopySuccess(''), 2000);
-                    }}
-                    title="Click to copy"
-                  >
-                    <div className="break-words">{userData.email}</div>
-                  </div>
-                  
-                  {/* Phone Number */}
-                  {userData.phoneNumber && (
-                    <div 
-                      className="text-sm text-gray-300 overflow-hidden mx-auto cursor-pointer hover:text-gray-100 hover:underline transition-colors duration-200"
-                      onClick={() => {
-                        navigator.clipboard.writeText(userData.phoneNumber || '');
-                        setCopySuccess('Phone number copied to clipboard!');
-                        setTimeout(() => setCopySuccess(''), 2000);
-                      }}
-                      title="Click to copy"
-                    >
-                      <div className="break-words">{userData.phoneNumber}</div>
-                    </div>
-                  )}
-                  
-                  {/* Profile Link */}
-                  <div 
-                    className="text-sm text-gray-300 overflow-hidden mx-auto cursor-pointer hover:text-gray-100 hover:underline transition-colors duration-200"
-                    onClick={() => {
-                      navigator.clipboard.writeText(profileLink);
-                      setCopySuccess('Profile link copied to clipboard!');
-                      setTimeout(() => setCopySuccess(''), 2000);
-                    }}
-                    title="Click to copy"
-                  >
-                    <div className="break-words">{profileLink}</div>
-                  </div>
+              {/* Contact Details - Animated expand/collapse */}
+              <div 
+                className="px-4 py-2 space-y-2 text-center overflow-hidden transition-all duration-300" 
+                style={{ 
+                  maxHeight: contactExpanded ? "200px" : "0px",
+                  opacity: contactExpanded ? 1 : 0,
+                  marginBottom: contactExpanded ? "5px" : "0px"
+                }}
+              >
+                {/* Email */}
+                <div 
+                  className="text-sm text-gray-300 overflow-hidden mx-auto cursor-pointer hover:text-gray-100 hover:underline transition-colors duration-200"
+                  onClick={() => {
+                    navigator.clipboard.writeText(userData.email);
+                    setCopySuccess('Email copied to clipboard!');
+                    setTimeout(() => setCopySuccess(''), 2000);
+                  }}
+                  title="Click to copy"
+                >
+                  <div className="break-words">{userData.email}</div>
                 </div>
-              )}
+                
+                {/* Phone Number */}
+                {userData.phoneNumber && (
+                  <div 
+                    className="text-sm text-gray-300 overflow-hidden mx-auto cursor-pointer hover:text-gray-100 hover:underline transition-colors duration-200"
+                    onClick={() => {
+                      navigator.clipboard.writeText(userData.phoneNumber || '');
+                      setCopySuccess('Phone number copied to clipboard!');
+                      setTimeout(() => setCopySuccess(''), 2000);
+                    }}
+                    title="Click to copy"
+                  >
+                    <div className="break-words">{userData.phoneNumber}</div>
+                  </div>
+                )}
+                
+                {/* Profile Link */}
+                <div 
+                  className="text-sm text-gray-300 overflow-hidden mx-auto cursor-pointer hover:text-gray-100 hover:underline transition-colors duration-200"
+                  onClick={() => {
+                    navigator.clipboard.writeText(profileLink);
+                    setCopySuccess('Profile link copied to clipboard!');
+                    setTimeout(() => setCopySuccess(''), 2000);
+                  }}
+                  title="Click to copy"
+                >
+                  <div className="break-words">{profileLink}</div>
+                </div>
+              </div>
             </div>
             
             {/* Removed View Full Profile and Powered by Musk sections */}
