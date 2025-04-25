@@ -5177,6 +5177,9 @@ ${extractedText.substring(0, 5000)}
   
   // Resume test routes for testing enhanced resume analysis
   app.use(resumeTestRoutes);
+  
+  // Migration routes for database schema updates
+  app.use("/api", routesMigrateWorkExperiences);
 
   app.use("/api", apiRouter);
 
