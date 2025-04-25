@@ -103,7 +103,10 @@ I'm usually able to provide personalized career advice and professional insights
 - Industry-specific insights
 - Professional networking strategies
 
-Feel free to check back soon!
+To help me better understand how I can assist you, I'd like to ask:
+- 🔍 What specific professional goals are you working toward right now?
+- 🎯 What area of your career would you most value guidance on?
+- 🛠️ What would make our conversation most helpful for your current situation?
 
 Quick Response Options:
 "What can Musk help me with?"
