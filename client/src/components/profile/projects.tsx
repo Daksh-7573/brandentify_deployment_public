@@ -1341,7 +1341,7 @@ export default function Projects() {
                                   <img 
                                     src={URL.createObjectURL(file)} 
                                     alt={`Preview ${index + 1}`}
-                                    className="h-24 w-full object-cover rounded-md border" 
+                                    className="aspect-square w-full object-cover rounded-md border" 
                                   />
                                   <div className="absolute top-1 right-1 flex gap-1">
                                     <button
