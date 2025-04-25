@@ -2,6 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ProfileImage } from "@/components/ui/profile-image";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Education, Project, Service, Skill, WorkExperience } from "@shared/schema";
 import { useEffect, useState, useRef } from "react";
 import PortfolioCtaButtons from "../portfolio-cta-buttons";
@@ -60,14 +61,14 @@ export default function CorporateExecutive({
   userServices = []
 }: CorporateExecutiveProps) {
   const [activeSection, setActiveSection] = useState<string>('about');
-  const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null);
   
   // Function to handle opening project details
   const openProjectDetails = (projectId: number) => {
-    setSelectedProjectId(projectId);
-    // Here you would typically open a modal or navigate to a project details page
-    alert(`Viewing project details for ID: ${projectId}`);
-    // In a real implementation, you would show a modal with project details or navigate to a details page
+    // Find the project
+    const project = userProjects.find(p => p.id === projectId);
+    if (project) {
+      alert(`Viewing project: ${project.title}\n\nDescription: ${project.description || 'No description available'}`);
+    }
   };
   
   // Sort skills by proficiency
@@ -833,27 +834,14 @@ export default function CorporateExecutive({
                             </span>
                           </div>
                           
-                          <div className="flex items-center gap-3">
-                            <button
-                              onClick={() => openProjectDetails(project.id)}
-                              className="text-[#6a0dad] text-sm flex items-center hover:underline"
-                              style={{ fontFamily: 'Inter, sans-serif' }}
-                            >
-                              <span>View Details</span>
-                              <Eye className="h-3.5 w-3.5 ml-1" />
-                            </button>
-                            
-                            <a 
-                              href={project.projectUrl} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="text-gray-500 text-sm flex items-center hover:underline"
-                              style={{ fontFamily: 'Inter, sans-serif' }}
-                            >
-                              <span>Visit</span>
-                              <ExternalLink className="h-3.5 w-3.5 ml-1" />
-                            </a>
-                          </div>
+                          <button
+                            onClick={() => openProjectDetails(project.id)}
+                            className="text-[#6a0dad] text-sm flex items-center hover:underline"
+                            style={{ fontFamily: 'Inter, sans-serif' }}
+                          >
+                            <span>View Details</span>
+                            <Eye className="h-3.5 w-3.5 ml-1" />
+                          </button>
                         </div>
                       )}
                     </div>
