@@ -663,6 +663,13 @@ export default function CorporateExecutive({
               >
                 Career
               </button>
+              <button 
+                onClick={() => scrollToSection('education')}
+                className={`nav-item text-sm ${activeSection === 'education' ? 'active' : 'text-gray-500 hover:text-gray-700'}`}
+                style={{ fontFamily: 'Inter, sans-serif' }}
+              >
+                Education
+              </button>
             </nav>
             
             {/* CTA Buttons */}
@@ -1133,6 +1140,113 @@ export default function CorporateExecutive({
                       </ul>
                     </div>
                   )}
+                </div>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-16 border border-gray-100 rounded-lg bg-white">
+                <p className="text-gray-400" style={{ fontFamily: 'Inter, sans-serif' }}>
+                  Your academic background will appear here
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+      
+      {/* Education Section */}
+      <section id="education" className="py-16 px-8 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl font-bold text-gray-900 mb-10 accent-border" style={{ fontFamily: 'Playfair Display, serif' }}>
+            Academic Background
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
+            {sortedEducations.length > 0 ? (
+              sortedEducations.map((edu, index) => (
+                <div 
+                  key={edu.id} 
+                  className="timeline-item fade-in"
+                  style={{ animationDelay: `${0.1 + index * 0.1}s` }}
+                >
+                  <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+                    <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-3 mb-3">
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>
+                          {edu.degree}
+                        </h3>
+                        <p className="text-[#6a0dad] font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          {edu.institution}
+                        </p>
+                      </div>
+                      
+                      <div className="text-sm text-gray-500 flex items-center whitespace-nowrap" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        <Calendar className="h-4 w-4 mr-1" />
+                        <span>
+                          {formatDate(edu.startDate)} - {edu.endDate ? formatDate(edu.endDate) : 'Present'}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex flex-wrap items-center gap-4 mb-4">
+                      {edu.location && (
+                        <div className="flex items-center text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          <MapPin className="h-4 w-4 mr-1" />
+                          <span>{edu.location}</span>
+                        </div>
+                      )}
+                      
+                      {edu.industry && (
+                        <div className="flex items-center text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          <Briefcase className="h-4 w-4 mr-1" />
+                          <span>{edu.industry}</span>
+                        </div>
+                      )}
+                      
+                      {edu.domain && (
+                        <div className="flex items-center text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          <Tag className="h-4 w-4 mr-1" />
+                          <span>{edu.domain}</span>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Field of Study */}
+                    {edu.fieldOfStudy && (
+                      <div className="mb-4">
+                        <div className="flex items-start gap-2">
+                          <GraduationCap className="h-5 w-5 text-[#6a0dad] mt-0.5" />
+                          <div>
+                            <p className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Inter, sans-serif' }}>
+                              Field of Study
+                            </p>
+                            <p className="text-sm text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>
+                              {edu.fieldOfStudy}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Skills Acquired */}
+                    {edu.skillsAcquired && edu.skillsAcquired.length > 0 && (
+                      <div className="mb-3">
+                        <p className="text-sm font-medium text-gray-700 mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          Skills Acquired
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {edu.skillsAcquired.map((skill: string, i: number) => (
+                            <span 
+                              key={i} 
+                              className="inline-flex items-center bg-purple-50 text-purple-700 text-xs px-2.5 py-1 rounded-md border border-purple-100"
+                              style={{ fontFamily: 'Inter, sans-serif' }}
+                            >
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               ))
             ) : (
