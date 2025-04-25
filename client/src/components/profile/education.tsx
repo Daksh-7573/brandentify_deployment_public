@@ -489,9 +489,9 @@ export default function Education() {
       location: uiData.location,
       startDate: uiData.startDate,
       endDate: uiData.endDate,
-      // Include the new fields
+      // Include the new fields - use names that match the database schema exactly
       industry: uiData.industry,
-      fieldOfStudy: uiData.field, // Map 'field' to 'fieldOfStudy' in the database
+      field_of_study: uiData.field, // Map UI 'field' to database 'field_of_study' column
       skillsAcquired: uiData.skillsAcquired,
       domain: uiData.domain
     };
@@ -504,7 +504,7 @@ export default function Education() {
   };
   
   // Handle edit education
-  const handleEditEducation = (education: Education) => {
+  const handleEditEducation = (education: any) => {
     setEditingEducation(education);
     
     // Set industry and domain for dropdowns
@@ -520,14 +520,18 @@ export default function Education() {
     setSkillsAcquired(education.skillsAcquired || []);
     setNewSkillInput("");
     
+    // Handle fieldOfStudy mapping - the database field is field_of_study but we use field in the UI
+    const field = education.fieldOfStudy || education.field_of_study || education.field || "";
+    
     // Update form values
     form.reset({
       ...education,
       // Convert string dates to Date objects if they exist
       startDate: education.startDate ? new Date(education.startDate) : undefined,
       endDate: education.endDate ? new Date(education.endDate) : undefined,
-      // Ensure skillsAcquired is an array
+      // Ensure skillsAcquired is an array and field is properly mapped
       skillsAcquired: education.skillsAcquired || [],
+      field: field,
     });
     
     setOpenDialog(true);
