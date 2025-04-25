@@ -121,7 +121,13 @@ export default function CorporateExecutive({
     .map(service => {
       const serviceWithPricing = {
         ...service,
-        pricing: ''
+        pricing: service.category === 'coaching' 
+          ? 'Starting at $5,000' 
+          : service.category === 'consulting' 
+            ? 'Custom engagement' 
+            : service.category === 'advisory' 
+              ? 'Retainer basis'
+              : 'On Request'
       };
       
       // Force the type to be EnhancedService
@@ -686,7 +692,7 @@ export default function CorporateExecutive({
             What I <span className="premium-gradient-text">Offer</span>
           </h2>
           <p className="text-gray-600 mb-10 max-w-2xl" style={{ fontFamily: 'Inter, sans-serif' }}>
-            
+            Specialized services tailored to drive organizational excellence and leadership effectiveness
           </p>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -716,10 +722,16 @@ export default function CorporateExecutive({
                   {service.description || "Comprehensive service designed to meet your specific business needs and challenges."}
                 </p>
                 
-                <div className="flex justify-end items-center">
+                <div className="flex justify-between items-center">
+                  {service.pricing && (
+                    <div className="text-sm font-medium text-[#6a0dad] highlight-badge px-3 py-1 rounded-full" style={{ fontFamily: 'Inter, sans-serif' }}>
+                      {service.pricing}
+                    </div>
+                  )}
+                  
                   <Button 
                     variant="outline"
-                    className="text-sm px-4 py-2 rounded-md flex items-center hover:bg-[#f9f0ff]"
+                    className="ml-auto text-sm px-4 py-2 rounded-md flex items-center hover:bg-[#f9f0ff]"
                   >
                     <span style={{ fontFamily: 'Inter, sans-serif' }}>Inquire</span>
                     <ChevronRight className="h-4 w-4 ml-1" />
