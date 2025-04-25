@@ -214,16 +214,11 @@ export default function CorporateExecutive({
   
   // Initialize animations and styles on component mount
   useEffect(() => {
-    // Add premium web fonts - Playfair Display (headings) and Inter (body)
-    const playfairLink = document.createElement('link');
-    playfairLink.href = 'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&display=swap';
-    playfairLink.rel = 'stylesheet';
-    
+    // Add premium web font - Inter (used consistently for all elements)
     const interLink = document.createElement('link');
     interLink.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap';
     interLink.rel = 'stylesheet';
     
-    document.head.appendChild(playfairLink);
     document.head.appendChild(interLink);
     
     // Add CSS for animations and custom styling
@@ -500,7 +495,6 @@ export default function CorporateExecutive({
     // Clean up on unmount
     return () => {
       document.head.removeChild(style);
-      document.head.removeChild(playfairLink);
       document.head.removeChild(interLink);
     };
   }, []);
