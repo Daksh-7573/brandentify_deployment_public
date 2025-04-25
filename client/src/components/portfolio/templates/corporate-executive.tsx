@@ -9,7 +9,7 @@ import {
   Mail, Linkedin, MapPin, Calendar, Download, FileText, ChevronRight,
   Briefcase, GraduationCap, Award, Target, ChartBar, Presentation,
   TrendingUp, Globe, BarChart2, Star, Database, UserCheck, Building,
-  ExternalLink, Play, Image, Info
+  ExternalLink, Play, Image, Info, Link
 } from "lucide-react";
 
 interface CorporateExecutiveProps {
@@ -781,11 +781,12 @@ export default function CorporateExecutive({
                 >
                   {/* Project Thumbnail */}
                   {project.thumbnailUrl && (
-                    <div className="project-card-img">
+                    <div className="h-[220px] w-full overflow-hidden">
                       <img 
                         src={project.thumbnailUrl} 
                         alt={project.title} 
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover object-center"
+                        style={{ aspectRatio: '1/1' }}
                       />
                     </div>
                   )}
@@ -807,23 +808,34 @@ export default function CorporateExecutive({
                       {project.description}
                     </p>
                     
-                    <div className="flex justify-between items-center">
+                    <div className="flex flex-col gap-2">
+                      {/* Date information */}
                       <div className="text-xs text-gray-500 flex items-center" style={{ fontFamily: 'Inter, sans-serif' }}>
                         <Calendar className="h-3.5 w-3.5 mr-1" />
                         {formatDate(project.startDate, true)}
                       </div>
                       
+                      {/* Project URL */}
                       {project.projectUrl && (
-                        <a 
-                          href={project.projectUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-[#6a0dad] text-sm flex items-center hover:underline"
-                          style={{ fontFamily: 'Inter, sans-serif' }}
-                        >
-                          <span>View Details</span>
-                          <ChevronRight className="h-4 w-4" />
-                        </a>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center">
+                            <Link className="h-3.5 w-3.5 mr-1 text-[#6a0dad]" />
+                            <span className="text-xs text-gray-500 truncate max-w-[150px]" style={{ fontFamily: 'Inter, sans-serif' }}>
+                              {new URL(project.projectUrl).hostname}
+                            </span>
+                          </div>
+                          
+                          <a 
+                            href={project.projectUrl} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-[#6a0dad] text-sm flex items-center hover:underline ml-auto"
+                            style={{ fontFamily: 'Inter, sans-serif' }}
+                          >
+                            <span>View</span>
+                            <ExternalLink className="h-3.5 w-3.5 ml-1" />
+                          </a>
+                        </div>
                       )}
                     </div>
                   </div>
