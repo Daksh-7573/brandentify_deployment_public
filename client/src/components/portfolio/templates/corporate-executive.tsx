@@ -488,7 +488,7 @@ export default function CorporateExecutive({
     }
   };
   
-  const formatDate = (dateString: string | null, showMonthName = false) => {
+  const formatDate = (dateString: string | null, showMonthName = true) => {
     if (!dateString) return '';
     const date = new Date(dateString);
     
@@ -1020,17 +1020,44 @@ export default function CorporateExecutive({
                         </div>
                       </div>
                       
-                      {exp.location && (
-                        <div className="flex items-center text-sm text-gray-500 mb-4" style={{ fontFamily: 'Inter, sans-serif' }}>
-                          <MapPin className="h-4 w-4 mr-1" />
-                          <span>{exp.location}</span>
-                        </div>
-                      )}
+                      <div className="flex flex-wrap items-center gap-4 mb-4">
+                        {exp.location && (
+                          <div className="flex items-center text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
+                            <MapPin className="h-4 w-4 mr-1" />
+                            <span>{exp.location}</span>
+                          </div>
+                        )}
+                        
+                        {exp.industry && (
+                          <div className="flex items-center text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
+                            <Briefcase className="h-4 w-4 mr-1" />
+                            <span>{exp.industry}</span>
+                          </div>
+                        )}
+                        
+                        {exp.domain && (
+                          <div className="flex items-center text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
+                            <Tag className="h-4 w-4 mr-1" />
+                            <span>{exp.domain}</span>
+                          </div>
+                        )}
+                      </div>
                       
                       {exp.description && (
                         <p className="text-gray-600 mb-4" style={{ fontFamily: 'Inter, sans-serif' }}>
                           {exp.description}
                         </p>
+                      )}
+                      
+                      {exp.keyResponsibilities && Array.isArray(exp.keyResponsibilities) && exp.keyResponsibilities.length > 0 && (
+                        <div className="mt-3 mb-2">
+                          <h4 className="text-sm font-semibold mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>Key Responsibilities & Achievements</h4>
+                          <ul className="list-disc pl-5 text-sm space-y-1 text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>
+                            {exp.keyResponsibilities.map((item, idx) => (
+                              <li key={idx}>{item}</li>
+                            ))}
+                          </ul>
+                        </div>
                       )}
                     </div>
                   </div>
