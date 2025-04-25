@@ -480,7 +480,7 @@ export default function Education() {
       domain: processedData.domain
     };
     
-    // Create a filtered version with only the fields that exist in the database schema
+    // Create a version with all fields including the newly added ones
     const apiData = {
       id: uiData.id,
       userId: uiData.userId,
@@ -488,7 +488,12 @@ export default function Education() {
       degree: uiData.degree,
       location: uiData.location,
       startDate: uiData.startDate,
-      endDate: uiData.endDate
+      endDate: uiData.endDate,
+      // Include the new fields
+      industry: uiData.industry,
+      fieldOfStudy: uiData.field, // Map 'field' to 'fieldOfStudy' in the database
+      skillsAcquired: uiData.skillsAcquired,
+      domain: uiData.domain
     };
     
     if (editingEducation) {
