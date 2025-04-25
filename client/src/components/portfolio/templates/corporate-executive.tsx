@@ -9,7 +9,7 @@ import {
   Mail, Linkedin, MapPin, Calendar, Download, FileText, ChevronRight,
   Briefcase, GraduationCap, Award, Target, ChartBar, Presentation,
   TrendingUp, Globe, BarChart2, Star, Database, UserCheck, Building,
-  ExternalLink, Play, Image, Info, Link
+  ExternalLink, Play, Image, Info, Link, Eye
 } from "lucide-react";
 
 interface CorporateExecutiveProps {
@@ -60,6 +60,15 @@ export default function CorporateExecutive({
   userServices = []
 }: CorporateExecutiveProps) {
   const [activeSection, setActiveSection] = useState<string>('about');
+  const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null);
+  
+  // Function to handle opening project details
+  const openProjectDetails = (projectId: number) => {
+    setSelectedProjectId(projectId);
+    // Here you would typically open a modal or navigate to a project details page
+    alert(`Viewing project details for ID: ${projectId}`);
+    // In a real implementation, you would show a modal with project details or navigate to a details page
+  };
   
   // Sort skills by proficiency
   const sortedSkills = [...userSkills].sort((a, b) => (b.proficiency || 0) - (a.proficiency || 0));
@@ -824,16 +833,27 @@ export default function CorporateExecutive({
                             </span>
                           </div>
                           
-                          <a 
-                            href={project.projectUrl} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="text-[#6a0dad] text-sm flex items-center hover:underline ml-auto"
-                            style={{ fontFamily: 'Inter, sans-serif' }}
-                          >
-                            <span>View</span>
-                            <ExternalLink className="h-3.5 w-3.5 ml-1" />
-                          </a>
+                          <div className="flex items-center gap-3">
+                            <button
+                              onClick={() => openProjectDetails(project.id)}
+                              className="text-[#6a0dad] text-sm flex items-center hover:underline"
+                              style={{ fontFamily: 'Inter, sans-serif' }}
+                            >
+                              <span>View Details</span>
+                              <Eye className="h-3.5 w-3.5 ml-1" />
+                            </button>
+                            
+                            <a 
+                              href={project.projectUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-gray-500 text-sm flex items-center hover:underline"
+                              style={{ fontFamily: 'Inter, sans-serif' }}
+                            >
+                              <span>Visit</span>
+                              <ExternalLink className="h-3.5 w-3.5 ml-1" />
+                            </a>
+                          </div>
                         </div>
                       )}
                     </div>
