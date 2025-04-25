@@ -27,6 +27,7 @@ import profileServicesRoutes from "./routes-services-sync";
 import { resumeTestRoutes } from "./routes-resume-test";
 import { routesMigrateWorkExperiences } from "./routes-migrate-work-experiences";
 import { registerMuskAnthropicRoutes } from "./routes-musk-anthropic";
+import { registerMuskMemoryRoutes } from "./routes-musk-memory";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -5185,6 +5186,9 @@ ${extractedText.substring(0, 5000)}
   
   // Register Anthropic-powered Musk AI Career Assistant routes
   registerMuskAnthropicRoutes(app);
+  
+  // Register Musk Memory & Emotional Intelligence routes
+  registerMuskMemoryRoutes(app);
 
   app.use("/api", apiRouter);
 

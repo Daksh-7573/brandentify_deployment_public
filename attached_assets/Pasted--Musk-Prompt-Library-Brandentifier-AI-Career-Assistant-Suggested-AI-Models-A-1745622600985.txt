@@ -1,0 +1,61 @@
+**Musk Prompt Library – Brandentifier AI Career Assistant**
+
+---
+
+### 🤖 Suggested AI Models & APIs for Musk
+
+... *(existing content remains unchanged)* ...
+
+---
+
+### 🧠 Conversational Memory & Emotion Intelligence Strategy
+
+#### 1. **Conversational Memory Design**
+
+| Feature | Description |
+|---------|-------------|
+| Persistent Context | Retain previous conversations (e.g., last 3 sessions) using user_id/session_id tagging. |
+| Context Recall | Automatically refer to past questions or goals ("Last time you asked about remote roles..."). |
+| Profile Memory | Store dynamic updates like skill changes, goal updates, or emotional tone. |
+| Resume Change Detection | If user uploads an updated CV, Musk compares it with older version and updates suggestions. |
+
+##### Sample Prompt Embedding:
+```text
+User: I want to move into product management.
+Musk (Session 1): Great! Let’s map that transition.
+Musk (Session 2): Picking up from our last chat about Product Management — have you explored those roadmap steps?
+```
+
+#### 2. **Emotion Intelligence Detection**
+
+| Cue | Detected Emotion | Musk Response Style |
+|-----|------------------|---------------------|
+| "I feel stuck" | Confusion, frustration | Reassuring, guiding questions |
+| "I hate my job" | Burnout | Empathetic + reset options |
+| "No one’s replying to my applications" | Discouragement | Encouragement + new strategies |
+| "I’m excited about AI" | Curiosity, ambition | Energetic, forward-thinking tone |
+
+##### Sample Training Prompts:
+```text
+User says: “I'm stuck and don’t know what to do next.”
+Respond empathetically. Don’t suggest solutions first. Reflect back tone and ask follow-up.
+```
+
+```text
+User: “What are my options in Web3?”
+Recognize curiosity and respond with a discovery-focused tone.
+```
+
+#### 3. **Emotion-Aware Output Templates**
+
+- **Burnout:** “You’re not alone in feeling this way. Let’s figure out a healthy and fulfilling next step together.”
+- **Excitement:** “I love that energy! Here’s how you can ride that momentum into your next big career leap.”
+- **Doubt:** “I get it — transitions are tough. But with your background, you have more leverage than you think.”
+
+#### 4. **Training Tools**
+- Use GoEmotions dataset to train emotion classifier
+- Inject tone-adapted responses through prompt templating
+- Classify chat intent: Advice / Exploration / Frustration / Directionless / Enthusiasm
+
+Would you like a working model spec or tone-tuning framework for Musk next?
+
