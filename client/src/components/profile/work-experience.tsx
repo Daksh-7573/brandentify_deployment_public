@@ -646,6 +646,20 @@ export default function WorkExperience() {
   
   // We're now using the global formatDate from @/lib/utils
   
+  // Convert location data to SelectItem format with unique keys
+  const locationOptions = popularLocations.map((location, index) => ({
+    value: location,
+    label: location,
+    key: `location-${index}`,
+  }));
+  
+  // Convert industry data to SelectItem format with unique keys
+  const industryOptions = INDUSTRIES.map((industry, index) => ({
+    value: industry,
+    label: industry,
+    key: `industry-${index}`,
+  }));
+  
   // Handle dialog visibility
   const openAddDialog = () => {
     resetForm();
