@@ -796,9 +796,9 @@ export default function CorporateExecutive({
       </section>
       
       {/* Expertise (Skills) Section */}
-      <section id="skills" className="py-16 px-8 bg-white">
+      <section id="skills" className="py-10 px-8 bg-white">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 mb-10 accent-border" style={{ fontFamily: 'Playfair Display, serif' }}>
+          <h2 className="text-3xl font-bold text-gray-900 mb-6 accent-border" style={{ fontFamily: 'Playfair Display, serif' }}>
             What I'm Good At
           </h2>
           
@@ -854,9 +854,9 @@ export default function CorporateExecutive({
       </section>
       
       {/* Services Section */}
-      <section id="services" className="py-16 px-8 bg-gray-50">
+      <section id="services" className="py-10 px-8 bg-gray-50">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 mb-10" style={{ fontFamily: 'Playfair Display, serif' }}>
+          <h2 className="text-3xl font-bold text-gray-900 mb-6" style={{ fontFamily: 'Playfair Display, serif' }}>
             What I <span className="premium-gradient-text">Offer</span>
           </h2>
           
