@@ -1,0 +1,80 @@
+**Musk Prompt Library – Brandentifier AI Career Assistant**
+
+---
+
+### 🤖 Suggested AI Models & APIs for Musk
+
+... *(existing content remains unchanged)* ...
+
+---
+
+### 🧠 Conversational Memory & Emotion Intelligence Strategy
+
+... *(existing content remains unchanged)* ...
+
+---
+
+### 🎭 Simulated QA & Roleplay Testing Framework
+
+To make Musk battle-ready across diverse user intents, edge cases, and emotional tones, conduct structured QA using simulated prompts.
+
+#### 1. **Test Scenario Categories**
+
+| Category | Purpose |
+|----------|---------|
+| 🟢 General | Verify standard advice performance for common career scenarios |
+| 🔴 Stress | Test Musk’s ability to remain calm, helpful, and emotionally intelligent under pressure |
+| 🟡 Confusion | Assess Musk’s clarification and follow-up questioning skills |
+| 🟣 Domain-Specific | Challenge Musk on specific industry/domain nuances |
+| 🧪 Experimental | Push limits of role-switching, forecasting, and new tools |
+
+#### 2. **Example QA Scenarios**
+
+**[🟢 General]:**
+> "I’m a marketing analyst with 2 years of experience. What should I learn next to grow?"
+
+**Expected Output:** 3 relevant skills with actionable resources, tone = confident and supportive.
+
+---
+
+**[🔴 Stress]:**
+> "I’ve applied to 50 jobs and haven’t gotten a single reply. What’s the point anymore?"
+
+**Expected Output:** Emotional validation + root-cause check (resume, ATS, mismatch) + motivation path.
+
+---
+
+**[🟡 Confusion]:**
+> "I want to be successful but don’t know if I should switch industries or not."
+
+**Expected Output:** Clarify with questions. Help user reflect + suggest exploration steps.
+
+---
+
+**[🟣 Domain-Specific]:**
+> "What’s the career growth path for an ML Engineer in fintech?"
+
+**Expected Output:** Specific job ladder + fintech considerations + AI trend alignment.
+
+---
+
+**[🧪 Experimental]:**
+> "Where would I be in 5 years if I combine AI and storytelling?"
+
+**Expected Output:** Speculative roadmap + cross-domain role suggestions (e.g. Narrative Designer for AI systems).
+
+---
+
+#### 3. **Scoring System**
+| Criterion | Description | Score (1–5) |
+|----------|-------------|--------------|
+| Relevance | How accurately the response meets the prompt goal | 1–5 |
+| Empathy | Appropriate tone, emotional recognition | 1–5 |
+| Clarity | Easy to understand, well-structured | 1–5 |
+| Actionability | Real, usable advice or next steps | 1–5 |
+| Innovation | Unique, forward-thinking suggestions | 1–5 |
+
+---
+
+Would you like a pre-made test suite with 50+ prompts to evaluate Musk during development?
+

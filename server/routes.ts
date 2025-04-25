@@ -28,6 +28,7 @@ import { resumeTestRoutes } from "./routes-resume-test";
 import { routesMigrateWorkExperiences } from "./routes-migrate-work-experiences";
 import { registerMuskAnthropicRoutes } from "./routes-musk-anthropic";
 import { registerMuskMemoryRoutes } from "./routes-musk-memory";
+import { setupMuskTestingRoutes } from "./routes-musk-testing";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -5189,6 +5190,9 @@ ${extractedText.substring(0, 5000)}
   
   // Register Musk Memory & Emotional Intelligence routes
   registerMuskMemoryRoutes(app);
+  
+  // Register Musk Testing routes for QA and Roleplay scenarios
+  setupMuskTestingRoutes(apiRouter);
 
   app.use("/api", apiRouter);
 
