@@ -6,7 +6,7 @@ import OpenAI from 'openai';
 import { analyzeResume } from './services/fixed-openai-service';
 import { storage } from './storage';
 
-// Initialize global variable for resume context storage if it doesn't exist
+// Initialize global variable for resume context storage and user interaction memory
 declare global {
   var resumeContexts: {
     [userId: string]: {
@@ -16,6 +16,32 @@ declare global {
       detectedIndustry: string | null;
       uploadDate: string;
       fileName: string;
+    }
+  };
+  
+  var userInteractionMemory: {
+    [userId: string]: {
+      interactionCount: number;
+      messageHistory: Array<{
+        timestamp: Date;
+        message: string;
+        response: string;
+      }>;
+      communicationStyle: {
+        messageLength: 'short' | 'medium' | 'long';
+        formality: 'casual' | 'neutral' | 'formal';
+        detailLevel: 'low' | 'medium' | 'high';
+        technicalLevel: 'low' | 'medium' | 'high';
+        preferredTopics: string[];
+        preferredFormat: 'text-heavy' | 'balanced' | 'visual';
+        lastInteraction: Date;
+      };
+      topicPreferences: {
+        [topic: string]: number;
+      };
+      learningPreferences: {
+        [key: string]: any;
+      };
     }
   };
 }
@@ -129,9 +155,14 @@ export const handleMuskChat = async (req: Request, res: Response) => {
     // Add session to context so it can be used to retrieve resume data
     enrichedContext.req = req;
     
-    // Check global storage for resume context (alternative to session)
+    // Initialize global storage for resume contexts and user interaction memory
     if (!global.resumeContexts) {
       global.resumeContexts = {};
+    }
+    
+    // Initialize user interaction memory for adaptive learning
+    if (!(global as any).userInteractionMemory) {
+      (global as any).userInteractionMemory = {};
     }
     
     // Check for resume context in global storage
@@ -144,10 +175,22 @@ export const handleMuskChat = async (req: Request, res: Response) => {
     
     if (userId) {
       enrichedContext = await enrichContextWithUserData(userId, enrichedContext);
+      
+      // Add user interaction memory to context if it exists
+      const userIdStr = userId.toString();
+      if ((global as any).userInteractionMemory && (global as any).userInteractionMemory[userIdStr]) {
+        enrichedContext.userMemory = (global as any).userInteractionMemory[userIdStr];
+        console.log(`Found user interaction memory for user ${userId}`);
+      }
     }
     
     // Generate response using the appropriate AI model
     const response = await generateMuskResponse(message, enrichedContext);
+    
+    // Update user interaction memory with this conversation
+    if (userId) {
+      updateUserInteractionMemory(userId.toString(), message, response, enrichedContext);
+    }
     
     // Return the response
     return res.status(200).json({
@@ -157,7 +200,8 @@ export const handleMuskChat = async (req: Request, res: Response) => {
       contextUsed: {
         dataSource: enrichedContext.dataSource || 'profile',
         hasResumeData: !!enrichedContext.resumeData,
-        detectedRole: enrichedContext.resumeData?.detectedRole || null
+        detectedRole: enrichedContext.resumeData?.detectedRole || null,
+        hasUserMemory: !!enrichedContext.userMemory
       }
     });
   } catch (error) {
