@@ -28,6 +28,7 @@ import FeedTestPage from "@/pages/feed-test";
 import CareerQuestsPage from "@/pages/career-quests";
 import OnboardingPage from "@/pages/onboarding";
 import EditProfilePage from "@/pages/edit-profile";
+import MuskTestingPage from "@/pages/musk-testing";
 // Lazy load the SharedCardPage to improve performance and show loader immediately
 import { lazy, Suspense } from "react";
 const SharedCardPage = lazy(() => import("@/pages/shared-card"));
@@ -130,6 +131,9 @@ function Router() {
       </Route>
       <Route path="/edit-profile">
         <ProtectedRoute path="/edit-profile" component={EditProfilePage} />
+      </Route>
+      <Route path="/musk-testing">
+        <ProtectedRoute path="/musk-testing" component={MuskTestingPage} />
       </Route>
       {/* Shared Quantum Card View route */}
       <Route path="/profile/card/:userId">

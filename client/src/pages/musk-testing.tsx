@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { apiRequest } from '@lib/queryClient';
+import { apiRequest, queryClient } from '../lib/queryClient';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,7 +10,7 @@ import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
-import { useUser } from '@/hooks/useUser';
+import { useAuth } from '../hooks/use-auth';
 
 // Define test categories and colors
 const categories = {
@@ -23,7 +23,7 @@ const categories = {
 
 const MuskTestingPage: React.FC = () => {
   const { toast } = useToast();
-  const { user } = useUser();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('general');
   const [selectedTest, setSelectedTest] = useState<{category: string, index: number} | null>(null);
   const [testResponse, setTestResponse] = useState<string>('');
@@ -44,11 +44,11 @@ const MuskTestingPage: React.FC = () => {
   // Mutation to run a test
   const runTestMutation = useMutation({
     mutationFn: (params: {category: string, index: number}) => 
-      apiRequest('/api/musk-testing/run-test', 'POST', {
+      apiRequest('POST', '/api/musk-testing/run-test', {
         ...params,
         userId: user?.id || null 
       }),
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
       setTestResponse(data.response);
       toast({
         title: 'Test completed',
@@ -71,7 +71,7 @@ const MuskTestingPage: React.FC = () => {
       index: number,
       score: typeof scores,
       responseText: string
-    }) => apiRequest('/api/musk-testing/score', 'POST', {
+    }) => apiRequest('POST', '/api/musk-testing/score', {
       ...params,
       userId: user?.id || null
     }),
@@ -172,24 +172,30 @@ const MuskTestingPage: React.FC = () => {
                       <div className="text-center py-8">Loading scenarios...</div>
                     ) : (
                       <div className="space-y-2 mt-2">
-                        {scenarios && scenarios[category]?.map((scenario: any, index: number) => (
-                          <div 
-                            key={index}
-                            className={`p-3 rounded-md cursor-pointer transition-colors hover:bg-muted ${
-                              selectedTest?.category === category && selectedTest?.index === index
-                                ? 'bg-muted border border-primary'
-                                : 'border'
-                            }`}
-                            onClick={() => handleTestSelect(index)}
-                          >
-                            <div className="flex items-center justify-between mb-2">
-                              <div className={`h-3 w-3 rounded-full ${categories[category as keyof typeof categories].color}`} />
-                              <span className="text-xs text-muted-foreground">Test #{index + 1}</span>
+                        {scenarios && scenarios[category as keyof typeof scenarios]?.length > 0 ? 
+                          scenarios[category as keyof typeof scenarios].map((scenario: any, index: number) => (
+                            <div 
+                              key={index}
+                              className={`p-3 rounded-md cursor-pointer transition-colors hover:bg-muted ${
+                                selectedTest?.category === category && selectedTest?.index === index
+                                  ? 'bg-muted border border-primary'
+                                  : 'border'
+                              }`}
+                              onClick={() => handleTestSelect(index)}
+                            >
+                              <div className="flex items-center justify-between mb-2">
+                                <div className={`h-3 w-3 rounded-full ${categories[category as keyof typeof categories].color}`} />
+                                <span className="text-xs text-muted-foreground">Test #{index + 1}</span>
+                              </div>
+                              <p className="text-sm font-medium mb-1">{scenario.prompt}</p>
+                              <p className="text-xs text-muted-foreground">{scenario.expectedOutput}</p>
                             </div>
-                            <p className="text-sm font-medium mb-1">{scenario.prompt}</p>
-                            <p className="text-xs text-muted-foreground">{scenario.expectedOutput}</p>
+                          ))
+                        : (
+                          <div className="p-4 text-center text-muted-foreground text-sm border rounded-md">
+                            No test scenarios available for this category
                           </div>
-                        ))}
+                        )}
                       </div>
                     )}
                   </TabsContent>
