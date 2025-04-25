@@ -681,11 +681,16 @@ export const handleResumeUpload = async (req: Request, res: Response) => {
     }
     
     // Analyze the resume using OpenAI
-    const analysisResult = await analyzeResume({
+    const analysisResponse = await analyzeResume({
       resumeTextStart: resumeText,
       isBase64: false,
       isLink: false
     });
+    
+    // Extract the analysis string from the response
+    const analysisResult = typeof analysisResponse === 'string' 
+      ? analysisResponse 
+      : analysisResponse?.analysis || '';
     
     // Extract key resume metadata for context preservation
     let resumeContext = null;
@@ -693,17 +698,22 @@ export const handleResumeUpload = async (req: Request, res: Response) => {
       // Extract role information using a simple regex pattern
       const rolePattern = /(\b(Product Manager|Software Engineer|Data Scientist|UX Designer|Project Manager|Marketing Manager|Sales Representative|Business Analyst|Financial Analyst|Human Resources Manager|Operations Manager|Customer Service Representative|Administrative Assistant|Executive Assistant|Research Scientist|Content Writer|Graphic Designer|Web Developer|Frontend Developer|Backend Developer|Full Stack Developer|DevOps Engineer|System Administrator|Network Engineer|IT Support Specialist|Quality Assurance Engineer|Test Engineer|Security Engineer|Database Administrator|Solutions Architect|Technical Lead|Engineering Manager|Director of Engineering|Chief Technology Officer|Chief Information Officer|Chief Executive Officer|Founder|Co-Founder)\b)/i;
       
+      // Convert analysis result to string to ensure it has match method
+      const analysisText = String(analysisResult);
+      
       // Try to find a role in the analysis result
-      const roleMatch = analysisResult.match(rolePattern);
+      const roleMatch = analysisText.match(rolePattern);
       const detectedRole = roleMatch ? roleMatch[1] : null;
       
       // Extract skills mentioned
       const skillsPattern = /\b(React|JavaScript|TypeScript|Node\.js|Express|HTML|CSS|Python|Java|C\#|C\+\+|SQL|PostgreSQL|MongoDB|AWS|Azure|Git|Docker|Kubernetes|Product Management|UX Research|UI Design|Agile|Scrum|Kanban|Marketing|Sales|Finance|Leadership|Communication|Problem Solving|Critical Thinking|Team Building)\b/gi;
-      const skills = [...new Set(analysisResult.match(skillsPattern) || [])];
+      const skillMatches = analysisText.match(skillsPattern) || [];
+      // Create an array from the matches and convert to Set to remove duplicates, then back to array
+      const skills = Array.from(new Set(skillMatches));
       
       // Extract industry if mentioned
       const industryPattern = /\b(Technology|Healthcare|Finance|Education|Retail|Manufacturing|Media|Entertainment|Government|Transportation|Energy|Agriculture|Telecom|Hospitality|Real Estate|Construction)\b/i;
-      const industryMatch = analysisResult.match(industryPattern);
+      const industryMatch = analysisText.match(industryPattern);
       const detectedIndustry = industryMatch ? industryMatch[1] : null;
       
       resumeContext = {

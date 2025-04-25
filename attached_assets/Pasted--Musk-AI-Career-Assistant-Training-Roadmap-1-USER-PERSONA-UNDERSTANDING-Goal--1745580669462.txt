@@ -1,0 +1,115 @@
+**Musk AI Career Assistant Training Roadmap**
+
+---
+
+### 1. USER PERSONA UNDERSTANDING
+
+**Goal:** Understand who the user is, their career context, and their ambitions.
+
+... *(unchanged content)* ...
+
+**Sample Prompt for Training:**
+```text
+Based on the user's profile as a mid-level Product Manager in SaaS, suggest realistic next career goals and a roadmap for reaching senior product roles. Consider location and current domain.
+```
+
+**Prompt Variations:**
+- "Create a 6-month strategic roadmap to help this user reach their next senior product role."
+- "What’s the best way for this user to advance in their domain while staying in India?"
+- "Suggest 3 milestone goals for someone with this profile."
+- "Offer a career growth plan considering they seek mentorship and new job opportunities."
+
+---
+
+### 2. SKILLS vs MARKET DEMAND MAPPING
+
+... *(unchanged content)* ...
+
+**Sample Prompt for Training:**
+```text
+Compare the user's current skill set with live job postings for senior product roles in SaaS. Highlight 2 high-priority skills they should develop and suggest relevant learning platforms.
+```
+
+**Prompt Variations:**
+- "Based on trends, what technical skills will boost this user's promotion chances?"
+- "Provide a ranked list of missing skills for high-paying roles in this user's region."
+- "Recommend 3 certifications that align with this user’s current and future goals."
+- "Analyze resume skills and match with trending tools/platforms."
+
+---
+
+### 3. CAREER PATH INTELLIGENCE
+
+... *(unchanged content)* ...
+
+**Sample Prompt for Training:**
+```text
+The user is currently a Graphic Designer aiming to become a UX Designer. Based on transferrable skills and industry demand, propose a 3-month learning path and suggest real-world project ideas.
+```
+
+**Prompt Variations:**
+- "Suggest career pivots for someone from graphic design with an interest in UX."
+- "What are the realistic switch options within 6 months based on their current experience?"
+- "Give an example of a role transformation from their past to future job."
+- "Compare job title shifts with estimated time to transition."
+
+---
+
+### 4. GLOBAL OPPORTUNITY AWARENESS
+
+... *(unchanged content)* ...
+
+**Prompt Variations:**
+- "Which remote roles are available for this profile globally?"
+- "Rank countries hiring for this user’s skill set with relocation ease."
+- "What visa programs are open for this professional background?"
+- "Compare top job portals across countries matching this user."
+
+---
+
+### 5. PERSONALITY-TO-PROFESSION MAPPING
+
+... *(unchanged content)* ...
+
+**Prompt Variations:**
+- "Suggest 3 career roles based on introverted and creative tendencies."
+- "Map professions that align with a value for work-life balance."
+- "User loves teaching — recommend roles across industries using this strength."
+- "Which professions fit users who prefer low-structure and exploration?"
+
+---
+
+### 6. TREND FORECASTING ENGINE
+
+... *(unchanged content)* ...
+
+**Prompt Variations:**
+- "What new roles are appearing at the intersection of AI and marketing?"
+- "Suggest 5 futuristic careers that didn’t exist 5 years ago."
+- "How will this user's domain evolve in the next 2–3 years?"
+- "What skills are emerging in this user's current domain?"
+
+---
+
+### 7. USER FEEDBACK & LOOP LEARNING
+
+... *(unchanged content)* ...
+
+**Prompt Variations:**
+- "Identify recurring positive patterns in user reactions to career advice."
+- "What kind of prompts receive the most engagement from similar profiles?"
+- "Adjust future feedback based on lack of engagement from this user."
+- "Create a new feedback path based on resume edit tracking."
+
+---
+
+### 8. EMOTIONAL INTELLIGENCE
+
+... *(unchanged content)* ...
+
+**Prompt Variations:**
+- "User writes: 'I think I’m in the wrong industry.' Recognize tone and assist."
+- "User: 'Should I just quit?' Provide thoughtful career coaching response."
+- "User says they feel burned out. Provide emotional support + practical tips."
+- "User is frustrated by rejection. Offer encouragement and actionable advice."
+

@@ -68,6 +68,7 @@ export async function generatePersonalizedResponse(
     
     // Determine user intent from the message
     const intent = await determineUserIntent(message, context);
+    console.log(`Detected intent: ${intent}`);
     
     // Generate personalized prompt based on career profile, intent and available data
     const prompt = generateEnhancedPrompt(message, intent, careerProfile, context);
@@ -87,11 +88,26 @@ export async function generatePersonalizedResponse(
       ]
     });
     
-    // Extract and format the response
+    // Extract the response
     const aiResponse = response.choices[0].message.content || 
       "I apologize, but I'm unable to process your request right now. Please try again later.";
     
-    return formatResponseWithPersonalization(aiResponse, context);
+    // Generate potential follow-up questions based on intent and context
+    const followUpQuestions = generateFollowUpQuestions(intent, context);
+    
+    // Choose one follow-up question to add to the response if appropriate
+    let finalResponse = formatResponseWithPersonalization(aiResponse, context);
+    
+    // Add a follow-up question if the response doesn't already contain a question
+    // and it's not too long (to avoid making it overwhelming)
+    if (followUpQuestions.length > 0 && 
+        !aiResponse.includes("?") && 
+        finalResponse.length < 2000) {
+      const selectedQuestion = followUpQuestions[0];
+      finalResponse += `\n\nIs there anything specific you'd like to know more about? For example: ${selectedQuestion}`;
+    }
+    
+    return finalResponse;
   } catch (error) {
     console.error("Error in Musk intelligence system:", error);
     return "I encountered an issue while processing your request. As your AI career assistant, I'll work on improving. Could you please try asking your question in a different way?";
@@ -337,13 +353,23 @@ function generateEnhancedPrompt(
   careerProfile: any,
   context: MuskContext
 ): string {
-  // Base personality and capabilities
+  // Base personality and capabilities with improved prompt engineering based on Musk guidelines
   let prompt = `
-You are Musk, an advanced AI career coach and professional development assistant. 
-Your purpose is to provide personalized, actionable career guidance based on the user's specific 
-profile, experiences, and goals.
+# MUSK AI CAREER ASSISTANT SYSTEM PROMPT
 
-USER PROFILE INFORMATION:
+## YOUR ROLE
+You are Musk, a smart, empathetic AI career coach inside Brandentifier. 
+Respond like a futuristic career coach who is empathetic, strategic, and forward-thinking.
+Act as a wise AI mentor who gives confident, data-backed and user-centric advice.
+
+## PERSONALITY & TONE
+- Be supportive yet practical
+- Communicate with confidence and clarity
+- Show enthusiasm for the user's potential
+- Be forward-thinking and trend-aware
+- Balance empathy with strategic thinking
+
+## USER PROFILE INFORMATION
 - Name: ${careerProfile.name}
 - Career Stage: ${careerProfile.careerStage}
 - Industry: ${careerProfile.industry || "Unknown"}
@@ -351,24 +377,38 @@ USER PROFILE INFORMATION:
 - Location: ${careerProfile.location || "Unknown"}
 - Looking For: ${careerProfile.lookingFor || "Career development opportunities"}
 
-SKILLS:
+## SKILLS
 ${careerProfile.skills.length > 0 
   ? careerProfile.skills.map((s: any) => `- ${s.name} (${s.category || 'General'}, Level: ${s.level || 'Intermediate'})`).join('\n') 
   : "- No specific skills information available"}
 
-WORK EXPERIENCE:
+## WORK EXPERIENCE
 ${careerProfile.experiences.length > 0 
   ? careerProfile.experiences.map((e: any) => 
     `- ${e.title} at ${e.company}, ${e.industry || 'Unknown industry'} (${formatDateRange(e.startDate, e.endDate)})`
   ).join('\n') 
   : "- No specific work experience information available"}
 
-EDUCATION:
+## EDUCATION
 ${careerProfile.education.length > 0 
   ? careerProfile.education.map((e: any) => 
     `- ${e.degree || 'Studied'} in ${e.field || 'Unknown field'} at ${e.institution} (${formatDateRange(e.startDate, e.endDate)})`
   ).join('\n') 
   : "- No specific education information available"}
+
+## RESPONSE STRUCTURE
+- Start with an insight or "⚡ Here's your personalized career guidance..."
+- Provide actionable, specific advice (avoid generic phrases like "work hard")
+- Break advice into phases when appropriate: short-term, medium-term, long-term
+- Use bullet points for clear actions
+- End with a supportive closing like "Ready to explore this path? You've got this. —Musk"
+
+## QUALITY GUIDELINES
+- Be specific, not generic
+- Suggest resources only if they match the user's experience level and domain
+- Avoid repetitive suggestions
+- Consider it's 2025 when giving advice on trends and opportunities
+- If the user's profile is incomplete, gently guide them to complete it first
 `;
 
   // Add communication guidelines based on the 8 intelligence dimensions from the training roadmap
@@ -653,14 +693,98 @@ function formatDateRange(startDate: string | Date | null, endDate: string | Date
 }
 
 /**
- * Format AI response with personalization elements
+ * Format AI response with personalization elements and follow-up questions
  */
 function formatResponseWithPersonalization(response: string, context: MuskContext): string {
-  // Add personal greeting if we have the user's name
+  let formattedResponse = response;
+  
+  // Add personal greeting if we have the user's name and it's not already included
   if (context.userData?.name && !response.includes(context.userData.name)) {
     const greeting = `Hi ${context.userData.name}, `;
-    return greeting + response.charAt(0).toLowerCase() + response.slice(1);
+    formattedResponse = greeting + response.charAt(0).toLowerCase() + response.slice(1);
   }
   
-  return response;
+  // Make sure the response has the Musk signature ending if it doesn't already
+  if (!formattedResponse.includes("Ready to explore") && !formattedResponse.includes("—Musk")) {
+    formattedResponse += "\n\nReady to explore this path? You've got this. —Musk";
+  }
+  
+  return formattedResponse;
+}
+
+/**
+ * Generate appropriate follow-up questions based on user context and conversation
+ * This helps Musk provide more targeted guidance and encourages continued interaction
+ */
+function generateFollowUpQuestions(intent: string, context: MuskContext): string[] {
+  const questions: string[] = [];
+  
+  // Common questions for any intent
+  questions.push("Would you like more specific advice on any part of what I've shared?");
+  
+  // Intent-specific follow-up questions
+  switch (intent) {
+    case "skill_development":
+      questions.push("Which of these skills interests you most to develop first?");
+      questions.push("Are there any specific learning resources you prefer (courses, books, projects)?");
+      questions.push("Would you like to know how these skills can help with your next career move?");
+      break;
+      
+    case "career_change":
+      questions.push("What aspects of this career transition feel most challenging to you?");
+      questions.push("Would you like to hear about others who successfully made a similar transition?");
+      questions.push("Is there a specific timeline you're considering for this change?");
+      break;
+      
+    case "resume_feedback":
+      questions.push("Which section of your resume would you like me to focus on more?");
+      questions.push("Do you want examples of how to quantify your achievements?");
+      questions.push("Would you like advice on how to tailor your resume for a specific role?");
+      break;
+      
+    case "global_opportunities":
+      questions.push("Are there specific regions or countries you're most interested in?");
+      questions.push("Would you prefer remote opportunities or are you open to relocation?");
+      questions.push("Are there specific companies in those regions you'd like to know more about?");
+      break;
+      
+    case "industry_trends":
+      questions.push("Which of these emerging trends interests you most?");
+      questions.push("Would you like to know how to position yourself for these upcoming changes?");
+      questions.push("Are there specific technologies in your field you'd like to explore deeper?");
+      break;
+      
+    case "job_search":
+      questions.push("What part of the job search process is most challenging for you?");
+      questions.push("Would you like advice on how to stand out in applications for your target roles?");
+      questions.push("Have you been facing any specific obstacles in your job search?");
+      break;
+      
+    case "interview_preparation":
+      questions.push("What types of interviews are you preparing for (technical, behavioral, case)?");
+      questions.push("Would you like sample answers for common questions in your field?");
+      questions.push("Is there a specific company or role you're interviewing for?");
+      break;
+      
+    case "salary_negotiation":
+      questions.push("What stage of the negotiation process are you in?");
+      questions.push("Would you like scripts for how to respond to specific compensation offers?");
+      questions.push("Are there non-salary benefits that are important to you?");
+      break;
+      
+    case "networking":
+      questions.push("What networking approaches have you tried so far?");
+      questions.push("Would you like templates for outreach messages?");
+      questions.push("Are you looking to network for a specific purpose (job hunting, mentorship, learning)?");
+      break;
+      
+    default:
+      questions.push("What specific part of your career would you like guidance on next?");
+      questions.push("Is there a particular career challenge you're facing right now?");
+      break;
+  }
+  
+  // Choose 2-3 questions from the list
+  const shuffled = questions.sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, Math.min(2, shuffled.length));
 }
