@@ -137,10 +137,10 @@ export default function PortfolioCtaButtons({
     switch (variant) {
       case 'corporate':
         return {
-          container: `flex flex-col sm:flex-row gap-3 mt-6 ${className}`,
-          resumeBtn: 'bg-gradient-to-r from-[#6a0dad] to-[#9c27b0] hover:opacity-90 text-white border-none',
-          mentorBtn: 'border-[#6a0dad] text-[#6a0dad] bg-white hover:bg-[#f8f5fd]',
-          connectBtn: 'border-[#6a0dad] text-[#6a0dad] bg-white hover:bg-[#f8f5fd]'
+          container: `flex flex-col sm:flex-row ${className}`,
+          resumeBtn: 'bg-gradient-to-r from-[#6a0dad] to-[#9c27b0] hover:opacity-90 text-white border-none text-sm h-8 px-3',
+          mentorBtn: 'border-[#6a0dad] text-[#6a0dad] bg-white hover:bg-[#f8f5fd] text-sm h-8 px-3',
+          connectBtn: 'border-[#6a0dad] text-[#6a0dad] bg-white hover:bg-[#f8f5fd] text-sm h-8 px-3'
         };
       case 'creative':
         return {
@@ -199,7 +199,7 @@ export default function PortfolioCtaButtons({
           variant={variant === 'corporate' ? 'default' : 'outline'}
           onClick={handleConnect}
           className={variant === 'corporate' 
-            ? 'bg-[#6a0dad] hover:bg-[#7b1fa2] text-white border-none flex items-center gap-2 min-w-[120px] justify-center'
+            ? 'bg-[#6a0dad] hover:bg-[#7b1fa2] text-white border-none flex items-center gap-2 min-w-[120px] justify-center text-sm h-8 px-3'
             : `${styles.connectBtn} flex items-center gap-2 min-w-[120px] justify-center`}
         >
           <MessageCircle size={16} />

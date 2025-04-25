@@ -644,63 +644,65 @@ export default function CorporateExecutive({
       <div className="sticky top-0 z-50 bg-white border-b border-gray-100 py-4 shadow-sm">
         <div className="max-w-6xl mx-auto px-8">
           <div className="flex items-center justify-between">
-            {/* Navigation Links - centered and properly aligned */}
-            <nav className="flex justify-center items-center space-x-8 w-full">
-              <button 
-                onClick={() => scrollToSection('about')}
-                className={`nav-item text-sm font-medium ${activeSection === 'about' ? 'text-gray-900 active' : 'text-gray-500 hover:text-gray-700'}`}
-                style={{ fontFamily: 'Inter, sans-serif' }}
-              >
-                About
-              </button>
-              <button 
-                onClick={() => scrollToSection('skills')}
-                className={`nav-item text-sm font-medium ${activeSection === 'skills' ? 'text-gray-900 active' : 'text-gray-500 hover:text-gray-700'}`}
-                style={{ fontFamily: 'Inter, sans-serif' }}
-              >
-                Expertise
-              </button>
-              <button 
-                onClick={() => scrollToSection('services')}
-                className={`nav-item text-sm font-medium ${activeSection === 'services' ? 'text-gray-900 active' : 'text-gray-500 hover:text-gray-700'}`}
-                style={{ fontFamily: 'Inter, sans-serif' }}
-              >
-                Services
-              </button>
-              <button 
-                onClick={() => scrollToSection('projects')}
-                className={`nav-item text-sm font-medium ${activeSection === 'projects' ? 'text-gray-900 active' : 'text-gray-500 hover:text-gray-700'}`}
-                style={{ fontFamily: 'Inter, sans-serif' }}
-              >
-                Showcase
-              </button>
-              <button 
-                onClick={() => scrollToSection('experience')}
-                className={`nav-item text-sm font-medium ${activeSection === 'experience' ? 'text-gray-900 active' : 'text-gray-500 hover:text-gray-700'}`}
-                style={{ fontFamily: 'Inter, sans-serif' }}
-              >
-                Career
-              </button>
-              <button 
-                onClick={() => scrollToSection('education')}
-                className={`nav-item text-sm font-medium ${activeSection === 'education' ? 'text-gray-900 active' : 'text-gray-500 hover:text-gray-700'}`}
-                style={{ fontFamily: 'Inter, sans-serif' }}
-              >
-                Education
-              </button>
-            </nav>
-            
-            {/* CTA Buttons */}
-            <div className="hidden sm:block flex-shrink-0">
-              <PortfolioCtaButtons 
-                variant="corporate"
-                resumeUrl={null} 
-                mentorUrl={null}
-                connectUrl={null}
-                userEmail={userInfo.email}
-                userName={userInfo.name}
-                className="flex-row"
-              />
+            {/* Navigation Links - aligned with CTA buttons */}
+            <div className="flex items-center w-full">
+              <nav className="flex justify-center items-center space-x-6 flex-1">
+                <button 
+                  onClick={() => scrollToSection('about')}
+                  className={`nav-item text-sm font-medium ${activeSection === 'about' ? 'text-gray-900 active' : 'text-gray-500 hover:text-gray-700'}`}
+                  style={{ fontFamily: 'Inter, sans-serif' }}
+                >
+                  About
+                </button>
+                <button 
+                  onClick={() => scrollToSection('skills')}
+                  className={`nav-item text-sm font-medium ${activeSection === 'skills' ? 'text-gray-900 active' : 'text-gray-500 hover:text-gray-700'}`}
+                  style={{ fontFamily: 'Inter, sans-serif' }}
+                >
+                  Expertise
+                </button>
+                <button 
+                  onClick={() => scrollToSection('services')}
+                  className={`nav-item text-sm font-medium ${activeSection === 'services' ? 'text-gray-900 active' : 'text-gray-500 hover:text-gray-700'}`}
+                  style={{ fontFamily: 'Inter, sans-serif' }}
+                >
+                  Services
+                </button>
+                <button 
+                  onClick={() => scrollToSection('projects')}
+                  className={`nav-item text-sm font-medium ${activeSection === 'projects' ? 'text-gray-900 active' : 'text-gray-500 hover:text-gray-700'}`}
+                  style={{ fontFamily: 'Inter, sans-serif' }}
+                >
+                  Showcase
+                </button>
+                <button 
+                  onClick={() => scrollToSection('experience')}
+                  className={`nav-item text-sm font-medium ${activeSection === 'experience' ? 'text-gray-900 active' : 'text-gray-500 hover:text-gray-700'}`}
+                  style={{ fontFamily: 'Inter, sans-serif' }}
+                >
+                  Career
+                </button>
+                <button 
+                  onClick={() => scrollToSection('education')}
+                  className={`nav-item text-sm font-medium ${activeSection === 'education' ? 'text-gray-900 active' : 'text-gray-500 hover:text-gray-700'}`}
+                  style={{ fontFamily: 'Inter, sans-serif' }}
+                >
+                  Education
+                </button>
+              </nav>
+              
+              {/* CTA Buttons */}
+              <div className="hidden md:flex items-center ml-4">
+                <PortfolioCtaButtons 
+                  variant="corporate"
+                  resumeUrl={null} 
+                  mentorUrl={null}
+                  connectUrl={null}
+                  userEmail={userInfo.email}
+                  userName={userInfo.name}
+                  className="flex-row gap-3 mt-0"
+                />
+              </div>
             </div>
           </div>
         </div>
