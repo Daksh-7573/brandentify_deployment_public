@@ -1100,10 +1100,37 @@ export default function CorporateExecutive({
                     </Badge>
                   </div>
                   
-                  {edu.location && (
-                    <div className="flex items-center text-sm text-gray-500 mb-3" style={{ fontFamily: 'Inter, sans-serif' }}>
-                      <MapPin className="h-4 w-4 mr-1" />
-                      <span>{edu.location}</span>
+                  <div className="flex flex-wrap items-center gap-4 mb-3">
+                    {edu.location && (
+                      <div className="flex items-center text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        <MapPin className="h-4 w-4 mr-1" />
+                        <span>{edu.location}</span>
+                      </div>
+                    )}
+                    
+                    {edu.industry && (
+                      <div className="flex items-center text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        <Briefcase className="h-4 w-4 mr-1" />
+                        <span>{edu.industry}</span>
+                      </div>
+                    )}
+                    
+                    {edu.fieldOfStudy && (
+                      <div className="flex items-center text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        <GraduationCap className="h-4 w-4 mr-1" />
+                        <span>{edu.fieldOfStudy}</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {edu.skillsAcquired && Array.isArray(edu.skillsAcquired) && edu.skillsAcquired.length > 0 && (
+                    <div className="mt-3">
+                      <h4 className="text-sm font-semibold mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>Skills Acquired & Achievements</h4>
+                      <ul className="list-disc pl-5 text-sm space-y-1 text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        {edu.skillsAcquired.map((skill, idx) => (
+                          <li key={idx}>{skill}</li>
+                        ))}
+                      </ul>
                     </div>
                   )}
                 </div>

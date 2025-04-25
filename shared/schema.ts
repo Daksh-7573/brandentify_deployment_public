@@ -92,8 +92,11 @@ export const educations = pgTable("educations", {
   degree: text("degree").notNull(),
   institution: text("institution").notNull(),
   location: text("location"),
+  industry: text("industry"),
+  fieldOfStudy: text("field_of_study"),
   startDate: text("start_date").notNull(),
   endDate: text("end_date"),
+  skillsAcquired: jsonb("skills_acquired").default('[]'),
 });
 
 // Skill model
