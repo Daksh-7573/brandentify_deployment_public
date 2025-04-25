@@ -352,6 +352,65 @@ export const insertServiceSchema = baseServiceSchema.extend({
 export type Service = typeof services.$inferSelect;
 export type InsertService = z.infer<typeof insertServiceSchema>;
 
+// Feedback type enum
+export const feedbackTypeEnum = pgEnum("feedback_type", [
+  "helpful", // Yes/No binary feedback
+  "rating", // 1-5 stars
+  "text", // Text feedback for improvement
+  "save" // Saved to career plan
+]);
+
+// Feedback model for Musk response feedback
+export const muskFeedbacks = pgTable("musk_feedbacks", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  conversationId: text("conversation_id").notNull(), // Unique ID for the conversation
+  messageId: text("message_id").notNull(), // ID of the specific message
+  feedbackType: feedbackTypeEnum("feedback_type").notNull(),
+  rating: integer("rating"), // For star ratings (1-5)
+  helpful: boolean("helpful"), // For yes/no feedback
+  textFeedback: text("text_feedback"), // For text feedback
+  savedToPlan: boolean("saved_to_plan").default(false), // Whether saved to career plan
+  context: text("context"), // Context of the conversation (e.g., resume review, career advice)
+  promptCategory: text("prompt_category"), // Category of the prompt (e.g., career growth, job search)
+  promptDetails: jsonb("prompt_details").default("{}"), // JSON with detailed prompt info
+  responseDetails: jsonb("response_details").default("{}"), // JSON with response details
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Insert schema for MuskFeedback
+export const insertMuskFeedbackSchema = createInsertSchema(muskFeedbacks).omit({
+  id: true,
+  createdAt: true
+});
+
+// Feedback analysis model for tracking aggregated feedback patterns
+export const feedbackAnalytics = pgTable("feedback_analytics", {
+  id: serial("id").primaryKey(),
+  promptCategory: text("prompt_category").notNull(), // Category of the prompt
+  responseType: text("response_type").notNull(), // Type of response (e.g., advice, analysis)
+  averageRating: decimal("average_rating", { precision: 3, scale: 2 }), // Average star rating
+  helpfulCount: integer("helpful_count").default(0), // Count of helpful responses
+  unhelpfulCount: integer("unhelpful_count").default(0), // Count of unhelpful responses
+  savedCount: integer("saved_count").default(0), // Times saved to career plan
+  careerStage: text("career_stage"), // Target career stage (entry, mid, senior)
+  industry: text("industry"), // Target industry
+  mostCommonFeedback: jsonb("most_common_feedback").default("[]"), // Top feedback themes
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Insert schema for FeedbackAnalytics
+export const insertFeedbackAnalyticsSchema = createInsertSchema(feedbackAnalytics).omit({
+  id: true,
+  updatedAt: true
+});
+
+// Export types for Feedback
+export type MuskFeedback = typeof muskFeedbacks.$inferSelect;
+export type InsertMuskFeedback = z.infer<typeof insertMuskFeedbackSchema>;
+export type FeedbackAnalytics = typeof feedbackAnalytics.$inferSelect;
+export type InsertFeedbackAnalytics = z.infer<typeof insertFeedbackAnalyticsSchema>;
+
 // Pulse type enum
 export const pulseTypeEnum = pgEnum("pulse_type", [
   "poll", 

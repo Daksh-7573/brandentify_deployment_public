@@ -29,6 +29,7 @@ import { routesMigrateWorkExperiences } from "./routes-migrate-work-experiences"
 import { registerMuskAnthropicRoutes } from "./routes-musk-anthropic";
 import { registerMuskMemoryRoutes } from "./routes-musk-memory";
 import { setupMuskTestingRoutes } from "./routes-musk-testing";
+import muskFeedbackRoutes from "./routes-musk-feedback";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
