@@ -5,159 +5,380 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
-// Helper function to try decoding base64 for Anthropic processing
-function tryDecodeBase64(base64String: string): string {
-  try {
-    // Try to decode as a UTF-8 string 
-    const decoded = Buffer.from(base64String, 'base64').toString('utf-8');
+/**
+ * Generate career advice based on user profile information and specific advice type
+ * @param userProfile User profile data with career-related information
+ * @returns Career advice tailored to the user's profile
+ */
+export async function generateCareerAdvice(userProfile: {
+  name: string;
+  title?: string;
+  lookingFor?: string;
+  industry?: string;
+  domain?: string;
+  location?: string;
+  skills?: Array<{ name: string; proficiency: number; level?: string }>;
+  experiences?: Array<{
+    title: string;
+    company: string;
+    startDate: string;
+    endDate?: string;
+    domain?: string;
+    keyResponsibilities?: string[];
+  }>;
+  educations?: Array<{
+    degree: string;
+    institution: string;
+    fieldOfStudy?: string;
+    startDate: string;
+    endDate?: string;
+  }>;
+  projects?: Array<{
+    title: string;
+    description?: string;
+    category?: string;
+    startDate: string;
+    endDate?: string;
+  }>;
+  adviceType?: 'career_growth' | 'industry_switch' | 'skill_development' | 'interview_prep' | 'networking' | string;
+}) {
+  // Define system prompts based on the advice type
+  const systemPrompts: Record<string, string> = {
+    career_growth: `You are Musk, an expert AI Career Coach focused on helping professionals advance in their current field. Analyze the user's profile to recommend strategic next steps, potential promotions, and ways to position themselves for growth. Focus on tangible actions they can take in the next 3-12 months.`,
     
-    // If it decoded successfully and isn't binary gibberish, return it
-    // Check if it at least looks like text and not binary data
-    const isProbablyText = /^[\x00-\x7F\xC0-\xFF]*$/.test(decoded.substring(0, 1000));
-    if (isProbablyText && decoded.length > 100) {
-      console.log("Successfully decoded base64 to text:", decoded.substring(0, 100) + "...");
-      return decoded;
+    industry_switch: `You are Musk, an expert AI Career Transition Coach. Help the user navigate switching to a new industry by identifying transferable skills, potential entry points, and skills gaps they need to fill. Be specific about realistic transition paths based on their experience.`,
+    
+    skill_development: `You are Musk, an expert AI Skills Development Coach. Analyze the user's profile to identify critical skills they should develop to remain competitive and advance in their field. Recommend specific courses, certifications, or learning paths that are highly valued in their industry.`,
+    
+    interview_prep: `You are Musk, an expert AI Interview Coach. Based on the user's profile, provide tailored interview preparation advice including likely questions, how to position their experience, and ways to demonstrate their unique value. Focus on helping them tell compelling stories about their achievements.`,
+    
+    networking: `You are Musk, an expert AI Networking Coach. Help the user expand their professional network strategically. Provide specific approaches to connect with relevant professionals, suggest industry groups or events aligned with their goals, and offer templates for outreach messages.`
+  };
+
+  // Default to career growth if no specific type is provided
+  const adviceType = userProfile.adviceType || 'career_growth';
+  const systemPrompt = systemPrompts[adviceType] || systemPrompts.career_growth;
+
+  // Create a prompt summarizing the user's profile
+  let userProfileSummary = `Name: ${userProfile.name}\n`;
+  if (userProfile.title) userProfileSummary += `Current Title: ${userProfile.title}\n`;
+  if (userProfile.industry) userProfileSummary += `Industry: ${userProfile.industry}\n`;
+  if (userProfile.domain) userProfileSummary += `Domain: ${userProfile.domain}\n`;
+  if (userProfile.location) userProfileSummary += `Location: ${userProfile.location}\n`;
+  if (userProfile.lookingFor) userProfileSummary += `Looking For: ${userProfile.lookingFor}\n`;
+
+  // Add skills information
+  if (userProfile.skills && userProfile.skills.length > 0) {
+    userProfileSummary += '\nSkills:\n';
+    userProfile.skills.forEach(skill => {
+      userProfileSummary += `- ${skill.name}${skill.level ? ` (${skill.level})` : ''}\n`;
+    });
+  }
+
+  // Add work experience
+  if (userProfile.experiences && userProfile.experiences.length > 0) {
+    userProfileSummary += '\nWork Experience:\n';
+    userProfile.experiences.forEach(exp => {
+      userProfileSummary += `- ${exp.title} at ${exp.company} (${formatDate(exp.startDate)} - ${exp.endDate ? formatDate(exp.endDate) : 'Present'})\n`;
+      if (exp.domain) userProfileSummary += `  Domain: ${exp.domain}\n`;
+      if (exp.keyResponsibilities && exp.keyResponsibilities.length > 0) {
+        userProfileSummary += '  Key Responsibilities:\n';
+        exp.keyResponsibilities.forEach(resp => {
+          userProfileSummary += `  - ${resp}\n`;
+        });
+      }
+    });
+  }
+
+  // Add education
+  if (userProfile.educations && userProfile.educations.length > 0) {
+    userProfileSummary += '\nEducation:\n';
+    userProfile.educations.forEach(edu => {
+      userProfileSummary += `- ${edu.degree} in ${edu.fieldOfStudy || 'N/A'} from ${edu.institution} (${formatDate(edu.startDate)} - ${edu.endDate ? formatDate(edu.endDate) : 'Present'})\n`;
+    });
+  }
+
+  // Add projects if available
+  if (userProfile.projects && userProfile.projects.length > 0) {
+    userProfileSummary += '\nProjects:\n';
+    userProfile.projects.forEach(project => {
+      userProfileSummary += `- ${project.title}${project.category ? ` (${project.category})` : ''}\n`;
+      if (project.description) userProfileSummary += `  Description: ${project.description}\n`;
+    });
+  }
+
+  const userPrompt = `Based on my profile information below, I'm seeking ${adviceType.replace('_', ' ')} advice:\n\n${userProfileSummary}`;
+
+  try {
+    const response = await anthropic.messages.create({
+      model: 'claude-3-7-sonnet-20250219',
+      max_tokens: 1500,
+      system: systemPrompt,
+      messages: [
+        { role: 'user', content: userPrompt }
+      ],
+    });
+
+    // Check if the response has content and it's of type 'text'
+    if (response.content[0] && 'text' in response.content[0]) {
+      return {
+        advice: response.content[0].text,
+        nextSteps: extractNextSteps(response.content[0].text),
+      };
+    } else {
+      throw new Error('Unexpected response format from Anthropic API');
     }
-    return base64String;
-  } catch (e) {
-    console.log("Could not decode base64 to text, using as is");
-    return base64String;
+  } catch (error: unknown) {
+    console.error('Error generating career advice with Anthropic:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    throw new Error(`Failed to generate career advice: ${errorMessage}`);
   }
 }
 
-export async function analyzeResumeWithClaude(fileData: string): Promise<string> {
-  if (!fileData) {
-    throw new Error("No file data provided");
+/**
+ * Analyze a resume to extract professional insights
+ * @param options Resume text or options including the text
+ * @returns Analysis and recommendations based on the resume
+ */
+export async function analyzeResume(options: { resumeText: string } | string) {
+  const resumeText = typeof options === 'string' ? options : options.resumeText;
+
+  const systemPrompt = `You are Musk, an expert AI Career Assistant specialized in deep resume analysis. 
+Your task is to analyze the provided resume and provide comprehensive insights, organized in the following sections:
+
+1. FIRST IMPRESSION OVERVIEW: Briefly summarize the key highlights of the resume and the immediate impression it makes.
+
+2. STRENGTHS ASSESSMENT: Identify 3-5 clear strengths evident in the resume, with specific examples from the content.
+
+3. IMPROVEMENT RECOMMENDATIONS: Suggest 3-5 concrete improvements the person could make to their resume, with specific examples or rewrites of sections.
+
+4. SKILL ANALYSIS: List the technical and soft skills identified in the resume, noting any potential skill gaps based on the person's career path.
+
+5. CAREER TRAJECTORY INSIGHTS: Based on the resume, provide insights on the person's career path so far and potential future directions that would leverage their experience.
+
+6. FOLLOW-UP QUESTIONS: List 2-3 questions you would ask to better understand areas that aren't clear from the resume.
+
+Always be constructive and actionable in your feedback. Focus on helping the person improve their professional presentation and career potential.`;
+
+  try {
+    const response = await anthropic.messages.create({
+      model: 'claude-3-7-sonnet-20250219',
+      max_tokens: 2000,
+      system: systemPrompt,
+      messages: [
+        { role: 'user', content: `Here is my resume to analyze:\n\n${resumeText}` }
+      ],
+    });
+
+    // Check if the response has content and it's of type 'text'
+    if (response.content[0] && 'text' in response.content[0]) {
+      return {
+        analysis: response.content[0].text,
+        sections: extractAnalysisSections(response.content[0].text),
+      };
+    } else {
+      throw new Error('Unexpected response format from Anthropic API');
+    }
+  } catch (error: unknown) {
+    console.error('Error analyzing resume with Anthropic:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    throw new Error(`Failed to analyze resume: ${errorMessage}`);
+  }
+}
+
+/**
+ * Generate personalized networking recommendations
+ * @param userProfile User profile data with career information
+ * @param targetIndustry Optional target industry for networking
+ * @param purpose Optional purpose of networking (e.g., job search, mentorship)
+ * @returns Tailored networking recommendations
+ */
+export async function generateNetworkingRecommendations(
+  userProfile: {
+    name: string;
+    title?: string;
+    industry?: string;
+    domain?: string;
+    location?: string;
+    skills?: Array<{ name: string; level?: string }>;
+    lookingFor?: string;
+  },
+  targetIndustry?: string,
+  purpose?: string
+) {
+  // Create profile summary
+  let profileSummary = `Name: ${userProfile.name}\n`;
+  if (userProfile.title) profileSummary += `Title: ${userProfile.title}\n`;
+  if (userProfile.industry) profileSummary += `Current Industry: ${userProfile.industry}\n`;
+  if (userProfile.domain) profileSummary += `Domain: ${userProfile.domain}\n`;
+  if (userProfile.location) profileSummary += `Location: ${userProfile.location}\n`;
+  if (userProfile.lookingFor) profileSummary += `Looking For: ${userProfile.lookingFor}\n`;
+
+  // Add skills if available
+  if (userProfile.skills && userProfile.skills.length > 0) {
+    profileSummary += '\nKey Skills:\n';
+    userProfile.skills.forEach(skill => {
+      profileSummary += `- ${skill.name}${skill.level ? ` (${skill.level})` : ''}\n`;
+    });
+  }
+
+  const systemPrompt = `You are Musk, an expert AI Networking Advisor who helps professionals connect strategically to advance their careers. 
+Provide detailed, actionable networking recommendations based on the user's profile and goals. Include:
+
+1. STRATEGIC APPROACH: Overall networking strategy tailored to their specific situation
+2. PLATFORM RECOMMENDATIONS: Where specifically they should focus networking efforts (LinkedIn, events, associations, etc.)
+3. OUTREACH TEMPLATES: 1-2 customized message templates they can use to initiate connections
+4. TARGET CONNECTIONS: Types of professionals they should prioritize connecting with
+5. CONVERSATION STARTERS: Specific icebreakers and talking points relevant to their industry
+
+Your advice should be personalized, specific, and immediately actionable.`;
+
+  let userPrompt = `I'm looking for strategic networking advice based on my professional profile below:
+
+${profileSummary}`;
+
+  if (targetIndustry) {
+    userPrompt += `\nI'm particularly interested in networking with professionals in the ${targetIndustry} industry.`;
+  }
+
+  if (purpose) {
+    userPrompt += `\nMy main purpose for networking is: ${purpose}`;
   }
 
   try {
-    console.log(`Preparing PDF data for Claude analysis - length: ${fileData.length} chars`);
-    
-    // Try to decode the base64 data if possible
-    const decodedOrOriginal = tryDecodeBase64(fileData);
-    const textToAnalyze = decodedOrOriginal.substring(0, 100000); // Limit for API
-    
-    // Create messages with only text content
     const response = await anthropic.messages.create({
-      model: "claude-3-7-sonnet-20250219",
-      max_tokens: 4000,
-      system: `You are Musk, an expert resume analyzer within the Brandentifier platform, with deep knowledge of professional development and hiring practices across many industries. 
-      
-Your analysis must be EXTREMELY PERSONALIZED based on the resume content provided, directly referencing the specific experiences, skills, education, and background from the resume. Avoid generic advice at all costs - everything must be tailored to this specific individual's situation as detailed in their resume. 
-
-Provide detailed, constructive feedback with highly actionable insights. When suggesting improvements, always mention how Brandentifier's features can help, including the Portfolio Builder for showcasing projects, Smart Connect for networking, and Services showcase for freelancers and consultants.
-
-Your analysis should be detailed and helpful with the same level of personalization and specificity that ChatGPT would provide.`,
-      messages: [{
-        role: "user",
-        content: `I need an EXTREMELY detailed and personalized professional analysis of the resume I'm sending. This must be a comprehensive, specific analysis that directly references the actual content in the resume, not generic advice. Make your response feel like it was written specifically for this individual after carefully studying their resume.
-
-First, analyze the resume to identify the person's name, experience details, education background, skills, and other key information. Then, provide a comprehensive, personalized analysis that mentions the person by their EXACT name and references their SPECIFIC experiences, skills, and background throughout your entire response.
-
-Here is the resume content extracted from a PDF file:
-
-${textToAnalyze}
-
-Try your best to interpret this content as a resume, even if parts are difficult to parse. Focus on extracting key information like name, job titles, experiences, education, etc.
-
-Provide a HIGHLY personalized and comprehensive resume analysis with specific improvement suggestions using this structure:
-
-# Resume Analysis & Improvement Suggestions for [Name]
-            
-## Career Overview & Industry Context
-🔍 Identify the person's industry and career stage
-📈 Briefly describe how their experience aligns with current trends in their industry
-🎯 Note any career trajectory patterns visible in their work history
-            
-## Key Strengths:
-✅ List 6-7 key strengths from the resume (be specific to their actual achievements)
-✅ Include exact metrics/quantifiable results they've mentioned (and suggest where more could be added)
-✅ Highlight their specific technical proficiency and skill level
-✅ Note their industry exposure with company names and actual positions held
-            
-## Areas for Improvement & Detailed Recommendations:
-            
-### 1️⃣ Profile Summary Enhancement
-Analyze their existing summary section (or note its absence):
-            
-❌ Current summary (quoted EXACTLY from the resume) with specific weaknesses identified
-✅ Suggested revision (completely rewritten to be more impactful) that:
-   - Highlights their SPECIFIC years of experience in their ACTUAL field
-   - Incorporates their MOST impressive achievements with real metrics
-   - Positions them for their apparent career goals based on resume content
-   - Mentions how they could showcase this summary in their Brandentifier Portfolio
-            
-### 2️⃣ Achievement Optimization
-Identify 3-4 weak achievement descriptions from their ACTUAL resume:
-            
-❌ Original statement: "[exact quote from resume]"
-✅ Improved version: "[rewritten with specific metrics and outcomes]"
-            
-❌ Original statement: "[exact quote from resume]"
-✅ Improved version: "[rewritten with specific metrics and outcomes]"
-            
-[Include 1-2 more examples as needed]
-            
-### 3️⃣ Detailed Resume Structure Analysis
-Analyze the actual organization of their resume:
-- Comment on the specific section order they've used
-- Note any missing critical sections they should add
-- Suggest formatting improvements tailored to their industry/role
-- Recommend how they could present this improved structure using Brandentifier's Portfolio Builder
-            
-### 4️⃣ Comprehensive Skills Assessment
-Based on their stated role and industry:
-- List the skills they ACTUALLY mention that are valuable
-- Identify 5-7 SPECIFIC missing skills that employers in their field currently value
-- Suggest how to present skills by category/proficiency level
-- Recommend using Brandentifier's Skills showcase to better visualize their expertise
-            
-### 5️⃣ Expanded Projects/Portfolio Strategy
-Based on their actual work history:
-- Analyze any projects they've mentioned
-- Suggest 3-4 SPECIFIC additional projects they should highlight based on their experience
-- Provide a detailed format for presenting each project
-- Explain how Brandentifier's Portfolio Builder can help them create an impressive project showcase
-            
-### 6️⃣ Personalized ATS Optimization Recommendations
-Provide detailed, specific ATS optimization advice:
-- List 5-7 actual keywords from their industry that should be included
-- Identify any ATS-problematic formatting in their current resume
-- Suggest specific filename conventions for their field
-- Explain how to handle any unusual elements in their resume (gaps, career changes)
-            
-### 7️⃣ Networking Strategy Based on Resume Content
-Using the resume details:
-- Suggest 4-5 specific types of professionals they should connect with
-- Recommend how to leverage their unique experience when networking
-- Explain how Brandentifier's Smart Connect feature can help them build their professional network
-            
-### 8️⃣ Service Offering Opportunities
-Based on their expertise:
-- Suggest 3-4 specific services they could offer as a consultant/freelancer
-- Outline how to package and present each service
-- Explain how Brandentifier's Services showcase can help them market these offerings
-            
-Format with emoji bullets (like ✅, 🔹, 📅) to make sections visually distinct. Use a professional yet conversational tone, and make all advice extremely detailed, practical, and tailored specifically to their experience and industry.`
-      }]
+      model: 'claude-3-7-sonnet-20250219',
+      max_tokens: 1500,
+      system: systemPrompt,
+      messages: [
+        { role: 'user', content: userPrompt }
+      ],
     });
 
-    console.log("Successfully received analysis from Claude");
+    return {
+      recommendations: response.content[0].text,
+      sections: extractNetworkingSections(response.content[0].text),
+    };
+  } catch (error) {
+    console.error('Error generating networking recommendations with Anthropic:', error);
+    throw new Error(`Failed to generate networking recommendations: ${error.message}`);
+  }
+}
+
+// Helper to extract next steps from generated career advice
+function extractNextSteps(text: string): string[] {
+  // Look for sections that might contain next steps
+  const nextStepsRegex = /(?:next steps|action items|recommended actions|what to do next)(?::|\.)([\s\S]*?)(?:\n\n|\n#|\n\*\*|$)/i;
+  const match = text.match(nextStepsRegex);
+  
+  if (match && match[1]) {
+    // Extract bullet points or numbered items
+    const stepsText = match[1].trim();
+    const steps = stepsText
+      .split(/\n(?:[-•*]|\d+\.)\s+/)
+      .filter(step => step.trim().length > 0)
+      .map(step => step.trim());
     
-    // Check for expected response format and extract the text
-    if (response.content && response.content.length > 0) {
-      const contentBlock = response.content[0];
-      if ('text' in contentBlock) {
-        return contentBlock.text;
-      }
-    }
-    
-    throw new Error("Unexpected response format from Claude API");
-  } catch (error: any) {
-    console.error("Error calling Anthropic API:", error.message);
-    if (error.status === 401) {
-      throw new Error("Invalid Anthropic API key. Please check your credentials.");
-    }
-    throw new Error(`Failed to process resume with Claude: ${error.message}`);
+    return steps.length > 0 ? steps : [stepsText];
+  }
+
+  // If no explicit section found, try to identify action-oriented statements
+  const actionRegex = /(?:should|could|consider|try|start|begin|focus on|prioritize|learn|develop|create|build|reach out to|connect with)[^.!?]*[.!?]/gi;
+  const actionMatches = text.match(actionRegex) || [];
+  
+  return actionMatches.slice(0, 5).map(s => s.trim());
+}
+
+// Helper to extract analysis sections from resume analysis
+function extractAnalysisSections(text: string): Record<string, string> {
+  const sections = {
+    firstImpression: '',
+    strengths: '',
+    improvements: '',
+    skills: '',
+    careerTrajectory: '',
+    followUpQuestions: '',
+  };
+
+  // Extract each section using regex patterns
+  const firstImpressionMatch = text.match(/(?:FIRST IMPRESSION|OVERVIEW|SUMMARY)(?::|\.)([\s\S]*?)(?:\n\n|\n#|\n\d\.|\n\*\*|$)/i);
+  if (firstImpressionMatch && firstImpressionMatch[1]) {
+    sections.firstImpression = firstImpressionMatch[1].trim();
+  }
+
+  const strengthsMatch = text.match(/(?:STRENGTHS|STRENGTHS ASSESSMENT|STRONG POINTS)(?::|\.)([\s\S]*?)(?:\n\n|\n#|\n\d\.|\n\*\*|$)/i);
+  if (strengthsMatch && strengthsMatch[1]) {
+    sections.strengths = strengthsMatch[1].trim();
+  }
+
+  const improvementsMatch = text.match(/(?:IMPROVEMENT|IMPROVEMENTS|RECOMMENDATIONS|AREAS TO IMPROVE)(?::|\.)([\s\S]*?)(?:\n\n|\n#|\n\d\.|\n\*\*|$)/i);
+  if (improvementsMatch && improvementsMatch[1]) {
+    sections.improvements = improvementsMatch[1].trim();
+  }
+
+  const skillsMatch = text.match(/(?:SKILL|SKILLS|SKILL ANALYSIS|SKILLS ASSESSMENT)(?::|\.)([\s\S]*?)(?:\n\n|\n#|\n\d\.|\n\*\*|$)/i);
+  if (skillsMatch && skillsMatch[1]) {
+    sections.skills = skillsMatch[1].trim();
+  }
+
+  const careerMatch = text.match(/(?:CAREER|TRAJECTORY|CAREER PATH|CAREER TRAJECTORY)(?::|\.)([\s\S]*?)(?:\n\n|\n#|\n\d\.|\n\*\*|$)/i);
+  if (careerMatch && careerMatch[1]) {
+    sections.careerTrajectory = careerMatch[1].trim();
+  }
+
+  const questionsMatch = text.match(/(?:QUESTIONS|FOLLOW-UP|FOLLOW UP)(?::|\.)([\s\S]*?)(?:\n\n|\n#|\n\d\.|\n\*\*|$)/i);
+  if (questionsMatch && questionsMatch[1]) {
+    sections.followUpQuestions = questionsMatch[1].trim();
+  }
+
+  return sections;
+}
+
+// Helper to extract sections from networking recommendations
+function extractNetworkingSections(text: string): Record<string, string> {
+  const sections = {
+    strategy: '',
+    platforms: '',
+    outreachTemplates: '',
+    targetConnections: '',
+    conversationStarters: '',
+  };
+
+  // Extract each section using regex patterns
+  const strategyMatch = text.match(/(?:STRATEGIC APPROACH|STRATEGY|NETWORKING STRATEGY)(?::|\.)([\s\S]*?)(?:\n\n|\n#|\n\d\.|\n\*\*|$)/i);
+  if (strategyMatch && strategyMatch[1]) {
+    sections.strategy = strategyMatch[1].trim();
+  }
+
+  const platformsMatch = text.match(/(?:PLATFORM RECOMMENDATIONS|PLATFORMS|WHERE TO NETWORK)(?::|\.)([\s\S]*?)(?:\n\n|\n#|\n\d\.|\n\*\*|$)/i);
+  if (platformsMatch && platformsMatch[1]) {
+    sections.platforms = platformsMatch[1].trim();
+  }
+
+  const templatesMatch = text.match(/(?:OUTREACH TEMPLATES|TEMPLATES|MESSAGE TEMPLATES)(?::|\.)([\s\S]*?)(?:\n\n|\n#|\n\d\.|\n\*\*|$)/i);
+  if (templatesMatch && templatesMatch[1]) {
+    sections.outreachTemplates = templatesMatch[1].trim();
+  }
+
+  const connectionsMatch = text.match(/(?:TARGET CONNECTIONS|WHO TO CONNECT WITH|PRIORITY CONNECTIONS)(?::|\.)([\s\S]*?)(?:\n\n|\n#|\n\d\.|\n\*\*|$)/i);
+  if (connectionsMatch && connectionsMatch[1]) {
+    sections.targetConnections = connectionsMatch[1].trim();
+  }
+
+  const startersMatch = text.match(/(?:CONVERSATION STARTERS|ICEBREAKERS|TALKING POINTS)(?::|\.)([\s\S]*?)(?:\n\n|\n#|\n\d\.|\n\*\*|$)/i);
+  if (startersMatch && startersMatch[1]) {
+    sections.conversationStarters = startersMatch[1].trim();
+  }
+
+  return sections;
+}
+
+// Helper function to format dates
+function formatDate(dateString: string): string {
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+  } catch (e) {
+    return dateString;
   }
 }
