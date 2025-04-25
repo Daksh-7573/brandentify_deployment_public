@@ -108,12 +108,12 @@ async function updateAnalytics(params: CreateFeedbackParams): Promise<void> {
       );
 
     // Update counts based on feedback type
-    let helpfulCount = existingAnalytics?.helpfulCount || 0;
-    let unhelpfulCount = existingAnalytics?.unhelpfulCount || 0;
-    let savedCount = existingAnalytics?.savedCount || 0;
+    let helpfulCount = existingAnalytics?.helpfulCount ?? 0;
+    let unhelpfulCount = existingAnalytics?.unhelpfulCount ?? 0;
+    let savedCount = existingAnalytics?.savedCount ?? 0;
     let totalRatings = 0;
     let sumRatings = 0;
-    let averageRating = existingAnalytics?.averageRating || 0;
+    let averageRating = existingAnalytics?.averageRating ?? 0;
 
     if (params.feedbackType === "helpful") {
       if (params.helpful) {
@@ -127,12 +127,14 @@ async function updateAnalytics(params: CreateFeedbackParams): Promise<void> {
       // Calculate new average rating
       if (existingAnalytics) {
         // Approximate the previous sum of ratings
-        const previousTotalRatings = (existingAnalytics.helpfulCount + existingAnalytics.unhelpfulCount);
+        // Convert to numbers to ensure proper calculation
+        const previousTotalRatings = Number(helpfulCount) + Number(unhelpfulCount);
         totalRatings = previousTotalRatings + 1;
-        sumRatings = (existingAnalytics.averageRating || 0) * previousTotalRatings + params.rating;
+        const currentAvgRating = Number(averageRating) || 0;
+        sumRatings = currentAvgRating * previousTotalRatings + Number(params.rating);
         averageRating = sumRatings / totalRatings;
       } else {
-        averageRating = params.rating;
+        averageRating = Number(params.rating);
       }
     }
 
@@ -233,7 +235,7 @@ export async function getTopPerformingCategories(limit = 10) {
       LIMIT $1
     `;
     
-    return await db.execute(rawQuery, [limit]);
+    return await db.execute(rawQuery);
   } catch (error) {
     console.error("Error retrieving top performing categories:", error);
     return [];

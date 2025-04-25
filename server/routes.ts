@@ -5194,6 +5194,9 @@ ${extractedText.substring(0, 5000)}
   
   // Register Musk Testing routes for QA and Roleplay scenarios
   setupMuskTestingRoutes(apiRouter);
+  
+  // Register Musk Feedback routes for user feedback collection
+  app.use("/api/musk-feedback", muskFeedbackRoutes);
 
   app.use("/api", apiRouter);
 
