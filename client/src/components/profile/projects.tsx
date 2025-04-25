@@ -953,7 +953,7 @@ export default function Projects() {
               {displayProjects.map((project) => (
                 <div key={project.id} className="border rounded-lg overflow-hidden shadow-sm group relative">
                   {/* Project Thumbnail */}
-                  <div className="relative w-full h-48 bg-muted flex items-center justify-center overflow-hidden">
+                  <div className="relative w-full aspect-square bg-muted flex items-center justify-center overflow-hidden">
                     {project.thumbnailUrl ? (
                       <img 
                         src={
@@ -2339,7 +2339,7 @@ export default function Projects() {
                               <img 
                                 src={currentProject.mediaUrls} 
                                 alt="Project Image" 
-                                className={`aspect-video w-full object-cover rounded-md border cursor-pointer hover:opacity-95
+                                className={`aspect-square w-full object-cover rounded-md border cursor-pointer hover:opacity-95
                                   ${currentProject.thumbnailUrl === currentProject.mediaUrls ? 'ring-2 ring-primary ring-offset-1' : ''}
                                 `}
                                 onClick={() => openLightbox([currentProject.mediaUrls as string], 0)}
