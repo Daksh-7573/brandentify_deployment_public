@@ -4913,14 +4913,30 @@ export class DatabaseStorage implements IStorage {
       try {
         const result = await pool.query(`
           SELECT id, user_id as "userId", degree, institution, location, 
-                 start_date as "startDate", end_date as "endDate"
+                 start_date as "startDate", end_date as "endDate", industry,
+                 field_of_study as "fieldOfStudy", skills_acquired as "skillsAcquired", domain
           FROM educations
           WHERE user_id = $1
         `, [userId]);
         
         console.log(`[db.getEducationsByUserId] Found ${result.rows.length} education records for user ${userId}`);
         
-        return result.rows;
+        // Process skillsAcquired to ensure it's an array
+        const processedEducations = result.rows.map(education => {
+          if (education.skillsAcquired && typeof education.skillsAcquired === 'string') {
+            try {
+              education.skillsAcquired = JSON.parse(education.skillsAcquired);
+            } catch (error) {
+              console.error(`[db.getEducationsByUserId] Error parsing skillsAcquired for education ${education.id}:`, error);
+              education.skillsAcquired = [];
+            }
+          } else if (!education.skillsAcquired) {
+            education.skillsAcquired = [];
+          }
+          return education;
+        });
+        
+        return processedEducations;
       } catch (error) {
         console.error(`[db.getEducationsByUserId] Error fetching education records for user ${userId}:`, error);
         throw error; // Rethrow for retry mechanism
@@ -4942,19 +4958,24 @@ export class DatabaseStorage implements IStorage {
     try {
       const result = await pool.query(`
         INSERT INTO educations (
-          user_id, degree, institution, location, start_date, end_date
+          user_id, degree, institution, location, start_date, end_date, industry, field_of_study, skills_acquired, domain
         ) VALUES (
-          $1, $2, $3, $4, $5, $6
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
         ) RETURNING 
           id, user_id as "userId", degree, institution, location, 
-          start_date as "startDate", end_date as "endDate"
+          start_date as "startDate", end_date as "endDate", industry, field_of_study as "fieldOfStudy",
+          skills_acquired as "skillsAcquired", domain
       `, [
         insertEducation.userId,
         insertEducation.degree,
         insertEducation.institution,
         insertEducation.location,
         insertEducation.startDate,
-        insertEducation.endDate
+        insertEducation.endDate,
+        insertEducation.industry || null,
+        insertEducation.fieldOfStudy || null,
+        insertEducation.skillsAcquired || null,
+        insertEducation.domain || null
       ]);
       
       console.log(`[db.createEducation] Created education record with ID ${result.rows[0].id}`);
@@ -5000,6 +5021,27 @@ export class DatabaseStorage implements IStorage {
         values.push(educationData.endDate);
       }
       
+      // Handle new fields
+      if (educationData.industry !== undefined) {
+        updateFields.push(`industry = $${valueIndex++}`);
+        values.push(educationData.industry);
+      }
+      
+      if (educationData.fieldOfStudy !== undefined) {
+        updateFields.push(`field_of_study = $${valueIndex++}`);
+        values.push(educationData.fieldOfStudy);
+      }
+      
+      if (educationData.skillsAcquired !== undefined) {
+        updateFields.push(`skills_acquired = $${valueIndex++}`);
+        values.push(educationData.skillsAcquired);
+      }
+      
+      if (educationData.domain !== undefined) {
+        updateFields.push(`domain = $${valueIndex++}`);
+        values.push(educationData.domain);
+      }
+      
       // If no fields were provided to update, return the original education
       if (updateFields.length === 0) {
         console.log(`[db.updateEducation] No fields to update for education ${id}`);
@@ -5014,7 +5056,8 @@ export class DatabaseStorage implements IStorage {
         SET ${updateFields.join(', ')} 
         WHERE id = $${valueIndex}
         RETURNING id, user_id as "userId", degree, institution, location, 
-                 start_date as "startDate", end_date as "endDate"
+                 start_date as "startDate", end_date as "endDate", industry,
+                 field_of_study as "fieldOfStudy", skills_acquired as "skillsAcquired", domain
       `;
       
       console.log(`[db.updateEducation] Executing update query for education ${id}`);
