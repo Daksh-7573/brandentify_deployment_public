@@ -716,16 +716,10 @@ export default function CorporateExecutive({
                   {service.description || "Comprehensive service designed to meet your specific business needs and challenges."}
                 </p>
                 
-                <div className="flex justify-between items-center">
-                  {service.pricing && (
-                    <div className="text-sm font-medium text-[#6a0dad] highlight-badge px-3 py-1 rounded-full" style={{ fontFamily: 'Inter, sans-serif' }}>
-                      {service.pricing}
-                    </div>
-                  )}
-                  
+                <div className="flex justify-end items-center">
                   <Button 
                     variant="outline"
-                    className="ml-auto text-sm px-4 py-2 rounded-md flex items-center hover:bg-[#f9f0ff]"
+                    className="text-sm px-4 py-2 rounded-md flex items-center hover:bg-[#f9f0ff]"
                   >
                     <span style={{ fontFamily: 'Inter, sans-serif' }}>Inquire</span>
                     <ChevronRight className="h-4 w-4 ml-1" />
