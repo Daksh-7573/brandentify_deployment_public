@@ -531,7 +531,7 @@ export default function CorporateExecutive({
         {selectedProject && (
           <DialogContent className="max-w-4xl overflow-y-auto max-h-[90vh]">
             <DialogHeader>
-              <DialogTitle className="text-xl md:text-2xl font-bold" style={{ fontFamily: 'Playfair Display, serif' }}>
+              <DialogTitle className="text-xl md:text-2xl font-bold" style={{ fontFamily: 'Inter, sans-serif' }}>
                 {selectedProject.title}
               </DialogTitle>
               <DialogDescription className="text-base text-gray-600 mt-1" style={{ fontFamily: 'Inter, sans-serif' }}>
@@ -564,7 +564,7 @@ export default function CorporateExecutive({
                 
                 {selectedProject.description && (
                   <div className="mt-4">
-                    <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>Overview</h3>
+                    <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>Overview</h3>
                     <p className="text-gray-700" style={{ fontFamily: 'Inter, sans-serif' }}>
                       {selectedProject.description}
                     </p>
@@ -574,7 +574,7 @@ export default function CorporateExecutive({
                 {/* Project media gallery */}
                 {selectedProject && selectedProject.mediaUrls && Array.isArray(selectedProject.mediaUrls) && selectedProject.mediaUrls.length > 0 && (
                   <div className="mt-6">
-                    <h3 className="text-lg font-semibold mb-3" style={{ fontFamily: 'Playfair Display, serif' }}>Gallery</h3>
+                    <h3 className="text-lg font-semibold mb-3" style={{ fontFamily: 'Inter, sans-serif' }}>Gallery</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {selectedProject.mediaUrls.map((url: string, index: number) => (
                         <div key={index} className="rounded-lg overflow-hidden h-40">
@@ -594,7 +594,7 @@ export default function CorporateExecutive({
               <div className="space-y-6">
                 {selectedProject.projectUrl && (
                   <div>
-                    <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>External Link</h3>
+                    <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>External Link</h3>
                     <a 
                       href={selectedProject.projectUrl}
                       target="_blank"
@@ -610,7 +610,7 @@ export default function CorporateExecutive({
                 
                 {/* Additional project information */}
                 <div>
-                  <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>Project Details</h3>
+                  <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>Project Details</h3>
                   <ul className="space-y-2">
                     <li className="flex items-start gap-2">
                       <Calendar className="h-4 w-4 mt-1 text-gray-500" />
@@ -726,11 +726,11 @@ export default function CorporateExecutive({
             {/* Intro Content */}
             <div className="w-full md:w-3/4 flex flex-col">
               <div className="fade-in">
-                <h1 className="text-4xl font-bold text-gray-900 mb-3" style={{ fontFamily: 'Playfair Display, serif' }}>
+                <h1 className="text-4xl font-bold text-gray-900 mb-3" style={{ fontFamily: 'Inter, sans-serif' }}>
                   {userInfo.name}
                 </h1>
                 
-                <h2 className="text-2xl text-gray-700 mb-6 accent-border" style={{ fontFamily: 'Playfair Display, serif' }}>
+                <h2 className="text-2xl text-gray-700 mb-6 accent-border" style={{ fontFamily: 'Inter, sans-serif' }}>
                   I am a {userInfo.title || "Strategic Growth Advisor"}
                 </h2>
               </div>
@@ -770,7 +770,7 @@ export default function CorporateExecutive({
               
               {/* Executive Summary */}
               <div className="bg-white border border-gray-100 rounded-lg p-6 shadow-sm mb-8 fade-in fade-in-delay-3">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4" style={{ fontFamily: 'Inter, sans-serif' }}>
                   What I'm All About
                 </h3>
                 <div className="flex">
@@ -793,7 +793,7 @@ export default function CorporateExecutive({
       {/* Expertise (Skills) Section */}
       <section id="skills" className="py-16 px-8 bg-white">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 mb-10 accent-border" style={{ fontFamily: 'Playfair Display, serif' }}>
+          <h2 className="text-3xl font-bold text-gray-900 mb-10 accent-border" style={{ fontFamily: 'Inter, sans-serif' }}>
             What I'm Good At
           </h2>
           
@@ -851,7 +851,7 @@ export default function CorporateExecutive({
       {/* Services Section */}
       <section id="services" className="py-16 px-8 bg-gray-50">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 mb-10" style={{ fontFamily: 'Playfair Display, serif' }}>
+          <h2 className="text-3xl font-bold text-gray-900 mb-10" style={{ fontFamily: 'Inter, sans-serif' }}>
             What I <span className="premium-gradient-text">Offer</span>
           </h2>
           
@@ -873,7 +873,7 @@ export default function CorporateExecutive({
                     )}
                   </div>
                 
-                  <h3 className="text-xl font-semibold text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>
+                  <h3 className="text-xl font-semibold text-gray-900" style={{ fontFamily: 'Inter, sans-serif' }}>
                     {service.title}
                   </h3>
                 </div>
@@ -930,7 +930,7 @@ export default function CorporateExecutive({
       {/* Showcase (Projects) Section */}
       <section id="projects" className="py-16 px-8 bg-white">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 mb-10 accent-border" style={{ fontFamily: 'Playfair Display, serif' }}>
+          <h2 className="text-3xl font-bold text-gray-900 mb-10 accent-border" style={{ fontFamily: 'Inter, sans-serif' }}>
             Showcase
           </h2>
           
@@ -955,7 +955,7 @@ export default function CorporateExecutive({
                   
                   <div className="p-6">
                     <div className="flex justify-between items-start mb-3">
-                      <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>
+                      <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Inter, sans-serif' }}>
                         {project.title}
                       </h3>
                       
@@ -1015,7 +1015,7 @@ export default function CorporateExecutive({
       {/* Career Path (Experience) Section */}
       <section id="experience" className="py-16 px-8 bg-gray-50">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 mb-10 accent-border" style={{ fontFamily: 'Playfair Display, serif' }}>
+          <h2 className="text-3xl font-bold text-gray-900 mb-10 accent-border" style={{ fontFamily: 'Inter, sans-serif' }}>
             Career Path
           </h2>
           
@@ -1031,7 +1031,7 @@ export default function CorporateExecutive({
                     <div className="bg-white rounded-lg p-6 shadow-sm">
                       <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-3 mb-3">
                         <div>
-                          <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>
+                          <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Inter, sans-serif' }}>
                             {exp.title}
                           </h3>
                           <p className="text-[#6a0dad] font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>
@@ -1100,7 +1100,7 @@ export default function CorporateExecutive({
           </div>
           
           {/* Academic Background */}
-          <h2 className="text-3xl font-bold text-gray-900 mb-10 accent-border" style={{ fontFamily: 'Playfair Display, serif' }}>
+          <h2 className="text-3xl font-bold text-gray-900 mb-10 accent-border" style={{ fontFamily: 'Inter, sans-serif' }}>
             Academic Background
           </h2>
           
@@ -1114,7 +1114,7 @@ export default function CorporateExecutive({
                 >
                   <div className="flex justify-between mb-3">
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>
+                      <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Inter, sans-serif' }}>
                         {edu.degree}
                       </h3>
                       <p className="text-[#6a0dad] font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>
@@ -1176,7 +1176,7 @@ export default function CorporateExecutive({
       {/* Education Section */}
       <section id="education" className="py-16 px-8 bg-white">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 mb-10 accent-border" style={{ fontFamily: 'Playfair Display, serif' }}>
+          <h2 className="text-3xl font-bold text-gray-900 mb-10 accent-border" style={{ fontFamily: 'Inter, sans-serif' }}>
             Academic Background
           </h2>
           
@@ -1191,7 +1191,7 @@ export default function CorporateExecutive({
                   <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
                     <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-3 mb-3">
                       <div>
-                        <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>
+                        <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Inter, sans-serif' }}>
                           {edu.degree}
                         </h3>
                         <p className="text-[#6a0dad] font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>
@@ -1280,7 +1280,7 @@ export default function CorporateExecutive({
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center gap-8">
             <div>
-              <h2 className="text-3xl font-bold mb-3" style={{ fontFamily: 'Playfair Display, serif' }}>
+              <h2 className="text-3xl font-bold mb-3" style={{ fontFamily: 'Inter, sans-serif' }}>
                 Ready to Connect?
               </h2>
               <p className="text-gray-300 mb-0" style={{ fontFamily: 'Inter, sans-serif' }}>
