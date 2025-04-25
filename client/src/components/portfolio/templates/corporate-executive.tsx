@@ -714,7 +714,7 @@ export default function CorporateExecutive({
       </div>
       
       {/* Hero Section */}
-      <section id="about" className="py-20 px-8 bg-gray-50">
+      <section id="about" className="py-16 px-8 bg-gray-50">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-12">
             {/* Profile Image */}
