@@ -121,13 +121,7 @@ export default function CorporateExecutive({
     .map(service => {
       const serviceWithPricing = {
         ...service,
-        pricing: service.category === 'coaching' 
-          ? 'Starting at $5,000' 
-          : service.category === 'consulting' 
-            ? 'Custom engagement' 
-            : service.category === 'advisory' 
-              ? 'Retainer basis'
-              : 'On Request'
+        pricing: ''
       };
       
       // Force the type to be EnhancedService
@@ -692,7 +686,7 @@ export default function CorporateExecutive({
             What I <span className="premium-gradient-text">Offer</span>
           </h2>
           <p className="text-gray-600 mb-10 max-w-2xl" style={{ fontFamily: 'Inter, sans-serif' }}>
-            Specialized services tailored to drive organizational excellence and leadership effectiveness
+            
           </p>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
