@@ -319,6 +319,8 @@ export const handleMuskChat = async (req: Request, res: Response) => {
   try {
     const { userId: rawUserId, message, context } = req.body;
     
+    console.log(`Musk chat: Received message request with rawUserId: ${rawUserId}, type: ${typeof rawUserId}`);
+    
     if (!message) {
       return res.status(400).json({ error: "Message is required" });
     }
@@ -340,20 +342,39 @@ export const handleMuskChat = async (req: Request, res: Response) => {
     }
     
     // Handle both Firebase UIDs and numeric user IDs
-    let numericUserId = typeof rawUserId === 'number' ? rawUserId : 0;
+    let numericUserId = 0;
     
-    // If the userId is a Firebase UID (string format), try to look up the numeric ID
-    if (rawUserId && typeof rawUserId === 'string' && !numericUserId) {
-      try {
-        console.log(`Musk chat: Converting Firebase UID to numeric ID: ${rawUserId}`);
-        const user = await storage.getUserByUsername(rawUserId);
-        if (user) {
-          numericUserId = user.id;
-          console.log(`Musk chat: Found numeric ID ${numericUserId} for Firebase UID ${rawUserId}`);
-        }
-      } catch (error) {
-        console.error(`Error looking up numeric ID for Firebase UID ${rawUserId}:`, error);
+    if (rawUserId) {
+      // If userId is a number, use it directly
+      if (typeof rawUserId === 'number') {
+        numericUserId = rawUserId;
+        console.log(`Musk chat: Using numeric userId directly: ${numericUserId}`);
+      } 
+      // If userId is a numeric string (e.g., "2"), convert it
+      else if (typeof rawUserId === 'string' && /^\d+$/.test(rawUserId)) {
+        numericUserId = parseInt(rawUserId, 10);
+        console.log(`Musk chat: Converted numeric string "${rawUserId}" to number: ${numericUserId}`);
       }
+      // If userId is a Firebase UID (string format), look up the numeric ID
+      else if (typeof rawUserId === 'string') {
+        try {
+          console.log(`Musk chat: Looking up numeric ID for Firebase UID: ${rawUserId}`);
+          const user = await storage.getUserByUsername(rawUserId);
+          if (user) {
+            numericUserId = user.id;
+            console.log(`Musk chat: Found numeric ID ${numericUserId} for Firebase UID ${rawUserId}`);
+          } else {
+            console.log(`Musk chat: No user found for Firebase UID ${rawUserId}`);
+          }
+        } catch (error) {
+          console.error(`Error looking up numeric ID for Firebase UID ${rawUserId}:`, error);
+        }
+      }
+    }
+    
+    // If we couldn't find a valid user ID, log warning but don't use demo user
+    if (!numericUserId) {
+      console.log(`Musk chat: Warning - No valid user ID found (raw input: ${rawUserId})`);
     }
     
     console.log(`Musk chat: Using user ID ${numericUserId} (original: ${rawUserId})`);
@@ -411,23 +432,30 @@ export const handleMuskChat = async (req: Request, res: Response) => {
 // Enhance context with user data for personalized responses
 async function enrichContextWithUserData(userId: number, context?: any) {
   try {
-    // Get user profile data
+    // Get user profile data with debug logging
+    console.log(`Enriching context with user data for userId: ${userId}`);
     const user = await storage.getUser(userId);
     if (!user) {
+      console.log(`No user found for userId: ${userId}`);
       return context;
     }
+    console.log(`Found user profile for userId ${userId}: ${user.name}, ${user.title}`);
     
-    // Get user's experiences
+    // Get user's experiences with debug logging
     const experiences = await storage.getWorkExperiencesByUserId(userId);
+    console.log(`Found ${experiences?.length || 0} work experiences for userId ${userId}`);
     
-    // Get user's educations
+    // Get user's educations with debug logging
     const educations = await storage.getEducationsByUserId(userId);
+    console.log(`Found ${educations?.length || 0} education entries for userId ${userId}`);
     
-    // Get user's skills
+    // Get user's skills with debug logging
     const skills = await storage.getSkillsByUserId(userId);
+    console.log(`Found ${skills?.length || 0} skills for userId ${userId}`);
     
-    // Get user's projects/assignments
+    // Get user's projects/assignments with debug logging
     const projects = await storage.getProjectsByUserId(userId);
+    console.log(`Found ${projects?.length || 0} projects for userId ${userId}`);
     
     // Create base context with user data
     const baseContext = {
@@ -605,15 +633,29 @@ When asking follow-up questions, use this precise framework to create focused, v
       { role: "user" as const, content: message }
     ];
 
+    // Log the important context being used
+    console.log("Musk context data being sent to AI:", {
+      hasUserData: !!context.userData,
+      userProfile: context.userData?.profile,
+      experienceCount: context.userData?.experiences?.length || 0,
+      skillsCount: context.userData?.skills?.length || 0,
+      projectsCount: context.userData?.projects?.length || 0,
+      hasResumeData: !!context.resumeData,
+      dataSource: context.dataSource || 'profile',
+      hasUserMemory: !!context.userMemory
+    });
+    
     // Call OpenAI API
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
       messages: messages,
       temperature: 0.7,
       max_tokens: 800,
     });
 
-    return completion.choices[0].message.content;
+    const response = completion.choices[0].message.content;
+    console.log("Musk AI response generated with personalized context");
+    return response;
   } catch (error) {
     console.error("Error calling OpenAI:", error);
     // Fallback to demo responses if OpenAI fails
@@ -640,7 +682,45 @@ async function extractTextFromPdf(pdfBuffer: Buffer): Promise<string> {
 // Handle CV/Resume uploads for analysis by Musk
 export const handleResumeUpload = async (req: Request, res: Response) => {
   try {
-    const userId = parseInt(req.body.userId) || 1; // Use 1 as default for demo
+    // Get user ID from request body with more robust handling
+    const rawUserId = req.body.userId;
+    console.log(`Resume upload: Received rawUserId: ${rawUserId}, type: ${typeof rawUserId}`);
+    
+    let userId = 0;
+    
+    // Better userId handling to match our other fixes
+    if (rawUserId) {
+      // Handle numeric user ID
+      if (typeof rawUserId === 'number') {
+        userId = rawUserId;
+        console.log(`Resume upload: Using numeric userId directly: ${userId}`);
+      } 
+      // Handle string that can be parsed as a number
+      else if (typeof rawUserId === 'string' && /^\d+$/.test(rawUserId)) {
+        userId = parseInt(rawUserId, 10);
+        console.log(`Resume upload: Converted numeric string "${rawUserId}" to number: ${userId}`);
+      }
+      // Handle Firebase UID (string)
+      else if (typeof rawUserId === 'string') {
+        try {
+          console.log(`Resume upload: Looking up numeric ID for Firebase UID: ${rawUserId}`);
+          const user = await storage.getUserByUsername(rawUserId);
+          if (user) {
+            userId = user.id;
+            console.log(`Resume upload: Found numeric ID ${userId} for Firebase UID ${rawUserId}`);
+          } else {
+            console.log(`Resume upload: No user found for Firebase UID ${rawUserId}`);
+          }
+        } catch (error) {
+          console.error(`Resume upload: Error looking up numeric ID for Firebase UID ${rawUserId}:`, error);
+        }
+      }
+    }
+    
+    // Don't default to demo user, log a warning instead
+    if (!userId) {
+      console.log(`Resume upload: Warning - No valid user ID found (raw input: ${rawUserId})`);
+    }
     
     // Check if file was uploaded
     if (!req.files || Object.keys(req.files).length === 0) {
@@ -766,7 +846,45 @@ export const handleResumeUpload = async (req: Request, res: Response) => {
 // Handle Pitch Deck uploads for analysis by Musk
 export const handlePitchDeckUpload = async (req: Request, res: Response) => {
   try {
-    const userId = parseInt(req.body.userId) || 1; // Use 1 as default for demo
+    // Get user ID from request body with more robust handling
+    const rawUserId = req.body.userId;
+    console.log(`Pitch deck upload: Received rawUserId: ${rawUserId}, type: ${typeof rawUserId}`);
+    
+    let userId = 0;
+    
+    // Better userId handling to match our other fixes
+    if (rawUserId) {
+      // Handle numeric user ID
+      if (typeof rawUserId === 'number') {
+        userId = rawUserId;
+        console.log(`Pitch deck upload: Using numeric userId directly: ${userId}`);
+      } 
+      // Handle string that can be parsed as a number
+      else if (typeof rawUserId === 'string' && /^\d+$/.test(rawUserId)) {
+        userId = parseInt(rawUserId, 10);
+        console.log(`Pitch deck upload: Converted numeric string "${rawUserId}" to number: ${userId}`);
+      }
+      // Handle Firebase UID (string)
+      else if (typeof rawUserId === 'string') {
+        try {
+          console.log(`Pitch deck upload: Looking up numeric ID for Firebase UID: ${rawUserId}`);
+          const user = await storage.getUserByUsername(rawUserId);
+          if (user) {
+            userId = user.id;
+            console.log(`Pitch deck upload: Found numeric ID ${userId} for Firebase UID ${rawUserId}`);
+          } else {
+            console.log(`Pitch deck upload: No user found for Firebase UID ${rawUserId}`);
+          }
+        } catch (error) {
+          console.error(`Pitch deck upload: Error looking up numeric ID for Firebase UID ${rawUserId}:`, error);
+        }
+      }
+    }
+    
+    // Don't default to demo user, log a warning instead
+    if (!userId) {
+      console.log(`Pitch deck upload: Warning - No valid user ID found (raw input: ${rawUserId})`);
+    }
     
     // Check if file was uploaded
     if (!req.files || Object.keys(req.files).length === 0) {
