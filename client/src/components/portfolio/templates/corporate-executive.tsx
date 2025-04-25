@@ -127,7 +127,7 @@ export default function CorporateExecutive({
             ? 'Custom engagement' 
             : service.category === 'advisory' 
               ? 'Retainer basis'
-              : 'On Request'
+              : ''
       };
       
       // Force the type to be EnhancedService
@@ -688,12 +688,9 @@ export default function CorporateExecutive({
       {/* Services Section */}
       <section id="services" className="py-16 px-8 bg-gray-50">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+          <h2 className="text-3xl font-bold text-gray-900 mb-10" style={{ fontFamily: 'Playfair Display, serif' }}>
             What I <span className="premium-gradient-text">Offer</span>
           </h2>
-          <p className="text-gray-600 mb-10 max-w-2xl" style={{ fontFamily: 'Inter, sans-serif' }}>
-            Specialized services tailored to drive organizational excellence and leadership effectiveness
-          </p>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {enhancedServices.map((service, index) => (
@@ -723,7 +720,7 @@ export default function CorporateExecutive({
                 </p>
                 
                 <div className="flex justify-between items-center">
-                  {service.pricing && (
+                  {service.pricing && service.pricing.length > 0 && (
                     <div className="text-sm font-medium text-[#6a0dad] highlight-badge px-3 py-1 rounded-full" style={{ fontFamily: 'Inter, sans-serif' }}>
                       {service.pricing}
                     </div>
