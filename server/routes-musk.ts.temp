@@ -1,25 +1,30 @@
-import { Request, Response } from 'express';
-import fs from 'fs';
-import path from 'path';
-import crypto from 'crypto';
-import OpenAI from 'openai';
-import { analyzeResume } from './services/fixed-openai-service';
-import { storage } from './storage';
+import { Request, Response } from "express";
+import { storage } from "./storage";
+import OpenAI from "openai";
+import { extractTextFromPdf } from "./utils/pdf-extractor";
+import { analyzeResume } from "../openai-service-fix";
+import path from "path";
+import fs from "fs";
+import crypto from "crypto";
 
-// Initialize global variable for resume context storage if it doesn't exist
+// Define types for resume context storage
+interface ResumeContext {
+  resumeText: string;
+  detectedRole: string | null;
+  skills: string[];
+  detectedIndustry: string | null;
+  uploadDate: string;
+  fileName: string;
+}
+
+// Global storage for resume contexts - persists between requests
 declare global {
   var resumeContexts: {
-    [userId: string]: {
-      resumeText: string;
-      detectedRole: string | null;
-      skills: string[];
-      detectedIndustry: string | null;
-      uploadDate: string;
-      fileName: string;
-    }
+    [userId: string]: ResumeContext;
   };
 }
 
+// Initialize the global resume contexts storage
 if (!global.resumeContexts) {
   global.resumeContexts = {};
 }
@@ -121,12 +126,23 @@ export const handleMuskChat = async (req: Request, res: Response) => {
       global.resumeContexts = {};
     }
     
-    // Check for resume context in global storage
+    // Check for resume context in global storage first since it's most reliable
     const userIdStr = userId.toString();
     if (global.resumeContexts[userIdStr]) {
       console.log(`Found resume context in global storage for user ${userId}`);
     } else {
-      console.log(`No resume context found for user ${userId}`);
+      // Only try session if the above fails
+      try {
+        if (req.session?.resumeContexts?.[userIdStr]) {
+          console.log(`Found resume context in session for user ${userId}`);
+          // Copy from session to global for future consistency
+          global.resumeContexts[userIdStr] = req.session.resumeContexts[userIdStr];
+        } else {
+          console.log(`No resume context found for user ${userId}`);
+        }
+      } catch (e) {
+        console.log(`Session not available, no resume context found for user ${userId}`);
+      }
     }
     
     if (userId) {
@@ -191,11 +207,11 @@ async function enrichContextWithUserData(userId: number, context?: any) {
       }
     };
     
-    // Check for resume context in global storage
+    // Check for resume context in global storage (our primary storage method)
     let enrichedContext = baseContext;
     const userIdStr = userId.toString();
     
-    // Check global storage for resume context
+    // Prioritize global storage
     if (global.resumeContexts && global.resumeContexts[userIdStr]) {
       const resumeContext = global.resumeContexts[userIdStr];
       console.log(`Found global resume context for user ${userId}: `, resumeContext);
@@ -203,6 +219,23 @@ async function enrichContextWithUserData(userId: number, context?: any) {
       enrichedContext = {
         ...baseContext,
         resumeData: resumeContext,
+        dataSource: 'resume',
+        lastUploaded: resumeContext.uploadDate
+      };
+    } 
+    // Fall back to session storage if needed
+    else if (context?.req?.session?.resumeContexts?.[userIdStr]) {
+      const resumeContext = context.req.session.resumeContexts[userIdStr];
+      console.log(`Found session resume context for user ${userId}: `, resumeContext);
+      
+      // Mirror to global storage for future consistency
+      global.resumeContexts[userIdStr] = resumeContext;
+      
+      // Add resume context information
+      enrichedContext = {
+        ...baseContext,
+        resumeData: resumeContext,
+        // Signal to Musk that it should use resume data with higher priority
         dataSource: 'resume',
         lastUploaded: resumeContext.uploadDate
       };
@@ -311,22 +344,6 @@ ${context.dataSource === 'resume' ? '**IMPORTANT: You must prioritize the resume
   }
 }
 
-// Helper function to extract text from PDF files
-async function extractTextFromPdf(pdfBuffer: Buffer): Promise<string> {
-  try {
-    // Since we can't use PDFLoader directly, we'll return a simplified approach
-    // In a production environment, we would use a proper PDF extraction library
-    // For now, we'll just return a placeholder and rely on OpenAI's PDF analysis capabilities
-    
-    // The API analyzeResume can handle the base64 encoded PDF directly,
-    // so we'll just return a placeholder here for completeness
-    return "PDF text extraction is being handled by the API service directly.";
-  } catch (error) {
-    console.error("Error extracting text from PDF:", error);
-    return "Error extracting text from PDF. Please check the file format.";
-  }
-}
-
 // Handle CV/Resume uploads for analysis by Musk
 export const handleResumeUpload = async (req: Request, res: Response) => {
   try {
@@ -430,6 +447,19 @@ export const handleResumeUpload = async (req: Request, res: Response) => {
       global.resumeContexts[userId.toString()] = resumeContext;
       
       console.log(`Stored resume context for user ${userId} in global storage: ${JSON.stringify(resumeContext, null, 2)}`);
+      
+      // Try to store in session if available (as a backup)
+      try {
+        if (req.session && typeof req.session === 'object') {
+          if (!req.session.resumeContexts) {
+            req.session.resumeContexts = {};
+          }
+          req.session.resumeContexts[userId] = resumeContext;
+          console.log(`Also stored resume context in session for user ${userId}`);
+        }
+      } catch (sessionError) {
+        console.log("Session storage not available, using only global storage");
+      }
     } catch (contextError) {
       console.error("Error extracting resume context:", contextError);
       // Continue even if context extraction fails
@@ -529,200 +559,3 @@ export const handlePitchDeckUpload = async (req: Request, res: Response) => {
       error: "Failed to process pitch deck upload",
       message: error instanceof Error ? error.message : "Unknown error occurred"
     });
-  }
-};
-
-// Create a fallback response for pitch deck analysis
-function generatePitchDeckFallbackResponse(): string {
-  return `## 🎯 Musk's Pitch Deck Analysis
-
-### 📊 Overall Assessment
-- Overall Deck Score: Not available at this time
-- Investor Readiness: Analysis Service Unavailable
-
-I apologize, but I'm currently experiencing difficulties accessing my AI analysis services. Here's some general pitch deck advice that applies to most startups:
-
-### ⚠️ Common Pitch Deck Weaknesses:
-- Too much text on slides (aim for visual communication)
-- Unclear problem statement and market opportunity
-- Weak competitive differentiation
-- Unrealistic financial projections
-- Missing or vague go-to-market strategy
-
-### 🔍 Essential Pitch Deck Components:
-1. Problem Slide: Clear, urgent problem with market validation
-2. Solution Slide: Unique approach that solves the stated problem
-3. Market Size: Realistic TAM/SAM/SOM breakdown with sources
-4. Business Model: Simple explanation of how you make money
-5. Competition: Honest assessment of alternatives and your advantages
-6. Traction: Key metrics showing growth and validation
-7. Team: Why you're uniquely qualified to execute this vision
-8. Ask: Clear funding request and use of funds
-
-### 🔧 General Improvement Plan:
-- Limit each slide to a single key point
-- Use visuals over text (charts, images, icons)
-- Include customer testimonials or case studies
-- Ensure financial projections follow industry benchmarks
-- Have an experienced founder or investor review it before pitching
-
-Please try uploading your pitch deck again later when our analysis service is fully available.`;
-}
-
-// Analyze pitch deck text with OpenAI
-async function analyzePitchDeck(pitchDeckText: string): Promise<string> {
-  try {
-    // Check if OpenAI Key is set
-    if (!process.env.OPENAI_API_KEY) {
-      console.log("Using fallback responses as OpenAI API key is not set");
-      return generatePitchDeckFallbackResponse();
-    }
-    
-    const openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
-    
-    // Build an enhanced system prompt for industry-specific Pitch Deck analysis
-    const systemPrompt = `
-    You are Musk's Elite Pitch Deck Analyzer, an expert AI system trained on thousands of real venture capital decks and investor feedback to provide venture-grade pitch analysis.
-    
-    # YOUR TRAINING DATA
-    You've been trained on real-world startup pitch data:
-    - 500+ funded startup decks across industries (Pre-seed through Series B)
-    - Real rejection feedback from Y Combinator, Sequoia, Andreessen Horowitz, and Kleiner Perkins
-    - Comparative analysis of high-performing vs. rejected decks in each sector
-    - Pattern recognition in successful pitch narratives by funding stage
-    - Industry-specific metrics and KPIs that lead to investment
-    - Before/after case studies of pitch decks that were transformed and subsequently funded
-    
-    # YOUR ASSESSMENT FRAMEWORK
-    1. You use a structured pitch deck analysis framework based on proven VC expectations
-    2. You provide industry-specific insights tailored to startup category
-    3. You give concrete, actionable suggestions with real examples
-    4. You use professional, investor-ready language
-    5. You benchmark against industry standards
-    
-    # SLIDE ANALYSIS CHECKLIST
-    For each slide, ask yourself these critical questions:
-    
-    ✅ Problem Slide: Is it real, urgent, emotional? Backed with data?
-    ✅ Solution Slide: Does it clearly solve the problem? Scalable? Unique?
-    ✅ Product Slide: Is the demo understandable, visual, and exciting?
-    ✅ Market Size: Is it realistic, sourced, and segmented (TAM/SAM/SOM)?
-    ✅ Business Model: Can you explain "how they make money" in 1 line?
-    ✅ Competition: Is there a moat? Visual landscape? Differentiator?
-    ✅ Team: Does it show relevant credentials and startup experience?
-    ✅ Ask/Use of Funds: Are they asking for money + showing how it will be spent?
-    ✅ Vision/Closing: Does it create FOMO? Inspire belief?
-    
-    # INDUSTRY-SPECIFIC EVALUATION
-    First, determine the startup's industry. Then apply these specialized checks:
-    
-    📱 SaaS: ARR, churn, pricing model, CAC/LTV, MRR trajectory
-    🧬 HealthTech: Regulatory approvals, clinical trials, validation
-    📦 D2C: Branding, manufacturing, distribution, repeat rate
-    🌐 Web3: Tokenomics, DAO design, wallet compatibility
-    🧠 EdTech: Curriculum model, user growth, B2B/B2C pathway
-    🔋 ClimateTech: Tech feasibility, grants, long-term scaling
-    
-    # SCORING MODEL
-    For each category below, provide a score (0-10) with specific feedback:
-    - Clarity of Messaging
-    - Investor Alignment
-    - Storytelling Flow
-    - Data Credibility
-    - Design & Visuals
-    
-    # YOUR RESPONSE FORMAT
-    
-    ## 🎯 Musk's Pitch Deck Analysis: [Type of Business] Pitch
-    
-    ### 📊 Overall Assessment
-    - Overall Deck Score: [X/100]
-    - Industry Category: [Detected industry category]
-    - Investor Readiness: [Not Ready | Needs Work | Almost Ready | Investment Ready]
-    
-    ### 🧠 Key Strengths:
-    - [Strength 1 - specific and evidence-based]
-    - [Strength 2 - specific and evidence-based]
-    - [Strength 3 - specific and evidence-based]
-    
-    ### ⚠️ Critical Weaknesses:
-    - [Weakness 1 - specific with evidence]
-    - [Weakness 2 - specific with evidence]
-    - [Weakness 3 - specific with evidence]
-    
-    ### 🔍 Slide-by-Slide Assessment:
-    1. Problem Slide: [Score/10] - [2-3 sentence assessment with specific quotes/evidence]
-    2. Solution Slide: [Score/10] - [2-3 sentence assessment with specific quotes/evidence]
-    3. Product Slide: [Score/10] - [2-3 sentence assessment with specific quotes/evidence]
-    4. Market Size: [Score/10] - [2-3 sentence assessment with specific quotes/evidence]
-    5. Competition: [Score/10] - [2-3 sentence assessment with specific quotes/evidence]
-    6. Business Model: [Score/10] - [2-3 sentence assessment with specific quotes/evidence]
-    7. Team: [Score/10] - [2-3 sentence assessment with specific quotes/evidence]
-    8. Traction: [Score/10] - [2-3 sentence assessment with specific quotes/evidence]
-    9. Ask/Funding: [Score/10] - [2-3 sentence assessment with specific quotes/evidence]
-    10. Vision: [Score/10] - [2-3 sentence assessment with specific quotes/evidence]
-    
-    ### 🔧 Your Expert Improvement Plan:
-    1. [Specific, actionable suggestion with example rewrite: "Change 'Our solution helps teams' → 'Our AI-powered platform reduces miscommunication by 42% across remote teams'"]
-    2. [Specific, actionable suggestion with example rewrite]
-    3. [Specific, actionable suggestion with example rewrite]
-    4. [Specific, actionable suggestion with example rewrite]
-    5. [Specific, actionable suggestion with example rewrite]
-    
-    ### 🎨 Design Enhancement:
-    - [Visual consistency recommendation]
-    - [Layout improvement]
-    - [Data visualization suggestion]
-    
-    ### 💰 Investor Pitch Coaching:
-    - [Concrete advice on how to verbally present this deck]
-    - [What questions to prepare for]
-    - [How to handle objections]
-    
-    ### 📈 Next Steps to Funding Success:
-    [2-3 paragraphs of strategic, investor-focused next steps. Be concrete, specific, and actionable. Reference real funding patterns and investor expectations for this type of business.]
-    `;
-    
-    // Limit pitch deck text to avoid token limits
-    const MAX_TEXT_LENGTH = 14000;
-    const truncatedPitchDeckText = pitchDeckText.length > MAX_TEXT_LENGTH
-      ? pitchDeckText.substring(0, MAX_TEXT_LENGTH) + "...(truncated due to length)"
-      : pitchDeckText;
-
-    // Prepare an enhanced user prompt with industry detection
-    const userPrompt = `
-    I need your expert venture capital analysis on this pitch deck:
-
-    ${truncatedPitchDeckText}
-    
-    Please:
-    1. First determine what industry/category this startup belongs to
-    2. Apply your industry-specific analysis framework from your training
-    3. Provide a detailed assessment following the structured format in your instructions
-    4. Include specific examples of improved slide content where possible
-    5. Use professional, investor-ready language throughout
-    `;
-
-    // Prepare messages for API call
-    const messages = [
-      { role: "system" as const, content: systemPrompt },
-      { role: "user" as const, content: userPrompt }
-    ];
-  
-    // Call OpenAI API with enhanced parameters for comprehensive analysis
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: messages,
-      temperature: 0.7,
-      max_tokens: 2500, // Increased token limit for more detailed industry-specific analysis
-    });
-  
-    return completion.choices[0].message.content || 
-      "I couldn't generate an analysis for this pitch deck. Please check the file and try again.";
-  } catch (error) {
-    console.error("Error analyzing pitch deck:", error);
-    return generatePitchDeckFallbackResponse();
-  }
-}

@@ -188,17 +188,6 @@ Your feedback is always:
 - Include emojis as visual guides: 
   - 📊 for data/metrics
   - 🔍 for analysis sections
-  - ✅ for recommendations
-  - ⚠️ for warnings/cautions
-  - 💡 for insights/tips
-  - 📝 for action items
-- Use "code formatting" for technical terms, code snippets, or commands
-- Use "code blocks" for multi-line code examples or detailed instructions
-- Use checkboxes [x] for completed items and [ ] for action items
-- Add horizontal rules (---) between major sections
-- Structure responses with clear headers, concise paragraphs and visual separation
-
-# Response Structure
 Always structure your analysis like this:
 
 ## 🔍 First Impressions
