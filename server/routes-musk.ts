@@ -50,6 +50,180 @@ if (!global.resumeContexts) {
   global.resumeContexts = {};
 }
 
+// Initialize user interaction memory for Musk's adaptive learning capability
+if (!global.userInteractionMemory) {
+  global.userInteractionMemory = {};
+}
+
+// Track and update user interaction patterns to enable adaptive learning
+function updateUserInteractionMemory(userId: string, message: string, response: string, context: any): void {
+  try {
+    // Initialize memory for this user if it doesn't exist
+    if (!global.userInteractionMemory[userId]) {
+      global.userInteractionMemory[userId] = {
+        interactionCount: 0,
+        messageHistory: [],
+        communicationStyle: {
+          messageLength: 'medium',  // short, medium, long
+          formality: 'neutral',     // casual, neutral, formal
+          detailLevel: 'medium',    // low, medium, high
+          technicalLevel: 'medium', // low, medium, high
+          preferredTopics: [],
+          preferredFormat: 'balanced', // text-heavy, balanced, visual
+          lastInteraction: new Date()
+        },
+        topicPreferences: {},
+        learningPreferences: {}
+      };
+    }
+    
+    // Get the user's memory
+    const userMemory = global.userInteractionMemory[userId];
+    
+    // Update interaction count
+    userMemory.interactionCount += 1;
+    
+    // Add message to history (limit to last 10 for memory efficiency)
+    userMemory.messageHistory.push({
+      timestamp: new Date(),
+      message: message,
+      response: response
+    });
+    
+    // Keep only the last 10 messages
+    if (userMemory.messageHistory.length > 10) {
+      userMemory.messageHistory = userMemory.messageHistory.slice(-10);
+    }
+    
+    // Analyze communication style
+    analyzeUserCommunicationStyle(userId, message, userMemory);
+    
+    // Analyze topic preferences
+    analyzeTopicPreferences(userId, message, userMemory);
+    
+    // Update last interaction time
+    if (userMemory.communicationStyle) {
+      userMemory.communicationStyle.lastInteraction = new Date();
+    }
+    
+    console.log(`Updated user interaction memory for user ${userId}, interaction count: ${userMemory.interactionCount}`);
+  } catch (error) {
+    console.error("Error updating user interaction memory:", error);
+  }
+}
+
+// Analyze user's communication style to adapt responses
+function analyzeUserCommunicationStyle(userId: string, message: string, userMemory: any): void {
+  try {
+    // Analyze message length (character count as a simple metric)
+    const length = message.length;
+    if (length < 50) {
+      userMemory.communicationStyle.messageLength = 'short';
+    } else if (length > 200) {
+      userMemory.communicationStyle.messageLength = 'long';
+    } else {
+      userMemory.communicationStyle.messageLength = 'medium';
+    }
+    
+    // Analyze formality (very basic approach using certain markers)
+    const casualMarkers = ['hey', 'btw', 'lol', 'haha', 'yeah', 'cool', 'awesome', 'gonna', 'wanna'];
+    const formalMarkers = ['would you', 'could you', 'I would like', 'please', 'thank you', 'appreciate', 'sincerely'];
+    
+    let casualScore = 0;
+    let formalScore = 0;
+    
+    casualMarkers.forEach(marker => {
+      if (message.toLowerCase().includes(marker)) casualScore++;
+    });
+    
+    formalMarkers.forEach(marker => {
+      if (message.toLowerCase().includes(marker)) formalScore++;
+    });
+    
+    if (casualScore > formalScore) {
+      userMemory.communicationStyle.formality = 'casual';
+    } else if (formalScore > casualScore) {
+      userMemory.communicationStyle.formality = 'formal';
+    } else {
+      userMemory.communicationStyle.formality = 'neutral';
+    }
+    
+    // Analyze detail level (simple heuristic based on question words and complexity)
+    const detailMarkers = ['how', 'why', 'explain', 'detail', 'specifically', 'expand', 'elaborate'];
+    let detailScore = 0;
+    
+    detailMarkers.forEach(marker => {
+      if (message.toLowerCase().includes(marker)) detailScore++;
+    });
+    
+    // Complexity can also be estimated by average word length and sentence count
+    const words = message.split(' ');
+    const avgWordLength = words.reduce((sum, word) => sum + word.length, 0) / words.length;
+    const sentenceCount = (message.match(/[.!?]+/g) || []).length;
+    
+    if (detailScore > 2 || avgWordLength > 6 || sentenceCount > 3) {
+      userMemory.communicationStyle.detailLevel = 'high';
+    } else if (detailScore > 0 || avgWordLength > 4) {
+      userMemory.communicationStyle.detailLevel = 'medium';
+    } else {
+      userMemory.communicationStyle.detailLevel = 'low';
+    }
+    
+    // Analyze technical level
+    const technicalMarkers = ['code', 'technical', 'software', 'programming', 'algorithm', 'framework', 'data', 'analysis'];
+    let techScore = 0;
+    
+    technicalMarkers.forEach(marker => {
+      if (message.toLowerCase().includes(marker)) techScore++;
+    });
+    
+    if (techScore > 2) {
+      userMemory.communicationStyle.technicalLevel = 'high';
+    } else if (techScore > 0) {
+      userMemory.communicationStyle.technicalLevel = 'medium';
+    } else {
+      userMemory.communicationStyle.technicalLevel = 'low';
+    }
+    
+  } catch (error) {
+    console.error("Error analyzing user communication style:", error);
+  }
+}
+
+// Analyze user's topic preferences
+function analyzeTopicPreferences(userId: string, message: string, userMemory: any): void {
+  try {
+    const topicKeywords = {
+      'resume': ['resume', 'cv', 'curriculum', 'experience', 'work history'],
+      'career': ['career', 'job', 'profession', 'advancement', 'promotion', 'growth'],
+      'skills': ['skills', 'abilities', 'competencies', 'expertise', 'learn', 'develop'],
+      'education': ['education', 'degree', 'university', 'college', 'school', 'certification'],
+      'networking': ['network', 'connect', 'contacts', 'referral', 'recommendation', 'introduction'],
+      'interview': ['interview', 'hiring', 'recruiter', 'employer', 'questions', 'answers'],
+      'salary': ['salary', 'compensation', 'pay', 'benefits', 'negotiate', 'offer'],
+      'industry': ['industry', 'sector', 'field', 'niche', 'market']
+    };
+    
+    // Initialize topic preferences if they don't exist
+    if (!userMemory.topicPreferences) {
+      userMemory.topicPreferences = {};
+    }
+    
+    // Check for topic keywords in the message
+    Object.entries(topicKeywords).forEach(([topic, keywords]) => {
+      keywords.forEach(keyword => {
+        if (message.toLowerCase().includes(keyword.toLowerCase())) {
+          // Increment topic count or initialize it
+          userMemory.topicPreferences[topic] = (userMemory.topicPreferences[topic] || 0) + 1;
+        }
+      });
+    });
+    
+  } catch (error) {
+    console.error("Error analyzing topic preferences:", error);
+  }
+}
+
 // Handle Musk AI assistant chat requests
 // Provide a meaningful fallback response when OpenAI is unavailable
 function generateFallbackResponse(message: string, context: any): string {
@@ -161,8 +335,8 @@ export const handleMuskChat = async (req: Request, res: Response) => {
     }
     
     // Initialize user interaction memory for adaptive learning
-    if (!(global as any).userInteractionMemory) {
-      (global as any).userInteractionMemory = {};
+    if (!global.userInteractionMemory) {
+      global.userInteractionMemory = {};
     }
     
     // Check for resume context in global storage
@@ -178,8 +352,8 @@ export const handleMuskChat = async (req: Request, res: Response) => {
       
       // Add user interaction memory to context if it exists
       const userIdStr = userId.toString();
-      if ((global as any).userInteractionMemory && (global as any).userInteractionMemory[userIdStr]) {
-        enrichedContext.userMemory = (global as any).userInteractionMemory[userIdStr];
+      if (global.userInteractionMemory && global.userInteractionMemory[userIdStr]) {
+        enrichedContext.userMemory = global.userInteractionMemory[userIdStr];
         console.log(`Found user interaction memory for user ${userId}`);
       }
     }
@@ -189,7 +363,10 @@ export const handleMuskChat = async (req: Request, res: Response) => {
     
     // Update user interaction memory with this conversation
     if (userId) {
-      updateUserInteractionMemory(userId.toString(), message, response, enrichedContext);
+      const userIdString = userId.toString();
+      if (userIdString) {
+        updateUserInteractionMemory(userIdString, message, response, enrichedContext);
+      }
     }
     
     // Return the response
@@ -285,8 +462,8 @@ async function generateMuskResponse(message: string, context: any) {
       apiKey: process.env.OPENAI_API_KEY,
     });
     
-    // Build a detailed system prompt for Musk AI persona
-    const systemPrompt = `
+    // Build a detailed system prompt for Musk AI persona with adaptive learning
+    let systemPrompt = `
 You are Musk, an AI career strategist and the AI brain of Brandentifier, a professional networking platform.
 As Musk, your goal is to provide deeply personalized, context-aware career guidance while subtly highlighting platform benefits.
 
@@ -313,6 +490,35 @@ You must prioritize this resume data over the user profile data when responding 
 
 # Data Source Priority
 ${context.dataSource === 'resume' ? '**IMPORTANT: You must prioritize the resume data over profile data in your responses.**' : 'Use the profile data for personalization.'}
+
+${context.userMemory ? `# User Interaction History
+I have learned the following about this user's communication preferences:
+- Message Length: ${context.userMemory.communicationStyle.messageLength} (prefers ${context.userMemory.communicationStyle.messageLength} messages)
+- Formality: ${context.userMemory.communicationStyle.formality} (prefers a ${context.userMemory.communicationStyle.formality} tone)
+- Detail Level: ${context.userMemory.communicationStyle.detailLevel} (prefers ${context.userMemory.communicationStyle.detailLevel} level of detail)
+- Technical Level: ${context.userMemory.communicationStyle.technicalLevel} (prefers ${context.userMemory.communicationStyle.technicalLevel} technical content)
+- Interaction Count: ${context.userMemory.interactionCount} previous interactions
+${context.userMemory.topicPreferences && Object.keys(context.userMemory.topicPreferences).length > 0 ? 
+`- Topic Preferences: ${Object.entries(context.userMemory.topicPreferences as Record<string, number>)
+  .sort((a, b) => (b[1] as number) - (a[1] as number))
+  .slice(0, 3)
+  .map(([topic, count]) => `${topic} (${count} mentions)`)
+  .join(', ')}` : '- No clear topic preferences yet'}
+
+**Adapt your response based on these preferences:**
+- ${context.userMemory.communicationStyle.messageLength === 'short' ? 'Keep your response concise and to the point.' : 
+  context.userMemory.communicationStyle.messageLength === 'long' ? 'Provide detailed, comprehensive responses.' : 
+  'Balance detail with conciseness.'}
+- ${context.userMemory.communicationStyle.formality === 'casual' ? 'Use a more conversational, relaxed tone.' : 
+  context.userMemory.communicationStyle.formality === 'formal' ? 'Maintain a professional, formal tone.' : 
+  'Use a balanced, professional yet approachable tone.'}
+- ${context.userMemory.communicationStyle.detailLevel === 'low' ? 'Focus on key points without excessive detail.' : 
+  context.userMemory.communicationStyle.detailLevel === 'high' ? 'Provide in-depth explanations and thorough analysis.' : 
+  'Provide moderate detail, balancing thoroughness with clarity.'}
+- ${context.userMemory.communicationStyle.technicalLevel === 'low' ? 'Avoid technical jargon and complicated concepts.' : 
+  context.userMemory.communicationStyle.technicalLevel === 'high' ? 'Feel free to use technical terminology and detailed concepts.' : 
+  'Use some technical terms but explain them clearly.'}
+` : ''}
 
 # Response Requirements
 1. ${context.resumeData ? 'Prioritize the resume context for all career advice and use it as the primary source of information about the user.' : 'Analyze the user\'s profile data to provide truly personalized advice'}
