@@ -521,8 +521,8 @@ export default function Education() {
     setSkillsAcquired(education.skillsAcquired || []);
     setNewSkillInput("");
     
-    // Handle fieldOfStudy mapping - the database field is fieldOfStudy but we use field in the UI
-    const field = education.fieldOfStudy || education.field || "";
+    // Handle fieldOfStudy mapping - the database field is fieldOfStudy but we use field in the UI form
+    const field = education.fieldOfStudy || "";
     
     // Update form values
     form.reset({
@@ -656,7 +656,7 @@ export default function Education() {
                   </div>
                   
                   <p className="text-sm text-muted-foreground ml-7">
-                    {education.degree}{education.field ? `, ${education.field}` : ""}
+                    {education.degree}{education.fieldOfStudy ? `, ${education.fieldOfStudy}` : ""}
                   </p>
                   
                   <div className="flex flex-wrap gap-y-1 gap-x-4 mt-1 text-sm ml-7">
