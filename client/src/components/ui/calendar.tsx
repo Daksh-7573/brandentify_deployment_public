@@ -1,149 +1,11 @@
 import * as React from "react"
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 import { DayPicker } from "react-day-picker"
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
-
-// Define an extended CaptionProps interface to include the properties we need
-interface CustomCaptionProps {
-  displayMonth: Date;
-  goToMonth?: (date: Date) => void;
-  fromYear?: number;
-  toYear?: number;
-}
-
-// Generate a range of years for the year selector
-const generateYearRange = (fromYear: number, toYear: number) => {
-  const years = []
-  for (let year = fromYear; year <= toYear; year++) {
-    years.push(year)
-  }
-  return years
-}
-
-// Custom caption component with year selector
-function CustomCaption({ 
-  displayMonth, 
-  goToMonth, 
-  ...props 
-}: CustomCaptionProps) {
-  const months = [
-    "January", "February", "March", "April", "May", "June", 
-    "July", "August", "September", "October", "November", "December"
-  ]
-  
-  // Default year range if not specified
-  const fromYear = props.fromYear || new Date().getFullYear() - 100
-  const toYear = props.toYear || new Date().getFullYear() + 5
-  
-  const years = generateYearRange(fromYear, toYear)
-  
-  const handleYearChange = (year: string) => {
-    if (!goToMonth || typeof goToMonth !== 'function') {
-      console.error('goToMonth is not a function or undefined');
-      return;
-    }
-    const newMonth = new Date(displayMonth)
-    newMonth.setFullYear(parseInt(year))
-    goToMonth(newMonth)
-  }
-  
-  const handleMonthChange = (month: string) => {
-    if (!goToMonth || typeof goToMonth !== 'function') {
-      console.error('goToMonth is not a function or undefined');
-      return;
-    }
-    const newMonth = new Date(displayMonth)
-    newMonth.setMonth(months.indexOf(month))
-    goToMonth(newMonth)
-  }
-  
-  const handlePrevYear = () => {
-    if (!goToMonth || typeof goToMonth !== 'function') {
-      console.error('goToMonth is not a function or undefined');
-      return;
-    }
-    const newMonth = new Date(displayMonth)
-    newMonth.setFullYear(displayMonth.getFullYear() - 1)
-    goToMonth(newMonth)
-  }
-  
-  const handleNextYear = () => {
-    if (!goToMonth || typeof goToMonth !== 'function') {
-      console.error('goToMonth is not a function or undefined');
-      return;
-    }
-    const newMonth = new Date(displayMonth)
-    newMonth.setFullYear(displayMonth.getFullYear() + 1)
-    goToMonth(newMonth)
-  }
-  
-  return (
-    <div className="flex justify-center items-center gap-1">
-      <div className="flex items-center">
-        <button
-          onClick={handlePrevYear}
-          aria-label="Previous Year"
-          className={cn(
-            buttonVariants({ variant: "outline" }),
-            "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100"
-          )}
-        >
-          <ChevronsLeft className="h-4 w-4" />
-        </button>
-      </div>
-      
-      <Select
-        value={displayMonth.getFullYear().toString()}
-        onValueChange={handleYearChange}
-      >
-        <SelectTrigger className="h-7 w-[4.5rem] border-0 bg-transparent px-2 text-center font-medium">
-          <SelectValue placeholder={displayMonth.getFullYear().toString()} />
-        </SelectTrigger>
-        <SelectContent className="max-h-[250px]">
-          {years.map((year) => (
-            <SelectItem key={year} value={year.toString()}>
-              {year}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      
-      <Select
-        value={months[displayMonth.getMonth()]}
-        onValueChange={handleMonthChange}
-      >
-        <SelectTrigger className="h-7 w-[6.5rem] border-0 bg-transparent px-2 text-center font-medium">
-          <SelectValue placeholder={months[displayMonth.getMonth()]} />
-        </SelectTrigger>
-        <SelectContent>
-          {months.map((month) => (
-            <SelectItem key={month} value={month}>
-              {month}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      
-      <div className="flex items-center">
-        <button
-          onClick={handleNextYear}
-          aria-label="Next Year"
-          className={cn(
-            buttonVariants({ variant: "outline" }),
-            "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100"
-          )}
-        >
-          <ChevronsRight className="h-4 w-4" />
-        </button>
-      </div>
-    </div>
-  )
-}
 
 function Calendar({
   className,
@@ -192,7 +54,6 @@ function Calendar({
       components={{
         IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" />,
         IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" />,
-        Caption: CustomCaption
       }}
       {...props}
     />
