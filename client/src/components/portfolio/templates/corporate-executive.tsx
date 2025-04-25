@@ -1019,75 +1019,87 @@ export default function CorporateExecutive({
       </section>
       
       {/* Career Path (Experience) Section */}
-      <section id="experience" className="py-16 px-8 bg-gray-50">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 mb-10 accent-border" style={{ fontFamily: 'Playfair Display, serif' }}>
+      <section id="experience" className="py-20 px-8 bg-gradient-to-b from-gray-50 to-white">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-12 relative pl-6 border-l-4 border-[#6a0dad]" style={{ fontFamily: 'Playfair Display, serif' }}>
             Career Path
           </h2>
           
           <div className="mb-16">
             {sortedExperiences.length > 0 ? (
-              <div className="space-y-3">
+              <div className="space-y-8">
+                {/* Timeline vertical line */}
+                <div className="absolute left-8 top-10 bottom-10 w-0.5 bg-gradient-to-b from-[#6a0dad] to-gray-100 hidden md:block"></div>
+                
                 {sortedExperiences.map((exp, index) => (
                   <div 
                     key={exp.id} 
-                    className="timeline-item fade-in"
+                    className="timeline-item fade-in relative"
                     style={{ animationDelay: `${0.1 + index * 0.1}s` }}
                   >
-                    <div className="bg-white rounded-lg p-6 shadow-sm">
-                      <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-3 mb-3">
+                    {/* Timeline dot */}
+                    <div className="absolute left-8 top-10 w-4 h-4 rounded-full bg-[#6a0dad] transform -translate-x-1/2 hidden md:block"></div>
+                    
+                    <div className="bg-white rounded-lg p-8 shadow-sm ml-0 md:ml-16 border border-gray-100 hover:border-[#6a0dad]/30 transition-colors duration-300">
+                      <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-6">
                         <div>
-                          <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>
+                          <h3 className="text-xl font-semibold text-gray-900 mb-1" style={{ fontFamily: 'Playfair Display, serif' }}>
                             {exp.title}
                           </h3>
-                          <p className="text-[#6a0dad] font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          <p className="text-[#6a0dad] font-medium text-lg" style={{ fontFamily: 'Inter, sans-serif' }}>
                             {exp.company}
                           </p>
                         </div>
                         
-                        <div className="text-sm text-gray-500 flex items-center whitespace-nowrap" style={{ fontFamily: 'Inter, sans-serif' }}>
-                          <Calendar className="h-4 w-4 mr-1" />
+                        <div className="text-base text-gray-700 flex items-center whitespace-nowrap bg-gray-50 px-4 py-2 rounded-full" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          <Calendar className="h-5 w-5 mr-2 text-[#6a0dad]" />
                           <span>
                             {formatDate(exp.startDate)} - {exp.endDate ? formatDate(exp.endDate) : 'Present'}
                           </span>
                         </div>
                       </div>
                       
-                      <div className="flex flex-wrap items-center gap-4 mb-4">
+                      <div className="flex flex-wrap items-center gap-4 mb-6">
                         {exp.location && (
-                          <div className="flex items-center text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
-                            <MapPin className="h-4 w-4 mr-1" />
+                          <div className="flex items-center text-sm text-gray-600 bg-gray-50 px-3 py-1.5 rounded-full" style={{ fontFamily: 'Inter, sans-serif' }}>
+                            <MapPin className="h-4 w-4 mr-1.5 text-[#6a0dad]" />
                             <span>{exp.location}</span>
                           </div>
                         )}
                         
                         {exp.industry && (
-                          <div className="flex items-center text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
-                            <Briefcase className="h-4 w-4 mr-1" />
+                          <div className="flex items-center text-sm text-gray-600 bg-gray-50 px-3 py-1.5 rounded-full" style={{ fontFamily: 'Inter, sans-serif' }}>
+                            <Briefcase className="h-4 w-4 mr-1.5 text-[#6a0dad]" />
                             <span>{exp.industry}</span>
                           </div>
                         )}
                         
                         {exp.domain && (
-                          <div className="flex items-center text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
-                            <Tag className="h-4 w-4 mr-1" />
+                          <div className="flex items-center text-sm text-gray-600 bg-gray-50 px-3 py-1.5 rounded-full" style={{ fontFamily: 'Inter, sans-serif' }}>
+                            <Tag className="h-4 w-4 mr-1.5 text-[#6a0dad]" />
                             <span>{exp.domain}</span>
                           </div>
                         )}
                       </div>
                       
                       {exp.description && (
-                        <p className="text-gray-600 mb-4" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        <p className="text-gray-700 mb-6 leading-relaxed border-l-2 border-[#6a0dad]/20 pl-4" style={{ fontFamily: 'Inter, sans-serif' }}>
                           {exp.description}
                         </p>
                       )}
                       
                       {exp.keyResponsibilities && Array.isArray(exp.keyResponsibilities) && exp.keyResponsibilities.length > 0 && (
-                        <div className="mt-3 mb-2">
-                          <h4 className="text-sm font-semibold mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>Key Responsibilities & Achievements</h4>
-                          <ul className="list-disc pl-5 text-sm space-y-1 text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        <div className="mt-4">
+                          <h4 className="text-base font-semibold mb-3 flex items-center" style={{ fontFamily: 'Inter, sans-serif' }}>
+                            <Award className="h-4 w-4 mr-2 text-[#6a0dad]" />
+                            Key Responsibilities & Achievements
+                          </h4>
+                          <ul className="list-none space-y-2 text-gray-700" style={{ fontFamily: 'Inter, sans-serif' }}>
                             {exp.keyResponsibilities.map((item, idx) => (
-                              <li key={idx}>{item}</li>
+                              <li key={idx} className="flex items-start">
+                                <div className="text-[#6a0dad] mr-2 mt-1">•</div>
+                                <span>{item}</span>
+                              </li>
                             ))}
                           </ul>
                         </div>
@@ -1106,71 +1118,94 @@ export default function CorporateExecutive({
           </div>
           
           {/* Academic Background */}
-          <h2 className="text-3xl font-bold text-gray-900 mb-10 accent-border" style={{ fontFamily: 'Playfair Display, serif' }}>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-12 relative pl-6 border-l-4 border-[#6a0dad]" style={{ fontFamily: 'Playfair Display, serif' }}>
             Academic Background
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {sortedEducations.length > 0 ? (
               sortedEducations.map((edu, index) => (
                 <div 
                   key={edu.id} 
-                  className="bg-white rounded-lg p-6 shadow-sm fade-in"
+                  className="bg-white rounded-lg p-8 shadow-sm fade-in border border-gray-100 hover:border-[#6a0dad]/30 transition-colors duration-300"
                   style={{ animationDelay: `${0.1 + index * 0.1}s` }}
                 >
-                  <div className="flex justify-between mb-3">
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>
+                  <div className="flex flex-col justify-between mb-6">
+                    <div className="mb-4">
+                      <h3 className="text-xl font-semibold text-gray-900 mb-1" style={{ fontFamily: 'Playfair Display, serif' }}>
                         {edu.degree}
                       </h3>
-                      <p className="text-[#6a0dad] font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>
+                      <p className="text-[#6a0dad] font-medium text-lg" style={{ fontFamily: 'Inter, sans-serif' }}>
                         {edu.institution}
                       </p>
                     </div>
                     
-                    <Badge className="bg-gray-100 text-gray-600 h-fit whitespace-nowrap">
-                      {formatDate(edu.startDate)} - {edu.endDate ? formatDate(edu.endDate) : 'Present'}
-                    </Badge>
+                    <div className="text-base text-gray-700 flex items-center bg-gray-50 px-4 py-2 rounded-full w-fit" style={{ fontFamily: 'Inter, sans-serif' }}>
+                      <Calendar className="h-5 w-5 mr-2 text-[#6a0dad]" />
+                      <span>
+                        {formatDate(edu.startDate)} - {edu.endDate ? formatDate(edu.endDate) : 'Present'}
+                      </span>
+                    </div>
                   </div>
                   
-                  <div className="flex flex-wrap items-center gap-4 mb-3">
+                  <div className="flex flex-wrap items-center gap-4 mb-6">
                     {edu.location && (
-                      <div className="flex items-center text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
-                        <MapPin className="h-4 w-4 mr-1" />
+                      <div className="flex items-center text-sm text-gray-600 bg-gray-50 px-3 py-1.5 rounded-full" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        <MapPin className="h-4 w-4 mr-1.5 text-[#6a0dad]" />
                         <span>{edu.location}</span>
                       </div>
                     )}
                     
                     {edu.industry && (
-                      <div className="flex items-center text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
-                        <Briefcase className="h-4 w-4 mr-1" />
+                      <div className="flex items-center text-sm text-gray-600 bg-gray-50 px-3 py-1.5 rounded-full" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        <Briefcase className="h-4 w-4 mr-1.5 text-[#6a0dad]" />
                         <span>{edu.industry}</span>
-                      </div>
-                    )}
-                    
-                    {edu.fieldOfStudy && (
-                      <div className="flex items-center text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
-                        <GraduationCap className="h-4 w-4 mr-1" />
-                        <span>{edu.fieldOfStudy}</span>
                       </div>
                     )}
                   </div>
                   
+                  {/* Field of Study */}
+                  {edu.fieldOfStudy && (
+                    <div className="mb-6 bg-[#6a0dad]/5 p-4 rounded-lg">
+                      <div className="flex items-start gap-3">
+                        <GraduationCap className="h-5 w-5 text-[#6a0dad] mt-0.5" />
+                        <div>
+                          <p className="text-sm font-semibold text-gray-800 mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>
+                            Field of Study
+                          </p>
+                          <p className="text-base text-gray-700" style={{ fontFamily: 'Inter, sans-serif' }}>
+                            {edu.fieldOfStudy}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Skills Acquired */}
                   {edu.skillsAcquired && Array.isArray(edu.skillsAcquired) && edu.skillsAcquired.length > 0 && (
-                    <div className="mt-3">
-                      <h4 className="text-sm font-semibold mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>Skills Acquired & Achievements</h4>
-                      <ul className="list-disc pl-5 text-sm space-y-1 text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>
-                        {edu.skillsAcquired.map((skill, idx) => (
-                          <li key={idx}>{skill}</li>
+                    <div>
+                      <h4 className="text-base font-semibold mb-3 flex items-center" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        <Award className="h-4 w-4 mr-2 text-[#6a0dad]" />
+                        Skills Acquired & Achievements
+                      </h4>
+                      <div className="flex flex-wrap gap-2">
+                        {(edu.skillsAcquired as string[]).map((skill: string, i: number) => (
+                          <span 
+                            key={i} 
+                            className="inline-flex items-center bg-[#6a0dad]/5 text-[#6a0dad] text-sm px-3 py-1.5 rounded-full border border-[#6a0dad]/10"
+                            style={{ fontFamily: 'Inter, sans-serif' }}
+                          >
+                            {skill}
+                          </span>
                         ))}
-                      </ul>
+                      </div>
                     </div>
                   )}
                 </div>
               ))
             ) : (
-              <div className="col-span-full text-center py-16 border border-gray-100 rounded-lg bg-white">
-                <p className="text-gray-400" style={{ fontFamily: 'Inter, sans-serif' }}>
+              <div className="col-span-full text-center py-20 border border-gray-100 rounded-lg bg-white shadow-sm">
+                <p className="text-gray-400 text-lg" style={{ fontFamily: 'Inter, sans-serif' }}>
                   Your academic background will appear here
                 </p>
               </div>
@@ -1179,118 +1214,19 @@ export default function CorporateExecutive({
         </div>
       </section>
       
-      {/* Education Section */}
-      <section id="education" className="py-16 px-8 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 mb-10 accent-border" style={{ fontFamily: 'Playfair Display, serif' }}>
-            Academic Background
-          </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
-            {sortedEducations.length > 0 ? (
-              sortedEducations.map((edu, index) => (
-                <div 
-                  key={edu.id} 
-                  className="timeline-item fade-in"
-                  style={{ animationDelay: `${0.1 + index * 0.1}s` }}
-                >
-                  <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
-                    <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-3 mb-3">
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>
-                          {edu.degree}
-                        </h3>
-                        <p className="text-[#6a0dad] font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>
-                          {edu.institution}
-                        </p>
-                      </div>
-                      
-                      <div className="text-sm text-gray-500 flex items-center whitespace-nowrap" style={{ fontFamily: 'Inter, sans-serif' }}>
-                        <Calendar className="h-4 w-4 mr-1" />
-                        <span>
-                          {formatDate(edu.startDate)} - {edu.endDate ? formatDate(edu.endDate) : 'Present'}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <div className="flex flex-wrap items-center gap-4 mb-4">
-                      {edu.location && (
-                        <div className="flex items-center text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
-                          <MapPin className="h-4 w-4 mr-1" />
-                          <span>{edu.location}</span>
-                        </div>
-                      )}
-                      
-                      {edu.industry && (
-                        <div className="flex items-center text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
-                          <Briefcase className="h-4 w-4 mr-1" />
-                          <span>{edu.industry}</span>
-                        </div>
-                      )}
-                      
-                      {/* Domain fields aren't needed for education */}
-                    </div>
-                    
-                    {/* Field of Study */}
-                    {edu.fieldOfStudy && (
-                      <div className="mb-4">
-                        <div className="flex items-start gap-2">
-                          <GraduationCap className="h-5 w-5 text-[#6a0dad] mt-0.5" />
-                          <div>
-                            <p className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Inter, sans-serif' }}>
-                              Field of Study
-                            </p>
-                            <p className="text-sm text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>
-                              {edu.fieldOfStudy}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {/* Skills Acquired */}
-                    {edu.skillsAcquired && Array.isArray(edu.skillsAcquired) && edu.skillsAcquired.length > 0 && (
-                      <div className="mb-3">
-                        <p className="text-sm font-medium text-gray-700 mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>
-                          Skills Acquired
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          {(edu.skillsAcquired as string[]).map((skill: string, i: number) => (
-                            <span 
-                              key={i} 
-                              className="inline-flex items-center bg-purple-50 text-purple-700 text-xs px-2.5 py-1 rounded-md border border-purple-100"
-                              style={{ fontFamily: 'Inter, sans-serif' }}
-                            >
-                              {skill}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="col-span-full text-center py-16 border border-gray-100 rounded-lg bg-white">
-                <p className="text-gray-400" style={{ fontFamily: 'Inter, sans-serif' }}>
-                  Your academic background will appear here
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
+
       
       {/* Footer CTA */}
-      <section className="py-16 px-8 bg-gray-900 text-white">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-8">
+      <section className="py-20 px-8 bg-gradient-to-b from-gray-900 to-[#200028] text-white">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-10 bg-gradient-to-r from-[#3a0d50]/50 to-[#6a0dad]/50 p-10 rounded-xl border border-[#6a0dad]/20">
             <div>
-              <h2 className="text-3xl font-bold mb-3" style={{ fontFamily: 'Playfair Display, serif' }}>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
                 Ready to Connect?
               </h2>
-              <p className="text-gray-300 mb-0" style={{ fontFamily: 'Inter, sans-serif' }}>
-                Let's discuss how I can bring value to your organization
+              <p className="text-gray-200 text-lg leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
+                Let's discuss how I can bring value to your organization.
+                <br />Reach out today to explore potential collaborations.
               </p>
             </div>
             
@@ -1307,7 +1243,7 @@ export default function CorporateExecutive({
             </div>
           </div>
           
-          <div className="mt-16 pt-8 border-t border-gray-800 text-center">
+          <div className="mt-20 pt-8 border-t border-gray-800 text-center">
             <p className="text-gray-400 text-sm" style={{ fontFamily: 'Inter, sans-serif' }}>
               © {new Date().getFullYear()} {userInfo.name} • All Rights Reserved
             </p>
