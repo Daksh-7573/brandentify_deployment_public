@@ -28,6 +28,7 @@ import { resumeTestRoutes } from "./routes-resume-test";
 import { routesMigrateWorkExperiences } from "./routes-migrate-work-experiences";
 import { registerMuskAnthropicRoutes } from "./routes-musk-anthropic";
 import { registerMuskMemoryRoutes } from "./routes-musk-memory";
+import { registerTrendGraphRoutes } from "./routes-trend-graph";
 import { setupMuskTestingRoutes } from "./routes-musk-testing";
 import muskFeedbackRoutes from "./routes-musk-feedback";
 import { 
@@ -5191,6 +5192,8 @@ ${extractedText.substring(0, 5000)}
   
   // Register Musk Memory & Emotional Intelligence routes
   registerMuskMemoryRoutes(app);
+  registerTrendGraphRoutes(app);
+  console.log("Trend Graph routes loaded");
   
   // Register Musk Testing routes for QA and Roleplay scenarios
   setupMuskTestingRoutes(apiRouter);
