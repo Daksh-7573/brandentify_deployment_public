@@ -127,7 +127,7 @@ export default function CorporateExecutive({
             ? 'Custom engagement' 
             : service.category === 'advisory' 
               ? 'Retainer basis'
-              : 'Custom pricing'
+              : 'On Request'
       };
       
       // Force the type to be EnhancedService
@@ -691,7 +691,9 @@ export default function CorporateExecutive({
           <h2 className="text-3xl font-bold text-gray-900 mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
             What I <span className="premium-gradient-text">Offer</span>
           </h2>
-          {/* Removed the specialized services line as requested */}
+          <p className="text-gray-600 mb-10 max-w-2xl" style={{ fontFamily: 'Inter, sans-serif' }}>
+            Specialized services tailored to drive organizational excellence and leadership effectiveness
+          </p>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {enhancedServices.map((service, index) => (
@@ -720,25 +722,16 @@ export default function CorporateExecutive({
                   {service.description || "Comprehensive service designed to meet your specific business needs and challenges."}
                 </p>
                 
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {/* Pricing Details */}
+                <div className="flex justify-between items-center">
                   {service.pricing && (
                     <div className="text-sm font-medium text-[#6a0dad] highlight-badge px-3 py-1 rounded-full" style={{ fontFamily: 'Inter, sans-serif' }}>
-                      <span className="font-semibold">Pricing:</span> {service.pricing}
+                      {service.pricing}
                     </div>
                   )}
                   
-                  {/* Active Status */}
-                  <div className={`text-sm font-medium px-3 py-1 rounded-full flex items-center ${service.isActive ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-gray-50 text-gray-500 border border-gray-200'}`} style={{ fontFamily: 'Inter, sans-serif' }}>
-                    <div className={`w-2 h-2 rounded-full mr-1.5 ${service.isActive ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-                    {service.isActive ? 'Active' : 'Inactive'}
-                  </div>
-                </div>
-                
-                <div className="flex justify-end items-center">
                   <Button 
                     variant="outline"
-                    className="text-sm px-4 py-2 rounded-md flex items-center hover:bg-[#f9f0ff]"
+                    className="ml-auto text-sm px-4 py-2 rounded-md flex items-center hover:bg-[#f9f0ff]"
                   >
                     <span style={{ fontFamily: 'Inter, sans-serif' }}>Inquire</span>
                     <ChevronRight className="h-4 w-4 ml-1" />
