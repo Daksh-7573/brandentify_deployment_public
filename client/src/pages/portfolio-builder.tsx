@@ -179,8 +179,32 @@ export default function PortfolioBuilder() {
   const { data: educations, isLoading: isLoadingEducations } = useQuery<Education[]>({
     queryKey: [`/api/users/${userNumericId}/educations`],
     enabled: !!user && !!userNumericId, // Only fetch when we have the numeric ID
-    staleTime: 30000
+    staleTime: 30000,
+    onSuccess: (data) => {
+      console.log("Education Query - Fetched educations data:", data);
+      console.log("Education Query - Data length:", data?.length);
+    }
   });
+  
+  // Direct education data fetch to verify data from API
+  useEffect(() => {
+    if (!userNumericId) return;
+    
+    const fetchEducationData = async () => {
+      try {
+        console.log("Education - Directly fetching education data");
+        const response = await fetch(`/api/users/${userNumericId}/educations`);
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Education - Direct education fetch result:", data);
+        }
+      } catch (error) {
+        console.error("Error directly fetching education data:", error);
+      }
+    };
+    
+    fetchEducationData();
+  }, [userNumericId]);
   
   // Fetch user services
   const { data: services, isLoading: isLoadingServices } = useQuery<Service[]>({
