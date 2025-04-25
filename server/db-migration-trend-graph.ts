@@ -3,11 +3,15 @@
  * These tables support Musk's ability to provide skill trend analysis and career path guidance
  */
 
-import { Pool } from '@neondatabase/serverless';
+import { Pool, neonConfig } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-serverless';
 import { sql } from 'drizzle-orm';
 import dotenv from 'dotenv';
+import ws from 'ws';
 import * as schema from '../shared/schema';
+
+// Configure Neon to use ws for WebSocket connections
+neonConfig.webSocketConstructor = ws;
 
 dotenv.config();
 
