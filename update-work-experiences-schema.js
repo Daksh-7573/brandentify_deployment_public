@@ -1,9 +1,25 @@
-import { db, pool, executeRawQuery } from './db';
-
 /**
  * Migration script to add domain and key_responsibilities columns to work_experiences table
  */
-export async function runMigration() {
+const { Pool } = require('@neondatabase/serverless');
+const ws = require('ws');
+
+// Configure Neon database
+const pool = new Pool({ 
+  connectionString: process.env.DATABASE_URL,
+  webSocketConstructor: ws
+});
+
+async function executeQuery(queryText, params = []) {
+  try {
+    return await pool.query(queryText, params);
+  } catch (error) {
+    console.error('Database query error:', error);
+    throw error;
+  }
+}
+
+async function runMigration() {
   console.log('Starting migration: Adding domain and key_responsibilities columns to work_experiences table');
 
   try {
@@ -15,13 +31,13 @@ export async function runMigration() {
       AND column_name IN ('domain', 'key_responsibilities');
     `;
     
-    const existingColumns = await executeRawQuery(checkColumnQuery);
-    const existingColumnNames = existingColumns.rows ? existingColumns.rows.map((row: any) => row.column_name) : [];
+    const existingColumnsResult = await executeQuery(checkColumnQuery);
+    const existingColumnNames = existingColumnsResult.rows.map(row => row.column_name);
     
     // Add domain column if it doesn't exist
     if (!existingColumnNames.includes('domain')) {
       console.log('Adding domain column to work_experiences table');
-      await executeRawQuery(`
+      await executeQuery(`
         ALTER TABLE work_experiences
         ADD COLUMN domain TEXT;
       `);
@@ -33,7 +49,7 @@ export async function runMigration() {
     // Add key_responsibilities column if it doesn't exist
     if (!existingColumnNames.includes('key_responsibilities')) {
       console.log('Adding key_responsibilities column to work_experiences table');
-      await executeRawQuery(`
+      await executeQuery(`
         ALTER TABLE work_experiences
         ADD COLUMN key_responsibilities JSONB DEFAULT '[]';
       `);
@@ -46,6 +62,8 @@ export async function runMigration() {
   } catch (error) {
     console.error('Error during migration:', error);
     throw error;
+  } finally {
+    await pool.end();
   }
 }
 
@@ -53,7 +71,7 @@ export async function runMigration() {
 runMigration()
   .then(() => {
     console.log('Migration finished');
-    // Don't exit the process here, let it complete naturally
+    process.exit(0);
   })
   .catch((error) => {
     console.error('Migration failed:', error);
