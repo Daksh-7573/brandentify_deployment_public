@@ -771,22 +771,21 @@ export default function CorporateExecutive({
             Showcase
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="flex flex-wrap justify-center md:justify-start gap-8">
             {sortedProjects.length > 0 ? (
               sortedProjects.slice(0, 6).map((project, index) => (
                 <div 
                   key={project.id} 
-                  className="project-card bg-white rounded-lg overflow-hidden shadow-sm fade-in"
-                  style={{ animationDelay: `${0.1 + index * 0.1}s` }}
+                  className="project-card bg-white rounded-lg overflow-hidden shadow-sm fade-in flex flex-col"
+                  style={{ animationDelay: `${0.1 + index * 0.1}s`, width: '280px', aspectRatio: '2/3.5' }}
                 >
                   {/* Project Thumbnail */}
                   {project.thumbnailUrl && (
-                    <div className="h-[220px] w-full overflow-hidden">
+                    <div className="w-full" style={{ aspectRatio: '1/1', height: '280px' }}>
                       <img 
                         src={project.thumbnailUrl} 
                         alt={project.title} 
                         className="w-full h-full object-cover object-center"
-                        style={{ aspectRatio: '1/1' }}
                       />
                     </div>
                   )}
