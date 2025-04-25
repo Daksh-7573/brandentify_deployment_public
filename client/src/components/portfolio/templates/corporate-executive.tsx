@@ -153,6 +153,9 @@ export default function CorporateExecutive({
   
   // Function to get icon for skill category
   const getSkillCategoryIcon = (name: string) => {
+    // Check if name is undefined or null before calling toLowerCase
+    if (!name) return <Award className="h-5 w-5" />;
+    
     const nameLower = name.toLowerCase();
     if (nameLower.includes('strateg')) return <Target className="h-5 w-5" />;
     if (nameLower.includes('lead')) return <UserCheck className="h-5 w-5" />;
@@ -1042,7 +1045,7 @@ export default function CorporateExecutive({
                   <Twitter className="h-5 w-5" />
                 </a>
                 <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                  <GitHub className="h-5 w-5" />
+                  <Github className="h-5 w-5" />
                 </a>
                 <a href="#" className="text-gray-400 hover:text-white transition-colors">
                   <Instagram className="h-5 w-5" />
