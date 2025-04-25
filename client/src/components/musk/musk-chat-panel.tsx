@@ -146,8 +146,9 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
     e.preventDefault();
     if (!inputValue.trim()) return;
     
-    // Get current user ID from context or fallback to demo user
-    const userId = context?.userId || 1;
+    // Get current user ID from context - don't default to demo user
+    const userId = context?.userId;
+    console.log("Musk chat: Using userId from context:", userId, "type:", typeof userId);
     
     // Add user message to the chat
     const userMessage: Message = {
@@ -329,8 +330,9 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
       return;
     }
     
-    // Get current user ID from context or fallback to demo user
-    const userId = context?.userId || 1;
+    // Get current user ID from context - don't default to demo user
+    const userId = context?.userId;
+    console.log("Musk file upload: Using userId from context:", userId, "type:", typeof userId);
     
     // Add user message about uploading file
     const userMessage: Message = {
@@ -359,7 +361,10 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
       // Create form data for file upload
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('userId', userId.toString());
+      // Only append userId if it exists
+      if (userId !== null && userId !== undefined) {
+        formData.append('userId', userId.toString());
+      }
       
       // Use XMLHttpRequest to track upload progress
       const xhr = new XMLHttpRequest();

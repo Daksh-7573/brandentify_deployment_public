@@ -317,7 +317,7 @@ Quick Response Options:
 
 export const handleMuskChat = async (req: Request, res: Response) => {
   try {
-    const { userId, message, context } = req.body;
+    const { userId: rawUserId, message, context } = req.body;
     
     if (!message) {
       return res.status(400).json({ error: "Message is required" });
@@ -339,6 +339,28 @@ export const handleMuskChat = async (req: Request, res: Response) => {
       global.userInteractionMemory = {};
     }
     
+    // Handle both Firebase UIDs and numeric user IDs
+    let numericUserId = typeof rawUserId === 'number' ? rawUserId : 0;
+    
+    // If the userId is a Firebase UID (string format), try to look up the numeric ID
+    if (rawUserId && typeof rawUserId === 'string' && !numericUserId) {
+      try {
+        console.log(`Musk chat: Converting Firebase UID to numeric ID: ${rawUserId}`);
+        const user = await storage.getUserByUsername(rawUserId);
+        if (user) {
+          numericUserId = user.id;
+          console.log(`Musk chat: Found numeric ID ${numericUserId} for Firebase UID ${rawUserId}`);
+        }
+      } catch (error) {
+        console.error(`Error looking up numeric ID for Firebase UID ${rawUserId}:`, error);
+      }
+    }
+    
+    console.log(`Musk chat: Using user ID ${numericUserId} (original: ${rawUserId})`);
+    
+    // Use numeric user ID for all operations
+    const userId = numericUserId;
+    
     // Check for resume context in global storage
     const userIdStr = userId.toString();
     if (global.resumeContexts[userIdStr]) {
@@ -351,7 +373,6 @@ export const handleMuskChat = async (req: Request, res: Response) => {
       enrichedContext = await enrichContextWithUserData(userId, enrichedContext);
       
       // Add user interaction memory to context if it exists
-      const userIdStr = userId.toString();
       if (global.userInteractionMemory && global.userInteractionMemory[userIdStr]) {
         enrichedContext.userMemory = global.userInteractionMemory[userIdStr];
         console.log(`Found user interaction memory for user ${userId}`);
