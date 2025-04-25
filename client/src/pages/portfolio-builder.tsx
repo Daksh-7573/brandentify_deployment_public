@@ -689,7 +689,10 @@ export default function PortfolioBuilder() {
         
         // Extract educations, sorted by date
         const userEducations = portfolioPreviewData?.educations || educations || [];
-        console.log("Preview step - Educations data:", userEducations);
+        const sortedEducations = [...userEducations].sort((a, b) => 
+          new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+        );
+        console.log("Preview step - Educations data:", userEducations, "Length:", userEducations.length);
         
         // Extract services
         const userServices = portfolioPreviewData?.services || services || [];
@@ -789,6 +792,7 @@ export default function PortfolioBuilder() {
                 userSkills={userSkills || []}
                 userExperiences={userExperiences || []}
                 userProjects={userProjects || []}
+                userEducations={userEducations || []}
                 userServices={userServices || []}
               />
             )}
