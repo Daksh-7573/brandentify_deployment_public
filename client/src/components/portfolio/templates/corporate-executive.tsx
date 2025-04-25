@@ -38,6 +38,20 @@ interface CorporateExecutiveProps {
   userServices?: Service[];
 }
 
+// Enhanced Education type for the Corporate Executive template
+interface EnhancedEducation {
+  id: number;
+  userId: number;
+  degree: string;
+  institution: string;
+  location: string | null;
+  industry: string | null;
+  fieldOfStudy: string | null;
+  startDate: string;
+  endDate: string | null;
+  skillsAcquired: string[];
+}
+
 // Enhanced Service type for the Corporate Executive template
 interface EnhancedService {
   id: number;
@@ -166,8 +180,19 @@ export default function CorporateExecutive({
     new Date(b.startDate || '').getTime() - new Date(a.startDate || '').getTime()
   );
   
-  // Sort educations by date (most recent first)
-  const sortedEducations = [...userEducations].sort((a, b) => 
+  // Sort educations by date (most recent first) and enhance them
+  const sortedEducations = [...userEducations].map(edu => {
+    // Make sure skillsAcquired is an array of strings
+    const skillsAcquired = Array.isArray(edu.skillsAcquired) 
+      ? edu.skillsAcquired as string[]
+      : [];
+      
+    // Return with enhanced type
+    return {
+      ...edu,
+      skillsAcquired
+    } as EnhancedEducation;
+  }).sort((a, b) => 
     new Date(b.startDate || '').getTime() - new Date(a.startDate || '').getTime()
   );
   
@@ -1202,12 +1227,7 @@ export default function CorporateExecutive({
                         </div>
                       )}
                       
-                      {edu.domain && (
-                        <div className="flex items-center text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
-                          <Tag className="h-4 w-4 mr-1" />
-                          <span>{edu.domain}</span>
-                        </div>
-                      )}
+                      {/* Domain fields aren't needed for education */}
                     </div>
                     
                     {/* Field of Study */}
@@ -1228,13 +1248,13 @@ export default function CorporateExecutive({
                     )}
                     
                     {/* Skills Acquired */}
-                    {edu.skillsAcquired && edu.skillsAcquired.length > 0 && (
+                    {edu.skillsAcquired && Array.isArray(edu.skillsAcquired) && edu.skillsAcquired.length > 0 && (
                       <div className="mb-3">
                         <p className="text-sm font-medium text-gray-700 mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>
                           Skills Acquired
                         </p>
                         <div className="flex flex-wrap gap-2">
-                          {edu.skillsAcquired.map((skill: string, i: number) => (
+                          {(edu.skillsAcquired as string[]).map((skill: string, i: number) => (
                             <span 
                               key={i} 
                               className="inline-flex items-center bg-purple-50 text-purple-700 text-xs px-2.5 py-1 rounded-md border border-purple-100"
