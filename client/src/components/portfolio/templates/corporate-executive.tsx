@@ -719,20 +719,44 @@ export default function CorporateExecutive({
                   {service.description || "Comprehensive service designed to meet your specific business needs and challenges."}
                 </p>
                 
-                <div className="flex justify-between items-center">
-                  {service.pricing && service.pricing.length > 0 && (
-                    <div className="text-sm font-medium text-[#6a0dad] highlight-badge px-3 py-1 rounded-full" style={{ fontFamily: 'Inter, sans-serif' }}>
-                      {service.pricing}
-                    </div>
-                  )}
+                <div className="flex flex-col gap-3">
+                  {/* Pricing and Active Status details */}
+                  <div className="flex flex-wrap gap-2 items-center mb-1">
+                    {service.pricing && service.pricing.length > 0 && (
+                      <div className="text-sm font-medium text-[#6a0dad] highlight-badge px-3 py-1 rounded-full" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        {service.pricing}
+                      </div>
+                    )}
+                    
+                    {service.priceUsd && (
+                      <div className="text-sm font-medium bg-green-50 text-green-700 px-3 py-1 rounded-full border border-green-200" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        ${service.priceUsd}{service.isHourly ? "/hr" : ""}
+                      </div>
+                    )}
+                    
+                    {service.priceInr && (
+                      <div className="text-sm font-medium bg-blue-50 text-blue-700 px-3 py-1 rounded-full border border-blue-200" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        ₹{service.priceInr}{service.isHourly ? "/hr" : ""}
+                      </div>
+                    )}
+                    
+                    {service.isActive !== undefined && (
+                      <div className={`text-xs font-medium px-2 py-1 rounded-full ${service.isActive ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-gray-50 text-gray-500 border border-gray-200'}`} style={{ fontFamily: 'Inter, sans-serif' }}>
+                        {service.isActive ? 'Active' : 'Inactive'}
+                      </div>
+                    )}
+                  </div>
                   
-                  <Button 
-                    variant="outline"
-                    className="ml-auto text-sm px-4 py-2 rounded-md flex items-center hover:bg-[#f9f0ff]"
-                  >
-                    <span style={{ fontFamily: 'Inter, sans-serif' }}>Inquire</span>
-                    <ChevronRight className="h-4 w-4 ml-1" />
-                  </Button>
+                  {/* Inquiry button */}
+                  <div className="flex justify-end">
+                    <Button 
+                      variant="outline"
+                      className="text-sm px-4 py-2 rounded-md flex items-center hover:bg-[#f9f0ff]"
+                    >
+                      <span style={{ fontFamily: 'Inter, sans-serif' }}>Inquire</span>
+                      <ChevronRight className="h-4 w-4 ml-1" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             ))}
