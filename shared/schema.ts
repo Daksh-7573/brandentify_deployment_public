@@ -77,10 +77,12 @@ export const workExperiences = pgTable("work_experiences", {
   title: text("title").notNull(),
   company: text("company").notNull(),
   industry: text("industry"),
+  domain: text("domain"),
   location: text("location"),
   startDate: text("start_date").notNull(),
   endDate: text("end_date"),
   description: text("description"),
+  keyResponsibilities: jsonb("key_responsibilities").default('[]'),
 });
 
 // Education model
