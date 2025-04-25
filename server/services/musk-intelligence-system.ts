@@ -116,57 +116,82 @@ export async function generatePersonalizedResponse(
 
 /**
  * Determines the user's intent from their message to guide response generation
- * Based on the 8 intelligence dimensions from the training roadmap
+ * Based on the 8 intelligence dimensions from the training roadmap and Musk Prompt Library
  */
 async function determineUserIntent(message: string, context: MuskContext): Promise<string> {
   try {
-    // Advanced intent map based on the 8 intelligence dimensions
+    // Enhanced intent map based on the 8 intelligence dimensions and Musk Prompt Library
     const intentMap = {
       // USER PERSONA UNDERSTANDING
       persona_assessment: ["who am i", "what type of professional", "my strengths", "my weaknesses", "personality", 
-                          "professional identity", "work style", "career stage"],
+                          "professional identity", "work style", "career stage", "profile analysis", 
+                          "personal brand", "career identity", "professional strengths"],
                           
       // SKILLS vs MARKET DEMAND MAPPING
       skill_gap_analysis: ["skills i need", "missing skills", "learn", "improve skills", "skill gap", 
-                          "current skills", "market demand", "skills in demand", "certification", "courses"],
+                          "current skills", "market demand", "skills in demand", "certification", "courses",
+                          "develop skills", "upskill", "technical skills", "soft skills", "skill assessment",
+                          "competitive skills", "skill benchmark", "learn new tools", "professional development"],
       
       // CAREER PATH INTELLIGENCE
       career_progression: ["next step", "career path", "progress", "advance", "promotion", "grow", 
-                          "career trajectory", "next role", "step up", "senior", "leadership"],
+                          "career trajectory", "next role", "step up", "senior", "leadership", 
+                          "career growth", "professional growth", "advancement", "roadmap", "tech lead",
+                          "management track", "individual contributor", "expert path", "stuck in career"],
       
       career_change: ["change career", "switch", "transition", "new field", "different industry", 
-                     "pivot", "transfer skills", "reinvent", "new direction"],
+                     "pivot", "transfer skills", "reinvent", "new direction", "career switch",
+                     "industry change", "skill bridge", "career pivot", "second career", "move into", 
+                     "shift to", "career alternatives", "from finance to tech", "moving from"],
       
       // GLOBAL OPPORTUNITY AWARENESS
       location_advice: ["relocation", "move to", "remote work", "location", "geographic", "city", 
-                       "country", "region", "cost of living", "local market"],
+                       "country", "region", "cost of living", "local market", "visa", "work permit",
+                       "global job", "international", "overseas opportunity", "country comparison", 
+                       "regional differences", "moving abroad", "immigration", "global career"],
       
       market_trends: ["trends", "growing markets", "hotspots", "emerging markets", "industry growth",
-                     "regional differences", "global opportunities"],
+                     "regional differences", "global opportunities", "industry outlook", "sector growth",
+                     "market forecast", "emerging sectors", "industry prediction", "growth areas", 
+                     "future of industry", "market analysis", "industry health"],
       
       // PERSONALITY-TO-PROFESSION MAPPING
       role_fit: ["right job for me", "job fit", "culture fit", "match my personality", "suit me", 
-                "work environment", "company size", "startup", "corporate", "right for me"],
+                "work environment", "company size", "startup", "corporate", "right for me",
+                "personality type", "work preference", "independent work", "team collaboration", 
+                "work style", "value alignment", "company culture", "work-life balance", "burned out"],
       
       // TREND FORECASTING
       future_planning: ["future proof", "emerging trends", "upcoming", "next 5 years", "future skills",
-                       "industry direction", "technology trends", "future of work"],
+                       "industry direction", "technology trends", "future of work", "sustainability careers",
+                       "emerging roles", "future jobs", "jobs of tomorrow", "future career paths", 
+                       "technology evolution", "skill future-proofing", "career longevity", "AI impact"],
       
       // Standard career needs
       resume_feedback: ["resume", "cv", "application", "my profile", "professional summary", 
-                       "improve resume", "review resume", "application materials"],
+                       "improve resume", "review resume", "application materials", "resume weaknesses",
+                       "strengthen profile", "profile improvement", "CV feedback", "resume bullets",
+                       "application documents", "resume optimization", "ATS friendly", "LinkedIn profile"],
       
       job_search: ["find job", "job hunt", "job search", "looking for work", "job application", 
-                  "job posting", "apply", "interview process", "application status"],
+                  "job posting", "apply", "interview process", "application status", "job boards",
+                  "company research", "job search strategy", "application tracking", "recruiter outreach", 
+                  "hiring process", "application follow-up", "job opportunities", "talent acquisition"],
       
       interview_preparation: ["interview", "prepare for interview", "interview question", "common questions", 
-                             "technical interview", "behavioral interview", "assessment", "case study"],
+                             "technical interview", "behavioral interview", "assessment", "case study",
+                             "interview prep", "STAR method", "interview story", "practice interview",
+                             "interview nerves", "interview examples", "tough questions", "panel interview"],
       
       salary_negotiation: ["salary", "compensation", "benefits", "negotiate", "offer", "pay", 
-                          "raise", "bonus", "equity", "total compensation"],
+                          "raise", "bonus", "equity", "total compensation", "counter offer",
+                          "salary expectations", "compensation package", "market rate", "negotiate benefits",
+                          "salary research", "pay increase", "salary benchmark", "worth in market"],
       
       networking: ["network", "connect", "professional network", "linkedin", "industry contacts", 
-                  "referral", "introduction", "networking event", "conference"]
+                  "referral", "introduction", "networking event", "conference", "build connections",
+                  "industry networking", "professional relationships", "informational interview", 
+                  "networking strategy", "social capital", "virtual networking", "community building"]
     };
     
     // Check for the most relevant intent
@@ -715,6 +740,7 @@ function formatResponseWithPersonalization(response: string, context: MuskContex
 /**
  * Generate appropriate follow-up questions based on user context and conversation
  * This helps Musk provide more targeted guidance and encourages continued interaction
+ * Enhanced with Musk Prompt Library patterns
  */
 function generateFollowUpQuestions(intent: string, context: MuskContext): string[] {
   const questions: string[] = [];
@@ -722,69 +748,103 @@ function generateFollowUpQuestions(intent: string, context: MuskContext): string
   // Common questions for any intent
   questions.push("Would you like more specific advice on any part of what I've shared?");
   
-  // Intent-specific follow-up questions
+  // Intent-specific follow-up questions enhanced with Musk Prompt Library
   switch (intent) {
     case "skill_development":
       questions.push("Which of these skills interests you most to develop first?");
-      questions.push("Are there any specific learning resources you prefer (courses, books, projects)?");
-      questions.push("Would you like to know how these skills can help with your next career move?");
+      questions.push("Would you like a skill-bridge roadmap, including online certifications and transition timeline?");
+      questions.push("Would you prefer focusing on technical skills or leadership capabilities?");
+      questions.push("How does your learning style work best - hands-on projects, courses, or mentorship?");
+      questions.push("Are you interested in future-proof skills that will remain relevant over the next 5 years?");
       break;
       
     case "career_change":
       questions.push("What aspects of this career transition feel most challenging to you?");
+      questions.push("Would you like a detailed skill-bridge roadmap for this career change?");
       questions.push("Would you like to hear about others who successfully made a similar transition?");
-      questions.push("Is there a specific timeline you're considering for this change?");
+      questions.push("Are you looking for a complete industry switch or role evolution within your current field?");
+      questions.push("What transferable skills from your current role do you value most?");
       break;
       
     case "resume_feedback":
-      questions.push("Which section of your resume would you like me to focus on more?");
-      questions.push("Do you want examples of how to quantify your achievements?");
-      questions.push("Would you like advice on how to tailor your resume for a specific role?");
+      questions.push("Which section of your resume would you like me to focus on improving next?");
+      questions.push("Would you like me to suggest 5 bullet points to enhance your 'About Me' section?");
+      questions.push("Would you like examples of how to quantify your achievements for greater impact?");
+      questions.push("Are you tailoring your resume for a specific role or industry?");
+      questions.push("Would you like help making your resume more ATS-friendly for automated screening?");
       break;
       
     case "global_opportunities":
-      questions.push("Are there specific regions or countries you're most interested in?");
+      questions.push("Are there specific regions or countries you're most interested in working?");
+      questions.push("Would you like recommendations for remote job boards in your specific field?");
       questions.push("Would you prefer remote opportunities or are you open to relocation?");
-      questions.push("Are there specific companies in those regions you'd like to know more about?");
+      questions.push("Are visa and work permit considerations important in your decision?");
+      questions.push("Would you like insights on cost of living and tech industry growth in different regions?");
       break;
       
     case "industry_trends":
-      questions.push("Which of these emerging trends interests you most?");
-      questions.push("Would you like to know how to position yourself for these upcoming changes?");
-      questions.push("Are there specific technologies in your field you'd like to explore deeper?");
+      questions.push("Which of these emerging trends interests you most to explore further?");
+      questions.push("Would you like to know the top 5 emerging job roles in your industry?");
+      questions.push("Are you interested in how sustainability might impact career opportunities in your field?");
+      questions.push("Would you like recommendations for future-proof roles in your domain?");
+      questions.push("Which upcoming technology shifts do you think will most impact your career path?");
       break;
       
     case "job_search":
-      questions.push("What part of the job search process is most challenging for you?");
-      questions.push("Would you like advice on how to stand out in applications for your target roles?");
+      questions.push("What part of the job search process is most challenging for you currently?");
+      questions.push("Would you like strategies for standing out in competitive application processes?");
       questions.push("Have you been facing any specific obstacles in your job search?");
+      questions.push("Would you like a strategic job search plan tailored to your industry?");
+      questions.push("Are you interested in unconventional job search approaches beyond job boards?");
       break;
       
     case "interview_preparation":
       questions.push("What types of interviews are you preparing for (technical, behavioral, case)?");
-      questions.push("Would you like sample answers for common questions in your field?");
-      questions.push("Is there a specific company or role you're interviewing for?");
+      questions.push("Would you like sample answers for industry-specific questions in your field?");
+      questions.push("Would you like preparation strategies for salary expectation questions?");
+      questions.push("Are you comfortable with the STAR method for behavioral questions?");
+      questions.push("Would you like help preparing for specific types of technical assessments?");
       break;
       
     case "salary_negotiation":
-      questions.push("What stage of the negotiation process are you in?");
-      questions.push("Would you like scripts for how to respond to specific compensation offers?");
-      questions.push("Are there non-salary benefits that are important to you?");
+      questions.push("What stage of the negotiation process are you currently in?");
+      questions.push("Have you researched current market rates for your role and experience level?");
+      questions.push("Would you like scripts for how to respond to specific compensation scenarios?");
+      questions.push("Would you like strategies for negotiating beyond just the base salary?");
+      questions.push("Are you comfortable discussing your value and achievements during negotiations?");
       break;
       
     case "networking":
-      questions.push("What networking approaches have you tried so far?");
-      questions.push("Would you like templates for outreach messages?");
+      questions.push("What networking approaches have been most effective for you so far?");
+      questions.push("Would you like templates for outreach messages to industry professionals?");
       questions.push("Are you looking to network for a specific purpose (job hunting, mentorship, learning)?");
+      questions.push("Would you like strategies for virtual networking in today's digital environment?");
+      questions.push("Are you comfortable with informational interviews and how to request them?");
       break;
       
     default:
-      questions.push("What specific part of your career would you like guidance on next?");
+      questions.push("What specific aspect of your career would you like guidance on next?");
       questions.push("Is there a particular career challenge you're facing right now?");
+      questions.push("Would you like advice on how to grow in your current role or explore new opportunities?");
+      questions.push("Are you feeling burned out or confused about your next career steps?");
+      questions.push("Would you like me to analyze your current profile and suggest growth areas?");
       break;
+  }
+  
+  // Add contextual questions based on user profile if available
+  if (context.userData?.industry) {
+    questions.push(`How do you feel about the current state of the ${context.userData.industry} industry?`);
+  }
+  
+  if (context.userData?.location) {
+    const locationParts = context.userData.location.split(',');
+    const city = locationParts[0]?.trim();
+    if (city) {
+      questions.push(`Are you interested in career opportunities specifically in ${city} or open to relocation?`);
+    }
   }
   
   // Choose 2-3 questions from the list
   const shuffled = questions.sort(() => 0.5 - Math.random());
-  return shuffled.slice(0, Math.min(2, shuffled.length));
+  return shuffled.slice(0, Math.min(3, shuffled.length));
 }

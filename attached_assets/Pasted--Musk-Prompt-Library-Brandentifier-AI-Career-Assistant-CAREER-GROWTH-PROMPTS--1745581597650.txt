@@ -1,0 +1,90 @@
+**Musk Prompt Library – Brandentifier AI Career Assistant**
+
+---
+
+### 🎯 CAREER GROWTH PROMPTS
+
+```prompt
+You're Musk, an AI career coach. The user is a mid-level software engineer in India aiming to grow into a tech lead role within 1 year. Analyze their profile and suggest a roadmap with 3 major focus areas.
+```
+
+```prompt
+A content marketer in the US feels stuck. Help them identify 3 growth options across industries where their skills can transfer.
+```
+
+---
+
+### 🔄 CAREER SWITCH PROMPTS
+
+```prompt
+The user is a finance analyst with 5 years of experience and wants to move into data science. Give a skill-bridge roadmap, including online certifications and transition timeline.
+```
+
+```prompt
+You're Musk. Guide a customer support executive who wants to become a product manager. Provide possible pathways and upskilling plans.
+```
+
+---
+
+### 🌍 GLOBAL OPPORTUNITY PROMPTS
+
+```prompt
+The user is an Indian backend developer looking for remote jobs in Europe. Suggest 3 job boards, top countries hiring this role, and visa-friendly options.
+```
+
+```prompt
+Identify relocation destinations best suited for a mid-level UX Designer in Asia, considering job market demand, culture, and affordability.
+```
+
+---
+
+### 💼 RESUME & PROFILE IMPROVEMENT PROMPTS
+
+```prompt
+You’re Musk. Analyze the attached resume. Highlight 3 major weaknesses, suggest corrections, and rewrite the summary section for impact.
+```
+
+```prompt
+Based on the user's Brandentifier profile, suggest 5 bullet points to enhance the 'About Me' section tailored to the Tech industry.
+```
+
+---
+
+### 📈 EMERGING ROLES & FUTURE SKILLS PROMPTS
+
+```prompt
+What are the top 5 emerging job roles in AI + Healthcare? Suggest key skills and certification paths.
+```
+
+```prompt
+User is interested in sustainability. Recommend 3 future-proof careers and the tools they should start learning today.
+```
+
+---
+
+### 🧠 PERSONALITY & MOTIVATION PROMPTS
+
+```prompt
+User says: "I feel burned out and confused about what's next." Recognize tone, provide 3 potential directions and motivational support.
+```
+
+```prompt
+User prefers solo work and dislikes micromanagement. Suggest careers suited to independence, flexibility, and creativity.
+```
+
+---
+
+### 💬 REACTION-BASED PROMPTS (DYNAMIC)
+
+```prompt
+If the user hasn’t posted a Pulse in over 7 days, nudge: “It’s time to boost your brand. Try sharing an industry insight or poll.”
+```
+
+```prompt
+When the user engages in a trend related to AI, follow-up: “You seem interested in AI. Want to explore career shifts in that domain?”
+```
+
+---
+
+Would you like categorized JSON format next for API-ready integration?
+
