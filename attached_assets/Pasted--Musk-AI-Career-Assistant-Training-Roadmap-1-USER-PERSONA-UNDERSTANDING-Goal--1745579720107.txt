@@ -1,0 +1,130 @@
+**Musk AI Career Assistant Training Roadmap**
+
+---
+
+### 1. USER PERSONA UNDERSTANDING
+
+**Goal:** Understand who the user is, their career context, and their ambitions.
+
+**Train Musk on:**
+- Career stage (student, early-career, mid-level, senior, executive)
+- Job title and role history
+- Industry and domain expertise
+- Location and geographic preferences
+- Career goals selected by the user
+- Behavioral traits (platform activity, pulse reactions, etc.)
+
+**Data Sources:**
+- Resume/CV uploads
+- Profile section (About Me, Skills, Services)
+- Career goals dropdown + “Looking For” field
+- Interaction with Musk and other features
+
+**Outputs from Musk:**
+- Personalized tone and advice
+- Matching questions and opportunities
+- Custom guidance based on user’s trajectory
+
+**Sample Data Structure:**
+```json
+{
+  "user_id": "u_123456",
+  "name": "Nishant Chopra",
+  "career_stage": "mid-level",
+  "job_title": "Product Manager",
+  "industry": "Technology",
+  "domain": "SaaS",
+  "location": "Ahmedabad, India",
+  "goals": ["Career Growth", "Switch Industry"],
+  "looking_for": ["Mentor", "Job Opportunities"]
+}
+```
+
+**Sample Prompt for Training:**
+```text
+Based on the user's profile as a mid-level Product Manager in SaaS, suggest realistic next career goals and a roadmap for reaching senior product roles. Consider location and current domain.
+```
+
+---
+
+### 2. SKILLS vs MARKET DEMAND MAPPING
+
+**Goal:** Match current user skills to live job market requirements and suggest improvements.
+
+**Train Musk on:**
+- Technical and soft skill taxonomies
+- Skills in demand per role, industry, and geography
+- Resume gaps: missing hard skills, certifications, tools
+- Prioritization: what’s most valuable *next* for this user
+
+**Data Sources:**
+- Global job posting APIs (LinkedIn, Indeed, AngelList)
+- Skill databases (ESCO, O*Net, Coursera skill tags)
+- Resume analysis
+
+**Outputs from Musk:**
+- Skills to upgrade or acquire
+- Urgency level (Must Have / Good to Have / Optional)
+- Matching learning resources
+
+**Sample Data Structure:**
+```json
+{
+  "user_skills": ["Product Management", "User Research", "Agile"],
+  "job_market_skills": ["A/B Testing", "SQL", "Figma", "AI Integration"],
+  "missing_skills": ["SQL", "AI Integration"],
+  "priority": [
+    {"skill": "SQL", "importance": "High"},
+    {"skill": "AI Integration", "importance": "Medium"}
+  ]
+}
+```
+
+**Sample Prompt for Training:**
+```text
+Compare the user's current skill set with live job postings for senior product roles in SaaS. Highlight 2 high-priority skills they should develop and suggest relevant learning platforms.
+```
+
+---
+
+### 3. CAREER PATH INTELLIGENCE
+
+**Goal:** Recommend relevant, realistic, and future-ready career paths.
+
+**Train Musk on:**
+- Common career transitions (e.g. QA → Dev → PM)
+- Cross-domain skill transfer (e.g. Finance → Data Science)
+- Time & ROI of switches (How long? Worth it?)
+- Alternative titles, hybrid roles
+
+**Data Sources:**
+- Resume databases
+- Career switch success stories
+- LinkedIn open graph patterns
+- Real user journeys on Brandentifier
+
+**Outputs from Musk:**
+- Suggested paths (short, medium, long-term)
+- Skill bridges (what connects A → B)
+- Real profiles who’ve done it
+
+**Sample Data Structure:**
+```json
+{
+  "current_role": "Graphic Designer",
+  "goal": "UX Designer",
+  "transferrable_skills": ["Design Thinking", "Adobe XD", "User Flow Mapping"],
+  "gap_skills": ["Prototyping", "User Testing"],
+  "transition_time_estimate": "3–6 months"
+}
+```
+
+**Sample Prompt for Training:**
+```text
+The user is currently a Graphic Designer aiming to become a UX Designer. Based on transferrable skills and industry demand, propose a 3-month learning path and suggest real-world project ideas.
+```
+
+---
+
+(Continued in next update with sections 4 to 8...)
+

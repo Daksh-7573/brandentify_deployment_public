@@ -100,56 +100,120 @@ export async function generatePersonalizedResponse(
 
 /**
  * Determines the user's intent from their message to guide response generation
+ * Based on the 8 intelligence dimensions from the training roadmap
  */
 async function determineUserIntent(message: string, context: MuskContext): Promise<string> {
   try {
-    // Common career-related intents
-    const intents = [
-      "career_advice",
-      "skill_development",
-      "resume_feedback",
-      "job_search",
-      "networking",
-      "education_advice",
-      "industry_trends",
-      "salary_negotiation",
-      "work_life_balance",
-      "personal_branding",
-      "interview_preparation",
-      "career_change",
-      "entrepreneurship",
-      "freelancing_advice",
-      "remote_work",
-      "professional_development",
-      "leadership_development",
-      "technical_question"
-    ];
+    // Advanced intent map based on the 8 intelligence dimensions
+    const intentMap = {
+      // USER PERSONA UNDERSTANDING
+      persona_assessment: ["who am i", "what type of professional", "my strengths", "my weaknesses", "personality", 
+                          "professional identity", "work style", "career stage"],
+                          
+      // SKILLS vs MARKET DEMAND MAPPING
+      skill_gap_analysis: ["skills i need", "missing skills", "learn", "improve skills", "skill gap", 
+                          "current skills", "market demand", "skills in demand", "certification", "courses"],
+      
+      // CAREER PATH INTELLIGENCE
+      career_progression: ["next step", "career path", "progress", "advance", "promotion", "grow", 
+                          "career trajectory", "next role", "step up", "senior", "leadership"],
+      
+      career_change: ["change career", "switch", "transition", "new field", "different industry", 
+                     "pivot", "transfer skills", "reinvent", "new direction"],
+      
+      // GLOBAL OPPORTUNITY AWARENESS
+      location_advice: ["relocation", "move to", "remote work", "location", "geographic", "city", 
+                       "country", "region", "cost of living", "local market"],
+      
+      market_trends: ["trends", "growing markets", "hotspots", "emerging markets", "industry growth",
+                     "regional differences", "global opportunities"],
+      
+      // PERSONALITY-TO-PROFESSION MAPPING
+      role_fit: ["right job for me", "job fit", "culture fit", "match my personality", "suit me", 
+                "work environment", "company size", "startup", "corporate", "right for me"],
+      
+      // TREND FORECASTING
+      future_planning: ["future proof", "emerging trends", "upcoming", "next 5 years", "future skills",
+                       "industry direction", "technology trends", "future of work"],
+      
+      // Standard career needs
+      resume_feedback: ["resume", "cv", "application", "my profile", "professional summary", 
+                       "improve resume", "review resume", "application materials"],
+      
+      job_search: ["find job", "job hunt", "job search", "looking for work", "job application", 
+                  "job posting", "apply", "interview process", "application status"],
+      
+      interview_preparation: ["interview", "prepare for interview", "interview question", "common questions", 
+                             "technical interview", "behavioral interview", "assessment", "case study"],
+      
+      salary_negotiation: ["salary", "compensation", "benefits", "negotiate", "offer", "pay", 
+                          "raise", "bonus", "equity", "total compensation"],
+      
+      networking: ["network", "connect", "professional network", "linkedin", "industry contacts", 
+                  "referral", "introduction", "networking event", "conference"]
+    };
     
-    // Basic intent detection through keywords
+    // Check for the most relevant intent
     const lowercaseMessage = message.toLowerCase();
+    let matchedIntent = "career_advice"; // Default intent
+    let highestScore = 0;
     
-    if (lowercaseMessage.includes("resume") || lowercaseMessage.includes("cv")) {
-      return "resume_feedback";
-    } else if (lowercaseMessage.includes("skill") || lowercaseMessage.includes("learn")) {
-      return "skill_development";
-    } else if (lowercaseMessage.includes("job") || lowercaseMessage.includes("position") || lowercaseMessage.includes("apply")) {
-      return "job_search";
-    } else if (lowercaseMessage.includes("salary") || lowercaseMessage.includes("compensation") || lowercaseMessage.includes("negotiate")) {
-      return "salary_negotiation";
-    } else if (lowercaseMessage.includes("network") || lowercaseMessage.includes("connect")) {
-      return "networking";
-    } else if (lowercaseMessage.includes("interview") || lowercaseMessage.includes("question")) {
-      return "interview_preparation";
-    } else if (lowercaseMessage.includes("change") || lowercaseMessage.includes("switch") || lowercaseMessage.includes("transition")) {
-      return "career_change";
-    } else if (lowercaseMessage.includes("trend") || lowercaseMessage.includes("future") || lowercaseMessage.includes("emerging")) {
-      return "industry_trends";
-    } else if (lowercaseMessage.includes("advice") || lowercaseMessage.includes("tip") || lowercaseMessage.includes("suggest")) {
-      return "career_advice";
+    // Score each intent based on keyword matches
+    for (const [intent, keywords] of Object.entries(intentMap)) {
+      let score = 0;
+      
+      for (const keyword of keywords) {
+        if (lowercaseMessage.includes(keyword)) {
+          score++;
+        }
+      }
+      
+      // Additional contextual scoring
+      if (intent === "resume_feedback" && context.resumeData) {
+        score += 2; // Prioritize resume feedback if the user has uploaded a resume
+      }
+      
+      if (intent === "career_change" && 
+          context.userMemory?.patterns?.topicPreferences && 
+          context.userMemory.patterns.topicPreferences["career"] > 2) {
+        score += 1; // Boost career change if user frequently discusses career topics
+      }
+      
+      // Check if we have a new highest score
+      if (score > highestScore) {
+        highestScore = score;
+        matchedIntent = intent;
+      }
     }
     
-    // Default to general career advice if no specific intent detected
-    return "career_advice";
+    // Special case: If no keywords matched but user has resume data and is asking something general,
+    // prioritize resume-related advice
+    if (highestScore === 0 && context.resumeData && message.length < 50) {
+      return "resume_feedback";
+    }
+    
+    // Map our detailed intents to higher-level categories for prompt generation
+    const intentCategories = {
+      persona_assessment: "career_advice",
+      skill_gap_analysis: "skill_development",
+      career_progression: "career_advice",
+      career_change: "career_change",
+      location_advice: "global_opportunities",
+      market_trends: "industry_trends",
+      role_fit: "career_advice",
+      future_planning: "industry_trends",
+      resume_feedback: "resume_feedback",
+      job_search: "job_search",
+      interview_preparation: "interview_preparation",
+      salary_negotiation: "salary_negotiation",
+      networking: "networking"
+    };
+    
+    // Log the intent detection results
+    console.log(`Intent detection: message triggered intent "${matchedIntent}" with score ${highestScore}`);
+    
+    // Return the mapped category or the matched intent if no mapping exists
+    return intentCategories[matchedIntent as keyof typeof intentCategories] || matchedIntent;
   } catch (error) {
     console.error("Error determining user intent:", error);
     return "career_advice";
@@ -307,17 +371,57 @@ ${careerProfile.education.length > 0
   : "- No specific education information available"}
 `;
 
-  // Add communication guidelines based on the 8 intelligence dimensions
+  // Add communication guidelines based on the 8 intelligence dimensions from the training roadmap
   prompt += `
-YOUR GUIDANCE APPROACH:
-1. USER PERSONA UNDERSTANDING: Tailor your advice to the user's career stage, skills, and aspirations.
-2. SKILLS vs MARKET DEMAND: Connect their current skills to market demand, suggesting improvements.
-3. CAREER PATH INTELLIGENCE: Recommend realistic career paths based on their background.
-4. GLOBAL OPPORTUNITY AWARENESS: Consider location-specific advice when relevant.
-5. PERSONALITY-TO-PROFESSION MAPPING: Match their interests and work style to suitable roles.
-6. TREND FORECASTING: Include emerging trends and roles they might consider.
-7. USER FEEDBACK LEARNING: Adapt based on the conversation context.
-8. EMOTIONAL INTELLIGENCE: Respond with empathy to career challenges and anxiety.
+YOUR GUIDANCE APPROACH (THE 8 INTELLIGENCE DIMENSIONS):
+
+1. USER PERSONA UNDERSTANDING:
+   - Tailor your advice to ${careerProfile.name}'s specific career stage: ${careerProfile.careerStage}
+   - Consider their industry (${careerProfile.industry || "Unknown"}) and domain specialization
+   - Factor in their location (${careerProfile.location || "Unspecified"}) and geographic preferences
+   - Address their explicitly stated career goals: ${careerProfile.lookingFor || "Career development"}
+
+2. SKILLS vs MARKET DEMAND MAPPING:
+   - Identify gaps between their current skills and market requirements
+   - Prioritize skill suggestions based on ROI and relevance to their goals
+   - Suggest specific tools, technologies, or certifications that would enhance their profile
+   - Consider both technical skills and soft skills in your recommendations
+
+3. CAREER PATH INTELLIGENCE:
+   - Suggest realistic next steps based on their experience and qualifications
+   - Recommend alternative paths that leverage their transferable skills
+   - Provide insights on common career transitions from their current position
+   - Share approximate timeframes for career transitions when relevant
+
+4. GLOBAL OPPORTUNITY AWARENESS:
+   - Consider location-specific career dynamics in ${careerProfile.location || "their region"}
+   - Highlight remote work opportunities when appropriate
+   - Mention geographic hotspots for their industry or desired role
+   - Address regional salary differences and cost of living considerations
+
+5. PERSONALITY-TO-PROFESSION MAPPING:
+   - Infer work preferences from their communication style and stated goals
+   - Match their apparent interests and strengths to suitable roles
+   - Suggest environments (startup, enterprise, freelance) that might fit their style
+   - Recommend roles that align with their apparent values and priorities
+
+6. TREND FORECASTING:
+   - Highlight emerging roles and technologies in their industry
+   - Identify skills with growing demand in their field
+   - Reference industry shifts that could impact their career trajectory
+   - Suggest how they can position themselves for future opportunities
+
+7. USER FEEDBACK LOOP LEARNING:
+   - Reference previous conversations when available
+   - Adapt your guidance based on their engagement patterns
+   - Build upon topics they've shown interest in previously
+   - Progressively refine your understanding of their needs
+
+8. EMOTIONAL INTELLIGENCE:
+   - Acknowledge career challenges and anxiety when expressed
+   - Be supportive and constructive while remaining honest
+   - Recognize achievements and strengths to build confidence
+   - Provide both encouragement and realistic expectations
 
 FORMATTING:
 - Use markdown formatting with headers (##, ###), bullet points, and emphasis when appropriate
@@ -347,39 +451,187 @@ ${recentInteractions}
 `;
   }
 
-  // Add intent-specific instructions
+  // Add intent-specific instructions based on the 8 intelligence dimensions
   switch (intent) {
     case "skill_development":
       prompt += `
-For SKILL DEVELOPMENT requests:
-- Focus on the skills the user already has (${careerProfile.skills.map((s: any) => s.name).join(', ')})
-- Suggest new skills based on their career stage and industry trends
-- Prioritize recommendations based on market demand
-- Mention specific resources or courses when appropriate
+# SKILL DEVELOPMENT INSTRUCTIONS
+
+## Focus Areas:
+- Analyze the gap between their current skills (${careerProfile.skills.map((s: any) => s.name).join(', ')}) and market requirements
+- Suggest both technical and soft skills that would enhance their profile in ${careerProfile.industry || "their industry"}
+- Prioritize recommendations based on ROI and market demand
+- Consider their career stage (${careerProfile.careerStage}) when suggesting skill development paths
+
+## Approach Style:
+- Provide specific, actionable learning paths with estimated timeframes
+- Suggest 2-3 high-priority skills they should develop next
+- Recommend relevant learning platforms, certifications, or resources
+- Connect skill recommendations to potential career outcomes
 `;
       break;
       
     case "career_change":
       prompt += `
-For CAREER CHANGE guidance:
-- Analyze transferable skills from their current role/industry
-- Suggest realistic transition paths based on their experience
-- Highlight skill gaps they'll need to address
-- Provide concrete steps to make the transition
+# CAREER TRANSITION GUIDANCE
+
+## Focus Areas:
+- Analyze their transferable skills from ${careerProfile.experiences.length > 0 ? careerProfile.experiences[0].title + ' at ' + careerProfile.experiences[0].company : "their current role"}
+- Suggest realistic transition paths based on their background
+- Identify skill gaps they'll need to address for the transition
+- Estimate realistic timeframes for different transition scenarios
+
+## Approach Style:
+- Start with acknowledging the challenges of career transitions
+- Frame career change as a strategic process with concrete steps
+- Provide examples of successful transitions from similar backgrounds
+- Include both immediate next steps and longer-term planning
 `;
       break;
       
     case "resume_feedback":
       prompt += `
-For RESUME FEEDBACK:
-- Focus on highlighting achievements over responsibilities
-- Suggest industry-specific keywords to include
-- Recommend structure and formatting that matches their career level
-- Provide specific examples of strong bullet points based on their background
+# RESUME ENHANCEMENT GUIDANCE
+
+## Focus Areas:
+- Focus on highlighting quantifiable achievements over responsibilities
+- Suggest industry-specific keywords and power verbs for ${careerProfile.industry || "their industry"}
+- Recommend structure and formatting that aligns with their career goals
+- Address potential gaps or red flags in their experience
+
+## Approach Style:
+- Be constructive but honest about areas for improvement
+- Provide specific examples of strong bullet points tailored to their experience
+- Suggest ATS optimization strategies 
+- Reference how their resume should position them for their next career step
 `;
       break;
       
-    // Add more intent-specific instructions as needed
+    case "global_opportunities":
+      prompt += `
+# LOCATION-BASED CAREER GUIDANCE
+
+## Focus Areas:
+- Analyze career opportunities specific to ${careerProfile.location || "their location"}
+- Discuss remote work possibilities in their field
+- Identify geographic hotspots for their industry or desired roles
+- Compare career growth potential across different regions if relevant
+
+## Approach Style:
+- Be specific about location-based salary expectations and cost of living
+- Discuss cultural workplace differences if relevant
+- Highlight companies or sectors with strong presence in their region
+- Include remote-friendly employers in their industry when appropriate
+`;
+      break;
+      
+    case "industry_trends":
+      prompt += `
+# INDUSTRY TREND ANALYSIS
+
+## Focus Areas:
+- Highlight emerging roles and technologies in ${careerProfile.industry || "their industry"}
+- Identify skills with growing demand in their field
+- Discuss industry shifts that could impact their career trajectory
+- Suggest how they can position themselves for future opportunities
+
+## Approach Style:
+- Focus on practical, actionable insights rather than abstract predictions
+- Connect trends directly to their career stage and background
+- Prioritize near-term (1-3 year) trends over long-term speculation
+- Include specific examples of how professionals are adapting to these trends
+`;
+      break;
+      
+    case "job_search":
+      prompt += `
+# JOB SEARCH STRATEGY GUIDANCE
+
+## Focus Areas:
+- Tailor job search tactics to their career stage and industry
+- Suggest targeted companies and roles based on their background
+- Discuss effective networking approaches for their field
+- Provide strategies for standing out in application processes
+
+## Approach Style:
+- Be realistic about the current job market in their industry
+- Emphasize quality of applications over quantity
+- Include both traditional and creative job search methods
+- Provide concrete next steps they can take immediately
+`;
+      break;
+      
+    case "interview_preparation":
+      prompt += `
+# INTERVIEW PREPARATION GUIDANCE
+
+## Focus Areas:
+- Suggest preparation strategies for common questions in their field
+- Provide frameworks for discussing their experience effectively
+- Help them address potential red flags or gaps
+- Tailor advice to both technical and behavioral aspects
+
+## Approach Style:
+- Include specific example responses based on their background
+- Suggest methods to demonstrate both technical and soft skills
+- Address interview anxiety with practical preparation strategies
+- Include guidance on follow-up and negotiation phases
+`;
+      break;
+      
+    case "salary_negotiation":
+      prompt += `
+# COMPENSATION NEGOTIATION GUIDANCE
+
+## Focus Areas:
+- Provide market-based salary insights for their role, experience and location
+- Suggest negotiation tactics appropriate for their career stage
+- Address total compensation beyond base salary
+- Help them present their value proposition effectively
+
+## Approach Style:
+- Be data-driven about compensation ranges
+- Emphasize professional, confident approaches to negotiation
+- Include scripts or frameworks for different negotiation scenarios
+- Address concerns about negotiation risks constructively
+`;
+      break;
+      
+    case "networking":
+      prompt += `
+# PROFESSIONAL NETWORKING GUIDANCE
+
+## Focus Areas:
+- Suggest networking approaches tailored to their industry and goals
+- Provide strategies for meaningful connection building
+- Address both online and in-person networking opportunities
+- Help craft effective outreach and follow-up communications
+
+## Approach Style:
+- Focus on quality connections over quantity
+- Include templates or scripts for different networking scenarios
+- Emphasize authentic relationship building over transactional approaches
+- Suggest specific professional groups or communities relevant to their field
+`;
+      break;
+      
+    default:
+      prompt += `
+# CAREER GUIDANCE APPROACH
+
+## Focus Areas:
+- Provide personalized advice based on their career stage, skills, and experiences
+- Address both short-term steps and longer-term career vision
+- Consider their specific industry, location, and stated goals
+- Balance tactical advice with strategic career planning
+
+## Approach Style:
+- Be specific and actionable in your guidance
+- Balance encouragement with realistic expectations
+- Structure your response with clear, distinct recommendations
+- End with concrete next steps they can take
+`;
+      break;
   }
 
   return prompt;
