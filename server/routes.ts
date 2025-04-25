@@ -25,6 +25,7 @@ import enhancedUserRoutes from "./routes-enhanced-user";
 import whatIOfferRoutes from "./routes-what-i-offer";
 import profileServicesRoutes from "./routes-services-sync";
 import { resumeTestRoutes } from "./routes-resume-test";
+import { routesMigrateWorkExperiences } from "./routes-migrate-work-experiences";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 

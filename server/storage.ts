@@ -4854,15 +4854,21 @@ export class DatabaseStorage implements IStorage {
       try {
         const result = await pool.query(`
           SELECT id, user_id as "userId", title, company, location, 
-                industry, start_date as "startDate", end_date as "endDate", 
-                description
+                industry, domain, start_date as "startDate", end_date as "endDate", 
+                description, key_responsibilities as "keyResponsibilities"
           FROM work_experiences
           WHERE user_id = $1
         `, [userId]);
         
         console.log(`[db.getWorkExperiencesByUserId] Found ${result.rows.length} work experiences for user ${userId}`);
         
-        return result.rows;
+        // Make sure keyResponsibilities is an array
+        const experiences = result.rows.map(row => ({
+          ...row,
+          keyResponsibilities: row.keyResponsibilities || []
+        }));
+        
+        return experiences;
       } catch (error) {
         console.error(`[db.getWorkExperiencesByUserId] Error fetching work experiences for user ${userId}:`, error);
         throw error; // Rethrow for retry mechanism
