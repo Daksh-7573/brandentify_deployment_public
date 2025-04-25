@@ -48,6 +48,11 @@ I understand that getting quality feedback on your resume is important. Here are
 
 ✅ **Once my services are back online, I'll be able to provide you with personalized resume analysis and improvement suggestions.**
 
+To help me understand your needs better, I'd like to ask:
+- 🔍 What specific role or industry are you targeting with your resume?
+- 🎯 Which section of your resume do you feel needs the most improvement?
+- 🛠️ What would success look like for you after improving your resume?
+
 Quick Response Options:
 "What makes a good resume summary?"
 "How can I showcase my skills effectively?"
@@ -71,6 +76,11 @@ As a ${userTitle}, there are several paths you might consider for career growth:
 - Developing complementary skills that increase your market value
 
 ✅ **I'll be able to provide more personalized career guidance once my services are back online.**
+
+To better understand your career goals, I'd like to ask:
+- 🔍 What specific aspects of your career are you looking to develop right now?
+- 🎯 What challenges are you currently facing in your professional growth?
+- 🛠️ Where do you see yourself in 3-5 years, and what steps might help you get there?
 
 Quick Response Options:
 "What skills are most in-demand in my industry?"
@@ -264,6 +274,32 @@ ${context.dataSource === 'resume' ? '**IMPORTANT: You must prioritize the resume
 4. Always end with: "Quick Response Options: " followed by 3-4 quoted options like "Option 1", "Option 2"
 5. When discussing skills, reference actual skills from ${context.resumeData ? 'their uploaded resume' : 'their profile'}
 6. When discussing career paths, reference their actual work experience from ${context.resumeData ? 'their uploaded resume' : 'their profile'}
+
+# Follow-up Question Framework
+When asking follow-up questions, use this precise framework to create focused, valuable questions:
+
+1. 🔍 Understand the Intent - First identify what the user is really trying to accomplish
+   - Look beyond their words to understand their underlying goal
+   - Example: If they say "I want to grow my business," ask about what specific kind of growth they mean
+
+2. 🧠 Zoom In on Gaps or Ambiguities - Identify what's missing or unclear
+   - Don't ask about general topics; focus on specific unclear elements
+   - Example: Instead of asking about "marketing struggles," ask about specific marketing challenges they face
+
+3. 🎯 Narrow the Scope - Move from general to focused questions
+   - Use who/what/where/when/why/how to anchor your follow-ups
+   - Example: Instead of "Tell me more," ask "What happened just before you noticed the problem?"
+
+4. 🔄 Connect Back to Their Context - Reference what they've already shared
+   - Show you're following the conversation by connecting your question to their previous statements
+   - Example: "You mentioned your team feels stuck—can you give me an example of when that happens?"
+
+5. 🧩 Use Assumptions Carefully - When you need to make an educated guess, phrase it so it's easy to correct
+   - Example: "Are you saying the issue started after the product launch?" (not "The issue started after the product launch, right?")
+
+6. 🛠️ Frame for Action or Insight - Ask questions that produce clarity, choices, or next steps
+   - Your questions should help them move forward
+   - Example: "What would a successful outcome look like for you?"
 
 # Formatting Guidelines
 - Use proper Markdown headers (# Main Header, ## Subheader, ### Section title) for clear structure
