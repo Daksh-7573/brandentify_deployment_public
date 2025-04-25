@@ -10,7 +10,7 @@ import {
   Mail, Linkedin, MapPin, Calendar, Download, FileText, ChevronRight,
   Briefcase, GraduationCap, Award, Target, ChartBar, Presentation,
   TrendingUp, Globe, BarChart2, Star, Database, UserCheck, Building,
-  ExternalLink, Play, Image, Info, Link, Eye
+  ExternalLink, Play, Image, Info, Link, Eye, Tag
 } from "lucide-react";
 
 interface CorporateExecutiveProps {
@@ -542,11 +542,11 @@ export default function CorporateExecutive({
                 )}
                 
                 {/* Project media gallery */}
-                {selectedProject.mediaUrls && selectedProject.mediaUrls.length > 0 && (
+                {selectedProject.mediaUrls && Array.isArray(selectedProject.mediaUrls) && selectedProject.mediaUrls.length > 0 && (
                   <div className="mt-6">
                     <h3 className="text-lg font-semibold mb-3" style={{ fontFamily: 'Playfair Display, serif' }}>Gallery</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {selectedProject.mediaUrls.map((url, index) => (
+                      {selectedProject.mediaUrls.map((url: string, index: number) => (
                         <div key={index} className="rounded-lg overflow-hidden h-40">
                           <img 
                             src={url} 
