@@ -13,7 +13,7 @@ import {
   TrendingUp, Globe, BarChart2, Star, Database, UserCheck, Building,
   ExternalLink, Play, Image, Info, Link, Eye, Tag, Menu, MenuIcon, X,
   HelpCircle, CheckCircle, Code, Paintbrush, Link2, Facebook,
-  Twitter, Instagram, Github, Youtube, Smartphone, User
+  Twitter, Instagram, GitHub, Youtube, Smartphone, User
 } from "lucide-react";
 
 interface Project extends Omit<ProjectSchema, 'mediaUrls'> {
