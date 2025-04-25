@@ -39,9 +39,10 @@ export const registerMuskAnthropicRoutes = (app: express.Express) => {
       });
 
       res.json(result);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error in career advice endpoint:', error);
-      res.status(500).json({ error: error.message || 'Failed to generate career advice' });
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      res.status(500).json({ error: errorMessage || 'Failed to generate career advice' });
     }
   });
 
@@ -57,9 +58,10 @@ export const registerMuskAnthropicRoutes = (app: express.Express) => {
 
       const result = await analyzeResume({ resumeText });
       res.json(result);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error in resume analysis endpoint:', error);
-      res.status(500).json({ error: error.message || 'Failed to analyze resume' });
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      res.status(500).json({ error: errorMessage || 'Failed to analyze resume' });
     }
   });
 
@@ -98,9 +100,10 @@ export const registerMuskAnthropicRoutes = (app: express.Express) => {
       );
 
       res.json(result);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error in networking recommendations endpoint:', error);
-      res.status(500).json({ error: error.message || 'Failed to generate networking recommendations' });
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      res.status(500).json({ error: errorMessage || 'Failed to generate networking recommendations' });
     }
   });
 
@@ -172,9 +175,10 @@ export const registerMuskAnthropicRoutes = (app: express.Express) => {
 
       const result = await generateCareerAdvice(demoProfile);
       res.json(result);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error in demo career advice endpoint:', error);
-      res.status(500).json({ error: error.message || 'Failed to generate demo career advice' });
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      res.status(500).json({ error: errorMessage || 'Failed to generate demo career advice' });
     }
   });
 
@@ -235,9 +239,10 @@ Open Source Contribution | 2019-Present
 
       const result = await analyzeResume(sampleResume);
       res.json(result);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error in demo resume analysis endpoint:', error);
-      res.status(500).json({ error: error.message || 'Failed to generate demo resume analysis' });
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      res.status(500).json({ error: errorMessage || 'Failed to generate demo resume analysis' });
     }
   });
 

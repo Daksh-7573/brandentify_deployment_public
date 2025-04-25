@@ -255,13 +255,19 @@ ${profileSummary}`;
       ],
     });
 
-    return {
-      recommendations: response.content[0].text,
-      sections: extractNetworkingSections(response.content[0].text),
-    };
-  } catch (error) {
+    // Check if the response has content and it's of type 'text'
+    if (response.content[0] && 'text' in response.content[0]) {
+      return {
+        recommendations: response.content[0].text,
+        sections: extractNetworkingSections(response.content[0].text),
+      };
+    } else {
+      throw new Error('Unexpected response format from Anthropic API');
+    }
+  } catch (error: unknown) {
     console.error('Error generating networking recommendations with Anthropic:', error);
-    throw new Error(`Failed to generate networking recommendations: ${error.message}`);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    throw new Error(`Failed to generate networking recommendations: ${errorMessage}`);
   }
 }
 

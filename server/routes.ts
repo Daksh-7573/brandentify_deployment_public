@@ -2728,8 +2728,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           try {
             if (process.env.ANTHROPIC_API_KEY) {
               console.log("Attempting PDF analysis with Claude (Anthropic)");
-              const { analyzeResumeWithClaude } = await import('./services/anthropic-service');
-              analysis = await analyzeResumeWithClaude(fileData);
+              const { analyzeResume } = await import('./services/anthropic-service');
+              const result = await analyzeResume({ resumeText: fileData });
+              analysis = result.analysis;
               console.log("Successfully received Claude analysis for PDF");
             } else {
               throw new Error("Anthropic API key not available");
