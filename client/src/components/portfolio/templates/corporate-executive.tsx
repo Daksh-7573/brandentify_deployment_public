@@ -644,53 +644,46 @@ export default function CorporateExecutive({
       <div className="sticky top-0 z-50 bg-white border-b border-gray-100 py-4 shadow-sm">
         <div className="max-w-6xl mx-auto px-8">
           <div className="flex items-center justify-between">
-            {/* Logo - Removed name as requested */}
-            <div className="flex-shrink-0">
-              <h3 className="text-xl font-semibold text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>
-                Portfolio
-              </h3>
-            </div>
-            
-            {/* Navigation Links */}
-            <nav className="hidden md:flex items-center space-x-8">
+            {/* Navigation Links - centered and properly aligned */}
+            <nav className="flex justify-center items-center space-x-8 w-full">
               <button 
                 onClick={() => scrollToSection('about')}
-                className={`nav-item text-sm ${activeSection === 'about' ? 'active' : 'text-gray-500 hover:text-gray-700'}`}
+                className={`nav-item text-sm font-medium ${activeSection === 'about' ? 'text-gray-900 active' : 'text-gray-500 hover:text-gray-700'}`}
                 style={{ fontFamily: 'Inter, sans-serif' }}
               >
                 About
               </button>
               <button 
                 onClick={() => scrollToSection('skills')}
-                className={`nav-item text-sm ${activeSection === 'skills' ? 'active' : 'text-gray-500 hover:text-gray-700'}`}
+                className={`nav-item text-sm font-medium ${activeSection === 'skills' ? 'text-gray-900 active' : 'text-gray-500 hover:text-gray-700'}`}
                 style={{ fontFamily: 'Inter, sans-serif' }}
               >
                 Expertise
               </button>
               <button 
                 onClick={() => scrollToSection('services')}
-                className={`nav-item text-sm ${activeSection === 'services' ? 'active' : 'text-gray-500 hover:text-gray-700'}`}
+                className={`nav-item text-sm font-medium ${activeSection === 'services' ? 'text-gray-900 active' : 'text-gray-500 hover:text-gray-700'}`}
                 style={{ fontFamily: 'Inter, sans-serif' }}
               >
                 Services
               </button>
               <button 
                 onClick={() => scrollToSection('projects')}
-                className={`nav-item text-sm ${activeSection === 'projects' ? 'active' : 'text-gray-500 hover:text-gray-700'}`}
+                className={`nav-item text-sm font-medium ${activeSection === 'projects' ? 'text-gray-900 active' : 'text-gray-500 hover:text-gray-700'}`}
                 style={{ fontFamily: 'Inter, sans-serif' }}
               >
                 Showcase
               </button>
               <button 
                 onClick={() => scrollToSection('experience')}
-                className={`nav-item text-sm ${activeSection === 'experience' ? 'active' : 'text-gray-500 hover:text-gray-700'}`}
+                className={`nav-item text-sm font-medium ${activeSection === 'experience' ? 'text-gray-900 active' : 'text-gray-500 hover:text-gray-700'}`}
                 style={{ fontFamily: 'Inter, sans-serif' }}
               >
                 Career
               </button>
               <button 
                 onClick={() => scrollToSection('education')}
-                className={`nav-item text-sm ${activeSection === 'education' ? 'active' : 'text-gray-500 hover:text-gray-700'}`}
+                className={`nav-item text-sm font-medium ${activeSection === 'education' ? 'text-gray-900 active' : 'text-gray-500 hover:text-gray-700'}`}
                 style={{ fontFamily: 'Inter, sans-serif' }}
               >
                 Education
@@ -698,7 +691,7 @@ export default function CorporateExecutive({
             </nav>
             
             {/* CTA Buttons */}
-            <div className="hidden sm:block">
+            <div className="hidden sm:block flex-shrink-0">
               <PortfolioCtaButtons 
                 variant="corporate"
                 resumeUrl={null} 
