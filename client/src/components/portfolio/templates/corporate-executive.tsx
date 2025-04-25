@@ -3,7 +3,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ProfileImage } from "@/components/ui/profile-image";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Education, Project as ProjectSchema, Service, Skill, WorkExperience } from "@shared/schema";
 import { useEffect, useState, useRef } from "react";
 import PortfolioCtaButtons from "../portfolio-cta-buttons";
@@ -11,11 +10,10 @@ import {
   Mail, Linkedin, MapPin, Calendar, Download, FileText, ChevronRight,
   Briefcase, GraduationCap, Award, Target, ChartBar, Presentation,
   TrendingUp, Globe, BarChart2, Star, Database, UserCheck, Building,
-  ExternalLink, Play, Image, Info, Link, Eye, Tag, Menu, MenuIcon, X,
-  HelpCircle, CheckCircle, Code, Paintbrush, Link2, Facebook,
-  Twitter, Instagram, Github, Youtube, Smartphone, User
+  ExternalLink, Play, Image, Info, Link, Eye, Tag
 } from "lucide-react";
 
+// Extended Project interface with mediaUrls property
 interface Project extends Omit<ProjectSchema, 'mediaUrls'> {
   mediaUrls?: string[];
 }
@@ -40,6 +38,7 @@ interface CorporateExecutiveProps {
   userServices?: Service[];
 }
 
+// Enhanced Education type for the Corporate Executive template
 interface EnhancedEducation {
   id: number;
   userId: number;
@@ -53,6 +52,7 @@ interface EnhancedEducation {
   skillsAcquired: string[];
 }
 
+// Enhanced Service type for the Corporate Executive template
 interface EnhancedService {
   id: number;
   userId: number;
@@ -79,83 +79,127 @@ export default function CorporateExecutive({
   userEducations = [],
   userServices = []
 }: CorporateExecutiveProps) {
-  // State
+  const [activeSection, setActiveSection] = useState<string>('about');
   const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [currentSection, setCurrentSection] = useState('about');
-  const sortedSkills = [...userSkills].sort((a, b) => b.level - a.level);
-  const sortedExperiences = [...userExperiences].sort((a, b) => 
-    new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
-  );
-  const sortedProjects = [...userProjects].sort((a, b) => 
-    new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
-  );
-  const sortedEducations = [...(userEducations || [])].sort((a, b) => 
-    new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
-  );
   
-  // Get selected project
-  const selectedProject = userProjects.find(p => p.id === selectedProjectId) || null;
-  
-  // Navigation items
-  const navItems = [
-    { id: 'about', label: 'About' },
-    { id: 'skills', label: 'Skills' },
-    { id: 'experience', label: 'Experience' },
-    { id: 'projects', label: 'Projects' },
-    { id: 'education', label: 'Education' },
-    ...(userServices && userServices.length > 0 ? [{ id: 'services', label: 'Services' }] : []),
-    { id: 'contact', label: 'Contact' }
-  ];
-  
-  // Functions
-  const closeProjectDetails = () => setSelectedProjectId(null);
-  
-  const scrollToSection = (sectionId: string) => {
-    setCurrentSection(sectionId);
-    setMobileMenuOpen(false);
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
+  // Function to handle opening project details - sets the selected project ID
+  const openProjectDetails = (projectId: number) => {
+    setSelectedProjectId(projectId);
   };
   
-  // Transform services to add pricing display
-  const enhancedServices = userServices.map(service => {
-    const isHourly = service.isHourly;
-    let pricing = 'Custom Pricing';
-    
-    if (service.priceUsd !== null && service.priceUsd > 0) {
-      pricing = `$${service.priceUsd}${isHourly ? '/hr' : ''}`;
-    } else if (service.priceInr !== null && service.priceInr > 0) {
-      pricing = `₹${service.priceInr}${isHourly ? '/hr' : ''}`;
-    }
-    
-    const serviceWithPricing = {
-      ...service,
-      pricing
-    };
-    
-    return serviceWithPricing as unknown as EnhancedService;
-  });
+  // Function to close the project details modal
+  const closeProjectDetails = () => {
+    setSelectedProjectId(null);
+  };
   
-  // Transform education to ensure skillsAcquired is always an array
-  const enhancedEducations: EnhancedEducation[] = sortedEducations.map(edu => {
-    const skillsAcquired = typeof edu.skillsAcquired === 'string' 
-      ? JSON.parse(edu.skillsAcquired as unknown as string)
-      : (Array.isArray(edu.skillsAcquired) ? edu.skillsAcquired : []);
-    
+  // Find the selected project
+  const selectedProject = selectedProjectId 
+    ? userProjects.find(project => project.id === selectedProjectId) 
+    : null;
+  
+  // Sort skills by proficiency
+  const sortedSkills = [...userSkills].sort((a, b) => (b.proficiency || 0) - (a.proficiency || 0));
+  
+  // Define mock services for when no services are available
+  const mockServices = [
+    {
+      id: 101,
+      userId: 1,
+      title: "Strategic Advisory",
+      description: "Expert guidance on business strategy, growth initiatives, and market positioning to help your organization achieve its full potential.",
+      category: "consulting",
+      createdAt: new Date(),
+      updatedAt: null,
+      priceInr: null,
+      priceUsd: null,
+      isHourly: false,
+      features: [],
+      imageUrl: null,
+      order: 1,
+      isActive: true
+    },
+    {
+      id: 102,
+      userId: 1,
+      title: "Executive Coaching",
+      description: "Personalized coaching for senior leaders and executives focused on leadership development, decision-making, and organizational effectiveness.",
+      category: "coaching",
+      createdAt: new Date(),
+      updatedAt: null,
+      priceInr: null,
+      priceUsd: null,
+      isHourly: false,
+      features: [],
+      imageUrl: null,
+      order: 2,
+      isActive: true
+    },
+    {
+      id: 103,
+      userId: 1,
+      title: "Board Directorship",
+      description: "Experienced board member bringing strategic oversight, governance expertise, and industry knowledge to drive corporate success.",
+      category: "consulting",
+      createdAt: new Date(),
+      updatedAt: null,
+      priceInr: null,
+      priceUsd: null,
+      isHourly: false,
+      features: [],
+      imageUrl: null,
+      order: 3,
+      isActive: true
+    }
+  ];
+  
+  // Create enhanced services with pricing information
+  const enhancedServices: EnhancedService[] = (userServices.length > 0 ? userServices : mockServices)
+    .map(service => {
+      const serviceWithPricing = {
+        ...service,
+        pricing: service.category === 'coaching' 
+          ? 'Starting at $5,000' 
+          : service.category === 'consulting' 
+            ? 'Custom engagement' 
+            : service.category === 'advisory' 
+              ? 'Retainer basis'
+              : ''
+      };
+      
+      // Force the type to be EnhancedService
+      return serviceWithPricing as unknown as EnhancedService;
+    });
+  
+  // Sort experiences by date (most recent first)
+  const sortedExperiences = [...userExperiences].sort((a, b) => 
+    new Date(b.startDate || '').getTime() - new Date(a.startDate || '').getTime()
+  );
+  
+  // Sort projects by date (most recent first)
+  const sortedProjects = [...userProjects].sort((a, b) => 
+    new Date(b.startDate || '').getTime() - new Date(a.startDate || '').getTime()
+  );
+  
+  // Sort educations by date (most recent first) and enhance them
+  const sortedEducations = [...userEducations].map(edu => {
+    // Make sure skillsAcquired is an array of strings
+    const skillsAcquired = Array.isArray(edu.skillsAcquired) 
+      ? edu.skillsAcquired as string[]
+      : [];
+      
+    // Return with enhanced type
     return {
       ...edu,
       skillsAcquired
     } as EnhancedEducation;
-  });
+  }).sort((a, b) => 
+    new Date(b.startDate || '').getTime() - new Date(a.startDate || '').getTime()
+  );
   
-  // Function to get icon for skill category
-  const getSkillCategoryIcon = (name: string) => {
-    // Check if name is undefined or null before calling toLowerCase
-    if (!name) return <Award className="h-5 w-5" />;
-    
+
+  
+  // Maps skill names to appropriate icons
+  const getSkillIcon = (name: string) => {
     const nameLower = name.toLowerCase();
     if (nameLower.includes('strateg')) return <Target className="h-5 w-5" />;
     if (nameLower.includes('lead')) return <UserCheck className="h-5 w-5" />;
@@ -168,84 +212,308 @@ export default function CorporateExecutive({
     return <Award className="h-5 w-5" />;
   };
   
-  // Scroll event listener
+  // Initialize animations and styles on component mount
   useEffect(() => {
-    const handleScroll = () => {
-      const sections = navItems.map(item => item.id);
-      const currentPositions = sections.map(id => {
-        const element = document.getElementById(id);
-        if (!element) return { id, position: 0 };
-        const rect = element.getBoundingClientRect();
-        return {
-          id,
-          position: rect.top
-        };
-      });
-      
-      // Find the section closest to the top of the viewport
-      const closestSection = currentPositions
-        .filter(item => item.position <= 200) // Sections above or near the top
-        .sort((a, b) => b.position - a.position)[0]; // Get the one closest to the top
-      
-      if (closestSection) {
-        setCurrentSection(closestSection.id);
-      }
-    };
-    
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [navItems]);
-  
-  // Add custom fonts
-  useEffect(() => {
-    const style = document.createElement('style');
-    style.textContent = `
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-    `;
-    
+    // Add premium web fonts - Playfair Display (headings) and Inter (body)
     const playfairLink = document.createElement('link');
-    playfairLink.href = 'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap';
+    playfairLink.href = 'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&display=swap';
     playfairLink.rel = 'stylesheet';
     
-    document.head.appendChild(style);
-    document.head.appendChild(playfairLink);
+    const interLink = document.createElement('link');
+    interLink.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap';
+    interLink.rel = 'stylesheet';
     
-    return () => {
-      document.head.removeChild(style);
-      document.head.removeChild(playfairLink);
-    };
-  }, []);
-  
-  // Add custom global styles
-  useEffect(() => {
+    document.head.appendChild(playfairLink);
+    document.head.appendChild(interLink);
+    
+    // Add CSS for animations and custom styling
     const style = document.createElement('style');
     style.textContent = `
-      .accent-border::before {
-        content: '';
-        display: block;
-        width: 60px;
-        height: 3px;
-        background-color: #6a0dad;
-        margin-bottom: 20px;
-      }
-      
-      .fade-in {
-        opacity: 0;
-        animation: fadeIn 0.5s ease-in-out forwards;
-      }
-      
+      /* Corporate Executive Template - Enhanced Premium Styling */
       @keyframes fadeIn {
         from { opacity: 0; transform: translateY(10px); }
         to { opacity: 1; transform: translateY(0); }
       }
+      
+      @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+
+      @keyframes shimmer {
+        0% { background-position: -100% 0; }
+        100% { background-position: 100% 0; }
+      }
+      
+      .corporate-executive-template .fade-in {
+        opacity: 0;
+        animation: fadeIn 0.6s ease-out forwards;
+      }
+      
+      .corporate-executive-template .fade-in-delay-1 {
+        animation-delay: 0.2s;
+      }
+      
+      .corporate-executive-template .fade-in-delay-2 {
+        animation-delay: 0.4s;
+      }
+      
+      .corporate-executive-template .fade-in-delay-3 {
+        animation-delay: 0.6s;
+      }
+      
+      .corporate-executive-template .accent-border {
+        position: relative;
+      }
+      
+      .corporate-executive-template .accent-border::after {
+        content: '';
+        position: absolute;
+        bottom: -6px;
+        left: 0;
+        width: 40px;
+        height: 2px;
+        background: #6a0dad; /* Modern purple accent color */
+      }
+      
+      .corporate-executive-template .timeline-item {
+        position: relative;
+        padding-left: 1.5rem;
+        padding-bottom: 2rem;
+      }
+      
+      .corporate-executive-template .timeline-item::before {
+        content: '';
+        position: absolute;
+        top: 0.5rem;
+        left: 0;
+        width: 0.75rem;
+        height: 0.75rem;
+        border-radius: 50%;
+        background: #6a0dad; /* Modern purple accent color */
+        z-index: 1;
+      }
+      
+      .corporate-executive-template .timeline-item::after {
+        content: '';
+        position: absolute;
+        top: 1rem;
+        bottom: 0;
+        left: 0.375rem;
+        width: 1px;
+        background: #e5e7eb;
+      }
+      
+      .corporate-executive-template .timeline-item:last-child::after {
+        display: none;
+      }
+      
+      .corporate-executive-template .skill-tag {
+        transition: all 0.3s ease;
+        border: 1px solid #e5e7eb;
+      }
+      
+      .corporate-executive-template .skill-tag:hover {
+        border-color: #6a0dad;
+        background: linear-gradient(120deg, rgba(106, 13, 173, 0.05) 0%, rgba(106, 13, 173, 0.1) 100%);
+        box-shadow: 0 2px 10px rgba(106, 13, 173, 0.1);
+        transform: translateY(-2px);
+      }
+      
+      .corporate-executive-template .profile-image-frame {
+        position: relative;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      }
+      
+      .corporate-executive-template .profile-image-frame::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: 2px solid rgba(106, 13, 173, 0.3);
+        border-radius: 12px;
+        opacity: 0.8;
+      }
+      
+      .corporate-executive-template .nav-item {
+        position: relative;
+        transition: all 0.3s ease;
+      }
+      
+      .corporate-executive-template .nav-item.active {
+        color: #1a202c;
+        font-weight: 500;
+      }
+      
+      .corporate-executive-template .nav-item.active::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: #6a0dad; /* Modern purple accent color */
+      }
+      
+      .corporate-executive-template .project-card {
+        transition: all 0.3s ease;
+        border: 1px solid #f3f4f6;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      
+      .corporate-executive-template .project-card:hover {
+        border-color: #6a0dad;
+        box-shadow: 0 4px 20px rgba(106, 13, 173, 0.1);
+        transform: translateY(-3px);
+      }
+
+      .corporate-executive-template .project-card-img {
+        position: relative;
+        overflow: hidden;
+        height: 180px;
+      }
+
+      .corporate-executive-template .project-card-img img {
+        transition: transform 0.6s ease;
+      }
+
+      .corporate-executive-template .project-card:hover .project-card-img img {
+        transform: scale(1.05);
+      }
+      
+      .corporate-executive-template .service-card {
+        transition: all 0.3s ease;
+        border-radius: 12px;
+        border-left: 3px solid transparent;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      }
+      
+      .corporate-executive-template .service-card:hover {
+        border-left-color: #6a0dad;
+        background: linear-gradient(to right, rgba(106, 13, 173, 0.03), transparent);
+        box-shadow: 0 8px 30px rgba(106, 13, 173, 0.1);
+      }
+
+      .corporate-executive-template .service-card-icon {
+        background: linear-gradient(135deg, #7b1fa2, #6a0dad);
+        color: white;
+        border-radius: 12px;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(106, 13, 173, 0.2);
+      }
+      
+      .corporate-executive-template .btn-primary {
+        background: linear-gradient(135deg, #6a0dad, #9c27b0);
+        background-size: 200% 200%;
+        animation: gradientShift 4s ease infinite;
+        transition: all 0.3s ease;
+        color: white;
+        font-weight: 500;
+        border-radius: 8px;
+      }
+      
+      .corporate-executive-template .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(106, 13, 173, 0.3);
+      }
+      
+      .corporate-executive-template .btn-outline {
+        border: 1px solid #e5e7eb;
+        transition: all 0.3s ease;
+        border-radius: 8px;
+      }
+      
+      .corporate-executive-template .btn-outline:hover {
+        border-color: #6a0dad;
+        color: #6a0dad;
+        box-shadow: 0 2px 8px rgba(106, 13, 173, 0.1);
+      }
+
+      .corporate-executive-template .highlight-badge {
+        background: linear-gradient(90deg, rgba(106, 13, 173, 0.1) 0%, rgba(156, 39, 176, 0.1) 100%);
+        border: 1px solid rgba(106, 13, 173, 0.2);
+        color: #6a0dad;
+        font-weight: 500;
+      }
+
+      .corporate-executive-template .achievement-card {
+        border-radius: 12px;
+        background: linear-gradient(135deg, #f9f9f9, #ffffff);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        border: 1px solid #f0f0f0;
+        transition: all 0.3s ease;
+      }
+
+      .corporate-executive-template .achievement-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        border-color: rgba(106, 13, 173, 0.2);
+      }
+
+      .corporate-executive-template .premium-gradient-text {
+        background: linear-gradient(90deg, #6a0dad, #9c27b0);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: inline-block;
+      }
+
+      .corporate-executive-template .testimonial-card {
+        background: linear-gradient(135deg, #ffffff, #f9f9f9);
+        border-radius: 12px;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+        border: 1px solid #f0f0f0;
+        transition: all 0.3s ease;
+      }
+
+      .corporate-executive-template .testimonial-card:hover {
+        box-shadow: 0 8px 40px rgba(106, 13, 173, 0.1);
+      }
+
+      .corporate-executive-template .testimonial-quote {
+        position: relative;
+      }
+
+      .corporate-executive-template .testimonial-quote::before {
+        content: """;
+        position: absolute;
+        top: -20px;
+        left: -10px;
+        font-size: 80px;
+        color: rgba(106, 13, 173, 0.1);
+        font-family: "Georgia", serif;
+      }
     `;
     
     document.head.appendChild(style);
-    return () => document.head.removeChild(style);
+    
+    // Clean up on unmount
+    return () => {
+      document.head.removeChild(style);
+      document.head.removeChild(playfairLink);
+      document.head.removeChild(interLink);
+    };
   }, []);
   
-  // Helper function to format dates
-  const formatDate = (dateString: string, showMonthName: boolean = true) => {
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+      setActiveSection(sectionId);
+    }
+  };
+  
+  const formatDate = (dateString: string | null, showMonthName = true) => {
     if (!dateString) return '';
     const date = new Date(dateString);
     
@@ -282,37 +550,37 @@ export default function CorporateExecutive({
             </DialogHeader>
             
             <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Main Content */}
+              {/* Main content */}
               <div className="md:col-span-2 space-y-4">
-                {/* Cover Image */}
-                {selectedProject.coverImage && (
+                {selectedProject.thumbnailUrl && (
                   <div className="rounded-lg overflow-hidden">
                     <img 
-                      src={selectedProject.coverImage} 
+                      src={selectedProject.thumbnailUrl} 
                       alt={selectedProject.title} 
-                      className="w-full h-auto object-cover"
+                      className="w-full h-auto"
                     />
                   </div>
                 )}
                 
-                {/* Description */}
-                <div className="mt-4">
-                  <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>Overview</h3>
-                  <p className="text-gray-700 whitespace-pre-line" style={{ fontFamily: 'Inter, sans-serif' }}>
-                    {selectedProject.description}
-                  </p>
-                </div>
+                {selectedProject.description && (
+                  <div className="mt-4">
+                    <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>Overview</h3>
+                    <p className="text-gray-700" style={{ fontFamily: 'Inter, sans-serif' }}>
+                      {selectedProject.description}
+                    </p>
+                  </div>
+                )}
                 
-                {/* Gallery */}
-                {selectedProject.mediaUrls && selectedProject.mediaUrls.length > 0 && (
+                {/* Project media gallery */}
+                {selectedProject && selectedProject.mediaUrls && Array.isArray(selectedProject.mediaUrls) && selectedProject.mediaUrls.length > 0 && (
                   <div className="mt-6">
-                    <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>Gallery</h3>
+                    <h3 className="text-lg font-semibold mb-3" style={{ fontFamily: 'Playfair Display, serif' }}>Gallery</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {selectedProject.mediaUrls.map((url, index) => (
+                      {selectedProject.mediaUrls.map((url: string, index: number) => (
                         <div key={index} className="rounded-lg overflow-hidden h-40">
                           <img 
                             src={url} 
-                            alt={`Project media ${index + 1}`} 
+                            alt={`${selectedProject.title} - Image ${index + 1}`} 
                             className="w-full h-full object-cover"
                           />
                         </div>
@@ -324,288 +592,260 @@ export default function CorporateExecutive({
               
               {/* Sidebar */}
               <div className="space-y-6">
-                {/* Project Details */}
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="text-lg font-semibold mb-3" style={{ fontFamily: 'Playfair Display, serif' }}>Project Details</h3>
-                  
-                  <div className="space-y-3">
-                    {/* Client */}
-                    {selectedProject.client && (
-                      <div className="flex items-start">
-                        <User className="h-5 w-5 text-gray-500 mt-0.5 mr-2" />
-                        <div>
-                          <p className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Inter, sans-serif' }}>Client</p>
-                          <p className="text-sm text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>{selectedProject.client}</p>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {/* Duration */}
-                    <div className="flex items-start">
-                      <Calendar className="h-5 w-5 text-gray-500 mt-0.5 mr-2" />
+                {selectedProject.projectUrl && (
+                  <div>
+                    <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>External Link</h3>
+                    <a 
+                      href={selectedProject.projectUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-[#6a0dad] hover:underline"
+                      style={{ fontFamily: 'Inter, sans-serif' }}
+                    >
+                      <span>Visit Project</span>
+                      <ExternalLink className="h-4 w-4" />
+                    </a>
+                  </div>
+                )}
+                
+                {/* Additional project information */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>Project Details</h3>
+                  <ul className="space-y-2">
+                    <li className="flex items-start gap-2">
+                      <Calendar className="h-4 w-4 mt-1 text-gray-500" />
                       <div>
-                        <p className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Inter, sans-serif' }}>Timeline</p>
+                        <span className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Inter, sans-serif' }}>Date</span>
                         <p className="text-sm text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>
-                          {formatDate(selectedProject.startDate)} — 
-                          {selectedProject.endDate ? formatDate(selectedProject.endDate) : 'Present'}
+                          {formatDate(selectedProject.startDate, true)}
                         </p>
                       </div>
-                    </div>
+                    </li>
                     
-                    {/* Category */}
                     {selectedProject.category && (
-                      <div className="flex items-start">
-                        <FileText className="h-5 w-5 text-gray-500 mt-0.5 mr-2" />
+                      <li className="flex items-start gap-2">
+                        <Tag className="h-4 w-4 mt-1 text-gray-500" />
                         <div>
-                          <p className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Inter, sans-serif' }}>Category</p>
-                          <p className="text-sm text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>{selectedProject.category}</p>
+                          <span className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Inter, sans-serif' }}>Category</span>
+                          <p className="text-sm text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>
+                            {selectedProject.category}
+                          </p>
                         </div>
-                      </div>
+                      </li>
                     )}
-                    
-                    {/* Project URL */}
-                    {selectedProject.url && (
-                      <div className="flex items-start">
-                        <Link2 className="h-5 w-5 text-gray-500 mt-0.5 mr-2" />
-                        <div>
-                          <p className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Inter, sans-serif' }}>Website</p>
-                          <a 
-                            href={selectedProject.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-sm text-blue-600 hover:underline"
-                            style={{ fontFamily: 'Inter, sans-serif' }}
-                          >
-                            {selectedProject.url.replace(/^https?:\/\//, '')}
-                          </a>
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                  </ul>
                 </div>
-                
-                {/* Technologies Used */}
-                {selectedProject.technologies && selectedProject.technologies.length > 0 && (
-                  <div>
-                    <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>Technologies</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedProject.technologies.map((tech, index) => (
-                        <Badge key={index} variant="secondary" className="bg-gray-100 text-gray-700">
-                          {tech}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                
-                {/* Key Achievements */}
-                {selectedProject.keyAchievements && selectedProject.keyAchievements.length > 0 && (
-                  <div>
-                    <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>Key Achievements</h3>
-                    <ul className="space-y-2 list-disc list-inside">
-                      {selectedProject.keyAchievements.map((achievement, index) => (
-                        <li key={index} className="text-sm text-gray-700" style={{ fontFamily: 'Inter, sans-serif' }}>
-                          {achievement}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
               </div>
             </div>
           </DialogContent>
         )}
       </Dialog>
-      
-      {/* Navigation Bar */}
-      <nav className="sticky top-0 z-50 bg-white shadow-md px-4 py-4">
-        <div className="max-w-6xl mx-auto flex justify-between items-center">
-          {/* Logo/Name */}
-          <div>
-            <h1 className="text-xl font-bold text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>
-              {userInfo.name}
-            </h1>
-          </div>
-          
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-1">
-            {navItems.map(item => (
-              <button
-                key={item.id}
-                onClick={() => scrollToSection(item.id)}
-                className={`px-3 py-2 rounded-lg text-sm transition-colors hover:bg-gray-100 ${
-                  currentSection === item.id 
-                    ? 'font-semibold text-[#6a0dad]' 
-                    : 'text-gray-600'
-                }`}
-                style={{ fontFamily: 'Inter, sans-serif' }}
-              >
-                {item.label}
-              </button>
-            ))}
-          </div>
-          
-          {/* Mobile Menu Button */}
-          <button 
-            className="md:hidden text-gray-700 focus:outline-none"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <MenuIcon className="h-6 w-6" />
-            )}
-          </button>
-        </div>
-        
-        {/* Mobile Navigation Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-white border-t border-gray-100 mt-4">
-            <div className="py-2 space-y-1">
-              {navItems.map(item => (
-                <button
-                  key={item.id}
-                  onClick={() => scrollToSection(item.id)}
-                  className={`w-full text-left px-4 py-2 text-sm ${
-                    currentSection === item.id 
-                      ? 'font-semibold text-[#6a0dad] bg-gray-50' 
-                      : 'text-gray-600'
-                  }`}
-                  style={{ fontFamily: 'Inter, sans-serif' }}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-      </nav>
-      
-      {/* Hero Section */}
-      <section id="about" className="py-20 px-8 bg-white border-b border-gray-100">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
-            <div className="md:col-span-2 fade-in">
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
-                {userInfo.name}
-              </h2>
-              
-              {userInfo.title && (
-                <p className="text-xl md:text-2xl font-medium text-gray-700 mb-6" style={{ fontFamily: 'Inter, sans-serif' }}>
-                  {userInfo.title}
-                </p>
-              )}
-              
-              <div className="flex flex-wrap gap-2 mb-6">
-                {userInfo.industry && (
-                  <Badge className="bg-gray-100 text-gray-700 border-gray-200" style={{ fontFamily: 'Inter, sans-serif' }}>
-                    {userInfo.industry}
-                  </Badge>
-                )}
-                
-                {userInfo.domain && (
-                  <Badge className="bg-gray-100 text-gray-700 border-gray-200" style={{ fontFamily: 'Inter, sans-serif' }}>
-                    {userInfo.domain}
-                  </Badge>
-                )}
-                
-                {userInfo.location && (
-                  <Badge className="bg-gray-100 text-gray-700 border-gray-200" style={{ fontFamily: 'Inter, sans-serif' }}>
-                    <MapPin className="h-3 w-3 mr-1" />
-                    {userInfo.location}
-                  </Badge>
-                )}
-                
-                {userInfo.jobLevel && (
-                  <Badge className="bg-gray-100 text-gray-700 border-gray-200" style={{ fontFamily: 'Inter, sans-serif' }}>
-                    {userInfo.jobLevel}
-                  </Badge>
-                )}
-              </div>
-              
-              {userInfo.aboutMe && (
-                <div className="prose max-w-none text-gray-700" style={{ fontFamily: 'Inter, sans-serif' }}>
-                  <p className="whitespace-pre-line">
-                    {userInfo.aboutMe}
-                  </p>
-                </div>
-              )}
-              
-              {userInfo.lookingFor && (
-                <div className="mt-6">
-                  <p className="font-medium text-gray-900 mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>
-                    Currently looking for:
-                  </p>
-                  <p className="text-gray-700 bg-gray-50 p-3 rounded-lg border border-gray-100" style={{ fontFamily: 'Inter, sans-serif' }}>
-                    {userInfo.lookingFor}
-                  </p>
-                </div>
-              )}
+      {/* Fixed Navigation */}
+      <div className="sticky top-0 z-50 bg-white border-b border-gray-100 py-4 shadow-sm">
+        <div className="max-w-6xl mx-auto px-8">
+          <div className="flex items-center justify-between">
+            {/* Logo - Removed name as requested */}
+            <div className="flex-shrink-0">
+              <h3 className="text-xl font-semibold text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>
+                Portfolio
+              </h3>
             </div>
             
-            {userInfo.photoURL && (
-              <div className="order-first md:order-last flex justify-center fade-in" style={{ animationDelay: '0.2s' }}>
-                <div className="relative w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-white shadow-xl">
-                  <img 
-                    src={userInfo.photoURL} 
-                    alt={userInfo.name} 
-                    className="w-full h-full object-cover"
-                  />
+            {/* Navigation Links */}
+            <nav className="hidden md:flex items-center space-x-8">
+              <button 
+                onClick={() => scrollToSection('about')}
+                className={`nav-item text-sm ${activeSection === 'about' ? 'active' : 'text-gray-500 hover:text-gray-700'}`}
+                style={{ fontFamily: 'Inter, sans-serif' }}
+              >
+                About
+              </button>
+              <button 
+                onClick={() => scrollToSection('skills')}
+                className={`nav-item text-sm ${activeSection === 'skills' ? 'active' : 'text-gray-500 hover:text-gray-700'}`}
+                style={{ fontFamily: 'Inter, sans-serif' }}
+              >
+                Expertise
+              </button>
+              <button 
+                onClick={() => scrollToSection('services')}
+                className={`nav-item text-sm ${activeSection === 'services' ? 'active' : 'text-gray-500 hover:text-gray-700'}`}
+                style={{ fontFamily: 'Inter, sans-serif' }}
+              >
+                Services
+              </button>
+              <button 
+                onClick={() => scrollToSection('projects')}
+                className={`nav-item text-sm ${activeSection === 'projects' ? 'active' : 'text-gray-500 hover:text-gray-700'}`}
+                style={{ fontFamily: 'Inter, sans-serif' }}
+              >
+                Showcase
+              </button>
+              <button 
+                onClick={() => scrollToSection('experience')}
+                className={`nav-item text-sm ${activeSection === 'experience' ? 'active' : 'text-gray-500 hover:text-gray-700'}`}
+                style={{ fontFamily: 'Inter, sans-serif' }}
+              >
+                Career
+              </button>
+              <button 
+                onClick={() => scrollToSection('education')}
+                className={`nav-item text-sm ${activeSection === 'education' ? 'active' : 'text-gray-500 hover:text-gray-700'}`}
+                style={{ fontFamily: 'Inter, sans-serif' }}
+              >
+                Education
+              </button>
+            </nav>
+            
+            {/* CTA Buttons */}
+            <div className="hidden sm:block">
+              <PortfolioCtaButtons 
+                variant="corporate"
+                resumeUrl={null} 
+                mentorUrl={null}
+                connectUrl={null}
+                userEmail={userInfo.email}
+                userName={userInfo.name}
+                className="flex-row"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Hero Section */}
+      <section id="about" className="py-16 px-8 bg-gray-50">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row items-center md:items-start gap-12">
+            {/* Profile Image */}
+            <div className="w-full md:w-1/4 flex justify-center md:justify-start fade-in">
+              <div className="profile-image-frame w-48 h-48">
+                <ProfileImage
+                  src={userInfo.photoURL}
+                  alt={userInfo.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
+            
+            {/* Intro Content */}
+            <div className="w-full md:w-3/4 flex flex-col">
+              <div className="fade-in">
+                <h1 className="text-4xl font-bold text-gray-900 mb-3" style={{ fontFamily: 'Playfair Display, serif' }}>
+                  {userInfo.name}
+                </h1>
+                
+                <h2 className="text-2xl text-gray-700 mb-6 accent-border" style={{ fontFamily: 'Playfair Display, serif' }}>
+                  I am a {userInfo.title || "Strategic Growth Advisor"}
+                </h2>
+              </div>
+              
+              <div className="flex items-center text-gray-500 mb-6 fade-in fade-in-delay-1">
+                <MapPin className="h-4 w-4 mr-1" />
+                <span className="text-sm" style={{ fontFamily: 'Inter, sans-serif' }}>
+                  {userInfo.location || "New York, United States"}
+                </span>
+              </div>
+              
+              {/* Industry / Domain Badges */}
+              <div className="flex flex-wrap gap-3 mb-6 fade-in fade-in-delay-1">
+                {userInfo.industry && (
+                  <Badge className="bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-md px-3 py-1.5">
+                    <Briefcase className="h-3.5 w-3.5 mr-1" />
+                    <span className="text-xs" style={{ fontFamily: 'Inter, sans-serif' }}>{userInfo.industry}</span>
+                  </Badge>
+                )}
+                {userInfo.domain && (
+                  <Badge className="bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-md px-3 py-1.5">
+                    <Globe className="h-3.5 w-3.5 mr-1" />
+                    <span className="text-xs" style={{ fontFamily: 'Inter, sans-serif' }}>{userInfo.domain}</span>
+                  </Badge>
+                )}
+              </div>
+              
+              {/* Looking For */}
+              {userInfo.lookingFor && (
+                <div className="mb-8 fade-in fade-in-delay-2">
+                  <Badge className="bg-[#1e3a8a]/5 text-[#1e3a8a] hover:bg-[#1e3a8a]/10 border border-[#1e3a8a]/20 font-medium rounded-md px-4 py-2">
+                    <Target className="h-4 w-4 mr-2" />
+                    <span style={{ fontFamily: 'Inter, sans-serif' }}>{userInfo.lookingFor}</span>
+                  </Badge>
+                </div>
+              )}
+              
+              {/* Executive Summary */}
+              <div className="bg-white border border-gray-100 rounded-lg p-6 shadow-sm mb-8 fade-in fade-in-delay-3">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
+                  What I'm All About
+                </h3>
+                <div className="flex">
+                  <div className="text-[#6a0dad] mr-3 flex-shrink-0 mt-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-quote"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg>
+                  </div>
+                  <p className="text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
+                    {userInfo.aboutMe || 
+                    `I'm passionate about delivering value and achieving results through collaborative work and innovative approaches.`}
+                  </p>
                 </div>
               </div>
-            )}
+              
+              {/* Contact/Connect section removed as requested */}
+            </div>
           </div>
         </div>
       </section>
       
-      {/* Skills Section */}
-      <section id="skills" className="py-16 px-8 bg-gray-50">
+      {/* Expertise (Skills) Section */}
+      <section id="skills" className="py-16 px-8 bg-white">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-gray-900 mb-10 accent-border" style={{ fontFamily: 'Playfair Display, serif' }}>
-            Professional Skills
+            What I'm Good At
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {sortedSkills.length > 0 ? (
-              sortedSkills.map((skill, index) => (
+              sortedSkills.slice(0, 8).map((skill, index) => (
                 <div 
                   key={skill.id} 
-                  className="bg-white rounded-lg p-5 shadow-sm border border-gray-100 transition-transform hover:translate-y-[-5px] fade-in"
-                  style={{ animationDelay: `${0.1 + index * 0.05}s` }}
+                  className="skill-tag bg-white rounded-lg p-5 shadow-sm fade-in"
+                  style={{ animationDelay: `${0.1 + index * 0.1}s` }}
                 >
-                  <div className="flex items-start">
-                    <div className="bg-gray-50 p-3 rounded-lg text-[#6a0dad] mr-4">
-                      {getSkillCategoryIcon(skill.category)}
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="p-2 bg-gray-50 rounded-md text-[#6a0dad]">
+                      {getSkillIcon(skill.name)}
                     </div>
-                    
-                    <div className="flex-1">
-                      <h3 className="text-xl font-semibold text-gray-900 mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
-                        {skill.name}
-                      </h3>
-                      
-                      <p className="text-gray-600 text-sm mb-3" style={{ fontFamily: 'Inter, sans-serif' }}>
-                        {skill.category}
-                      </p>
-                      
-                      <div className="flex items-center">
-                        <div className="flex-1 bg-gray-200 rounded-full h-2 mr-2">
-                          <div 
-                            className="bg-[#6a0dad] h-2 rounded-full" 
-                            style={{ width: `${skill.level * 20}%` }}
-                          />
-                        </div>
-                        <span className="text-xs font-medium text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>
-                          {skill.level}/5
-                        </span>
-                      </div>
+                    <h3 className="text-gray-900 font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>
+                      {skill.name}
+                    </h3>
+                  </div>
+                  
+                  {/* Proficiency Level - Enhanced with percentage progress bar */}
+                  <div className="space-y-2">
+                    {/* Progress bar with percentage */}
+                    <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-gradient-to-r from-[#6a0dad] to-[#9c27b0]" 
+                        style={{ 
+                          width: `${skill.proficiency ? skill.proficiency : 0}%`,
+                          transition: 'width 1s ease-in-out'
+                        }}
+                      ></div>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-[#6a0dad] font-medium">
+                        {skill.proficiency ? `${skill.proficiency}%` : '0%'}
+                      </span>
+                      <span className="text-xs text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        {skill.level || ''}
+                      </span>
                     </div>
                   </div>
                 </div>
               ))
             ) : (
-              <div className="col-span-full text-center py-10 border border-gray-100 bg-white rounded-lg">
+              <div className="col-span-full text-center py-10 border border-gray-100 rounded-lg">
                 <p className="text-gray-400" style={{ fontFamily: 'Inter, sans-serif' }}>
-                  Your skills will be displayed here
+                  Your expertise will be showcased here
                 </p>
               </div>
             )}
@@ -613,300 +853,330 @@ export default function CorporateExecutive({
         </div>
       </section>
       
-      {/* Experience Section */}
-      <section id="experience" className="py-16 px-8 bg-white">
+      {/* Services Section */}
+      <section id="services" className="py-16 px-8 bg-gray-50">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 mb-10 accent-border" style={{ fontFamily: 'Playfair Display, serif' }}>
-            Professional Experience
+          <h2 className="text-3xl font-bold text-gray-900 mb-10" style={{ fontFamily: 'Playfair Display, serif' }}>
+            What I <span className="premium-gradient-text">Offer</span>
           </h2>
           
-          {sortedExperiences.length > 0 ? (
-            <div className="relative border-l-2 border-gray-200 pl-8 ml-4">
-              {sortedExperiences.map((experience, index) => (
-                <div 
-                  key={experience.id} 
-                  className="mb-12 relative fade-in"
-                  style={{ animationDelay: `${0.1 + index * 0.1}s` }}
-                >
-                  {/* Timeline marker */}
-                  <div className="absolute w-4 h-4 bg-[#6a0dad] rounded-full -left-[41px] top-1.5 border-4 border-white" />
-                  
-                  <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
-                    <div className="flex flex-col md:flex-row md:items-start justify-between mb-4">
-                      <div>
-                        <h3 className="text-xl font-semibold text-gray-900 mb-1" style={{ fontFamily: 'Playfair Display, serif' }}>
-                          {experience.position}
-                        </h3>
-                        
-                        <h4 className="text-lg text-gray-700 font-medium mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>
-                          {experience.organization}
-                        </h4>
-                        
-                        <div className="flex flex-wrap gap-y-2 gap-x-4 text-gray-500 mb-4">
-                          <div className="flex items-center">
-                            <Calendar className="h-4 w-4 mr-1" />
-                            <span className="text-sm" style={{ fontFamily: 'Inter, sans-serif' }}>
-                              {formatDate(experience.startDate)} — {experience.endDate ? formatDate(experience.endDate) : 'Present'}
-                            </span>
-                          </div>
-                          
-                          {experience.location && (
-                            <div className="flex items-center">
-                              <MapPin className="h-4 w-4 mr-1" />
-                              <span className="text-sm" style={{ fontFamily: 'Inter, sans-serif' }}>
-                                {experience.location}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      
-                      {experience.domain && (
-                        <Badge className="text-sm bg-gray-100 text-gray-700 mt-2 md:mt-0 self-start" style={{ fontFamily: 'Inter, sans-serif' }}>
-                          {experience.domain}
-                        </Badge>
-                      )}
-                    </div>
-                    
-                    {experience.description && (
-                      <div className="mb-4">
-                        <p className="text-gray-700 whitespace-pre-line" style={{ fontFamily: 'Inter, sans-serif' }}>
-                          {experience.description}
-                        </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {enhancedServices.map((service, index) => (
+              <div 
+                key={service.id} 
+                className="service-card bg-white rounded-lg p-6 shadow-sm fade-in"
+                style={{ animationDelay: `${0.1 + index * 0.1}s` }}
+              >
+                <div className="flex items-center mb-4">
+                  <div className="service-card-icon mr-4 flex-shrink-0">
+                    {service.category === "consulting" ? (
+                      <Briefcase className="h-5 w-5" />
+                    ) : service.category === "coaching" ? (
+                      <UserCheck className="h-5 w-5" />
+                    ) : (
+                      <Star className="h-5 w-5" />
+                    )}
+                  </div>
+                
+                  <h3 className="text-xl font-semibold text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>
+                    {service.title}
+                  </h3>
+                </div>
+                
+                <p className="text-gray-600 mb-6 line-clamp-3" style={{ fontFamily: 'Inter, sans-serif' }}>
+                  {service.description || "Comprehensive service designed to meet your specific business needs and challenges."}
+                </p>
+                
+                <div className="flex flex-col gap-3">
+                  {/* Pricing and Active Status details */}
+                  <div className="flex flex-wrap gap-2 items-center mb-1">
+                    {service.pricing && service.pricing.length > 0 && (
+                      <div className="text-sm font-medium text-[#6a0dad] highlight-badge px-3 py-1 rounded-full" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        {service.pricing}
                       </div>
                     )}
                     
-                    {experience.keyResponsibilities && experience.keyResponsibilities.length > 0 && (
-                      <div className="mb-4">
-                        <p className="text-sm font-medium text-gray-700 mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>
-                          Key Responsibilities:
-                        </p>
-                        <ul className="list-disc list-inside space-y-1">
-                          {experience.keyResponsibilities.map((responsibility, i) => (
-                            <li key={i} className="text-gray-700 text-sm pl-1" style={{ fontFamily: 'Inter, sans-serif' }}>
-                              {responsibility}
-                            </li>
-                          ))}
-                        </ul>
+                    {service.priceUsd && (
+                      <div className="text-sm font-medium bg-green-50 text-green-700 px-3 py-1 rounded-full border border-green-200" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        ${service.priceUsd}{service.isHourly ? "/hr" : ""}
                       </div>
                     )}
                     
-                    {experience.technologies && experience.technologies.length > 0 && (
-                      <div className="mt-4">
-                        <p className="text-sm font-medium text-gray-700 mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>
-                          Skills & Technologies:
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          {experience.technologies.map((tech, i) => (
-                            <span 
-                              key={i} 
-                              className="text-xs bg-gray-50 border border-gray-200 px-2 py-1 rounded-md text-gray-600"
-                              style={{ fontFamily: 'Inter, sans-serif' }}
-                            >
-                              {tech}
-                            </span>
-                          ))}
-                        </div>
+                    {service.priceInr && (
+                      <div className="text-sm font-medium bg-blue-50 text-blue-700 px-3 py-1 rounded-full border border-blue-200" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        ₹{service.priceInr}{service.isHourly ? "/hr" : ""}
+                      </div>
+                    )}
+                    
+                    {service.isActive !== undefined && (
+                      <div className={`text-xs font-medium px-2 py-1 rounded-full ${service.isActive ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-gray-50 text-gray-500 border border-gray-200'}`} style={{ fontFamily: 'Inter, sans-serif' }}>
+                        {service.isActive ? 'Active' : 'Inactive'}
                       </div>
                     )}
                   </div>
+                  
+                  {/* Inquiry button */}
+                  <div className="flex justify-end">
+                    <Button 
+                      variant="outline"
+                      className="text-sm px-4 py-2 rounded-md flex items-center hover:bg-[#f9f0ff]"
+                    >
+                      <span style={{ fontFamily: 'Inter, sans-serif' }}>Inquire</span>
+                      <ChevronRight className="h-4 w-4 ml-1" />
+                    </Button>
+                  </div>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-10 border border-gray-100 rounded-lg">
-              <p className="text-gray-400" style={{ fontFamily: 'Inter, sans-serif' }}>
-                Your work experience will be displayed here
-              </p>
-            </div>
-          )}
+              </div>
+            ))}
+          </div>
         </div>
       </section>
       
-      {/* Projects Section */}
-      <section id="projects" className="py-16 px-8 bg-gray-50">
+      {/* Showcase (Projects) Section */}
+      <section id="projects" className="py-16 px-8 bg-white">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-gray-900 mb-10 accent-border" style={{ fontFamily: 'Playfair Display, serif' }}>
-            Selected Projects
+            Showcase
           </h2>
           
-          {sortedProjects.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {sortedProjects.map((project, index) => (
+          <div className="flex flex-wrap justify-center md:justify-start gap-8">
+            {sortedProjects.length > 0 ? (
+              sortedProjects.slice(0, 6).map((project, index) => (
                 <div 
                   key={project.id} 
-                  className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-100 transition-all hover:shadow-md cursor-pointer fade-in"
-                  style={{ animationDelay: `${0.1 + index * 0.05}s` }}
-                  onClick={() => setSelectedProjectId(project.id)}
+                  className="project-card bg-white rounded-lg overflow-hidden shadow-sm fade-in flex flex-col"
+                  style={{ animationDelay: `${0.1 + index * 0.1}s`, width: '280px', aspectRatio: '2/3.5' }}
                 >
-                  <div className="h-48 overflow-hidden">
-                    {project.coverImage ? (
+                  {/* Project Thumbnail */}
+                  {project.thumbnailUrl && (
+                    <div className="w-full" style={{ aspectRatio: '1/1', height: '280px' }}>
                       <img 
-                        src={project.coverImage} 
+                        src={project.thumbnailUrl} 
                         alt={project.title} 
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover object-center"
                       />
-                    ) : (
-                      <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                        <FileText className="h-12 w-12 text-gray-300" />
-                      </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
                   
-                  <div className="p-5">
-                    <div className="flex items-center justify-between mb-3">
-                      <Badge 
-                        variant="outline" 
-                        className="text-xs font-normal text-gray-600"
-                        style={{ fontFamily: 'Inter, sans-serif' }}
-                      >
-                        {formatDate(project.startDate, false)}
-                      </Badge>
+                  <div className="p-6">
+                    <div className="flex justify-between items-start mb-3">
+                      <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>
+                        {project.title}
+                      </h3>
                       
                       {project.category && (
-                        <Badge 
-                          className="bg-gray-100 text-xs font-normal text-gray-600 border-gray-200"
-                          style={{ fontFamily: 'Inter, sans-serif' }}
-                        >
+                        <Badge className="bg-gray-100 text-gray-600 text-xs">
                           {project.category}
                         </Badge>
                       )}
                     </div>
                     
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
-                      {project.title}
-                    </h3>
-                    
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-2" style={{ fontFamily: 'Inter, sans-serif' }}>
+                    <p className="text-gray-600 mb-4 line-clamp-3" style={{ fontFamily: 'Inter, sans-serif' }}>
                       {project.description}
                     </p>
                     
-                    {project.technologies && project.technologies.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mb-3">
-                        {project.technologies.slice(0, 3).map((tech, i) => (
-                          <span 
-                            key={i} 
-                            className="text-xs bg-gray-50 px-2 py-0.5 rounded text-gray-600"
-                            style={{ fontFamily: 'Inter, sans-serif' }}
-                          >
-                            {tech}
-                          </span>
-                        ))}
-                        {project.technologies.length > 3 && (
-                          <span 
-                            className="text-xs bg-gray-50 px-2 py-0.5 rounded text-gray-600"
-                            style={{ fontFamily: 'Inter, sans-serif' }}
-                          >
-                            +{project.technologies.length - 3} more
-                          </span>
-                        )}
+                    <div className="flex flex-col gap-2">
+                      {/* Date information */}
+                      <div className="text-xs text-gray-500 flex items-center" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        <Calendar className="h-3.5 w-3.5 mr-1" />
+                        {formatDate(project.startDate, true)}
                       </div>
-                    )}
-                    
-                    <button 
-                      className="flex items-center text-sm text-[#6a0dad] font-medium mt-2 hover:underline"
-                      style={{ fontFamily: 'Inter, sans-serif' }}
-                    >
-                      View Details
-                      <ChevronRight className="h-4 w-4 ml-1" />
-                    </button>
+                      
+                      {/* Project URL */}
+                      {project.projectUrl && (
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center">
+                            <Link className="h-3.5 w-3.5 mr-1 text-[#6a0dad]" />
+                            <span className="text-xs text-gray-500 truncate max-w-[150px]" style={{ fontFamily: 'Inter, sans-serif' }}>
+                              {new URL(project.projectUrl).hostname}
+                            </span>
+                          </div>
+                          
+                          <button
+                            onClick={() => openProjectDetails(project.id)}
+                            className="text-[#6a0dad] text-sm flex items-center hover:underline"
+                            style={{ fontFamily: 'Inter, sans-serif' }}
+                          >
+                            <span>View Details</span>
+                            <Eye className="h-3.5 w-3.5 ml-1" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-10 border border-gray-100 bg-white rounded-lg">
-              <p className="text-gray-400" style={{ fontFamily: 'Inter, sans-serif' }}>
-                Your projects will be displayed here
-              </p>
-            </div>
-          )}
+              ))
+            ) : (
+              <div className="col-span-full text-center py-16 border border-gray-100 rounded-lg">
+                <p className="text-gray-400" style={{ fontFamily: 'Inter, sans-serif' }}>
+                  Your showcase projects will appear here
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       </section>
       
-      {/* Services Section */}
-      {userServices && userServices.length > 0 && (
-        <section id="services" className="py-16 px-8 bg-white">
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl font-bold text-gray-900 mb-10 accent-border" style={{ fontFamily: 'Playfair Display, serif' }}>
-              Professional Services
-            </h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {enhancedServices.map((service, index) => (
-                <div 
-                  key={service.id} 
-                  className="bg-white rounded-lg p-6 shadow-sm border border-gray-100 fade-in"
-                  style={{ animationDelay: `${0.1 + index * 0.05}s` }}
-                >
-                  <div className="mb-6">
-                    {service.imageUrl ? (
-                      <div className="w-16 h-16 mx-auto mb-4 rounded-full overflow-hidden bg-gray-50">
-                        <img 
-                          src={service.imageUrl} 
-                          alt={service.title} 
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    ) : (
-                      <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-50 flex items-center justify-center">
-                        <div className="text-[#6a0dad]">
-                          {service.category === 'consulting' && <Briefcase className="h-8 w-8" />}
-                          {service.category === 'development' && <Code className="h-8 w-8" />}
-                          {service.category === 'design' && <Paintbrush className="h-8 w-8" />}
-                          {service.category === 'marketing' && <TrendingUp className="h-8 w-8" />}
-                          {service.category === 'writing' && <FileText className="h-8 w-8" />}
-                          {service.category === 'coaching' && <UserCheck className="h-8 w-8" />}
-                          {service.category === 'teaching' && <GraduationCap className="h-8 w-8" />}
-                          {service.category === 'advisory' && <HelpCircle className="h-8 w-8" />}
-                          {service.category === 'other' && <Briefcase className="h-8 w-8" />}
+      {/* Career Path (Experience) Section */}
+      <section id="experience" className="py-16 px-8 bg-gray-50">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl font-bold text-gray-900 mb-10 accent-border" style={{ fontFamily: 'Playfair Display, serif' }}>
+            Career Path
+          </h2>
+          
+          <div className="mb-16">
+            {sortedExperiences.length > 0 ? (
+              <div className="space-y-3">
+                {sortedExperiences.map((exp, index) => (
+                  <div 
+                    key={exp.id} 
+                    className="timeline-item fade-in"
+                    style={{ animationDelay: `${0.1 + index * 0.1}s` }}
+                  >
+                    <div className="bg-white rounded-lg p-6 shadow-sm">
+                      <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-3 mb-3">
+                        <div>
+                          <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>
+                            {exp.title}
+                          </h3>
+                          <p className="text-[#6a0dad] font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>
+                            {exp.company}
+                          </p>
                         </div>
+                        
+                        <div className="text-sm text-gray-500 flex items-center whitespace-nowrap" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          <Calendar className="h-4 w-4 mr-1" />
+                          <span>
+                            {formatDate(exp.startDate)} - {exp.endDate ? formatDate(exp.endDate) : 'Present'}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex flex-wrap items-center gap-4 mb-4">
+                        {exp.location && (
+                          <div className="flex items-center text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
+                            <MapPin className="h-4 w-4 mr-1" />
+                            <span>{exp.location}</span>
+                          </div>
+                        )}
+                        
+                        {exp.industry && (
+                          <div className="flex items-center text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
+                            <Briefcase className="h-4 w-4 mr-1" />
+                            <span>{exp.industry}</span>
+                          </div>
+                        )}
+                        
+                        {exp.domain && (
+                          <div className="flex items-center text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
+                            <Tag className="h-4 w-4 mr-1" />
+                            <span>{exp.domain}</span>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {exp.description && (
+                        <p className="text-gray-600 mb-4" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          {exp.description}
+                        </p>
+                      )}
+                      
+                      {exp.keyResponsibilities && Array.isArray(exp.keyResponsibilities) && exp.keyResponsibilities.length > 0 && (
+                        <div className="mt-3 mb-2">
+                          <h4 className="text-sm font-semibold mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>Key Responsibilities & Achievements</h4>
+                          <ul className="list-disc pl-5 text-sm space-y-1 text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>
+                            {exp.keyResponsibilities.map((item, idx) => (
+                              <li key={idx}>{item}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-16 border border-gray-100 rounded-lg bg-white">
+                <p className="text-gray-400" style={{ fontFamily: 'Inter, sans-serif' }}>
+                  Your career experience will appear here
+                </p>
+              </div>
+            )}
+          </div>
+          
+          {/* Academic Background */}
+          <h2 className="text-3xl font-bold text-gray-900 mb-10 accent-border" style={{ fontFamily: 'Playfair Display, serif' }}>
+            Academic Background
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {sortedEducations.length > 0 ? (
+              sortedEducations.map((edu, index) => (
+                <div 
+                  key={edu.id} 
+                  className="bg-white rounded-lg p-6 shadow-sm fade-in"
+                  style={{ animationDelay: `${0.1 + index * 0.1}s` }}
+                >
+                  <div className="flex justify-between mb-3">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>
+                        {edu.degree}
+                      </h3>
+                      <p className="text-[#6a0dad] font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        {edu.institution}
+                      </p>
+                    </div>
+                    
+                    <Badge className="bg-gray-100 text-gray-600 h-fit whitespace-nowrap">
+                      {formatDate(edu.startDate)} - {edu.endDate ? formatDate(edu.endDate) : 'Present'}
+                    </Badge>
+                  </div>
+                  
+                  <div className="flex flex-wrap items-center gap-4 mb-3">
+                    {edu.location && (
+                      <div className="flex items-center text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        <MapPin className="h-4 w-4 mr-1" />
+                        <span>{edu.location}</span>
                       </div>
                     )}
                     
-                    <h3 className="text-center text-xl font-semibold text-gray-900 mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
-                      {service.title}
-                    </h3>
+                    {edu.industry && (
+                      <div className="flex items-center text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        <Briefcase className="h-4 w-4 mr-1" />
+                        <span>{edu.industry}</span>
+                      </div>
+                    )}
                     
-                    <div className="text-center mb-4">
-                      <Badge className="bg-gray-100 text-gray-700 border-gray-200" style={{ fontFamily: 'Inter, sans-serif' }}>
-                        {service.category.charAt(0).toUpperCase() + service.category.slice(1)}
-                      </Badge>
-                    </div>
-                    
-                    <p className="text-center text-gray-700 text-sm mb-6" style={{ fontFamily: 'Inter, sans-serif' }}>
-                      {service.description}
-                    </p>
-                    
-                    <div className="text-center font-semibold text-lg text-[#6a0dad] mb-4" style={{ fontFamily: 'Inter, sans-serif' }}>
-                      {service.pricing}
-                    </div>
+                    {edu.fieldOfStudy && (
+                      <div className="flex items-center text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        <GraduationCap className="h-4 w-4 mr-1" />
+                        <span>{edu.fieldOfStudy}</span>
+                      </div>
+                    )}
                   </div>
                   
-                  {service.features && service.features.length > 0 && (
-                    <div className="border-t border-gray-100 pt-4">
-                      <p className="text-sm font-medium text-gray-700 mb-3" style={{ fontFamily: 'Inter, sans-serif' }}>
-                        This service includes:
-                      </p>
-                      
-                      <ul className="space-y-2">
-                        {service.features.map((feature, i) => (
-                          <li key={i} className="flex items-start">
-                            <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
-                            <span className="text-sm text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>
-                              {feature}
-                            </span>
-                          </li>
+                  {edu.skillsAcquired && Array.isArray(edu.skillsAcquired) && edu.skillsAcquired.length > 0 && (
+                    <div className="mt-3">
+                      <h4 className="text-sm font-semibold mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>Skills Acquired & Achievements</h4>
+                      <ul className="list-disc pl-5 text-sm space-y-1 text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        {edu.skillsAcquired.map((skill, idx) => (
+                          <li key={idx}>{skill}</li>
                         ))}
                       </ul>
                     </div>
                   )}
                 </div>
-              ))}
-            </div>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-16 border border-gray-100 rounded-lg bg-white">
+                <p className="text-gray-400" style={{ fontFamily: 'Inter, sans-serif' }}>
+                  Your academic background will appear here
+                </p>
+              </div>
+            )}
           </div>
-        </section>
-      )}
+        </div>
+      </section>
       
       {/* Education Section */}
       <section id="education" className="py-16 px-8 bg-white">
@@ -915,78 +1185,94 @@ export default function CorporateExecutive({
             Academic Background
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {enhancedEducations.length > 0 ? (
-              enhancedEducations.map((education, index) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
+            {sortedEducations.length > 0 ? (
+              sortedEducations.map((edu, index) => (
                 <div 
-                  key={education.id} 
-                  className="bg-white rounded-lg p-6 shadow-sm border border-gray-100 fade-in"
+                  key={edu.id} 
+                  className="timeline-item fade-in"
                   style={{ animationDelay: `${0.1 + index * 0.1}s` }}
                 >
-                  <div className="flex items-start">
-                    <div className="bg-gray-50 p-3 rounded-lg text-[#6a0dad] mr-4">
-                      <GraduationCap className="h-6 w-6" />
-                    </div>
-                    
-                    <div className="flex-1">
-                      <h3 className="text-xl font-semibold text-gray-900 mb-1" style={{ fontFamily: 'Playfair Display, serif' }}>
-                        {education.degree}
-                      </h3>
-                      
-                      <h4 className="text-gray-700 font-medium mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>
-                        {education.institution}
-                      </h4>
-                      
-                      <div className="flex items-center text-gray-500 mb-4">
-                        <Calendar className="h-4 w-4 mr-1" />
-                        <span className="text-sm" style={{ fontFamily: 'Inter, sans-serif' }}>
-                          {formatDate(education.startDate)} — {education.endDate ? formatDate(education.endDate) : 'Present'}
-                        </span>
+                  <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+                    <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-3 mb-3">
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>
+                          {edu.degree}
+                        </h3>
+                        <p className="text-[#6a0dad] font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          {edu.institution}
+                        </p>
                       </div>
                       
-                      {education.location && (
-                        <div className="flex items-center text-gray-500 mb-4">
+                      <div className="text-sm text-gray-500 flex items-center whitespace-nowrap" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        <Calendar className="h-4 w-4 mr-1" />
+                        <span>
+                          {formatDate(edu.startDate)} - {edu.endDate ? formatDate(edu.endDate) : 'Present'}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex flex-wrap items-center gap-4 mb-4">
+                      {edu.location && (
+                        <div className="flex items-center text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
                           <MapPin className="h-4 w-4 mr-1" />
-                          <span className="text-sm" style={{ fontFamily: 'Inter, sans-serif' }}>
-                            {education.location}
-                          </span>
+                          <span>{edu.location}</span>
                         </div>
                       )}
                       
-                      {education.fieldOfStudy && (
-                        <div className="mb-4">
-                          <span className="text-sm bg-gray-100 px-3 py-1 rounded-full text-gray-700" style={{ fontFamily: 'Inter, sans-serif' }}>
-                            Field: {education.fieldOfStudy}
-                          </span>
+                      {edu.industry && (
+                        <div className="flex items-center text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          <Briefcase className="h-4 w-4 mr-1" />
+                          <span>{edu.industry}</span>
                         </div>
                       )}
                       
-                      {education.skillsAcquired && education.skillsAcquired.length > 0 && (
-                        <div className="mt-4">
-                          <p className="text-sm font-medium text-gray-700 mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>
-                            Skills Acquired:
-                          </p>
-                          <div className="flex flex-wrap gap-2">
-                            {education.skillsAcquired.map((skill, i) => (
-                              <span 
-                                key={i} 
-                                className="text-xs bg-gray-50 border border-gray-200 px-2 py-1 rounded-md text-gray-600"
-                                style={{ fontFamily: 'Inter, sans-serif' }}
-                              >
-                                {skill}
-                              </span>
-                            ))}
+                      {/* Domain fields aren't needed for education */}
+                    </div>
+                    
+                    {/* Field of Study */}
+                    {edu.fieldOfStudy && (
+                      <div className="mb-4">
+                        <div className="flex items-start gap-2">
+                          <GraduationCap className="h-5 w-5 text-[#6a0dad] mt-0.5" />
+                          <div>
+                            <p className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Inter, sans-serif' }}>
+                              Field of Study
+                            </p>
+                            <p className="text-sm text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>
+                              {edu.fieldOfStudy}
+                            </p>
                           </div>
                         </div>
-                      )}
-                    </div>
+                      </div>
+                    )}
+                    
+                    {/* Skills Acquired */}
+                    {edu.skillsAcquired && Array.isArray(edu.skillsAcquired) && edu.skillsAcquired.length > 0 && (
+                      <div className="mb-3">
+                        <p className="text-sm font-medium text-gray-700 mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          Skills Acquired
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {(edu.skillsAcquired as string[]).map((skill: string, i: number) => (
+                            <span 
+                              key={i} 
+                              className="inline-flex items-center bg-purple-50 text-purple-700 text-xs px-2.5 py-1 rounded-md border border-purple-100"
+                              style={{ fontFamily: 'Inter, sans-serif' }}
+                            >
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))
             ) : (
-              <div className="col-span-full text-center py-10 border border-gray-100 rounded-lg">
+              <div className="col-span-full text-center py-16 border border-gray-100 rounded-lg bg-white">
                 <p className="text-gray-400" style={{ fontFamily: 'Inter, sans-serif' }}>
-                  Your educational background will be displayed here
+                  Your academic background will appear here
                 </p>
               </div>
             )}
@@ -994,88 +1280,36 @@ export default function CorporateExecutive({
         </div>
       </section>
       
-      {/* Contact Section */}
-      <section id="contact" className="py-16 px-8 bg-gray-900 text-white">
+      {/* Footer CTA */}
+      <section className="py-16 px-8 bg-gray-900 text-white">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-white mb-10" style={{ fontFamily: 'Playfair Display, serif' }}>
-            <span className="relative">
-              <span className="absolute -bottom-2 left-0 w-16 h-1 bg-[#6a0dad]"></span>
-              Contact
-            </span>
-          </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-6">
-              <p className="text-gray-300" style={{ fontFamily: 'Inter, sans-serif' }}>
-                Feel free to reach out for professional inquiries, collaborations, or consulting opportunities.
+          <div className="flex flex-col md:flex-row justify-between items-center gap-8">
+            <div>
+              <h2 className="text-3xl font-bold mb-3" style={{ fontFamily: 'Playfair Display, serif' }}>
+                Ready to Connect?
+              </h2>
+              <p className="text-gray-300 mb-0" style={{ fontFamily: 'Inter, sans-serif' }}>
+                Let's discuss how I can bring value to your organization
               </p>
-              
-              {userInfo.email && (
-                <div className="flex items-start">
-                  <Mail className="h-5 w-5 text-[#6a0dad] mt-0.5 mr-3" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-400 mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>Email</p>
-                    <a 
-                      href={`mailto:${userInfo.email}`} 
-                      className="text-white hover:text-[#6a0dad] transition-colors"
-                      style={{ fontFamily: 'Inter, sans-serif' }}
-                    >
-                      {userInfo.email}
-                    </a>
-                  </div>
-                </div>
-              )}
-              
-              {userInfo.location && (
-                <div className="flex items-start">
-                  <MapPin className="h-5 w-5 text-[#6a0dad] mt-0.5 mr-3" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-400 mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>Location</p>
-                    <p className="text-white" style={{ fontFamily: 'Inter, sans-serif' }}>{userInfo.location}</p>
-                  </div>
-                </div>
-              )}
-              
-              {/* Social Media Links - Add these if available in the future */}
-              <div className="flex gap-3 mt-6 pt-6 border-t border-gray-800">
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                  <Linkedin className="h-5 w-5" />
-                </a>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                  <Twitter className="h-5 w-5" />
-                </a>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                  <Github className="h-5 w-5" />
-                </a>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                  <Instagram className="h-5 w-5" />
-                </a>
-              </div>
             </div>
             
-            <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-              <h3 className="text-xl font-semibold text-white mb-6" style={{ fontFamily: 'Playfair Display, serif' }}>
-                Download CV
-              </h3>
-              
-              <p className="text-gray-300 mb-6" style={{ fontFamily: 'Inter, sans-serif' }}>
-                For more details about my experience, skills, and qualifications, you can download my complete CV.
-              </p>
-              
-              <button 
-                className="flex items-center bg-[#6a0dad] hover:bg-[#5a0c9d] text-white px-4 py-2 rounded-lg transition-colors"
-                style={{ fontFamily: 'Inter, sans-serif' }}
-              >
-                <Download className="h-5 w-5 mr-2" />
-                Download CV
-              </button>
-              
-              <div className="mt-16 pt-8 border-t border-gray-800 text-center">
-                <p className="text-gray-400 text-sm" style={{ fontFamily: 'Inter, sans-serif' }}>
-                  © {new Date().getFullYear()} {userInfo.name} • All Rights Reserved
-                </p>
-              </div>
+            <div>
+              <PortfolioCtaButtons 
+                variant="corporate"
+                resumeUrl={null} 
+                mentorUrl={null}
+                connectUrl={null}
+                userEmail={userInfo.email}
+                userName={userInfo.name}
+                className="sm:justify-end"
+              />
             </div>
+          </div>
+          
+          <div className="mt-16 pt-8 border-t border-gray-800 text-center">
+            <p className="text-gray-400 text-sm" style={{ fontFamily: 'Inter, sans-serif' }}>
+              © {new Date().getFullYear()} {userInfo.name} • All Rights Reserved
+            </p>
           </div>
         </div>
       </section>
