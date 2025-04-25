@@ -491,7 +491,7 @@ export default function Education() {
       endDate: uiData.endDate,
       // Include the new fields - use names that match the database schema exactly
       industry: uiData.industry,
-      field_of_study: uiData.field, // Map UI 'field' to database 'field_of_study' column
+      fieldOfStudy: uiData.field, // Map UI 'field' to database 'fieldOfStudy' column (camelCase)
       // Convert skills array to JSON string for Postgres JSONB column
       skillsAcquired: Array.isArray(uiData.skillsAcquired) ? JSON.stringify(uiData.skillsAcquired) : "[]",
       domain: uiData.domain
@@ -521,8 +521,8 @@ export default function Education() {
     setSkillsAcquired(education.skillsAcquired || []);
     setNewSkillInput("");
     
-    // Handle fieldOfStudy mapping - the database field is field_of_study but we use field in the UI
-    const field = education.fieldOfStudy || education.field_of_study || education.field || "";
+    // Handle fieldOfStudy mapping - the database field is fieldOfStudy but we use field in the UI
+    const field = education.fieldOfStudy || education.field || "";
     
     // Update form values
     form.reset({
