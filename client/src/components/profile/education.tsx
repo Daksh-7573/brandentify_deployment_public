@@ -492,7 +492,8 @@ export default function Education() {
       // Include the new fields - use names that match the database schema exactly
       industry: uiData.industry,
       field_of_study: uiData.field, // Map UI 'field' to database 'field_of_study' column
-      skillsAcquired: uiData.skillsAcquired,
+      // Convert skills array to JSON string for Postgres JSONB column
+      skillsAcquired: Array.isArray(uiData.skillsAcquired) ? JSON.stringify(uiData.skillsAcquired) : "[]",
       domain: uiData.domain
     };
     
@@ -561,29 +562,33 @@ export default function Education() {
   };
   
   // Convert location data to combobox format
-  const locationOptions = popularLocations.map(location => ({
+  const locationOptions = popularLocations.map((location, index) => ({
     value: location,
     label: location,
+    key: `location-${index}`, // Add unique key based on index
   }));
   
-  // Convert industry data to combobox format
-  const industryOptions = INDUSTRIES.map(industry => ({
+  // Convert industry data to combobox format with unique keys
+  const industryOptions = INDUSTRIES.map((industry, index) => ({
     value: industry,
     label: industry,
+    key: `industry-${index}`,
   }));
   
   // We're now using the global formatDate from @/lib/utils
   
-  // Convert domains to combobox format
-  const domainOptionsFormatted = domainOptions.map(value => ({
+  // Convert domains to combobox format with unique keys
+  const domainOptionsFormatted = domainOptions.map((value, index) => ({
     value,
     label: value,
+    key: `domain-${index}`,
   }));
   
-  // Convert degrees to combobox format
-  const degreeOptions = DEGREES.map(degree => ({
+  // Convert degrees to combobox format with unique keys
+  const degreeOptions = DEGREES.map((degree, index) => ({
     value: degree,
     label: degree,
+    key: `degree-${index}`,
   }));
   
   return (
@@ -774,9 +779,9 @@ export default function Education() {
                           <SelectValue placeholder="Select an industry" />
                         </SelectTrigger>
                         <SelectContent>
-                          {INDUSTRIES.map((industry) => (
-                            <SelectItem key={industry} value={industry}>
-                              {industry}
+                          {industryOptions.map((option) => (
+                            <SelectItem key={option.key} value={option.value}>
+                              {option.label}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -821,9 +826,9 @@ export default function Education() {
                           <SelectValue placeholder="Select a location" />
                         </SelectTrigger>
                         <SelectContent>
-                          {popularLocations.map((location) => (
-                            <SelectItem key={location} value={location}>
-                              {location}
+                          {locationOptions.map((option) => (
+                            <SelectItem key={option.key} value={option.value}>
+                              {option.label}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -854,9 +859,9 @@ export default function Education() {
                             <SelectValue placeholder="Select a domain" />
                           </SelectTrigger>
                           <SelectContent>
-                            {domainOptions.map((domain) => (
-                              <SelectItem key={domain} value={domain}>
-                                {domain}
+                            {domainOptionsFormatted.map((option) => (
+                              <SelectItem key={option.key} value={option.value}>
+                                {option.label}
                               </SelectItem>
                             ))}
                           </SelectContent>
