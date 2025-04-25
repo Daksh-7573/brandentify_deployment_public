@@ -411,6 +411,77 @@ export type InsertMuskFeedback = z.infer<typeof insertMuskFeedbackSchema>;
 export type FeedbackAnalytics = typeof feedbackAnalytics.$inferSelect;
 export type InsertFeedbackAnalytics = z.infer<typeof insertFeedbackAnalyticsSchema>;
 
+// Skill trend data for job market analysis
+export const skillTrends = pgTable("skill_trends", {
+  id: serial("id").primaryKey(),
+  skillName: text("skill_name").notNull(),
+  industry: text("industry").notNull(),
+  category: text("category").notNull(), // e.g., "technical", "soft", "domain"
+  growthRate: decimal("growth_rate", { precision: 5, scale: 2 }).notNull(), // Percentage growth over period
+  demandScore: integer("demand_score").notNull(), // 1-100 scale
+  timeFrame: text("time_frame").notNull(), // e.g., "6_months", "1_year", "3_years"
+  dataSource: text("data_source"), // e.g., "linkedin", "indeed", "stackoverflow"
+  jobCount: integer("job_count"), // Number of jobs requiring this skill
+  avgSalaryImpact: integer("avg_salary_impact"), // Salary boost this skill provides
+  relatedSkills: jsonb("related_skills").default("[]"), // Related skills as array
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// Insert schema for SkillTrends
+export const insertSkillTrendSchema = createInsertSchema(skillTrends).omit({
+  id: true,
+  updatedAt: true
+});
+
+// Career paths and job roles
+export const careerPathNodes = pgTable("career_path_nodes", {
+  id: serial("id").primaryKey(),
+  jobTitle: text("job_title").notNull(),
+  industry: text("industry").notNull(),
+  level: text("level").notNull(), // e.g., "entry", "mid", "senior", "executive"
+  avgSalary: integer("avg_salary"),
+  requiredSkills: jsonb("required_skills").default("[]"), // Required skills array
+  recommendedSkills: jsonb("recommended_skills").default("[]"), // Recommended skills array
+  jobDescription: text("job_description"),
+  growthOutlook: text("growth_outlook"), // e.g., "growing", "stable", "declining"
+  entryBarrier: text("entry_barrier"), // e.g., "low", "medium", "high"
+  commonPathways: jsonb("common_pathways").default("{}"), // Previous and next common roles
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// Insert schema for CareerPathNodes
+export const insertCareerPathNodeSchema = createInsertSchema(careerPathNodes).omit({
+  id: true,
+  updatedAt: true
+});
+
+// Career transitions between roles
+export const careerTransitions = pgTable("career_transitions", {
+  id: serial("id").primaryKey(),
+  fromNodeId: integer("from_node_id").notNull().references(() => careerPathNodes.id),
+  toNodeId: integer("to_node_id").notNull().references(() => careerPathNodes.id),
+  transitionDifficulty: text("transition_difficulty").notNull(), // e.g., "easy", "moderate", "difficult"
+  skillGaps: jsonb("skill_gaps").default("[]"), // Skills needed to make the transition
+  avgTransitionTime: integer("avg_transition_time"), // In months
+  recommendedSteps: jsonb("recommended_steps").default("[]"), // Steps to make the transition
+  successRate: integer("success_rate"), // Percentage of people who make this transition
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// Insert schema for CareerTransitions
+export const insertCareerTransitionSchema = createInsertSchema(careerTransitions).omit({
+  id: true,
+  updatedAt: true
+});
+
+// Export types for Trend Graph and Job Graph
+export type SkillTrend = typeof skillTrends.$inferSelect;
+export type InsertSkillTrend = z.infer<typeof insertSkillTrendSchema>;
+export type CareerPathNode = typeof careerPathNodes.$inferSelect;
+export type InsertCareerPathNode = z.infer<typeof insertCareerPathNodeSchema>;
+export type CareerTransition = typeof careerTransitions.$inferSelect;
+export type InsertCareerTransition = z.infer<typeof insertCareerTransitionSchema>;
+
 // Pulse type enum
 export const pulseTypeEnum = pgEnum("pulse_type", [
   "poll", 
