@@ -5,6 +5,7 @@ import crypto from 'crypto';
 import OpenAI from 'openai';
 import { analyzeResume } from './services/fixed-openai-service';
 import { storage } from './storage';
+import { generatePersonalizedResponse, MuskContext } from './services/musk-intelligence-system';
 
 // Initialize global variable for resume context storage and user interaction memory
 declare global {
@@ -507,157 +508,55 @@ async function generateMuskResponse(message: string, context: any) {
       return generateFallbackResponse(message, context);
     }
     
-    const openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
+    console.log("Generating personalized response using Musk Intelligence System");
+    
+    // Convert the old context format to our new MuskContext format
+    const muskContext: MuskContext = {
+      userId: context.userId,
+      userData: context.userData?.profile,
+      experiences: context.userData?.experiences || [],
+      educations: context.userData?.educations || [],
+      skills: context.userData?.skills || [],
+      projects: context.userData?.projects || [],
+      resumeData: context.resumeData,
+      userMemory: context.userMemory ? {
+        interactions: context.userMemory.messageHistory || [],
+        patterns: {
+          communicationStyle: context.userMemory.communicationStyle?.formality || 'neutral',
+          topicPreferences: context.userMemory.topicPreferences || {},
+          engagementLevel: context.userMemory.communicationStyle?.detailLevel || 'medium',
+          responseStyle: context.userMemory.communicationStyle?.messageLength || 'medium'
+        }
+      } : undefined,
+      dataSource: context.dataSource,
+      page: context.page,
+      section: context.section
+    };
+    
+    // Log context data for debugging
+    console.log("Musk context data being sent to intelligence system:", {
+      hasUserData: !!muskContext.userData,
+      userProfile: muskContext.userData,
+      experienceCount: muskContext.experiences?.length || 0,
+      skillsCount: muskContext.skills?.length || 0,
+      projectsCount: muskContext.projects?.length || 0,
+      hasResumeData: !!muskContext.resumeData,
+      dataSource: muskContext.dataSource || 'profile',
+      hasUserMemory: !!muskContext.userMemory
     });
     
-    // Build a detailed system prompt for Musk AI persona with adaptive learning
-    let systemPrompt = `
-You are Musk, an AI career strategist and the AI brain of Brandentifier, a professional networking platform.
-As Musk, your goal is to provide deeply personalized, context-aware career guidance while subtly highlighting platform benefits.
-
-# Your Persona
-- You are confident, insightful, and direct (like Elon Musk - hence your name)
-- You give strategic, actionable career advice based on real user data
-- You speak in a professional but conversational tone
-- You avoid generic platitudes, focusing instead on specific, data-driven insights
-- You always end responses with 3-4 suggested quick replies for the user
-
-# User Context
-${JSON.stringify(context.userData || {}, null, 2)}
-
-${context.resumeData ? `# Resume Context
-The user has uploaded a resume recently with the following information:
-- Detected Role: ${context.resumeData.detectedRole || 'Not detected'}
-- Skills Mentioned: ${context.resumeData.skills?.join(', ') || 'None detected'} 
-- Industry: ${context.resumeData.detectedIndustry || 'Not detected'}
-- Filename: ${context.resumeData.fileName || 'Unknown'}
-- Upload Date: ${context.resumeData.uploadDate || 'Unknown'}
-
-You must prioritize this resume data over the user profile data when responding to queries about the user's career, skills, or resume. When tailoring the resume for a specific role, focus on the role mentioned in the uploaded resume, not the role in the user profile.
-` : ''}
-
-# Data Source Priority
-${context.dataSource === 'resume' ? '**IMPORTANT: You must prioritize the resume data over profile data in your responses.**' : 'Use the profile data for personalization.'}
-
-${context.userMemory ? `# User Interaction History
-I have learned the following about this user's communication preferences:
-- Message Length: ${context.userMemory.communicationStyle.messageLength} (prefers ${context.userMemory.communicationStyle.messageLength} messages)
-- Formality: ${context.userMemory.communicationStyle.formality} (prefers a ${context.userMemory.communicationStyle.formality} tone)
-- Detail Level: ${context.userMemory.communicationStyle.detailLevel} (prefers ${context.userMemory.communicationStyle.detailLevel} level of detail)
-- Technical Level: ${context.userMemory.communicationStyle.technicalLevel} (prefers ${context.userMemory.communicationStyle.technicalLevel} technical content)
-- Interaction Count: ${context.userMemory.interactionCount} previous interactions
-${context.userMemory.topicPreferences && Object.keys(context.userMemory.topicPreferences).length > 0 ? 
-`- Topic Preferences: ${Object.entries(context.userMemory.topicPreferences as Record<string, number>)
-  .sort((a, b) => (b[1] as number) - (a[1] as number))
-  .slice(0, 3)
-  .map(([topic, count]) => `${topic} (${count} mentions)`)
-  .join(', ')}` : '- No clear topic preferences yet'}
-
-**Adapt your response based on these preferences:**
-- ${context.userMemory.communicationStyle.messageLength === 'short' ? 'Keep your response concise and to the point.' : 
-  context.userMemory.communicationStyle.messageLength === 'long' ? 'Provide detailed, comprehensive responses.' : 
-  'Balance detail with conciseness.'}
-- ${context.userMemory.communicationStyle.formality === 'casual' ? 'Use a more conversational, relaxed tone.' : 
-  context.userMemory.communicationStyle.formality === 'formal' ? 'Maintain a professional, formal tone.' : 
-  'Use a balanced, professional yet approachable tone.'}
-- ${context.userMemory.communicationStyle.detailLevel === 'low' ? 'Focus on key points without excessive detail.' : 
-  context.userMemory.communicationStyle.detailLevel === 'high' ? 'Provide in-depth explanations and thorough analysis.' : 
-  'Provide moderate detail, balancing thoroughness with clarity.'}
-- ${context.userMemory.communicationStyle.technicalLevel === 'low' ? 'Avoid technical jargon and complicated concepts.' : 
-  context.userMemory.communicationStyle.technicalLevel === 'high' ? 'Feel free to use technical terminology and detailed concepts.' : 
-  'Use some technical terms but explain them clearly.'}
-` : ''}
-
-# Response Requirements
-1. ${context.resumeData ? 'Prioritize the resume context for all career advice and use it as the primary source of information about the user.' : 'Analyze the user\'s profile data to provide truly personalized advice'}
-2. Highlight platform features when relevant (e.g. "You could showcase this project in your Brandentifier portfolio")
-3. Keep responses concise but valuable (3-4 paragraphs maximum)
-4. Always end with: "Quick Response Options: " followed by 3-4 quoted options like "Option 1", "Option 2"
-5. When discussing skills, reference actual skills from ${context.resumeData ? 'their uploaded resume' : 'their profile'}
-6. When discussing career paths, reference their actual work experience from ${context.resumeData ? 'their uploaded resume' : 'their profile'}
-
-# Follow-up Question Framework
-When asking follow-up questions, use this precise framework to create focused, valuable questions:
-
-1. 🔍 Understand the Intent - First identify what the user is really trying to accomplish
-   - Look beyond their words to understand their underlying goal
-   - Example: If they say "I want to grow my business," ask about what specific kind of growth they mean
-
-2. 🧠 Zoom In on Gaps or Ambiguities - Identify what's missing or unclear
-   - Don't ask about general topics; focus on specific unclear elements
-   - Example: Instead of asking about "marketing struggles," ask about specific marketing challenges they face
-
-3. 🎯 Narrow the Scope - Move from general to focused questions
-   - Use who/what/where/when/why/how to anchor your follow-ups
-   - Example: Instead of "Tell me more," ask "What happened just before you noticed the problem?"
-
-4. 🔄 Connect Back to Their Context - Reference what they've already shared
-   - Show you're following the conversation by connecting your question to their previous statements
-   - Example: "You mentioned your team feels stuck—can you give me an example of when that happens?"
-
-5. 🧩 Use Assumptions Carefully - When you need to make an educated guess, phrase it so it's easy to correct
-   - Example: "Are you saying the issue started after the product launch?" (not "The issue started after the product launch, right?")
-
-6. 🛠️ Frame for Action or Insight - Ask questions that produce clarity, choices, or next steps
-   - Your questions should help them move forward
-   - Example: "What would a successful outcome look like for you?"
-
-# Formatting Guidelines
-- Use proper Markdown headers (# Main Header, ## Subheader, ### Section title) for clear structure
-- Use **bold text** for important points and key conclusions
-- Use *italic text* for emphasis or technical terms
-- Create organized lists with bullet points (- item) for recommendations
-- Include emojis as visual guides: 
-  - 📊 for data/metrics
-  - 🔍 for analysis sections
-  - ✅ for recommendations
-  - ⚠️ for warnings/cautions
-  - 💡 for insights/tips
-  - 📝 for action items
-- Use \\\`code formatting\\\` for technical terms, code snippets, or commands
-- Use \\\`\\\`\\\`code blocks\\\`\\\`\\\` for multi-line code examples or detailed instructions
-- Use checkboxes [x] for completed items and [ ] for action items
-- Add horizontal rules (---) between major sections
-- Structure responses with clear headers, concise paragraphs and visual separation
-
-# Special Instructions
-- If the user is in the ${context?.section || "general"} section, focus advice on that area
-- Mention relevant features of Brandentifier that could help in the advised area
-- Be conversational but professional
-`;
-
-    // Prepare messages for API call
-    const messages = [
-      { role: "system" as const, content: systemPrompt },
-      { role: "user" as const, content: message }
-    ];
-
-    // Log the important context being used
-    console.log("Musk context data being sent to AI:", {
-      hasUserData: !!context.userData,
-      userProfile: context.userData?.profile,
-      experienceCount: context.userData?.experiences?.length || 0,
-      skillsCount: context.userData?.skills?.length || 0,
-      projectsCount: context.userData?.projects?.length || 0,
-      hasResumeData: !!context.resumeData,
-      dataSource: context.dataSource || 'profile',
-      hasUserMemory: !!context.userMemory
-    });
+    // Use our enhanced intelligence system instead of direct OpenAI call
+    let response = await generatePersonalizedResponse(message, muskContext);
     
-    // Call OpenAI API
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-      messages: messages,
-      temperature: 0.7,
-      max_tokens: 800,
-    });
-
-    const response = completion.choices[0].message.content;
-    console.log("Musk AI response generated with personalized context");
+    // Ensure we always have quick response options
+    if (!response.includes("Quick Response Options:")) {
+      response += "\n\nQuick Response Options: \"Tell me more about my career options\", \"How can I improve my skills?\", \"What industries are growing?\"";
+    }
+    
+    console.log("Musk AI response generated with enhanced intelligence system");
     return response;
   } catch (error) {
-    console.error("Error calling OpenAI:", error);
+    console.error("Error in Musk intelligence system:", error);
     // Fallback to demo responses if OpenAI fails
     return generateFallbackResponse(message, context);
   }

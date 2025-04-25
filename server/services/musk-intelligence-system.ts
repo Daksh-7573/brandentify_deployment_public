@@ -223,9 +223,9 @@ function extractSkills(context: MuskContext): any[] {
   }
   
   return context.skills.map(skill => ({
-    name: skill.name,
-    category: skill.category,
-    level: skill.level
+    name: skill.name || "Unknown",
+    category: (skill as any).category || "General",
+    level: skill.level || "Intermediate"
   }));
 }
 
@@ -258,7 +258,7 @@ function extractEducation(context: MuskContext): any[] {
   return context.educations.map(edu => ({
     institution: edu.institution,
     degree: edu.degree,
-    field: edu.fieldOfStudy,
+    field: (edu as any).fieldOfStudy || "General Studies",
     startDate: edu.startDate,
     endDate: edu.endDate
   }));
@@ -333,12 +333,12 @@ Remember, your goal is to provide personalized guidance that is directly relevan
 `;
 
   // Add conversation memory if available to provide context continuity
-  if (context.userMemory?.interactions?.length > 0) {
+  if (context.userMemory?.interactions && context.userMemory.interactions.length > 0) {
     const recentInteractions = context.userMemory.interactions
       .slice(-3) // Get last 3 interactions
       .map(interaction => `
-USER: ${interaction.message}
-YOU: ${interaction.response.substring(0, 150)}...
+USER: ${interaction.message || ""}
+YOU: ${(interaction.response || "").substring(0, 150)}...
       `).join('\n');
     
     prompt += `
