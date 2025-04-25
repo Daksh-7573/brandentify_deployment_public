@@ -796,9 +796,9 @@ export default function CorporateExecutive({
       </section>
       
       {/* Expertise (Skills) Section */}
-      <section id="skills" className="py-10 px-8 bg-white">
+      <section id="skills" className="py-16 px-8 bg-white">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6 accent-border" style={{ fontFamily: 'Playfair Display, serif' }}>
+          <h2 className="text-3xl font-bold text-gray-900 mb-10 accent-border" style={{ fontFamily: 'Playfair Display, serif' }}>
             What I'm Good At
           </h2>
           
@@ -854,9 +854,9 @@ export default function CorporateExecutive({
       </section>
       
       {/* Services Section */}
-      <section id="services" className="py-10 px-8 bg-gray-50">
+      <section id="services" className="py-16 px-8 bg-gray-50">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6" style={{ fontFamily: 'Playfair Display, serif' }}>
+          <h2 className="text-3xl font-bold text-gray-900 mb-10" style={{ fontFamily: 'Playfair Display, serif' }}>
             What I <span className="premium-gradient-text">Offer</span>
           </h2>
           
@@ -933,13 +933,13 @@ export default function CorporateExecutive({
       </section>
       
       {/* Showcase (Projects) Section */}
-      <section id="projects" className="py-10 px-8 bg-white">
+      <section id="projects" className="py-16 px-8 bg-white">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6 accent-border" style={{ fontFamily: 'Playfair Display, serif' }}>
+          <h2 className="text-3xl font-bold text-gray-900 mb-10 accent-border" style={{ fontFamily: 'Playfair Display, serif' }}>
             Showcase
           </h2>
           
-          <div className="flex flex-wrap justify-center md:justify-start gap-6">
+          <div className="flex flex-wrap justify-center md:justify-start gap-8">
             {sortedProjects.length > 0 ? (
               sortedProjects.slice(0, 6).map((project, index) => (
                 <div 
@@ -958,8 +958,8 @@ export default function CorporateExecutive({
                     </div>
                   )}
                   
-                  <div className="p-5">
-                    <div className="flex justify-between items-start mb-2">
+                  <div className="p-6">
+                    <div className="flex justify-between items-start mb-3">
                       <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>
                         {project.title}
                       </h3>
@@ -971,7 +971,7 @@ export default function CorporateExecutive({
                       )}
                     </div>
                     
-                    <p className="text-gray-600 mb-3 line-clamp-3" style={{ fontFamily: 'Inter, sans-serif' }}>
+                    <p className="text-gray-600 mb-4 line-clamp-3" style={{ fontFamily: 'Inter, sans-serif' }}>
                       {project.description}
                     </p>
                     
@@ -1007,7 +1007,7 @@ export default function CorporateExecutive({
                 </div>
               ))
             ) : (
-              <div className="col-span-full text-center py-10 border border-gray-100 rounded-lg">
+              <div className="col-span-full text-center py-16 border border-gray-100 rounded-lg">
                 <p className="text-gray-400" style={{ fontFamily: 'Inter, sans-serif' }}>
                   Your showcase projects will appear here
                 </p>
@@ -1018,13 +1018,13 @@ export default function CorporateExecutive({
       </section>
       
       {/* Career Path (Experience) Section */}
-      <section id="experience" className="py-10 px-8 bg-gray-50">
+      <section id="experience" className="py-16 px-8 bg-gray-50">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6 accent-border" style={{ fontFamily: 'Playfair Display, serif' }}>
+          <h2 className="text-3xl font-bold text-gray-900 mb-10 accent-border" style={{ fontFamily: 'Playfair Display, serif' }}>
             Career Path
           </h2>
           
-          <div className="mb-8">
+          <div className="mb-16">
             {sortedExperiences.length > 0 ? (
               <div className="space-y-3">
                 {sortedExperiences.map((exp, index) => (
@@ -1105,7 +1105,7 @@ export default function CorporateExecutive({
           </div>
           
           {/* Academic Background */}
-          <h2 className="text-3xl font-bold text-gray-900 mb-6 accent-border" style={{ fontFamily: 'Playfair Display, serif' }}>
+          <h2 className="text-3xl font-bold text-gray-900 mb-10 accent-border" style={{ fontFamily: 'Playfair Display, serif' }}>
             Academic Background
           </h2>
           
@@ -1178,8 +1178,110 @@ export default function CorporateExecutive({
         </div>
       </section>
       
+      {/* Education Section */}
+      <section id="education" className="py-16 px-8 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl font-bold text-gray-900 mb-10 accent-border" style={{ fontFamily: 'Playfair Display, serif' }}>
+            Academic Background
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
+            {sortedEducations.length > 0 ? (
+              sortedEducations.map((edu, index) => (
+                <div 
+                  key={edu.id} 
+                  className="timeline-item fade-in"
+                  style={{ animationDelay: `${0.1 + index * 0.1}s` }}
+                >
+                  <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+                    <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-3 mb-3">
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>
+                          {edu.degree}
+                        </h3>
+                        <p className="text-[#6a0dad] font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          {edu.institution}
+                        </p>
+                      </div>
+                      
+                      <div className="text-sm text-gray-500 flex items-center whitespace-nowrap" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        <Calendar className="h-4 w-4 mr-1" />
+                        <span>
+                          {formatDate(edu.startDate)} - {edu.endDate ? formatDate(edu.endDate) : 'Present'}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex flex-wrap items-center gap-4 mb-4">
+                      {edu.location && (
+                        <div className="flex items-center text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          <MapPin className="h-4 w-4 mr-1" />
+                          <span>{edu.location}</span>
+                        </div>
+                      )}
+                      
+                      {edu.industry && (
+                        <div className="flex items-center text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          <Briefcase className="h-4 w-4 mr-1" />
+                          <span>{edu.industry}</span>
+                        </div>
+                      )}
+                      
+                      {/* Domain fields aren't needed for education */}
+                    </div>
+                    
+                    {/* Field of Study */}
+                    {edu.fieldOfStudy && (
+                      <div className="mb-4">
+                        <div className="flex items-start gap-2">
+                          <GraduationCap className="h-5 w-5 text-[#6a0dad] mt-0.5" />
+                          <div>
+                            <p className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Inter, sans-serif' }}>
+                              Field of Study
+                            </p>
+                            <p className="text-sm text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>
+                              {edu.fieldOfStudy}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Skills Acquired */}
+                    {edu.skillsAcquired && Array.isArray(edu.skillsAcquired) && edu.skillsAcquired.length > 0 && (
+                      <div className="mb-3">
+                        <p className="text-sm font-medium text-gray-700 mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          Skills Acquired
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {(edu.skillsAcquired as string[]).map((skill: string, i: number) => (
+                            <span 
+                              key={i} 
+                              className="inline-flex items-center bg-purple-50 text-purple-700 text-xs px-2.5 py-1 rounded-md border border-purple-100"
+                              style={{ fontFamily: 'Inter, sans-serif' }}
+                            >
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-16 border border-gray-100 rounded-lg bg-white">
+                <p className="text-gray-400" style={{ fontFamily: 'Inter, sans-serif' }}>
+                  Your academic background will appear here
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+      
       {/* Footer CTA */}
-      <section className="py-10 px-8 bg-gray-900 text-white">
+      <section className="py-16 px-8 bg-gray-900 text-white">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center gap-8">
             <div>
@@ -1204,7 +1306,7 @@ export default function CorporateExecutive({
             </div>
           </div>
           
-          <div className="mt-8 pt-6 border-t border-gray-800 text-center">
+          <div className="mt-16 pt-8 border-t border-gray-800 text-center">
             <p className="text-gray-400 text-sm" style={{ fontFamily: 'Inter, sans-serif' }}>
               © {new Date().getFullYear()} {userInfo.name} • All Rights Reserved
             </p>
