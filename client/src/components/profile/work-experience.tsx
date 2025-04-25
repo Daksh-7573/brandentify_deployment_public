@@ -576,7 +576,7 @@ export default function WorkExperience() {
     onError: (error: Error) => {
       toast({
         title: "Error adding work experience",
-        description: error.message,
+        description: error.message || "Failed to add work experience",
         variant: "destructive",
       });
     }
@@ -587,7 +587,7 @@ export default function WorkExperience() {
     mutationFn: async (data: any) => {
       console.log("Updating work experience:", data);
       const res = await apiRequest({
-        method: 'PUT', 
+        method: 'PATCH', 
         url: `/api/experiences/${data.id}`,
         data: data
       });
@@ -605,7 +605,7 @@ export default function WorkExperience() {
     onError: (error: Error) => {
       toast({
         title: "Error updating work experience",
-        description: error.message,
+        description: error.message || "Failed to update work experience",
         variant: "destructive",
       });
     }
@@ -615,18 +615,10 @@ export default function WorkExperience() {
   const deleteExperienceMutation = useMutation({
     mutationFn: async (id: number) => {
       console.log("Deleting work experience:", id);
-      const res = await apiRequest({
+      await apiRequest({
         method: 'DELETE', 
-        url: `/api/experiences/${id}`
+        url: `/api/experiences/${id}`,
       });
-      
-      // For 204 No Content responses, just return a success value without trying to parse JSON
-      if (res.status === 204) {
-        return { success: true };
-      }
-      
-      // For other responses, try to parse JSON
-      return await res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/users/${endpointUserId}/experiences`] });
@@ -638,7 +630,7 @@ export default function WorkExperience() {
     onError: (error: Error) => {
       toast({
         title: "Error deleting work experience",
-        description: error.message,
+        description: error.message || "Failed to delete work experience",
         variant: "destructive",
       });
     }
@@ -659,6 +651,16 @@ export default function WorkExperience() {
     label: industry,
     key: `industry-${index}`,
   }));
+  
+  // Function to create domain options with unique keys
+  const getDomainOptionsForIndustry = (industry: string) => {
+    if (!industry || !INDUSTRY_DOMAINS[industry]) return [];
+    return INDUSTRY_DOMAINS[industry].map((domain, index) => ({
+      value: domain,
+      label: domain,
+      key: `${industry}-domain-${index}`,
+    }));
+  };
   
   // Handle dialog visibility
   const openAddDialog = () => {
@@ -1015,7 +1017,6 @@ export default function WorkExperience() {
                           {experience.industry}
                         </Badge>
                       )}
-                      
                       {experience.domain && (
                         <Badge variant="outline" className="bg-gray-50 flex items-center">
                           <TagIcon className="h-3 w-3 mr-1" />
@@ -1024,32 +1025,36 @@ export default function WorkExperience() {
                       )}
                     </div>
                     
-                    {experience.keyResponsibilities && experience.keyResponsibilities.length > 0 && (
-                      <div className="mt-2">
-                        <h4 className="text-sm font-medium">Key Responsibilities & Achievements</h4>
-                        <ul className="list-disc pl-5 mt-1 text-sm space-y-1">
-                          {experience.keyResponsibilities.map((item: string, idx: number) => (
-                            <li key={idx}>{item}</li>
+                    {/* Key Responsibilities Section */}
+                    {experience.keyResponsibilities && Array.isArray(experience.keyResponsibilities) && experience.keyResponsibilities.length > 0 && (
+                      <div className="mt-3">
+                        <h4 className="text-sm font-medium mb-1">Key Responsibilities:</h4>
+                        <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-1">
+                          {experience.keyResponsibilities.map((responsibility: string, index: number) => (
+                            <li key={index}>{responsibility}</li>
                           ))}
                         </ul>
                       </div>
                     )}
                   </div>
-                  
-                  <div className="flex space-x-1">
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
+                  <div className="flex space-x-2">
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-8 w-8"
                       onClick={() => openEditDialog(experience)}
                     >
                       <Edit className="h-4 w-4" />
+                      <span className="sr-only">Edit</span>
                     </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-8 w-8 text-destructive"
                       onClick={() => handleDelete(experience.id)}
                     >
                       <Trash2 className="h-4 w-4" />
+                      <span className="sr-only">Delete</span>
                     </Button>
                   </div>
                 </div>
@@ -1061,31 +1066,27 @@ export default function WorkExperience() {
       
       {/* Add Experience Dialog */}
       <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-        <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="md:max-w-lg">
           <DialogHeader>
             <DialogTitle>Add Career Path</DialogTitle>
             <DialogDescription>
-              Add details about your career journey
+              Add details about your professional experience
             </DialogDescription>
           </DialogHeader>
           
-          <Alert className="mb-4 bg-blue-50 border-blue-100">
-            <AlertCircle className="h-4 w-4 text-blue-500" />
-            <AlertDescription className="text-blue-700 font-medium">
-              Industry and Domain fields are essential for accurate job matching and smart networking recommendations.
-            </AlertDescription>
-          </Alert>
-          
-          <div className="space-y-4">
+          <div className="grid gap-4 py-2">
             <div className="space-y-2">
               <Label htmlFor="title" className="flex items-center">
                 Job Title <span className="text-red-500 ml-1">*</span>
               </Label>
-              <JobTitleCombobox 
+              <Input
+                id="title"
+                name="title"
+                placeholder="e.g. Software Engineer"
                 value={formData.title}
-                onChange={(value) => handleSelectChange('title', value)}
+                onChange={handleInputChange}
+                className={cn(formErrors.title ? "border-red-500" : "", "bg-gray-50")}
                 disabled={createExperienceMutation.isPending}
-                error={formErrors.title}
               />
               {formErrors.title && (
                 <p className="text-sm text-red-500">Job title is required</p>
@@ -1099,13 +1100,46 @@ export default function WorkExperience() {
               <Input
                 id="company"
                 name="company"
+                placeholder="e.g. Acme Corporation"
                 value={formData.company}
                 onChange={handleInputChange}
+                className={cn(formErrors.company ? "border-red-500" : "", "bg-gray-50")}
                 disabled={createExperienceMutation.isPending}
-                className={formErrors.company ? "border-red-500" : ""}
               />
               {formErrors.company && (
-                <p className="text-sm text-red-500">Company is required</p>
+                <p className="text-sm text-red-500">Company name is required</p>
+              )}
+            </div>
+            
+            <div className="space-y-2 relative">
+              <Label htmlFor="location">
+                Location
+              </Label>
+              <Input
+                id="location"
+                name="location"
+                placeholder="e.g. New York, NY"
+                value={formData.location}
+                onChange={handleInputChange}
+                className="bg-gray-50"
+                disabled={createExperienceMutation.isPending}
+              />
+              
+              {/* Location suggestions */}
+              {locationSuggestions.length > 0 && (
+                <div className="absolute z-10 mt-1 w-full bg-white rounded-md shadow-lg border max-h-60 overflow-auto">
+                  <ul className="py-1">
+                    {locationSuggestions.map((suggestion, index) => (
+                      <li 
+                        key={`suggestion-${index}`}
+                        className="px-3 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+                        onClick={() => handleSuggestionSelect(suggestion)}
+                      >
+                        {suggestion}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               )}
             </div>
             
@@ -1124,9 +1158,9 @@ export default function WorkExperience() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      {INDUSTRIES.map(industry => (
-                        <SelectItem key={industry} value={industry}>
-                          {industry}
+                      {industryOptions.map(option => (
+                        <SelectItem key={option.key} value={option.value}>
+                          {option.label}
                         </SelectItem>
                       ))}
                     </SelectGroup>
@@ -1151,9 +1185,9 @@ export default function WorkExperience() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      {formData.industry && INDUSTRY_DOMAINS[formData.industry]?.map(domain => (
-                        <SelectItem key={domain} value={domain}>
-                          {domain}
+                      {formData.industry && getDomainOptionsForIndustry(formData.industry).map(option => (
+                        <SelectItem key={option.key} value={option.value}>
+                          {option.label}
                         </SelectItem>
                       ))}
                     </SelectGroup>
@@ -1163,36 +1197,6 @@ export default function WorkExperience() {
                   <p className="text-sm text-red-500">Domain is required</p>
                 )}
               </div>
-            </div>
-            
-            <div className="space-y-2 relative">
-              <Label htmlFor="location">Location</Label>
-              <Input
-                id="location"
-                name="location"
-                value={formData.location}
-                onChange={handleInputChange}
-                disabled={createExperienceMutation.isPending}
-                placeholder="Enter location (optional)"
-                className="bg-gray-50"
-              />
-              
-              {/* Location suggestions dropdown */}
-              {locationSuggestions.length > 0 && (
-                <div className="absolute w-full mt-1 p-2 bg-white border rounded-md shadow-lg z-10 max-h-60 overflow-y-auto">
-                  <div className="space-y-1">
-                    {locationSuggestions.map((suggestion) => (
-                      <div
-                        key={suggestion}
-                        className="px-2 py-1.5 text-sm rounded hover:bg-gray-100 cursor-pointer"
-                        onClick={() => handleSuggestionSelect(suggestion)}
-                      >
-                        {suggestion}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
             
             <div className="grid grid-cols-2 gap-4">
@@ -1205,10 +1209,11 @@ export default function WorkExperience() {
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !formData.startDate && "text-muted-foreground",
-                        formErrors.startDate && "border-red-500"
+                        "justify-start text-left font-normal w-full",
+                        formErrors.startDate ? "border-red-500" : "",
+                        "bg-gray-50"
                       )}
+                      disabled={createExperienceMutation.isPending}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
                       {formData.startDate ? formatDate(formData.startDate) : "Select date"}
@@ -1219,9 +1224,7 @@ export default function WorkExperience() {
                       mode="single"
                       selected={formData.startDate}
                       onSelect={(date) => handleDateChange('startDate', date)}
-                      disabled={createExperienceMutation.isPending}
-                      fromYear={1980}
-                      toYear={2035}
+                      initialFocus
                     />
                   </PopoverContent>
                 </Popover>
@@ -1231,165 +1234,160 @@ export default function WorkExperience() {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="endDate" className="flex items-center">
-                  End Date {!formData.isCurrentlyWorking && <span className="text-red-500 ml-1">*</span>}
-                </Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !formData.endDate && "text-muted-foreground",
-                        formErrors.endDate && "border-red-500"
-                      )}
-                      disabled={formData.isCurrentlyWorking || createExperienceMutation.isPending}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {formData.endDate ? formatDate(formData.endDate) : "Present"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={formData.endDate}
-                      onSelect={(date) => handleDateChange('endDate', date)}
-                      disabled={formData.isCurrentlyWorking || createExperienceMutation.isPending}
-                      fromYear={1980}
-                      toYear={2035}
-                    />
-                  </PopoverContent>
-                </Popover>
-                <div className="h-5">
-                  {formErrors.endDate && (
-                    <p className="text-sm text-red-500">End date is required</p>
-                  )}
-                  {formData.startDate && formData.endDate && formData.endDate < formData.startDate && (
-                    <p className="text-sm text-red-500">End date must be after start date</p>
-                  )}
-                </div>
-                <div className="flex items-center space-x-2 mt-1">
-                  <Checkbox 
-                    id="currentlyWorking"
-                    checked={formData.isCurrentlyWorking}
-                    onCheckedChange={(checked) => {
-                      setFormData(prev => ({
-                        ...prev,
-                        isCurrentlyWorking: checked === true,
-                        // Clear end date if currently working
-                        endDate: checked === true ? undefined : prev.endDate
-                      }));
-                      // Clear end date validation error if currently working
-                      if (checked === true) {
+                <div className="flex justify-between items-center">
+                  <Label htmlFor="endDate" className="flex items-center">
+                    End Date {!formData.isCurrentlyWorking && <span className="text-red-500 ml-1">*</span>}
+                  </Label>
+                  <div className="flex items-center space-x-2 text-sm">
+                    <Switch
+                      id="current-job"
+                      checked={formData.isCurrentlyWorking}
+                      onCheckedChange={(checked) => {
+                        setFormData(prev => ({
+                          ...prev,
+                          isCurrentlyWorking: checked,
+                          // Clear end date if currently working
+                          endDate: checked ? undefined : prev.endDate
+                        }));
+                        // Clear validation error
                         setFormErrors(prev => ({
                           ...prev,
                           endDate: false
                         }));
-                      }
-                    }}
-                    disabled={createExperienceMutation.isPending}
-                  />
-                  <Label
-                    htmlFor="currentlyWorking"
-                    className="text-sm font-normal cursor-pointer"
-                  >
-                    I am currently working here
-                  </Label>
+                      }}
+                      disabled={createExperienceMutation.isPending}
+                    />
+                    <Label htmlFor="current-job" className="cursor-pointer">Current job</Label>
+                  </div>
                 </div>
+                
+                {!formData.isCurrentlyWorking && (
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "justify-start text-left font-normal w-full",
+                          formErrors.endDate ? "border-red-500" : "",
+                          "bg-gray-50"
+                        )}
+                        disabled={createExperienceMutation.isPending || formData.isCurrentlyWorking}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {formData.endDate ? formatDate(formData.endDate) : "Select date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={formData.endDate}
+                        onSelect={(date) => handleDateChange('endDate', date)}
+                        initialFocus
+                        disabled={(date) => formData.startDate ? date < formData.startDate : false}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                )}
+                
+                {formErrors.endDate && !formData.isCurrentlyWorking && (
+                  <p className="text-sm text-red-500">End date is required</p>
+                )}
               </div>
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="keyResponsibilities">Key Responsibilities & Achievements</Label>
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <Input
-                    id="newResponsibility"
-                    placeholder="Add a responsibility or achievement"
-                    className="flex-1"
-                    value={newResponsibilityInput}
-                    onChange={(e) => setNewResponsibilityInput(e.target.value)}
-                    disabled={createExperienceMutation.isPending}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && newResponsibilityInput.trim() && formData.keyResponsibilities.length < 10) {
-                        e.preventDefault();
-                        setFormData(prev => ({
-                          ...prev,
-                          keyResponsibilities: [...prev.keyResponsibilities, newResponsibilityInput.trim()]
-                        }));
-                        setNewResponsibilityInput('');
-                      }
-                    }}
-                  />
-                  <Button
-                    type="button"
-                    size="sm"
-                    disabled={!newResponsibilityInput.trim() || formData.keyResponsibilities.length >= 10 || createExperienceMutation.isPending}
-                    onClick={() => {
-                      if (newResponsibilityInput.trim() && formData.keyResponsibilities.length < 10) {
-                        setFormData(prev => ({
-                          ...prev,
-                          keyResponsibilities: [...prev.keyResponsibilities, newResponsibilityInput.trim()]
-                        }));
-                        setNewResponsibilityInput('');
-                      }
-                    }}
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </div>
-                
-                {formData.keyResponsibilities.length > 0 && (
-                  <div className="border rounded-md p-3 bg-gray-50">
-                    <ul className="space-y-2">
-                      {formData.keyResponsibilities.map((item, index) => (
-                        <li key={index} className="flex items-center gap-2 group">
-                          <span className="flex-1 text-sm">{item}</span>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                            onClick={() => {
-                              const newItems = [...formData.keyResponsibilities];
-                              newItems.splice(index, 1);
-                              setFormData(prev => ({
-                                ...prev,
-                                keyResponsibilities: newItems
-                              }));
-                            }}
-                            disabled={createExperienceMutation.isPending}
-                          >
-                            <X className="h-3.5 w-3.5 text-muted-foreground" />
-                          </Button>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                
-                <div className="text-xs text-muted-foreground">
-                  {formData.keyResponsibilities.length === 0 ? (
-                    <p>Add up to 10 responsibilities or achievements</p>
-                  ) : formData.keyResponsibilities.length === 10 ? (
-                    <p>Maximum 10 items reached</p>
-                  ) : (
-                    <p>{formData.keyResponsibilities.length} of 10 items added</p>
-                  )}
-                </div>
+              <Label htmlFor="keyResponsibilities">
+                Key Responsibilities
+              </Label>
+              
+              {/* Responsibilities list */}
+              {formData.keyResponsibilities.length > 0 && (
+                <ul className="space-y-2 mb-3">
+                  {formData.keyResponsibilities.map((responsibility, index) => (
+                    <li key={index} className="flex items-center bg-gray-50 rounded-md p-2 text-sm">
+                      <span className="flex-1">{responsibility}</span>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-7 w-7 text-destructive"
+                        onClick={() => {
+                          setFormData(prev => ({
+                            ...prev,
+                            keyResponsibilities: prev.keyResponsibilities.filter((_, i) => i !== index)
+                          }));
+                        }}
+                        disabled={createExperienceMutation.isPending}
+                      >
+                        <X className="h-4 w-4" />
+                        <span className="sr-only">Remove</span>
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              
+              {/* Add new responsibility */}
+              <div className="flex space-x-2">
+                <Input
+                  id="newResponsibility"
+                  name="newResponsibility"
+                  placeholder="e.g. Led a team of 5 developers"
+                  value={newResponsibilityInput}
+                  onChange={(e) => setNewResponsibilityInput(e.target.value)}
+                  className="bg-gray-50 flex-1"
+                  disabled={createExperienceMutation.isPending || formData.keyResponsibilities.length >= 10}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && newResponsibilityInput.trim()) {
+                      e.preventDefault();
+                      setFormData(prev => ({
+                        ...prev,
+                        keyResponsibilities: [...prev.keyResponsibilities, newResponsibilityInput.trim()]
+                      }));
+                      setNewResponsibilityInput('');
+                    }
+                  }}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={!newResponsibilityInput.trim() || createExperienceMutation.isPending || formData.keyResponsibilities.length >= 10}
+                  onClick={() => {
+                    if (newResponsibilityInput.trim()) {
+                      setFormData(prev => ({
+                        ...prev,
+                        keyResponsibilities: [...prev.keyResponsibilities, newResponsibilityInput.trim()]
+                      }));
+                      setNewResponsibilityInput('');
+                    }
+                  }}
+                >
+                  Add
+                </Button>
               </div>
+              
+              {formData.keyResponsibilities.length >= 10 && (
+                <p className="text-sm text-amber-600 flex items-center mt-1">
+                  <AlertCircle className="h-3.5 w-3.5 mr-1.5" />
+                  Maximum of 10 responsibilities reached
+                </p>
+              )}
             </div>
           </div>
           
           <DialogFooter>
-            <Button 
-              variant="outline" 
-              onClick={() => setShowAddDialog(false)}
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setShowAddDialog(false);
+                resetForm();
+              }}
               disabled={createExperienceMutation.isPending}
             >
               Cancel
             </Button>
             <Button 
+              type="button" 
               onClick={handleAddSubmit}
               disabled={createExperienceMutation.isPending}
             >
@@ -1401,31 +1399,27 @@ export default function WorkExperience() {
       
       {/* Edit Experience Dialog */}
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-        <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="md:max-w-lg">
           <DialogHeader>
             <DialogTitle>Edit Career Path</DialogTitle>
             <DialogDescription>
-              Update details about your career journey
+              Update details about your professional experience
             </DialogDescription>
           </DialogHeader>
           
-          <Alert className="mb-4 bg-blue-50 border-blue-100">
-            <AlertCircle className="h-4 w-4 text-blue-500" />
-            <AlertDescription className="text-blue-700 font-medium">
-              Industry and Domain fields are essential for accurate job matching and smart networking recommendations.
-            </AlertDescription>
-          </Alert>
-          
-          <div className="space-y-4">
+          <div className="grid gap-4 py-2">
             <div className="space-y-2">
-              <Label htmlFor="title" className="flex items-center">
+              <Label htmlFor="edit-title" className="flex items-center">
                 Job Title <span className="text-red-500 ml-1">*</span>
               </Label>
-              <JobTitleCombobox 
+              <Input
+                id="edit-title"
+                name="title"
+                placeholder="e.g. Software Engineer"
                 value={formData.title}
-                onChange={(value) => handleSelectChange('title', value)}
+                onChange={handleInputChange}
+                className={cn(formErrors.title ? "border-red-500" : "", "bg-gray-50")}
                 disabled={updateExperienceMutation.isPending}
-                error={formErrors.title}
               />
               {formErrors.title && (
                 <p className="text-sm text-red-500">Job title is required</p>
@@ -1433,25 +1427,58 @@ export default function WorkExperience() {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="company" className="flex items-center">
+              <Label htmlFor="edit-company" className="flex items-center">
                 Company <span className="text-red-500 ml-1">*</span>
               </Label>
               <Input
-                id="company"
+                id="edit-company"
                 name="company"
+                placeholder="e.g. Acme Corporation"
                 value={formData.company}
                 onChange={handleInputChange}
+                className={cn(formErrors.company ? "border-red-500" : "", "bg-gray-50")}
                 disabled={updateExperienceMutation.isPending}
-                className={formErrors.company ? "border-red-500" : ""}
               />
               {formErrors.company && (
-                <p className="text-sm text-red-500">Company is required</p>
+                <p className="text-sm text-red-500">Company name is required</p>
+              )}
+            </div>
+            
+            <div className="space-y-2 relative">
+              <Label htmlFor="edit-location">
+                Location
+              </Label>
+              <Input
+                id="edit-location"
+                name="location"
+                placeholder="e.g. New York, NY"
+                value={formData.location}
+                onChange={handleInputChange}
+                className="bg-gray-50"
+                disabled={updateExperienceMutation.isPending}
+              />
+              
+              {/* Location suggestions */}
+              {locationSuggestions.length > 0 && (
+                <div className="absolute z-10 mt-1 w-full bg-white rounded-md shadow-lg border max-h-60 overflow-auto">
+                  <ul className="py-1">
+                    {locationSuggestions.map((suggestion, index) => (
+                      <li 
+                        key={`edit-suggestion-${index}`}
+                        className="px-3 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+                        onClick={() => handleSuggestionSelect(suggestion)}
+                      >
+                        {suggestion}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               )}
             </div>
             
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="industry" className="flex items-center">
+                <Label htmlFor="edit-industry" className="flex items-center">
                   Industry <span className="text-red-500 ml-1">*</span>
                 </Label>
                 <Select
@@ -1464,9 +1491,9 @@ export default function WorkExperience() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      {INDUSTRIES.map(industry => (
-                        <SelectItem key={industry} value={industry}>
-                          {industry}
+                      {industryOptions.map(option => (
+                        <SelectItem key={option.key} value={option.value}>
+                          {option.label}
                         </SelectItem>
                       ))}
                     </SelectGroup>
@@ -1478,7 +1505,7 @@ export default function WorkExperience() {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="domain" className="flex items-center">
+                <Label htmlFor="edit-domain" className="flex items-center">
                   Domain <span className="text-red-500 ml-1">*</span>
                 </Label>
                 <Select
@@ -1491,9 +1518,9 @@ export default function WorkExperience() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      {formData.industry && INDUSTRY_DOMAINS[formData.industry]?.map(domain => (
-                        <SelectItem key={domain} value={domain}>
-                          {domain}
+                      {formData.industry && getDomainOptionsForIndustry(formData.industry).map(option => (
+                        <SelectItem key={option.key} value={option.value}>
+                          {option.label}
                         </SelectItem>
                       ))}
                     </SelectGroup>
@@ -1505,39 +1532,9 @@ export default function WorkExperience() {
               </div>
             </div>
             
-            <div className="space-y-2 relative">
-              <Label htmlFor="location">Location</Label>
-              <Input
-                id="location"
-                name="location"
-                value={formData.location}
-                onChange={handleInputChange}
-                disabled={updateExperienceMutation.isPending}
-                placeholder="Enter location (optional)"
-                className="bg-gray-50"
-              />
-              
-              {/* Location suggestions dropdown */}
-              {locationSuggestions.length > 0 && (
-                <div className="absolute w-full mt-1 p-2 bg-white border rounded-md shadow-lg z-10 max-h-60 overflow-y-auto">
-                  <div className="space-y-1">
-                    {locationSuggestions.map((suggestion) => (
-                      <div
-                        key={suggestion}
-                        className="px-2 py-1.5 text-sm rounded hover:bg-gray-100 cursor-pointer"
-                        onClick={() => handleSuggestionSelect(suggestion)}
-                      >
-                        {suggestion}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-            
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="startDate" className="flex items-center">
+                <Label htmlFor="edit-startDate" className="flex items-center">
                   Start Date <span className="text-red-500 ml-1">*</span>
                 </Label>
                 <Popover>
@@ -1545,10 +1542,11 @@ export default function WorkExperience() {
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !formData.startDate && "text-muted-foreground",
-                        formErrors.startDate && "border-red-500"
+                        "justify-start text-left font-normal w-full",
+                        formErrors.startDate ? "border-red-500" : "",
+                        "bg-gray-50"
                       )}
+                      disabled={updateExperienceMutation.isPending}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
                       {formData.startDate ? formatDate(formData.startDate) : "Select date"}
@@ -1559,9 +1557,7 @@ export default function WorkExperience() {
                       mode="single"
                       selected={formData.startDate}
                       onSelect={(date) => handleDateChange('startDate', date)}
-                      disabled={updateExperienceMutation.isPending}
-                      fromYear={1980}
-                      toYear={2035}
+                      initialFocus
                     />
                   </PopoverContent>
                 </Popover>
@@ -1571,165 +1567,160 @@ export default function WorkExperience() {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="endDate" className="flex items-center">
-                  End Date {!formData.isCurrentlyWorking && <span className="text-red-500 ml-1">*</span>}
-                </Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !formData.endDate && "text-muted-foreground",
-                        formErrors.endDate && "border-red-500"
-                      )}
-                      disabled={formData.isCurrentlyWorking || updateExperienceMutation.isPending}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {formData.endDate ? formatDate(formData.endDate) : "Present"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={formData.endDate}
-                      onSelect={(date) => handleDateChange('endDate', date)}
-                      disabled={formData.isCurrentlyWorking || updateExperienceMutation.isPending}
-                      fromYear={1980}
-                      toYear={2035}
-                    />
-                  </PopoverContent>
-                </Popover>
-                <div className="h-5">
-                  {formErrors.endDate && (
-                    <p className="text-sm text-red-500">End date is required</p>
-                  )}
-                  {formData.startDate && formData.endDate && formData.endDate < formData.startDate && (
-                    <p className="text-sm text-red-500">End date must be after start date</p>
-                  )}
-                </div>
-                <div className="flex items-center space-x-2 mt-1">
-                  <Checkbox 
-                    id="currentlyWorkingEdit"
-                    checked={formData.isCurrentlyWorking}
-                    onCheckedChange={(checked) => {
-                      setFormData(prev => ({
-                        ...prev,
-                        isCurrentlyWorking: checked === true,
-                        // Clear end date if currently working
-                        endDate: checked === true ? undefined : prev.endDate
-                      }));
-                      // Clear end date validation error if currently working
-                      if (checked === true) {
+                <div className="flex justify-between items-center">
+                  <Label htmlFor="edit-endDate" className="flex items-center">
+                    End Date {!formData.isCurrentlyWorking && <span className="text-red-500 ml-1">*</span>}
+                  </Label>
+                  <div className="flex items-center space-x-2 text-sm">
+                    <Switch
+                      id="edit-current-job"
+                      checked={formData.isCurrentlyWorking}
+                      onCheckedChange={(checked) => {
+                        setFormData(prev => ({
+                          ...prev,
+                          isCurrentlyWorking: checked,
+                          // Clear end date if currently working
+                          endDate: checked ? undefined : prev.endDate
+                        }));
+                        // Clear validation error
                         setFormErrors(prev => ({
                           ...prev,
                           endDate: false
                         }));
-                      }
-                    }}
-                    disabled={updateExperienceMutation.isPending}
-                  />
-                  <Label
-                    htmlFor="currentlyWorkingEdit"
-                    className="text-sm font-normal cursor-pointer"
-                  >
-                    I am currently working here
-                  </Label>
+                      }}
+                      disabled={updateExperienceMutation.isPending}
+                    />
+                    <Label htmlFor="edit-current-job" className="cursor-pointer">Current job</Label>
+                  </div>
                 </div>
+                
+                {!formData.isCurrentlyWorking && (
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "justify-start text-left font-normal w-full",
+                          formErrors.endDate ? "border-red-500" : "",
+                          "bg-gray-50"
+                        )}
+                        disabled={updateExperienceMutation.isPending || formData.isCurrentlyWorking}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {formData.endDate ? formatDate(formData.endDate) : "Select date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={formData.endDate}
+                        onSelect={(date) => handleDateChange('endDate', date)}
+                        initialFocus
+                        disabled={(date) => formData.startDate ? date < formData.startDate : false}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                )}
+                
+                {formErrors.endDate && !formData.isCurrentlyWorking && (
+                  <p className="text-sm text-red-500">End date is required</p>
+                )}
               </div>
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="keyResponsibilities">Key Responsibilities & Achievements</Label>
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <Input
-                    id="editResponsibility"
-                    placeholder="Add a responsibility or achievement"
-                    className="flex-1"
-                    value={editResponsibilityInput}
-                    onChange={(e) => setEditResponsibilityInput(e.target.value)}
-                    disabled={updateExperienceMutation.isPending}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && editResponsibilityInput.trim() && formData.keyResponsibilities.length < 10) {
-                        e.preventDefault();
-                        setFormData(prev => ({
-                          ...prev,
-                          keyResponsibilities: [...prev.keyResponsibilities, editResponsibilityInput.trim()]
-                        }));
-                        setEditResponsibilityInput('');
-                      }
-                    }}
-                  />
-                  <Button
-                    type="button"
-                    size="sm"
-                    disabled={!editResponsibilityInput.trim() || formData.keyResponsibilities.length >= 10 || updateExperienceMutation.isPending}
-                    onClick={() => {
-                      if (editResponsibilityInput.trim() && formData.keyResponsibilities.length < 10) {
-                        setFormData(prev => ({
-                          ...prev,
-                          keyResponsibilities: [...prev.keyResponsibilities, editResponsibilityInput.trim()]
-                        }));
-                        setEditResponsibilityInput('');
-                      }
-                    }}
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </div>
-                
-                {formData.keyResponsibilities.length > 0 && (
-                  <div className="border rounded-md p-3 bg-gray-50">
-                    <ul className="space-y-2">
-                      {formData.keyResponsibilities.map((item, index) => (
-                        <li key={index} className="flex items-center gap-2 group">
-                          <span className="flex-1 text-sm">{item}</span>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                            onClick={() => {
-                              const newItems = [...formData.keyResponsibilities];
-                              newItems.splice(index, 1);
-                              setFormData(prev => ({
-                                ...prev,
-                                keyResponsibilities: newItems
-                              }));
-                            }}
-                            disabled={updateExperienceMutation.isPending}
-                          >
-                            <X className="h-3.5 w-3.5 text-muted-foreground" />
-                          </Button>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                
-                <div className="text-xs text-muted-foreground">
-                  {formData.keyResponsibilities.length === 0 ? (
-                    <p>Add up to 10 responsibilities or achievements</p>
-                  ) : formData.keyResponsibilities.length === 10 ? (
-                    <p>Maximum 10 items reached</p>
-                  ) : (
-                    <p>{formData.keyResponsibilities.length} of 10 items added</p>
-                  )}
-                </div>
+              <Label htmlFor="edit-keyResponsibilities">
+                Key Responsibilities
+              </Label>
+              
+              {/* Responsibilities list */}
+              {formData.keyResponsibilities.length > 0 && (
+                <ul className="space-y-2 mb-3">
+                  {formData.keyResponsibilities.map((responsibility, index) => (
+                    <li key={index} className="flex items-center bg-gray-50 rounded-md p-2 text-sm">
+                      <span className="flex-1">{responsibility}</span>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-7 w-7 text-destructive"
+                        onClick={() => {
+                          setFormData(prev => ({
+                            ...prev,
+                            keyResponsibilities: prev.keyResponsibilities.filter((_, i) => i !== index)
+                          }));
+                        }}
+                        disabled={updateExperienceMutation.isPending}
+                      >
+                        <X className="h-4 w-4" />
+                        <span className="sr-only">Remove</span>
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              
+              {/* Add new responsibility */}
+              <div className="flex space-x-2">
+                <Input
+                  id="edit-newResponsibility"
+                  name="editResponsibilityInput"
+                  placeholder="e.g. Led a team of 5 developers"
+                  value={editResponsibilityInput}
+                  onChange={(e) => setEditResponsibilityInput(e.target.value)}
+                  className="bg-gray-50 flex-1"
+                  disabled={updateExperienceMutation.isPending || formData.keyResponsibilities.length >= 10}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && editResponsibilityInput.trim()) {
+                      e.preventDefault();
+                      setFormData(prev => ({
+                        ...prev,
+                        keyResponsibilities: [...prev.keyResponsibilities, editResponsibilityInput.trim()]
+                      }));
+                      setEditResponsibilityInput('');
+                    }
+                  }}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={!editResponsibilityInput.trim() || updateExperienceMutation.isPending || formData.keyResponsibilities.length >= 10}
+                  onClick={() => {
+                    if (editResponsibilityInput.trim()) {
+                      setFormData(prev => ({
+                        ...prev,
+                        keyResponsibilities: [...prev.keyResponsibilities, editResponsibilityInput.trim()]
+                      }));
+                      setEditResponsibilityInput('');
+                    }
+                  }}
+                >
+                  Add
+                </Button>
               </div>
+              
+              {formData.keyResponsibilities.length >= 10 && (
+                <p className="text-sm text-amber-600 flex items-center mt-1">
+                  <AlertCircle className="h-3.5 w-3.5 mr-1.5" />
+                  Maximum of 10 responsibilities reached
+                </p>
+              )}
             </div>
           </div>
           
           <DialogFooter>
-            <Button 
-              variant="outline" 
-              onClick={() => setShowEditDialog(false)}
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setShowEditDialog(false);
+                resetForm();
+              }}
               disabled={updateExperienceMutation.isPending}
             >
               Cancel
             </Button>
             <Button 
+              type="button" 
               onClick={handleEditSubmit}
               disabled={updateExperienceMutation.isPending}
             >
