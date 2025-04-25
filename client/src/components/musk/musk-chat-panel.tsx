@@ -15,6 +15,7 @@ import { apiRequest } from '@/lib/queryClient';
 import { X, Send, MessageSquare, Loader2, FileUp, Paperclip, FileText, PresentationIcon, LightbulbIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/use-auth';
 import { getSuggestedQuestions, type SuggestedQuestion } from './suggested-questions';
 import { UserData } from '@/types/user';
 
@@ -53,6 +54,7 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
   // For generating personalized suggested questions
   const [suggestedQuestions, setSuggestedQuestions] = useState<SuggestedQuestion[]>([]);
   const [engagementHistory, setEngagementHistory] = useState<Record<string, number>>({});
+  const { user } = useAuth(); // Get current user data from auth context
   
   // Initialize with default welcome message
   const [messages, setMessages] = useState<Message[]>([
@@ -148,7 +150,6 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
     
     // Get user ID from context, but prefer Firebase UID if available
     // This will allow our backend to properly resolve the numeric user ID
-    const { user } = useAuth();
     
     // Prefer the Firebase UID when available, as it's what the server expects for lookup
     let userId;
@@ -344,7 +345,6 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
     
     // Get user ID from context, but prefer Firebase UID if available 
     // This will allow our backend to properly resolve the numeric user ID
-    const { user } = useAuth();
     
     // Prefer the Firebase UID when available, as it's what the server expects for lookup
     let userId;
