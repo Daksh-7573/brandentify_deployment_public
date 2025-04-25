@@ -779,6 +779,17 @@ export default function CorporateExecutive({
                   className="project-card bg-white rounded-lg overflow-hidden shadow-sm fade-in"
                   style={{ animationDelay: `${0.1 + index * 0.1}s` }}
                 >
+                  {/* Project Thumbnail */}
+                  {project.thumbnailUrl && (
+                    <div className="project-card-img">
+                      <img 
+                        src={project.thumbnailUrl} 
+                        alt={project.title} 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                  
                   <div className="p-6">
                     <div className="flex justify-between items-start mb-3">
                       <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>
