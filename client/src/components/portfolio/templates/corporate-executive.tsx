@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ProfileImage } from "@/components/ui/profile-image";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Education, Project, Service, Skill, WorkExperience } from "@shared/schema";
+import { Education, Project as ProjectSchema, Service, Skill, WorkExperience } from "@shared/schema";
 import { useEffect, useState, useRef } from "react";
 import PortfolioCtaButtons from "../portfolio-cta-buttons";
 import { 
@@ -12,6 +12,11 @@ import {
   TrendingUp, Globe, BarChart2, Star, Database, UserCheck, Building,
   ExternalLink, Play, Image, Info, Link, Eye, Tag
 } from "lucide-react";
+
+// Extended Project interface with mediaUrls property
+interface Project extends Omit<ProjectSchema, 'mediaUrls'> {
+  mediaUrls?: string[];
+}
 
 interface CorporateExecutiveProps {
   userInfo: {
@@ -542,7 +547,7 @@ export default function CorporateExecutive({
                 )}
                 
                 {/* Project media gallery */}
-                {selectedProject.mediaUrls && Array.isArray(selectedProject.mediaUrls) && selectedProject.mediaUrls.length > 0 && (
+                {selectedProject && selectedProject.mediaUrls && Array.isArray(selectedProject.mediaUrls) && selectedProject.mediaUrls.length > 0 && (
                   <div className="mt-6">
                     <h3 className="text-lg font-semibold mb-3" style={{ fontFamily: 'Playfair Display, serif' }}>Gallery</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

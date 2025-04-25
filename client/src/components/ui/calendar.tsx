@@ -1,12 +1,20 @@
 import * as React from "react"
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react"
-import { DayPicker, CaptionProps } from "react-day-picker"
+import { DayPicker } from "react-day-picker"
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
+
+// Define an extended CaptionProps interface to include the properties we need
+interface CustomCaptionProps {
+  displayMonth: Date;
+  goToMonth?: (date: Date) => void;
+  fromYear?: number;
+  toYear?: number;
+}
 
 // Generate a range of years for the year selector
 const generateYearRange = (fromYear: number, toYear: number) => {
@@ -22,7 +30,7 @@ function CustomCaption({
   displayMonth, 
   goToMonth, 
   ...props 
-}: CaptionProps) {
+}: CustomCaptionProps) {
   const months = [
     "January", "February", "March", "April", "May", "June", 
     "July", "August", "September", "October", "November", "December"
@@ -35,24 +43,40 @@ function CustomCaption({
   const years = generateYearRange(fromYear, toYear)
   
   const handleYearChange = (year: string) => {
+    if (!goToMonth || typeof goToMonth !== 'function') {
+      console.error('goToMonth is not a function or undefined');
+      return;
+    }
     const newMonth = new Date(displayMonth)
     newMonth.setFullYear(parseInt(year))
     goToMonth(newMonth)
   }
   
   const handleMonthChange = (month: string) => {
+    if (!goToMonth || typeof goToMonth !== 'function') {
+      console.error('goToMonth is not a function or undefined');
+      return;
+    }
     const newMonth = new Date(displayMonth)
     newMonth.setMonth(months.indexOf(month))
     goToMonth(newMonth)
   }
   
   const handlePrevYear = () => {
+    if (!goToMonth || typeof goToMonth !== 'function') {
+      console.error('goToMonth is not a function or undefined');
+      return;
+    }
     const newMonth = new Date(displayMonth)
     newMonth.setFullYear(displayMonth.getFullYear() - 1)
     goToMonth(newMonth)
   }
   
   const handleNextYear = () => {
+    if (!goToMonth || typeof goToMonth !== 'function') {
+      console.error('goToMonth is not a function or undefined');
+      return;
+    }
     const newMonth = new Date(displayMonth)
     newMonth.setFullYear(displayMonth.getFullYear() + 1)
     goToMonth(newMonth)
