@@ -232,10 +232,12 @@ export async function getTopPerformingCategories(limit = 10) {
         END as helpfulness_ratio
       FROM feedback_analytics
       ORDER BY helpfulness_ratio DESC, helpful_count DESC
-      LIMIT $1
+      LIMIT ${limit}
     `;
     
-    return await db.execute(rawQuery);
+    const result = await db.execute(rawQuery);
+    // Format the response to be more user-friendly
+    return result.rows;
   } catch (error) {
     console.error("Error retrieving top performing categories:", error);
     return [];
