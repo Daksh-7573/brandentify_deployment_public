@@ -146,9 +146,21 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
     e.preventDefault();
     if (!inputValue.trim()) return;
     
-    // Get current user ID from context - don't default to demo user
-    const userId = context?.userId;
-    console.log("Musk chat: Using userId from context:", userId, "type:", typeof userId);
+    // Get user ID from context, but prefer Firebase UID if available
+    // This will allow our backend to properly resolve the numeric user ID
+    const { user } = useAuth();
+    
+    // Prefer the Firebase UID when available, as it's what the server expects for lookup
+    let userId;
+    if (user?.uid) {
+      userId = user.uid; // This is the Firebase UID (string)
+      console.log("Musk chat: Using Firebase UID from auth:", userId);
+    } else if (context?.userId) {
+      userId = context.userId;
+      console.log("Musk chat: Using userId from context:", userId, "type:", typeof userId);
+    } else {
+      console.log("Musk chat: No userId available in context or auth");
+    }
     
     // Add user message to the chat
     const userMessage: Message = {
@@ -330,9 +342,21 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
       return;
     }
     
-    // Get current user ID from context - don't default to demo user
-    const userId = context?.userId;
-    console.log("Musk file upload: Using userId from context:", userId, "type:", typeof userId);
+    // Get user ID from context, but prefer Firebase UID if available 
+    // This will allow our backend to properly resolve the numeric user ID
+    const { user } = useAuth();
+    
+    // Prefer the Firebase UID when available, as it's what the server expects for lookup
+    let userId;
+    if (user?.uid) {
+      userId = user.uid; // This is the Firebase UID (string)
+      console.log("Musk file upload: Using Firebase UID from auth:", userId);
+    } else if (context?.userId) {
+      userId = context.userId;
+      console.log("Musk file upload: Using userId from context:", userId, "type:", typeof userId);
+    } else {
+      console.log("Musk file upload: No userId available in context or auth");
+    }
     
     // Add user message about uploading file
     const userMessage: Message = {
