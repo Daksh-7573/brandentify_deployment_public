@@ -31,6 +31,7 @@ import {
   MessageSquare,
   Volume2, 
   VolumeX, 
+  Globe,
   LucideIcon
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
@@ -861,28 +862,27 @@ export default function TimelineStoryteller({
                   <div className="p-6">
                     <h3 className="text-xl font-medium text-gray-800 mb-2">{project.title}</h3>
                     
-                    <p className="text-gray-600 mb-4">
-                      {project.description}
-                    </p>
-                    
-                    {/* Project details and links */}
-                    <div className="flex items-center justify-between mt-2">
-                      <div className="flex items-center text-sm text-gray-500">
-                        <Calendar className="h-4 w-4 mr-1" />
-                        <span>{formatDate(project.startDate)}</span>
-                      </div>
-                      
-                      {project.projectUrl && (
+                    {/* Project URL instead of description */}
+                    {project.projectUrl && (
+                      <div className="flex items-center mb-4 text-sm">
                         <a 
                           href={project.projectUrl} 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          className="flex items-center text-sm text-purple-600 hover:text-purple-800 transition-colors"
+                          className="flex items-center text-purple-600 hover:text-purple-800 transition-colors overflow-hidden text-ellipsis"
                         >
-                          <span className="mr-1">Visit Project</span>
-                          <ExternalLink className="h-3 w-3" />
+                          <Globe className="h-4 w-4 mr-1 flex-shrink-0" />
+                          <span className="truncate">{project.projectUrl.replace(/^https?:\/\//, '')}</span>
                         </a>
-                      )}
+                      </div>
+                    )}
+                    
+                    {/* Project details with date */}
+                    <div className="flex items-center mt-2">
+                      <div className="flex items-center text-sm text-gray-500">
+                        <Calendar className="h-4 w-4 mr-1" />
+                        <span>{formatDate(project.startDate)}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
