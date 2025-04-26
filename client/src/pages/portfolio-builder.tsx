@@ -126,6 +126,14 @@ export default function PortfolioBuilder() {
   // State for whatIOffer value - placed at component top level to avoid hook rule violations
   const [whatIOfferValue, setWhatIOfferValue] = useState(userData?.whatIOffer || '');
   
+  // Effect to update whatIOffer value when userData changes
+  useEffect(() => {
+    if (userData?.whatIOffer) {
+      console.log("Setting whatIOffer from userData:", userData.whatIOffer);
+      setWhatIOfferValue(userData.whatIOffer);
+    }
+  }, [userData]);
+  
   // Effect to fetch whatIOffer data - placed at component top level
   useEffect(() => {
     const fetchWhatIOffer = async () => {
@@ -137,6 +145,7 @@ export default function PortfolioBuilder() {
             const data = await response.json();
             console.log("Fetched whatIOffer with dedicated endpoint:", data);
             if (data.whatIOffer) {
+              console.log("Setting whatIOffer from API response:", data.whatIOffer);
               setWhatIOfferValue(data.whatIOffer);
             }
           }
@@ -813,7 +822,7 @@ export default function PortfolioBuilder() {
                     lookingFor: userData?.lookingFor || '',
                     jobLevel: userData?.jobLevel || '',
                     aboutMe: userInfo.aboutMe || '',  // Use userInfo.aboutMe instead of userData?.aboutMe
-                    whatIOffer: userInfo.whatIOffer || ''  // Use userInfo.whatIOffer instead of userData?.whatIOffer
+                    whatIOffer: userData?.whatIOffer || ''  // Use userData.whatIOffer since it contains the correct data from DB
                   }}
                   userSkills={userSkills}
                   userExperiences={userExperiences || []}
