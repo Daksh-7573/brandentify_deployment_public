@@ -707,6 +707,15 @@ export default function Scholar({
                       )}
                     </div>
                     
+                    {/* Display industry badge - added this section */}
+                    {project.industry && (
+                      <div className="mb-3">
+                        <Badge variant="outline" className="tag-badge bg-purple-50 text-purple-700 border-purple-200">
+                          # {project.industry}
+                        </Badge>
+                      </div>
+                    )}
+                    
                     {project.startDate && (
                       <div className="flex items-center text-gray-500 text-sm mb-3">
                         <Calendar className="h-3.5 w-3.5 mr-1" />
@@ -721,15 +730,18 @@ export default function Scholar({
                       <p className="text-gray-600 mb-4 line-clamp-3">{project.description}</p>
                     )}
                     
+                    {/* Made Project URL more prominent - improved this section */}
                     {project.projectUrl && (
-                      <div className="flex justify-end">
+                      <div className="mt-4 border-t pt-3 border-gray-100">
                         <a 
                           href={project.projectUrl} 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800"
+                          className="flex items-center justify-between text-sm font-medium text-blue-600 hover:text-blue-800 p-2 bg-blue-50 rounded-md transition-colors hover:bg-blue-100"
                         >
-                          View Project <ExternalLink className="h-3.5 w-3.5 ml-1" />
+                          <Globe className="h-4 w-4 mr-2" />
+                          <span className="flex-1 truncate">{project.projectUrl}</span>
+                          <ExternalLink className="h-3.5 w-3.5 ml-2 flex-shrink-0" />
                         </a>
                       </div>
                     )}
