@@ -60,6 +60,7 @@ interface TimelineStorytellerProps {
     photoURL: string | null;
     lookingFor: string | null;
     jobLevel: string | null;
+    aboutMe?: string | null;
   };
   userSkills: Skill[];
   userExperiences: WorkExperience[];
