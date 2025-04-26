@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '../hooks/use-auth';
+import EnhancedCareerGuidance from '@/components/musk/enhanced-career-guidance';
 
 // Define test categories and colors
 const categories = {
@@ -147,9 +148,16 @@ const MuskTestingPage: React.FC = () => {
         <p className="text-lg text-muted-foreground mb-6">
           Test Musk's responses across different scenarios and evaluate performance
         </p>
-      </div>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        {/* Main Tabs */}
+        <Tabs defaultValue="scenarios">
+          <TabsList className="mb-6">
+            <TabsTrigger value="scenarios">Test Scenarios</TabsTrigger>
+            <TabsTrigger value="enhanced-guidance">Enhanced Career Guidance</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="scenarios">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-4">
           <Card>
             <CardHeader>
@@ -364,6 +372,32 @@ const MuskTestingPage: React.FC = () => {
             </Card>
           )}
         </div>
+      </div>
+      </TabsContent>
+          
+      <TabsContent value="enhanced-guidance">
+        <div className="mb-4 max-w-3xl mx-auto">
+          <Card>
+            <CardHeader>
+              <CardTitle>Enhanced Career Guidance</CardTitle>
+              <CardDescription>
+                Test Musk's data-driven career guidance capabilities powered by trend graph data
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {/* Render the EnhancedCareerGuidance component with the user ID */}
+              {user ? (
+                <EnhancedCareerGuidance userId={user.id} />
+              ) : (
+                <div className="p-8 text-center">
+                  <p className="text-muted-foreground">Please log in to use Enhanced Career Guidance</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </TabsContent>
+      </Tabs>
       </div>
     </div>
   );
