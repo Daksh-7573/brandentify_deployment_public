@@ -767,7 +767,8 @@ export default function PortfolioBuilder() {
                     email: userInfo.email,
                     photoURL: userInfo.photoURL,
                     lookingFor: userData?.lookingFor || '',
-                    jobLevel: userData?.jobLevel || ''
+                    jobLevel: userData?.jobLevel || '',
+                    aboutMe: userData?.aboutMe || ''
                   }}
                   userSkills={userSkills}
                   userExperiences={userExperiences || []}
