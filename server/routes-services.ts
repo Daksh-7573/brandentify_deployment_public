@@ -37,8 +37,16 @@ export function setupServicesRoutes(app: Express) {
         }
       }
       
-      const services = await storage.getServicesByUserId(numericUserId);
-      console.log(`[GET /users/:userId/services] Found ${services.length} services for userId: ${numericUserId}`);
+      let services = await storage.getServicesByUserId(numericUserId);
+      
+      // Filter out services with "other" category if requested
+      const removeOther = req.query.removeOther === 'true';
+      if (removeOther) {
+        services = services.filter(service => service.category !== 'other');
+        console.log(`[GET /users/:userId/services] Filtered out "other" category, returning ${services.length} services`);
+      } else {
+        console.log(`[GET /users/:userId/services] Found ${services.length} services for userId: ${numericUserId}`);
+      }
       
       return res.json(services);
     } catch (error) {
