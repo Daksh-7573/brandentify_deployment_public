@@ -28,6 +28,7 @@ import {
   Download,
   Gift,
   Lightbulb,
+  Search,
   MessageSquare,
   Volume2, 
   VolumeX, 
