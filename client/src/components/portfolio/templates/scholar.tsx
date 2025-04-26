@@ -88,6 +88,7 @@ interface ScholarProps {
     description?: string | null;
     achievements?: string | null;
     industry?: string | null;
+    domain?: string | null;
     fieldOfStudy?: string | null;
     skillsAcquired?: string[] | null;
   }[];
