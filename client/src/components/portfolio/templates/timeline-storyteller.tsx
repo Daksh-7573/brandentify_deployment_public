@@ -726,9 +726,14 @@ export default function TimelineStoryteller({
                             <div key={service.id} className="bg-indigo-50 p-4 rounded-md border border-indigo-100">
                               <div className="flex justify-between items-start mb-2">
                                 <h5 className="text-base font-medium text-indigo-800">{service.title}</h5>
-                                <Badge className="bg-indigo-100 text-indigo-700">
-                                  {service.isHourly ? 'Hourly' : 'Fixed Price'}
-                                </Badge>
+                                <div className="flex items-center gap-2">
+                                  <Badge className={service.isActive ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"}>
+                                    {service.isActive ? 'Active' : 'Inactive'}
+                                  </Badge>
+                                  <Badge className="bg-indigo-100 text-indigo-700">
+                                    {service.isHourly ? 'Hourly' : 'Fixed Price'}
+                                  </Badge>
+                                </div>
                               </div>
                               {service.description && (
                                 <p className="text-sm text-gray-700 mb-2">{service.description}</p>
@@ -766,9 +771,14 @@ export default function TimelineStoryteller({
                           <div key={service.id} className="bg-indigo-50 p-4 rounded-md border border-indigo-100">
                             <div className="flex justify-between items-start mb-2">
                               <h5 className="text-base font-medium text-indigo-800">{service.title}</h5>
-                              <Badge className="bg-indigo-100 text-indigo-700">
-                                {service.isHourly ? 'Hourly' : 'Fixed Price'}
-                              </Badge>
+                              <div className="flex items-center gap-2">
+                                <Badge className={service.isActive ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"}>
+                                  {service.isActive ? 'Active' : 'Inactive'}
+                                </Badge>
+                                <Badge className="bg-indigo-100 text-indigo-700">
+                                  {service.isHourly ? 'Hourly' : 'Fixed Price'}
+                                </Badge>
+                              </div>
                             </div>
                             {service.description && (
                               <p className="text-sm text-gray-700 mb-2">{service.description}</p>
