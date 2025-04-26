@@ -33,6 +33,7 @@ import { registerMuskCareerInsightsRoutes } from "./routes-musk-career-insights"
 import { registerMuskAIEnhancedRoutes } from "./routes-musk-ai-enhanced";
 import { setupMuskTestingRoutes } from "./routes-musk-testing";
 import muskFeedbackRoutes from "./routes-musk-feedback";
+import { setupServicesRoutes } from "./routes-services";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -5254,6 +5255,10 @@ ${extractedText.substring(0, 5000)}
   
   // Register Musk Feedback routes for user feedback collection
   app.use("/api/musk-feedback", muskFeedbackRoutes);
+  
+  // Register Services routes for managing user services
+  setupServicesRoutes(app);
+  console.log("Services routes loaded");
 
   app.use("/api", apiRouter);
 

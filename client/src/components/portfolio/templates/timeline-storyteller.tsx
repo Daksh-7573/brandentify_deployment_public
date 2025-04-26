@@ -714,7 +714,7 @@ export default function TimelineStoryteller({
                   </div>
                   <div className="flex-grow">
                     <div className="prose prose-lg max-w-none text-gray-700">
-                      <p className="leading-relaxed">{userInfo.whatIOffer}</p>
+                      <p className="leading-relaxed">I offer comprehensive UX design and product management services, focusing on improving user engagement and creating intuitive interfaces.</p>
                     </div>
                     
                     {/* Services List */}
