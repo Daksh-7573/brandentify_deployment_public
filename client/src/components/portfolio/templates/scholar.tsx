@@ -688,7 +688,7 @@ export default function Scholar({
               {userProjects.map((project, index) => (
                 <div key={project.id} className={`project-card fade-in-up delay-${index * 100} overflow-hidden rounded-lg bg-white shadow-sm`}>
                   {project.thumbnailUrl && (
-                    <div className="w-full h-48 overflow-hidden">
+                    <div className="w-full aspect-square overflow-hidden">
                       <img 
                         src={project.thumbnailUrl} 
                         alt={project.title} 
