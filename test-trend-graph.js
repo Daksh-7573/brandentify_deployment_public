@@ -10,7 +10,7 @@ import fetch from 'node-fetch';
 // Test data for skill trends
 const testSkillTrend = {
   skillName: "React",
-  industry: "Software Development",
+  industry: "Technology", // Changed to match real user data's industry field
   category: "Frontend",
   growthRate: "18.5", // Changed to string to match schema
   demandScore: 92,
@@ -24,7 +24,7 @@ const testSkillTrend = {
 // Test data for career path nodes
 const testJobNode = {
   jobTitle: "Frontend Developer",
-  industry: "Software Development",
+  industry: "Technology", // Changed to match real user data's industry field
   level: "Mid-Level",
   avgSalary: 95000,
   requiredSkills: ["HTML", "CSS", "JavaScript", "React"],
@@ -112,7 +112,7 @@ async function testAddJobNode() {
 async function testGetTrendingSkills() {
   console.log('\n===== Testing Get Trending Skills =====');
   try {
-    const response = await fetch('http://localhost:5000/api/trend-graph/skills/trending?industry=Software%20Development&timeFrame=1_year');
+    const response = await fetch('http://localhost:5000/api/trend-graph/skills/trending?industry=Technology&timeFrame=1_year');
     
     console.log('Status:', response.status);
     const data = await logResponse(response);

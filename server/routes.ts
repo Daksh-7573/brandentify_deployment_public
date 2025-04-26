@@ -30,6 +30,7 @@ import { registerMuskAnthropicRoutes } from "./routes-musk-anthropic";
 import { registerMuskMemoryRoutes } from "./routes-musk-memory";
 import { registerTrendGraphRoutes } from "./routes-trend-graph";
 import { registerMuskCareerInsightsRoutes } from "./routes-musk-career-insights";
+import { registerMuskAIEnhancedRoutes } from "./routes-musk-ai-enhanced";
 import { setupMuskTestingRoutes } from "./routes-musk-testing";
 import muskFeedbackRoutes from "./routes-musk-feedback";
 import { 
@@ -5199,6 +5200,10 @@ ${extractedText.substring(0, 5000)}
   // Register Musk Career Insights routes
   registerMuskCareerInsightsRoutes(app);
   console.log("Musk Career Insights routes loaded");
+  
+  // Register Musk AI Enhanced routes with trend data integration
+  registerMuskAIEnhancedRoutes(app);
+  console.log("Musk AI Enhanced routes loaded");
   
   // Register Musk Testing routes for QA and Roleplay scenarios
   setupMuskTestingRoutes(apiRouter);
