@@ -733,16 +733,20 @@ export default function Scholar({
                     {/* Made Project URL more prominent - improved this section */}
                     {project.projectUrl && (
                       <div className="mt-4 border-t pt-3 border-gray-100">
-                        <a 
-                          href={project.projectUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="flex items-center justify-between text-sm font-medium text-blue-600 hover:text-blue-800 p-2 bg-blue-50 rounded-md transition-colors hover:bg-blue-100"
-                        >
-                          <Globe className="h-4 w-4 mr-2" />
-                          <span className="flex-1 truncate">{project.projectUrl}</span>
-                          <ExternalLink className="h-3.5 w-3.5 ml-2 flex-shrink-0" />
-                        </a>
+                        <div className="flex justify-between items-center">
+                          <div className="flex-1 mr-2 truncate">
+                            <Globe className="h-4 w-4 inline mr-2 text-gray-500" />
+                            <span className="text-xs text-gray-500 truncate">{project.projectUrl}</span>
+                          </div>
+                          <a 
+                            href={project.projectUrl} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="whitespace-nowrap inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 px-3 py-1 bg-blue-50 rounded-md transition-colors hover:bg-blue-100"
+                          >
+                            View Project <ExternalLink className="h-3.5 w-3.5 ml-1" />
+                          </a>
+                        </div>
                       </div>
                     )}
                   </div>
