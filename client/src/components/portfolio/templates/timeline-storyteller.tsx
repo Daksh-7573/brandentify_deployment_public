@@ -1100,7 +1100,11 @@ export default function TimelineStoryteller({
               sortedProjects.map((project, index) => (
                 <div 
                   key={project.id}
-                  className="card-animated bg-white rounded-lg shadow-lg overflow-hidden border border-purple-100"
+                  className="card-animated bg-white rounded-lg shadow-lg overflow-hidden border border-purple-100 cursor-pointer"
+                  onClick={() => {
+                    setSelectedProject(project);
+                    setIsProjectModalOpen(true);
+                  }}
                 >
                   {/* Project media header */}
                   <div className="relative h-56 overflow-hidden">
@@ -1138,17 +1142,19 @@ export default function TimelineStoryteller({
                         )}
                       </div>
                       
-                      {project.projectUrl && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="text-purple-600 border-purple-200 hover:bg-purple-50"
-                          onClick={() => window.open(project.projectUrl || '#', '_blank')}
-                        >
-                          <ExternalLink className="h-4 w-4 mr-1" />
-                          View Project
-                        </Button>
-                      )}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-purple-600 border-purple-200 hover:bg-purple-50"
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent triggering the parent onClick
+                          setSelectedProject(project);
+                          setIsProjectModalOpen(true);
+                        }}
+                      >
+                        <Search className="h-4 w-4 mr-1" />
+                        Project Details
+                      </Button>
                     </div>
                   </div>
                 </div>
