@@ -422,25 +422,7 @@ export default function Scholar({
   
   return (
     <div className="min-h-screen bg-white scholar-template">
-      {/* Header with navigation and CTA buttons */}
-      <header className="sticky top-0 z-50 bg-white border-b border-indigo-100 shadow-sm">
-        <div className="container mx-auto px-4 md:px-8 py-3">
-          <div className="flex justify-between items-center">
-            <h2 className="text-lg font-serif font-semibold text-indigo-800">
-              {userInfo?.name || "Scholar Profile"}
-            </h2>
-            <div>
-              <PortfolioCtaButtons 
-                userEmail={userInfo?.email}
-                userName={userInfo?.name}
-                variant="academic"
-                size="sm"
-                className="space-x-2"
-              />
-            </div>
-          </div>
-        </div>
-      </header>
+      {/* Removing the top sticky header as we're moving the buttons into the personal details card */}
       
       {/* Hero Section */}
       <section className="relative pt-16 pb-12 bg-gradient-to-r from-indigo-50 via-blue-50 to-indigo-50">
@@ -504,6 +486,17 @@ export default function Scholar({
                     {userInfo.title}
                   </Badge>
                 )}
+              </div>
+              
+              {/* CTA Buttons */}
+              <div className="flex flex-wrap gap-2 justify-center md:justify-start fade-in-up delay-400 mb-4">
+                <PortfolioCtaButtons 
+                  userEmail={userInfo?.email}
+                  userName={userInfo?.name}
+                  variant="academic"
+                  size="sm"
+                  className="space-x-2"
+                />
               </div>
             </div>
           </div>
