@@ -43,7 +43,8 @@ export default function ServicesManager({ userId }: { userId: number }) {
     const fetchServices = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/users/${userId}/services`);
+        // Add removeOther=true query parameter to filter out "other" category services
+        const response = await fetch(`/api/users/${userId}/services?removeOther=true`);
         
         if (!response.ok) {
           throw new Error("Failed to fetch services");
