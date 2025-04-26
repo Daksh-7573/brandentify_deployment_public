@@ -84,6 +84,14 @@ export default function TimelineStoryteller({
   userEducations = [],
   userServices = []
 }: TimelineStorytellerProps) {
+  // Debug info
+  console.log("TimelineStoryteller - userInfo:", userInfo);
+  console.log("TimelineStoryteller - whatIOffer check:", {
+    whatIOffer: userInfo.whatIOffer,
+    isNull: userInfo.whatIOffer === null,
+    isUndefined: userInfo.whatIOffer === undefined,
+    type: typeof userInfo.whatIOffer
+  });
   // State for audio narration feature
   const [isNarrating, setIsNarrating] = useState(false);
   
