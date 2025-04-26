@@ -836,7 +836,19 @@ export default function Scholar({
                       </div>
                       
                       <div className="pl-4 border-l-2 border-indigo-100 py-2 mb-4">
-                        <p className="text-gray-700">{experience.description}</p>
+                        {experience.description && <p className="text-gray-700 mb-3">{experience.description}</p>}
+                        
+                        {/* Key Responsibilities Section */}
+                        {experience.keyResponsibilities && experience.keyResponsibilities.length > 0 && (
+                          <div className="mt-2">
+                            <h4 className="text-sm font-semibold text-indigo-800 mb-2">Key Responsibilities:</h4>
+                            <ul className="list-disc list-inside space-y-1 text-gray-700">
+                              {Array.isArray(experience.keyResponsibilities) && experience.keyResponsibilities.map((responsibility, idx) => (
+                                <li key={idx} className="ml-1">{responsibility}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
                       </div>
                       
                       {(experience.industry || experience.domain) && (
