@@ -883,9 +883,9 @@ export default function TimelineStoryteller({
         <div className="mx-auto max-w-4xl">
           <div className="mb-12">
             <div className="inline-block bg-pink-100 px-3 py-1 rounded-full text-pink-800 text-sm font-medium mb-3 animate-fade-in">
-              My Achievements
+              What I'm Good At
             </div>
-            <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">Certifications & Highlights</h2>
+            <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">Skills & Expertise</h2>
           </div>
           
           {/* If there are skills, display them as certifications */}
@@ -903,9 +903,14 @@ export default function TimelineStoryteller({
                       </div>
                       <div>
                         <h3 className="text-lg font-medium text-gray-800">{skill.name}</h3>
-                        <p className="text-gray-500 text-sm mt-1">
-                          {skill.level || `${skill.proficiency || 0}% Proficiency`}
-                        </p>
+                        <div className="flex justify-between mt-1">
+                          <p className="text-gray-500 text-sm">
+                            <span className="font-medium">Level:</span> {skill.level || 'Advanced'}
+                          </p>
+                          <p className="text-gray-500 text-sm">
+                            <span className="font-medium">Proficiency:</span> {skill.proficiency || 0}%
+                          </p>
+                        </div>
                       </div>
                     </div>
                     
@@ -925,7 +930,7 @@ export default function TimelineStoryteller({
                 <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-pink-100 flex items-center justify-center">
                   <Award className="h-6 w-6 text-pink-400" />
                 </div>
-                <p className="text-gray-500">Your certifications and key achievements will appear here</p>
+                <p className="text-gray-500">Your skills and expertise will appear here</p>
               </div>
             )}
           </div>
