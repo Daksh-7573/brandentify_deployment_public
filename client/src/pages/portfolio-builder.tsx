@@ -758,6 +758,11 @@ export default function PortfolioBuilder() {
               <>
                 {console.log("Timeline Storyteller - Education data being passed:", userEducations)}
                 {console.log("Timeline Storyteller - Services data being passed:", userServices)}
+                {console.log("Timeline Storyteller - whatIOffer data:", {
+                  fromUserInfo: userInfo.whatIOffer,
+                  fromUserData: userData?.whatIOffer,
+                  combinedValue: userInfo.whatIOffer || userData?.whatIOffer || 'I offer professional services in my area of expertise.'
+                })}
                 <TimelineStoryteller 
                   userInfo={{
                     name: userInfo.name,
@@ -770,7 +775,7 @@ export default function PortfolioBuilder() {
                     lookingFor: userData?.lookingFor || '',
                     jobLevel: userData?.jobLevel || '',
                     aboutMe: userData?.aboutMe || '',
-                    whatIOffer: userData?.whatIOffer || ''
+                    whatIOffer: userInfo.whatIOffer || userData?.whatIOffer || 'I offer professional services in my area of expertise.'
                   }}
                   userSkills={userSkills}
                   userExperiences={userExperiences || []}
