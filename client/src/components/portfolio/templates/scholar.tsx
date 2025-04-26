@@ -971,13 +971,13 @@ export default function Scholar({
       {/* Project Details Modal */}
       <Dialog open={isProjectModalOpen} onOpenChange={setIsProjectModalOpen}>
         {selectedProject && (
-          <DialogContent className="max-w-4xl p-0 overflow-hidden rounded-lg border-0 my-4">
-            <div className="scholar-template">
+          <DialogContent className="max-w-3xl p-0 overflow-visible rounded-lg border-0 max-h-[95vh] h-auto my-6 mx-auto">
+            <div className="scholar-template overflow-y-auto max-h-[95vh] flex flex-col">
               {/* Modal Header with Title Bar */}
-              <div className="relative bg-indigo-50 border-b border-indigo-100">
-                <div className="p-5 pl-8 pr-14">
+              <div className="relative bg-indigo-50 border-b border-indigo-100 flex-shrink-0">
+                <div className="p-4 pl-6 pr-12">
                   <DialogHeader>
-                    <DialogTitle className="text-2xl font-serif font-bold text-indigo-800">
+                    <DialogTitle className="text-xl font-serif font-bold text-indigo-800">
                       {selectedProject.title}
                     </DialogTitle>
                   </DialogHeader>
@@ -986,16 +986,16 @@ export default function Scholar({
                 {/* Close Button */}
                 <button 
                   onClick={() => setIsProjectModalOpen(false)} 
-                  className="absolute top-5 right-5 text-indigo-400 hover:text-indigo-600 bg-white rounded-full p-1.5 shadow-sm transition-colors border border-indigo-100"
+                  className="absolute top-4 right-4 text-indigo-400 hover:text-indigo-600 bg-white rounded-full p-1.5 shadow-sm transition-colors border border-indigo-100"
                 >
                   <X className="h-4 w-4" />
                 </button>
               </div>
               
               {/* Project Image or Placeholder */}
-              <div className="bg-white border-b border-gray-100">
+              <div className="bg-white border-b border-gray-100 flex-shrink-0">
                 {selectedProject.thumbnailUrl ? (
-                  <div className="w-full h-52 md:h-64 overflow-hidden">
+                  <div className="w-full h-48 md:h-56 overflow-hidden">
                     <img
                       src={selectedProject.thumbnailUrl}
                       alt={selectedProject.title}
@@ -1003,28 +1003,28 @@ export default function Scholar({
                     />
                   </div>
                 ) : (
-                  <div className="w-full h-52 md:h-64 bg-gradient-to-r from-blue-50 to-indigo-50 flex items-center justify-center overflow-hidden">
-                    <div className="rounded-full bg-indigo-100 p-8 w-32 h-32 flex items-center justify-center">
-                      <FileText className="h-16 w-16 text-indigo-300" />
+                  <div className="w-full h-48 md:h-56 bg-gradient-to-r from-blue-50 to-indigo-50 flex items-center justify-center overflow-hidden">
+                    <div className="rounded-full bg-indigo-100 p-6 w-24 h-24 flex items-center justify-center">
+                      <FileText className="h-12 w-12 text-indigo-300" />
                     </div>
                   </div>
                 )}
               </div>
               
               {/* Content */}
-              <div className="notebook-paper p-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="notebook-paper p-5 flex-grow overflow-y-auto">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                   {/* Project Details (now on the left) */}
-                  <div className="graph-paper p-5 rounded-lg">
-                    <h3 className="text-lg font-serif font-semibold text-indigo-800 mb-4 flex items-center">
+                  <div className="graph-paper p-4 rounded-lg">
+                    <h3 className="text-base font-serif font-semibold text-indigo-800 mb-3 flex items-center">
                       <FileText className="h-4 w-4 mr-2" />
                       Project Details
                     </h3>
                     
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       {selectedProject.category && (
-                        <div className="flex items-start border-b border-indigo-50 pb-3">
-                          <div className="w-24 text-gray-500 font-medium text-sm">Category:</div>
+                        <div className="flex items-start border-b border-indigo-50 pb-2">
+                          <div className="w-20 text-gray-500 font-medium text-sm">Category:</div>
                           <div className="flex-1">
                             <Badge className="bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 flex items-center">
                               {getCategoryIcon(selectedProject.category)}
@@ -1035,8 +1035,8 @@ export default function Scholar({
                       )}
                       
                       {selectedProject.industry && (
-                        <div className="flex items-start border-b border-indigo-50 pb-3">
-                          <div className="w-24 text-gray-500 font-medium text-sm">Industry:</div>
+                        <div className="flex items-start border-b border-indigo-50 pb-2">
+                          <div className="w-20 text-gray-500 font-medium text-sm">Industry:</div>
                           <div className="flex-1">
                             <Badge variant="outline" className="tag-badge bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100">
                               # {selectedProject.industry}
@@ -1046,11 +1046,11 @@ export default function Scholar({
                       )}
                       
                       {selectedProject.startDate && (
-                        <div className="flex items-start border-b border-indigo-50 pb-3">
-                          <div className="w-24 text-gray-500 font-medium text-sm">Date:</div>
+                        <div className="flex items-start border-b border-indigo-50 pb-2">
+                          <div className="w-20 text-gray-500 font-medium text-sm">Date:</div>
                           <div className="flex-1 flex items-center text-gray-700">
                             <Calendar className="h-3.5 w-3.5 mr-1.5 text-indigo-600" />
-                            <span>
+                            <span className="text-sm">
                               {new Date(selectedProject.startDate).toLocaleDateString(undefined, { 
                                 year: 'numeric',
                                 month: 'long'
@@ -1062,7 +1062,7 @@ export default function Scholar({
                       
                       {selectedProject.projectUrl && (
                         <div className="flex items-start pt-1">
-                          <div className="w-24 text-gray-500 font-medium text-sm">Website:</div>
+                          <div className="w-20 text-gray-500 font-medium text-sm">Website:</div>
                           <div className="flex-1 break-all text-blue-600 hover:text-blue-800">
                             <a 
                               href={selectedProject.projectUrl} 
@@ -1071,7 +1071,7 @@ export default function Scholar({
                               className="flex items-center hover:underline"
                             >
                               <Globe className="h-3.5 w-3.5 mr-1.5 text-indigo-600" />
-                              <span className="text-sm">{selectedProject.projectUrl}</span>
+                              <span className="text-xs">{selectedProject.projectUrl}</span>
                             </a>
                           </div>
                         </div>
@@ -1081,23 +1081,23 @@ export default function Scholar({
                   
                   {/* Main Content (now on the right) */}
                   <div className="md:col-span-2">
-                    <h3 className="text-lg font-serif font-semibold text-indigo-800 mb-3">
+                    <h3 className="text-base font-serif font-semibold text-indigo-800 mb-2">
                       About This Project
                     </h3>
-                    <div className="pl-4 border-l-2 border-indigo-100 py-2 mb-6 bg-white rounded-r-lg shadow-sm">
-                      <p className="text-gray-700 leading-relaxed">
+                    <div className="pl-3 border-l-2 border-indigo-100 py-2 mb-4 bg-white rounded-r-lg shadow-sm">
+                      <p className="text-gray-700 leading-relaxed text-sm">
                         {selectedProject.description || 'No description available for this project.'}
                       </p>
                     </div>
                     
                     {/* Media Gallery - Placeholder for future implementation */}
                     {selectedProject.mediaUrls && selectedProject.mediaUrls.length > 0 && (
-                      <div className="mt-6">
-                        <h3 className="text-lg font-serif font-semibold text-indigo-800 mb-3 flex items-center">
+                      <div className="mt-4">
+                        <h3 className="text-base font-serif font-semibold text-indigo-800 mb-2 flex items-center">
                           <BookOpen className="h-4 w-4 mr-2" />
                           Project Gallery
                         </h3>
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                           {selectedProject.mediaUrls.map((url, index) => (
                             <div key={index} className="aspect-square rounded-md overflow-hidden border border-indigo-100 shadow-sm hover:shadow-md transition-shadow">
                               <img 
@@ -1115,12 +1115,12 @@ export default function Scholar({
               </div>
               
               {/* Footer */}
-              <DialogFooter className="p-4 bg-indigo-50 border-t border-indigo-100">
-                <div className="w-full flex flex-col sm:flex-row justify-between items-center gap-4">
+              <DialogFooter className="p-3 bg-indigo-50 border-t border-indigo-100 flex-shrink-0">
+                <div className="w-full flex flex-row justify-between items-center gap-3">
                   <Button 
                     variant="outline" 
                     onClick={() => setIsProjectModalOpen(false)}
-                    className="border-indigo-200 text-indigo-700 hover:bg-indigo-100 hover:text-indigo-800"
+                    className="border-indigo-200 text-indigo-700 hover:bg-indigo-100 hover:text-indigo-800 h-8 text-sm"
                   >
                     Close
                   </Button>
@@ -1130,9 +1130,9 @@ export default function Scholar({
                       href={selectedProject.projectUrl} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-indigo-600 text-white shadow hover:bg-indigo-700 h-9 rounded-md px-4 py-2"
+                      className="inline-flex items-center justify-center font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-indigo-600 text-white shadow hover:bg-indigo-700 h-8 rounded-md px-3 py-1 text-sm"
                     >
-                      Visit Project <ExternalLink className="h-3.5 w-3.5 ml-2" />
+                      Visit Project <ExternalLink className="h-3 w-3 ml-1.5" />
                     </a>
                   )}
                 </div>
