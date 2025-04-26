@@ -89,6 +89,7 @@ export default function TimelineStoryteller({
   const [activeChapter, setActiveChapter] = useState("intro");
   const chapterRefs = {
     intro: useRef<HTMLDivElement>(null),
+    aboutMe: useRef<HTMLDivElement>(null),
     career: useRef<HTMLDivElement>(null),
     education: useRef<HTMLDivElement>(null),
     projects: useRef<HTMLDivElement>(null),
@@ -586,6 +587,30 @@ export default function TimelineStoryteller({
           </div>
         </div>
       </section>
+      
+      {/* What I'm All About Section */}
+      {userInfo.aboutMe && (
+        <section 
+          id="chapter-aboutMe" 
+          ref={chapterRefs.aboutMe}
+          className="py-16 px-8 bg-gradient-to-b from-purple-50 to-white"
+        >
+          <div className="mx-auto max-w-3xl">
+            <div className="mb-6">
+              <div className="inline-block bg-purple-100 px-3 py-1 rounded-full text-purple-800 text-sm font-medium mb-3 animate-fade-in">
+                What I'm All About
+              </div>
+              <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">My Professional Story</h2>
+            </div>
+            
+            <div className="bg-white rounded-lg shadow-md p-8 border border-purple-100 animate-fade-in">
+              <div className="prose prose-lg max-w-none text-gray-700">
+                <p className="leading-relaxed">{userInfo.aboutMe}</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
       
       {/* Career Path (Timeline Navigation) */}
       <section 
