@@ -77,6 +77,7 @@ interface ScholarProps {
     description: string;
     industry: string;
     domain: string;
+    keyResponsibilities?: string[] | null;
   }[];
   userEducations: {
     id: number;
@@ -847,7 +848,7 @@ export default function Scholar({
                           <div className="mt-2">
                             <h4 className="text-sm font-semibold text-indigo-800 mb-2">Key Responsibilities:</h4>
                             <ul className="list-disc list-inside space-y-1 text-gray-700">
-                              {Array.isArray(experience.keyResponsibilities) && experience.keyResponsibilities.map((responsibility, idx) => (
+                              {Array.isArray(experience.keyResponsibilities) && experience.keyResponsibilities.map((responsibility: string, idx: number) => (
                                 <li key={idx} className="ml-1">{responsibility}</li>
                               ))}
                             </ul>
@@ -940,13 +941,19 @@ export default function Scholar({
                       </div>
                     )}
                     
-                    {/* Field of Study and Industry Section */}
-                    {(education.fieldOfStudy || education.industry) && (
+                    {/* Field of Study, Domain, and Industry Section */}
+                    {(education.fieldOfStudy || education.industry || education.domain) && (
                       <div className="flex flex-wrap gap-2 mt-3 mb-4">
                         {education.fieldOfStudy && (
                           <Badge variant="outline" className="tag-badge bg-indigo-50 text-indigo-700 border-indigo-200">
                             <BookOpen className="h-3.5 w-3.5 mr-1.5" />
                             {education.fieldOfStudy}
+                          </Badge>
+                        )}
+                        {education.domain && (
+                          <Badge variant="outline" className="tag-badge bg-blue-50 text-blue-700 border-blue-200">
+                            <Briefcase className="h-3.5 w-3.5 mr-1.5" />
+                            {education.domain}
                           </Badge>
                         )}
                         {education.industry && (
@@ -965,7 +972,7 @@ export default function Scholar({
                           <span className="font-medium text-blue-800">Skills Acquired</span>
                         </div>
                         <div className="flex flex-wrap gap-2">
-                          {Array.isArray(education.skillsAcquired) && education.skillsAcquired.map((skill, idx) => (
+                          {Array.isArray(education.skillsAcquired) && education.skillsAcquired.map((skill: string, idx: number) => (
                             <Badge key={idx} variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
                               {skill}
                             </Badge>
