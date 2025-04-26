@@ -714,7 +714,7 @@ export default function TimelineStoryteller({
                   </div>
                   <div className="flex-grow">
                     <div className="prose prose-lg max-w-none text-gray-700">
-                      <p className="leading-relaxed">I offer comprehensive UX design and product management services, focusing on improving user engagement and creating intuitive interfaces.</p>
+                      <p className="leading-relaxed">{userInfo.whatIOffer || ''}</p>
                     </div>
                     
                     {/* Services List */}
@@ -735,7 +735,7 @@ export default function TimelineStoryteller({
                               )}
                               <div className="flex justify-between items-center text-sm">
                                 <span className="font-medium">
-                                  {service.category ? service.category.replace(/^\w/, c => c.toUpperCase()) : 'Other'}
+                                  {service.category ? (service.category === 'other' ? 'Custom Service' : service.category.replace(/^\w/, c => c.toUpperCase())) : ''}
                                 </span>
                                 <span className="text-indigo-700 font-medium">
                                   {service.priceUsd ? `$${service.priceUsd}` : 'Price on request'}
@@ -775,7 +775,7 @@ export default function TimelineStoryteller({
                             )}
                             <div className="flex justify-between items-center text-sm">
                               <span className="font-medium">
-                                {service.category ? service.category.replace(/^\w/, c => c.toUpperCase()) : 'Other'}
+                                {service.category ? (service.category === 'other' ? 'Custom Service' : service.category.replace(/^\w/, c => c.toUpperCase())) : ''}
                               </span>
                               <span className="text-indigo-700 font-medium">
                                 {service.priceUsd ? `$${service.priceUsd}` : 'Price on request'}
