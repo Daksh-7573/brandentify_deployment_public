@@ -735,7 +735,7 @@ export default function TimelineStoryteller({
                               )}
                               <div className="flex justify-between items-center text-sm">
                                 <span className="font-medium">
-                                  {service.category ? (service.category === 'other' ? 'Custom Service' : service.category.replace(/^\w/, c => c.toUpperCase())) : ''}
+                                  {service.category && service.category !== 'other' ? service.category.replace(/^\w/, c => c.toUpperCase()) : ''}
                                 </span>
                                 <span className="text-indigo-700 font-medium">
                                   {service.priceUsd ? `$${service.priceUsd}` : 'Price on request'}
@@ -775,7 +775,7 @@ export default function TimelineStoryteller({
                             )}
                             <div className="flex justify-between items-center text-sm">
                               <span className="font-medium">
-                                {service.category ? (service.category === 'other' ? 'Custom Service' : service.category.replace(/^\w/, c => c.toUpperCase())) : ''}
+                                {service.category && service.category !== 'other' ? service.category.replace(/^\w/, c => c.toUpperCase()) : ''}
                               </span>
                               <span className="text-indigo-700 font-medium">
                                 {service.priceUsd ? `$${service.priceUsd}` : 'Price on request'}
