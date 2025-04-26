@@ -29,6 +29,7 @@ import CareerQuestsPage from "@/pages/career-quests";
 import OnboardingPage from "@/pages/onboarding";
 import EditProfilePage from "@/pages/edit-profile";
 import MuskTestingPage from "@/pages/musk-testing";
+import ManageServicesPage from "@/pages/manage-services";
 // Lazy load the SharedCardPage to improve performance and show loader immediately
 import { lazy, Suspense } from "react";
 const SharedCardPage = lazy(() => import("@/pages/shared-card"));
@@ -96,8 +97,7 @@ function Router() {
         <ProtectedRoute path="/portfolio-builder" component={PortfolioBuilder} />
       </Route>
       <Route path="/services">
-        {/* Redirect services to industry-pulse for now */}
-        <Redirect to="/industry-pulse" />
+        <ProtectedRoute path="/services" component={ManageServicesPage} />
       </Route>
       <Route path="/create-pulse">
         <ProtectedRoute path="/create-pulse" component={CreatePulsePage} />
