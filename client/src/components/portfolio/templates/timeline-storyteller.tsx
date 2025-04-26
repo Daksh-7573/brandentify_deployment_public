@@ -716,11 +716,80 @@ export default function TimelineStoryteller({
                     <div className="prose prose-lg max-w-none text-gray-700">
                       <p className="leading-relaxed">{userInfo.whatIOffer}</p>
                     </div>
+                    
+                    {/* Services List */}
+                    {userServices && userServices.length > 0 && (
+                      <div className="mt-6">
+                        <h4 className="text-lg font-medium text-gray-800 mb-3">My Services</h4>
+                        <div className="grid gap-4">
+                          {userServices.map((service) => (
+                            <div key={service.id} className="bg-indigo-50 p-4 rounded-md border border-indigo-100">
+                              <div className="flex justify-between items-start mb-2">
+                                <h5 className="text-base font-medium text-indigo-800">{service.title}</h5>
+                                <Badge className="bg-indigo-100 text-indigo-700">
+                                  {service.isHourly ? 'Hourly' : 'Fixed Price'}
+                                </Badge>
+                              </div>
+                              {service.description && (
+                                <p className="text-sm text-gray-700 mb-2">{service.description}</p>
+                              )}
+                              <div className="flex justify-between items-center text-sm">
+                                <span className="font-medium">
+                                  {service.category ? service.category.replace(/^\w/, c => c.toUpperCase()) : 'Other'}
+                                </span>
+                                <span className="text-indigo-700 font-medium">
+                                  {service.priceUsd ? `$${service.priceUsd}` : 'Price on request'}
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ) : userServices && userServices.length > 0 ? (
+              // Show services even if whatIOffer is empty
+              <div className="bg-white rounded-lg shadow-md p-8 border border-indigo-100">
+                <div className="flex items-start gap-4">
+                  <div className="mt-1 flex-shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                      <Gift className="h-5 w-5 text-indigo-500" />
+                    </div>
+                  </div>
+                  <div className="flex-grow">
+                    <div className="mt-2">
+                      <h4 className="text-lg font-medium text-gray-800 mb-3">My Services</h4>
+                      <div className="grid gap-4">
+                        {userServices.map((service) => (
+                          <div key={service.id} className="bg-indigo-50 p-4 rounded-md border border-indigo-100">
+                            <div className="flex justify-between items-start mb-2">
+                              <h5 className="text-base font-medium text-indigo-800">{service.title}</h5>
+                              <Badge className="bg-indigo-100 text-indigo-700">
+                                {service.isHourly ? 'Hourly' : 'Fixed Price'}
+                              </Badge>
+                            </div>
+                            {service.description && (
+                              <p className="text-sm text-gray-700 mb-2">{service.description}</p>
+                            )}
+                            <div className="flex justify-between items-center text-sm">
+                              <span className="font-medium">
+                                {service.category ? service.category.replace(/^\w/, c => c.toUpperCase()) : 'Other'}
+                              </span>
+                              <span className="text-indigo-700 font-medium">
+                                {service.priceUsd ? `$${service.priceUsd}` : 'Price on request'}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             ) : (
-              // Empty state
+              // Empty state when no whatIOffer and no services
               <div className="bg-white rounded-lg shadow-md p-8 text-center">
                 <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-indigo-100 flex items-center justify-center">
                   <Gift className="h-6 w-6 text-indigo-400" />
