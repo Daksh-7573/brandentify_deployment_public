@@ -109,6 +109,8 @@ export default function PortfolioBuilder() {
     location: string | null;
     jobLevel: string | null;
     lookingFor: string | null;
+    aboutMe: string | null;
+    whatIOffer: string | null;
     // Add other fields as needed
   };
   
@@ -118,6 +120,27 @@ export default function PortfolioBuilder() {
     enabled: !!user,
     staleTime: 30000
   });
+  
+  // Directly fetch user data for debugging
+  useEffect(() => {
+    if (!user?.uid) return;
+    
+    const fetchUserData = async () => {
+      try {
+        console.log("Directly fetching user data for debugging whatIOffer field");
+        const response = await fetch(`/api/users/${user.uid}`);
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Direct user data fetch result:", data);
+          console.log("whatIOffer field:", data.whatIOffer);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+    
+    fetchUserData();
+  }, [user?.uid]);
   
   // Fetch user profile numeric ID for use in other queries
   const userNumericId = userData?.id;
