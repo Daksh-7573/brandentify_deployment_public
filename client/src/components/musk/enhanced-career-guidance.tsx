@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { apiRequest } from "@/lib/queryClient";
-import { Loader2, TrendingUp, BookText, Lightbulb } from "lucide-react";
+import { Loader2, TrendingUp, BookText, Lightbulb, GitBranch, BarChart } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -132,34 +132,48 @@ export default function EnhancedCareerGuidance({ userId }: { userId: number }) {
               <Lightbulb className="h-5 w-5 text-primary" />
               <span>Your Enhanced Career Guidance</span>
             </CardTitle>
-            <CardDescription>
-              Guidance enhanced with{" "}
-              {insightsUsed && (
-                <span className="space-x-2">
-                  {insightsUsed.trendingSkillsCount > 0 && (
-                    <Badge variant="outline" className="text-xs">
-                      {insightsUsed.trendingSkillsCount} Trending Skills
+            <CardDescription className="space-y-2">
+              <div>
+                Powered by Musk's fine-tuned intelligence trained on specialized career data
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {insightsUsed && (
+                  <>
+                    <Badge variant={model === "openai" ? "default" : "outline"} className="text-xs">
+                      {model === "openai" ? "GPT-4o" : "Claude 3.7"}
                     </Badge>
-                  )}
-                  {insightsUsed.careerPathOptionsCount > 0 && (
-                    <Badge variant="outline" className="text-xs">
-                      {insightsUsed.careerPathOptionsCount} Career Paths
-                    </Badge>
-                  )}
-                  {insightsUsed.skillMarketFit > 0 && (
-                    <Badge variant="outline" className="text-xs">
-                      Market Fit Analysis
-                    </Badge>
-                  )}
-                  {insightsUsed.trendingSkillsCount === 0 && 
-                   insightsUsed.careerPathOptionsCount === 0 && 
-                   insightsUsed.skillMarketFit === 0 && (
-                    <Badge variant="outline" className="text-xs">
-                      Base AI Analysis
-                    </Badge>
-                  )}
-                </span>
-              )}
+                    
+                    {insightsUsed.trendingSkillsCount > 0 && (
+                      <Badge variant="outline" className="text-xs flex items-center gap-1">
+                        <TrendingUp className="h-3 w-3" />
+                        {insightsUsed.trendingSkillsCount} Trending Skills
+                      </Badge>
+                    )}
+                    
+                    {insightsUsed.careerPathOptionsCount > 0 && (
+                      <Badge variant="outline" className="text-xs flex items-center gap-1">
+                        <GitBranch className="h-3 w-3" />
+                        {insightsUsed.careerPathOptionsCount} Career Paths
+                      </Badge>
+                    )}
+                    
+                    {insightsUsed.skillMarketFit > 0 && (
+                      <Badge variant="outline" className="text-xs flex items-center gap-1">
+                        <BarChart className="h-3 w-3" />
+                        Market Fit {insightsUsed.skillMarketFit}%
+                      </Badge>
+                    )}
+                    
+                    {insightsUsed.trendingSkillsCount === 0 && 
+                     insightsUsed.careerPathOptionsCount === 0 && 
+                     insightsUsed.skillMarketFit === 0 && (
+                      <Badge variant="outline" className="text-xs">
+                        Base AI Analysis
+                      </Badge>
+                    )}
+                  </>
+                )}
+              </div>
             </CardDescription>
           </CardHeader>
           <CardContent>
