@@ -115,6 +115,11 @@ export default function TimelineStoryteller({
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [contactPurpose, setContactPurpose] = useState<string>("");
   const [contactMessage, setContactMessage] = useState<string>("");
+  
+  // Project modal state
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+  
   const { toast } = useToast();
   
   // Sort skills by proficiency
@@ -832,7 +837,11 @@ export default function TimelineStoryteller({
               sortedProjects.map((project, index) => (
                 <div 
                   key={project.id}
-                  className="card-animated bg-white rounded-lg shadow-md overflow-hidden border border-purple-100 max-w-[280px] mx-auto"
+                  className="card-animated bg-white rounded-lg shadow-md overflow-hidden border border-purple-100 max-w-[280px] mx-auto cursor-pointer"
+                  onClick={() => {
+                    setSelectedProject(project);
+                    setIsProjectModalOpen(true);
+                  }}
                 >
                   {/* Project media header - using smaller square aspect ratio */}
                   <div className="relative aspect-square w-full overflow-hidden">
@@ -865,15 +874,10 @@ export default function TimelineStoryteller({
                     {/* Project URL instead of description */}
                     {project.projectUrl && (
                       <div className="flex items-center mb-4 text-sm">
-                        <a 
-                          href={project.projectUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="flex items-center text-purple-600 hover:text-purple-800 transition-colors overflow-hidden text-ellipsis"
-                        >
+                        <div className="flex items-center text-purple-600 overflow-hidden text-ellipsis">
                           <Globe className="h-4 w-4 mr-1 flex-shrink-0" />
                           <span className="truncate">{project.projectUrl.replace(/^https?:\/\//, '')}</span>
-                        </a>
+                        </div>
                       </div>
                     )}
                     
@@ -1277,6 +1281,120 @@ export default function TimelineStoryteller({
                 </Button>
               </div>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Project Details Modal */}
+      <Dialog open={isProjectModalOpen} onOpenChange={setIsProjectModalOpen}>
+        <DialogContent className="sm:max-w-[650px] max-h-[85vh] overflow-y-auto modal-animation">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold">{selectedProject?.title}</DialogTitle>
+            <div className="drag-handle mt-1 mb-2"></div>
+          </DialogHeader>
+          
+          {selectedProject && (
+            <div className="space-y-6">
+              {/* Project thumbnail/media */}
+              {selectedProject.thumbnailUrl && (
+                <div className="relative overflow-hidden rounded-lg">
+                  <img 
+                    src={selectedProject.thumbnailUrl} 
+                    alt={selectedProject.title}
+                    className="w-full h-auto object-cover rounded-lg"
+                  />
+                </div>
+              )}
+              
+              {/* Project details grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  {/* Basic info */}
+                  <div>
+                    <h3 className="text-lg font-semibold mb-2">Project Overview</h3>
+                    <p className="text-gray-700">{selectedProject.description || "No description available."}</p>
+                  </div>
+                  
+                  {/* URL */}
+                  {selectedProject.projectUrl && (
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2">Project URL</h3>
+                      <a 
+                        href={selectedProject.projectUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center text-purple-600 hover:text-purple-800 transition-colors break-all"
+                      >
+                        <Globe className="h-4 w-4 mr-2 flex-shrink-0" />
+                        {selectedProject.projectUrl}
+                      </a>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="space-y-4">
+                  {/* Metadata */}
+                  <div>
+                    <h3 className="text-lg font-semibold mb-2">Project Details</h3>
+                    <div className="space-y-2">
+                      {/* Date */}
+                      <div className="flex items-center text-sm text-gray-600">
+                        <Calendar className="h-4 w-4 mr-2" />
+                        <span>Started: {formatDate(selectedProject.startDate)}</span>
+                      </div>
+                      
+                      {/* Category */}
+                      {selectedProject.category && (
+                        <div className="flex items-center text-sm text-gray-600">
+                          <Briefcase className="h-4 w-4 mr-2" />
+                          <span>Category: {selectedProject.category}</span>
+                        </div>
+                      )}
+                      
+                      {/* Industry */}
+                      {selectedProject.industry && (
+                        <div className="flex items-center text-sm text-gray-600">
+                          <Building className="h-4 w-4 mr-2" />
+                          <span>Industry: {selectedProject.industry}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Media Gallery */}
+              {selectedProject.mediaUrls && selectedProject.mediaUrls.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold mb-3">Project Gallery</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {selectedProject.mediaUrls.map((url, index) => (
+                      <div key={index} className="relative rounded-lg overflow-hidden h-28">
+                        <img 
+                          src={url as string} 
+                          alt={`Project image ${index + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+          
+          <div className="flex justify-between mt-6">
+            <Button variant="outline" onClick={() => setIsProjectModalOpen(false)}>
+              Close
+            </Button>
+            {selectedProject?.projectUrl && (
+              <Button 
+                onClick={() => window.open(selectedProject.projectUrl, '_blank')}
+                className="flex items-center bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white"
+              >
+                Visit Project <ExternalLink className="ml-2 h-4 w-4" />
+              </Button>
+            )}
           </div>
         </DialogContent>
       </Dialog>
