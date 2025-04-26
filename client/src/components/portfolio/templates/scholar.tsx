@@ -604,12 +604,9 @@ export default function Scholar({
                 </div>
               )}
               
-              {/* Other Skills */}
+              {/* Skills categorized as "other" are still displayed but without a separate section header */}
               {skillCategories.other.length > 0 && (
                 <div className="graph-paper fade-in-up delay-300 p-6 rounded-lg">
-                  <h3 className="text-lg font-serif font-semibold mb-4 flex items-center text-green-800">
-                    <Award className="h-5 w-5 mr-2 text-green-600" /> Other Skills
-                  </h3>
                   <div className="flex flex-wrap gap-2">
                     {skillCategories.other.map((skill) => (
                       <Badge 
