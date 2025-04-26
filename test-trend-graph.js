@@ -5,14 +5,14 @@
  * which support Musk's ability to provide data-driven career guidance.
  */
 
-const fetch = require('node-fetch');
+import fetch from 'node-fetch';
 
 // Test data for skill trends
 const testSkillTrend = {
   skillName: "React",
   industry: "Software Development",
   category: "Frontend",
-  growthRate: 18.5,
+  growthRate: "18.5", // Changed to string to match schema
   demandScore: 92,
   timeFrame: "1_year",
   dataSource: "LinkedIn Jobs Analysis",
