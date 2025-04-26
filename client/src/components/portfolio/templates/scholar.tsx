@@ -427,9 +427,9 @@ export default function Scholar({
       {/* Hero Section */}
       <section className="relative pt-16 pb-12 bg-gradient-to-r from-indigo-50 via-blue-50 to-indigo-50">
         <div className="container mx-auto px-4 md:px-8">
-          <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
-            {/* Profile picture with notebook motif */}
-            <div className="relative">
+          <div className="flex flex-col md:flex-row md:items-center gap-8">
+            {/* Left side with profile picture */}
+            <div className="relative md:w-auto">
               <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-white shadow-md transition-transform hover:scale-105 relative">
                 <div className="absolute inset-0 rounded-full border-2 border-dashed border-blue-300 z-10 opacity-50"></div>
                 <Avatar className="w-full h-full">
@@ -447,7 +447,7 @@ export default function Scholar({
               )}
             </div>
 
-            {/* Name and Academic Info */}
+            {/* Middle section with name and info */}
             <div className="text-center md:text-left flex-1">
               <h1 className="text-3xl md:text-4xl font-serif font-bold text-gray-800 mb-1 fade-in-up">
                 {userInfo && userInfo.name ? userInfo.name : "Scholar"}
@@ -487,15 +487,22 @@ export default function Scholar({
                   </Badge>
                 )}
               </div>
-              
-              {/* CTA Buttons */}
-              <div className="flex flex-wrap gap-2 justify-center md:justify-start fade-in-up delay-400 mb-4">
+            </div>
+            
+            {/* Right side with CTA buttons aligned with profile picture */}
+            <div className="md:self-center flex items-center justify-center md:justify-end fade-in-up delay-400">
+              <div className="flex flex-col gap-2">
                 <PortfolioCtaButtons 
                   userEmail={userInfo?.email}
                   userName={userInfo?.name}
-                  variant="academic"
+                  variant="technical"
                   size="sm"
-                  className="space-x-2"
+                  className="space-y-2"
+                  buttonStyle={{
+                    background: "linear-gradient(to right, #4A69BD, #3B5998)",
+                    color: "white",
+                    border: "none"
+                  }}
                 />
               </div>
             </div>
