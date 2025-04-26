@@ -892,7 +892,7 @@ export default function CorporateExecutive({
                 </div>
                 
                 <p className="text-gray-600 mb-6 line-clamp-3" style={{ fontFamily: 'Inter, sans-serif' }}>
-                  {service.description || ""}
+                  {service.description || "Comprehensive service designed to meet your specific business needs and challenges."}
                 </p>
                 
                 <div className="flex flex-col gap-3">
