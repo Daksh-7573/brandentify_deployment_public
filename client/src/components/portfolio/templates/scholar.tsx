@@ -60,6 +60,10 @@ interface ScholarProps {
     description: string | null;
     category: string;
     rate?: string | null;
+    priceUsd?: string | null;
+    priceInr?: string | null;
+    isHourly?: boolean;
+    isActive?: boolean;
   }[];
   userExperiences: {
     id: number;
@@ -636,10 +640,24 @@ export default function Scholar({
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {userServices.slice(0, 3).map((service, index) => (
                 <div key={service.id} className={`notebook-paper fade-in-up delay-${index * 100} rounded-lg border-l-[3px] border-l-blue-500 hover:shadow-md transition-shadow p-6`}>
-                  <h3 className="text-lg font-serif font-semibold text-blue-800 mb-3">{service.title}</h3>
+                  <div className="flex justify-between mb-3">
+                    <h3 className="text-lg font-serif font-semibold text-blue-800">{service.title}</h3>
+                    {service.isActive ? (
+                      <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Active</Badge>
+                    ) : (
+                      <Badge variant="outline" className="text-gray-500">Inactive</Badge>
+                    )}
+                  </div>
                   <p className="text-gray-600 mb-4">{service.description}</p>
-                  {service.rate && (
-                    <div className="text-blue-600 font-medium mb-4">{service.rate}</div>
+                  {(service.priceUsd || service.priceInr) && (
+                    <div className="text-blue-600 font-medium mb-4">
+                      {service.priceUsd && (
+                        <span className="mr-2">${service.priceUsd}{service.isHourly ? '/hr' : ''}</span>
+                      )}
+                      {service.priceInr && (
+                        <span>₹{service.priceInr}{service.isHourly ? '/hr' : ''}</span>
+                      )}
+                    </div>
                   )}
                   <Button variant="outline" className="text-blue-600 border-blue-200 hover:bg-blue-50">
                     Request Service
