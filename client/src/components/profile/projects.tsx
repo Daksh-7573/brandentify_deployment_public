@@ -1070,11 +1070,18 @@ export default function Projects() {
                       )}
                     </div>
                     
-                    {project.category && (
-                      <Badge variant="outline" className="mb-2">
-                        {project.category}
-                      </Badge>
-                    )}
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      {project.category && (
+                        <Badge variant="outline">
+                          {project.category}
+                        </Badge>
+                      )}
+                      {project.industry && (
+                        <Badge variant="secondary" className="bg-slate-100">
+                          {project.industry}
+                        </Badge>
+                      )}
+                    </div>
                     
                     <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
                       {project.description}
