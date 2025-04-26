@@ -39,7 +39,6 @@ import CorporateExecutive from "@/components/portfolio/templates/corporate-execu
 import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innovator";
 import Animated from "@/components/portfolio/templates/animated";
 import Scholar from "@/components/portfolio/templates/scholar";
-import TestWhatIOffer from "@/components/portfolio/templates/test-whatioffer";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -110,8 +109,6 @@ export default function PortfolioBuilder() {
     location: string | null;
     jobLevel: string | null;
     lookingFor: string | null;
-    aboutMe: string | null;
-    whatIOffer: string | null;
     // Add other fields as needed
   };
   
@@ -121,27 +118,6 @@ export default function PortfolioBuilder() {
     enabled: !!user,
     staleTime: 30000
   });
-  
-  // Directly fetch user data for debugging
-  useEffect(() => {
-    if (!user?.uid) return;
-    
-    const fetchUserData = async () => {
-      try {
-        console.log("Directly fetching user data for debugging whatIOffer field");
-        const response = await fetch(`/api/users/${user.uid}`);
-        if (response.ok) {
-          const data = await response.json();
-          console.log("Direct user data fetch result:", data);
-          console.log("whatIOffer field:", data.whatIOffer);
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
-    
-    fetchUserData();
-  }, [user?.uid]);
   
   // Fetch user profile numeric ID for use in other queries
   const userNumericId = userData?.id;
@@ -715,7 +691,6 @@ export default function PortfolioBuilder() {
           email: userData?.email || user?.email || '',
           photoURL: userData?.photoURL || user?.photoURL || null,
           aboutMe: userData?.aboutMe || '',
-          whatIOffer: userData?.whatIOffer || '',  // Added whatIOffer field
           lookingFor: userData?.lookingFor || null,
           jobLevel: userData?.jobLevel || null,
         };
@@ -782,33 +757,6 @@ export default function PortfolioBuilder() {
               <>
                 {console.log("Timeline Storyteller - Education data being passed:", userEducations)}
                 {console.log("Timeline Storyteller - Services data being passed:", userServices)}
-                {console.log("Timeline Storyteller - whatIOffer data:", {
-                  fromUserInfo: userInfo.whatIOffer,
-                  fromUserData: userData?.whatIOffer,
-                  combinedValue: userInfo.whatIOffer || userData?.whatIOffer || 'I offer professional services in my area of expertise.'
-                })}
-                {console.log("Timeline Storyteller - Full userInfo being passed:", {
-                  name: userInfo.name,
-                  title: userInfo.title,
-                  industry: userInfo.industry,
-                  domain: userInfo.domain,
-                  location: userInfo.location,
-                  email: userInfo.email,
-                  photoURL: userInfo.photoURL,
-                  lookingFor: userData?.lookingFor || '',
-                  jobLevel: userData?.jobLevel || '',
-                  aboutMe: userData?.aboutMe || '',
-                  whatIOffer: userInfo.whatIOffer || userData?.whatIOffer || 'I offer professional services in my area of expertise.'
-                })}
-                
-                {/* Test component to debug whatIOffer field */}
-                {console.log("Raw whatIOffer values - userInfo:", userInfo.whatIOffer, "userData:", userData?.whatIOffer)}
-                <div className="mb-8 p-4 bg-gray-50 rounded-lg border border-gray-300">
-                  <h3 className="text-lg font-semibold mb-2">Debug - What I Offer Field</h3>
-                  <TestWhatIOffer userInfo={{ 
-                    whatIOffer: userInfo.whatIOffer || userData?.whatIOffer || 'I offer professional services in my area of expertise.'
-                  }} />
-                </div>
                 <TimelineStoryteller 
                   userInfo={{
                     name: userInfo.name,
@@ -820,8 +768,7 @@ export default function PortfolioBuilder() {
                     photoURL: userInfo.photoURL,
                     lookingFor: userData?.lookingFor || '',
                     jobLevel: userData?.jobLevel || '',
-                    aboutMe: userData?.aboutMe || '',
-                    whatIOffer: userInfo.whatIOffer || userData?.whatIOffer || 'I offer professional services in my area of expertise.'
+                    aboutMe: userData?.aboutMe || ''
                   }}
                   userSkills={userSkills}
                   userExperiences={userExperiences || []}

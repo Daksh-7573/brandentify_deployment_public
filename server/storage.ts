@@ -774,7 +774,7 @@ export class MemStorage implements IStorage {
         SELECT id, username, email, password, phone_number as "phoneNumber", 
         name, photo_url as "photoURL", title, about_me as "aboutMe", 
         location, industry, domain, looking_for as "lookingFor", 
-        what_i_offer as "whatIOffer", visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
+        visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
         email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
         email_verification_expires as "emailVerificationExpires", created_at as "createdAt"
         FROM users WHERE id = $1
@@ -828,7 +828,7 @@ export class MemStorage implements IStorage {
         SELECT id, username, email, password, phone_number as "phoneNumber", 
         name, photo_url as "photoURL", title, about_me as "aboutMe", 
         location, industry, domain, looking_for as "lookingFor", 
-        what_i_offer as "whatIOffer", visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
+        visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
         email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
         email_verification_expires as "emailVerificationExpires", created_at as "createdAt"
         FROM users WHERE email = $1
@@ -856,7 +856,7 @@ export class MemStorage implements IStorage {
         SELECT id, username, email, password, phone_number as "phoneNumber", 
         name, photo_url as "photoURL", title, about_me as "aboutMe", 
         location, industry, domain, looking_for as "lookingFor", 
-        what_i_offer as "whatIOffer", visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
+        visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
         email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
         email_verification_expires as "emailVerificationExpires", created_at as "createdAt"
         FROM users WHERE username = $1

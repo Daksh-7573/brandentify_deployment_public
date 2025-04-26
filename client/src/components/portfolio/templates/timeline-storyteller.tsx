@@ -692,13 +692,8 @@ export default function TimelineStoryteller({
             <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">What I Offer</h2>
           </div>
           
-          {/* Debug Output */}
-          <div className="hidden">
-            Debug What I Offer: {JSON.stringify({value: userInfo.whatIOffer, type: typeof userInfo.whatIOffer})}
-          </div>
-          
           <div className="animate-fade-in">
-            {userInfo.whatIOffer && userInfo.whatIOffer.length > 0 ? (
+            {userInfo.whatIOffer ? (
               <div className="bg-white rounded-lg shadow-md p-8 border border-indigo-100">
                 <div className="flex items-start gap-4">
                   <div className="mt-1 flex-shrink-0">
