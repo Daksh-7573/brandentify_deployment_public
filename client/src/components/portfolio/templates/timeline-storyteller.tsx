@@ -615,6 +615,69 @@ export default function TimelineStoryteller({
         </section>
       )}
       
+      {/* Certifications & Highlights Section */}
+      <section 
+        id="chapter-certifications" 
+        ref={chapterRefs.certifications}
+        className="py-24 px-8 bg-gradient-to-b from-purple-50 to-white min-h-screen"
+      >
+        <div className="mx-auto max-w-4xl">
+          <div className="mb-12">
+            <div className="inline-block bg-pink-100 px-3 py-1 rounded-full text-pink-800 text-sm font-medium mb-3 animate-fade-in">
+              What I'm Good At
+            </div>
+            <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">Skills & Expertise</h2>
+          </div>
+          
+          {/* If there are skills, display them as certifications */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
+            {sortedSkills.length > 0 ? (
+              sortedSkills.slice(0, 6).map((skill) => (
+                <div key={skill.id} className="card-animated bg-white rounded-lg shadow-md overflow-hidden border border-pink-100">
+                  <div className="h-2 bg-gradient-to-r from-pink-400 to-purple-400"></div>
+                  <div className="p-6">
+                    <div className="flex items-start mb-4">
+                      <div className="mr-4 mt-1">
+                        <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center">
+                          <Award className="h-5 w-5 text-pink-500" />
+                        </div>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-medium text-gray-800">{skill.name}</h3>
+                        <p className="text-gray-500 text-sm mt-1">
+                          <span className="font-medium">Proficiency Level:</span> {skill.level || 'Advanced'}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    {/* Progress indicator */}
+                    <div className="relative mt-2">
+                      <div className="h-2 w-full bg-gray-100 rounded-full">
+                        <div 
+                          className="h-full bg-gradient-to-r from-pink-400 to-purple-400 rounded-full" 
+                          style={{ width: `${skill.proficiency || 0}%` }}
+                        ></div>
+                      </div>
+                      <div className="text-xs text-gray-500 text-right mt-1">
+                        {skill.proficiency || 0}%
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              // Empty state
+              <div className="col-span-1 md:col-span-2 bg-white rounded-lg shadow-md p-8 text-center">
+                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-pink-100 flex items-center justify-center">
+                  <Award className="h-6 w-6 text-pink-400" />
+                </div>
+                <p className="text-gray-500">Your skills and expertise will appear here</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+      
       {/* What I Offer Section */}
       <section 
         id="chapter-whatIOffer" 
