@@ -39,6 +39,7 @@ import CorporateExecutive from "@/components/portfolio/templates/corporate-execu
 import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innovator";
 import Animated from "@/components/portfolio/templates/animated";
 import Scholar from "@/components/portfolio/templates/scholar";
+import TestWhatIOffer from "@/components/portfolio/templates/test-whatioffer";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -786,6 +787,28 @@ export default function PortfolioBuilder() {
                   fromUserData: userData?.whatIOffer,
                   combinedValue: userInfo.whatIOffer || userData?.whatIOffer || 'I offer professional services in my area of expertise.'
                 })}
+                {console.log("Timeline Storyteller - Full userInfo being passed:", {
+                  name: userInfo.name,
+                  title: userInfo.title,
+                  industry: userInfo.industry,
+                  domain: userInfo.domain,
+                  location: userInfo.location,
+                  email: userInfo.email,
+                  photoURL: userInfo.photoURL,
+                  lookingFor: userData?.lookingFor || '',
+                  jobLevel: userData?.jobLevel || '',
+                  aboutMe: userData?.aboutMe || '',
+                  whatIOffer: userInfo.whatIOffer || userData?.whatIOffer || 'I offer professional services in my area of expertise.'
+                })}
+                
+                {/* Test component to debug whatIOffer field */}
+                {console.log("Raw whatIOffer values - userInfo:", userInfo.whatIOffer, "userData:", userData?.whatIOffer)}
+                <div className="mb-8 p-4 bg-gray-50 rounded-lg border border-gray-300">
+                  <h3 className="text-lg font-semibold mb-2">Debug - What I Offer Field</h3>
+                  <TestWhatIOffer userInfo={{ 
+                    whatIOffer: userInfo.whatIOffer || userData?.whatIOffer || 'I offer professional services in my area of expertise.'
+                  }} />
+                </div>
                 <TimelineStoryteller 
                   userInfo={{
                     name: userInfo.name,
