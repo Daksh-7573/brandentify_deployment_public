@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Briefcase,
   Mail,
@@ -25,8 +25,10 @@ import {
   BookOpen as Book,
   School,
   Layers,
-  Lightbulb
+  Lightbulb,
+  X
 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -106,6 +108,15 @@ export default function Scholar({
   userEducations,
   userProjects
 }: ScholarProps) {
+  // State for project modal
+  const [selectedProject, setSelectedProject] = useState<(typeof userProjects)[0] | null>(null);
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+  
+  // Open project modal with selected project
+  const openProjectModal = (project: (typeof userProjects)[0]) => {
+    setSelectedProject(project);
+    setIsProjectModalOpen(true);
+  };
   
   // Add notebook-style background and effects on component mount
   useEffect(() => {
@@ -738,14 +749,16 @@ export default function Scholar({
                             <Globe className="h-4 w-4 inline mr-2 text-gray-500" />
                             <span className="text-xs text-gray-500 truncate">{project.projectUrl}</span>
                           </div>
-                          <a 
-                            href={project.projectUrl} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
+                          <Button 
+                            variant="outline"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              openProjectModal(project);
+                            }}
                             className="whitespace-nowrap inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 px-3 py-1 bg-blue-50 rounded-md transition-colors hover:bg-blue-100"
                           >
                             View Project <ExternalLink className="h-3.5 w-3.5 ml-1" />
-                          </a>
+                          </Button>
                         </div>
                       </div>
                     )}
@@ -953,6 +966,167 @@ export default function Scholar({
           </div>
         </div>
       </section>
+
+      {/* Project Details Modal */}
+      <Dialog open={isProjectModalOpen} onOpenChange={setIsProjectModalOpen}>
+        {selectedProject && (
+          <DialogContent className="max-w-3xl p-0 overflow-hidden">
+            <div className="scholar-template">
+              {/* Modal Header with Background Image */}
+              <div className="relative">
+                {selectedProject.thumbnailUrl ? (
+                  <div className="w-full h-48 md:h-60 overflow-hidden">
+                    <img
+                      src={selectedProject.thumbnailUrl}
+                      alt={selectedProject.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                  </div>
+                ) : (
+                  <div className="w-full h-48 md:h-60 bg-gradient-to-r from-blue-600 to-indigo-700 overflow-hidden">
+                    <div className="absolute inset-0 pattern-dots-lg text-blue-400 opacity-20"></div>
+                  </div>
+                )}
+                
+                {/* Close Button */}
+                <button 
+                  onClick={() => setIsProjectModalOpen(false)} 
+                  className="absolute top-4 right-4 text-white bg-black/20 hover:bg-black/40 rounded-full p-1.5 transition-colors"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              
+              {/* Content */}
+              <div className="p-6 md:p-8 notebook-paper">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl font-serif font-bold text-indigo-800 mb-4">
+                    {selectedProject.title}
+                  </DialogTitle>
+                </DialogHeader>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {/* Main Content */}
+                  <div className="md:col-span-2">
+                    <div className="pl-4 border-l-2 border-blue-200 py-2 mb-6">
+                      <p className="text-gray-700">
+                        {selectedProject.description || 'No description available.'}
+                      </p>
+                    </div>
+                    
+                    {/* Media Gallery - Placeholder for future implementation */}
+                    {selectedProject.mediaUrls && selectedProject.mediaUrls.length > 0 && (
+                      <div className="mt-6">
+                        <h3 className="text-lg font-serif font-semibold text-indigo-700 mb-3">
+                          Project Gallery
+                        </h3>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                          {selectedProject.mediaUrls.map((url, index) => (
+                            <div key={index} className="aspect-square rounded-md overflow-hidden border border-gray-200">
+                              <img 
+                                src={url} 
+                                alt={`Project media ${index + 1}`} 
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Project Details */}
+                  <div className="bg-gray-50 p-5 rounded-lg border border-gray-100">
+                    <h3 className="text-lg font-serif font-semibold text-indigo-700 mb-4">
+                      Project Details
+                    </h3>
+                    
+                    <div className="space-y-3">
+                      {selectedProject.category && (
+                        <div className="flex items-start">
+                          <div className="w-24 text-gray-500 font-medium">Category:</div>
+                          <div className="flex-1">
+                            <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-200 flex items-center">
+                              {getCategoryIcon(selectedProject.category)}
+                              <span className="ml-1 text-xs">{selectedProject.category}</span>
+                            </Badge>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {selectedProject.industry && (
+                        <div className="flex items-start">
+                          <div className="w-24 text-gray-500 font-medium">Industry:</div>
+                          <div className="flex-1">
+                            <Badge variant="outline" className="tag-badge bg-purple-50 text-purple-700 border-purple-200">
+                              # {selectedProject.industry}
+                            </Badge>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {selectedProject.startDate && (
+                        <div className="flex items-start">
+                          <div className="w-24 text-gray-500 font-medium">Date:</div>
+                          <div className="flex-1 flex items-center text-gray-700">
+                            <Calendar className="h-3.5 w-3.5 mr-1.5" />
+                            {new Date(selectedProject.startDate).toLocaleDateString(undefined, { 
+                              year: 'numeric',
+                              month: 'long'
+                            })}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {selectedProject.projectUrl && (
+                        <div className="flex items-start">
+                          <div className="w-24 text-gray-500 font-medium">Website:</div>
+                          <div className="flex-1 break-all text-blue-600 hover:text-blue-800">
+                            <a 
+                              href={selectedProject.projectUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="flex items-center"
+                            >
+                              <Globe className="h-3.5 w-3.5 mr-1.5" />
+                              {selectedProject.projectUrl}
+                            </a>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Footer */}
+              <DialogFooter className="p-6 md:p-8 bg-gray-50 border-t border-gray-100">
+                <div className="w-full flex flex-col sm:flex-row justify-between gap-4">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setIsProjectModalOpen(false)}
+                    className="border-gray-300"
+                  >
+                    Close
+                  </Button>
+                  
+                  {selectedProject.projectUrl && (
+                    <a 
+                      href={selectedProject.projectUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-blue-600 text-white shadow hover:bg-blue-700 h-9 rounded-md px-4 py-2"
+                    >
+                      Visit Project <ExternalLink className="h-3.5 w-3.5 ml-1.5" />
+                    </a>
+                  )}
+                </div>
+              </DialogFooter>
+            </div>
+          </DialogContent>
+        )}
+      </Dialog>
     </div>
   );
 }
