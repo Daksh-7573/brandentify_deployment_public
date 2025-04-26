@@ -58,7 +58,8 @@ const projectSchema = z.object({
   title: z.string().min(1, { message: "Title is required" }),
   description: z.string().min(1, { message: "Description is required" }),
   category: z.string().min(1, { message: "Category is required" }),
-  industry: z.string().nullable().optional(),
+  // industry field removed as requested
+  // industry: z.string().nullable().optional(),
   startDate: z.string().min(1, { message: "Start date is required" }),
   projectUrl: z.string().url({ message: "Valid URL is required" }).min(1, { message: "Project URL is required" }),
   mediaUrls: z.array(z.string()).nullable().optional(), // This is handled separately with our custom validation
@@ -1174,22 +1175,7 @@ export default function Projects() {
                         )}
                       />
                       
-                      <FormField
-                        control={projectForm.control}
-                        name="industry"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Industry</FormLabel>
-                            <FormControl>
-                              <Input placeholder="e.g. Healthcare" {...field} value={field.value || ''} />
-                            </FormControl>
-                            <FormDescription>
-                              Industry the project belongs to
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                      {/* Industry field removed as requested */}
                     </div>
                     
                     <div className="grid grid-cols-2 gap-4">
