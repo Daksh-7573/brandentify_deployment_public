@@ -5152,7 +5152,7 @@ export class DatabaseStorage implements IStorage {
       try {
         const result = await pool.query(`
           SELECT id, user_id as "userId", title, description, start_date as "startDate",
-                project_url as "projectUrl", category, thumbnail_url as "thumbnailUrl",
+                project_url as "projectUrl", category, industry, thumbnail_url as "thumbnailUrl",
                 thumbnail_file as "thumbnailFile", media_urls as "mediaUrls",
                 created_at as "createdAt", updated_at as "updatedAt"
           FROM projects
@@ -5187,8 +5187,41 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getProjectById(id: number): Promise<Project | undefined> {
-    const [project] = await db.select().from(projects).where(eq(projects.id, id));
-    return project || undefined;
+    try {
+      console.log(`[db.getProjectById] Looking for project with ID ${id}`);
+      
+      const result = await pool.query(`
+        SELECT id, user_id as "userId", title, description, start_date as "startDate",
+              project_url as "projectUrl", category, industry, thumbnail_url as "thumbnailUrl",
+              thumbnail_file as "thumbnailFile", media_urls as "mediaUrls",
+              created_at as "createdAt", updated_at as "updatedAt"
+        FROM projects
+        WHERE id = $1
+      `, [id]);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.getProjectById] No project found with ID ${id}`);
+        return undefined;
+      }
+      
+      console.log(`[db.getProjectById] Found project with ID ${id}`);
+      
+      // Parse mediaUrls from JSON string to array if needed
+      const project = result.rows[0];
+      try {
+        if (project.mediaUrls && typeof project.mediaUrls === 'string') {
+          project.mediaUrls = JSON.parse(project.mediaUrls);
+        }
+      } catch (parseError) {
+        console.error(`[db.getProjectById] Error parsing mediaUrls for project ${id}:`, parseError);
+        // Keep original string if parsing fails
+      }
+      
+      return project;
+    } catch (error) {
+      console.error(`[db.getProjectById] Error fetching project with ID ${id}:`, error);
+      return undefined;
+    }
   }
 
   async createProject(insertProject: InsertProject): Promise<Project> {
