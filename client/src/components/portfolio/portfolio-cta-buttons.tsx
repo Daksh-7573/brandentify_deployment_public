@@ -29,6 +29,8 @@ export interface PortfolioCtaButtonsProps {
   userEmail?: string | null;
   userName?: string | null;
   className?: string;
+  size?: string;
+  buttonStyle?: React.CSSProperties;
 }
 
 export default function PortfolioCtaButtons({
@@ -38,7 +40,9 @@ export default function PortfolioCtaButtons({
   connectUrl = null,
   userEmail = null,
   userName = null,
-  className = ''
+  className = '',
+  size = '',
+  buttonStyle = {}
 }: PortfolioCtaButtonsProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedIntro, setSelectedIntro] = useState<string>("");
@@ -181,6 +185,7 @@ export default function PortfolioCtaButtons({
         <Button 
           onClick={handleDownloadResume}
           className={`${styles.resumeBtn} flex items-center gap-2 min-w-[120px] justify-center`}
+          style={Object.keys(buttonStyle).length > 0 ? buttonStyle : undefined}
         >
           <DownloadCloud size={16} />
           Resume
@@ -190,6 +195,7 @@ export default function PortfolioCtaButtons({
           variant="outline" 
           onClick={handleMentorRequest}
           className={`${styles.mentorBtn} flex items-center gap-2 min-w-[120px] justify-center`}
+          style={Object.keys(buttonStyle).length > 0 ? buttonStyle : undefined}
         >
           <UserPlus size={16} />
           Mentor
@@ -201,6 +207,7 @@ export default function PortfolioCtaButtons({
           className={variant === 'corporate' 
             ? 'bg-[#6a0dad] hover:bg-[#7b1fa2] text-white border-none flex items-center gap-2 min-w-[120px] justify-center text-sm h-8 px-3'
             : `${styles.connectBtn} flex items-center gap-2 min-w-[120px] justify-center`}
+          style={Object.keys(buttonStyle).length > 0 ? buttonStyle : undefined}
         >
           <MessageCircle size={16} />
           {variant === 'corporate' ? "Let's Talk" : "Connect"}

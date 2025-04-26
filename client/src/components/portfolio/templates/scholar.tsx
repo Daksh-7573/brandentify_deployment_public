@@ -491,13 +491,13 @@ export default function Scholar({
             
             {/* Right side with CTA buttons aligned with profile picture */}
             <div className="md:self-center flex items-center justify-center md:justify-end fade-in-up delay-400">
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-row gap-2">
                 <PortfolioCtaButtons 
                   userEmail={userInfo?.email}
                   userName={userInfo?.name}
                   variant="technical"
                   size="sm"
-                  className="space-y-2"
+                  className="space-x-2 flex flex-row"
                   buttonStyle={{
                     background: "linear-gradient(to right, #4A69BD, #3B5998)",
                     color: "white",
