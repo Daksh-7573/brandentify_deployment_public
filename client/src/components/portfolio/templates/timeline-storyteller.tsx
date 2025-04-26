@@ -825,16 +825,16 @@ export default function TimelineStoryteller({
             <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">Featured Work</h2>
           </div>
           
-          {/* Project Gallery */}
-          <div className="grid grid-cols-1 gap-8 animate-fade-in">
+          {/* Project Gallery - Using a grid for smaller sizes */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
             {sortedProjects.length > 0 ? (
               sortedProjects.map((project, index) => (
                 <div 
                   key={project.id}
-                  className="card-animated bg-white rounded-lg shadow-lg overflow-hidden border border-purple-100"
+                  className="card-animated bg-white rounded-lg shadow-md overflow-hidden border border-purple-100 max-w-[280px] mx-auto"
                 >
-                  {/* Project media header - using square aspect ratio */}
-                  <div className="relative aspect-square overflow-hidden">
+                  {/* Project media header - using smaller square aspect ratio */}
+                  <div className="relative aspect-square w-full overflow-hidden">
                     {project.thumbnailUrl ? (
                       <img 
                         src={project.thumbnailUrl} 
@@ -843,7 +843,7 @@ export default function TimelineStoryteller({
                       />
                     ) : (
                       <div className="h-full w-full bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center">
-                        <Code className="h-12 w-12 text-purple-400" />
+                        <Code className="h-10 w-10 text-purple-400" />
                       </div>
                     )}
                     
