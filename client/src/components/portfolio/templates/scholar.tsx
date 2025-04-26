@@ -87,6 +87,9 @@ interface ScholarProps {
     endDate: string | null;
     description?: string | null;
     achievements?: string | null;
+    industry?: string | null;
+    fieldOfStudy?: string | null;
+    skillsAcquired?: string[] | null;
   }[];
   userProjects: {
     id: number;
@@ -936,6 +939,41 @@ export default function Scholar({
                       </div>
                     )}
                     
+                    {/* Field of Study and Industry Section */}
+                    {(education.fieldOfStudy || education.industry) && (
+                      <div className="flex flex-wrap gap-2 mt-3 mb-4">
+                        {education.fieldOfStudy && (
+                          <Badge variant="outline" className="tag-badge bg-indigo-50 text-indigo-700 border-indigo-200">
+                            <BookOpen className="h-3.5 w-3.5 mr-1.5" />
+                            {education.fieldOfStudy}
+                          </Badge>
+                        )}
+                        {education.industry && (
+                          <Badge variant="outline" className="tag-badge bg-purple-50 text-purple-700 border-purple-200">
+                            # {education.industry}
+                          </Badge>
+                        )}
+                      </div>
+                    )}
+                    
+                    {/* Skills Acquired Section */}
+                    {education.skillsAcquired && education.skillsAcquired.length > 0 && (
+                      <div className="mt-3 bg-gray-50 p-3 rounded-lg">
+                        <div className="flex items-center mb-2">
+                          <Code className="h-5 w-5 text-blue-600 mr-2" />
+                          <span className="font-medium text-blue-800">Skills Acquired</span>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {Array.isArray(education.skillsAcquired) && education.skillsAcquired.map((skill, idx) => (
+                            <Badge key={idx} variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                              {skill}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Achievements Section */}
                     {education.achievements && (
                       <div className="mt-3 bg-blue-50 p-3 rounded-lg">
                         <div className="flex items-center mb-2">
