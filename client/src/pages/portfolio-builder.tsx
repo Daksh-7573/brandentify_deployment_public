@@ -682,6 +682,58 @@ export default function PortfolioBuilder() {
         const portfolioPreviewData = storedData ? JSON.parse(storedData) : null;
         
         // Extract user data and content from stored portfolio data
+        console.log("Portfolio Builder - userData check:", {
+          userData,
+          whatIOffer: userData?.whatIOffer,
+          whatIOfferType: typeof userData?.whatIOffer,
+          whatIOfferExists: !!userData?.whatIOffer
+        });
+        
+        // If userData doesn't have whatIOffer field, try to fetch it directly
+        const fetchWhatIOffer = async () => {
+          if (userNumericId) {
+            try {
+              console.log("Fetching whatIOffer with dedicated endpoint");
+              const response = await fetch(`/api/users/${userNumericId}/what-i-offer`);
+              if (response.ok) {
+                const data = await response.json();
+                console.log("Fetched whatIOffer with dedicated endpoint:", data);
+                return data.whatIOffer || '';
+              }
+            } catch (error) {
+              console.error("Error fetching whatIOffer:", error);
+            }
+          }
+          return userData?.whatIOffer || '';
+        };
+        
+        // Call the fetch function immediately (async IIFE)
+        const [whatIOfferValue, setWhatIOfferValue] = useState(userData?.whatIOffer || '');
+        
+        useEffect(() => {
+          const fetchWhatIOffer = async () => {
+            if (userNumericId) {
+              try {
+                console.log("Actively fetching whatIOffer with dedicated endpoint for userId:", userNumericId);
+                const response = await fetch(`/api/users/${userNumericId}/what-i-offer`);
+                if (response.ok) {
+                  const data = await response.json();
+                  console.log("Fetched whatIOffer with dedicated endpoint:", data);
+                  if (data.whatIOffer) {
+                    setWhatIOfferValue(data.whatIOffer);
+                  }
+                }
+              } catch (error) {
+                console.error("Error fetching whatIOffer:", error);
+              }
+            }
+          };
+          
+          fetchWhatIOffer();
+        }, [userNumericId]);
+        
+        console.log("Portfolio Builder - whatIOfferValue:", whatIOfferValue);
+        
         const userInfo = portfolioPreviewData?.userData || {
           name: userData?.name || user?.name || '',
           title: userData?.title || '',
@@ -691,7 +743,7 @@ export default function PortfolioBuilder() {
           email: userData?.email || user?.email || '',
           photoURL: userData?.photoURL || user?.photoURL || null,
           aboutMe: userData?.aboutMe || '',
-          whatIOffer: userData?.whatIOffer || '',
+          whatIOffer: whatIOfferValue, // Use the value we've fetched
           lookingFor: userData?.lookingFor || null,
           jobLevel: userData?.jobLevel || null,
         };
