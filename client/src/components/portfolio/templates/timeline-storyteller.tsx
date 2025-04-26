@@ -903,23 +903,23 @@ export default function TimelineStoryteller({
                       </div>
                       <div>
                         <h3 className="text-lg font-medium text-gray-800">{skill.name}</h3>
-                        <div className="flex justify-between mt-1">
-                          <p className="text-gray-500 text-sm">
-                            <span className="font-medium">Level:</span> {skill.level || 'Advanced'}
-                          </p>
-                          <p className="text-gray-500 text-sm">
-                            <span className="font-medium">Proficiency:</span> {skill.proficiency || 0}%
-                          </p>
-                        </div>
+                        <p className="text-gray-500 text-sm mt-1">
+                          <span className="font-medium">Proficiency Level:</span> {skill.level || 'Advanced'}
+                        </p>
                       </div>
                     </div>
                     
                     {/* Progress indicator */}
-                    <div className="h-2 w-full bg-gray-100 rounded-full mt-2">
-                      <div 
-                        className="h-full bg-gradient-to-r from-pink-400 to-purple-400 rounded-full" 
-                        style={{ width: `${skill.proficiency || 0}%` }}
-                      ></div>
+                    <div className="relative mt-2">
+                      <div className="h-2 w-full bg-gray-100 rounded-full">
+                        <div 
+                          className="h-full bg-gradient-to-r from-pink-400 to-purple-400 rounded-full" 
+                          style={{ width: `${skill.proficiency || 0}%` }}
+                        ></div>
+                      </div>
+                      <div className="text-xs text-gray-500 text-right mt-1">
+                        {skill.proficiency || 0}%
+                      </div>
                     </div>
                   </div>
                 </div>
