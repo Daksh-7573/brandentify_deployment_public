@@ -811,6 +811,95 @@ export default function TimelineStoryteller({
         </div>
       </section>
       
+      {/* Projects Showcase */}
+      <section 
+        id="chapter-projects" 
+        ref={chapterRefs.projects}
+        className="py-24 px-8 bg-gradient-to-b from-indigo-50 to-purple-50 min-h-screen"
+      >
+        <div className="mx-auto max-w-4xl">
+          <div className="mb-12">
+            <div className="inline-block bg-purple-100 px-3 py-1 rounded-full text-purple-800 text-sm font-medium mb-3 animate-fade-in">
+              My Projects
+            </div>
+            <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">Featured Work</h2>
+          </div>
+          
+          {/* Project Gallery */}
+          <div className="grid grid-cols-1 gap-8 animate-fade-in">
+            {sortedProjects.length > 0 ? (
+              sortedProjects.map((project, index) => (
+                <div 
+                  key={project.id}
+                  className="card-animated bg-white rounded-lg shadow-lg overflow-hidden border border-purple-100"
+                >
+                  {/* Project media header */}
+                  <div className="relative h-56 overflow-hidden">
+                    {project.thumbnailUrl ? (
+                      <img 
+                        src={project.thumbnailUrl} 
+                        alt={project.title} 
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="h-full w-full bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center">
+                        <Code className="h-12 w-12 text-purple-400" />
+                      </div>
+                    )}
+                    
+                    {/* Category tag */}
+                    {project.category && (
+                      <div className="absolute top-4 right-4">
+                        <Badge className="bg-white text-purple-700 font-normal">
+                          {project.category}
+                        </Badge>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Project content */}
+                  <div className="p-6">
+                    <h3 className="text-xl font-medium text-gray-800 mb-2">{project.title}</h3>
+                    
+                    <p className="text-gray-600 mb-4">
+                      {project.description}
+                    </p>
+                    
+                    {/* Project details and links */}
+                    <div className="flex items-center justify-between mt-2">
+                      <div className="flex items-center text-sm text-gray-500">
+                        <Calendar className="h-4 w-4 mr-1" />
+                        <span>{formatDate(project.startDate)}</span>
+                      </div>
+                      
+                      {project.projectUrl && (
+                        <a 
+                          href={project.projectUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center text-sm text-purple-600 hover:text-purple-800 transition-colors"
+                        >
+                          <span className="mr-1">Visit Project</span>
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              // Empty state
+              <div className="bg-white rounded-lg shadow-md p-8 text-center">
+                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-purple-100 flex items-center justify-center">
+                  <Code className="h-6 w-6 text-purple-400" />
+                </div>
+                <p className="text-gray-500">Your projects will appear here</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+      
       {/* Career Path (Timeline Navigation) */}
       <section 
         id="chapter-career" 

@@ -1,0 +1,85 @@
+      {/* Career Path (Timeline Navigation) */}
+      <section 
+        id="chapter-career" 
+        ref={chapterRefs.career}
+        className="py-24 px-8 bg-gradient-to-b from-white to-pink-50 min-h-screen"
+      >
+        <div className="mx-auto max-w-4xl">
+          <div className="mb-12">
+            <div className="inline-block bg-pink-100 px-3 py-1 rounded-full text-pink-800 text-sm font-medium mb-3 animate-fade-in">
+              My Career Journey
+            </div>
+            <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">Career Path</h2>
+          </div>
+          
+          {/* Vertical timeline with nodes */}
+          <div className="relative mt-12 animate-fade-in">
+            {/* Timeline vertical line */}
+            <div className="timeline-vertical-line absolute top-0 bottom-0 h-full"></div>
+            
+            {/* Work experiences */}
+            <div className="relative z-10">
+              {sortedExperiences.length > 0 ? (
+                <div className="space-y-16">
+                  {sortedExperiences.map((exp, index) => (
+                    <div key={exp.id} 
+                      className={`timeline-entry flex items-start ${index === 0 ? 'active' : ''}`}
+                      onClick={() => {
+                        // Expand this entry when clicked
+                        const entries = document.querySelectorAll('.timeline-entry');
+                        entries.forEach(e => e.classList.remove('active'));
+                        document.getElementById(`exp-${exp.id}`)?.classList.add('active');
+                      }}
+                      id={`exp-${exp.id}`}
+                    >
+                      {/* Timeline node */}
+                      <div className="mr-8 pt-2 relative">
+                        <div className="timeline-node w-8 h-8 rounded-full bg-white border-2 border-pink-300 shadow-md flex items-center justify-center">
+                          <Briefcase className="h-4 w-4 text-pink-500" />
+                        </div>
+                        {/* Date tag */}
+                        <div className="absolute top-12 -left-2 transform -rotate-90 origin-top-left whitespace-nowrap">
+                          <span className="text-xs font-medium bg-pink-100 text-pink-800 py-1 px-2 rounded-md">
+                            {formatDate(exp.startDate)} - {exp.endDate ? formatDate(exp.endDate) : 'Present'}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      {/* Experience card */}
+                      <div className="card-animated bg-white rounded-lg shadow-md p-6 border border-pink-100 flex-grow">
+                        <div className="flex justify-between items-start mb-3">
+                          <h3 className="text-lg font-medium text-gray-800">{exp.title}</h3>
+                          {exp.company && (
+                            <Badge className="bg-pink-100 text-pink-700 font-normal">
+                              {exp.company}
+                            </Badge>
+                          )}
+                        </div>
+                        
+                        <p className="text-gray-600 mb-4">{exp.description}</p>
+                        
+                        {/* Key achievement */}
+                        <div className="bg-pink-50 rounded-md p-3 border border-pink-100">
+                          <h4 className="text-sm font-medium text-pink-800 mb-1">Key Achievement</h4>
+                          <p className="text-sm text-gray-700">
+                            {exp.description ? `${exp.description.substring(0, 100)}...` : "Led cross-functional teams to deliver projects on time and within budget."}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                // Empty state
+                <div className="bg-white rounded-lg shadow-md p-8 text-center">
+                  <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-pink-100 flex items-center justify-center">
+                    <Briefcase className="h-6 w-6 text-pink-400" />
+                  </div>
+                  <p className="text-gray-500">Your work experiences will appear here</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+      
