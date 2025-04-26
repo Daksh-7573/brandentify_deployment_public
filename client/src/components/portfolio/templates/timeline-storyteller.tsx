@@ -508,7 +508,7 @@ export default function TimelineStoryteller({
           </div>
           
           {/* Profile picture centered on timeline */}
-          <div className="relative mx-auto mb-6">
+          <div className="relative flex justify-center items-center mb-6">
             <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-white shadow-lg timeline-dot bg-white">
               <ProfileImage
                 src={userInfo.photoURL}
