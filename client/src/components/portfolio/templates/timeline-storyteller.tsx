@@ -833,8 +833,8 @@ export default function TimelineStoryteller({
                   key={project.id}
                   className="card-animated bg-white rounded-lg shadow-lg overflow-hidden border border-purple-100"
                 >
-                  {/* Project media header */}
-                  <div className="relative h-56 overflow-hidden">
+                  {/* Project media header - using square aspect ratio */}
+                  <div className="relative aspect-square overflow-hidden">
                     {project.thumbnailUrl ? (
                       <img 
                         src={project.thumbnailUrl} 
