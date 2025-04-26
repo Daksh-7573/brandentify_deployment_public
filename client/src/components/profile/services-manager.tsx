@@ -104,6 +104,42 @@ export default function ServicesManager({ userId }: { userId: number }) {
       setActionInProgress(null);
     }
   };
+  
+  // Delete service
+  const deleteService = async (serviceId: number) => {
+    try {
+      if (!window.confirm('Are you sure you want to delete this service?')) {
+        return;
+      }
+      
+      setActionInProgress(serviceId);
+      
+      const response = await fetch(`/api/services/${serviceId}`, {
+        method: "DELETE",
+      });
+      
+      if (!response.ok) {
+        throw new Error("Failed to delete service");
+      }
+      
+      // Update the services state
+      setServices(services.filter(service => service.id !== serviceId));
+      
+      toast({
+        title: "Success",
+        description: "Service deleted successfully.",
+      });
+    } catch (error) {
+      console.error("Error deleting service:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete service. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setActionInProgress(null);
+    }
+  };
 
   // Format price
   const formatPrice = (price: number | null, isHourly: boolean) => {
@@ -113,6 +149,10 @@ export default function ServicesManager({ userId }: { userId: number }) {
 
   // Format category
   const formatCategory = (category: string) => {
+    // Replace "other" with a more descriptive category if needed
+    if (category.toLowerCase() === "other") {
+      return "Custom Service";
+    }
     return category.charAt(0).toUpperCase() + category.slice(1);
   };
 
@@ -167,7 +207,7 @@ export default function ServicesManager({ userId }: { userId: number }) {
                   <TableCell>
                     <Badge 
                       variant={service.isActive ? "default" : "outline"}
-                      className={service.isActive ? "bg-green-100 text-green-800 hover:bg-green-100" : "text-gray-500"}
+                      className={service.isActive ? "bg-green-600 text-white" : "bg-gray-200 text-gray-700"}
                     >
                       {service.isActive ? "Active" : "Inactive"}
                     </Badge>
@@ -179,6 +219,23 @@ export default function ServicesManager({ userId }: { userId: number }) {
                         disabled={actionInProgress === service.id}
                         onCheckedChange={() => toggleServiceActive(service.id)}
                       />
+                      {service.category === "other" && (
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          onClick={() => deleteService(service.id)}
+                          disabled={actionInProgress === service.id}
+                          className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-trash-2">
+                            <path d="M3 6h18"></path>
+                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                            <line x1="10" x2="10" y1="11" y2="17"></line>
+                            <line x1="14" x2="14" y1="11" y2="17"></line>
+                          </svg>
+                        </Button>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>
