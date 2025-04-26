@@ -5243,6 +5243,34 @@ export class DatabaseStorage implements IStorage {
     return result.rowCount > 0;
   }
 
+  // Project Collaborator operations
+  async getProjectCollaboratorsByProjectId(projectId: number): Promise<any[]> {
+    try {
+      console.log(`[db.getProjectCollaboratorsByProjectId] Looking for collaborators for project ${projectId}`);
+      
+      // This is a placeholder implementation that returns an empty array
+      // In a real implementation, we would query for collaborators
+      return [];
+    } catch (error) {
+      console.error(`[db.getProjectCollaboratorsByProjectId] Error fetching collaborators for project ${projectId}:`, error);
+      return [];
+    }
+  }
+
+  // Project Endorsement operations
+  async getProjectEndorsementsByProjectId(projectId: number): Promise<any[]> {
+    try {
+      console.log(`[db.getProjectEndorsementsByProjectId] Looking for endorsements for project ${projectId}`);
+      
+      // This is a placeholder implementation that returns an empty array
+      // In a real implementation, we would query for endorsements
+      return [];
+    } catch (error) {
+      console.error(`[db.getProjectEndorsementsByProjectId] Error fetching endorsements for project ${projectId}:`, error);
+      return [];
+    }
+  }
+
   // Portfolio operations
   async getPortfolioByUserId(userId: number): Promise<Portfolio | undefined> {
     try {
