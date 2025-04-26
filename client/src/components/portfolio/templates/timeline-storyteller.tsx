@@ -26,6 +26,7 @@ import {
   User, 
   Clock, 
   Download,
+  Gift,
   Lightbulb,
   MessageSquare,
   Volume2, 
@@ -61,6 +62,7 @@ interface TimelineStorytellerProps {
     lookingFor: string | null;
     jobLevel: string | null;
     aboutMe?: string | null;
+    whatIOffer?: string | null;
   };
   userSkills: Skill[];
   userExperiences: WorkExperience[];
