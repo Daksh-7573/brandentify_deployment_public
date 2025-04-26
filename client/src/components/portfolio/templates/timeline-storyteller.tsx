@@ -93,7 +93,8 @@ export default function TimelineStoryteller({
     career: useRef<HTMLDivElement>(null),
     education: useRef<HTMLDivElement>(null),
     projects: useRef<HTMLDivElement>(null),
-    certifications: useRef<HTMLDivElement>(null)
+    certifications: useRef<HTMLDivElement>(null),
+    whatIOffer: useRef<HTMLDivElement>(null)
   };
   
   // State for Let's Talk modal
@@ -931,6 +932,49 @@ export default function TimelineStoryteller({
                   <Award className="h-6 w-6 text-pink-400" />
                 </div>
                 <p className="text-gray-500">Your skills and expertise will appear here</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+      
+      {/* What I Offer Section */}
+      <section 
+        id="chapter-whatIOffer" 
+        ref={chapterRefs.whatIOffer}
+        className="py-24 px-8 bg-gradient-to-b from-white to-indigo-50 min-h-screen"
+      >
+        <div className="mx-auto max-w-4xl">
+          <div className="mb-12">
+            <div className="inline-block bg-indigo-100 px-3 py-1 rounded-full text-indigo-800 text-sm font-medium mb-3 animate-fade-in">
+              My Services
+            </div>
+            <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">What I Offer</h2>
+          </div>
+          
+          <div className="animate-fade-in">
+            {userInfo.whatIOffer ? (
+              <div className="bg-white rounded-lg shadow-md p-8 border border-indigo-100">
+                <div className="flex items-start gap-4">
+                  <div className="mt-1 flex-shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                      <Gift className="h-5 w-5 text-indigo-500" />
+                    </div>
+                  </div>
+                  <div className="flex-grow">
+                    <div className="prose prose-lg max-w-none text-gray-700">
+                      <p className="leading-relaxed">{userInfo.whatIOffer}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              // Empty state
+              <div className="bg-white rounded-lg shadow-md p-8 text-center">
+                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-indigo-100 flex items-center justify-center">
+                  <Gift className="h-6 w-6 text-indigo-400" />
+                </div>
+                <p className="text-gray-500">Share what services you offer to help others understand your expertise</p>
               </div>
             )}
           </div>
