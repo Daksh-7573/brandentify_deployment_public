@@ -88,9 +88,12 @@ export default function TimelineStoryteller({
   console.log("TimelineStoryteller - userInfo:", userInfo);
   console.log("TimelineStoryteller - whatIOffer check:", {
     whatIOffer: userInfo.whatIOffer,
+    whatIOfferTrimmed: userInfo.whatIOffer?.trim(),
+    isEmpty: !userInfo.whatIOffer || userInfo.whatIOffer.trim() === '',
     isNull: userInfo.whatIOffer === null,
     isUndefined: userInfo.whatIOffer === undefined,
-    type: typeof userInfo.whatIOffer
+    type: typeof userInfo.whatIOffer,
+    length: userInfo.whatIOffer?.length
   });
   // State for audio narration feature
   const [isNarrating, setIsNarrating] = useState(false);
@@ -701,7 +704,7 @@ export default function TimelineStoryteller({
           </div>
           
           <div className="animate-fade-in">
-            {userInfo.whatIOffer ? (
+            {userInfo.whatIOffer && userInfo.whatIOffer.trim() !== '' ? (
               <div className="bg-white rounded-lg shadow-md p-8 border border-indigo-100">
                 <div className="flex items-start gap-4">
                   <div className="mt-1 flex-shrink-0">
