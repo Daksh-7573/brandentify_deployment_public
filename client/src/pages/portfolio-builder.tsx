@@ -109,6 +109,7 @@ export default function PortfolioBuilder() {
     location: string | null;
     jobLevel: string | null;
     lookingFor: string | null;
+    whatIOffer: string | null;
     // Add other fields as needed
   };
   
@@ -121,6 +122,32 @@ export default function PortfolioBuilder() {
   
   // Fetch user profile numeric ID for use in other queries
   const userNumericId = userData?.id;
+  
+  // State for whatIOffer value - placed at component top level to avoid hook rule violations
+  const [whatIOfferValue, setWhatIOfferValue] = useState(userData?.whatIOffer || '');
+  
+  // Effect to fetch whatIOffer data - placed at component top level
+  useEffect(() => {
+    const fetchWhatIOffer = async () => {
+      if (userNumericId && currentStep === STEPS.PREVIEW) {
+        try {
+          console.log("Actively fetching whatIOffer with dedicated endpoint for userId:", userNumericId);
+          const response = await fetch(`/api/users/${userNumericId}/what-i-offer`);
+          if (response.ok) {
+            const data = await response.json();
+            console.log("Fetched whatIOffer with dedicated endpoint:", data);
+            if (data.whatIOffer) {
+              setWhatIOfferValue(data.whatIOffer);
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching whatIOffer:", error);
+        }
+      }
+    };
+    
+    fetchWhatIOffer();
+  }, [userNumericId, currentStep]);
   
   // Fetch existing portfolio if it exists
   const { data: portfolio, isLoading: isLoadingPortfolio, isError: isPortfolioError } = useQuery({
@@ -686,53 +713,12 @@ export default function PortfolioBuilder() {
           userData,
           whatIOffer: userData?.whatIOffer,
           whatIOfferType: typeof userData?.whatIOffer,
-          whatIOfferExists: !!userData?.whatIOffer
+          whatIOfferExists: !!userData?.whatIOffer,
+          whatIOfferFromState: whatIOfferValue
         });
         
-        // If userData doesn't have whatIOffer field, try to fetch it directly
-        const fetchWhatIOffer = async () => {
-          if (userNumericId) {
-            try {
-              console.log("Fetching whatIOffer with dedicated endpoint");
-              const response = await fetch(`/api/users/${userNumericId}/what-i-offer`);
-              if (response.ok) {
-                const data = await response.json();
-                console.log("Fetched whatIOffer with dedicated endpoint:", data);
-                return data.whatIOffer || '';
-              }
-            } catch (error) {
-              console.error("Error fetching whatIOffer:", error);
-            }
-          }
-          return userData?.whatIOffer || '';
-        };
-        
-        // Call the fetch function immediately (async IIFE)
-        const [whatIOfferValue, setWhatIOfferValue] = useState(userData?.whatIOffer || '');
-        
-        useEffect(() => {
-          const fetchWhatIOffer = async () => {
-            if (userNumericId) {
-              try {
-                console.log("Actively fetching whatIOffer with dedicated endpoint for userId:", userNumericId);
-                const response = await fetch(`/api/users/${userNumericId}/what-i-offer`);
-                if (response.ok) {
-                  const data = await response.json();
-                  console.log("Fetched whatIOffer with dedicated endpoint:", data);
-                  if (data.whatIOffer) {
-                    setWhatIOfferValue(data.whatIOffer);
-                  }
-                }
-              } catch (error) {
-                console.error("Error fetching whatIOffer:", error);
-              }
-            }
-          };
-          
-          fetchWhatIOffer();
-        }, [userNumericId]);
-        
-        console.log("Portfolio Builder - whatIOfferValue:", whatIOfferValue);
+        // Log the current whatIOffer value from state
+        console.log("Portfolio Builder - whatIOfferValue from state:", whatIOfferValue);
         
         const userInfo = portfolioPreviewData?.userData || {
           name: userData?.name || user?.name || '',
