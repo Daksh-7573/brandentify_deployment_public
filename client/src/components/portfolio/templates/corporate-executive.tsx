@@ -539,6 +539,13 @@ export default function CorporateExecutive({
                       <Badge variant="outline">{selectedProject.category}</Badge>
                     </>
                   )}
+                  
+                  {selectedProject.industry && (
+                    <>
+                      <span className="mx-1">•</span>
+                      <Badge className="bg-purple-50 text-purple-700 border border-purple-200">{selectedProject.industry}</Badge>
+                    </>
+                  )}
                 </div>
               </DialogDescription>
             </DialogHeader>
@@ -623,6 +630,18 @@ export default function CorporateExecutive({
                           <span className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Inter, sans-serif' }}>Category</span>
                           <p className="text-sm text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>
                             {selectedProject.category}
+                          </p>
+                        </div>
+                      </li>
+                    )}
+                    
+                    {selectedProject.industry && (
+                      <li className="flex items-start gap-2">
+                        <Briefcase className="h-4 w-4 mt-1 text-gray-500" />
+                        <div>
+                          <span className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Inter, sans-serif' }}>Industry</span>
+                          <p className="text-sm text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>
+                            {selectedProject.industry}
                           </p>
                         </div>
                       </li>
@@ -953,11 +972,18 @@ export default function CorporateExecutive({
                         {project.title}
                       </h3>
                       
-                      {project.category && (
-                        <Badge className="bg-gray-100 text-gray-600 text-xs">
-                          {project.category}
-                        </Badge>
-                      )}
+                      <div className="flex gap-2 flex-wrap">
+                        {project.category && (
+                          <Badge className="bg-gray-100 text-gray-600 text-xs">
+                            {project.category}
+                          </Badge>
+                        )}
+                        {project.industry && (
+                          <Badge className="bg-purple-50 text-purple-700 text-xs border border-purple-200">
+                            {project.industry}
+                          </Badge>
+                        )}
+                      </div>
                     </div>
                     
                     <p className="text-gray-600 mb-4 line-clamp-3" style={{ fontFamily: 'Inter, sans-serif' }}>
