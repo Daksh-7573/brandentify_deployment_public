@@ -691,6 +691,7 @@ export default function PortfolioBuilder() {
           email: userData?.email || user?.email || '',
           photoURL: userData?.photoURL || user?.photoURL || null,
           aboutMe: userData?.aboutMe || '',
+          whatIOffer: userData?.whatIOffer || '',  // Added whatIOffer field
           lookingFor: userData?.lookingFor || null,
           jobLevel: userData?.jobLevel || null,
         };
@@ -768,7 +769,8 @@ export default function PortfolioBuilder() {
                     photoURL: userInfo.photoURL,
                     lookingFor: userData?.lookingFor || '',
                     jobLevel: userData?.jobLevel || '',
-                    aboutMe: userData?.aboutMe || ''
+                    aboutMe: userData?.aboutMe || '',
+                    whatIOffer: userData?.whatIOffer || ''
                   }}
                   userSkills={userSkills}
                   userExperiences={userExperiences || []}
