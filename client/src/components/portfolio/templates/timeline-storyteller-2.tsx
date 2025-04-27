@@ -300,25 +300,42 @@ export default function TimelineStoryteller2({
             </div>
           </div>
           
-          {/* About Me */}
-          {userInfo.aboutMe && (
-            <div className="max-w-2xl mx-auto mb-4 animate-fade-in delay-400">
-              <h3 className="text-md font-medium text-indigo-700 mb-2">About Me</h3>
-              <p className="text-gray-600 text-lg">
-                {userInfo.aboutMe}
-              </p>
+          {/* Two-Column Layout for About Me and What I'm All About */}
+          <div className="max-w-4xl mx-auto mb-8 grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in delay-400">
+            {/* About Me Column */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+              <h3 className="text-lg font-semibold text-indigo-700 mb-3 flex items-center">
+                <User className="h-5 w-5 mr-2" />
+                About Me
+              </h3>
+              {userInfo.aboutMe ? (
+                <p className="text-gray-600">
+                  {userInfo.aboutMe}
+                </p>
+              ) : (
+                <div className="p-4 bg-gray-50 border border-gray-100 rounded-md text-center">
+                  <p className="text-gray-400">Add information about yourself to display here</p>
+                </div>
+              )}
             </div>
-          )}
-          
-          {/* What I Offer / What I'm All About */}
-          {userInfo.whatIOffer && (
-            <div className="max-w-2xl mx-auto mb-8 animate-fade-in delay-450">
-              <h3 className="text-md font-medium text-indigo-700 mb-2">What I'm All About</h3>
-              <p className="text-gray-600 text-lg">
-                {userInfo.whatIOffer}
-              </p>
+            
+            {/* What I'm All About Column */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+              <h3 className="text-lg font-semibold text-indigo-700 mb-3 flex items-center">
+                <Gift className="h-5 w-5 mr-2" />
+                What I'm All About
+              </h3>
+              {userInfo.whatIOffer ? (
+                <p className="text-gray-600">
+                  {userInfo.whatIOffer}
+                </p>
+              ) : (
+                <div className="p-4 bg-gray-50 border border-gray-100 rounded-md text-center">
+                  <p className="text-gray-400">Add information about what you offer or value to display here</p>
+                </div>
+              )}
             </div>
-          )}
+          </div>
           
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in delay-500">
