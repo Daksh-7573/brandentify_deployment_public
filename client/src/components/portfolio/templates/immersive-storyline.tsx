@@ -123,6 +123,15 @@ export default function ImmersiveStoryline({
   userEducations = [],
   userServices = [],
 }: ImmersiveStorylineProps) {
+  // Add diagnostic logging
+  console.log("ImmersiveStoryline - Received props:", {
+    userInfo,
+    skillsCount: userSkills?.length || 0,
+    experiencesCount: userExperiences?.length || 0,
+    projectsCount: userProjects?.length || 0,
+    educationsCount: userEducations?.length || 0,
+    servicesCount: userServices?.length || 0
+  });
   // State management
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
@@ -363,7 +372,34 @@ export default function ImmersiveStoryline({
   }, []);
 
   // Title for the page
-  const titleText = userInfo.title || "Professional";
+  const titleText = userInfo?.title || "Professional";
+
+  // Simple fallback for debugging
+  if (!userInfo || !userInfo.name) {
+    return (
+      <div className="min-h-screen p-8 bg-gray-100 flex flex-col items-center justify-center">
+        <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+          <h2 className="text-2xl font-bold text-center mb-6">Immersive Storyline Template</h2>
+          <div className="bg-amber-50 border border-amber-200 p-4 rounded-md mb-4">
+            <p className="text-amber-800">Template is loaded but data is missing or incomplete.</p>
+          </div>
+          <div className="space-y-4">
+            <div className="bg-gray-50 p-4 rounded-md">
+              <p className="font-medium">Debug Information:</p>
+              <pre className="text-xs mt-2 bg-gray-100 p-2 rounded overflow-auto max-h-40">
+                {JSON.stringify({
+                  userInfo,
+                  skillsCount: userSkills?.length || 0,
+                  experiencesCount: userExperiences?.length || 0,
+                  projectsCount: userProjects?.length || 0
+                }, null, 2)}
+              </pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="immersive-storyline-template font-['Plus_Jakarta_Sans']">
