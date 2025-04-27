@@ -448,6 +448,13 @@ export default function PortfolioBuilder() {
       theme: "#FF6B6B"
     },
     { 
+      id: "timeline-storyteller-2", 
+      name: "The Timeline Storyteller 2.0", 
+      description: `✔ Theme: Modern Timeline & Enhanced Experience
+✔ Best For: Professionals looking for a complete profile showcase`,
+      theme: "#6C63FF"
+    },
+    { 
       id: "visual-expert", 
       name: "The Visual Expert", 
       description: `✔ Theme: Image-First, Creative & Bold
@@ -824,6 +831,32 @@ export default function PortfolioBuilder() {
                     jobLevel: userData?.jobLevel || '',
                     aboutMe: userInfo.aboutMe || '',  // Use userInfo.aboutMe instead of userData?.aboutMe
                     whatIOffer: userData?.whatIOffer || ''  // Use userData.whatIOffer since it contains the correct data from DB
+                  }}
+                  userSkills={userSkills}
+                  userExperiences={userExperiences || []}
+                  userProjects={userProjects}
+                  userEducations={userEducations || []}
+                  userServices={userServices || []}
+                />
+              </>
+            )}
+            
+            {form.watch("layout") === "timeline-storyteller-2" && (
+              <>
+                {console.log("Timeline Storyteller 2.0 - Education data being passed:", userEducations)}
+                {console.log("Timeline Storyteller 2.0 - Services data being passed:", userServices)}
+                <TimelineStoryteller2 
+                  userInfo={{
+                    name: userInfo.name,
+                    title: userInfo.title,
+                    industry: userInfo.industry,
+                    domain: userInfo.domain,
+                    location: userInfo.location,
+                    email: userInfo.email,
+                    photoURL: userInfo.photoURL,
+                    lookingFor: userData?.lookingFor || '',
+                    aboutMe: userInfo.aboutMe || '',
+                    whatIOffer: userData?.whatIOffer || ''
                   }}
                   userSkills={userSkills}
                   userExperiences={userExperiences || []}
