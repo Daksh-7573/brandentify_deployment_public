@@ -647,9 +647,17 @@ export default function VisualExpert({
             
             {/* Location Info */}
             {userInfo.location && (
-              <div className="flex items-center mb-10 text-gray-300 animate-fade-in">
+              <div className="flex items-center mb-6 text-gray-300 animate-fade-in">
                 <MapPin className="w-5 h-5 mr-2" />
                 <span>{userInfo.location}</span>
+              </div>
+            )}
+            
+            {/* What I Offer */}
+            {userInfo.whatIOffer && (
+              <div className="mb-10 max-w-2xl mx-auto bg-gray-800/40 rounded-lg p-6 animate-fade-in">
+                <h3 className="text-xl font-semibold mb-3 text-pink-300">What I Offer</h3>
+                <p className="text-gray-200">{userInfo.whatIOffer}</p>
               </div>
             )}
             
@@ -709,23 +717,6 @@ export default function VisualExpert({
           </div>
         </div>
       </section>
-      
-      {/* What I Offer Section */}
-      {userInfo.whatIOffer && (
-        <section className="py-20 px-4 sm:px-6 md:px-8 lg:px-16 bg-white">
-          <div className="container mx-auto max-w-6xl">
-            <h2 className="section-heading text-3xl md:text-4xl font-bold text-gray-900 mb-12 scroll-reveal">
-              What I Offer
-            </h2>
-            
-            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl shadow-xl p-8 scroll-reveal">
-              <p className="text-lg text-gray-700 leading-relaxed">
-                {userInfo.whatIOffer}
-              </p>
-            </div>
-          </div>
-        </section>
-      )}
       
       {/* Visual Projects Showcase - Masonry Grid */}
       <section className="py-20 px-4 sm:px-6 md:px-8 lg:px-16 bg-white">
@@ -849,8 +840,50 @@ export default function VisualExpert({
                   <Card key={service.id} className="overflow-hidden hover:shadow-xl transition-shadow duration-300">
                     <div className="h-2 bg-gradient-to-r from-pink-500 to-purple-600"></div>
                     <CardContent className="pt-6">
-                      <h4 className="font-bold text-lg mb-3">{service.title}</h4>
-                      <p className="text-gray-600">{service.description}</p>
+                      <h4 className="font-bold text-lg mb-2">{service.title}</h4>
+                      
+                      {service.category && (
+                        <div className="mb-3">
+                          <Badge variant="outline" className="text-sm bg-pink-50 text-pink-700 border-pink-200">
+                            {service.category.charAt(0).toUpperCase() + service.category.slice(1)}
+                          </Badge>
+                        </div>
+                      )}
+                      
+                      <p className="text-gray-600 mb-4">{service.description}</p>
+                      
+                      <div className="flex items-center justify-between mt-4 mb-2">
+                        <div className="flex items-center">
+                          {service.priceUsd && (
+                            <span className="font-semibold text-gray-800">
+                              ${parseFloat(service.priceUsd).toFixed(2)} {service.isHourly ? '/hr' : ''}
+                            </span>
+                          )}
+                          {service.priceInr && !service.priceUsd && (
+                            <span className="font-semibold text-gray-800">
+                              ₹{parseFloat(service.priceInr).toFixed(2)} {service.isHourly ? '/hr' : ''}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      
+                      {service.features && service.features.length > 0 && (
+                        <div className="mt-3 pt-3 border-t border-gray-100">
+                          <div className="text-sm font-medium text-gray-700 mb-2">Includes:</div>
+                          <ul className="space-y-1 text-sm text-gray-600">
+                            {service.features.map((feature, index) => (
+                              <li key={index} className="flex items-start">
+                                <div className="flex-shrink-0 w-4 h-4 mt-0.5 mr-2 text-green-500">
+                                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                  </svg>
+                                </div>
+                                {feature}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                 ))}
