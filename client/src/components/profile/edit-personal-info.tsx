@@ -10,14 +10,16 @@ import { UserData } from "@/types/user";
 
 interface EditPersonalInfoProps {
   userData: UserData;
-  onCancel: () => void;
-  onSave: () => void;
+  userNumericId?: number | null;
+  onCancel?: () => void;
+  onSave?: () => void;
 }
 
 const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({ 
   userData, 
-  onCancel,
-  onSave
+  userNumericId,
+  onCancel = () => {},
+  onSave = () => {}
 }) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -56,8 +58,8 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
       
       // Update user data via API
       await apiRequest({
-        url: `/api/users/${userData.id}`,
         method: 'PUT',
+        url: `/api/users/${userData.id}`,
         data: {
           phoneNumber: formattedPhoneNumber
         }

@@ -1,4 +1,30 @@
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
+
+/**
+ * Generic card skeleton component that can be customized with className
+ */
+export function CardSkeleton({ className }: { className?: string }) {
+  return (
+    <div className={cn("bg-white rounded-lg shadow-sm p-6 border border-gray-100", className)}>
+      <div className="space-y-4">
+        <Skeleton className="h-6 w-3/4" />
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-3/4" />
+        </div>
+        <div className="flex justify-between items-center pt-2">
+          <div className="flex gap-2">
+            <Skeleton className="h-6 w-16 rounded-full" />
+            <Skeleton className="h-6 w-20 rounded-full" />
+          </div>
+          <Skeleton className="h-8 w-24 rounded-md" />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 /**
  * Skeleton loader for the TimelineStoryteller portfolio template
@@ -364,6 +390,78 @@ export function CorporateExecutiveSkeleton() {
             ))}
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Simple section skeleton with title for portfolio builder page
+ */
+export function SectionSkeleton({ title }: { title: string }) {
+  return (
+    <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100 mb-6">
+      <h3 className="text-xl font-semibold mb-4">{title}</h3>
+      <div className="space-y-4">
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-3/4" />
+        <div className="py-2">
+          <Skeleton className="h-8 w-40 mx-auto" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Profile skeleton for the portfolio builder page
+ */
+export function ProfileSkeleton() {
+  return (
+    <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100 mb-6">
+      <div className="flex flex-col items-center space-y-4 mb-6">
+        <Skeleton className="h-24 w-24 rounded-full" />
+        <Skeleton className="h-6 w-40" />
+        <Skeleton className="h-4 w-32" />
+      </div>
+      <div className="space-y-4">
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-5/6" />
+        <Skeleton className="h-4 w-4/5" />
+      </div>
+      <div className="flex flex-wrap gap-2 mt-4 justify-center">
+        <Skeleton className="h-8 w-24 rounded-full" />
+        <Skeleton className="h-8 w-20 rounded-full" />
+        <Skeleton className="h-8 w-28 rounded-full" />
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Skeleton for individual experience items (used in Work Experience and Education sections)
+ */
+export function ExperienceItemSkeleton() {
+  return (
+    <div className="mb-6 bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+      <div className="flex justify-between items-start mb-4">
+        <div className="space-y-2">
+          <Skeleton className="h-6 w-48" />
+          <Skeleton className="h-5 w-40" />
+        </div>
+        <Skeleton className="h-5 w-32" />
+      </div>
+      <div className="flex flex-wrap gap-2 mb-4">
+        <Skeleton className="h-6 w-20 rounded-full" />
+        <Skeleton className="h-6 w-24 rounded-full" />
+        <Skeleton className="h-6 w-32 rounded-full" />
+      </div>
+      <div className="space-y-2">
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-3/4" />
       </div>
     </div>
   );
