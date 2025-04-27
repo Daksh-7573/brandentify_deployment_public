@@ -284,8 +284,7 @@ export const portfolioLayoutEnum = pgEnum("portfolio_layout", [
   "technical",
   "executive",
   "minimalist_pro", // Added "The Minimalist Pro" theme with snake_case format
-  "timeline-storyteller",
-  "timeline-storyteller-2", // Added "Timeline Storyteller 2.0" template
+  "timeline-storyteller-2", // Timeline Storyteller 2.0 template - comprehensive interactive timeline
   "visual-expert",
   "corporate-executive",
   "dynamic-innovator",

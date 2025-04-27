@@ -441,17 +441,10 @@ export default function PortfolioBuilder() {
       theme: "#4F86C6"
     },
     { 
-      id: "timeline-storyteller", 
-      name: "The Timeline Storyteller", 
-      description: `✔ Theme: Interactive & Storytelling-Based
-✔ Best For: Product Managers, Entrepreneurs, Creatives`,
-      theme: "#FF6B6B"
-    },
-    { 
       id: "timeline-storyteller-2", 
-      name: "The Timeline Storyteller 2.0", 
-      description: `✔ Theme: Modern Timeline & Enhanced Experience
-✔ Best For: Professionals looking for a complete profile showcase`,
+      name: "The Timeline Storyteller", 
+      description: `✔ Theme: Interactive Timeline with Comprehensive Profile Display
+✔ Best For: Storytellers & Professionals with Rich Career Histories`,
       theme: "#6C63FF"
     },
     { 
@@ -608,7 +601,7 @@ export default function PortfolioBuilder() {
             ? `${userDetails.title}${userDetails.industry ? ` in ${userDetails.industry}` : ''}`
             : (userDetails.industry ? `Professional in ${userDetails.industry}` : ''),
           customizationOptions: {
-            theme: selectedLayout === 'visual-expert' || selectedLayout === 'timeline-storyteller' || selectedLayout === 'timeline-storyteller-2' ? 'colorful' : 'professional',
+            theme: selectedLayout === 'visual-expert' || selectedLayout === 'timeline-storyteller-2' ? 'colorful' : 'professional',
             showContact: true
           },
           featuredProjects: projectsData.map((project: Project) => project.id),
