@@ -516,7 +516,7 @@ export default function ImmersiveStoryline({
             <div className="absolute inset-0 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 blur-md opacity-70 scale-110 animate-pulse"></div>
             <div className="relative h-40 w-40 md:h-48 md:w-48 rounded-full overflow-hidden border-4 border-white/20 shadow-xl">
               <ProfileImage
-                src={userInfo.photoURL || undefined}
+                src={userInfo.photoURL}
                 alt={userInfo.name}
                 className="w-full h-full object-cover"
               />
@@ -1286,7 +1286,7 @@ export default function ImmersiveStoryline({
                 {selectedProject.url && (
                   <Button 
                     className="mb-6 bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 hover:bg-indigo-500/30"
-                    onClick={() => window.open(selectedProject.url, '_blank')}
+                    onClick={() => window.open(selectedProject.url || '', '_blank')}
                   >
                     <ExternalLink className="w-4 h-4 mr-2" />
                     Visit Project
