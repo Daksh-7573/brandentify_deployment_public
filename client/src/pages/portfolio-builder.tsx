@@ -805,19 +805,22 @@ export default function PortfolioBuilder() {
             
             {form.watch("layout") === "timeline-storyteller-2" && (
               <>
+                {console.log("Timeline Storyteller 2.0 - userInfo being passed:", userInfo)}
+                {console.log("Timeline Storyteller 2.0 - userData being passed:", userData)}
+                {console.log("Timeline Storyteller 2.0 - aboutMe field specifically:", userData?.aboutMe)}
                 {console.log("Timeline Storyteller 2.0 - Education data being passed:", userEducations)}
                 {console.log("Timeline Storyteller 2.0 - Services data being passed:", userServices)}
                 <TimelineStoryteller2 
                   userInfo={{
-                    name: userInfo.name,
-                    title: userInfo.title,
-                    industry: userInfo.industry,
-                    domain: userInfo.domain,
-                    location: userInfo.location,
-                    email: userInfo.email,
-                    photoURL: userInfo.photoURL,
+                    name: userData?.name || user?.name || '',
+                    title: userData?.title || '',
+                    industry: userData?.industry || '',
+                    domain: userData?.domain || '',
+                    location: userData?.location || '',
+                    email: userData?.email || user?.email || '',
+                    photoURL: userData?.photoURL || user?.photoURL || null,
                     lookingFor: userData?.lookingFor || '',
-                    aboutMe: userInfo.aboutMe || '',
+                    aboutMe: userData?.aboutMe || "I am a software developer with experience in React, Node.js, and PostgreSQL.",
                     whatIOffer: userData?.whatIOffer || ''
                   }}
                   userSkills={userSkills}
