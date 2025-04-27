@@ -96,8 +96,7 @@ export default function TimelineStoryteller2({
     services: useRef<HTMLDivElement>(null),
     projects: useRef<HTMLDivElement>(null),
     career: useRef<HTMLDivElement>(null),
-    education: useRef<HTMLDivElement>(null),
-    contact: useRef<HTMLDivElement>(null)
+    education: useRef<HTMLDivElement>(null)
   };
 
   // Project modal state
@@ -833,121 +832,6 @@ export default function TimelineStoryteller2({
                   <p className="text-gray-500">Your education history will appear here</p>
                 </div>
               )}
-            </div>
-          </div>
-        </div>
-      </section>
-      
-      {/* Contact Section */}
-      <section 
-        id="chapter-contact" 
-        ref={chapterRefs.contact}
-        className="py-24 px-4 md:px-6 bg-gradient-to-b from-pink-50 to-indigo-50 min-h-[90vh] flex items-center"
-      >
-        <div className="mx-auto max-w-4xl w-full">
-          <div className="bg-white rounded-xl shadow-xl overflow-hidden">
-            <div className="grid grid-cols-1 md:grid-cols-2">
-              <div className="bg-gradient-to-br from-indigo-600 to-purple-600 p-8 md:p-10 text-white flex flex-col justify-center">
-                <h2 className="text-3xl font-bold mb-6">Let's Connect</h2>
-                <p className="mb-8 opacity-90">Ready to discuss opportunities or just want to say hello? I'd love to hear from you.</p>
-                
-                <div className="space-y-4">
-                  {userInfo.email && (
-                    <div className="flex items-center">
-                      <Mail className="h-5 w-5 mr-3" />
-                      <a href={`mailto:${userInfo.email}`} className="hover:underline">{userInfo.email}</a>
-                    </div>
-                  )}
-                  
-                  {userInfo.location && (
-                    <div className="flex items-center">
-                      <MapPin className="h-5 w-5 mr-3" />
-                      <span>{userInfo.location}</span>
-                    </div>
-                  )}
-                  
-                  <div className="flex items-center">
-                    <Globe className="h-5 w-5 mr-3" />
-                    <span>Available for remote work worldwide</span>
-                  </div>
-                </div>
-                
-                <div className="mt-10 pt-6 border-t border-white/20">
-                  <div className="flex gap-4">
-                    <button className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
-                      <Linkedin className="h-4 w-4" />
-                    </button>
-                    <button className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
-                      <Instagram className="h-4 w-4" />
-                    </button>
-                    <button className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
-                      <Code className="h-4 w-4" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="p-8 md:p-10">
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">Drop me a message</h3>
-                
-                <form onSubmit={handleContactSubmit}>
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="contact-purpose">What are you looking for?</Label>
-                      <Select 
-                        value={contactForm.purpose}
-                        onValueChange={(value) => setContactForm({...contactForm, purpose: value})}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select a purpose" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="collaboration">Collaboration</SelectItem>
-                          <SelectItem value="job">Job Opportunity</SelectItem>
-                          <SelectItem value="mentorship">Mentorship</SelectItem>
-                          <SelectItem value="general">General Inquiry</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="contact-name">Your Name</Label>
-                      <Input 
-                        id="contact-name" 
-                        value={contactForm.name}
-                        onChange={(e) => setContactForm({...contactForm, name: e.target.value})}
-                        placeholder="Enter your name" 
-                      />
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="contact-email">Email Address</Label>
-                      <Input 
-                        id="contact-email" 
-                        type="email"
-                        value={contactForm.email}
-                        onChange={(e) => setContactForm({...contactForm, email: e.target.value})}
-                        placeholder="Enter your email" 
-                      />
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="contact-message">Message</Label>
-                      <Textarea 
-                        id="contact-message" 
-                        value={contactForm.message}
-                        onChange={(e) => setContactForm({...contactForm, message: e.target.value})}
-                        placeholder="What would you like to discuss?" 
-                        rows={4}
-                      />
-                    </div>
-                    
-                    <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white">
-                      Send Message
-                    </Button>
-                  </div>
-                </form>
-              </div>
             </div>
           </div>
         </div>
