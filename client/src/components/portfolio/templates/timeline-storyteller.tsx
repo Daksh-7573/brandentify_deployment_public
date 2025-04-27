@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ProfileImage } from "@/components/ui/profile-image";
 import { Education, Project, Service, Skill, WorkExperience } from "@shared/schema";
 import { useEffect, useState, useRef } from "react";
+import { Link } from "wouter";
 import PortfolioCtaButtons from "../portfolio-cta-buttons";
 import { 
   Calendar, 
@@ -33,6 +34,7 @@ import {
   Volume2, 
   VolumeX, 
   Globe,
+  Folder,
   LucideIcon
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
@@ -1074,12 +1076,10 @@ export default function TimelineStoryteller({
                   {/* Project image */}
                   {project.thumbnailUrl && (
                     <div className="h-48 w-full relative">
-                      <Image 
+                      <img 
                         src={project.thumbnailUrl} 
                         alt={project.title} 
                         className="h-full w-full object-cover"
-                        width={400}
-                        height={200}
                       />
                       {/* Category pill */}
                       {project.category && (
@@ -1119,12 +1119,10 @@ export default function TimelineStoryteller({
                         <div className="grid grid-cols-3 gap-2">
                           {project.mediaUrls.map((url, index) => (
                             <div key={index} className="h-20 rounded-md overflow-hidden">
-                              <Image 
-                                src={url} 
+                              <img 
+                                src={url as string} 
                                 alt={`${project.title} image ${index + 1}`} 
                                 className="h-full w-full object-cover"
-                                width={100}
-                                height={100}
                               />
                             </div>
                           ))}
