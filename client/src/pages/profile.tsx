@@ -13,6 +13,7 @@ import Services from "@/components/profile/services";
 import PersonalInfoSection from "@/components/profile/personal-info-section";
 import EditPersonalInfo from "@/components/profile/edit-personal-info";
 import MuskButton from "@/components/musk/musk-button";
+import { ProfilePageSkeleton } from "@/components/ui/skeleton-loaders";
 // Removed Resume and LinkedIn import components
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -44,7 +45,6 @@ import {
   SelectSeparator
 } from "@/components/ui/select";
 import { JobTitleCombobox } from "@/components/ui/job-title-combobox";
-import { ProfilePageSkeleton } from "@/components/ui/skeleton-loaders";
 
 // Define "I am looking for" categories
 const LOOKING_FOR_CATEGORIES = [
@@ -401,7 +401,7 @@ export const INDUSTRIES = [
 ];
 
 export default function Profile() {
-  const { user, isAuthenticated, isLoading, signOut } = useAuth();
+  const { user, isAuthenticated, isLoading: isAuthLoading, signOut } = useAuth();
   const [_, setLocation] = useLocation();
   const { toast } = useToast();
   
@@ -449,36 +449,42 @@ export default function Profile() {
         // Add cache busting parameter to prevent browser caching
         const timestamp = new Date().getTime();
         
-        // First approach - direct fetch with cache control headers
-        const directResponse = await fetch(`/api/users/${userId}?_=${timestamp}`, {
-          method: 'GET',
-          headers: {
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-          }
-        });
-        
-        if (directResponse.ok) {
-          const freshData = await directResponse.json();
-          console.log("Fresh user data fetched:", freshData);
+        // Try direct fetch first with more detailed error handling
+        try {
+          // Use server-side cache busting parameter
+          const directUrl = `/api/users/${userId}?_=${timestamp}`;
+          console.log(`Attempting direct fetch of user data from: ${directUrl}`);
           
-          // Check that we have a valid user object
-          if (freshData && typeof freshData === 'object') {
-            console.log("whatIOffer field value:", freshData.whatIOffer || 'NOT FOUND');
-            
-            // Store the fetched data in localStorage as well as a backup
-            try {
-              localStorage.setItem('cachedUserData', JSON.stringify(freshData));
-              console.log("Cached user data in localStorage");
-            } catch (err) {
-              console.error("Failed to cache user data:", err);
-            }
+          const response = await fetch(directUrl);
+          
+          if (!response.ok) {
+            console.error(`Direct fetch failed with status: ${response.status}`);
+            throw new Error(`Direct fetch failed: ${response.statusText}`);
+          }
+          
+          // IMPORTANT: Clone the response before parsing to avoid "body already read" errors
+          // if we need to retry with alternative methods
+          const responseClone = response.clone();
+          
+          try {
+            const freshData = await response.json();
+            console.log("Fresh user data fetched:", freshData);
+            console.log("whatIOffer field from fresh data:", freshData.whatIOffer || 'NOT FOUND');
             
             return freshData;
-          } else {
-            console.error("Invalid user data received:", freshData);
+          } catch (parseError) {
+            console.error("Failed to parse JSON from direct fetch:", parseError);
+            
+            // Try to get the raw text to see if it's valid
+            try {
+              const rawText = await responseClone.text();
+              console.error("Raw response text:", rawText);
+            } catch (textError) {
+              console.error("Failed to get raw response text:", textError);
+            }
           }
+        } catch (directFetchError) {
+          console.error("Direct fetch attempt failed:", directFetchError);
         }
         
         // If direct fetch fails or returns invalid data, try the API request function
@@ -495,1788 +501,561 @@ export default function Profile() {
         } catch (apiError) {
           console.error("API request failed:", apiError);
           
-          // As a last resort, try to get data from localStorage
-          try {
-            const cachedData = localStorage.getItem('cachedUserData');
-            if (cachedData) {
-              const userData = JSON.parse(cachedData);
-              console.log("Using cached user data from localStorage:", userData);
-              return userData;
-            }
-          } catch (cacheError) {
-            console.error("Failed to retrieve cached user data:", cacheError);
+          // Final fallback - try to use any existing data in the cache
+          const existingData = queryClient.getQueryData(['/api/users', userId]);
+          if (existingData) {
+            console.log("Using existing cached data:", existingData);
+            return existingData;
           }
         }
         
         // If all attempts fail, return an empty object to prevent crashes
         return {};
       } catch (error) {
-        console.log("Retrying request (2 attempts left)...");
-        throw error; // Let React Query handle the retry
+        console.error("User data fetch error:", error);
+        throw error;
       }
     }
   });
-  
-  // Define userNumericId based on the userData response
-  // Critical: Don't use a fallback value like 0 as it might fetch wrong user's data
-  const userNumericId = userData?.id || null;
-  
-  // Enhanced refresh logic for profile update caching issues
+
   // This effect runs when we return from profile editing via a browser reload
   useEffect(() => {
-    const justEdited = localStorage.getItem('justEditedProfile');
-    const editTimestamp = localStorage.getItem('profileEditTimestamp');
-    const redirectToProfile = localStorage.getItem('redirectToProfile');
+    // Check for edit completion timestamp in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const editTimestamp = urlParams.get('edit_complete');
     
-    if (justEdited === 'true' && editTimestamp) {
+    if (editTimestamp) {
       console.log(`Detected return from profile editing (timestamp: ${new Date(parseInt(editTimestamp)).toLocaleTimeString()}) - executing enhanced refresh procedure`);
       
-      // Clear the flags to prevent continuous refresh
-      localStorage.removeItem('justEditedProfile');
-      localStorage.removeItem('redirectToProfile');
+      // Clear the query param without changing the rest of the URL
+      window.history.replaceState({}, document.title, window.location.pathname);
       
-      // Check if we have whatIOffer stored in localStorage
-      const storedWhatIOffer = localStorage.getItem('whatIOffer_saved');
-      const storedWhatIOfferTimestamp = localStorage.getItem('whatIOffer_savedAt');
-      let appliedCachedWhatIOffer = false;
+      // Force a refetch of user data
+      refetchUserData();
       
-      if (storedWhatIOffer && storedWhatIOfferTimestamp) {
-        const timestamp = parseInt(storedWhatIOfferTimestamp);
-        const timeAgo = Date.now() - timestamp;
-        const FIVE_MINUTES = 5 * 60 * 1000;
+      // Show success message
+      toast({
+        title: "Profile Updated",
+        description: "Your profile has been successfully updated",
+        variant: "default",
+      });
+    }
+  }, []);
+  
+  // Update local form state when user data is fetched
+  useEffect(() => {
+    if (userData) {
+      // Initialize selectedIndustry and selectedDomain based on userData
+      if (userData.industry) {
+        setSelectedIndustry(userData.industry);
         
-        if (timeAgo < FIVE_MINUTES) {
-          console.log("Found recent cached whatIOffer value:", storedWhatIOffer);
-          console.log(`Saved ${Math.round(timeAgo/1000)}s ago - applying to ensure consistency`);
-          
-          // Keep this value as a backup until we confirm it's properly saved in DB
-          appliedCachedWhatIOffer = true;
-          
-          // Apply this backup directly to the form data
-          setFormData(prev => ({
-            ...prev,
-            whatIOffer: storedWhatIOffer
-          }));
-          
-          // Also directly attempt to save it using our direct API
-          if (userNumericId) {
-            try {
-              console.log("Applying cached whatIOffer directly to ensure consistency");
-              fetch(`/api/users/${userNumericId}/what-i-offer`, {
-                method: 'PUT',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Cache-Control': 'no-cache',
-                },
-                body: JSON.stringify({ 
-                  whatIOffer: storedWhatIOffer,
-                  _recovery: true 
-                }),
-              });
-            } catch (error) {
-              console.error("Error applying cached whatIOffer:", error);
-            }
+        // Initialize domain if the industry exists and has a matching domain
+        if (userData.domain && INDUSTRY_DOMAINS[userData.industry]) {
+          // Check if the domain is valid for the industry
+          if (INDUSTRY_DOMAINS[userData.industry].includes(userData.domain)) {
+            setSelectedDomain(userData.domain);
           }
-        } else {
-          console.log(`Found cached whatIOffer value but it's too old (${Math.round(timeAgo/60000)}min ago)`);
-          localStorage.removeItem('whatIOffer_saved');
-          localStorage.removeItem('whatIOffer_savedAt');
         }
       }
       
-      // Clear other whatIOffer related flags
-      localStorage.removeItem('whatIOffer_value');
-      localStorage.removeItem('whatIOffer_pendingUpdate');
-      
-      // 1. First completely clear the React Query cache
-      queryClient.clear();
-      
-      // 2. Force immediate data refetching with fresh timestamps
-      const fetchFreshData = async () => {
-        if (userNumericId) {
-          console.log("Executing multi-stage refresh procedure for user ID:", userNumericId, 
-                      appliedCachedWhatIOffer ? "(with cached whatIOffer backup)" : "");
-          
-          try {
-            // Direct fetch with cache-busting timestamp
-            const cacheBuster = Date.now();
-            console.log("Forcing fresh fetch of user data for ID:", userNumericId);
-            
-            const response = await fetch(`/api/users/${userNumericId}?_cb=${cacheBuster}`, {
-              headers: {
-                'Cache-Control': 'no-cache, no-store, must-revalidate',
-                'Pragma': 'no-cache',
-                'Expires': '0'
-              }
-            });
-            
-            if (response.ok) {
-              const freshData = await response.json();
-              console.log("Fresh user data fetched:", freshData);
-              console.log("whatIOffer field value:", freshData.whatIOffer);
-              
-              // Store the fetched data in localStorage as well as a backup
-              try {
-                localStorage.setItem('cachedUserData', JSON.stringify(freshData));
-                console.log("Cached user data in localStorage");
-              } catch (err) {
-                console.error("Failed to cache user data in localStorage", err);
-              }
-              
-              // Update the query cache with the fresh data
-              // FIXED: Use consistent query key format 
-              queryClient.setQueryData(['/api/users', userNumericId], freshData);
-              
-              // If we have a stored whatIOffer value from the edit page, verify it matches what we got from the server
-              if (storedWhatIOffer && storedWhatIOffer !== freshData.whatIOffer) {
-                console.warn("Mismatch between stored whatIOffer and server data:", {
-                  stored: storedWhatIOffer,
-                  server: freshData.whatIOffer
-                });
-              }
-            } else {
-              console.error("Failed to fetch fresh user data:", await response.text());
-            }
-          } catch (error) {
-            console.error("Error fetching fresh user data:", error);
-          }
-        }
-      };
-      
-      // Execute the multi-stage refresh procedure
-      fetchFreshData();
-      
-      // 3. Also use the built-in React Query refetch methods
-      setTimeout(() => {
-        // Refetch everything through the standard mechanisms too
-        console.log("Executing multi-query refetch operation");
-        try {
-          refetchUserData();
-          refetchSkills();
-          refetchExperiences();
-          refetchProjects();
-          refetchEducation();
-          refetchServices();
-          
-          console.log("All refetch operations successfully triggered");
-        } catch (refetchError) {
-          console.error("Error in refetch operations:", refetchError);
-        }
-      }, 200);
-    }
-  }, [queryClient, userNumericId]);
-  
-  // Debug logging for userData with detailed field inspection
-  useEffect(() => {
-    console.log("Current userData:", userData);
-    if (userData?.id) {
-      console.log(`Using numeric user ID: ${userData.id} for data fetching`);
-      
-      // Detailed field inspection for debugging
-      console.log("PROFILE DATA INSPECTION:");
-      console.log(`- name: "${userData.name || 'MISSING'}"`);
-      console.log(`- location: "${userData.location || 'MISSING'}"`);
-      console.log(`- title: "${userData.title || 'MISSING'}"`);
-      console.log(`- aboutMe: "${userData.aboutMe || 'MISSING'}"`);
-      console.log(`- lookingFor: "${userData.lookingFor || 'MISSING'}"`);
-      console.log(`- industry: "${userData.industry || 'MISSING'}"`);
-      console.log(`- domain: "${userData.domain || 'MISSING'}"`);
-      
-      // Update form data with the latest userData
-      setFormData(prevData => ({
-        ...prevData,
+      // Update form data
+      setFormData({
         name: userData.name || '',
         title: userData.title || '',
+        jobLevel: userData.jobLevel || '',
         location: userData.location || '',
         industry: userData.industry || '',
         domain: userData.domain || '',
         lookingFor: userData.lookingFor || '',
         aboutMe: userData.aboutMe || '',
         whatIOffer: userData.whatIOffer || ''
-      }));
+      });
     }
   }, [userData]);
   
-  // Special query for the dedicated "What I Offer" field using our special endpoint
-  const { data: whatIOfferData, refetch: refetchWhatIOffer } = useQuery({
-    queryKey: ['/api/users', userNumericId, 'what-i-offer'],  // Removed timestamp to maintain consistent cache
-    queryFn: async () => {
-      if (!userNumericId) return null;
-      
-      console.log("Fetching whatIOffer field with dedicated endpoint");
-      try {
-        // Use our dedicated endpoint to get just the whatIOffer field
-        const response = await fetch(`/api/users/${userNumericId}/what-i-offer?_t=${Date.now()}`, {  // Add timestamp here instead
-          method: 'GET',
-          headers: {
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-          }
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          console.log("Fetched whatIOffer with dedicated endpoint:", data);
-          return data;
-        } else {
-          console.error("Dedicated whatIOffer endpoint failed:", response.status);
-          return null;
-        }
-      } catch (error) {
-        console.error("Error fetching whatIOffer with dedicated endpoint:", error);
-        return null;
-      }
-    },
-    enabled: !!userNumericId,
-    staleTime: 0,
-    gcTime: 0,
-    refetchOnMount: "always"
-  });
+  // State for profile sidebar
+  const [showAboutMeEdit, setShowAboutMeEdit] = useState(false);
+  const [showWhatIOfferEdit, setShowWhatIOfferEdit] = useState(false);
+  const [aboutMeText, setAboutMeText] = useState('');
+  const [whatIOfferText, setWhatIOfferText] = useState('');
   
-  // Use the whatIOffer field from our special query if the main userData doesn't have it
-  useEffect(() => {
-    if (userData && whatIOfferData && whatIOfferData.whatIOffer) {
-      // Only update if the main userData is missing the field or it's different
-      if (!userData.whatIOffer || userData.whatIOffer !== whatIOfferData.whatIOffer) {
-        console.log("Updating whatIOffer field from dedicated endpoint:", whatIOfferData.whatIOffer);
-        
-        // Create an updated user object with the correct whatIOffer field
-        const updatedUserData = {
-          ...userData,
-          whatIOffer: whatIOfferData.whatIOffer
-        };
-        
-        // Update the React Query cache with consistent key formats
-        queryClient.setQueryData(['/api/users', userData.id], updatedUserData);
-        
-        // Also update if the cache used a string version of the ID
-        if (typeof userData.id === 'number') {
-          queryClient.setQueryData(['/api/users', userData.id.toString()], updatedUserData);
-        }
-      }
-    }
-  }, [userData, whatIOfferData]);
+  // Handle showing the about me edit dialog
+  const handleShowAboutMeEdit = () => {
+    setAboutMeText(userData?.aboutMe || '');
+    setShowAboutMeEdit(true);
+  };
   
-  // Check for profile edit flag in localStorage
-  useEffect(() => {
-    const justEditedProfile = localStorage.getItem('justEditedProfile');
-    const profileEditTimestamp = localStorage.getItem('profileEditTimestamp');
-    
-    if (justEditedProfile === 'true') {
-      console.log('Detected profile edit from Edit Profile page');
-      
-      // Clear flag
-      localStorage.removeItem('justEditedProfile');
-      
-      // Force refresh all data
-      setTimeout(() => {
-        refetchUserData();
-        refetchSkills();
-        refetchExperiences();
-        refetchEducation();
-        refetchProjects();
-        refetchServices();
-        refetchWhatIOffer();
-      }, 300);
-    }
-  }, []);
-
-  // Fetch user skills for the badges
-  const { data: skills = [], isLoading: isLoadingSkills, refetch: refetchSkills } = useQuery<any[]>({
-    queryKey: ['/api/users', userNumericId, 'skills'], // FIXED: Use consistent array format
-    queryFn: async () => {
-      if (!userNumericId) return [];
-      const response = await apiRequest('GET', `/api/users/${userNumericId}/skills`);
-      return response;
-    },
-    enabled: !!userNumericId && isAuthenticated,
-    staleTime: 1000, // Consider data stale after 1 second to force refresh
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
-  });
+  // Handle showing the what I offer edit dialog
+  const handleShowWhatIOfferEdit = () => {
+    setWhatIOfferText(userData?.whatIOffer || '');
+    setShowWhatIOfferEdit(true);
+  };
   
-  // Fetch user experiences for profile completion calculation
-  const { data: experiences = [], isLoading: isLoadingExperiences, refetch: refetchExperiences } = useQuery<any[]>({
-    queryKey: ['/api/users', userNumericId, 'experiences'], // FIXED: Use consistent array format
-    queryFn: async () => {
-      if (!userNumericId) return [];
-      try {
-        const response = await apiRequest('GET', `/api/users/${userNumericId}/experiences`);
-        // Ensure we always return an array
-        return Array.isArray(response) ? response : [];
-      } catch (error) {
-        console.error("Error fetching experiences:", error);
-        return [];
-      }
-    },
-    enabled: !!userNumericId && isAuthenticated,
-    staleTime: 1000,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
-  });
-  
-  // Fetch user educations for profile completion calculation
-  const { data: educations = [], isLoading: isLoadingEducations, refetch: refetchEducation } = useQuery<any[]>({
-    queryKey: ['/api/users', userNumericId, 'educations'], // FIXED: Use consistent array format
-    queryFn: async () => {
-      if (!userNumericId) return [];
-      try {
-        const response = await apiRequest('GET', `/api/users/${userNumericId}/educations`);
-        // Ensure we always return an array
-        return Array.isArray(response) ? response : [];
-      } catch (error) {
-        console.error("Error fetching educations:", error);
-        return [];
-      }
-    },
-    enabled: !!userNumericId && isAuthenticated,
-    staleTime: 1000,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
-  });
-  
-  // Fetch user projects for profile completion calculation
-  const { data: projects = [], isLoading: isLoadingProjects, refetch: refetchProjects } = useQuery<any[]>({
-    queryKey: ['/api/users', userNumericId, 'projects'], // FIXED: Use consistent array format
-    queryFn: async () => {
-      if (!userNumericId) return [];
-      try {
-        const response = await apiRequest('GET', `/api/users/${userNumericId}/projects`);
-        // Ensure we always return an array
-        return Array.isArray(response) ? response : [];
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-        return [];
-      }
-    },
-    enabled: !!userNumericId && isAuthenticated,
-    staleTime: 1000,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
-  });
-  
-  // Fetch user services via the unified profile-services endpoint for consistency with Edit Profile
-  const { data: profileServicesData, isLoading: isLoadingServices, refetch: refetchServices } = useQuery({
-    queryKey: ['/api/users', userNumericId, 'profile-services'],
-    queryFn: async () => {
-      if (!userNumericId) return { services: [] };
-      try {
-        console.log("Profile page - Fetching profile-services data");
-        const response = await apiRequest('GET', `/api/users/${userNumericId}/profile-services`);
-        console.log("Profile page - profile-services response:", response);
-        return response || { services: [] };
-      } catch (error) {
-        console.error("Error fetching profile services:", error);
-        return { services: [] };
-      }
-    },
-    enabled: !!userNumericId && isAuthenticated,
-    staleTime: 0, // Always fetch fresh data
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
-  });
-  
-  // Mutation for updating user basic info
-  const updateUserMutation = useMutation({
-    mutationFn: async (data: any) => {
-      const res = await apiRequest('PUT', `/api/users/${userId}`, data);
-      return res;
-    },
-    onSuccess: async (data) => {
-      console.log("Profile update mutation succeeded with data:", data);
-      
-      // Clear all caches to ensure fresh data
-      queryClient.clear();
-      
-      // Invalidate all related queries using the correct query key format
-      await queryClient.invalidateQueries({ queryKey: ['/api/users'] });
-      await queryClient.invalidateQueries({ queryKey: ['/api/users', userId] });
-      
-      if (userNumericId) {
-        await queryClient.invalidateQueries({ queryKey: ['/api/users', userNumericId] });
-        await queryClient.invalidateQueries({ queryKey: ['/api/users', userNumericId, 'profile-services'] });
-        await queryClient.invalidateQueries({ queryKey: ['/api/users', userNumericId, 'what-i-offer'] });
-        await queryClient.invalidateQueries({ queryKey: ['/api/users', userNumericId, 'services'] });
-        
-        // Also invalidate nested resource endpoints using the consistent format
-        await queryClient.invalidateQueries({ queryKey: ['/api/users', userNumericId, 'skills'] });
-        await queryClient.invalidateQueries({ queryKey: ['/api/users', userNumericId, 'experiences'] });
-        await queryClient.invalidateQueries({ queryKey: ['/api/users', userNumericId, 'educations'] });
-        await queryClient.invalidateQueries({ queryKey: ['/api/users', userNumericId, 'projects'] });
+  // Save about me text
+  const saveAboutMe = async () => {
+    try {
+      if (!userId) {
+        throw new Error("User ID is required");
       }
       
-      // Add a short delay to ensure the server has processed the update
-      await new Promise(resolve => setTimeout(resolve, 300));
-      
-      // Set flag for cross-page synchronization
-      localStorage.setItem('justEditedProfile', 'true');
-      localStorage.setItem('profileEditTimestamp', Date.now().toString());
-      
-      // Manually refetch the user data and all related data
-      refetchUserData();
-      refetchSkills();
-      refetchExperiences();
-      refetchEducation();
-      refetchProjects();
-      refetchServices();
-      refetchWhatIOffer();
-      
-      // Clear localStorage cache and update with fresh data
-      try {
-        localStorage.removeItem('cachedUserData');
-        if (data) {
-          localStorage.setItem('cachedUserData', JSON.stringify(data));
-        }
-      } catch (err) {
-        console.error("Failed to update localStorage cache:", err);
-      }
-      
-      toast({
-        title: "Profile updated",
-        description: "Your profile information has been updated successfully! Changes will appear shortly.",
+      const response = await apiRequest('PATCH', `/api/users/${userId}`, {
+        aboutMe: aboutMeText
       });
       
+      if (response) {
+        // Update the userData in the query cache
+        queryClient.setQueryData(['/api/users', userId], {
+          ...userData,
+          aboutMe: aboutMeText
+        });
+        
+        toast({
+          title: "About Me updated",
+          description: "Your profile has been successfully updated",
+          variant: "default",
+        });
+        
+        setShowAboutMeEdit(false);
+      }
+    } catch (error) {
+      console.error("Failed to update About Me:", error);
+      
+      toast({
+        title: "Error",
+        description: "Failed to update your profile. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+  
+  // Save what I offer text
+  const saveWhatIOffer = async () => {
+    try {
+      if (!userId) {
+        throw new Error("User ID is required");
+      }
+      
+      const response = await apiRequest('PATCH', `/api/users/${userId}`, {
+        whatIOffer: whatIOfferText
+      });
+      
+      if (response) {
+        // Update the userData in the query cache
+        queryClient.setQueryData(['/api/users', userId], {
+          ...userData,
+          whatIOffer: whatIOfferText
+        });
+        
+        toast({
+          title: "What I Offer updated",
+          description: "Your profile has been successfully updated",
+          variant: "default",
+        });
+        
+        setShowWhatIOfferEdit(false);
+      }
+    } catch (error) {
+      console.error("Failed to update What I Offer:", error);
+      
+      toast({
+        title: "Error",
+        description: "Failed to update your profile. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+  
+  // Find the domain values for the current industry
+  const availableDomains = selectedIndustry ? INDUSTRY_DOMAINS[selectedIndustry] || [] : [];
+  
+  // Handler for industry change
+  const handleIndustryChange = (value: string) => {
+    setSelectedIndustry(value);
+    setSelectedDomain(''); // Reset domain when industry changes
+  };
+  
+  // Helper function to get user's numeric ID for APIs that require it
+  const userNumericId = userData?.id || null;
+  
+  // Calculate profile completion percentage
+  const profileCompletionPercentage = userData ? calculateOverallProfileCompletion(userData) : 0;
+  
+  // Helper function to find the label for a looking for category
+  const getLookingForLabel = (value: string) => {
+    const category = LOOKING_FOR_CATEGORIES.find(cat => cat.value === value);
+    return category ? category.label : value;
+  };
+  
+  // Basic info update mutation
+  const updateBasicInfoMutation = useMutation({
+    mutationFn: async (data: any) => {
+      if (!userId) {
+        throw new Error("User ID is required");
+      }
+      
+      return apiRequest('PATCH', `/api/users/${userId}`, data);
+    },
+    onSuccess: () => {
+      // Invalidate and refetch user data
+      queryClient.invalidateQueries({ queryKey: ['/api/users', userId] });
+      
+      // Show success message
+      toast({
+        title: "Profile Updated",
+        description: "Your basic information has been successfully updated",
+        variant: "default",
+      });
+      
+      // Close dialog
       setShowEditBasicInfo(false);
     },
-    onError: (error: Error) => {
+    onError: (error) => {
+      console.error("Failed to update profile:", error);
+      
       toast({
-        title: "Error updating profile",
-        description: error.message,
+        title: "Error",
+        description: "Failed to update your profile. Please try again.",
         variant: "destructive",
       });
     }
   });
-
-  // List of popular cities for location suggestions
-  const popularLocations = [
-    // North America - USA
-    "New York, NY, USA",
-    "San Francisco, CA, USA",
-    "Los Angeles, CA, USA",
-    "Chicago, IL, USA",
-    "Seattle, WA, USA",
-    "Austin, TX, USA",
-    "Boston, MA, USA",
-    "Denver, CO, USA",
-    "Atlanta, GA, USA",
-    "Portland, OR, USA",
-    "Washington, DC, USA",
-    "San Diego, CA, USA",
-    "Miami, FL, USA",
-    "Dallas, TX, USA",
-    "Houston, TX, USA",
-    "Phoenix, AZ, USA",
-    "Philadelphia, PA, USA",
-    "Las Vegas, NV, USA",
-    "Detroit, MI, USA",
-    "Minneapolis, MN, USA",
-    "Nashville, TN, USA",
-    "Charlotte, NC, USA",
-    "Raleigh, NC, USA",
-    "Indianapolis, IN, USA",
-    "Columbus, OH, USA",
-    "Cleveland, OH, USA",
-    "Pittsburgh, PA, USA",
-    "Kansas City, MO, USA",
-    "St. Louis, MO, USA",
-    "Salt Lake City, UT, USA",
-    "Orlando, FL, USA",
-    "Tampa, FL, USA",
-    "New Orleans, LA, USA",
-    "Honolulu, HI, USA",
-    "Anchorage, AK, USA",
-    "San Jose, CA, USA",
-    "Sacramento, CA, USA",
-    "Oakland, CA, USA",
-    "Cincinnati, OH, USA",
-    "Buffalo, NY, USA",
-    "Baltimore, MD, USA",
-    "San Antonio, TX, USA",
-    "Milwaukee, WI, USA",
-    "Albuquerque, NM, USA",
-    "Tucson, AZ, USA",
-    "Fresno, CA, USA",
-    "Long Beach, CA, USA",
-    "Omaha, NE, USA",
-    "Oklahoma City, OK, USA",
-    "Louisville, KY, USA",
-    "Memphis, TN, USA",
-    "Tulsa, OK, USA",
-    "Fort Worth, TX, USA",
-    "El Paso, TX, USA",
-    "Boise, ID, USA",
-    "Richmond, VA, USA",
-    "Birmingham, AL, USA",
-    "Providence, RI, USA",
-    "Jacksonville, FL, USA",
-    "Albany, NY, USA",
-    "Rochester, NY, USA",
-    "Baton Rouge, LA, USA",
-    "Des Moines, IA, USA",
-    "Charleston, SC, USA",
-    "Savannah, GA, USA",
-    "Madison, WI, USA",
-    "Boulder, CO, USA",
-    "Ann Arbor, MI, USA",
-    "Eugene, OR, USA",
-    "Santa Fe, NM, USA",
-    "Asheville, NC, USA",
-    "Spokane, WA, USA",
-    "Tacoma, WA, USA",
-    // Canada
-    "Toronto, Canada",
-    "Vancouver, Canada",
-    "Montreal, Canada",
-    "Calgary, Canada",
-    "Ottawa, Canada",
-    "Edmonton, Canada",
-    "Winnipeg, Canada",
-    "Quebec City, Canada",
-    "Hamilton, Canada",
-    "Halifax, Canada",
-    "Victoria, Canada",
-    "London, Canada",
-    "Kitchener, Canada",
-    "Windsor, Canada",
-    "Oshawa, Canada",
-    "Saskatoon, Canada",
-    "Regina, Canada",
-    "St. John's, Canada",
-    "Kelowna, Canada",
-    "Abbotsford, Canada",
-    "Kingston, Canada",
-    "Guelph, Canada",
-    "Barrie, Canada",
-    "Moncton, Canada",
-    "Thunder Bay, Canada",
-    "Fredericton, Canada",
-    "Sherbrooke, Canada",
-    "Red Deer, Canada",
-    "Sudbury, Canada",
-    "Kamloops, Canada",
-    "Chilliwack, Canada",
-    "Niagara Falls, Canada",
-    "Gatineau, Canada",
-    "Lethbridge, Canada",
-    "Saint John, Canada",
-    "Nanaimo, Canada",
-    "Burnaby, Canada",
-    "Richmond, Canada",
-    "Surrey, Canada",
-    "Mississauga, Canada",
-    "Brampton, Canada",
-    "Markham, Canada",
-    "Vaughan, Canada",
-    "Burlington, Canada",
-    "Oakville, Canada",
-    "Richmond Hill, Canada",
-    "Mexico City, Mexico",
-    "Guadalajara, Mexico",
-    "Monterrey, Mexico",
-    "Cancun, Mexico",
-    "Tijuana, Mexico",
-    
-    // Europe
-    "London, UK",
-    "Manchester, UK",
-    "Edinburgh, UK",
-    "Glasgow, UK",
-    "Birmingham, UK",
-    "Liverpool, UK",
-    "Bristol, UK",
-    "Leeds, UK",
-    "Cardiff, UK",
-    "Dublin, Ireland",
-    "Cork, Ireland",
-    "Galway, Ireland",
-    "Paris, France",
-    "Lyon, France",
-    "Nice, France",
-    "Marseille, France",
-    "Bordeaux, France",
-    "Toulouse, France",
-    "Strasbourg, France",
-    "Berlin, Germany",
-    "Munich, Germany",
-    "Hamburg, Germany",
-    "Cologne, Germany",
-    "Frankfurt, Germany",
-    "Stuttgart, Germany",
-    "Düsseldorf, Germany",
-    "Dresden, Germany",
-    "Leipzig, Germany",
-    "Amsterdam, Netherlands",
-    "Rotterdam, Netherlands",
-    "Utrecht, Netherlands",
-    "The Hague, Netherlands",
-    "Eindhoven, Netherlands",
-    "Madrid, Spain",
-    "Barcelona, Spain",
-    "Valencia, Spain",
-    "Seville, Spain",
-    "Malaga, Spain",
-    "Bilbao, Spain",
-    "Lisbon, Portugal",
-    "Porto, Portugal",
-    "Rome, Italy",
-    "Milan, Italy",
-    "Florence, Italy",
-    "Naples, Italy",
-    "Turin, Italy",
-    "Bologna, Italy",
-    "Venice, Italy",
-    "Palermo, Italy",
-    "Vienna, Austria",
-    "Salzburg, Austria",
-    "Innsbruck, Austria",
-    "Graz, Austria",
-    "Zurich, Switzerland",
-    "Geneva, Switzerland",
-    "Basel, Switzerland",
-    "Bern, Switzerland",
-    "Lausanne, Switzerland",
-    "Brussels, Belgium",
-    "Antwerp, Belgium",
-    "Ghent, Belgium",
-    "Bruges, Belgium",
-    "Copenhagen, Denmark",
-    "Aarhus, Denmark",
-    "Odense, Denmark",
-    "Oslo, Norway",
-    "Bergen, Norway",
-    "Trondheim, Norway",
-    "Stockholm, Sweden",
-    "Gothenburg, Sweden",
-    "Malmö, Sweden",
-    "Helsinki, Finland",
-    "Tampere, Finland",
-    "Turku, Finland",
-    "Reykjavik, Iceland",
-    "Prague, Czech Republic",
-    "Brno, Czech Republic",
-    "Warsaw, Poland",
-    "Krakow, Poland",
-    "Gdansk, Poland",
-    "Wroclaw, Poland",
-    "Poznan, Poland",
-    "Budapest, Hungary",
-    "Debrecen, Hungary",
-    "Bratislava, Slovakia",
-    "Ljubljana, Slovenia",
-    "Zagreb, Croatia",
-    "Split, Croatia",
-    "Dubrovnik, Croatia",
-    "Belgrade, Serbia",
-    "Sarajevo, Bosnia and Herzegovina",
-    "Skopje, North Macedonia",
-    "Tirana, Albania",
-    "Sofia, Bulgaria",
-    "Bucharest, Romania",
-    "Cluj-Napoca, Romania",
-    "Athens, Greece",
-    "Thessaloniki, Greece",
-    "Heraklion, Greece",
-    "Nicosia, Cyprus",
-    "Valletta, Malta",
-    "Tallinn, Estonia",
-    "Riga, Latvia",
-    "Vilnius, Lithuania",
-    "Minsk, Belarus",
-    "Kiev, Ukraine",
-    "Lviv, Ukraine",
-    "Odessa, Ukraine",
-    "Moscow, Russia",
-    "Saint Petersburg, Russia",
-    "Kazan, Russia",
-    "Yekaterinburg, Russia",
-    
-    // Asia - East Asia
-    "Tokyo, Japan",
-    "Osaka, Japan",
-    "Kyoto, Japan",
-    "Sapporo, Japan",
-    "Fukuoka, Japan",
-    "Nagoya, Japan",
-    "Yokohama, Japan",
-    "Kobe, Japan",
-    "Hiroshima, Japan",
-    "Nara, Japan",
-    "Sendai, Japan",
-    "Kawasaki, Japan",
-    "Okinawa, Japan",
-    "Seoul, South Korea",
-    "Busan, South Korea",
-    "Incheon, South Korea",
-    "Daegu, South Korea",
-    "Daejeon, South Korea",
-    "Gwangju, South Korea",
-    "Suwon, South Korea",
-    "Ulsan, South Korea",
-    "Jeju, South Korea",
-    "Beijing, China",
-    "Shanghai, China",
-    "Guangzhou, China",
-    "Shenzhen, China",
-    "Chengdu, China",
-    "Hangzhou, China",
-    "Nanjing, China",
-    "Wuhan, China",
-    "Tianjin, China",
-    "Xian, China",
-    "Chongqing, China",
-    "Suzhou, China",
-    "Qingdao, China",
-    "Dalian, China",
-    "Xiamen, China",
-    "Kunming, China",
-    "Changsha, China",
-    "Zhengzhou, China",
-    "Hong Kong",
-    "Macau",
-    "Taipei, Taiwan",
-    "Kaohsiung, Taiwan",
-    "Taichung, Taiwan",
-    "Tainan, Taiwan",
-    "Hsinchu, Taiwan",
-    "Ulaanbaatar, Mongolia",
-    
-    // Asia - Southeast Asia
-    "Singapore",
-    "Kuala Lumpur, Malaysia",
-    "Penang, Malaysia",
-    "Johor Bahru, Malaysia",
-    "Ipoh, Malaysia",
-    "Kuching, Malaysia",
-    "Kota Kinabalu, Malaysia",
-    "Bangkok, Thailand",
-    "Chiang Mai, Thailand",
-    "Phuket, Thailand",
-    "Pattaya, Thailand",
-    "Krabi, Thailand",
-    "Hua Hin, Thailand",
-    "Jakarta, Indonesia",
-    "Bali, Indonesia",
-    "Surabaya, Indonesia",
-    "Bandung, Indonesia",
-    "Yogyakarta, Indonesia",
-    "Medan, Indonesia",
-    "Makassar, Indonesia",
-    "Manila, Philippines",
-    "Cebu, Philippines",
-    "Davao, Philippines",
-    "Boracay, Philippines",
-    "Baguio, Philippines",
-    "Ho Chi Minh City, Vietnam",
-    "Hanoi, Vietnam",
-    "Da Nang, Vietnam",
-    "Hoi An, Vietnam",
-    "Nha Trang, Vietnam",
-    "Hue, Vietnam",
-    "Phnom Penh, Cambodia",
-    "Siem Reap, Cambodia",
-    "Vientiane, Laos",
-    "Luang Prabang, Laos",
-    "Yangon, Myanmar",
-    "Mandalay, Myanmar",
-    "Brunei",
-    // India
-    "Mumbai, India",
-    "Delhi, India",
-    "Bangalore, India",
-    "Chennai, India",
-    "Kolkata, India",
-    "Hyderabad, India",
-    "Pune, India",
-    "Ahmedabad, India",
-    "Gandhinagar, India",
-    "Jaipur, India",
-    "Lucknow, India",
-    "Chandigarh, India",
-    "Kochi, India",
-    "Goa, India",
-    "Nagpur, India",
-    "Indore, India",
-    "Thane, India",
-    "Bhopal, India",
-    "Visakhapatnam, India",
-    "Surat, India",
-    "Vadodara, India",
-    "Ludhiana, India",
-    "Agra, India",
-    "Nashik, India",
-    "Faridabad, India",
-    "Meerut, India",
-    "Rajkot, India",
-    "Varanasi, India",
-    "Srinagar, India",
-    "Aurangabad, India",
-    "Dhanbad, India",
-    "Amritsar, India",
-    "Allahabad, India",
-    "Ranchi, India",
-    "Coimbatore, India",
-    "Jabalpur, India",
-    "Gwalior, India",
-    "Vijayawada, India",
-    "Jodhpur, India",
-    "Madurai, India",
-    "Raipur, India",
-    "Kota, India",
-    "Guwahati, India",
-    "Trivandrum, India",
-    "Tiruchirapalli, India",
-    "Hubli, India",
-    "Mangalore, India",
-    "Mysore, India",
-    "Dehradun, India",
-    "Bhubaneswar, India",
-    "Salem, India",
-    "Warangal, India",
-    "Jamshedpur, India",
-    "Noida, India",
-    "Gurgaon, India",
-    "Thiruvananthapuram, India",
-    "Patna, India",
-    "Pimpri-Chinchwad, India",
-    "Durgapur, India",
-    "Gangtok, India",
-    "Shimla, India",
-    "Ooty, India",
-    "Rishikesh, India",
-    "Udaipur, India",
-    "Haridwar, India",
-    "Jammu, India",
-    "Mussoorie, India",
-    "Nainital, India",
-    "Darjeeling, India",
-    "Panaji, India",
-    "Dharamshala, India",
-    "Shillong, India",
-    "Port Blair, India",
-    "Manali, India",
-    "Kanpur, India",
-    // West Asia & Middle East
-    "Dubai, UAE",
-    "Abu Dhabi, UAE",
-    "Sharjah, UAE",
-    "Al Ain, UAE",
-    "Ras Al Khaimah, UAE",
-    "Fujairah, UAE",
-    "Ajman, UAE",
-    "Umm Al Quwain, UAE",
-    "Istanbul, Turkey",
-    "Ankara, Turkey",
-    "Antalya, Turkey",
-    "Izmir, Turkey",
-    "Bursa, Turkey",
-    "Adana, Turkey",
-    "Konya, Turkey",
-    "Bodrum, Turkey",
-    "Cappadocia, Turkey",
-    "Tel Aviv, Israel",
-    "Jerusalem, Israel",
-    "Haifa, Israel",
-    "Eilat, Israel",
-    "Amman, Jordan",
-    "Petra, Jordan",
-    "Aqaba, Jordan",
-    "Beirut, Lebanon",
-    "Byblos, Lebanon",
-    "Tripoli, Lebanon",
-    "Doha, Qatar",
-    "Riyadh, Saudi Arabia",
-    "Jeddah, Saudi Arabia",
-    "Mecca, Saudi Arabia",
-    "Medina, Saudi Arabia",
-    "Dammam, Saudi Arabia",
-    "Muscat, Oman",
-    "Salalah, Oman",
-    "Kuwait City, Kuwait",
-    "Manama, Bahrain",
-    
-    // South Asia
-    "Lahore, Pakistan",
-    "Karachi, Pakistan",
-    "Islamabad, Pakistan",
-    "Peshawar, Pakistan",
-    "Faisalabad, Pakistan",
-    "Multan, Pakistan",
-    "Rawalpindi, Pakistan",
-    "Quetta, Pakistan",
-    "Kathmandu, Nepal",
-    "Pokhara, Nepal",
-    "Dhaka, Bangladesh",
-    "Chittagong, Bangladesh",
-    "Sylhet, Bangladesh",
-    "Khulna, Bangladesh",
-    "Colombo, Sri Lanka",
-    "Kandy, Sri Lanka",
-    "Galle, Sri Lanka",
-    "Male, Maldives",
-    "Thimphu, Bhutan",
-    
-    // Australia
-    "Sydney, Australia",
-    "Melbourne, Australia",
-    "Brisbane, Australia",
-    "Perth, Australia",
-    "Adelaide, Australia",
-    "Gold Coast, Australia",
-    "Canberra, Australia",
-    "Hobart, Australia",
-    "Darwin, Australia",
-    "Newcastle, Australia",
-    "Wollongong, Australia",
-    "Geelong, Australia",
-    "Cairns, Australia",
-    "Townsville, Australia",
-    "Alice Springs, Australia",
-    "Sunshine Coast, Australia",
-    "Toowoomba, Australia",
-    "Ballarat, Australia",
-    "Bendigo, Australia",
-    "Mandurah, Australia",
-    "Albury, Australia",
-    "Wodonga, Australia",
-    "Launceston, Australia",
-    "Mackay, Australia",
-    "Rockhampton, Australia",
-    "Bunbury, Australia",
-    "Bundaberg, Australia",
-    "Hervey Bay, Australia",
-    "Wagga Wagga, Australia",
-    "Coffs Harbour, Australia",
-    "Gladstone, Australia",
-    "Mildura, Australia",
-    "Shepparton, Australia",
-    "Port Macquarie, Australia",
-    "Tamworth, Australia",
-    "Orange, Australia",
-    "Dubbo, Australia",
-    "Geraldton, Australia",
-    // New Zealand
-    "Auckland, New Zealand",
-    "Wellington, New Zealand",
-    "Christchurch, New Zealand",
-    "Queenstown, New Zealand",
-    "Dunedin, New Zealand",
-    "Hamilton, New Zealand",
-    "Tauranga, New Zealand",
-    "Napier-Hastings, New Zealand",
-    "Palmerston North, New Zealand",
-    "Nelson, New Zealand",
-    "Rotorua, New Zealand",
-    "New Plymouth, New Zealand",
-    "Whangarei, New Zealand",
-    "Invercargill, New Zealand",
-    "Whanganui, New Zealand",
-    "Gisborne, New Zealand",
-    "Timaru, New Zealand",
-    "Taupo, New Zealand",
-    "Blenheim, New Zealand",
-    "Pukekohe, New Zealand",
-    "Cambridge, New Zealand",
-    "Te Awamutu, New Zealand",
-    "Oamaru, New Zealand",
-    "Whakatane, New Zealand",
-    "Kerikeri, New Zealand",
-    "Ashburton, New Zealand",
-    "Rangiora, New Zealand",
-    "Paraparaumu, New Zealand",
-    "Motueka, New Zealand",
-    "Suva, Fiji",
-    "Port Moresby, Papua New Guinea",
-    "Nouméa, New Caledonia",
-    "Port Vila, Vanuatu",
-    "Apia, Samoa",
-    "Nuku'alofa, Tonga",
-    "Honolulu, Hawaii, USA",
-    
-    // Africa
-    "Cairo, Egypt",
-    "Alexandria, Egypt",
-    "Johannesburg, South Africa",
-    "Cape Town, South Africa",
-    "Durban, South Africa",
-    "Pretoria, South Africa",
-    "Lagos, Nigeria",
-    "Abuja, Nigeria",
-    "Nairobi, Kenya",
-    "Mombasa, Kenya",
-    "Casablanca, Morocco",
-    "Marrakech, Morocco",
-    "Rabat, Morocco",
-    "Accra, Ghana",
-    "Kumasi, Ghana",
-    "Addis Ababa, Ethiopia",
-    "Tunis, Tunisia",
-    "Algiers, Algeria",
-    "Dakar, Senegal",
-    "Dar es Salaam, Tanzania",
-    "Kampala, Uganda",
-    "Lusaka, Zambia",
-    "Harare, Zimbabwe",
-    "Kigali, Rwanda",
-    "Windhoek, Namibia",
-    "Gaborone, Botswana",
-    "Maputo, Mozambique",
-    "Libreville, Gabon",
-    "Luanda, Angola",
-    "Antananarivo, Madagascar",
-    "Port Louis, Mauritius",
-    "Victoria, Seychelles",
-    "Tripoli, Libya",
-    "Khartoum, Sudan",
-    "Abidjan, Ivory Coast",
-    "Bamako, Mali",
-    "Ouagadougou, Burkina Faso",
-    "Cotonou, Benin",
-    "Lomé, Togo",
-    "Yaoundé, Cameroon",
-    
-    // South America
-    "São Paulo, Brazil",
-    "Rio de Janeiro, Brazil",
-    "Brasília, Brazil",
-    "Salvador, Brazil",
-    "Recife, Brazil",
-    "Fortaleza, Brazil",
-    "Curitiba, Brazil",
-    "Manaus, Brazil",
-    "Porto Alegre, Brazil",
-    "Buenos Aires, Argentina",
-    "Córdoba, Argentina",
-    "Rosario, Argentina",
-    "Mendoza, Argentina",
-    "Santiago, Chile",
-    "Valparaíso, Chile",
-    "Concepción, Chile",
-    "Lima, Peru",
-    "Cusco, Peru",
-    "Arequipa, Peru",
-    "Bogotá, Colombia",
-    "Medellín, Colombia",
-    "Cali, Colombia",
-    "Cartagena, Colombia",
-    "Caracas, Venezuela",
-    "Maracaibo, Venezuela",
-    "Valencia, Venezuela",
-    "Montevideo, Uruguay",
-    "Punta del Este, Uruguay",
-    "Quito, Ecuador",
-    "Guayaquil, Ecuador",
-    "Asunción, Paraguay",
-    "La Paz, Bolivia",
-    "Santa Cruz, Bolivia",
-    "Georgetown, Guyana",
-    "Paramaribo, Suriname",
-    "Cayenne, French Guiana"
-  ];
   
-  // State for location suggestions
-  const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
-  
-  // Initialize form data when user data changes
-  useEffect(() => {
-    if (userData) {
-      // Log userData for debugging
-      console.log("Current userData:", userData);
-      console.log("Form data before update:", formData);
+  // Personal info update mutation
+  const updatePersonalInfoMutation = useMutation({
+    mutationFn: async (data: any) => {
+      if (!userId) {
+        throw new Error("User ID is required");
+      }
       
-      // Get industry and domain directly from the userData object
-      let mainIndustry = userData.industry || '';
+      return apiRequest('PATCH', `/api/users/${userId}`, data);
+    },
+    onSuccess: () => {
+      // Invalidate and refetch user data
+      queryClient.invalidateQueries({ queryKey: ['/api/users', userId] });
       
-      // Get domain from userData.domain if it exists
-      let domain = userData.domain || '';
-      
-      // Get lookingFor from userData
-      let lookingFor = userData.lookingFor || '';
-      
-      // Get what I offer data (if present)
-      let whatIOffer = userData.whatIOffer || '';
-      
-      // Log values for debugging
-      console.log("Initializing form with:", {
-        industry: mainIndustry, 
-        domain: domain,
-        lookingFor: lookingFor,
-        whatIOffer: whatIOffer
+      // Show success message
+      toast({
+        title: "Profile Updated",
+        description: "Your personal information has been successfully updated",
+        variant: "default",
       });
       
-      setSelectedIndustry(mainIndustry);
-      setSelectedDomain(domain);
+      // Close dialog
+      setShowEditPersonalInfo(false);
+    },
+    onError: (error) => {
+      console.error("Failed to update profile:", error);
       
-      // Parse job level from title if possible
-      let jobLevel = '';
-      let title = userData.title || '';
-      
-      // Check if the title starts with any of our job levels
-      const jobLevels = ['Senior', 'Junior', 'Director', 'Vice President', 'President', 'Consultant'];
-      for (const level of jobLevels) {
-        if (title.startsWith(level + ' ')) {
-          jobLevel = level;
-          title = title.substring(level.length + 1); // +1 for the space
-          break;
-        }
-      }
-      
-      // Special case for C-level executives
-      const cLevelTitles = [
-        'Chief Executive Officer', 
-        'Chief Operating Officer', 
-        'Chief Financial Officer', 
-        'Chief Technology Officer', 
-        'Chief Marketing Officer'
-      ];
-      
-      for (const cTitle of cLevelTitles) {
-        if (title === cTitle || title.includes(cTitle)) {
-          title = cTitle;
-          break;
-        }
-      }
-      
-      setFormData({
-        name: userData.name || '',
-        title: title,
-        jobLevel: jobLevel,
-        location: userData.location || '',
-        industry: mainIndustry || '',
-        domain: domain || '',
-        lookingFor: lookingFor || '',
-        aboutMe: userData.aboutMe || '',
-        whatIOffer: whatIOffer || ''
+      toast({
+        title: "Error",
+        description: "Failed to update your profile. Please try again.",
+        variant: "destructive",
       });
     }
-  }, [userData]);
-
-  // Handle form input changes
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    
-    // Handle location suggestions
-    if (name === 'location' && value.trim()) {
-      // Filter locations that match the input value
-      const inputValue = value.toLowerCase();
-      
-      // First try exact matches (most relevant)
-      let filtered = popularLocations.filter(location => 
-        location.toLowerCase().includes(inputValue)
-      );
-      
-      // If no exact matches or very few, try fuzzy matching for spelling variations
-      if (filtered.length < 3) {
-        // Try alternative spellings and common misspellings
-        const alternativeMatches = popularLocations.filter(location => {
-          const locationLower = location.toLowerCase();
-          
-          // Handle common spelling variations for major cities
-          if (inputValue.includes('melb') && locationLower.includes('melbourne')) return true;
-          if (inputValue.includes('malb') && locationLower.includes('melbourne')) return true;
-          if (inputValue.includes('syd') && locationLower.includes('sydney')) return true;
-          if (inputValue.includes('bris') && locationLower.includes('brisbane')) return true;
-          if (inputValue.includes('auck') && locationLower.includes('auckland')) return true;
-          if (inputValue.includes('sing') && locationLower.includes('singapore')) return true;
-          if (inputValue.includes('bangl') && locationLower.includes('bangalore')) return true;
-          if (inputValue.includes('bengal') && locationLower.includes('bangalore')) return true;
-          if (inputValue.includes('york') && locationLower.includes('new york')) return true;
-          if (inputValue.includes('angeles') && locationLower.includes('los angeles')) return true;
-          if (inputValue.includes('fran') && locationLower.includes('san francisco')) return true;
-          if (inputValue.includes('tokyo') && locationLower.includes('tokyo')) return true;
-          if (inputValue.includes('dubai') && locationLower.includes('dubai')) return true;
-          
-          return false;
-        });
-        
-        // Combine both sets of results with exact matches first
-        filtered = [...filtered, ...alternativeMatches];
-      }
-      
-      setLocationSuggestions(filtered.slice(0, 10)); // Show up to 10 suggestions
-    } else if (name === 'location' && !value.trim()) {
-      setLocationSuggestions([]);
-    }
+  });
+  
+  // Handle form submission for basic info
+  const handleBasicInfoSubmit = (data: any) => {
+    updateBasicInfoMutation.mutate({
+      title: data.title,
+      jobLevel: data.jobLevel,
+      location: data.location,
+      industry: data.industry,
+      domain: data.domain
+    });
   };
   
-  // Handle suggestion selection
-  const handleSuggestionSelect = (suggestion: string) => {
-    setFormData(prev => ({
-      ...prev,
-      location: suggestion
-    }));
-    setLocationSuggestions([]);
+  // Handle form submission for personal info
+  const handlePersonalInfoSubmit = (data: any) => {
+    updatePersonalInfoMutation.mutate({
+      name: data.name,
+      lookingFor: data.lookingFor,
+      aboutMe: data.aboutMe
+    });
   };
   
-  // Reset suggestions when dialog closes
-  useEffect(() => {
-    if (!showEditBasicInfo) {
-      setLocationSuggestions([]);
-    }
-  }, [showEditBasicInfo]);
+  // Check for loading state
+  const isLoading = isAuthLoading || isLoadingUser;
   
-  // Event handler for location suggestion div to prevent bubbling
-  const handleSuggestionClick = (event: React.MouseEvent) => {
-    // Prevent event bubbling to keep dropdown open until selection
-    event.stopPropagation();
-  };
-
-  // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Create a copy of form data
-    const updatedFormData = { ...formData };
-    
-    // Combine job level and title if both are present
-    if (formData.jobLevel && formData.title) {
-      updatedFormData.title = `${formData.jobLevel} ${formData.title}`;
-    }
-    
-    // Prepare data for the API - explicitly include domain field separately
-    const apiData = {
-      name: updatedFormData.name,
-      title: updatedFormData.title,
-      location: updatedFormData.location,
-      industry: updatedFormData.industry,
-      domain: updatedFormData.domain, // Send domain as a separate field
-      lookingFor: updatedFormData.lookingFor,
-      aboutMe: updatedFormData.aboutMe,
-      whatIOffer: updatedFormData.whatIOffer
-    };
-    
-    // Log what we're sending to the server
-    console.log("Submitting profile data:", apiData);
-    
-    updateUserMutation.mutate(apiData);
-  };
-
-  // Redirect to landing if not authenticated
-  if (!isLoading && !isAuthenticated) {
-    setLocation('/');
+  // If user is not authenticated or data is loading, show loading state
+  if (isLoading) {
+    return <ProfilePageSkeleton />;
+  }
+  
+  // If user is not authenticated and not loading, redirect to login
+  if (!isAuthenticated && !isLoading) {
+    setLocation("/login");
     return null;
   }
-
-  
-  // Loading state with skeleton UI
-  if (isLoading) {
-    return (
-      <div className="flex h-screen flex-col relative">
-        <Header />
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-16 max-w-7xl">
-          <ProfilePageSkeleton />
-        </div>
-      </div>
-    );
-  }
-
-  // Handle profile picture update
-  const handleProfilePictureUpdate = (base64Image: string) => {
-    profilePictureMutation.mutate(base64Image);
-  };
   
   return (
     <div className="flex h-screen flex-col relative">
-      {/* Profile Picture Dialog */}
-      <ProfilePictureDialog 
-        open={showProfilePictureDialog}
-        onOpenChange={setShowProfilePictureDialog}
-        currentPhotoURL={userData?.photoURL || user?.photoURL}
-        onSave={handleProfilePictureUpdate}
-      />
-      
-      {/* Personal Information Edit Dialog */}
-      {userData && (
-        <Dialog open={showEditPersonalInfo} onOpenChange={setShowEditPersonalInfo}>
-          <DialogContent className="sm:max-w-[550px]">
-            <DialogHeader>
-              <DialogTitle>Edit Personal Information</DialogTitle>
-            </DialogHeader>
-            <EditPersonalInfo 
-              userData={userData}
-              onCancel={() => setShowEditPersonalInfo(false)}
-              onSave={() => {
-                setShowEditPersonalInfo(false);
-                // Refetch user data
-                queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
-              }}
-            />
-          </DialogContent>
-        </Dialog>
-      )}
-      
-      {/* Edit Basic Info Dialog */}
-      <Dialog 
-        open={showEditBasicInfo} 
-        onOpenChange={(isOpen) => {
-          if (isOpen) {
-            // Debug what's in the form when the dialog opens
-            console.log("Opening dialog with form data:", formData);
-            console.log("Domain value:", formData.domain);
-          }
-          setShowEditBasicInfo(isOpen);
-        }}
-      >
-        <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>All About Me</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleSubmit}>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="name">Name</Label>
-                <Input
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  placeholder="Your name"
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="title">Job Title</Label>
-                <div className="flex gap-2">
-                  <div className="w-1/3">
-                    <Select
-                      value={formData.jobLevel}
-                      onValueChange={(value) => {
-                        setFormData(prev => ({
-                          ...prev,
-                          jobLevel: value
-                        }));
-                      }}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Level" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Fresher">Fresher</SelectItem>
-                        <SelectItem value="Student">Student</SelectItem>
-                        <SelectItem value="Junior">Junior</SelectItem>
-                        <SelectItem value="Senior">Senior</SelectItem>
-                        <SelectItem value="Consultant">Consultant</SelectItem>
-                        <SelectItem value="Director">Director</SelectItem>
-                        <SelectItem value="Vice President">Vice President</SelectItem>
-                        <SelectItem value="President">President</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="w-2/3">
-                    <JobTitleCombobox
-                      value={formData.title || ''}
-                      onChange={(value) => setFormData({ ...formData, title: value })}
-                      placeholder="Select or type your job title"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="grid gap-2 relative">
-                <Label htmlFor="location">Location</Label>
-                <Input
-                  id="location"
-                  name="location"
-                  value={formData.location}
-                  onChange={handleInputChange}
-                  placeholder="Your location"
-                  autoComplete="off"
-                />
-                {locationSuggestions.length > 0 && (
-                  <div 
-                    className="absolute top-full left-0 right-0 z-10 bg-white border border-gray-200 rounded-md shadow-md mt-1 max-h-60 overflow-auto"
-                    onClick={handleSuggestionClick}
-                  >
-                    {locationSuggestions.map((suggestion, index) => (
-                      <div 
-                        key={index}
-                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                        onClick={() => handleSuggestionSelect(suggestion)}
-                      >
-                        {suggestion}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="industry">Industry</Label>
-                <Select
-                  value={formData.industry}
-                  onValueChange={(value) => {
-                    setSelectedIndustry(value);
-                    setSelectedDomain('');
-                    setFormData(prev => ({
-                      ...prev,
-                      industry: value,
-                      domain: ''
-                    }));
-                  }}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select your industry" />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-80">
-                    {INDUSTRIES.map((industry) => (
-                      <SelectItem key={industry} value={industry}>
-                        {industry}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              {/* Domain selector - always show it */}
-              <div className="grid gap-2">
-                <Label htmlFor="domain">Specific Domain</Label>
-                <Select
-                  value={formData.domain || ""}
-                  onValueChange={(value) => {
-                    console.log("Domain selected:", value);
-                    setSelectedDomain(value);
-                    setFormData(prev => ({
-                      ...prev,
-                      domain: value
-                    }));
-                  }}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select your domain" />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-80">
-                    {/* Add a General option as the first choice */}
-                    <SelectItem key="all" value="all">
-                      General
-                    </SelectItem>
-                    {formData.industry && INDUSTRY_DOMAINS[formData.industry]?.map((domain: string) => (
-                      <SelectItem key={domain} value={domain}>
-                        {domain}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="lookingFor">I am looking for</Label>
-                <Select
-                  value={formData.lookingFor}
-                  onValueChange={(value) => {
-                    setFormData(prev => ({
-                      ...prev,
-                      lookingFor: value
-                    }));
-                  }}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="What are you looking for?" />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-80">
-                    <SelectGroup>
-                      <SelectLabel>Career & Job Seeking</SelectLabel>
-                      {LOOKING_FOR_CATEGORIES.filter(cat => cat.label.includes("💼")).map(category => (
-                        <SelectItem key={category.value} value={category.value}>
-                          {category.label}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                    <SelectSeparator />
-                    <SelectGroup>
-                      <SelectLabel>Business & Investment</SelectLabel>
-                      {LOOKING_FOR_CATEGORIES.filter(cat => cat.label.includes("🚀")).map(category => (
-                        <SelectItem key={category.value} value={category.value}>
-                          {category.label}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                    <SelectSeparator />
-                    <SelectGroup>
-                      <SelectLabel>Learning & Upskilling</SelectLabel>
-                      {LOOKING_FOR_CATEGORIES.filter(cat => cat.label.includes("🎓")).map(category => (
-                        <SelectItem key={category.value} value={category.value}>
-                          {category.label}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                    <SelectSeparator />
-                    <SelectGroup>
-                      <SelectLabel>Networking & Collaborations</SelectLabel>
-                      {LOOKING_FOR_CATEGORIES.filter(cat => cat.label.includes("🤝")).map(category => (
-                        <SelectItem key={category.value} value={category.value}>
-                          {category.label}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                    <SelectSeparator />
-                    <SelectGroup>
-                      <SelectLabel>Freelance & Side Hustle</SelectLabel>
-                      {LOOKING_FOR_CATEGORIES.filter(cat => cat.label.includes("💰")).map(category => (
-                        <SelectItem key={category.value} value={category.value}>
-                          {category.label}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              {/* What I'm All About section */}
-              <div className="grid gap-2">
-                <Label htmlFor="aboutMe">What I'm All About</Label>
-                <Textarea
-                  id="aboutMe"
-                  name="aboutMe"
-                  value={formData.aboutMe}
-                  onChange={(e) => setFormData(prev => ({
-                    ...prev,
-                    aboutMe: e.target.value
-                  }))}
-                  placeholder="Tell us about yourself (max 350 words)"
-                  className="min-h-[150px]"
-                  maxLength={2000}
-                />
-                <div className="text-xs text-gray-500 text-right">
-                  {formData.aboutMe?.split(/\s+/).filter(Boolean).length || 0}/350 words
-                </div>
-              </div>
-              
-
-            </div>
-            <DialogFooter>
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={() => setShowEditBasicInfo(false)}
-              >
-                Cancel
-              </Button>
-              <Button 
-                type="submit"
-                disabled={updateUserMutation.isPending}
-              >
-                {updateUserMutation.isPending ? 'Saving...' : 'Save Changes'}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-      
-      {/* Top Navigation */}
+      {/* Main Header */}
       <Header />
-
+      
       {/* Main Content */}
-      <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top for fixed header */}
-        {/* Sidebar */}
-        
-
-        {/* Center content */}
-        <div className="flex-1 overflow-auto p-6 bg-gray-50">
-          <div className="mx-auto max-w-3xl">
-            <div className="flex items-center justify-between mb-6">
-              <h1 className="text-2xl font-semibold text-gray-900">Profile</h1>
-              <div className="flex items-center gap-4">
-                <Button 
-                  onClick={() => {
-                    // Create a loading state in the button
-                    const btn = document.getElementById('portfolio-btn');
-                    if (btn) {
-                      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
-                      btn.classList.add('opacity-80');
-                    }
-                    
-                    // Pre-create empty portfolio in the background
-                    fetch('/api/portfolios', {
-                      method: 'POST',
-                      headers: {
-                        'Content-Type': 'application/json',
-                      },
-                      body: JSON.stringify({
-                        userId: userData?.id,
-                        layout: 'professional', // Changed to match the backend schema
-                        isPublished: false,
-                        publicUrl: null
-                      })
-                    }).catch(err => console.log("Portfolio creation attempted - ignoring error if already exists"));
-                    
-                    // Navigate to the portfolio builder page
-                    setTimeout(() => setLocation('/portfolio-builder'), 200);
-                  }}
-                  id="portfolio-btn"
-                  className="flex items-center gap-2 bg-white border border-gray-200 hover:bg-gray-50"
-                  variant="outline"
-                >
-                  <i className="fas fa-id-card"></i>
-                  Portfolio Builder
-                </Button>
-                
-                <Button 
-                  onClick={() => setLocation('/resume')}
-                  id="resume-btn"
-                  className="flex items-center gap-2 bg-white border border-gray-200 hover:bg-gray-50"
-                  variant="outline"
-                >
-                  <FileText className="h-4 w-4" />
-                  Resume Builder
-                </Button>
-                <div className="text-right">
-                  <p className="text-sm text-gray-500">Profile Completion</p>
-                  <div className="flex items-center mt-1">
-                    {userData && (
-                      <>
-                        <div className="w-36 bg-gray-200 rounded-full h-2.5 mr-2">
-                          <div 
-                            id="profile-completion-bar" 
-                            className="bg-primary h-2.5 rounded-full" 
-                            style={{ 
-                              width: `${calculateOverallProfileCompletion(
-                                userData, 
-                                experiences, 
-                                educations, 
-                                skills, 
-                                projects,
-                                profileServicesData?.services || []
-                              )}%` 
-                            }}
-                          ></div>
-                        </div>
-                        <span className="text-sm font-medium text-gray-900">
-                          {(() => {
-                            console.log("Profile Completion Data:", {
-                              userData,
-                              experiences,
-                              educations,
-                              skills,
-                              projects,
-                              services: profileServicesData?.services || []
-                            });
-                            return calculateOverallProfileCompletion(
-                              userData, 
-                              experiences, 
-                              educations, 
-                              skills, 
-                              projects,
-                              profileServicesData?.services || []
-                            );
-                          })()}%
-                        </span>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            {/* Profile Header */}
-            <Card className="mb-6 overflow-hidden">
-              <div className="h-32 bg-gradient-to-r from-primary to-purple-600"></div>
-              <CardContent className="relative pt-16 pb-4">
-                <div className="absolute -top-16 left-1/2 sm:left-6 transform -translate-x-1/2 sm:translate-x-0">
-                  <div className="relative group">
-                    <div className="h-24 w-24 overflow-hidden rounded-full bg-white ring-4 ring-white flex items-center justify-center">
-                      <img 
-                        className="h-full w-full object-cover" 
-                        src={userData?.photoURL || user?.photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
-                        alt="User profile"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
-                        }}
-                      />
+      <div className="flex flex-1 overflow-y-auto bg-gray-50 relative">
+        <div className="w-full max-w-7xl mx-auto p-4 sm:p-6 md:p-8">
+          {/* Header Section */}
+          <div className="mb-8">
+            <h1 className="text-2xl font-semibold">My Profile</h1>
+            <p className="text-gray-600">
+              Manage your profile information and enhance your professional presence
+            </p>
+          </div>
+          
+          {/* Profile Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+            {/* Sidebar */}
+            <div className="lg:col-span-1">
+              <Card className="mb-6">
+                <CardContent className="py-6">
+                  <div className="flex flex-col items-center space-y-4">
+                    <div className="relative group">
+                      <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
+                        {userData?.photoURL ? (
+                          <img 
+                            src={userData.photoURL} 
+                            alt={userData.name || 'Profile picture'} 
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-indigo-100 text-indigo-500 flex items-center justify-center text-3xl font-semibold">
+                            {userData?.name ? userData.name.charAt(0).toUpperCase() : '?'}
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Photo upload button with circular background */}
+                      <div 
+                        className="absolute bottom-1 right-1 rounded-full p-2 bg-indigo-600 text-white cursor-pointer hover:bg-indigo-700 transition-colors"
+                        onClick={() => setShowProfilePictureDialog(true)}
+                      >
+                        <Camera className="h-4 w-4" />
+                      </div>
                     </div>
-                    {/* Camera button for profile picture update */}
-                    <button 
-                      onClick={() => setShowProfilePictureDialog(true)}
-                      className="absolute bottom-0 right-0 bg-primary hover:bg-primary/90 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                      aria-label="Change profile picture"
-                    >
-                      <Camera size={16} />
-                    </button>
                     
-                    {/* Edit Profile button positioned to the side of profile picture */}
+                    <h3 className="text-xl font-semibold">{userData?.name || 'Your Name'}</h3>
+                    <p className="text-gray-600">{userData?.title || 'Your Title'}</p>
+                    
+                    {/* Social/Contact Icons */}
+                    <div className="flex space-x-2 mt-2">
+                      {/* Email icon */}
+                      {userData?.email && (
+                        <a href={`mailto:${userData.email}`} className="text-gray-500 hover:text-indigo-600 transition-colors">
+                          <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                              <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                          </div>
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* About Me section */}
+                  <div className="pt-4 mt-4 border-t border-gray-100">
+                    <div className="flex justify-between items-center mb-2">
+                      <h4 className="text-sm font-medium text-gray-900">About Me</h4>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-8 px-2 text-gray-500 hover:text-indigo-600" 
+                        onClick={handleShowAboutMeEdit}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <p className="text-sm text-gray-600 whitespace-pre-wrap">
+                      {userData?.aboutMe || 'Add a brief description about yourself...'}
+                    </p>
+                  </div>
+                  
+                  {/* Edit Button */}
+                  <div className="pt-4 mt-4 border-t border-gray-100">
                     <Button 
-                      onClick={() => setLocation('/edit-profile')}
-                      className="absolute -right-32 top-1/2 transform -translate-y-1/2 flex items-center gap-2 bg-primary/90 hover:bg-primary text-xs shadow-lg"
-                      size="sm"
+                      className="w-full" 
+                      variant="outline"
+                      onClick={() => setShowEditBasicInfo(true)}
                     >
                       Edit Profile
                     </Button>
-                    
-                    {/* Personal info button - Positioned directly under the profile picture with business card icon */}
-                    <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
-                      <button 
-                        onClick={() => setLocation('/personal-details')}
-                        className="bg-primary hover:bg-primary/90 text-white p-3 rounded-full shadow-md"
-                        aria-label="View personal information"
-                      >
-                        <PersonalInfoIcon className="w-7 h-7" />
-                      </button>
-                    </div>
                   </div>
-                </div>
-                <div className="pl-0 sm:pl-32 mt-12 sm:mt-2">
-                  <div className="flex justify-between items-center group relative">
-                    <h2 className="text-xl text-gray-900">
-                      Hey there! <span className="font-bold text-2xl text-primary">{userData?.name || user?.name || 'User'}</span> here,
-                    </h2>
-                    {/* Edit button that appears on hover */}
+                </CardContent>
+              </Card>
+
+              {/* Profile Completion Card */}
+              <Card className="mb-6">
+                <CardContent className="py-6">
+                  <h3 className="text-sm font-medium text-gray-900 mb-4">Profile Completion</h3>
+                  
+                  {/* Progress bar */}
+                  <div className="w-full bg-gray-100 rounded-full h-2.5 mb-2">
+                    <div 
+                      className="bg-indigo-600 h-2.5 rounded-full" 
+                      style={{ width: `${profileCompletionPercentage}%` }}
+                    ></div>
+                  </div>
+                  
+                  <p className="text-xs text-gray-600 mb-4">
+                    {profileCompletionPercentage}% Complete
+                  </p>
+                  
+                  {/* Completion tips */}
+                  <div className="space-y-2">
+                    {!userData?.photoURL && (
+                      <div className="flex items-center text-sm text-gray-600">
+                        <div className="w-2 h-2 bg-amber-500 rounded-full mr-2"></div>
+                        Add a profile photo
+                      </div>
+                    )}
+                    
+                    {!userData?.title && (
+                      <div className="flex items-center text-sm text-gray-600">
+                        <div className="w-2 h-2 bg-amber-500 rounded-full mr-2"></div>
+                        Add your professional title
+                      </div>
+                    )}
+                    
+                    {!userData?.industry && (
+                      <div className="flex items-center text-sm text-gray-600">
+                        <div className="w-2 h-2 bg-amber-500 rounded-full mr-2"></div>
+                        Set your industry
+                      </div>
+                    )}
+                    
+                    {!userData?.domain && (
+                      <div className="flex items-center text-sm text-gray-600">
+                        <div className="w-2 h-2 bg-amber-500 rounded-full mr-2"></div>
+                        Add your domain expertise
+                      </div>
+                    )}
+                    
+                    {!userData?.lookingFor && (
+                      <div className="flex items-center text-sm text-gray-600">
+                        <div className="w-2 h-2 bg-amber-500 rounded-full mr-2"></div>
+                        Set what you're looking for
+                      </div>
+                    )}
+                    
+                    {(!userData?.aboutMe || userData.aboutMe.length < 20) && (
+                      <div className="flex items-center text-sm text-gray-600">
+                        <div className="w-2 h-2 bg-amber-500 rounded-full mr-2"></div>
+                        Add more details to your bio
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+              
+              {/* Musk AI Button */}
+              <div className="mb-6">
+                <MuskButton />
+              </div>
+            </div>
+            
+            {/* Main Content Area */}
+            <div className="lg:col-span-3 space-y-6">
+              {/* Basic Info Section */}
+              <Card>
+                <CardContent className="py-6">
+                  <div className="flex justify-between items-center mb-6">
+                    <div className="flex items-center">
+                      <PersonalInfoIcon className="h-8 w-8 text-indigo-600 mr-3" />
+                      <h2 className="text-xl font-semibold">Personal Information</h2>
+                    </div>
                     <Button 
-                      variant="ghost" 
+                      variant="outline" 
                       size="sm" 
-                      onClick={() => setShowEditBasicInfo(true)}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity absolute -right-1 top-0"
+                      onClick={() => setShowEditPersonalInfo(true)}
                     >
-                      <Edit className="h-4 w-4" />
+                      Edit
                     </Button>
                   </div>
-                  <p className="text-sm text-gray-500 mt-1">
-                    <span className="font-medium">I am:</span> {userData?.title || user?.title || 'Professional'}
-                  </p>
-                  <p className="text-sm text-gray-500 mt-1 flex items-center">
-                    <span className="font-medium mr-1">From:</span> 
-                    <span className="flex items-center">
-                      {userData?.location || formData.location ? (
-                        <>
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1 h-3 w-3 text-primary">
-                            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
-                            <circle cx="12" cy="10" r="3"></circle>
-                          </svg>
-                          <span>{userData?.location || formData.location}</span>
-                        </>
-                      ) : (
-                        <span className="italic text-gray-400">Location not specified</span>
-                      )}
-                    </span>
-                  </p>
-                  {/* Industry and Domain - now displayed separately */}
-                  {userData?.industry && (
-                    <p className="text-sm text-gray-500 mt-1">
-                      <span className="font-medium">Industry:</span> {userData.industry}
-                    </p>
-                  )}
-                  {userData?.domain && (
-                    <p className="text-sm text-gray-500 mt-1">
-                      <span className="font-medium">Domain:</span> {userData.domain === "all" ? "General" : userData.domain}
-                    </p>
-                  )}
-                  {userData?.lookingFor && (
-                    <p className="text-sm text-gray-500 mt-1">
-                      <span className="font-medium">Looking for:</span> {
-                        // Display the human-readable label instead of the value
-                        LOOKING_FOR_CATEGORIES.find(cat => cat.value === userData.lookingFor)?.label || userData.lookingFor
-                      }
-                    </p>
-                  )}
                   
-                  {/* What I'm All About section */}
-                  {userData?.aboutMe && (
-                    <div className="mt-4">
-                      <h3 className="text-sm font-medium text-gray-900">What I'm All About</h3>
-                      <p className="mt-2 text-sm text-gray-500 whitespace-pre-line">
-                        {userData.aboutMe}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Name */}
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-500 mb-1">Name</h3>
+                      <p className="text-base font-normal text-gray-900">
+                        {userData?.name || 'Not provided'}
                       </p>
                     </div>
-                  )}
+                    
+                    {/* Email */}
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-500 mb-1">Email</h3>
+                      <p className="text-base font-normal text-gray-900">
+                        {userData?.email || 'Not provided'}
+                      </p>
+                    </div>
+                    
+                    {/* Title */}
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-500 mb-1">Professional Title</h3>
+                      <p className="text-base font-normal text-gray-900">
+                        {userData?.title || 'Not provided'}
+                      </p>
+                    </div>
+                    
+                    {/* Job Level */}
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-500 mb-1">Job Level</h3>
+                      <p className="text-base font-normal text-gray-900">
+                        {userData?.jobLevel || 'Not provided'}
+                      </p>
+                    </div>
+                    
+                    {/* Location */}
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-500 mb-1">Location</h3>
+                      <p className="text-base font-normal text-gray-900">
+                        {userData?.location || 'Not provided'}
+                      </p>
+                    </div>
+                    
+                    {/* Industry */}
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-500 mb-1">Industry</h3>
+                      <p className="text-base font-normal text-gray-900">
+                        {userData?.industry || 'Not provided'}
+                      </p>
+                    </div>
+                    
+                    {/* Domain */}
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-500 mb-1">Domain</h3>
+                      <p className="text-base font-normal text-gray-900">
+                        {userData?.domain || 'Not provided'}
+                      </p>
+                    </div>
+                    
+                    {/* Looking For */}
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-500 mb-1">Looking For</h3>
+                      <p className="text-base font-normal text-gray-900">
+                        {userData?.lookingFor ? getLookingForLabel(userData.lookingFor) : 'Not provided'}
+                      </p>
+                    </div>
+                    
+                    {/* What I Offer */}
+                    <div className="md:col-span-2">
+                      <div className="flex justify-between items-center mb-1">
+                        <h3 className="text-sm font-medium text-gray-500">What I Offer</h3>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-6 px-2 text-gray-500 hover:text-indigo-600" 
+                          onClick={handleShowWhatIOfferEdit}
+                        >
+                          <Edit className="h-3 w-3" />
+                        </Button>
+                      </div>
+                      <p className="text-base font-normal text-gray-900 whitespace-pre-wrap">
+                        {userData?.whatIOffer || 'Not provided'}
+                      </p>
+                    </div>
                   
 
                 </div>
@@ -2302,28 +1081,316 @@ export default function Profile() {
             
             {/* Education Section */}
             <Education />
-            
-
-            
-            {/* Sign Out Button */}
-            <div className="flex justify-end mb-6">
-              <Button 
-                variant="outline"
-                className="px-6 bg-red-50 text-red-600 hover:bg-red-100 border-red-200"
-                onClick={() => signOut()}
-              >
-                <i className="fas fa-sign-out-alt mr-2"></i>
-                Sign Out
-              </Button>
-            </div>
           </div>
         </div>
       </div>
+    </div>
       
-      {/* 
-        No individual MuskButton needed here - using global MuskButton from App.tsx instead 
-        that appears on all pages
-      */}
+      {/* Edit Basic Info Dialog */}
+      <Dialog open={showEditBasicInfo} onOpenChange={setShowEditBasicInfo}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Basic Information</DialogTitle>
+          </DialogHeader>
+          
+          {/* Basic Info Form */}
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            handleBasicInfoSubmit(formData);
+          }}>
+            <div className="space-y-4 py-2">
+              {/* Professional Title */}
+              <div className="space-y-2">
+                <Label htmlFor="title">Professional Title</Label>
+                <JobTitleCombobox 
+                  value={formData.title}
+                  onChange={(value) => setFormData({ ...formData, title: value })}
+                  placeholder="e.g. Software Engineer"
+                />
+              </div>
+              
+              {/* Job Level */}
+              <div className="space-y-2">
+                <Label htmlFor="jobLevel">Job Level</Label>
+                <Select 
+                  value={formData.jobLevel} 
+                  onValueChange={(value) => setFormData({ ...formData, jobLevel: value })}
+                >
+                  <SelectTrigger id="jobLevel">
+                    <SelectValue placeholder="Select your level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="entry_level">Entry Level</SelectItem>
+                    <SelectItem value="junior">Junior</SelectItem>
+                    <SelectItem value="mid_level">Mid Level</SelectItem>
+                    <SelectItem value="senior">Senior</SelectItem>
+                    <SelectItem value="manager">Manager</SelectItem>
+                    <SelectItem value="director">Director</SelectItem>
+                    <SelectItem value="executive">C-Level Executive</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {/* Location */}
+              <div className="space-y-2">
+                <Label htmlFor="location">Location</Label>
+                <Input 
+                  id="location" 
+                  value={formData.location} 
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  placeholder="e.g. San Francisco, CA"
+                />
+              </div>
+              
+              {/* Industry */}
+              <div className="space-y-2">
+                <Label htmlFor="industry">Industry</Label>
+                <Select 
+                  value={selectedIndustry} 
+                  onValueChange={handleIndustryChange}
+                >
+                  <SelectTrigger id="industry">
+                    <SelectValue placeholder="Select an industry" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {INDUSTRIES.map((industry) => (
+                      <SelectItem key={industry} value={industry}>{industry}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {/* Domain (depends on industry selection) */}
+              <div className="space-y-2">
+                <Label htmlFor="domain">Domain</Label>
+                <Select 
+                  value={selectedDomain} 
+                  onValueChange={(value) => setSelectedDomain(value)}
+                  disabled={!selectedIndustry || availableDomains.length === 0}
+                >
+                  <SelectTrigger id="domain">
+                    <SelectValue placeholder={!selectedIndustry ? "Select an industry first" : "Select a domain"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableDomains.map((domain) => (
+                      <SelectItem key={domain} value={domain}>{domain}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            <DialogFooter className="mt-6">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setShowEditBasicInfo(false)}
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="submit" 
+                disabled={updateBasicInfoMutation.isPending}
+              >
+                {updateBasicInfoMutation.isPending ? "Saving..." : "Save Changes"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Edit Personal Info Dialog */}
+      <Dialog open={showEditPersonalInfo} onOpenChange={setShowEditPersonalInfo}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Personal Information</DialogTitle>
+          </DialogHeader>
+          
+          {/* Personal Info Form */}
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            handlePersonalInfoSubmit(formData);
+          }}>
+            <div className="space-y-4 py-2">
+              {/* Full Name */}
+              <div className="space-y-2">
+                <Label htmlFor="name">Full Name</Label>
+                <Input 
+                  id="name" 
+                  value={formData.name} 
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="e.g. John Smith"
+                />
+              </div>
+              
+              {/* Looking For */}
+              <div className="space-y-2">
+                <Label htmlFor="lookingFor">I am looking for</Label>
+                <Select 
+                  value={formData.lookingFor} 
+                  onValueChange={(value) => setFormData({ ...formData, lookingFor: value })}
+                >
+                  <SelectTrigger id="lookingFor">
+                    <SelectValue placeholder="Select what you're looking for" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Career & Job Seeking</SelectLabel>
+                      <SelectItem value="job_opportunities">💼 Job Opportunities</SelectItem>
+                      <SelectItem value="job_seekers">💼 Job Seekers / Candidates</SelectItem>
+                      <SelectItem value="internships">💼 Internships</SelectItem>
+                      <SelectItem value="interns">💼 Interns</SelectItem>
+                      <SelectItem value="mentors">💼 Career Mentors</SelectItem>
+                      <SelectItem value="mentees">💼 Career Mentees</SelectItem>
+                    </SelectGroup>
+                    
+                    <SelectSeparator />
+                    
+                    <SelectGroup>
+                      <SelectLabel>Business & Investment</SelectLabel>
+                      <SelectItem value="investors">🚀 Investors</SelectItem>
+                      <SelectItem value="startups">🚀 Startups</SelectItem>
+                      <SelectItem value="co_founders">🚀 Co-Founders</SelectItem>
+                      <SelectItem value="business_partners">🚀 Business Partners</SelectItem>
+                      <SelectItem value="advisors">🚀 Legal/Financial Advisors</SelectItem>
+                      <SelectItem value="tech_partners">🚀 Technical Partners</SelectItem>
+                    </SelectGroup>
+                    
+                    <SelectSeparator />
+                    
+                    <SelectGroup>
+                      <SelectLabel>Learning & Upskilling</SelectLabel>
+                      <SelectItem value="skill_trainers">🎓 Skill Trainers</SelectItem>
+                      <SelectItem value="learners">🎓 Students/Learners</SelectItem>
+                      <SelectItem value="study_groups">🎓 Study Groups</SelectItem>
+                    </SelectGroup>
+                    
+                    <SelectSeparator />
+                    
+                    <SelectGroup>
+                      <SelectLabel>Networking & Collaborations</SelectLabel>
+                      <SelectItem value="industry_experts">🤝 Industry Experts</SelectItem>
+                      <SelectItem value="share_expertise">🤝 Sharing My Expertise</SelectItem>
+                    </SelectGroup>
+                    
+                    <SelectSeparator />
+                    
+                    <SelectGroup>
+                      <SelectLabel>Freelance & Side Hustle</SelectLabel>
+                      <SelectItem value="freelance_gigs">💰 Freelance Gigs</SelectItem>
+                      <SelectItem value="hiring_freelancers">💰 Hiring Freelancers</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {/* About Me */}
+              <div className="space-y-2">
+                <Label htmlFor="aboutMe">About Me</Label>
+                <Textarea 
+                  id="aboutMe" 
+                  value={formData.aboutMe} 
+                  onChange={(e) => setFormData({ ...formData, aboutMe: e.target.value })}
+                  placeholder="Tell others about yourself, your experience, and your interests"
+                  rows={5}
+                />
+              </div>
+            </div>
+            
+            <DialogFooter className="mt-6">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setShowEditPersonalInfo(false)}
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="submit" 
+                disabled={updatePersonalInfoMutation.isPending}
+              >
+                {updatePersonalInfoMutation.isPending ? "Saving..." : "Save Changes"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+      
+      {/* About Me Edit Dialog */}
+      <Dialog open={showAboutMeEdit} onOpenChange={setShowAboutMeEdit}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit About Me</DialogTitle>
+          </DialogHeader>
+          
+          <div className="py-4">
+            <Textarea 
+              value={aboutMeText} 
+              onChange={(e) => setAboutMeText(e.target.value)}
+              placeholder="Tell others about yourself, your experience, and your interests"
+              rows={8}
+              className="resize-none"
+            />
+          </div>
+          
+          <DialogFooter>
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => setShowAboutMeEdit(false)}
+            >
+              Cancel
+            </Button>
+            <Button onClick={saveAboutMe}>
+              Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* What I Offer Edit Dialog */}
+      <Dialog open={showWhatIOfferEdit} onOpenChange={setShowWhatIOfferEdit}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit What I Offer</DialogTitle>
+          </DialogHeader>
+          
+          <div className="py-4">
+            <Textarea 
+              value={whatIOfferText} 
+              onChange={(e) => setWhatIOfferText(e.target.value)}
+              placeholder="Describe what services, expertise, or value you offer to others"
+              rows={8}
+              className="resize-none"
+            />
+          </div>
+          
+          <DialogFooter>
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => setShowWhatIOfferEdit(false)}
+            >
+              Cancel
+            </Button>
+            <Button onClick={saveWhatIOffer}>
+              Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Profile Picture Dialog */}
+      <ProfilePictureDialog 
+        open={showProfilePictureDialog} 
+        onOpenChange={setShowProfilePictureDialog} 
+      />
+      
+      {/* Personal Info Edit Component (for full edit experience) */}
+      <EditPersonalInfo 
+        userData={userData} 
+        userNumericId={userNumericId} 
+      />
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ProfileImage } from "@/components/ui/profile-image";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Education, Project as ProjectSchema, Service, Skill, WorkExperience } from "@shared/schema";
 import { useEffect, useState, useRef } from "react";
@@ -211,6 +212,183 @@ export default function CorporateExecutive({
     if (nameLower.includes('data')) return <Database className="h-5 w-5" />;
     return <Award className="h-5 w-5" />;
   };
+  
+  // Skeleton components for loading states
+function CorporateExecutiveSkeleton() {
+  return (
+    <div className="corporate-executive-template bg-white min-h-screen font-sans">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Header Skeleton */}
+        <div className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-16">
+          <div className="w-40 h-40 rounded-xl">
+            <Skeleton className="w-full h-full rounded-xl" />
+          </div>
+          <div className="flex-1 text-center md:text-left">
+            <div className="space-y-4">
+              <Skeleton className="h-8 w-72 mx-auto md:mx-0" />
+              <Skeleton className="h-6 w-48 mx-auto md:mx-0" />
+              <div className="flex flex-wrap gap-2 justify-center md:justify-start">
+                <Skeleton className="h-7 w-24 rounded-md" />
+                <Skeleton className="h-7 w-32 rounded-md" />
+              </div>
+              <div className="space-y-2 max-w-xl pt-4">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+              </div>
+              <div className="flex flex-wrap gap-3 justify-center md:justify-start pt-2">
+                <Skeleton className="h-10 w-28 rounded-md" />
+                <Skeleton className="h-10 w-32 rounded-md" />
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Navigation Skeleton */}
+        <div className="mb-12 border-b pb-4">
+          <div className="flex overflow-x-auto space-x-8 no-scrollbar">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-9 w-24" />
+            ))}
+          </div>
+        </div>
+        
+        {/* About Me Section Skeleton */}
+        <div className="mb-16">
+          <Skeleton className="h-7 w-48 mb-6" />
+          <div className="space-y-4">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <Skeleton key={i} className="h-5 w-full" />
+            ))}
+          </div>
+        </div>
+        
+        {/* Experience Section Skeleton */}
+        <div className="mb-16">
+          <Skeleton className="h-7 w-48 mb-6" />
+          <div className="space-y-8">
+            {Array.from({ length: 2 }).map((_, i) => (
+              <div key={i} className="space-y-3">
+                <div className="flex justify-between">
+                  <div className="space-y-1">
+                    <Skeleton className="h-6 w-48" />
+                    <Skeleton className="h-5 w-40" />
+                  </div>
+                  <Skeleton className="h-5 w-32" />
+                </div>
+                <div className="flex flex-wrap gap-2 pt-2">
+                  <Skeleton className="h-6 w-20 rounded-full" />
+                  <Skeleton className="h-6 w-24 rounded-full" />
+                </div>
+                <div className="space-y-2 pt-2">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        {/* Education Section Skeleton */}
+        <div className="mb-16">
+          <Skeleton className="h-7 w-48 mb-6" />
+          <div className="space-y-8">
+            {Array.from({ length: 2 }).map((_, i) => (
+              <div key={i} className="space-y-3">
+                <div className="flex justify-between">
+                  <div className="space-y-1">
+                    <Skeleton className="h-6 w-48" />
+                    <Skeleton className="h-5 w-40" />
+                  </div>
+                  <Skeleton className="h-5 w-32" />
+                </div>
+                <div className="flex flex-wrap gap-2 pt-2">
+                  <Skeleton className="h-6 w-20 rounded-full" />
+                  <Skeleton className="h-6 w-24 rounded-full" />
+                </div>
+                <div className="space-y-2 pt-2">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        {/* Skills Section Skeleton */}
+        <div className="mb-16">
+          <Skeleton className="h-7 w-48 mb-6" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="border rounded-lg p-4 space-y-3">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-10 w-10 rounded-md" />
+                  <Skeleton className="h-5 w-32" />
+                </div>
+                <Skeleton className="h-2 w-full rounded-full" />
+                <div className="flex justify-between items-center">
+                  <Skeleton className="h-4 w-16" />
+                  <Skeleton className="h-4 w-8" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        {/* Projects Section Skeleton */}
+        <div className="mb-16">
+          <Skeleton className="h-7 w-48 mb-6" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {Array.from({ length: 2 }).map((_, i) => (
+              <div key={i} className="border rounded-lg overflow-hidden">
+                <Skeleton className="h-48 w-full" />
+                <div className="p-6 space-y-4">
+                  <Skeleton className="h-6 w-3/4" />
+                  <div className="flex flex-wrap gap-2">
+                    <Skeleton className="h-6 w-20 rounded-full" />
+                    <Skeleton className="h-6 w-24 rounded-full" />
+                  </div>
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-2/3" />
+                  </div>
+                  <div className="flex justify-between pt-2">
+                    <Skeleton className="h-8 w-20" />
+                    <Skeleton className="h-8 w-32" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        {/* Services Section Skeleton */}
+        <div>
+          <Skeleton className="h-7 w-48 mb-6" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="border rounded-lg p-6 space-y-4">
+                <Skeleton className="h-6 w-3/4" />
+                <Skeleton className="h-4 w-1/3" />
+                <div className="space-y-2 py-2">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                </div>
+                <div className="pt-2 flex justify-between items-center">
+                  <Skeleton className="h-5 w-28" />
+                  <Skeleton className="h-9 w-24 rounded-md" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
   
   // Initialize animations and styles on component mount
   useEffect(() => {
