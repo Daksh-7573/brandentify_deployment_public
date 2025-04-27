@@ -39,8 +39,6 @@ import CorporateExecutive from "@/components/portfolio/templates/corporate-execu
 import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innovator";
 import Animated from "@/components/portfolio/templates/animated";
 import Scholar from "@/components/portfolio/templates/scholar";
-import ImmersiveStoryline from "@/components/portfolio/templates/immersive-storyline";
-import ImmersiveStorylineSimple from "@/components/portfolio/templates/immersive-storyline-simple"; // New parallax motion effects template
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -73,7 +71,7 @@ const portfolioFormSchema = z.object({
   layout: z.enum([
     "professional", "creative", "minimal", "technical", "executive", "minimalist_pro",
     "minimalist-pro", "timeline-storyteller-2", "visual-expert", "corporate-executive", 
-    "dynamic-innovator", "freelancer-hub", "animated", "scholar", "immersive-storyline"
+    "dynamic-innovator", "freelancer-hub", "animated", "scholar"
   ]),
   isPublished: z.boolean().default(false),
   publicUrl: z.string().nullable().optional(),
@@ -442,20 +440,12 @@ export default function PortfolioBuilder() {
       theme: "#4F86C6"
     },
     { 
-      id: "immersive-storyline", 
-      name: "The Immersive Storyline", 
-      description: `✔ Theme: Dynamic Parallax Scrolling with Motion Effects
-✔ Best For: Creative Professionals, Designers, and Storytellers who want a visually engaging presentation`,
-      theme: "#6C3FFF"
-    },
-    { 
       id: "timeline-storyteller-2", 
       name: "The Timeline Storyteller", 
       description: `✔ Theme: Interactive Timeline with Comprehensive Profile Display
 ✔ Best For: Storytellers & Professionals with Rich Career Histories`,
       theme: "#6C63FF"
     },
-
     { 
       id: "visual-expert", 
       name: "The Visual Expert", 
@@ -1001,32 +991,6 @@ export default function PortfolioBuilder() {
                   />
                 </CardContent>
               </Card>
-            )}
-            
-            {/* Immersive Storyline Template with Parallax Motion Effects */}
-            {form.watch("layout") === "immersive-storyline" && (
-              <>
-                {console.log("Immersive Storyline - Data being passed:", {
-                  userInfo: userInfo,
-                  skillsCount: sortedSkills.length,
-                  experiencesCount: sortedExperiences.length,
-                  projectsCount: sortedProjects.length,
-                  educationsCount: sortedEducations.length,
-                  servicesCount: userServices.length
-                })}
-                <Card className="overflow-hidden bg-white border-gray-200 shadow-lg">
-                  <CardContent className="p-0">
-                    <ImmersiveStorylineSimple
-                      userInfo={userInfo}
-                      userSkills={sortedSkills}
-                      userServices={userServices || []}
-                      userExperiences={sortedExperiences}
-                      userEducations={sortedEducations}
-                      userProjects={sortedProjects}
-                    />
-                  </CardContent>
-                </Card>
-              </>
             )}
             
             <div className="flex justify-between">
