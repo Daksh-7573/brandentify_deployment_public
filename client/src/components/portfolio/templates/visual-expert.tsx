@@ -709,21 +709,31 @@ export default function VisualExpert({
             Skills & Expertise
           </h2>
           
-          <div className="skills-container mb-16 scroll-reveal">
+          <div className="skills-container grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-16 scroll-reveal">
             {sortedSkills.length > 0 ? (
               sortedSkills.map((skill) => {
                 const SkillIcon = getSkillIcon(skill.name);
                 return (
-                  <Badge 
-                    key={skill.id}
-                    className="skill-badge bg-white text-gray-700 border-gray-200 shadow-sm px-4 py-3 text-base rounded-full"
-                  >
-                    <SkillIcon className="w-4 h-4 mr-2 text-pink-500" />
-                    {skill.name}
+                  <div key={skill.id} className="flex flex-col">
+                    <Badge 
+                      className="skill-badge bg-white text-gray-700 border-gray-200 shadow-sm px-4 py-3 text-base rounded-full"
+                    >
+                      <SkillIcon className="w-4 h-4 mr-2 text-pink-500" />
+                      {skill.name}
+                    </Badge>
+                    
                     {skill.proficiency && (
-                      <span className="ml-2 text-pink-500 font-medium">{skill.proficiency}%</span>
+                      <div className="mt-1 w-full px-2">
+                        <div className="text-xs text-center text-gray-600 mb-1">Proficiency: <span className="font-medium text-pink-500">{skill.proficiency}%</span></div>
+                        <div className="w-full bg-gray-200 rounded-full h-1.5">
+                          <div 
+                            className="bg-gradient-to-r from-pink-500 to-purple-600 h-1.5 rounded-full" 
+                            style={{ width: `${skill.proficiency}%` }}
+                          ></div>
+                        </div>
+                      </div>
                     )}
-                  </Badge>
+                  </div>
                 );
               })
             ) : (
