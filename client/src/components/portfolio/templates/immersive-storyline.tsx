@@ -191,14 +191,24 @@ export default function ImmersiveStoryline({
 
   // Initialize smooth scrolling and animations
   useEffect(() => {
+    // Skip on server-side
+    if (typeof window === 'undefined') return;
+    
     // Initialize smooth scrolling with Lenis
     const lenis = new Lenis({
       duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      wheelMultiplier: 1,
-      smoothWheel: true
+      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      wheelMultiplier: 2,
+      smoothWheel: true,
+      touchMultiplier: 2,
     });
 
+    // Connect gsap and lenis
+    gsap.ticker.add((time: number) => {
+      lenis.raf(time * 1000);
+    });
+    
+    // Manual animation frame loop
     function raf(time: number) {
       lenis.raf(time);
       requestAnimationFrame(raf);
