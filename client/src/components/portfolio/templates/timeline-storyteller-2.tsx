@@ -136,7 +136,7 @@ export default function TimelineStoryteller2({
     const observerOptions = {
       root: null, // use viewport as root
       rootMargin: '0px',
-      threshold: 0.5, // trigger when 50% of element is visible
+      threshold: [0.2, 0.4, 0.6], // Multiple thresholds for better detection
     };
 
     const observerCallback: IntersectionObserverCallback = (entries) => {
@@ -144,7 +144,14 @@ export default function TimelineStoryteller2({
         if (entry.isIntersecting) {
           // Get the section id from the target element - now the ID is directly the section name
           const sectionId = entry.target.id as keyof typeof chapterRefs;
-          setActiveChapter(sectionId);
+          
+          // Log for debugging
+          console.log(`Section ${sectionId} is now visible with ratio: ${entry.intersectionRatio}`);
+          
+          // Only update if actually changing to avoid unnecessary renders
+          if (sectionId && activeChapter !== sectionId) {
+            setActiveChapter(sectionId);
+          }
         }
       });
     };
@@ -152,11 +159,12 @@ export default function TimelineStoryteller2({
     // Create observer
     const observer = new IntersectionObserver(observerCallback, observerOptions);
     
-    // Observe all section refs
+    // Observe all section refs and log what we're observing
     Object.keys(chapterRefs).forEach((key) => {
       const ref = chapterRefs[key as keyof typeof chapterRefs];
       if (ref.current) {
         observer.observe(ref.current);
+        console.log(`Now observing section: ${key}`);
       }
     });
 
@@ -164,7 +172,7 @@ export default function TimelineStoryteller2({
     return () => {
       observer.disconnect();
     };
-  }, []);
+  }, [activeChapter]); // Add activeChapter as dependency to prevent stale closures
 
   // Sort user data for display
   // Sort skills by proficiency (highest first)
