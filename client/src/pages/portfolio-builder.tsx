@@ -39,7 +39,8 @@ import CorporateExecutive from "@/components/portfolio/templates/corporate-execu
 import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innovator";
 import Animated from "@/components/portfolio/templates/animated";
 import Scholar from "@/components/portfolio/templates/scholar";
-import ImmersiveStoryline from "@/components/portfolio/templates/immersive-storyline"; // New parallax motion effects template
+import ImmersiveStoryline from "@/components/portfolio/templates/immersive-storyline";
+import ImmersiveStorylineSimple from "@/components/portfolio/templates/immersive-storyline-simple"; // New parallax motion effects template
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -1015,7 +1016,7 @@ export default function PortfolioBuilder() {
                 })}
                 <Card className="overflow-hidden bg-white border-gray-200 shadow-lg">
                   <CardContent className="p-0">
-                    <ImmersiveStoryline 
+                    <ImmersiveStorylineSimple
                       userInfo={userInfo}
                       userSkills={sortedSkills}
                       userServices={userServices || []}
