@@ -301,22 +301,21 @@ export default function TimelineStoryteller2({
           </div>
           
           {/* What I'm All About - Full Width */}
-          <div className="max-w-4xl mx-auto mb-8 animate-fade-in delay-400">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
-              <h3 className="text-lg font-semibold text-indigo-700 mb-3 flex items-center">
-                <Gift className="h-5 w-5 mr-2" />
-                What I'm All About
-              </h3>
-              {userInfo.whatIOffer ? (
-                <p className="text-gray-600 text-lg">
-                  {userInfo.whatIOffer}
-                </p>
-              ) : (
-                <div className="p-5 bg-gray-50 border border-gray-100 rounded-md text-center">
-                  <p className="text-gray-400">Add information about what you offer or value to display here</p>
-                </div>
-              )}
+          <div className="max-w-2xl mx-auto mb-8 animate-fade-in delay-400">
+            <div className="inline-block bg-indigo-100 px-3 py-1 rounded-full text-indigo-800 text-sm font-medium mb-3">
+              What I'm All About
             </div>
+            <h3 className="text-2xl font-bold text-gray-800 mb-4">My Professional Focus</h3>
+            
+            {userInfo.whatIOffer || userInfo.aboutMe ? (
+              <p className="text-gray-600 text-lg leading-relaxed">
+                {userInfo.whatIOffer || userInfo.aboutMe}
+              </p>
+            ) : (
+              <div className="p-5 bg-gray-50 border border-gray-100 rounded-md text-center">
+                <p className="text-gray-400">Add information about what you offer or your professional focus to display here</p>
+              </div>
+            )}
           </div>
           
           {/* CTA Buttons */}
