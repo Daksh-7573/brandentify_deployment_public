@@ -1165,155 +1165,96 @@ export default function TimelineStoryteller({
         </div>
       </section>
       
-      {/* Projects Showcase */}
+      {/* What I Offer Section */}
       <section 
-        id="chapter-projects" 
-        ref={chapterRefs.projects}
-        className="py-24 px-8 bg-gradient-to-b from-indigo-50 to-purple-50 min-h-screen"
+        id="chapter-whatIOffer" 
+        ref={chapterRefs.whatIOffer}
+        className="py-24 px-8 bg-gradient-to-b from-white to-gray-50 min-h-screen"
       >
         <div className="mx-auto max-w-4xl">
           <div className="mb-12">
-            <div className="inline-block bg-purple-100 px-3 py-1 rounded-full text-purple-800 text-sm font-medium mb-3 animate-fade-in">
-              My Projects
+            <div className="inline-block bg-teal-100 px-3 py-1 rounded-full text-teal-800 text-sm font-medium mb-3 animate-fade-in">
+              My Services
             </div>
-            <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">Featured Work</h2>
+            <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">What I Offer</h2>
+            
+            {userInfo.whatIOffer && userInfo.whatIOffer.trim() !== '' ? (
+              <p className="text-gray-600 mt-4 animate-fade-in">
+                {userInfo.whatIOffer}
+              </p>
+            ) : null}
           </div>
           
-          {/* Project Gallery */}
-          <div className="grid grid-cols-1 gap-8 animate-fade-in">
-            {sortedProjects.length > 0 ? (
-              sortedProjects.map((project, index) => (
-                <div 
-                  key={project.id}
-                  className="card-animated bg-white rounded-lg shadow-lg overflow-hidden border border-purple-100 cursor-pointer"
-                  onClick={() => {
-                    setSelectedProject(project);
-                    setIsProjectModalOpen(true);
-                  }}
-                >
-                  {/* Project media header */}
-                  <div className="relative h-56 overflow-hidden">
-                    {project.thumbnailUrl ? (
-                      <img 
-                        src={project.thumbnailUrl} 
-                        alt={project.title} 
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gradient-to-r from-purple-100 to-indigo-100 flex items-center justify-center">
-                        <FileText className="w-12 h-12 text-purple-300" />
+          {/* Service cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
+            {sortedServices.length > 0 ? (
+              sortedServices.map(service => (
+                <div key={service.id} className="card-animated bg-white rounded-lg shadow-md overflow-hidden border border-teal-100">
+                  <div className="h-2 bg-gradient-to-r from-teal-400 to-blue-400"></div>
+                  
+                  <div className="p-6">
+                    <div className="flex justify-between items-start mb-4">
+                      <h3 className="text-lg font-bold text-gray-800">{service.title}</h3>
+                      <Badge className="bg-teal-100 text-teal-700">
+                        {service.category}
+                      </Badge>
+                    </div>
+                    
+                    <p className="text-gray-600 mb-4">
+                      {service.description}
+                    </p>
+                    
+                    {/* Price */}
+                    <div className="bg-teal-50 p-3 rounded-md border border-teal-100 mb-4">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <span className="text-sm font-medium text-teal-800">Price</span>
+                          <div className="text-2xl font-bold text-teal-900 mt-1">
+                            ${service.priceUsd}
+                          </div>
+                          <div className="text-xs text-teal-700">
+                            {service.isHourly ? 'Per hour' : 'Fixed price'}
+                          </div>
+                        </div>
+                        
+                        <Wallet className="h-12 w-12 text-teal-300" />
+                      </div>
+                    </div>
+                    
+                    {/* Features */}
+                    {service.features && service.features.length > 0 && (
+                      <div className="mb-4">
+                        <h4 className="text-sm font-medium text-gray-700 mb-2">What's included:</h4>
+                        <ul className="space-y-2">
+                          {service.features.map((feature, idx) => (
+                            <li key={idx} className="flex items-start">
+                              <div className="text-teal-500 mr-2 mt-0.5">
+                                <ChevronRight className="h-4 w-4" />
+                              </div>
+                              <span className="text-sm text-gray-600">{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
                       </div>
                     )}
                     
-                    {/* Timeline indicator */}
-                    <div className="absolute bottom-4 left-4 bg-white rounded-full py-1 px-3 shadow-md text-xs font-medium text-purple-700 flex items-center">
-                      <Calendar className="h-3 w-3 mr-1" />
-                      {formatDate(project.startDate)}
-                    </div>
-                  </div>
-                  
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold text-gray-800 mb-3">{project.title}</h3>
-                    
-                    <p className="text-gray-600 mb-6">{project.description}</p>
-                    
-                    {/* Project links and additional info */}
-                    <div className="flex justify-between items-center">
-                      <div className="space-x-2">
-                        {project.category && (
-                          <Badge className="bg-purple-100 text-purple-700">
-                            {project.category}
-                          </Badge>
-                        )}
-                      </div>
-                      
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="text-purple-600 border-purple-200 hover:bg-purple-50"
-                        onClick={(e) => {
-                          e.stopPropagation(); // Prevent triggering the parent onClick
-                          setSelectedProject(project);
-                          setIsProjectModalOpen(true);
-                        }}
-                      >
-                        <Search className="h-4 w-4 mr-1" />
-                        Project Details
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              // Empty state
-              <div className="bg-white rounded-lg shadow-md p-8 text-center">
-                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-purple-100 flex items-center justify-center">
-                  <FileText className="h-6 w-6 text-purple-400" />
-                </div>
-                <p className="text-gray-500">Your projects will appear here</p>
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
-      
-      {/* Certifications & Highlights Section */}
-      <section 
-        id="chapter-certifications" 
-        ref={chapterRefs.certifications}
-        className="py-24 px-8 bg-gradient-to-b from-purple-50 to-white min-h-screen"
-      >
-        <div className="mx-auto max-w-4xl">
-          <div className="mb-12">
-            <div className="inline-block bg-pink-100 px-3 py-1 rounded-full text-pink-800 text-sm font-medium mb-3 animate-fade-in">
-              What I'm Good At
-            </div>
-            <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">Skills & Expertise</h2>
-          </div>
-          
-          {/* If there are skills, display them as certifications */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
-            {sortedSkills.length > 0 ? (
-              sortedSkills.slice(0, 6).map((skill) => (
-                <div key={skill.id} className="card-animated bg-white rounded-lg shadow-md overflow-hidden border border-pink-100">
-                  <div className="h-2 bg-gradient-to-r from-pink-400 to-purple-400"></div>
-                  <div className="p-6">
-                    <div className="flex items-start mb-4">
-                      <div className="mr-4 mt-1">
-                        <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center">
-                          <Award className="h-5 w-5 text-pink-500" />
-                        </div>
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-medium text-gray-800">{skill.name}</h3>
-                        <p className="text-gray-500 text-sm mt-1">
-                          <span className="font-medium">Proficiency Level:</span> {skill.level || 'Advanced'}
-                        </p>
-                      </div>
-                    </div>
-                    
-                    {/* Progress indicator */}
-                    <div className="relative mt-2">
-                      <div className="h-2 w-full bg-gray-100 rounded-full">
-                        <div 
-                          className="h-full bg-gradient-to-r from-pink-400 to-purple-400 rounded-full" 
-                          style={{ width: `${skill.proficiency || 0}%` }}
-                        ></div>
-                      </div>
-                      <div className="text-xs text-gray-500 text-right mt-1">
-                        {skill.proficiency || 0}%
-                      </div>
-                    </div>
+                    <Button 
+                      className="w-full bg-teal-600 hover:bg-teal-700"
+                      onClick={() => setIsContactModalOpen(true)}
+                    >
+                      <MessageSquare className="h-4 w-4 mr-2" />
+                      Inquire about this service
+                    </Button>
                   </div>
                 </div>
               ))
             ) : (
               // Empty state
               <div className="col-span-1 md:col-span-2 bg-white rounded-lg shadow-md p-8 text-center">
-                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-pink-100 flex items-center justify-center">
-                  <Award className="h-6 w-6 text-pink-400" />
+                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-teal-100 flex items-center justify-center">
+                  <Gift className="h-6 w-6 text-teal-400" />
                 </div>
-                <p className="text-gray-500">Your skills and expertise will appear here</p>
+                <p className="text-gray-500">Your services will appear here</p>
               </div>
             )}
           </div>
