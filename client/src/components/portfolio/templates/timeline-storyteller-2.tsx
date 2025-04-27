@@ -307,9 +307,13 @@ export default function TimelineStoryteller2({
             </div>
             <h3 className="text-2xl font-bold text-gray-800 mb-4">My Professional Focus</h3>
             
-            {userInfo.whatIOffer || userInfo.aboutMe ? (
+            {userInfo.aboutMe ? (
               <p className="text-gray-600 text-lg leading-relaxed">
-                {userInfo.whatIOffer || userInfo.aboutMe}
+                {userInfo.aboutMe}
+              </p>
+            ) : userInfo.whatIOffer ? (
+              <p className="text-gray-600 text-lg leading-relaxed">
+                {userInfo.whatIOffer}
               </p>
             ) : (
               <div className="p-5 bg-gray-50 border border-gray-100 rounded-md text-center">
