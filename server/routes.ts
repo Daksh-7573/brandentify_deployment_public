@@ -683,7 +683,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(experience);
     } catch (error) {
+      console.error("[PUT /experiences/:id] Error:", error);
       res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  // Add PATCH route to handle update mutations from client
+  apiRouter.patch("/experiences/:id", async (req: Request, res: Response) => {
+    try {
+      console.log(`[PATCH /experiences/:id] Updating experience with data:`, req.body);
+      const experienceId = parseInt(req.params.id);
+      
+      if (isNaN(experienceId)) {
+        return res.status(400).json({ message: "Invalid experience ID format" });
+      }
+      
+      // Check if experience exists
+      const existingExperience = await storage.getWorkExperienceById(experienceId);
+      
+      if (!existingExperience) {
+        return res.status(404).json({ message: "Experience not found" });
+      }
+      
+      const experienceData = req.body;
+      
+      // Ensure we don't have nullish values that would fail schema validation
+      // Especially handle the location field which might be causing issues
+      if (experienceData.location === '') {
+        experienceData.location = null;
+      }
+      
+      console.log(`[PATCH /experiences/:id] Processing update with clean data:`, experienceData);
+      const experience = await storage.updateWorkExperience(experienceId, experienceData);
+      
+      if (!experience) {
+        return res.status(404).json({ message: "Failed to update experience" });
+      }
+      
+      console.log(`[PATCH /experiences/:id] Successfully updated experience`);
+      res.json(experience);
+    } catch (error) {
+      console.error(`[PATCH /experiences/:id] Error:`, error);
+      let errorMessage = "Internal server error";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      res.status(500).json({ message: errorMessage });
     }
   });
 
