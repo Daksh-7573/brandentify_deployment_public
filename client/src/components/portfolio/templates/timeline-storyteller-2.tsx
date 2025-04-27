@@ -570,7 +570,7 @@ export default function TimelineStoryteller2({
               ))
             ) : (
               // Empty state
-              <div className="bg-white rounded-lg shadow-md p-8 text-center">
+              <div className="col-span-1 sm:col-span-2 md:col-span-3 bg-white rounded-lg shadow-md p-8 text-center">
                 <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-purple-100 flex items-center justify-center">
                   <FileText className="h-6 w-6 text-purple-400" />
                 </div>
