@@ -257,7 +257,6 @@ export default function TimelineStoryteller2({
               <ProfileImage
                 src={userInfo.photoURL || ""}
                 alt={userInfo.name}
-                fallback={userInfo.name.charAt(0).toUpperCase()}
                 className="w-36 h-36 border-4 border-white rounded-full shadow-lg"
               />
             </div>
@@ -312,20 +311,10 @@ export default function TimelineStoryteller2({
             </div>
             <h3 className="text-2xl font-bold text-gray-800 mb-4">My Professional Focus</h3>
             
-            {/* Direct test rendering of aboutMe field to diagnose issues */}
-            {userInfo && typeof userInfo.aboutMe === 'string' && userInfo.aboutMe !== "" ? (
-              <div className="text-gray-600 text-lg leading-relaxed">
-                <p>{userInfo.aboutMe}</p>
-              </div>
-            ) : userInfo && typeof userInfo.whatIOffer === 'string' && userInfo.whatIOffer !== "" ? (
-              <div className="text-gray-600 text-lg leading-relaxed">
-                <p>{userInfo.whatIOffer}</p>
-              </div>
-            ) : (
-              <div className="p-5 bg-gray-50 border border-gray-100 rounded-md text-center">
-                <p className="text-gray-400">Add information about what you offer or your professional focus to display here</p>
-              </div>
-            )}
+            {/* Dynamic display of aboutMe field from user data */}
+            <div className="text-gray-600 text-lg leading-relaxed">
+              <p>{userInfo.aboutMe || "Add information about what you offer or your professional focus to display here"}</p>
+            </div>
           </div>
           
           {/* CTA Buttons */}
