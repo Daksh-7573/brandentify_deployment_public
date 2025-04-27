@@ -614,7 +614,7 @@ export default function TimelineStoryteller({
         <section 
           id="chapter-aboutMe" 
           ref={chapterRefs.aboutMe}
-          className="py-16 px-8 bg-gradient-to-b from-purple-50 to-white"
+          className="py-24 px-8 bg-gradient-to-b from-indigo-50 to-white min-h-screen"
         >
           <div className="mx-auto max-w-3xl">
             <div className="mb-6">
@@ -637,7 +637,7 @@ export default function TimelineStoryteller({
       <section 
         id="chapter-certifications" 
         ref={chapterRefs.certifications}
-        className="py-24 px-8 bg-gradient-to-b from-purple-50 to-white min-h-screen"
+        className="py-24 px-8 bg-gradient-to-b from-pink-50 to-white min-h-screen"
       >
         <div className="mx-auto max-w-4xl">
           <div className="mb-12">
