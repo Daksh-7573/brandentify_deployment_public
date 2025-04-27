@@ -1001,6 +1001,34 @@ export default function PortfolioBuilder() {
               </Card>
             )}
             
+            {form.watch("layout") === "immersive-storyline" && (
+              <Card className="overflow-hidden bg-white border-gray-200 shadow-lg">
+                <CardContent className="p-0">
+                  <ImmersiveStoryline 
+                    userInfo={{
+                      id: userData?.id,
+                      name: userData?.name || user?.name || '',
+                      email: userData?.email || user?.email || null,
+                      title: userData?.title || null,
+                      aboutMe: userData?.aboutMe || null,
+                      location: userData?.location || null,
+                      industry: userData?.industry || null,
+                      domain: userData?.domain || null,
+                      lookingFor: userData?.lookingFor || null,
+                      whatIOffer: userData?.whatIOffer || null,
+                      photoURL: userData?.photoURL || user?.photoURL || null,
+                      jobLevel: userData?.jobLevel || null
+                    }}
+                    userSkills={userSkills || []}
+                    userExperiences={userExperiences || []}
+                    userProjects={userProjects || []}
+                    userEducations={userEducations || []}
+                    userServices={userServices || []}
+                  />
+                </CardContent>
+              </Card>
+            )}
+            
             <div className="flex justify-between">
               <Button 
                 variant="outline"

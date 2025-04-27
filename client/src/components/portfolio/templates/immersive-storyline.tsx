@@ -11,7 +11,7 @@ import { Briefcase, Calendar, ChevronDown, Code, Download, ExternalLink, FileTex
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from '@studio-freight/lenis';
-import ProfileImage from '@/components/profile-image';
+import ProfileImage from '../../../components/profile-image';
 import PortfolioCtaButtons from '@/components/portfolio/portfolio-cta-buttons';
 
 // Register GSAP ScrollTrigger plugin
