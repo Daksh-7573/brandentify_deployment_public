@@ -34,6 +34,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import MinimalistPro from "@/components/portfolio/templates/minimalist-pro";
 import FreelancerHub from "@/components/portfolio/templates/freelancer-hub"; // Using the new improved template
 import TimelineStoryteller from "@/components/portfolio/templates/timeline-storyteller";
+import TimelineStoryteller2 from "@/components/portfolio/templates/timeline-storyteller-2"; // New Timeline Storyteller 2.0
 import VisualExpert from "@/components/portfolio/templates/visual-expert";
 import CorporateExecutive from "@/components/portfolio/templates/corporate-executive";
 import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innovator";
@@ -70,7 +71,7 @@ import Header from "@/components/layout/header";
 const portfolioFormSchema = z.object({
   layout: z.enum([
     "professional", "creative", "minimal", "technical", "executive", "minimalist_pro",
-    "minimalist-pro", "timeline-storyteller", "visual-expert", "corporate-executive", 
+    "minimalist-pro", "timeline-storyteller", "timeline-storyteller-2", "visual-expert", "corporate-executive", 
     "dynamic-innovator", "freelancer-hub", "animated", "scholar"
   ]),
   isPublished: z.boolean().default(false),
