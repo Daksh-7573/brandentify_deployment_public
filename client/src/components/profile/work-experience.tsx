@@ -1066,7 +1066,7 @@ export default function WorkExperience() {
       
       {/* Add Experience Dialog */}
       <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-        <DialogContent className="md:max-w-lg">
+        <DialogContent className="md:max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Add Career Path</DialogTitle>
             <DialogDescription>
@@ -1399,7 +1399,7 @@ export default function WorkExperience() {
       
       {/* Edit Experience Dialog */}
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-        <DialogContent className="md:max-w-lg">
+        <DialogContent className="md:max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Career Path</DialogTitle>
             <DialogDescription>
