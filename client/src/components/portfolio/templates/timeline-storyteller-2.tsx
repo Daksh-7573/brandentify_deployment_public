@@ -232,7 +232,7 @@ export default function TimelineStoryteller2({
               onClick={() => scrollToSection(section as keyof typeof chapterRefs)}
               className={`w-3 h-3 rounded-full transition-all duration-300 ${
                 activeChapter === section 
-                  ? 'bg-indigo-600 scale-125 shadow-md shadow-indigo-200' 
+                  ? 'bg-blue-600 scale-125 shadow-md shadow-blue-200' 
                   : 'bg-gray-300 hover:bg-gray-400'
               }`}
               aria-label={`Scroll to ${section} section`}
