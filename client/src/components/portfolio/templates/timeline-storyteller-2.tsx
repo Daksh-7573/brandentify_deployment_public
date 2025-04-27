@@ -191,10 +191,17 @@ export default function TimelineStoryteller2({
           {Object.keys(chapterRefs).map((section) => {
             // Direct click handler that also updates the active chapter
             const handleClick = () => {
-              // First scroll to the section
-              scrollToSection(section as keyof typeof chapterRefs);
-              // Then update active chapter immediately - don't wait for scroll detection
-              setActiveChapter(section as keyof typeof chapterRefs);
+              // Cast section to the correct type once
+              const sectionKey = section as keyof typeof chapterRefs;
+              
+              // Update active chapter immediately for responsive UI feedback
+              setActiveChapter(sectionKey);
+              
+              // Then scroll to the section
+              setTimeout(() => {
+                scrollToSection(sectionKey);
+              }, 50); // Small delay for better visual feedback
+              
               console.log("Clicked dot for section:", section);
             };
             
@@ -204,8 +211,8 @@ export default function TimelineStoryteller2({
                 onClick={handleClick}
                 className={`w-3 h-3 rounded-full transition-all duration-300 ${
                   activeChapter === section 
-                    ? 'bg-blue-600 scale-125 shadow-md shadow-blue-200' 
-                    : 'bg-gray-300 hover:bg-gray-400'
+                    ? 'bg-indigo-600 scale-125 shadow-md shadow-indigo-200 ring-2 ring-indigo-100' 
+                    : 'bg-gray-300 hover:bg-indigo-400'
                 }`}
                 aria-label={`Scroll to ${section} section`}
                 title={section.charAt(0).toUpperCase() + section.slice(1)}
