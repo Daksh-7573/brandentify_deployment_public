@@ -130,39 +130,45 @@ export default function TimelineStoryteller2({
   // Determine if the viewer is at a chapter during scrolling
   const [activeChapter, setActiveChapter] = useState<keyof typeof chapterRefs>('hero');
   
+  // Add debug log for active chapter
+  useEffect(() => {
+    console.log("Current active chapter:", activeChapter);
+  }, [activeChapter]);
+  
   useEffect(() => {
     const handleScroll = () => {
-      const scrollPosition = window.scrollY + window.innerHeight / 3; // Offset for better UX
+      // Get current scroll position with offset for better UX
+      const scrollPosition = window.scrollY + 150;
       
-      // Convert refs to array and sort by position for more accurate detection
-      const sections = Object.entries(chapterRefs)
-        .filter(([_, ref]) => ref.current)
-        .map(([key, ref]) => ({
+      // Get all section positions
+      const sectionPositions = Object.entries(chapterRefs).map(([key, ref]) => {
+        return {
           key: key as keyof typeof chapterRefs,
-          top: ref.current!.offsetTop,
-          bottom: ref.current!.offsetTop + ref.current!.offsetHeight
-        }))
-        .sort((a, b) => a.top - b.top);
+          top: ref.current?.offsetTop || 0
+        };
+      });
       
-      // Find the section currently in view
-      let found = false;
-      for (let i = sections.length - 1; i >= 0; i--) {
-        if (scrollPosition >= sections[i].top) {
-          setActiveChapter(sections[i].key);
-          found = true;
-          break;
+      // Sort sections by position (top to bottom)
+      sectionPositions.sort((a, b) => a.top - b.top);
+      
+      // Find the current section (last section that starts before the current scroll position)
+      let currentSection = sectionPositions[0].key; // Default to first section
+      
+      for (const section of sectionPositions) {
+        if (scrollPosition >= section.top) {
+          currentSection = section.key;
+        } else {
+          break; // Sections are sorted, so we can stop once we find a section that's below the current scroll position
         }
       }
       
-      // Default to first section if no match
-      if (!found && sections.length > 0) {
-        setActiveChapter(sections[0].key);
-      }
+      setActiveChapter(currentSection);
     };
     
-    // Initial call to set active chapter on mount
-    setTimeout(handleScroll, 100); // Short delay to ensure all refs are mounted
+    // Run scroll handler on mount
+    handleScroll();
     
+    // Add scroll event listener
     window.addEventListener('scroll', handleScroll);
     
     return () => {
