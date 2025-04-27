@@ -127,47 +127,10 @@ export default function TimelineStoryteller2({
     });
   };
 
-  // Determine active section on scroll
+  // Maintain state of the active section without scroll detection
   const [activeChapter, setActiveChapter] = useState<keyof typeof chapterRefs>('hero');
   
-  // Get all sections available for navigation
-  const allSections = Object.keys(chapterRefs);
-  
-  // Simple, more direct approach for scroll detection
-  useEffect(() => {
-    const handleScroll = () => {
-      // Current scroll position plus a small offset
-      const scrollY = window.scrollY + 100;
-      
-      // Check each section's position
-      for (let i = allSections.length - 1; i >= 0; i--) {
-        const section = allSections[i];
-        const ref = chapterRefs[section as keyof typeof chapterRefs].current;
-        
-        if (ref && scrollY >= ref.offsetTop) {
-          if (activeChapter !== section) {
-            setActiveChapter(section as keyof typeof chapterRefs);
-            console.log("Setting active chapter to:", section);
-          }
-          return; // Exit once we find the active section
-        }
-      }
-      
-      // If we reach here, we're at the top, so set to first section
-      if (activeChapter !== allSections[0]) {
-        setActiveChapter(allSections[0] as keyof typeof chapterRefs);
-      }
-    };
-    
-    // Run the handler once on mount
-    setTimeout(handleScroll, 200);
-    
-    // Add scroll listener
-    window.addEventListener('scroll', handleScroll);
-    
-    // Cleanup
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [activeChapter, allSections]);
+  // No scroll effect - we'll rely only on click handlers
 
   // Sort user data for display
   // Sort skills by proficiency (highest first)
@@ -266,6 +229,7 @@ export default function TimelineStoryteller2({
         id="chapter-hero" 
         ref={chapterRefs.hero} 
         className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-indigo-50 via-purple-50 to-pink-50 px-4 md:px-6 py-24"
+        onClick={() => setActiveChapter('hero')}
       >
         {/* Background decorative elements */}
         <div className="absolute inset-0 overflow-hidden">
@@ -377,6 +341,7 @@ export default function TimelineStoryteller2({
         id="chapter-skills" 
         ref={chapterRefs.skills}
         className="py-24 px-4 md:px-6 bg-white min-h-[90vh] relative overflow-hidden"
+        onClick={() => setActiveChapter('skills')}
       >
         <div className="mx-auto max-w-4xl relative z-10">
           <div className="mb-12">
@@ -444,6 +409,7 @@ export default function TimelineStoryteller2({
           id="chapter-services" 
           ref={chapterRefs.services}
           className="py-24 px-4 md:px-6 bg-gradient-to-b from-white to-blue-50 min-h-[90vh] relative"
+          onClick={() => setActiveChapter('services')}
         >
           <div className="mx-auto max-w-4xl relative z-10">
             <div className="mb-12">
@@ -516,6 +482,7 @@ export default function TimelineStoryteller2({
         id="chapter-projects" 
         ref={chapterRefs.projects}
         className="py-24 px-4 md:px-6 bg-gradient-to-b from-blue-50 to-purple-50 min-h-[90vh]"
+        onClick={() => setActiveChapter('projects')}
       >
         <div className="mx-auto max-w-4xl">
           <div className="mb-12">
@@ -629,6 +596,7 @@ export default function TimelineStoryteller2({
         id="chapter-career" 
         ref={chapterRefs.career}
         className="py-24 px-4 md:px-6 bg-gradient-to-b from-purple-50 to-indigo-50 min-h-[90vh]"
+        onClick={() => setActiveChapter('career')}
       >
         <div className="mx-auto max-w-4xl">
           <div className="mb-12">
@@ -749,6 +717,7 @@ export default function TimelineStoryteller2({
         id="chapter-education" 
         ref={chapterRefs.education}
         className="py-24 px-4 md:px-8 bg-gradient-to-b from-indigo-50 to-pink-50 min-h-[90vh]"
+        onClick={() => setActiveChapter('education')}
       >
         <div className="mx-auto max-w-4xl">
           <div className="mb-12">
