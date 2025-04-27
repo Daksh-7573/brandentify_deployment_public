@@ -33,8 +33,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 // Import our portfolio templates
 import MinimalistPro from "@/components/portfolio/templates/minimalist-pro";
 import FreelancerHub from "@/components/portfolio/templates/freelancer-hub"; // Using the new improved template
-import TimelineStoryteller from "@/components/portfolio/templates/timeline-storyteller";
-import TimelineStoryteller2 from "@/components/portfolio/templates/timeline-storyteller-2"; // New Timeline Storyteller 2.0
+import TimelineStoryteller2 from "@/components/portfolio/templates/timeline-storyteller-2"; // Timeline Storyteller with comprehensive interactive timeline
 import VisualExpert from "@/components/portfolio/templates/visual-expert";
 import CorporateExecutive from "@/components/portfolio/templates/corporate-executive";
 import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innovator";
@@ -71,7 +70,7 @@ import Header from "@/components/layout/header";
 const portfolioFormSchema = z.object({
   layout: z.enum([
     "professional", "creative", "minimal", "technical", "executive", "minimalist_pro",
-    "minimalist-pro", "timeline-storyteller", "timeline-storyteller-2", "visual-expert", "corporate-executive", 
+    "minimalist-pro", "timeline-storyteller-2", "visual-expert", "corporate-executive", 
     "dynamic-innovator", "freelancer-hub", "animated", "scholar"
   ]),
   isPublished: z.boolean().default(false),
@@ -802,37 +801,7 @@ export default function PortfolioBuilder() {
               </>
             )}
             
-            {form.watch("layout") === "timeline-storyteller" && (
-              <>
-                {console.log("Timeline Storyteller - Education data being passed:", userEducations)}
-                {console.log("Timeline Storyteller - Services data being passed:", userServices)}
-                {console.log("Timeline Storyteller - UserInfo being passed:", {
-                  whatIOffer: userInfo.whatIOffer,
-                  userInfoType: typeof userInfo,
-                  aboutMe: userInfo.aboutMe,
-                })}
-                <TimelineStoryteller 
-                  userInfo={{
-                    name: userInfo.name,
-                    title: userInfo.title,
-                    industry: userInfo.industry,
-                    domain: userInfo.domain,
-                    location: userInfo.location,
-                    email: userInfo.email,
-                    photoURL: userInfo.photoURL,
-                    lookingFor: userData?.lookingFor || '',
-                    jobLevel: userData?.jobLevel || '',
-                    aboutMe: userInfo.aboutMe || '',  // Use userInfo.aboutMe instead of userData?.aboutMe
-                    whatIOffer: userData?.whatIOffer || ''  // Use userData.whatIOffer since it contains the correct data from DB
-                  }}
-                  userSkills={userSkills}
-                  userExperiences={userExperiences || []}
-                  userProjects={userProjects}
-                  userEducations={userEducations || []}
-                  userServices={userServices || []}
-                />
-              </>
-            )}
+            {/* Original Timeline Storyteller option has been removed */}
             
             {form.watch("layout") === "timeline-storyteller-2" && (
               <>

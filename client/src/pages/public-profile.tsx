@@ -15,8 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 // Import portfolio templates
 import MinimalistPro from "@/components/portfolio/templates/minimalist-pro";
 import FreelancerHub from "@/components/portfolio/templates/freelancer-hub";
-import TimelineStoryteller from "@/components/portfolio/templates/timeline-storyteller";
-import TimelineStoryteller2 from "@/components/portfolio/templates/timeline-storyteller-2";
+import TimelineStoryteller2 from "@/components/portfolio/templates/timeline-storyteller-2"; // Timeline Storyteller with comprehensive interactive timeline
 import VisualExpert from "@/components/portfolio/templates/visual-expert";
 import CorporateExecutive from "@/components/portfolio/templates/corporate-executive";
 import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innovator";
@@ -202,8 +201,6 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
         return <MinimalistPro {...templateProps} />;
       case 'freelancer-hub':
         return <FreelancerHub {...templateProps} />;
-      case 'timeline-storyteller':
-        return <TimelineStoryteller {...templateProps} />;
       case 'timeline-storyteller-2':
         return <TimelineStoryteller2 {...templateProps} />;
       case 'visual-expert':
