@@ -1076,6 +1076,7 @@ export default function TimelineStoryteller({
                       
                       {/* Education card */}
                       <div className="card-animated bg-white rounded-lg shadow-md p-6 border border-indigo-100 flex-grow">
+                        {/* Title and Institution */}
                         <div className="flex justify-between items-start mb-3">
                           <h3 className="text-lg font-medium text-gray-800">{edu.degree}</h3>
                           {edu.institution && (
@@ -1085,19 +1086,65 @@ export default function TimelineStoryteller({
                           )}
                         </div>
                         
-                        {/* Location if available */}
-                        {edu.location && (
-                          <div className="flex items-center text-gray-500 text-sm mb-4">
-                            <MapPin className="h-4 w-4 mr-1" />
-                            <span>{edu.location}</span>
+                        {/* Location, Industry, Domain, Field of Study */}
+                        <div className="flex flex-col gap-2 mb-4">
+                          {/* Location */}
+                          {edu.location && (
+                            <div className="flex items-center text-sm text-gray-600">
+                              <MapPin className="h-4 w-4 mr-2 text-indigo-500" />
+                              <span>{edu.location}</span>
+                            </div>
+                          )}
+                          
+                          {/* Industry and Domain Badges */}
+                          <div className="flex flex-wrap gap-2">
+                            {edu.industry && (
+                              <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                                {edu.industry}
+                              </Badge>
+                            )}
+                            
+                            {edu.domain && (
+                              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                                {edu.domain}
+                              </Badge>
+                            )}
+                          </div>
+                          
+                          {/* Field of Study */}
+                          {edu.fieldOfStudy && (
+                            <div className="flex items-center text-sm text-gray-600">
+                              <BookOpen className="h-4 w-4 mr-2 text-indigo-500" />
+                              <span>Field: {edu.fieldOfStudy}</span>
+                            </div>
+                          )}
+                          
+                          {/* Date Range */}
+                          <div className="flex items-center text-sm text-gray-600">
+                            <Calendar className="h-4 w-4 mr-2 text-indigo-500" />
+                            <span>{formatDate(edu.startDate)} - {edu.endDate ? formatDate(edu.endDate) : 'Present'}</span>
+                          </div>
+                        </div>
+                        
+                        {/* Skills Acquired */}
+                        {edu.skillsAcquired && Array.isArray(edu.skillsAcquired) && edu.skillsAcquired.length > 0 && (
+                          <div className="bg-indigo-50 rounded-md p-3 border border-indigo-100 mb-3">
+                            <h4 className="text-sm font-medium text-indigo-800 mb-2">Skills Acquired</h4>
+                            <ul className="list-disc pl-5 text-sm text-gray-700 space-y-1">
+                              {edu.skillsAcquired.map((skill, idx) => (
+                                <li key={idx}>{skill}</li>
+                              ))}
+                            </ul>
                           </div>
                         )}
                         
-                        {/* Highlights */}
+                        {/* Academic Achievements */}
                         <div className="bg-indigo-50 rounded-md p-3 border border-indigo-100">
-                          <h4 className="text-sm font-medium text-indigo-800 mb-1">Highlight</h4>
+                          <h4 className="text-sm font-medium text-indigo-800 mb-2">Academic Achievements</h4>
                           <p className="text-sm text-gray-700">
-                            Focused on academic excellence and practical application of concepts.
+                            {Array.isArray(edu.skillsAcquired) && edu.skillsAcquired.length > 0 
+                              ? "Successfully completed coursework with distinction"
+                              : "Focused on academic excellence and practical application of concepts"}
                           </p>
                         </div>
                       </div>
