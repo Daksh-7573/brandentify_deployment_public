@@ -954,6 +954,7 @@ export default function TimelineStoryteller({
                       
                       {/* Experience card */}
                       <div className="card-animated bg-white rounded-lg shadow-md p-6 border border-pink-100 flex-grow">
+                        {/* Title and Company */}
                         <div className="flex justify-between items-start mb-3">
                           <h3 className="text-lg font-medium text-gray-800">{exp.title}</h3>
                           {exp.company && (
@@ -963,15 +964,51 @@ export default function TimelineStoryteller({
                           )}
                         </div>
                         
-                        <p className="text-gray-600 mb-4">{exp.description}</p>
-                        
-                        {/* Key achievement */}
-                        <div className="bg-pink-50 rounded-md p-3 border border-pink-100">
-                          <h4 className="text-sm font-medium text-pink-800 mb-1">Key Achievement</h4>
-                          <p className="text-sm text-gray-700">
-                            {exp.description ? `${exp.description.substring(0, 100)}...` : "Led cross-functional teams to deliver projects on time and within budget."}
-                          </p>
+                        {/* Location, Industry, Domain */}
+                        <div className="flex flex-col gap-2 mb-4">
+                          {exp.location && (
+                            <div className="flex items-center text-sm text-gray-600">
+                              <MapPin className="h-4 w-4 mr-2 text-pink-500" />
+                              <span>{exp.location}</span>
+                            </div>
+                          )}
+                          
+                          <div className="flex flex-wrap gap-2">
+                            {exp.industry && (
+                              <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                                {exp.industry}
+                              </Badge>
+                            )}
+                            
+                            {exp.domain && (
+                              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                                {exp.domain}
+                              </Badge>
+                            )}
+                          </div>
+                          
+                          <div className="flex items-center text-sm text-gray-600">
+                            <Calendar className="h-4 w-4 mr-2 text-pink-500" />
+                            <span>{formatDate(exp.startDate)} - {exp.endDate ? formatDate(exp.endDate) : 'Present'}</span>
+                          </div>
                         </div>
+                        
+                        {/* Description */}
+                        {exp.description && (
+                          <p className="text-gray-600 mb-4">{exp.description}</p>
+                        )}
+                        
+                        {/* Key Responsibilities */}
+                        {exp.keyResponsibilities && exp.keyResponsibilities.length > 0 && (
+                          <div className="bg-pink-50 rounded-md p-3 border border-pink-100 mb-2">
+                            <h4 className="text-sm font-medium text-pink-800 mb-2">Key Responsibilities</h4>
+                            <ul className="list-disc pl-5 text-sm text-gray-700 space-y-1">
+                              {exp.keyResponsibilities.map((responsibility, idx) => (
+                                <li key={idx}>{responsibility}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
