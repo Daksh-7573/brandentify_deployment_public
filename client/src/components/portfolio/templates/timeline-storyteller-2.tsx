@@ -847,11 +847,6 @@ export default function TimelineStoryteller2({
             </div>
             
             <div className="flex gap-4">
-              <Button variant="outline" className="border-gray-700 text-gray-300 hover:bg-gray-800">
-                <Download className="h-4 w-4 mr-2" />
-                Resume
-              </Button>
-              
               <Button 
                 className="bg-indigo-600 hover:bg-indigo-700 text-white"
                 onClick={() => scrollToSection('hero')}
