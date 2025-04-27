@@ -2,7 +2,23 @@ import React, { useEffect, useRef } from "react";
 import { Badge } from "@/components/ui/badge";
 import { ProfileImage } from "@/components/ui/profile-image";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, MapPin, Download, Code, Image, Target, Briefcase } from "lucide-react";
+import { 
+  MessageSquare, 
+  MapPin, 
+  Download, 
+  Code, 
+  Image, 
+  Target, 
+  Briefcase,
+  GraduationCap,
+  Building2,
+  BookOpen,
+  Calendar,
+  Award,
+  CheckCircle2,
+  DollarSign,
+  Clock
+} from "lucide-react";
 
 interface Skill {
   id: number;
@@ -117,6 +133,7 @@ export default function ImmersiveStorylineSimple({
   const projectsRef = useRef<HTMLDivElement>(null);
   const experiencesRef = useRef<HTMLDivElement>(null);
   const educationRef = useRef<HTMLDivElement>(null);
+  const servicesRef = useRef<HTMLDivElement>(null);
   
   // Get skill icon helper function
   const getSkillIcon = (skillName: string) => {
@@ -525,38 +542,60 @@ export default function ImmersiveStorylineSimple({
       
       {/* Services Section */}
       {userServices && userServices.length > 0 && (
-        <div className="p-8 md:p-16 bg-white">
+        <div ref={servicesRef} className="p-8 md:p-16 bg-white">
           <div className="container mx-auto">
-            <h2 className="text-2xl md:text-3xl font-bold mb-8 text-gray-800">Services</h2>
+            <h2 className="text-2xl md:text-3xl font-bold mb-8 text-gray-800 animate-on-scroll">Services</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {userServices.map((service) => (
-                <div key={service.id} className="bg-gray-50 rounded-lg overflow-hidden shadow-md border border-gray-200">
+              {userServices.map((service, index) => (
+                <div 
+                  key={service.id} 
+                  className="bg-gray-50 rounded-lg overflow-hidden shadow-md border border-gray-200 hover-scale animate-on-scroll"
+                  style={{ animationDelay: `${index * 0.15}s` }}
+                >
                   <div className="p-6">
-                    <h3 className="text-xl font-bold mb-2">{service.title}</h3>
+                    <h3 className="text-xl font-bold mb-2 flex items-center">
+                      <CheckCircle2 className="h-5 w-5 mr-2 text-green-600" /> {service.title}
+                    </h3>
                     <p className="text-gray-600 mb-4">{service.description}</p>
                     
                     <div className="flex justify-between items-center mb-4">
                       <Badge className="bg-green-100 text-green-800 border-none">
                         {service.category}
                       </Badge>
-                      <div className="text-lg font-semibold text-gray-800">
+                      <div className="text-lg font-semibold text-gray-800 flex items-center">
+                        <DollarSign className="h-4 w-4 mr-1 text-green-600" />
                         {service.priceUsd ? `$${service.priceUsd}` : ''}
                         {service.priceInr ? `₹${service.priceInr}` : ''}
-                        {service.isHourly ? '/hour' : ''}
+                        {service.isHourly ? (
+                          <span className="flex items-center">
+                            <Clock className="h-3 w-3 ml-1 mr-1 text-gray-500" /> /hour
+                          </span>
+                        ) : ''}
                       </div>
                     </div>
                     
                     {service.features && service.features.length > 0 && (
                       <div>
-                        <h5 className="font-medium text-gray-700 mb-2">Features:</h5>
-                        <ul className="list-disc list-inside space-y-1 text-gray-600">
+                        <h5 className="font-medium text-gray-700 mb-2 flex items-center">
+                          <Award className="h-4 w-4 mr-1 text-blue-600" /> Features:
+                        </h5>
+                        <ul className="list-none space-y-2 text-gray-600">
                           {service.features.map((feature, index) => (
-                            <li key={index}>{feature}</li>
+                            <li key={index} className="flex items-start">
+                              <CheckCircle2 className="h-4 w-4 mr-2 mt-1 text-green-500" />
+                              <span>{feature}</span>
+                            </li>
                           ))}
                         </ul>
                       </div>
                     )}
+                    
+                    <div className="mt-6">
+                      <Button variant="outline" size="sm" className="w-full flex items-center justify-center">
+                        <MessageSquare className="h-4 w-4 mr-2" /> Inquire About Service
+                      </Button>
+                    </div>
                   </div>
                 </div>
               ))}
