@@ -24,7 +24,7 @@ import {
   BookOpen,
   Tag
 } from "lucide-react";
-import { ProfileImage } from "@/components/profile-image";
+import { ProfileImage } from "@/components/ui/profile-image";
 import PortfolioCtaButtons from "@/components/portfolio/portfolio-cta-buttons";
 
 interface Skill {
@@ -244,7 +244,7 @@ export default function ImmersiveStoryline({
     
     // Add custom styles
     const style = document.createElement('style');
-    style.innerHTML = \`
+    style.innerHTML = `
       /* Custom Animation Styles */
       @keyframes fadeIn {
         from { opacity: 0; transform: translateY(20px); }
@@ -346,7 +346,7 @@ export default function ImmersiveStoryline({
       .education-badge:hover {
         transform: translateY(-5px);
       }
-    \`;
+    `;
     document.head.appendChild(style);
     
     // Add Google fonts

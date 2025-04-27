@@ -441,19 +441,20 @@ export default function PortfolioBuilder() {
       theme: "#4F86C6"
     },
     { 
+      id: "immersive-storyline", 
+      name: "The Immersive Storyline", 
+      description: `✔ Theme: Dynamic Parallax Scrolling with Motion Effects
+✔ Best For: Creative Professionals, Designers, and Storytellers who want a visually engaging presentation`,
+      theme: "#6C3FFF"
+    },
+    { 
       id: "timeline-storyteller-2", 
       name: "The Timeline Storyteller", 
       description: `✔ Theme: Interactive Timeline with Comprehensive Profile Display
 ✔ Best For: Storytellers & Professionals with Rich Career Histories`,
       theme: "#6C63FF"
     },
-    { 
-      id: "immersive-storyline", 
-      name: "The Immersive Storyline", 
-      description: `✔ Theme: Dynamic Parallax Scrolling with 3D Depth Effects
-✔ Best For: Creative Professionals Wanting a Modern & Interactive Experience`,
-      theme: "#8A2BE2"
-    },
+
     { 
       id: "visual-expert", 
       name: "The Visual Expert", 
