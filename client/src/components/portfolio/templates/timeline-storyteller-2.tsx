@@ -302,9 +302,22 @@ export default function TimelineStoryteller2({
           
           {/* About Me */}
           {userInfo.aboutMe && (
-            <p className="max-w-2xl mx-auto text-gray-600 text-lg mb-8 animate-fade-in delay-400">
-              {userInfo.aboutMe}
-            </p>
+            <div className="max-w-2xl mx-auto mb-4 animate-fade-in delay-400">
+              <h3 className="text-md font-medium text-indigo-700 mb-2">About Me</h3>
+              <p className="text-gray-600 text-lg">
+                {userInfo.aboutMe}
+              </p>
+            </div>
+          )}
+          
+          {/* What I Offer / What I'm All About */}
+          {userInfo.whatIOffer && (
+            <div className="max-w-2xl mx-auto mb-8 animate-fade-in delay-450">
+              <h3 className="text-md font-medium text-indigo-700 mb-2">What I'm All About</h3>
+              <p className="text-gray-600 text-lg">
+                {userInfo.whatIOffer}
+              </p>
+            </div>
           )}
           
           {/* CTA Buttons */}
