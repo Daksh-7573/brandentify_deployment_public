@@ -95,41 +95,101 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
     enabled: !!username
   });
   
-  // Fetch portfolio data if we have a user
-  const { data: portfolioData, isLoading: isPortfolioLoading } = useQuery<PortfolioData | null>({
-    queryKey: ['/api/portfolio', userData?.id],
+  // Fetch all user data components separately
+  const { data: userSkills = [], isLoading: isSkillsLoading } = useQuery({
+    queryKey: [`/api/users/${userData?.id}/skills`], 
     queryFn: async () => {
-      if (!userData?.id) return null;
+      if (!userData?.id) return [];
       try {
-        const response = await apiRequest('GET', `/api/portfolio/${userData.id}`);
-        return response as unknown as PortfolioData;
+        return await apiRequest('GET', `/api/users/${userData.id}/skills`);
       } catch (error) {
-        console.error('Error fetching portfolio:', error);
-        // Return a default portfolio structure with user data
-        return {
-          layout: 'visual-expert',
-          publicUrl: null,
-          isPublished: true,
-          customTitle: userData.name || userData.username,
-          customBio: '',
-          customizationOptions: {
-            theme: 'colorful',
-            showContact: true
-          },
-          featuredProjects: [],
-          featuredSkills: [],
-          featuredExperiences: [],
-          skills: [],
-          experiences: [],
-          projects: [],
-          educations: [],
-          services: [],
-          userData: userData
-        } as PortfolioData;
+        console.error('Error fetching skills:', error);
+        return [];
       }
     },
     enabled: !!userData?.id
   });
+
+  const { data: userExperiences = [], isLoading: isExperiencesLoading } = useQuery({
+    queryKey: [`/api/users/${userData?.id}/experiences`], 
+    queryFn: async () => {
+      if (!userData?.id) return [];
+      try {
+        return await apiRequest('GET', `/api/users/${userData.id}/experiences`);
+      } catch (error) {
+        console.error('Error fetching experiences:', error);
+        return [];
+      }
+    },
+    enabled: !!userData?.id
+  });
+
+  const { data: userProjects = [], isLoading: isProjectsLoading } = useQuery({
+    queryKey: [`/api/users/${userData?.id}/projects`], 
+    queryFn: async () => {
+      if (!userData?.id) return [];
+      try {
+        return await apiRequest('GET', `/api/users/${userData.id}/projects`);
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+        return [];
+      }
+    },
+    enabled: !!userData?.id
+  });
+
+  const { data: userEducations = [], isLoading: isEducationsLoading } = useQuery({
+    queryKey: [`/api/users/${userData?.id}/educations`], 
+    queryFn: async () => {
+      if (!userData?.id) return [];
+      try {
+        return await apiRequest('GET', `/api/users/${userData.id}/educations`);
+      } catch (error) {
+        console.error('Error fetching educations:', error);
+        return [];
+      }
+    },
+    enabled: !!userData?.id
+  });
+
+  const { data: userServices = [], isLoading: isServicesLoading } = useQuery({
+    queryKey: [`/api/users/${userData?.id}/services`], 
+    queryFn: async () => {
+      if (!userData?.id) return [];
+      try {
+        return await apiRequest('GET', `/api/users/${userData.id}/services`);
+      } catch (error) {
+        console.error('Error fetching services:', error);
+        return [];
+      }
+    },
+    enabled: !!userData?.id
+  });
+  
+  // Construct portfolio data from all fetched components
+  const portfolioData: PortfolioData | null = userData ? {
+    layout: 'visual-expert', // Default to visual-expert template
+    publicUrl: null,
+    isPublished: true,
+    customTitle: userData.name || userData.username,
+    customBio: '',
+    customizationOptions: {
+      theme: 'colorful',
+      showContact: true
+    },
+    featuredProjects: [],
+    featuredSkills: [],
+    featuredExperiences: [],
+    skills: userSkills,
+    experiences: userExperiences,
+    projects: userProjects,
+    educations: userEducations,
+    services: userServices,
+    userData: userData
+  } : null;
+  
+  const isPortfolioLoading = isSkillsLoading || isExperiencesLoading || isProjectsLoading || 
+                            isEducationsLoading || isServicesLoading;
   
   // If there's no username or if there's an error, show not found
   useEffect(() => {
@@ -179,15 +239,18 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
     // Map our portfolio data to the format each template expects
     const templateProps = {
       userInfo: {
+        id: portfolioData.userData.id,
         name: portfolioData.userData.name || portfolioData.userData.username,
         title: portfolioData.userData.title,
         industry: portfolioData.userData.industry,
-        domain: portfolioData.userData.domain,
+        domain: portfolioData.userData.domain || null,
         location: portfolioData.userData.location,
         email: portfolioData.userData.email,
         photoURL: portfolioData.userData.photoURL,
         lookingFor: portfolioData.userData.lookingFor,
-        jobLevel: null
+        whatIOffer: portfolioData.userData.whatIOffer || null,
+        aboutMe: portfolioData.userData.aboutMe || null,
+        jobLevel: portfolioData.userData.jobLevel || null
       },
       userSkills: portfolioData.skills || [],
       userExperiences: portfolioData.experiences || [],
