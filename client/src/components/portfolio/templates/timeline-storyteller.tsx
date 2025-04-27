@@ -1176,7 +1176,7 @@ export default function TimelineStoryteller({
             <div className="inline-block bg-purple-100 px-3 py-1 rounded-full text-purple-800 text-sm font-medium mb-3 animate-fade-in">
               My Projects
             </div>
-            <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">Featured Work</h2>
+            <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">My Projects</h2>
           </div>
           
           {/* Project Gallery */}
