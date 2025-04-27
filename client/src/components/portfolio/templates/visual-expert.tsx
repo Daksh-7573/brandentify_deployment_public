@@ -730,28 +730,14 @@ export default function VisualExpert({
                         </div>
                       )}
                       
-                      {/* Project overlay with details */}
+                      {/* Project overlay with only name and date */}
                       <div className="project-overlay">
                         <h3 className="text-xl font-bold text-white mb-2">{project.title}</h3>
                         
-                        {project.category && (
-                          <Badge className="bg-pink-600/40 text-pink-100 mb-3 inline-flex">
-                            {project.category}
-                          </Badge>
-                        )}
-                        
-                        <div className="flex items-center text-gray-300 text-sm mb-3">
+                        <div className="flex items-center text-gray-300 text-sm">
                           <Calendar className="w-3.5 h-3.5 mr-1.5" />
                           <span>{formatDate(project.startDate)}</span>
                         </div>
-                        
-                        <Button 
-                          size="sm" 
-                          variant="secondary" 
-                          className="w-full mt-2 bg-white/10 text-white hover:bg-white/20 backdrop-blur-sm"
-                        >
-                          View Details
-                        </Button>
                       </div>
                     </div>
                   </div>
