@@ -125,6 +125,7 @@ export default function TimelineStoryteller2({
       behavior: 'smooth',
       block: 'start'
     });
+    setActiveChapter(section);
   };
 
   // Maintain state of the active section
@@ -141,8 +142,8 @@ export default function TimelineStoryteller2({
     const observerCallback: IntersectionObserverCallback = (entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          // Get the section id from the target element
-          const sectionId = entry.target.id.replace('chapter-', '') as keyof typeof chapterRefs;
+          // Get the section id from the target element - now the ID is directly the section name
+          const sectionId = entry.target.id as keyof typeof chapterRefs;
           setActiveChapter(sectionId);
         }
       });
