@@ -553,7 +553,7 @@ export default function TimelineStoryteller({
           </div>
           
           {/* Location subtly placed */}
-          <div className="flex items-center justify-center mt-2 mb-6 text-gray-600">
+          <div className="flex items-center justify-center mt-2 mb-8 text-gray-600">
             <MapPin className="h-4 w-4 mr-1" />
             <span>{userInfo.location || "Location"}</span>
           </div>
