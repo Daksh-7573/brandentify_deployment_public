@@ -28,6 +28,8 @@ import {
   Layers,
   Image,
   ChevronDown,
+  Tag,
+  BookOpen,
   LucideIcon
 } from "lucide-react";
 import {
@@ -880,13 +882,47 @@ export default function VisualExpert({
                     </div>
                   </div>
                   
-                  {experience.company && (
-                    <div className="text-lg font-medium text-gray-700 mb-3">
-                      {experience.company}
+                  <div className="flex flex-col md:flex-row md:items-center gap-2 mb-3">
+                    {experience.company && (
+                      <div className="text-lg font-medium text-gray-700">
+                        {experience.company}
+                      </div>
+                    )}
+                    
+                    {experience.location && (
+                      <div className="flex items-center text-sm text-gray-500">
+                        <MapPin className="w-3.5 h-3.5 mr-1" />
+                        <span>{experience.location}</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-3 mb-4">
+                    {experience.industry && (
+                      <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                        Industry: {experience.industry}
+                      </Badge>
+                    )}
+                    
+                    {experience.domain && (
+                      <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                        Domain: {experience.domain}
+                      </Badge>
+                    )}
+                  </div>
+                  
+                  <p className="text-gray-600 mb-4">{experience.description}</p>
+                  
+                  {experience.keyResponsibilities && experience.keyResponsibilities.length > 0 && (
+                    <div className="mt-3">
+                      <h4 className="text-sm font-semibold text-gray-700 mb-2">Key Responsibilities:</h4>
+                      <ul className="list-disc pl-5 space-y-1 text-gray-600">
+                        {experience.keyResponsibilities.map((responsibility, index) => (
+                          <li key={index}>{responsibility}</li>
+                        ))}
+                      </ul>
                     </div>
                   )}
-                  
-                  <p className="text-gray-600">{experience.description}</p>
                 </div>
               ))
             ) : (
@@ -928,9 +964,36 @@ export default function VisualExpert({
                     </div>
                     
                     {education.location && (
-                      <div className="flex items-center text-gray-500 text-sm">
+                      <div className="flex items-center text-gray-500 mb-3 text-sm">
                         <MapPin className="w-3.5 h-3.5 mr-1" />
                         <span>{education.location}</span>
+                      </div>
+                    )}
+                    
+                    {education.fieldOfStudy && (
+                      <div className="flex items-center text-gray-500 mb-3 text-sm">
+                        <BookOpen className="w-3.5 h-3.5 mr-1" />
+                        <span>Field: {education.fieldOfStudy}</span>
+                      </div>
+                    )}
+                    
+                    {education.industry && (
+                      <div className="flex items-center text-gray-500 mb-3 text-sm">
+                        <Briefcase className="w-3.5 h-3.5 mr-1" />
+                        <span>Industry: {education.industry}</span>
+                      </div>
+                    )}
+                    
+                    {education.skillsAcquired && education.skillsAcquired.length > 0 && (
+                      <div className="mt-3">
+                        <div className="text-sm font-medium text-gray-700 mb-1">Skills Acquired:</div>
+                        <div className="flex flex-wrap gap-1">
+                          {education.skillsAcquired.map((skill, index) => (
+                            <Badge key={index} variant="outline" className="text-xs">
+                              {skill}
+                            </Badge>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </CardContent>
@@ -1079,6 +1142,23 @@ export default function VisualExpert({
               <div className="space-y-4">
                 <h3 className="font-medium text-lg">Project Details</h3>
                 <p className="text-gray-700">{selectedProject.description}</p>
+                
+                {/* Project metadata */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                  {selectedProject.industry && (
+                    <div className="flex items-center">
+                      <Briefcase className="w-4 h-4 mr-2 text-gray-500" />
+                      <span className="text-sm text-gray-700">Industry: <span className="font-medium">{selectedProject.industry}</span></span>
+                    </div>
+                  )}
+                  
+                  {selectedProject.category && (
+                    <div className="flex items-center">
+                      <Tag className="w-4 h-4 mr-2 text-gray-500" />
+                      <span className="text-sm text-gray-700">Category: <span className="font-medium">{selectedProject.category}</span></span>
+                    </div>
+                  )}
+                </div>
                 
                 {/* Project URL if available */}
                 {selectedProject.projectUrl && (
