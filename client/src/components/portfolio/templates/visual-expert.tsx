@@ -49,15 +49,18 @@ import { useToast } from "@/hooks/use-toast";
 
 interface VisualExpertProps {
   userInfo: {
+    id?: number;
     name: string;
+    email: string | null;
     title: string | null;
+    aboutMe: string | null;
+    location: string | null;
     industry: string | null;
     domain: string | null;
-    location: string | null;
-    email: string | null;
-    photoURL: string | null;
     lookingFor: string | null;
-    jobLevel: string | null;
+    whatIOffer: string | null;
+    photoURL: string | null;
+    jobLevel?: string | null;
   };
   userSkills: Skill[];
   userExperiences: WorkExperience[];
