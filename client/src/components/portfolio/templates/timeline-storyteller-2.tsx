@@ -127,10 +127,43 @@ export default function TimelineStoryteller2({
     });
   };
 
-  // Maintain state of the active section without scroll detection
+  // Maintain state of the active section
   const [activeChapter, setActiveChapter] = useState<keyof typeof chapterRefs>('hero');
   
-  // No scroll effect - we'll rely only on click handlers
+  // Set up intersection observer to detect which section is currently visible
+  useEffect(() => {
+    const observerOptions = {
+      root: null, // use viewport as root
+      rootMargin: '0px',
+      threshold: 0.5, // trigger when 50% of element is visible
+    };
+
+    const observerCallback: IntersectionObserverCallback = (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          // Get the section id from the target element
+          const sectionId = entry.target.id.replace('chapter-', '') as keyof typeof chapterRefs;
+          setActiveChapter(sectionId);
+        }
+      });
+    };
+
+    // Create observer
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+    
+    // Observe all section refs
+    Object.keys(chapterRefs).forEach((key) => {
+      const ref = chapterRefs[key as keyof typeof chapterRefs];
+      if (ref.current) {
+        observer.observe(ref.current);
+      }
+    });
+
+    // Cleanup function
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
   // Sort user data for display
   // Sort skills by proficiency (highest first)
@@ -233,7 +266,7 @@ export default function TimelineStoryteller2({
 
       {/* Hero Section with profile info */}
       <section 
-        id="chapter-hero" 
+        id="hero" 
         ref={chapterRefs.hero} 
         className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-indigo-50 via-purple-50 to-pink-50 px-4 md:px-6 py-24"
         onClick={() => setActiveChapter('hero')}
@@ -345,7 +378,7 @@ export default function TimelineStoryteller2({
 
       {/* Skills Section */}
       <section 
-        id="chapter-skills" 
+        id="skills" 
         ref={chapterRefs.skills}
         className="py-24 px-4 md:px-6 bg-white min-h-[90vh] relative overflow-hidden"
         onClick={() => setActiveChapter('skills')}
@@ -413,7 +446,7 @@ export default function TimelineStoryteller2({
       {/* Services Section - only shown if services exist */}
       {userServices && userServices.length > 0 && (
         <section 
-          id="chapter-services" 
+          id="services" 
           ref={chapterRefs.services}
           className="py-24 px-4 md:px-6 bg-gradient-to-b from-white to-blue-50 min-h-[90vh] relative"
           onClick={() => setActiveChapter('services')}
@@ -486,7 +519,7 @@ export default function TimelineStoryteller2({
 
       {/* Projects Showcase */}
       <section 
-        id="chapter-projects" 
+        id="projects" 
         ref={chapterRefs.projects}
         className="py-24 px-4 md:px-6 bg-gradient-to-b from-blue-50 to-purple-50 min-h-[90vh]"
         onClick={() => setActiveChapter('projects')}
@@ -600,7 +633,7 @@ export default function TimelineStoryteller2({
 
       {/* Career Journey */}
       <section 
-        id="chapter-career" 
+        id="career" 
         ref={chapterRefs.career}
         className="py-24 px-4 md:px-6 bg-gradient-to-b from-purple-50 to-indigo-50 min-h-[90vh]"
         onClick={() => setActiveChapter('career')}
@@ -721,7 +754,7 @@ export default function TimelineStoryteller2({
 
       {/* Education Journey */}
       <section 
-        id="chapter-education" 
+        id="education" 
         ref={chapterRefs.education}
         className="py-24 px-4 md:px-8 bg-gradient-to-b from-indigo-50 to-pink-50 min-h-[90vh]"
         onClick={() => setActiveChapter('education')}
