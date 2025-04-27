@@ -39,7 +39,6 @@ import CorporateExecutive from "@/components/portfolio/templates/corporate-execu
 import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innovator";
 import Animated from "@/components/portfolio/templates/animated";
 import Scholar from "@/components/portfolio/templates/scholar";
-import ImmersiveStoryline from "@/components/portfolio/templates/immersive-storyline"; // Immersive Storyline with parallax motion effects
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -72,7 +71,7 @@ const portfolioFormSchema = z.object({
   layout: z.enum([
     "professional", "creative", "minimal", "technical", "executive", "minimalist_pro",
     "minimalist-pro", "timeline-storyteller-2", "visual-expert", "corporate-executive", 
-    "dynamic-innovator", "freelancer-hub", "animated", "scholar", "immersive-storyline"
+    "dynamic-innovator", "freelancer-hub", "animated", "scholar"
   ]),
   isPublished: z.boolean().default(false),
   publicUrl: z.string().nullable().optional(),
@@ -474,13 +473,6 @@ export default function PortfolioBuilder() {
       description: `✔ Theme: Fully Animated, Motion-Driven, Interactive
 ✔ Best For: Motion Designers, VFX Artists, Web Animators, AR/VR & Game Designers`,
       theme: "#00E5FF"
-    },
-    { 
-      id: "immersive-storyline", 
-      name: "The Immersive Storyline", 
-      description: `✔ Theme: Parallax Scrolling with 3D Motion Effects
-✔ Best For: UX Designers, Creative Directors, Digital Experience Creators`,
-      theme: "#6366F1"
     }
   ];
 
@@ -996,34 +988,6 @@ export default function PortfolioBuilder() {
                     userExperiences={userExperiences || []}
                     userEducations={userEducations || []}
                     userProjects={userProjects || []}
-                  />
-                </CardContent>
-              </Card>
-            )}
-            
-            {form.watch("layout") === "immersive-storyline" && (
-              <Card className="overflow-hidden bg-white border-gray-200 shadow-lg">
-                <CardContent className="p-0">
-                  <ImmersiveStoryline 
-                    userInfo={{
-                      id: userData?.id,
-                      name: userData?.name || user?.name || '',
-                      email: userData?.email || user?.email || null,
-                      title: userData?.title || null,
-                      aboutMe: userData?.aboutMe || null,
-                      location: userData?.location || null,
-                      industry: userData?.industry || null,
-                      domain: userData?.domain || null,
-                      lookingFor: userData?.lookingFor || null,
-                      whatIOffer: userData?.whatIOffer || null,
-                      photoURL: userData?.photoURL || user?.photoURL || null,
-                      jobLevel: userData?.jobLevel || null
-                    }}
-                    userSkills={userSkills || []}
-                    userExperiences={userExperiences || []}
-                    userProjects={userProjects || []}
-                    userEducations={userEducations || []}
-                    userServices={userServices || []}
                   />
                 </CardContent>
               </Card>

@@ -290,8 +290,7 @@ export const portfolioLayoutEnum = pgEnum("portfolio_layout", [
   "dynamic-innovator",
   "animated",
   "freelancer-hub",
-  "scholar",
-  "immersive-storyline" // Immersive Storyline template with parallax scrolling effects
+  "scholar"
 ]);
 
 // Portfolio model
