@@ -283,7 +283,15 @@ export const portfolioLayoutEnum = pgEnum("portfolio_layout", [
   "minimal", 
   "technical",
   "executive",
-  "minimalist_pro" // Added "The Minimalist Pro" theme with snake_case format
+  "minimalist_pro", // Added "The Minimalist Pro" theme with snake_case format
+  "timeline-storyteller",
+  "timeline-storyteller-2", // Added "Timeline Storyteller 2.0" template
+  "visual-expert",
+  "corporate-executive",
+  "dynamic-innovator",
+  "animated",
+  "freelancer-hub",
+  "scholar"
 ]);
 
 // Portfolio model
