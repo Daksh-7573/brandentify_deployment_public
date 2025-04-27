@@ -964,16 +964,19 @@ export default function VisualExpert({
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 scroll-reveal">
               {sortedEducations.map((education) => (
-                <Card key={education.id} className="overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
-                  <div className="bg-gradient-to-r from-blue-500 to-purple-600 py-3 px-4 text-white">
-                    <h3 className="font-bold text-lg">{education.degree}</h3>
-                  </div>
+                <Card key={education.id} className="overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 relative">
+                  {/* Gradient top border that aligns with the layout style */}
+                  <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-pink-500 to-purple-600"></div>
                   
-                  <CardContent className="pt-4">
-                    <div className="font-medium text-gray-800 mb-2">{education.institution}</div>
+                  <CardContent className="pt-6">
+                    <h3 className="font-bold text-xl text-transparent bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text mb-2">
+                      {education.degree}
+                    </h3>
+                    
+                    <div className="font-medium text-gray-800 mb-3">{education.institution}</div>
                     
                     <div className="flex items-center text-gray-500 mb-3 text-sm">
-                      <Calendar className="w-3.5 h-3.5 mr-1" />
+                      <Calendar className="w-3.5 h-3.5 mr-1.5" />
                       <span>
                         {formatDate(education.startDate)} — {education.endDate ? formatDate(education.endDate) : 'Present'}
                       </span>
@@ -981,26 +984,28 @@ export default function VisualExpert({
                     
                     {education.location && (
                       <div className="flex items-center text-gray-500 mb-3 text-sm">
-                        <MapPin className="w-3.5 h-3.5 mr-1" />
+                        <MapPin className="w-3.5 h-3.5 mr-1.5" />
                         <span>{education.location}</span>
                       </div>
                     )}
                     
-                    {education.fieldOfStudy && (
-                      <div className="flex items-center text-gray-500 mb-3 text-sm">
-                        <BookOpen className="w-3.5 h-3.5 mr-1" />
-                        <span>Field: {education.fieldOfStudy}</span>
-                      </div>
-                    )}
+                    <div className="flex flex-wrap gap-3 my-3">
+                      {education.fieldOfStudy && (
+                        <Badge variant="outline" className="bg-pink-50 text-pink-700 border-pink-200 flex items-center gap-1.5">
+                          <BookOpen className="w-3 h-3" />
+                          {education.fieldOfStudy}
+                        </Badge>
+                      )}
+                      
+                      {education.industry && (
+                        <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200 flex items-center gap-1.5">
+                          <Briefcase className="w-3 h-3" />
+                          {education.industry}
+                        </Badge>
+                      )}
+                    </div>
                     
-                    {education.industry && (
-                      <div className="flex items-center text-gray-500 mb-3 text-sm">
-                        <Briefcase className="w-3.5 h-3.5 mr-1" />
-                        <span>Industry: {education.industry}</span>
-                      </div>
-                    )}
-                    
-                    {education.skillsAcquired && education.skillsAcquired.length > 0 && (
+                    {education.skillsAcquired && Array.isArray(education.skillsAcquired) && education.skillsAcquired.length > 0 && (
                       <div className="mt-3">
                         <div className="text-sm font-medium text-gray-700 mb-1">Skills Acquired:</div>
                         <div className="flex flex-wrap gap-1">
