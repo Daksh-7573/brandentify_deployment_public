@@ -130,6 +130,11 @@ export default function TimelineStoryteller2({
   // Determine if the viewer is at a chapter during scrolling
   const [activeChapter, setActiveChapter] = useState<keyof typeof chapterRefs>('hero');
   
+  // Add debug logging to track active chapter changes 
+  useEffect(() => {
+    console.log("Active chapter changed to:", activeChapter);
+  }, [activeChapter]);
+  
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY + window.innerHeight / 3; // Offset for better UX
@@ -225,15 +230,15 @@ export default function TimelineStoryteller2({
       
       {/* Animated Dot Navigator (side navigation) */}
       <div className="fixed right-5 top-1/2 transform -translate-y-1/2 z-50 hidden md:block">
-        <div className="flex flex-col space-y-4 bg-white/80 backdrop-blur-sm p-3 rounded-full shadow-lg">
+        <div className="flex flex-col space-y-4 bg-white/80 backdrop-blur-sm p-4 rounded-full shadow-lg">
           {Object.keys(chapterRefs).map((section) => (
             <button
               key={section}
               onClick={() => scrollToSection(section as keyof typeof chapterRefs)}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${
+              className={`relative transition-all duration-300 ${
                 activeChapter === section 
-                  ? 'bg-indigo-600 scale-125 shadow-md shadow-indigo-200' 
-                  : 'bg-gray-300 hover:bg-gray-400'
+                  ? 'w-5 h-5 rounded-full bg-blue-600 scale-110 shadow-md shadow-blue-300 animate-pulse ring-4 ring-blue-200' 
+                  : 'w-3 h-3 rounded-full bg-gray-300 hover:bg-gray-400 hover:scale-110'
               }`}
               aria-label={`Scroll to ${section} section`}
               title={section.charAt(0).toUpperCase() + section.slice(1)}
