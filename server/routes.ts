@@ -3914,8 +3914,59 @@ ${extractedText.substring(0, 5000)}
       const portfolio = await storage.getPortfolioByUserId(userId);
       
       if (!portfolio) {
-        console.log(`[GET /users/:userId/portfolio] No portfolio found for userId: ${userId}`);
-        return res.status(404).json({ message: "Portfolio not found" });
+        console.log(`[GET /users/:userId/portfolio] No portfolio found for userId: ${userId}, generating dynamic portfolio`);
+        
+        // Get user data
+        const user = await storage.getUser(userId);
+        if (!user) {
+          return res.status(404).json({ message: "User not found" });
+        }
+        
+        // Get skills, work experiences, projects, services, and educations
+        const skills = await storage.getSkillsByUserId(userId);
+        const experiences = await storage.getWorkExperiencesByUserId(userId);
+        const projects = await storage.getProjectsByUserId(userId);
+        const services = await storage.getServicesByUserId(userId);
+        const educations = await storage.getEducationsByUserId(userId);
+        
+        // Create a dynamic portfolio
+        const dynamicPortfolio = {
+          id: 9999, // Virtual ID
+          userId,
+          layout: "immersive-storyline",
+          customTitle: user.name || user.username,
+          customBio: user.aboutMe || "",
+          customizationOptions: {
+            theme: "professional",
+            showContact: true
+          },
+          isPublished: true,
+          publicUrl: null,
+          featuredProjects: projects.slice(0, 4).map(p => p.id),
+          featuredSkills: skills.slice(0, 5).map(s => s.id),
+          featuredExperiences: experiences.slice(0, 3).map(e => e.id),
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          // Include full data to avoid additional API calls
+          skills,
+          experiences,
+          projects,
+          educations,
+          services,
+          userData: user
+        };
+        
+        console.log(`[GET /users/:userId/portfolio] Dynamic portfolio generated:`, {
+          id: dynamicPortfolio.id,
+          layout: dynamicPortfolio.layout, 
+          skillsCount: skills.length,
+          experiencesCount: experiences.length,
+          projectsCount: projects.length,
+          servicesCount: services.length,
+          educationsCount: educations.length
+        });
+        
+        return res.json(dynamicPortfolio);
       }
       
       console.log(`[GET /users/:userId/portfolio] Found portfolio:`, portfolio);
