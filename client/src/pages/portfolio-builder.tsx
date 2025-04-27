@@ -608,7 +608,7 @@ export default function PortfolioBuilder() {
             ? `${userDetails.title}${userDetails.industry ? ` in ${userDetails.industry}` : ''}`
             : (userDetails.industry ? `Professional in ${userDetails.industry}` : ''),
           customizationOptions: {
-            theme: selectedLayout === 'visual-expert' || selectedLayout === 'timeline-storyteller' ? 'colorful' : 'professional',
+            theme: selectedLayout === 'visual-expert' || selectedLayout === 'timeline-storyteller' || selectedLayout === 'timeline-storyteller-2' ? 'colorful' : 'professional',
             showContact: true
           },
           featuredProjects: projectsData.map((project: Project) => project.id),
