@@ -509,7 +509,7 @@ export default function TimelineStoryteller({
       <section 
         id="chapter-intro"
         ref={chapterRefs.intro}
-        className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-b from-indigo-50 via-pink-50 to-purple-50 relative overflow-hidden px-4 md:px-8"
+        className="py-24 px-8 min-h-screen flex flex-col justify-center items-center bg-gradient-to-b from-indigo-50 via-pink-50 to-purple-50 relative overflow-hidden"
       >
         {/* Background shapes */}
         <div className="hero-bg-shape absolute top-1/4 -left-24 w-64 h-64 rounded-full bg-pink-200 opacity-30"></div>
@@ -518,7 +518,7 @@ export default function TimelineStoryteller({
         
         <div className="mx-auto max-w-4xl z-10 text-center relative">
           {/* Dynamic line animation */}
-          <div className="mb-8 relative">
+          <div className="mb-12 relative">
             <svg className="w-full h-8 absolute -top-12" viewBox="0 0 400 40">
               <path 
                 d="M 0,20 C 100,10 300,30 400,20" 
@@ -531,7 +531,7 @@ export default function TimelineStoryteller({
           </div>
           
           {/* Profile picture centered on timeline */}
-          <div className="relative flex justify-center items-center mb-6">
+          <div className="relative flex justify-center items-center mb-8">
             <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-white shadow-lg timeline-dot bg-white">
               <ProfileImage
                 src={userInfo.photoURL}
@@ -548,7 +548,7 @@ export default function TimelineStoryteller({
           </h1>
           
           {/* Job Title in dynamic headline */}
-          <div className="text-xl md:text-2xl text-gray-700 mb-6 overflow-hidden animate-typewriter">
+          <div className="text-xl md:text-2xl text-gray-700 mb-8 overflow-hidden animate-typewriter">
             I'm a {userInfo.title || "Professional"} shaping the future of {userInfo.industry || "industry"}
           </div>
           
@@ -617,7 +617,7 @@ export default function TimelineStoryteller({
           className="py-24 px-8 bg-gradient-to-b from-indigo-50 to-white min-h-screen"
         >
           <div className="mx-auto max-w-3xl">
-            <div className="mb-6">
+            <div className="mb-12">
               <div className="inline-block bg-purple-100 px-3 py-1 rounded-full text-purple-800 text-sm font-medium mb-3 animate-fade-in">
                 What I'm All About
               </div>
