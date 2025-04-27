@@ -1,0 +1,85 @@
+// This is the new Projects section to add after Education section
+// Projects Section
+<section 
+  id="chapter-projects" 
+  ref={chapterRefs.projects}
+  className="py-24 px-8 bg-gradient-to-b from-gray-50 to-white min-h-screen"
+>
+  <div className="mx-auto max-w-4xl">
+    <div className="mb-12">
+      <div className="inline-block bg-blue-100 px-3 py-1 rounded-full text-blue-800 text-sm font-medium mb-3 animate-fade-in">
+        My Work
+      </div>
+      <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">Projects Showcase</h2>
+    </div>
+    
+    {/* Projects Grid */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
+      {sortedProjects.length > 0 ? (
+        sortedProjects.map(project => (
+          <div 
+            key={project.id} 
+            className="card-animated bg-white rounded-lg shadow-md overflow-hidden border border-blue-100 cursor-pointer"
+            onClick={() => {
+              setSelectedProject(project);
+              setIsProjectModalOpen(true);
+            }}
+          >
+            <div className="h-2 bg-gradient-to-r from-blue-400 to-indigo-400"></div>
+            
+            {project.imageUrl && (
+              <div className="relative h-48 overflow-hidden">
+                <img 
+                  src={project.imageUrl} 
+                  alt={project.title} 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
+            
+            <div className="p-6">
+              <div className="flex justify-between items-start mb-3">
+                <h3 className="text-lg font-bold text-gray-800">{project.title}</h3>
+                
+                {project.status && (
+                  <Badge className={
+                    project.status === 'completed' ? 'bg-green-100 text-green-700' : 
+                    project.status === 'in-progress' ? 'bg-amber-100 text-amber-700' :
+                    'bg-blue-100 text-blue-700'
+                  }>
+                    {project.status.charAt(0).toUpperCase() + project.status.slice(1).replace('-', ' ')}
+                  </Badge>
+                )}
+              </div>
+              
+              <p className="text-gray-600 mb-4 line-clamp-3">
+                {project.description}
+              </p>
+              
+              <div className="flex flex-wrap gap-1 mb-4">
+                {project.technologies && project.technologies.map((tech, idx) => (
+                  <span key={idx} className="inline-block text-xs px-2 py-1 rounded bg-gray-100 text-gray-700">
+                    {tech}
+                  </span>
+                ))}
+              </div>
+              
+              <div className="flex items-center text-sm text-gray-500 mt-3">
+                <Calendar className="h-4 w-4 mr-1" />
+                <span>{formatDate(project.startDate)} - {project.endDate ? formatDate(project.endDate) : 'Present'}</span>
+              </div>
+            </div>
+          </div>
+        ))
+      ) : (
+        // Empty state
+        <div className="col-span-1 md:col-span-2 bg-white rounded-lg shadow-md p-8 text-center">
+          <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-blue-100 flex items-center justify-center">
+            <Code className="h-6 w-6 text-blue-400" />
+          </div>
+          <p className="text-gray-500">Your projects will appear here</p>
+        </div>
+      )}
+    </div>
+  </div>
+</section>
