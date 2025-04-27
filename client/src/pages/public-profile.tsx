@@ -15,11 +15,12 @@ import { useToast } from "@/hooks/use-toast";
 // Import portfolio templates
 import MinimalistPro from "@/components/portfolio/templates/minimalist-pro";
 import FreelancerHub from "@/components/portfolio/templates/freelancer-hub";
-import TimelineStoryteller2 from "@/components/portfolio/templates/timeline-storyteller-2"; // Timeline Storyteller with comprehensive interactive timeline
+import TimelineStoryteller2 from "@/components/portfolio/templates/timeline-storyteller-2"; // Timeline Storyteller with comprehensive interactive timeline 
 import VisualExpert from "@/components/portfolio/templates/visual-expert";
 import CorporateExecutive from "@/components/portfolio/templates/corporate-executive";
 import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innovator";
 import Animated from "@/components/portfolio/templates/animated";
+import ImmersiveStoryline from "@/components/portfolio/templates/immersive-storyline"; // Immersive Storyline with parallax motion effects
 
 // Type for our user data
 interface UserData {
@@ -179,15 +180,18 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
     // Map our portfolio data to the format each template expects
     const templateProps = {
       userInfo: {
+        id: portfolioData.userData.id,
         name: portfolioData.userData.name || portfolioData.userData.username,
         title: portfolioData.userData.title,
         industry: portfolioData.userData.industry,
-        domain: portfolioData.userData.domain,
+        domain: portfolioData.userData.domain || null,
         location: portfolioData.userData.location,
         email: portfolioData.userData.email,
         photoURL: portfolioData.userData.photoURL,
         lookingFor: portfolioData.userData.lookingFor,
-        jobLevel: null
+        jobLevel: null,
+        aboutMe: null, // Add default values for required fields
+        whatIOffer: null
       },
       userSkills: portfolioData.skills || [],
       userExperiences: portfolioData.experiences || [],
@@ -211,6 +215,8 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
         return <DynamicInnovator {...templateProps} />;
       case 'animated':
         return <Animated {...templateProps} />;
+      case 'immersive-storyline':
+        return <ImmersiveStoryline {...templateProps} />;
       default:
         return <VisualExpert {...templateProps} />;
     }

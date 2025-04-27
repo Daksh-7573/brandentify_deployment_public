@@ -516,7 +516,7 @@ export default function ImmersiveStoryline({
             <div className="absolute inset-0 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 blur-md opacity-70 scale-110 animate-pulse"></div>
             <div className="relative h-40 w-40 md:h-48 md:w-48 rounded-full overflow-hidden border-4 border-white/20 shadow-xl">
               <ProfileImage
-                src={userInfo.photoURL}
+                src={userInfo.photoURL || undefined}
                 alt={userInfo.name}
                 className="w-full h-full object-cover"
               />

@@ -39,6 +39,7 @@ import CorporateExecutive from "@/components/portfolio/templates/corporate-execu
 import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innovator";
 import Animated from "@/components/portfolio/templates/animated";
 import Scholar from "@/components/portfolio/templates/scholar";
+import ImmersiveStoryline from "@/components/portfolio/templates/immersive-storyline"; // Immersive Storyline with parallax motion effects
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -71,7 +72,7 @@ const portfolioFormSchema = z.object({
   layout: z.enum([
     "professional", "creative", "minimal", "technical", "executive", "minimalist_pro",
     "minimalist-pro", "timeline-storyteller-2", "visual-expert", "corporate-executive", 
-    "dynamic-innovator", "freelancer-hub", "animated", "scholar"
+    "dynamic-innovator", "freelancer-hub", "animated", "scholar", "immersive-storyline"
   ]),
   isPublished: z.boolean().default(false),
   publicUrl: z.string().nullable().optional(),
