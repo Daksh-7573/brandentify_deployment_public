@@ -680,9 +680,9 @@ export default function VisualExpert({
             What I'm All About
           </h2>
           
-          <div className="overflow-hidden rounded-xl shadow-md hover:shadow-xl transition-all duration-300 scroll-reveal">
+          <Card className="overflow-hidden border-0 hover:shadow-xl transition-all duration-300 scroll-reveal">
             <div className="h-2 bg-gradient-to-r from-pink-500 to-purple-600"></div>
-            <div className="bg-white p-8">
+            <CardContent className="p-8">
               {userInfo.aboutMe ? (
                 <p className="text-lg text-gray-700 leading-relaxed">
                   {userInfo.aboutMe}
@@ -700,8 +700,8 @@ export default function VisualExpert({
                   </p>
                 </>
               )}
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
       </section>
       
