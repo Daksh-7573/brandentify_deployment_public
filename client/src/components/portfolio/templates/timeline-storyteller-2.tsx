@@ -482,20 +482,20 @@ export default function TimelineStoryteller2({
             <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">Project Showcase</h2>
           </div>
           
-          {/* Project Gallery */}
-          <div className="grid grid-cols-1 gap-8 animate-fade-in">
+          {/* Project Gallery - 3 projects per row, square thumbnails */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 animate-fade-in">
             {sortedProjects.length > 0 ? (
               sortedProjects.map((project) => (
                 <div 
                   key={project.id}
-                  className="card-animated bg-white rounded-lg shadow-lg overflow-hidden border border-purple-100 cursor-pointer hover:shadow-xl transition-all"
+                  className="card-animated bg-white rounded-lg shadow-md overflow-hidden border border-purple-100 cursor-pointer hover:shadow-xl transition-all"
                   onClick={() => {
                     setSelectedProject(project);
                     setIsProjectModalOpen(true);
                   }}
                 >
-                  {/* Project media header */}
-                  <div className="relative h-56 overflow-hidden">
+                  {/* Project thumbnail - square aspect ratio */}
+                  <div className="relative aspect-square w-full overflow-hidden">
                     {project.thumbnailUrl ? (
                       <img 
                         src={project.thumbnailUrl} 
@@ -509,33 +509,33 @@ export default function TimelineStoryteller2({
                     )}
                     
                     {/* Timeline indicator */}
-                    <div className="absolute bottom-4 left-4 bg-white rounded-full py-1 px-3 shadow-md text-xs font-medium text-purple-700 flex items-center">
+                    <div className="absolute bottom-3 left-3 bg-white rounded-full py-1 px-2 shadow-md text-xs font-medium text-purple-700 flex items-center">
                       <Calendar className="h-3 w-3 mr-1" />
                       {formatDate(project.startDate)}
                     </div>
                   </div>
                   
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold text-gray-800 mb-3">{project.title}</h3>
+                  <div className="p-4">
+                    <h3 className="text-lg font-bold text-gray-800 mb-2 line-clamp-1">{project.title}</h3>
                     
-                    <p className="text-gray-600 mb-6">{project.description}</p>
+                    <p className="text-gray-600 mb-3 text-sm line-clamp-2">{project.description}</p>
                     
-                    {/* Project links and additional info */}
-                    <div className="flex flex-wrap justify-between items-center gap-3">
-                      <div className="flex flex-wrap gap-2">
-                        {project.category && (
-                          <Badge className="bg-purple-100 text-purple-700">
-                            {project.category}
-                          </Badge>
-                        )}
+                    {/* Project category */}
+                    <div className="flex flex-wrap gap-2">
+                      {project.category && (
+                        <Badge className="bg-purple-100 text-purple-700 text-xs">
+                          {project.category}
+                        </Badge>
+                      )}
                         
-                        {project.industry && (
-                          <Badge variant="outline" className="border-purple-200 text-purple-600">
-                            {project.industry}
-                          </Badge>
-                        )}
-                      </div>
-                      
+                      {project.industry && (
+                        <Badge variant="outline" className="border-purple-200 text-purple-600 text-xs">
+                          {project.industry}
+                        </Badge>
+                      )}
+                    </div>
+                    
+                    <div className="flex justify-end mt-3">
                       <Button
                         variant="outline"
                         size="sm"
@@ -547,7 +547,7 @@ export default function TimelineStoryteller2({
                         }}
                       >
                         <Search className="h-4 w-4 mr-1" />
-                        Project Details
+                        Details
                       </Button>
                     </div>
                     
