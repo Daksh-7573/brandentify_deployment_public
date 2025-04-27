@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { ProfileImage } from "@/components/ui/profile-image";
 import { Education, Project, Service, Skill, WorkExperience } from "@shared/schema";
 import { useEffect, useState, useRef } from "react";
-import { Link } from "wouter";
 import PortfolioCtaButtons from "../portfolio-cta-buttons";
 import { 
   Calendar, 
@@ -34,7 +33,6 @@ import {
   Volume2, 
   VolumeX, 
   Globe,
-  Folder,
   LucideIcon
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
@@ -511,7 +509,7 @@ export default function TimelineStoryteller({
       <section 
         id="chapter-intro"
         ref={chapterRefs.intro}
-        className="py-24 px-8 min-h-screen flex flex-col justify-center items-center bg-gradient-to-b from-indigo-50 via-pink-50 to-purple-50 relative overflow-hidden"
+        className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-b from-indigo-50 via-pink-50 to-purple-50 relative overflow-hidden px-4 md:px-8"
       >
         {/* Background shapes */}
         <div className="hero-bg-shape absolute top-1/4 -left-24 w-64 h-64 rounded-full bg-pink-200 opacity-30"></div>
@@ -520,7 +518,7 @@ export default function TimelineStoryteller({
         
         <div className="mx-auto max-w-4xl z-10 text-center relative">
           {/* Dynamic line animation */}
-          <div className="mb-12 relative">
+          <div className="mb-8 relative">
             <svg className="w-full h-8 absolute -top-12" viewBox="0 0 400 40">
               <path 
                 d="M 0,20 C 100,10 300,30 400,20" 
@@ -533,7 +531,7 @@ export default function TimelineStoryteller({
           </div>
           
           {/* Profile picture centered on timeline */}
-          <div className="relative flex justify-center items-center mb-8">
+          <div className="relative flex justify-center items-center mb-6">
             <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-white shadow-lg timeline-dot bg-white">
               <ProfileImage
                 src={userInfo.photoURL}
@@ -550,12 +548,12 @@ export default function TimelineStoryteller({
           </h1>
           
           {/* Job Title in dynamic headline */}
-          <div className="text-xl md:text-2xl text-gray-700 mb-8 overflow-hidden animate-typewriter">
+          <div className="text-xl md:text-2xl text-gray-700 mb-6 overflow-hidden animate-typewriter">
             I'm a {userInfo.title || "Professional"} shaping the future of {userInfo.industry || "industry"}
           </div>
           
           {/* Location subtly placed */}
-          <div className="flex items-center justify-center mt-2 mb-8 text-gray-600">
+          <div className="flex items-center justify-center mt-2 mb-6 text-gray-600">
             <MapPin className="h-4 w-4 mr-1" />
             <span>{userInfo.location || "Location"}</span>
           </div>
@@ -616,10 +614,10 @@ export default function TimelineStoryteller({
         <section 
           id="chapter-aboutMe" 
           ref={chapterRefs.aboutMe}
-          className="py-24 px-8 bg-gradient-to-b from-indigo-50 to-white min-h-screen"
+          className="py-16 px-8 bg-gradient-to-b from-purple-50 to-white"
         >
           <div className="mx-auto max-w-3xl">
-            <div className="mb-12">
+            <div className="mb-6">
               <div className="inline-block bg-purple-100 px-3 py-1 rounded-full text-purple-800 text-sm font-medium mb-3 animate-fade-in">
                 What I'm All About
               </div>
@@ -639,7 +637,7 @@ export default function TimelineStoryteller({
       <section 
         id="chapter-certifications" 
         ref={chapterRefs.certifications}
-        className="py-24 px-8 bg-gradient-to-b from-pink-50 to-white min-h-screen"
+        className="py-24 px-8 bg-gradient-to-b from-purple-50 to-white min-h-screen"
       >
         <div className="mx-auto max-w-4xl">
           <div className="mb-12">
@@ -1054,106 +1052,96 @@ export default function TimelineStoryteller({
         </div>
       </section>
       
-      {/* Projects Showcase Section */}
+      {/* What I Offer Section */}
       <section 
-        id="chapter-projects" 
-        ref={chapterRefs.projects}
-        className="py-24 px-8 bg-gradient-to-b from-indigo-50 to-white min-h-screen"
+        id="chapter-whatIOffer" 
+        ref={chapterRefs.whatIOffer}
+        className="py-24 px-8 bg-gradient-to-b from-white to-gray-50 min-h-screen"
       >
         <div className="mx-auto max-w-4xl">
           <div className="mb-12">
-            <div className="inline-block bg-violet-100 px-3 py-1 rounded-full text-violet-800 text-sm font-medium mb-3 animate-fade-in">
-              My Portfolio
+            <div className="inline-block bg-teal-100 px-3 py-1 rounded-full text-teal-800 text-sm font-medium mb-3 animate-fade-in">
+              My Services
             </div>
-            <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">Projects Showcase</h2>
+            <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">What I Offer</h2>
+            
+            {userInfo.whatIOffer && userInfo.whatIOffer.trim() !== '' ? (
+              <p className="text-gray-600 mt-4 animate-fade-in">
+                {userInfo.whatIOffer}
+              </p>
+            ) : null}
           </div>
           
-          {/* Project cards in a grid */}
+          {/* Service cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
-            {sortedProjects.length > 0 ? (
-              sortedProjects.map(project => (
-                <div key={project.id} className="card-animated bg-white rounded-lg shadow-md overflow-hidden border border-violet-100">
-                  {/* Project image */}
-                  {project.thumbnailUrl && (
-                    <div className="h-48 w-full relative">
-                      <img 
-                        src={project.thumbnailUrl} 
-                        alt={project.title} 
-                        className="h-full w-full object-cover"
-                      />
-                      {/* Category pill */}
-                      {project.category && (
-                        <Badge className="absolute bottom-2 right-2 bg-violet-800/60 text-white backdrop-blur-sm">
-                          {project.category}
-                        </Badge>
-                      )}
-                    </div>
-                  )}
+            {sortedServices.length > 0 ? (
+              sortedServices.map(service => (
+                <div key={service.id} className="card-animated bg-white rounded-lg shadow-md overflow-hidden border border-teal-100">
+                  <div className="h-2 bg-gradient-to-r from-teal-400 to-blue-400"></div>
                   
                   <div className="p-6">
-                    {/* Title and date */}
                     <div className="flex justify-between items-start mb-4">
-                      <h3 className="text-lg font-bold text-gray-800">{project.title}</h3>
-                      <div className="text-xs text-gray-500">
-                        {project.startDate && formatDate(project.startDate)}
+                      <h3 className="text-lg font-bold text-gray-800">{service.title}</h3>
+                      <Badge className="bg-teal-100 text-teal-700">
+                        {service.category}
+                      </Badge>
+                    </div>
+                    
+                    <p className="text-gray-600 mb-4">
+                      {service.description}
+                    </p>
+                    
+                    {/* Price */}
+                    <div className="bg-teal-50 p-3 rounded-md border border-teal-100 mb-4">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <span className="text-sm font-medium text-teal-800">Price</span>
+                          <div className="text-2xl font-bold text-teal-900 mt-1">
+                            ${service.priceUsd}
+                          </div>
+                          <div className="text-xs text-teal-700">
+                            {service.isHourly ? 'Per hour' : 'Fixed price'}
+                          </div>
+                        </div>
+                        
+                        <Wallet className="h-12 w-12 text-teal-300" />
                       </div>
                     </div>
                     
-                    {/* Description */}
-                    <p className="text-gray-600 mb-4 line-clamp-3">{project.description}</p>
-                    
-                    {/* Industry badge */}
-                    {project.industry && (
+                    {/* Features */}
+                    {service.features && service.features.length > 0 && (
                       <div className="mb-4">
-                        <Badge variant="outline" className="bg-purple-100 text-purple-700 border-purple-200">
-                          <Building className="h-3.5 w-3.5 mr-1.5" />
-                          {project.industry}
-                        </Badge>
-                      </div>
-                    )}
-                    
-                    {/* Project gallery */}
-                    {project.mediaUrls && project.mediaUrls.length > 0 && (
-                      <div className="mb-4">
-                        <h3 className="text-lg font-semibold mb-3">Project Gallery</h3>
-                        <div className="grid grid-cols-3 gap-2">
-                          {project.mediaUrls.map((url, index) => (
-                            <div key={index} className="h-20 rounded-md overflow-hidden">
-                              <img 
-                                src={url as string} 
-                                alt={`${project.title} image ${index + 1}`} 
-                                className="h-full w-full object-cover"
-                              />
-                            </div>
+                        <h4 className="text-sm font-medium text-gray-700 mb-2">What's included:</h4>
+                        <ul className="space-y-2">
+                          {service.features.map((feature, idx) => (
+                            <li key={idx} className="flex items-start">
+                              <div className="text-teal-500 mr-2 mt-0.5">
+                                <ChevronRight className="h-4 w-4" />
+                              </div>
+                              <span className="text-sm text-gray-600">{feature}</span>
+                            </li>
                           ))}
-                        </div>
+                        </ul>
                       </div>
                     )}
                     
-                    {/* Project URL button */}
-                    {project.projectUrl && (
-                      <Link 
-                        href={project.projectUrl} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="inline-block w-full"
-                      >
-                        <Button className="w-full bg-violet-600 hover:bg-violet-700">
-                          <ExternalLink className="h-4 w-4 mr-2" />
-                          View Project
-                        </Button>
-                      </Link>
-                    )}
+                    <Button 
+                      className="w-full bg-teal-600 hover:bg-teal-700"
+                      onClick={() => setIsContactModalOpen(true)}
+                    >
+                      <MessageSquare className="h-4 w-4 mr-2" />
+                      Inquire about this service
+                    </Button>
                   </div>
                 </div>
               ))
             ) : (
               // Empty state
               <div className="col-span-1 md:col-span-2 bg-white rounded-lg shadow-md p-8 text-center">
-                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-violet-100 flex items-center justify-center">
-                  <Folder className="h-6 w-6 text-violet-400" />
+                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-teal-100 flex items-center justify-center">
+                  <Gift className="h-6 w-6 text-teal-400" />
                 </div>
-                <p className="text-gray-500">Your projects will appear here</p>
+                <p className="text-gray-500">Your services will appear here</p>
               </div>
             )}
           </div>
