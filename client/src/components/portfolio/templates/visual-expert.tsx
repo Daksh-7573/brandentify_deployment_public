@@ -708,6 +708,23 @@ export default function VisualExpert({
         </div>
       </section>
       
+      {/* What I Offer Section */}
+      {userInfo.whatIOffer && (
+        <section className="py-20 px-4 sm:px-6 md:px-8 lg:px-16 bg-white">
+          <div className="container mx-auto max-w-6xl">
+            <h2 className="section-heading text-3xl md:text-4xl font-bold text-gray-900 mb-12 scroll-reveal">
+              What I Offer
+            </h2>
+            
+            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl shadow-xl p-8 scroll-reveal">
+              <p className="text-lg text-gray-700 leading-relaxed">
+                {userInfo.whatIOffer}
+              </p>
+            </div>
+          </div>
+        </section>
+      )}
+      
       {/* Visual Projects Showcase - Masonry Grid */}
       <section className="py-20 px-4 sm:px-6 md:px-8 lg:px-16 bg-white">
         <div className="container mx-auto max-w-6xl">

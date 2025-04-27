@@ -832,14 +832,17 @@ export default function PortfolioBuilder() {
             {form.watch("layout") === "visual-expert" && (
               <VisualExpert
                 userInfo={{
+                  id: userData?.id,
                   name: userData?.name || user?.name || '',
+                  email: userData?.email || user?.email || null,
                   title: userData?.title || null,
+                  aboutMe: userData?.aboutMe || null,
+                  location: userData?.location || null,
                   industry: userData?.industry || null,
                   domain: userData?.domain || null,
-                  location: userData?.location || null,
-                  email: userData?.email || user?.email || null,
-                  photoURL: userData?.photoURL || user?.photoURL || null,
                   lookingFor: userData?.lookingFor || null,
+                  whatIOffer: userData?.whatIOffer || null,
+                  photoURL: userData?.photoURL || user?.photoURL || null,
                   jobLevel: userData?.jobLevel || null
                 }}
                 userSkills={userSkills || []}
