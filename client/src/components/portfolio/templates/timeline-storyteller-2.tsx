@@ -246,13 +246,16 @@ export default function TimelineStoryteller2({
         <div className="relative z-10 max-w-4xl w-full text-center">
           {/* Profile photo with floating animation */}
           <div className="animate-float mb-8 inline-block relative">
-            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 blur-md opacity-25 animate-pulse"></div>
-            <ProfileImage
-              src={userInfo.photoURL || ""}
-              alt={userInfo.name}
-              fallback={userInfo.name.charAt(0).toUpperCase()}
-              className="w-36 h-36 border-4 border-white rounded-full shadow-lg"
-            />
+            {/* Glow effect behind profile picture */}
+            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 blur-md opacity-25 animate-pulse scale-110 -z-10"></div>
+            <div className="relative z-10">
+              <ProfileImage
+                src={userInfo.photoURL || ""}
+                alt={userInfo.name}
+                fallback={userInfo.name.charAt(0).toUpperCase()}
+                className="w-36 h-36 border-4 border-white rounded-full shadow-lg"
+              />
+            </div>
           </div>
           
           {/* Looking For badge */}
