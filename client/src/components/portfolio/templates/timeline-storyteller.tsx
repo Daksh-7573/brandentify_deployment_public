@@ -1052,6 +1052,116 @@ export default function TimelineStoryteller({
         </div>
       </section>
       
+      {/* Projects Showcase Section */}
+      <section 
+        id="chapter-projects" 
+        ref={chapterRefs.projects}
+        className="py-24 px-8 bg-gradient-to-b from-indigo-50 to-white min-h-screen"
+      >
+        <div className="mx-auto max-w-4xl">
+          <div className="mb-12">
+            <div className="inline-block bg-violet-100 px-3 py-1 rounded-full text-violet-800 text-sm font-medium mb-3 animate-fade-in">
+              My Portfolio
+            </div>
+            <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">Projects Showcase</h2>
+          </div>
+          
+          {/* Project cards in a grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
+            {sortedProjects.length > 0 ? (
+              sortedProjects.map(project => (
+                <div key={project.id} className="card-animated bg-white rounded-lg shadow-md overflow-hidden border border-violet-100">
+                  {/* Project image */}
+                  {project.thumbnailUrl && (
+                    <div className="h-48 w-full relative">
+                      <Image 
+                        src={project.thumbnailUrl} 
+                        alt={project.title} 
+                        className="h-full w-full object-cover"
+                        width={400}
+                        height={200}
+                      />
+                      {/* Category pill */}
+                      {project.category && (
+                        <Badge className="absolute bottom-2 right-2 bg-violet-800/60 text-white backdrop-blur-sm">
+                          {project.category}
+                        </Badge>
+                      )}
+                    </div>
+                  )}
+                  
+                  <div className="p-6">
+                    {/* Title and date */}
+                    <div className="flex justify-between items-start mb-4">
+                      <h3 className="text-lg font-bold text-gray-800">{project.title}</h3>
+                      <div className="text-xs text-gray-500">
+                        {project.startDate && formatDate(project.startDate)}
+                      </div>
+                    </div>
+                    
+                    {/* Description */}
+                    <p className="text-gray-600 mb-4 line-clamp-3">{project.description}</p>
+                    
+                    {/* Industry badge */}
+                    {project.industry && (
+                      <div className="mb-4">
+                        <Badge variant="outline" className="bg-purple-100 text-purple-700 border-purple-200">
+                          <Building className="h-3.5 w-3.5 mr-1.5" />
+                          {project.industry}
+                        </Badge>
+                      </div>
+                    )}
+                    
+                    {/* Project gallery */}
+                    {project.mediaUrls && project.mediaUrls.length > 0 && (
+                      <div className="mb-4">
+                        <h3 className="text-lg font-semibold mb-3">Project Gallery</h3>
+                        <div className="grid grid-cols-3 gap-2">
+                          {project.mediaUrls.map((url, index) => (
+                            <div key={index} className="h-20 rounded-md overflow-hidden">
+                              <Image 
+                                src={url} 
+                                alt={`${project.title} image ${index + 1}`} 
+                                className="h-full w-full object-cover"
+                                width={100}
+                                height={100}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Project URL button */}
+                    {project.projectUrl && (
+                      <Link 
+                        href={project.projectUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="inline-block w-full"
+                      >
+                        <Button className="w-full bg-violet-600 hover:bg-violet-700">
+                          <ExternalLink className="h-4 w-4 mr-2" />
+                          View Project
+                        </Button>
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              ))
+            ) : (
+              // Empty state
+              <div className="col-span-1 md:col-span-2 bg-white rounded-lg shadow-md p-8 text-center">
+                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-violet-100 flex items-center justify-center">
+                  <Folder className="h-6 w-6 text-violet-400" />
+                </div>
+                <p className="text-gray-500">Your projects will appear here</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+      
       {/* Let's Talk Modal Dialog */}
       <Dialog open={isContactModalOpen} onOpenChange={setIsContactModalOpen}>
         <DialogContent className="sm:max-w-md modal-animation">
