@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { ProfileImage } from "@/components/ui/profile-image";
 import { Education, Project, Service, Skill, WorkExperience } from "@shared/schema";
 import { useEffect, useState, useRef } from "react";
-import PortfolioCtaButtons from "../portfolio-cta-buttons";
 import { 
   Calendar, 
   MapPin, 
@@ -319,6 +318,11 @@ export default function TimelineStoryteller2({
             <Button variant="outline" className="border-indigo-200 text-indigo-700 hover:bg-indigo-50 gap-2">
               <Download className="h-4 w-4" />
               Grab My Resume
+            </Button>
+            
+            <Button variant="outline" className="border-indigo-200 text-indigo-700 hover:bg-indigo-50 gap-2">
+              <User className="h-4 w-4" />
+              Mentor
             </Button>
           </div>
         </div>
@@ -1141,9 +1145,6 @@ export default function TimelineStoryteller2({
         </DialogContent>
       </Dialog>
 
-      {/* Fixed CTA Buttons */}
-      <PortfolioCtaButtons userInfo={userInfo} />
-      
       {/* CSS for Timeline Animation */}
       <style jsx global>{`
         .timeline-storyteller-2 {
