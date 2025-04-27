@@ -1052,85 +1052,96 @@ export default function TimelineStoryteller({
         </div>
       </section>
       
-      {/* Projects Section */}
+      {/* What I Offer Section */}
       <section 
-        id="chapter-projects" 
-        ref={chapterRefs.projects}
-        className="py-24 px-8 bg-gradient-to-b from-gray-50 to-white min-h-screen"
+        id="chapter-whatIOffer" 
+        ref={chapterRefs.whatIOffer}
+        className="py-24 px-8 bg-gradient-to-b from-white to-gray-50 min-h-screen"
       >
         <div className="mx-auto max-w-4xl">
           <div className="mb-12">
-            <div className="inline-block bg-blue-100 px-3 py-1 rounded-full text-blue-800 text-sm font-medium mb-3 animate-fade-in">
-              My Work
+            <div className="inline-block bg-teal-100 px-3 py-1 rounded-full text-teal-800 text-sm font-medium mb-3 animate-fade-in">
+              My Services
             </div>
-            <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">Projects Showcase</h2>
+            <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">What I Offer</h2>
+            
+            {userInfo.whatIOffer && userInfo.whatIOffer.trim() !== '' ? (
+              <p className="text-gray-600 mt-4 animate-fade-in">
+                {userInfo.whatIOffer}
+              </p>
+            ) : null}
           </div>
           
-          {/* Projects Grid */}
+          {/* Service cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
-            {sortedProjects.length > 0 ? (
-              sortedProjects.map(project => (
-                <div 
-                  key={project.id} 
-                  className="card-animated bg-white rounded-lg shadow-md overflow-hidden border border-blue-100 cursor-pointer"
-                  onClick={() => {
-                    setSelectedProject(project);
-                    setIsProjectModalOpen(true);
-                  }}
-                >
-                  <div className="h-2 bg-gradient-to-r from-blue-400 to-indigo-400"></div>
-                  
-                  {project.imageUrl && (
-                    <div className="relative h-48 overflow-hidden">
-                      <img 
-                        src={project.imageUrl} 
-                        alt={project.title} 
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  )}
+            {sortedServices.length > 0 ? (
+              sortedServices.map(service => (
+                <div key={service.id} className="card-animated bg-white rounded-lg shadow-md overflow-hidden border border-teal-100">
+                  <div className="h-2 bg-gradient-to-r from-teal-400 to-blue-400"></div>
                   
                   <div className="p-6">
-                    <div className="flex justify-between items-start mb-3">
-                      <h3 className="text-lg font-bold text-gray-800">{project.title}</h3>
-                      
-                      {project.status && (
-                        <Badge className={
-                          project.status === 'completed' ? 'bg-green-100 text-green-700' : 
-                          project.status === 'in-progress' ? 'bg-amber-100 text-amber-700' :
-                          'bg-blue-100 text-blue-700'
-                        }>
-                          {project.status.charAt(0).toUpperCase() + project.status.slice(1).replace('-', ' ')}
-                        </Badge>
-                      )}
+                    <div className="flex justify-between items-start mb-4">
+                      <h3 className="text-lg font-bold text-gray-800">{service.title}</h3>
+                      <Badge className="bg-teal-100 text-teal-700">
+                        {service.category}
+                      </Badge>
                     </div>
                     
-                    <p className="text-gray-600 mb-4 line-clamp-3">
-                      {project.description}
+                    <p className="text-gray-600 mb-4">
+                      {service.description}
                     </p>
                     
-                    <div className="flex flex-wrap gap-1 mb-4">
-                      {project.technologies && project.technologies.map((tech, idx) => (
-                        <span key={idx} className="inline-block text-xs px-2 py-1 rounded bg-gray-100 text-gray-700">
-                          {tech}
-                        </span>
-                      ))}
+                    {/* Price */}
+                    <div className="bg-teal-50 p-3 rounded-md border border-teal-100 mb-4">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <span className="text-sm font-medium text-teal-800">Price</span>
+                          <div className="text-2xl font-bold text-teal-900 mt-1">
+                            ${service.priceUsd}
+                          </div>
+                          <div className="text-xs text-teal-700">
+                            {service.isHourly ? 'Per hour' : 'Fixed price'}
+                          </div>
+                        </div>
+                        
+                        <Wallet className="h-12 w-12 text-teal-300" />
+                      </div>
                     </div>
                     
-                    <div className="flex items-center text-sm text-gray-500 mt-3">
-                      <Calendar className="h-4 w-4 mr-1" />
-                      <span>{formatDate(project.startDate)} - {project.endDate ? formatDate(project.endDate) : 'Present'}</span>
-                    </div>
+                    {/* Features */}
+                    {service.features && service.features.length > 0 && (
+                      <div className="mb-4">
+                        <h4 className="text-sm font-medium text-gray-700 mb-2">What's included:</h4>
+                        <ul className="space-y-2">
+                          {service.features.map((feature, idx) => (
+                            <li key={idx} className="flex items-start">
+                              <div className="text-teal-500 mr-2 mt-0.5">
+                                <ChevronRight className="h-4 w-4" />
+                              </div>
+                              <span className="text-sm text-gray-600">{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    
+                    <Button 
+                      className="w-full bg-teal-600 hover:bg-teal-700"
+                      onClick={() => setIsContactModalOpen(true)}
+                    >
+                      <MessageSquare className="h-4 w-4 mr-2" />
+                      Inquire about this service
+                    </Button>
                   </div>
                 </div>
               ))
             ) : (
               // Empty state
               <div className="col-span-1 md:col-span-2 bg-white rounded-lg shadow-md p-8 text-center">
-                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-blue-100 flex items-center justify-center">
-                  <Code className="h-6 w-6 text-blue-400" />
+                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-teal-100 flex items-center justify-center">
+                  <Gift className="h-6 w-6 text-teal-400" />
                 </div>
-                <p className="text-gray-500">Your projects will appear here</p>
+                <p className="text-gray-500">Your services will appear here</p>
               </div>
             )}
           </div>
