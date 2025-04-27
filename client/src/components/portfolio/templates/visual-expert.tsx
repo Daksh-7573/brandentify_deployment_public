@@ -167,16 +167,10 @@ export default function VisualExpert({
     setContactMessage("");
   };
   
-  // Create layout variation choices for the masonry grid
+  // All project cards have the same size
   const getProjectLayout = (index: number) => {
-    const layoutPatterns = [
-      { class: "masonry-item" }, // Regular
-      { class: "masonry-item-tall" }, // Tall
-      { class: "masonry-item-wide" }, // Wide
-      { class: "masonry-item" }, // Regular
-    ];
-    
-    return layoutPatterns[index % layoutPatterns.length].class;
+    // Using a single consistent class for all items
+    return "masonry-item";
   };
   
   // Initialize animations, styles, and typewriter effect on component mount
@@ -337,45 +331,31 @@ export default function VisualExpert({
       
       .visual-expert-template .masonry-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        grid-auto-rows: 300px;
-        grid-auto-flow: dense;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        grid-auto-rows: 280px;
         gap: 20px;
       }
       
-      /* Project items with different sizes */
+      /* Standardized project item size */
       .visual-expert-template .masonry-item {
         position: relative;
         overflow: hidden;
         border-radius: 12px;
         aspect-ratio: 1/1; /* Ensure square aspect ratio */
-      }
-      
-      .visual-expert-template .masonry-item-tall {
-        position: relative;
-        overflow: hidden;
-        border-radius: 12px;
-        grid-row: span 2;
-        aspect-ratio: 1/1; /* Ensure square aspect ratio */
-      }
-      
-      .visual-expert-template .masonry-item-wide {
-        position: relative;
-        overflow: hidden;
-        border-radius: 12px;
-        grid-column: span 2;
-        aspect-ratio: 1/1; /* Ensure square aspect ratio */
+        width: 280px;
+        height: 280px;
+        margin: 0 auto;
       }
       
       @media (max-width: 768px) {
-        .visual-expert-template .masonry-item-wide,
-        .visual-expert-template .masonry-item-tall {
-          grid-column: span 1;
-          grid-row: span 1;
-        }
-        
         .visual-expert-template .masonry-grid {
           grid-template-columns: 1fr;
+          justify-items: center;
+        }
+        
+        .visual-expert-template .masonry-item {
+          width: 280px;
+          height: 280px;
         }
       }
       
