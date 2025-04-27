@@ -474,6 +474,13 @@ export default function PortfolioBuilder() {
       description: `✔ Theme: Fully Animated, Motion-Driven, Interactive
 ✔ Best For: Motion Designers, VFX Artists, Web Animators, AR/VR & Game Designers`,
       theme: "#00E5FF"
+    },
+    { 
+      id: "immersive-storyline", 
+      name: "The Immersive Storyline", 
+      description: `✔ Theme: Parallax Scrolling with 3D Motion Effects
+✔ Best For: UX Designers, Creative Directors, Digital Experience Creators`,
+      theme: "#6366F1"
     }
   ];
 
