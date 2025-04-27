@@ -312,14 +312,15 @@ export default function TimelineStoryteller2({
             </div>
             <h3 className="text-2xl font-bold text-gray-800 mb-4">My Professional Focus</h3>
             
-            {userInfo.aboutMe ? (
-              <p className="text-gray-600 text-lg leading-relaxed">
-                {userInfo.aboutMe}
-              </p>
-            ) : userInfo.whatIOffer ? (
-              <p className="text-gray-600 text-lg leading-relaxed">
-                {userInfo.whatIOffer}
-              </p>
+            {/* Direct test rendering of aboutMe field to diagnose issues */}
+            {userInfo && typeof userInfo.aboutMe === 'string' && userInfo.aboutMe !== "" ? (
+              <div className="text-gray-600 text-lg leading-relaxed">
+                <p>{userInfo.aboutMe}</p>
+              </div>
+            ) : userInfo && typeof userInfo.whatIOffer === 'string' && userInfo.whatIOffer !== "" ? (
+              <div className="text-gray-600 text-lg leading-relaxed">
+                <p>{userInfo.whatIOffer}</p>
+              </div>
             ) : (
               <div className="p-5 bg-gray-50 border border-gray-100 rounded-md text-center">
                 <p className="text-gray-400">Add information about what you offer or your professional focus to display here</p>
