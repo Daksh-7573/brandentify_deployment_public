@@ -1004,30 +1004,28 @@ export default function PortfolioBuilder() {
             
             {/* Immersive Storyline Template with Parallax Motion Effects */}
             {form.watch("layout") === "immersive-storyline" && (
-              <Card className="overflow-hidden bg-white border-gray-200 shadow-lg">
-                <CardContent className="p-0">
-                  <ImmersiveStoryline 
-                    userInfo={{
-                      name: userData?.name || user?.name || '',
-                      title: userData?.title || '',
-                      industry: userData?.industry || '',
-                      domain: userData?.domain || '',
-                      location: userData?.location || '',
-                      email: userData?.email || user?.email || '',
-                      photoURL: userData?.photoURL || user?.photoURL || null,
-                      lookingFor: userData?.lookingFor || '',
-                      jobLevel: userData?.jobLevel || '',
-                      aboutMe: userData?.aboutMe || '',
-                      whatIOffer: whatIOfferValue || ''
-                    }}
-                    userSkills={userSkills || []}
-                    userServices={userServices || []}
-                    userExperiences={userExperiences || []}
-                    userEducations={userEducations || []}
-                    userProjects={userProjects || []}
-                  />
-                </CardContent>
-              </Card>
+              <>
+                {console.log("Immersive Storyline - Data being passed:", {
+                  userInfo: userInfo,
+                  skillsCount: sortedSkills.length,
+                  experiencesCount: sortedExperiences.length,
+                  projectsCount: sortedProjects.length,
+                  educationsCount: sortedEducations.length,
+                  servicesCount: userServices.length
+                })}
+                <Card className="overflow-hidden bg-white border-gray-200 shadow-lg">
+                  <CardContent className="p-0">
+                    <ImmersiveStoryline 
+                      userInfo={userInfo}
+                      userSkills={sortedSkills}
+                      userServices={userServices || []}
+                      userExperiences={sortedExperiences}
+                      userEducations={sortedEducations}
+                      userProjects={sortedProjects}
+                    />
+                  </CardContent>
+                </Card>
+              </>
             )}
             
             <div className="flex justify-between">
