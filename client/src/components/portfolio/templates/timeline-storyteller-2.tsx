@@ -494,28 +494,31 @@ export default function TimelineStoryteller2({
                     setIsProjectModalOpen(true);
                   }}
                 >
-                  {/* Project media header */}
-                  <div className="relative h-56 overflow-hidden">
-                    {project.thumbnailUrl ? (
-                      <img 
-                        src={project.thumbnailUrl} 
-                        alt={project.title} 
-                        className="w-full h-full object-cover transition-transform hover:scale-105"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gradient-to-r from-purple-100 to-indigo-100 flex items-center justify-center">
-                        <FileText className="w-12 h-12 text-purple-300" />
-                      </div>
-                    )}
+                  {/* Project media header - Square thumbnail */}
+                  <div className="flex">
+                    <div className="relative w-32 h-32 overflow-hidden flex-shrink-0">
+                      {project.thumbnailUrl ? (
+                        <img 
+                          src={project.thumbnailUrl} 
+                          alt={project.title} 
+                          className="w-full h-full object-cover aspect-square transition-transform hover:scale-105"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-r from-purple-100 to-indigo-100 flex items-center justify-center">
+                          <FileText className="w-8 h-8 text-purple-300" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-4 flex-grow"></div>
                     
                     {/* Timeline indicator */}
-                    <div className="absolute bottom-4 left-4 bg-white rounded-full py-1 px-3 shadow-md text-xs font-medium text-purple-700 flex items-center">
+                    <div className="mt-2 bg-white rounded-full py-1 px-3 shadow-md text-xs font-medium text-purple-700 flex items-center w-fit">
                       <Calendar className="h-3 w-3 mr-1" />
                       {formatDate(project.startDate)}
                     </div>
                   </div>
                   
-                  <div className="p-6">
+                  <div className="p-4">
                     <h3 className="text-xl font-bold text-gray-800 mb-3">{project.title}</h3>
                     
                     <p className="text-gray-600 mb-6">{project.description}</p>
