@@ -680,7 +680,7 @@ export default function VisualExpert({
             What I'm All About
           </h2>
           
-          <div className="bg-white rounded-xl shadow-xl p-8 scroll-reveal">
+          <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 p-8 scroll-reveal">
             {userInfo.aboutMe ? (
               <p className="text-lg text-gray-700 leading-relaxed">
                 {userInfo.aboutMe}
