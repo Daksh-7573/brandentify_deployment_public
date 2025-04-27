@@ -30,7 +30,8 @@ import {
   ChevronDown,
   Tag,
   BookOpen,
-  LucideIcon
+  LucideIcon,
+  X
 } from "lucide-react";
 import {
   Dialog,
@@ -1100,16 +1101,20 @@ export default function VisualExpert({
       
       {/* Project Detail Modal */}
       <Dialog open={isProjectModalOpen} onOpenChange={setIsProjectModalOpen}>
-        <DialogContent className="sm:max-w-4xl overflow-auto max-h-[90vh]">
-          <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-white transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-gray-950 focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-gray-100 data-[state=open]:text-gray-500">
-            <ChevronDown className="h-4 w-4" />
+        <DialogContent className="sm:max-w-4xl overflow-auto max-h-[90vh] border-0 shadow-xl">
+          <DialogTitle className="text-center text-3xl font-bold pb-4 mb-0 text-transparent bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text">
+            Project Details
+          </DialogTitle>
+          
+          <DialogClose className="absolute right-4 top-4 rounded-full p-2 opacity-70 bg-gray-100 transition-all hover:opacity-100 hover:bg-gray-200 focus:outline-none disabled:pointer-events-none">
+            <X className="h-4 w-4" />
             <span className="sr-only">Close</span>
           </DialogClose>
           
           {selectedProject && (
-            <div className="py-4">
+            <div className="py-2">
               {/* Project media */}
-              <div className="relative h-64 sm:h-96 mb-6 overflow-hidden rounded-lg">
+              <div className="relative h-64 sm:h-80 mb-8 overflow-hidden rounded-xl shadow-md">
                 {selectedProject.thumbnailUrl ? (
                   <img 
                     src={selectedProject.thumbnailUrl} 
@@ -1117,83 +1122,122 @@ export default function VisualExpert({
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
-                    <FileText className="w-16 h-16 text-gray-400" />
+                  <div className="w-full h-full bg-gradient-to-br from-purple-500/10 to-pink-500/10 flex items-center justify-center">
+                    <FileText className="w-16 h-16 text-pink-400/50" />
                   </div>
                 )}
-              </div>
-              
-              {/* Project title and category */}
-              <div className="mb-6">
-                <h2 className="text-2xl font-bold mb-2">{selectedProject.title}</h2>
                 
-                <div className="flex items-center justify-between">
-                  {selectedProject.category && (
-                    <Badge className="bg-pink-100 text-pink-800 text-sm">
-                      {selectedProject.category}
-                    </Badge>
-                  )}
+                {/* Gradient overlay at bottom */}
+                <div className="absolute bottom-0 left-0 right-0 h-1/4 bg-gradient-to-t from-black/60 to-transparent"></div>
+                
+                {/* Project title on image */}
+                <div className="absolute bottom-0 left-0 p-6 text-white">
+                  <h2 className="text-3xl font-bold mb-2 drop-shadow-md">{selectedProject.title}</h2>
                   
-                  <div className="text-sm text-gray-500">
-                    {formatDate(selectedProject.startDate)}
+                  <div className="flex items-center gap-3">
+                    {selectedProject.category && (
+                      <Badge className="bg-pink-600/40 text-pink-100 border-0 py-1 px-3">
+                        {selectedProject.category}
+                      </Badge>
+                    )}
+                    
+                    <div className="flex items-center text-gray-200 text-sm">
+                      <Calendar className="w-3.5 h-3.5 mr-1.5" />
+                      <span>{formatDate(selectedProject.startDate)}</span>
+                    </div>
                   </div>
                 </div>
               </div>
               
-              {/* Project description */}
-              <div className="space-y-4">
-                <h3 className="font-medium text-lg">Project Details</h3>
-                <p className="text-gray-700">{selectedProject.description}</p>
-                
-                {/* Project metadata */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                  {selectedProject.industry && (
-                    <div className="flex items-center">
-                      <Briefcase className="w-4 h-4 mr-2 text-gray-500" />
-                      <span className="text-sm text-gray-700">Industry: <span className="font-medium">{selectedProject.industry}</span></span>
-                    </div>
-                  )}
+              {/* Project content in cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Left column - Project details */}
+                <div className="md:col-span-2 space-y-6">
+                  <Card className="shadow-md hover:shadow-lg transition-shadow overflow-hidden">
+                    <div className="h-1 bg-gradient-to-r from-pink-500 to-purple-600"></div>
+                    <CardContent className="pt-6">
+                      <h3 className="font-bold text-xl mb-4 text-gray-800">About this Project</h3>
+                      <p className="text-gray-700 leading-relaxed">{selectedProject.description}</p>
+                    </CardContent>
+                  </Card>
                   
-                  {selectedProject.category && (
-                    <div className="flex items-center">
-                      <Tag className="w-4 h-4 mr-2 text-gray-500" />
-                      <span className="text-sm text-gray-700">Category: <span className="font-medium">{selectedProject.category}</span></span>
-                    </div>
+                  {/* Gallery of additional project images if available */}
+                  {selectedProject.mediaUrls && selectedProject.mediaUrls.length > 0 && (
+                    <Card className="shadow-md overflow-hidden">
+                      <div className="h-1 bg-gradient-to-r from-pink-500 to-purple-600"></div>
+                      <CardContent className="pt-6">
+                        <h3 className="font-bold text-xl mb-4 text-gray-800">Project Gallery</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          {selectedProject.mediaUrls.map((url, index) => (
+                            <div key={index} className="overflow-hidden rounded-lg aspect-square">
+                              <img 
+                                src={url}
+                                alt={`${selectedProject.title} - image ${index + 1}`}
+                                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
                   )}
                 </div>
                 
-                {/* Project URL if available */}
-                {selectedProject.projectUrl && (
-                  <div className="flex items-center mt-4">
-                    <Button 
-                      variant="outline" 
-                      className="text-purple-600 border-purple-200"
-                      onClick={() => window.open(selectedProject.projectUrl || '#', '_blank')}
-                    >
-                      <ExternalLink className="w-4 h-4 mr-2" />
-                      View Project
-                    </Button>
-                  </div>
-                )}
-              </div>
-              
-              {/* Gallery of additional project images if available */}
-              {selectedProject.mediaUrls && selectedProject.mediaUrls.length > 0 && (
-                <div className="mt-8">
-                  <h3 className="font-medium text-lg mb-4">Project Gallery</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {selectedProject.mediaUrls.map((url, index) => (
-                      <div key={index} className="overflow-hidden rounded-lg">
-                        <img 
-                          src={url}
-                          alt={`${selectedProject.title} - image ${index + 1}`}
-                          className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
-                        />
+                {/* Right column - Metadata */}
+                <div className="space-y-6">
+                  <Card className="shadow-md hover:shadow-lg transition-shadow overflow-hidden">
+                    <div className="h-1 bg-gradient-to-r from-pink-500 to-purple-600"></div>
+                    <CardContent className="pt-6">
+                      <h3 className="font-bold text-xl mb-4 text-gray-800">Project Details</h3>
+                      
+                      <div className="space-y-4">
+                        {selectedProject.industry && (
+                          <div>
+                            <div className="text-sm font-medium text-gray-500 mb-1">Industry</div>
+                            <div className="flex items-center">
+                              <Briefcase className="w-4 h-4 mr-2 text-pink-500" />
+                              <span className="text-gray-800">{selectedProject.industry}</span>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {selectedProject.category && (
+                          <div>
+                            <div className="text-sm font-medium text-gray-500 mb-1">Category</div>
+                            <div className="flex items-center">
+                              <Tag className="w-4 h-4 mr-2 text-pink-500" />
+                              <span className="text-gray-800">{selectedProject.category}</span>
+                            </div>
+                          </div>
+                        )}
+                        
+                        <div>
+                          <div className="text-sm font-medium text-gray-500 mb-1">Timeline</div>
+                          <div className="flex items-center">
+                            <Calendar className="w-4 h-4 mr-2 text-pink-500" />
+                            <span className="text-gray-800">
+                              {formatDate(selectedProject.startDate)}
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                    ))}
-                  </div>
+                      
+                      {/* Project URL if available */}
+                      {selectedProject.projectUrl && (
+                        <div className="mt-6 pt-4 border-t border-gray-100">
+                          <Button 
+                            className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white"
+                            onClick={() => window.open(selectedProject.projectUrl || '#', '_blank')}
+                          >
+                            <ExternalLink className="w-4 h-4 mr-2" />
+                            View Project
+                          </Button>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
                 </div>
-              )}
+              </div>
             </div>
           )}
         </DialogContent>
