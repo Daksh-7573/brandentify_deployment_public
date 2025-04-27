@@ -89,6 +89,11 @@ export default function TimelineStoryteller2({
   userEducations = [],
   userServices = []
 }: TimelineStoryteller2Props) {
+  
+  // Debug logging
+  console.log("TimelineStoryteller2 - userInfo:", userInfo);
+  console.log("TimelineStoryteller2 - aboutMe:", userInfo?.aboutMe);
+  console.log("TimelineStoryteller2 - whatIOffer:", userInfo?.whatIOffer);
   // Refs for scrolling to different sections
   const chapterRefs = {
     hero: useRef<HTMLDivElement>(null),
