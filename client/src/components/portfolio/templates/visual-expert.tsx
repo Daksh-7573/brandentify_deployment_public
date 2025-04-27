@@ -680,24 +680,27 @@ export default function VisualExpert({
             What I'm All About
           </h2>
           
-          <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 p-8 scroll-reveal">
-            {userInfo.aboutMe ? (
-              <p className="text-lg text-gray-700 leading-relaxed">
-                {userInfo.aboutMe}
-              </p>
-            ) : (
-              <>
-                <p className="text-lg text-gray-700 leading-relaxed mb-6">
-                  {userInfo.title ? `As a ${userInfo.title}` : "As a creative professional"} with a passion for {userInfo.domain || "visual storytelling"}, 
-                  I specialize in crafting compelling visual narratives that resonate with audiences and drive results.
-                </p>
-                
+          <div className="overflow-hidden rounded-xl shadow-md hover:shadow-xl transition-all duration-300 scroll-reveal">
+            <div className="h-2 bg-gradient-to-r from-pink-500 to-purple-600"></div>
+            <div className="bg-white p-8">
+              {userInfo.aboutMe ? (
                 <p className="text-lg text-gray-700 leading-relaxed">
-                  My approach combines technical expertise with creative vision, ensuring each project not only meets but exceeds expectations.
-                  {userInfo.lookingFor ? ` Currently, I'm looking for ${userInfo.lookingFor} opportunities that challenge me to grow and innovate.` : ""}
+                  {userInfo.aboutMe}
                 </p>
-              </>
-            )}
+              ) : (
+                <>
+                  <p className="text-lg text-gray-700 leading-relaxed mb-6">
+                    {userInfo.title ? `As a ${userInfo.title}` : "As a creative professional"} with a passion for {userInfo.domain || "visual storytelling"}, 
+                    I specialize in crafting compelling visual narratives that resonate with audiences and drive results.
+                  </p>
+                  
+                  <p className="text-lg text-gray-700 leading-relaxed">
+                    My approach combines technical expertise with creative vision, ensuring each project not only meets but exceeds expectations.
+                    {userInfo.lookingFor ? ` Currently, I'm looking for ${userInfo.lookingFor} opportunities that challenge me to grow and innovate.` : ""}
+                  </p>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </section>
