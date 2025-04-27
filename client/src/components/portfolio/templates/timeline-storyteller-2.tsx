@@ -127,54 +127,47 @@ export default function TimelineStoryteller2({
     });
   };
 
-  // Determine if the viewer is at a chapter during scrolling
+  // Determine active section on scroll
   const [activeChapter, setActiveChapter] = useState<keyof typeof chapterRefs>('hero');
   
-  // Add debug log for active chapter
-  useEffect(() => {
-    console.log("Current active chapter:", activeChapter);
-  }, [activeChapter]);
+  // Get all sections available for navigation
+  const allSections = Object.keys(chapterRefs);
   
+  // Simple, more direct approach for scroll detection
   useEffect(() => {
     const handleScroll = () => {
-      // Get current scroll position with offset for better UX
-      const scrollPosition = window.scrollY + 150;
+      // Current scroll position plus a small offset
+      const scrollY = window.scrollY + 100;
       
-      // Get all section positions
-      const sectionPositions = Object.entries(chapterRefs).map(([key, ref]) => {
-        return {
-          key: key as keyof typeof chapterRefs,
-          top: ref.current?.offsetTop || 0
-        };
-      });
-      
-      // Sort sections by position (top to bottom)
-      sectionPositions.sort((a, b) => a.top - b.top);
-      
-      // Find the current section (last section that starts before the current scroll position)
-      let currentSection = sectionPositions[0].key; // Default to first section
-      
-      for (const section of sectionPositions) {
-        if (scrollPosition >= section.top) {
-          currentSection = section.key;
-        } else {
-          break; // Sections are sorted, so we can stop once we find a section that's below the current scroll position
+      // Check each section's position
+      for (let i = allSections.length - 1; i >= 0; i--) {
+        const section = allSections[i];
+        const ref = chapterRefs[section as keyof typeof chapterRefs].current;
+        
+        if (ref && scrollY >= ref.offsetTop) {
+          if (activeChapter !== section) {
+            setActiveChapter(section as keyof typeof chapterRefs);
+            console.log("Setting active chapter to:", section);
+          }
+          return; // Exit once we find the active section
         }
       }
       
-      setActiveChapter(currentSection);
+      // If we reach here, we're at the top, so set to first section
+      if (activeChapter !== allSections[0]) {
+        setActiveChapter(allSections[0] as keyof typeof chapterRefs);
+      }
     };
     
-    // Run scroll handler on mount
-    handleScroll();
+    // Run the handler once on mount
+    setTimeout(handleScroll, 200);
     
-    // Add scroll event listener
+    // Add scroll listener
     window.addEventListener('scroll', handleScroll);
     
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
+    // Cleanup
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [activeChapter, allSections]);
 
   // Sort user data for display
   // Sort skills by proficiency (highest first)
@@ -232,19 +225,30 @@ export default function TimelineStoryteller2({
       {/* Animated Dot Navigator (side navigation) */}
       <div className="fixed right-5 top-1/2 transform -translate-y-1/2 z-50 hidden md:block">
         <div className="flex flex-col space-y-4 bg-white/80 backdrop-blur-sm p-3 rounded-full shadow-lg">
-          {Object.keys(chapterRefs).map((section) => (
-            <button
-              key={section}
-              onClick={() => scrollToSection(section as keyof typeof chapterRefs)}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                activeChapter === section 
-                  ? 'bg-blue-600 scale-125 shadow-md shadow-blue-200' 
-                  : 'bg-gray-300 hover:bg-gray-400'
-              }`}
-              aria-label={`Scroll to ${section} section`}
-              title={section.charAt(0).toUpperCase() + section.slice(1)}
-            />
-          ))}
+          {Object.keys(chapterRefs).map((section) => {
+            // Direct click handler that also updates the active chapter
+            const handleClick = () => {
+              // First scroll to the section
+              scrollToSection(section as keyof typeof chapterRefs);
+              // Then update active chapter immediately - don't wait for scroll detection
+              setActiveChapter(section as keyof typeof chapterRefs);
+              console.log("Clicked dot for section:", section);
+            };
+            
+            return (
+              <button
+                key={section}
+                onClick={handleClick}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  activeChapter === section 
+                    ? 'bg-blue-600 scale-125 shadow-md shadow-blue-200' 
+                    : 'bg-gray-300 hover:bg-gray-400'
+                }`}
+                aria-label={`Scroll to ${section} section`}
+                title={section.charAt(0).toUpperCase() + section.slice(1)}
+              />
+            );
+          })}
         </div>
       </div>
 
