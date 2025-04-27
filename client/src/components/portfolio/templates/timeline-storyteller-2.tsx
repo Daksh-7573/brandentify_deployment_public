@@ -132,19 +132,36 @@ export default function TimelineStoryteller2({
   
   useEffect(() => {
     const handleScroll = () => {
-      const scrollPosition = window.scrollY + 200; // Offset for better UX
+      const scrollPosition = window.scrollY + window.innerHeight / 3; // Offset for better UX
       
-      // Find which section is currently in view
-      let currentSection: keyof typeof chapterRefs = 'hero';
+      // Convert refs to array and sort by position for more accurate detection
+      const sections = Object.entries(chapterRefs)
+        .filter(([_, ref]) => ref.current)
+        .map(([key, ref]) => ({
+          key: key as keyof typeof chapterRefs,
+          top: ref.current!.offsetTop,
+          bottom: ref.current!.offsetTop + ref.current!.offsetHeight
+        }))
+        .sort((a, b) => a.top - b.top);
       
-      Object.entries(chapterRefs).forEach(([key, ref]) => {
-        if (ref.current && ref.current.offsetTop <= scrollPosition) {
-          currentSection = key as keyof typeof chapterRefs;
+      // Find the section currently in view
+      let found = false;
+      for (let i = sections.length - 1; i >= 0; i--) {
+        if (scrollPosition >= sections[i].top) {
+          setActiveChapter(sections[i].key);
+          found = true;
+          break;
         }
-      });
+      }
       
-      setActiveChapter(currentSection);
+      // Default to first section if no match
+      if (!found && sections.length > 0) {
+        setActiveChapter(sections[0].key);
+      }
     };
+    
+    // Initial call to set active chapter on mount
+    setTimeout(handleScroll, 100); // Short delay to ensure all refs are mounted
     
     window.addEventListener('scroll', handleScroll);
     
