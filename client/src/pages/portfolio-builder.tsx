@@ -39,6 +39,7 @@ import CorporateExecutive from "@/components/portfolio/templates/corporate-execu
 import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innovator";
 import Animated from "@/components/portfolio/templates/animated";
 import Scholar from "@/components/portfolio/templates/scholar";
+import ImmersiveStoryline from "@/components/portfolio/templates/immersive-storyline"; // New parallax motion effects template
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -71,7 +72,7 @@ const portfolioFormSchema = z.object({
   layout: z.enum([
     "professional", "creative", "minimal", "technical", "executive", "minimalist_pro",
     "minimalist-pro", "timeline-storyteller-2", "visual-expert", "corporate-executive", 
-    "dynamic-innovator", "freelancer-hub", "animated", "scholar"
+    "dynamic-innovator", "freelancer-hub", "animated", "scholar", "immersive-storyline"
   ]),
   isPublished: z.boolean().default(false),
   publicUrl: z.string().nullable().optional(),
@@ -445,6 +446,13 @@ export default function PortfolioBuilder() {
       description: `✔ Theme: Interactive Timeline with Comprehensive Profile Display
 ✔ Best For: Storytellers & Professionals with Rich Career Histories`,
       theme: "#6C63FF"
+    },
+    { 
+      id: "immersive-storyline", 
+      name: "The Immersive Storyline", 
+      description: `✔ Theme: Dynamic Parallax Scrolling with 3D Depth Effects
+✔ Best For: Creative Professionals Wanting a Modern & Interactive Experience`,
+      theme: "#8A2BE2"
     },
     { 
       id: "visual-expert", 
