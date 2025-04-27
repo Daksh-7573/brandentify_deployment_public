@@ -348,6 +348,7 @@ export default function VisualExpert({
         position: relative;
         overflow: hidden;
         border-radius: 12px;
+        aspect-ratio: 1/1; /* Ensure square aspect ratio */
       }
       
       .visual-expert-template .masonry-item-tall {
@@ -355,6 +356,7 @@ export default function VisualExpert({
         overflow: hidden;
         border-radius: 12px;
         grid-row: span 2;
+        aspect-ratio: 1/1; /* Ensure square aspect ratio */
       }
       
       .visual-expert-template .masonry-item-wide {
@@ -362,6 +364,7 @@ export default function VisualExpert({
         overflow: hidden;
         border-radius: 12px;
         grid-column: span 2;
+        aspect-ratio: 1/1; /* Ensure square aspect ratio */
       }
       
       @media (max-width: 768px) {
