@@ -311,14 +311,18 @@ export default function TimelineStoryteller2({
           )}
           
           {/* What I Offer / What I'm All About */}
-          {userInfo.whatIOffer && (
-            <div className="max-w-2xl mx-auto mb-8 animate-fade-in delay-450">
-              <h3 className="text-md font-medium text-indigo-700 mb-2">What I'm All About</h3>
+          <div className="max-w-2xl mx-auto mb-8 animate-fade-in delay-450">
+            <h3 className="text-md font-medium text-indigo-700 mb-2">What I'm All About</h3>
+            {userInfo.whatIOffer ? (
               <p className="text-gray-600 text-lg">
                 {userInfo.whatIOffer}
               </p>
-            </div>
-          )}
+            ) : (
+              <div className="p-4 bg-gray-50 border border-gray-100 rounded-md text-center">
+                <p className="text-gray-400">Add information about what you offer or value to display here</p>
+              </div>
+            )}
+          </div>
           
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in delay-500">
