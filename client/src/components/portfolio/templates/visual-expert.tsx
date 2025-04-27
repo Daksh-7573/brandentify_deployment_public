@@ -745,7 +745,7 @@ export default function VisualExpert({
                     <CardContent className="pt-6">
                       <h4 className="font-bold text-lg mb-2">{service.title}</h4>
                       
-                      {service.category && (
+                      {service.category && service.category !== 'other' && (
                         <div className="mb-3">
                           <Badge variant="outline" className="text-sm bg-pink-50 text-pink-700 border-pink-200">
                             {service.category.charAt(0).toUpperCase() + service.category.slice(1)}
