@@ -582,7 +582,8 @@ export default function FreelancerHub({
             }}
           />
           
-          <div className="relative aspect-square overflow-hidden">
+          {/* Square Thumbnail - Fixed height using aspect ratio */}
+          <div className="relative w-full aspect-square overflow-hidden">
             {/* Gradient background as fallback */}
             <div 
               className="absolute w-full h-full"
@@ -670,7 +671,7 @@ export default function FreelancerHub({
             </div>
           </div>
           
-          <div className="p-7 relative z-10 bg-white/80 backdrop-blur-sm">
+          <div className="p-7 relative z-10 bg-white/80 backdrop-blur-sm overflow-y-auto" style={{ maxHeight: "50vh" }}>
             <div className="bg-white rounded-2xl p-6 shadow-lg">
               {/* Duration */}
               {selectedProject.startDate && (
@@ -961,7 +962,7 @@ export default function FreelancerHub({
             </motion.div>
           </div>
           
-          <div className="p-7 relative z-10 bg-white/80 backdrop-blur-sm">
+          <div className="p-7 relative z-10 bg-white/80 backdrop-blur-sm overflow-y-auto" style={{ maxHeight: "50vh" }}>
             <div className="bg-white rounded-2xl p-6 shadow-lg">
               <motion.div 
                 className="mb-6"
