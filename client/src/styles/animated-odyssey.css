@@ -1,0 +1,150 @@
+/* Animated Odyssey Template Styles */
+
+.animated-odyssey {
+  --primary-color: #915eff;
+  --secondary-color: #00cea8;
+  --accent-color: #ff5e69;
+  --background-color: #050816;
+  --text-color: #f7f7f7;
+  --text-subtle: #aaa6c3;
+}
+
+/* Fix for animated elements */
+.animated-odyssey .stars-bg,
+.animated-odyssey .aurora-bg {
+  transform: translate3d(0px, 0px, 0) !important;
+}
+
+/* Card styling for consistent sizing */
+.animated-odyssey .card {
+  aspect-ratio: 2/3.5;
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.animated-odyssey .skill-card {
+  aspect-ratio: 2/2.5;
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+  margin: auto;
+  transition: all 0.3s ease;
+}
+
+.animated-odyssey .project-card {
+  width: 100%;
+  max-width: 350px;
+  aspect-ratio: 2/3;
+  margin: auto;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+}
+
+.animated-odyssey .project-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(145, 94, 255, 0.2);
+}
+
+.animated-odyssey .experience-card {
+  width: 100%;
+  border-radius: 16px;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.animated-odyssey .experience-card:hover {
+  border-color: rgba(145, 94, 255, 0.3);
+  box-shadow: 0 10px 30px rgba(145, 94, 255, 0.1);
+}
+
+.animated-odyssey .education-card {
+  perspective: 1000px;
+  max-width: 400px;
+  margin: auto;
+}
+
+.animated-odyssey .education-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.animated-odyssey .education-card:hover .education-inner {
+  transform: rotateY(180deg);
+}
+
+.animated-odyssey .education-front, 
+.animated-odyssey .education-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.animated-odyssey .education-front {
+  background: linear-gradient(145deg, rgba(145, 94, 255, 0.05), rgba(0, 206, 168, 0.05));
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.animated-odyssey .education-back {
+  background: linear-gradient(145deg, rgba(0, 206, 168, 0.05), rgba(145, 94, 255, 0.05));
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transform: rotateY(180deg);
+}
+
+/* Orbit animation effect */
+@keyframes orbit {
+  0% {
+    transform: rotate(0deg) translateX(100px) rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg) translateX(100px) rotate(-360deg);
+  }
+}
+
+.animated-odyssey .orbit {
+  animation: orbit 15s linear infinite;
+}
+
+/* Ensure typography is consistent */
+.animated-odyssey h1, 
+.animated-odyssey h2, 
+.animated-odyssey h3, 
+.animated-odyssey h4, 
+.animated-odyssey h5, 
+.animated-odyssey h6,
+.animated-odyssey p, 
+.animated-odyssey span, 
+.animated-odyssey div {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .animated-odyssey .card,
+  .animated-odyssey .skill-card,
+  .animated-odyssey .project-card {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .animated-odyssey .experience-card {
+    padding: 16px;
+  }
+  
+  .animated-odyssey h1 {
+    font-size: 2.5rem !important;
+  }
+}

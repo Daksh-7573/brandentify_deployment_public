@@ -431,9 +431,14 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
     );
   }
   
+  // Print portfolio data for debugging
+  console.log("Portfolio Data:", portfolioData);
+  console.log("Selected Layout:", portfolioData?.layout);
+
   // Return the portfolio
   // Special case for full-width templates
   if (portfolioData && (portfolioData.layout === 'animated-odyssey')) {
+    console.log("USING FULL WIDTH CONTAINER FOR ANIMATED ODYSSEY");
     return (
       <div className="min-h-screen">
         <Header />

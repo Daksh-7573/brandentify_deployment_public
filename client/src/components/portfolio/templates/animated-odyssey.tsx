@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from '@/components/ui/progress';
+import '@/styles/animated-odyssey.css'; // Adding the CSS import
 import { MapPin, Briefcase, ExternalLink, Calendar, Award, GraduationCap, Mail, Code, Users, Shield } from 'lucide-react';
 import { ProfileImage } from '@/components/ui/profile-image';
 
