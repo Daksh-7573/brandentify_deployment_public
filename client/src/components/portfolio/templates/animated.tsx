@@ -71,6 +71,10 @@ export default function AnimatedTemplate({
   aboutMe,
   whatIOffer
 }: AnimatedTemplateProps) {
+  // For debugging
+  console.log("Animated template - whatIOffer:", whatIOffer);
+  console.log("Animated template - aboutMe:", aboutMe);
+  
   // Use Lumos Animation hook
   const { initAmbientAuras, animateCardStack, addSparkleEffect, addTypingEffect } = useLumosAnimations();
   
