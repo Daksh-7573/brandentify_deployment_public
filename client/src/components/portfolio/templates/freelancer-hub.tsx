@@ -2392,14 +2392,51 @@ export default function FreelancerHub({
                       )}
                     </div>
                     
-                    {/* Random education fields */}
-                    <div className="flex flex-wrap gap-2 mt-4">
-                      {['Research', 'Coursework', 'Leadership', 'Projects'].slice(0, index % 3 + 2).map((field, i) => (
-                        <Badge key={i} className="bg-amber-100 text-amber-700 border-none">
-                          {field}
-                        </Badge>
-                      ))}
+                    {/* Industry and Field of Study section */}
+                    <div className="flex flex-col gap-2 mt-3 mb-4">
+                      {edu.industry && (
+                        <div className="flex items-center text-gray-600">
+                          <Briefcase className="h-4 w-4 mr-2 text-amber-500" />
+                          <span className="text-sm font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                            Industry: <span className="text-gray-800">{edu.industry}</span>
+                          </span>
+                        </div>
+                      )}
+                      
+                      {edu.fieldOfStudy && (
+                        <div className="flex items-center text-gray-600">
+                          <BookOpen className="h-4 w-4 mr-2 text-amber-500" />
+                          <span className="text-sm font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                            Field of Study: <span className="text-gray-800">{edu.fieldOfStudy}</span>
+                          </span>
+                        </div>
+                      )}
+                      
+                      {edu.domain && (
+                        <div className="flex items-center text-gray-600">
+                          <Layers className="h-4 w-4 mr-2 text-amber-500" />
+                          <span className="text-sm font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                            Domain: <span className="text-gray-800">{edu.domain}</span>
+                          </span>
+                        </div>
+                      )}
                     </div>
+                    
+                    {/* Skills Acquired section */}
+                    {edu.skillsAcquired && Array.isArray(edu.skillsAcquired) && edu.skillsAcquired.length > 0 && (
+                      <div className="bg-amber-50 rounded-xl p-4 mb-3">
+                        <h4 className="text-sm font-bold mb-2 text-amber-700" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+                          Skills Acquired
+                        </h4>
+                        <div className="flex flex-wrap gap-2">
+                          {edu.skillsAcquired.map((skill, idx) => (
+                            <Badge key={idx} className="bg-amber-100 text-amber-700 border-none">
+                              {skill}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </motion.div>
               ))}
