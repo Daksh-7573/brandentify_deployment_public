@@ -1033,6 +1033,62 @@ export function DynamicInnovator({
         </div>
       </section>
       
+      {/* Services Section */}
+      <section 
+        id="services-section" 
+        ref={sectionRefs.services}
+        className="section py-10 px-4 md:px-8 bg-[#0c162d]/50"
+      >
+        <div className="max-w-6xl mx-auto">
+          <h2 className="futuristic-heading text-2xl md:text-3xl font-bold mb-8 text-white inline-block">
+            <Layers className="inline-block h-6 w-6 mr-2 text-[#08f7fe]" />
+            What I Offer
+          </h2>
+          
+          {userInfo.whatIOffer || userServices.length > 0 ? (
+            <div className="grid grid-cols-1 gap-6 mt-6">
+              {/* Display whatIOffer from userInfo as a primary service */}
+              {userInfo.whatIOffer && (
+                <div className="tech-card p-6">
+                  <h3 className="text-lg font-medium text-[#08f7fe] mb-3">
+                    Professional Services
+                  </h3>
+                  <p className="text-gray-300 mb-4 whitespace-pre-line">
+                    {userInfo.whatIOffer}
+                  </p>
+                  
+                  <Badge className="bg-[#080E24] border border-[#08f7fe]/20 text-[#08f7fe]">
+                    {userInfo.domain || userInfo.industry || "Professional Services"}
+                  </Badge>
+                </div>
+              )}
+              
+              {/* Display any additional services */}
+              {userServices.length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+                  {userServices.map((service) => (
+                    <div key={service.id} className="tech-card p-6">
+                      <h3 className="text-lg font-medium text-[#08f7fe] mb-3">{service.title}</h3>
+                      <p className="text-gray-300 mb-4">{service.description}</p>
+                      
+                      <Badge className="bg-[#080E24] border border-[#08f7fe]/20 text-[#08f7fe]">
+                        {service.category || "Technical Service"}
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="tech-card p-8 text-center">
+              <Layers className="h-12 w-12 mx-auto mb-4 text-[#08f7fe]/50" />
+              <h3 className="text-xl text-[#08f7fe]">Services & Offerings</h3>
+              <p className="text-gray-400 mt-2">Professional services and offerings will be displayed here.</p>
+            </div>
+          )}
+        </div>
+      </section>
+      
       {/* Career Path Section */}
       <section 
         id="career-section" 
