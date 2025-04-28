@@ -41,7 +41,8 @@ import {
   ChevronRight,
   Check,
   Clock,
-  Tag
+  Tag,
+  ArrowRight
 } from "lucide-react";
 import {
   Dialog,
