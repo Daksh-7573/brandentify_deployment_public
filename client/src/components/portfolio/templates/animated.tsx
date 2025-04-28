@@ -72,11 +72,16 @@ export default function AnimatedTemplate({
   whatIOffer
 }: AnimatedTemplateProps) {
   
-  // Debug logging
+  // Enhanced debug logging
   console.log("[Animated Template] Props received:");
   console.log("- name:", name);
   console.log("- whatIOffer value:", whatIOffer);
+  console.log("- whatIOffer type:", typeof whatIOffer);
+  console.log("- whatIOffer null check:", whatIOffer === null);
+  console.log("- whatIOffer undefined check:", whatIOffer === undefined);
+  console.log("- whatIOffer empty string check:", whatIOffer === "");
   console.log("- aboutMe value:", aboutMe);
+  console.log("- aboutMe type:", typeof aboutMe);
   // Use Lumos Animation hook
   const { initAmbientAuras, animateCardStack, addSparkleEffect, addTypingEffect } = useLumosAnimations();
   
