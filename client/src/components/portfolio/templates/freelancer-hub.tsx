@@ -553,7 +553,8 @@ export default function FreelancerHub({
     
     return (
       <Dialog open={isProjectModalOpen} onOpenChange={setIsProjectModalOpen}>
-        <DialogContent className="sm:max-w-[700px] rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
+        <DialogContent className="sm:max-w-[700px] rounded-3xl p-0 overflow-hidden border-none shadow-2xl max-h-[90vh] flex flex-col">
+          <DialogTitle className="sr-only">Project Details</DialogTitle>
           {/* Floating decorative elements to match the template style */}
           <motion.div 
             className="absolute -top-10 -left-10 w-60 h-60 bg-gradient-to-br from-purple-200 to-purple-50 rounded-full opacity-20 blur-3xl z-0"
@@ -581,7 +582,7 @@ export default function FreelancerHub({
             }}
           />
           
-          <div className="relative h-72 overflow-hidden">
+          <div className="relative aspect-square overflow-hidden">
             {/* Gradient background as fallback */}
             <div 
               className="absolute w-full h-full"
