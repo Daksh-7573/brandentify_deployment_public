@@ -2237,14 +2237,7 @@ export default function FreelancerHub({
                       </div>
                     )}
                     
-                    {/* Skills used tags */}
-                    <div className="flex flex-wrap gap-2 mt-3">
-                      {['Leadership', 'Teamwork', 'Strategy', 'Innovation'].slice(0, index % 3 + 2).map((skill, i) => (
-                        <Badge key={i} className="bg-violet-100 text-violet-700 border-none">
-                          {skill}
-                        </Badge>
-                      ))}
-                    </div>
+
                   </div>
                   
                   {/* Timeline node decoration */}
