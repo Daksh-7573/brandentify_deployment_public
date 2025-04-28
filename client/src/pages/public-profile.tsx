@@ -79,25 +79,100 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
     username = pathname.startsWith('/@') ? pathname.substring(2) : undefined;
   }
   
-  // Enhance debugging for better tracking
+  // Enhanced debugging for better tracking
   console.log("Public profile page for username:", username);
   console.log("Current window.location.pathname:", window.location.pathname);
+  console.log("Route params received in public-profile component:", { username });
+  
+  // Add direct output to help debug the component
+  useEffect(() => {
+    console.log("PublicProfile component mounted with username:", username);
+    document.title = `Profile | ${username || 'User'}`;
+    
+    // Debug message directly in DOM
+    const debugDiv = document.createElement('div');
+    debugDiv.style.position = 'fixed';
+    debugDiv.style.top = '0';
+    debugDiv.style.left = '0';
+    debugDiv.style.backgroundColor = 'rgba(255,0,0,0.7)';
+    debugDiv.style.color = 'white';
+    debugDiv.style.padding = '10px';
+    debugDiv.style.zIndex = '9999';
+    debugDiv.innerHTML = `Debug: Profile page loading for username: ${username || 'undefined'}`;
+    document.body.appendChild(debugDiv);
+    
+    return () => {
+      if (document.body.contains(debugDiv)) {
+        document.body.removeChild(debugDiv);
+      }
+    };
+  }, [username]);
   
   // Fetch user data by username
   const { data: userData, isLoading: isUserLoading, error: userError } = useQuery<UserData | null>({
     queryKey: ['/api/users/by-username', username],
     queryFn: async () => {
-      if (!username) return null;
+      if (!username) {
+        console.error("[public-profile] No username provided for API request");
+        return null;
+      }
+      
+      console.log(`[public-profile] Attempting to fetch user data for username: ${username}`);
       try {
+        // API request with detailed error handling
         const response = await apiRequest('GET', `/api/users/by-username/${username}`);
-        console.log('[public-profile] User data fetched:', response);
-        if (response && typeof response === 'object') {
-          // Type-safe access to whatIOffer field
-          console.log('[public-profile] whatIOffer value:', response.whatIOffer || null);
+        
+        console.log('[public-profile] User data API response:', response);
+        
+        // Detailed validation of the response
+        if (!response) {
+          console.error('[public-profile] API returned empty response for username:', username);
+          return null;
         }
+        
+        if (typeof response !== 'object') {
+          console.error('[public-profile] API returned non-object response:', response);
+          return null;
+        }
+        
+        // Add a div to the DOM with the API response for debugging
+        const debugEl = document.createElement('div');
+        debugEl.id = 'debug-api-response';
+        debugEl.style.position = 'fixed';
+        debugEl.style.bottom = '0';
+        debugEl.style.left = '0';
+        debugEl.style.right = '0';
+        debugEl.style.backgroundColor = 'rgba(0,0,0,0.8)';
+        debugEl.style.color = 'white';
+        debugEl.style.padding = '10px';
+        debugEl.style.fontSize = '12px';
+        debugEl.style.maxHeight = '200px';
+        debugEl.style.overflow = 'auto';
+        debugEl.style.zIndex = '10000';
+        debugEl.style.fontFamily = 'monospace';
+        debugEl.innerHTML = `<strong>API Response for username ${username}:</strong><br/>${JSON.stringify(response, null, 2)}`;
+        document.body.appendChild(debugEl);
+        
+        // Type-safe access to fields
+        console.log('[public-profile] whatIOffer value:', response.whatIOffer || '(not provided)');
+        console.log('[public-profile] aboutMe value:', response.aboutMe || '(not provided)');
+        
         return response as unknown as UserData;
       } catch (error) {
-        console.error('Error fetching user:', error);
+        console.error('[public-profile] Error fetching user data:', error);
+        // Add error details to the page
+        const errorEl = document.createElement('div');
+        errorEl.style.position = 'fixed';
+        errorEl.style.top = '50%';
+        errorEl.style.left = '50%';
+        errorEl.style.transform = 'translate(-50%, -50%)';
+        errorEl.style.backgroundColor = 'rgba(255,0,0,0.9)';
+        errorEl.style.color = 'white';
+        errorEl.style.padding = '20px';
+        errorEl.style.borderRadius = '8px';
+        errorEl.style.zIndex = '10000';
+        errorEl.innerHTML = `<h3>Error loading profile</h3><p>${error.message || 'Unknown error'}</p>`;
+        document.body.appendChild(errorEl);
         throw error;
       }
     },
