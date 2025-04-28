@@ -369,6 +369,174 @@ export default function AnimatedTemplate({
         </div>
       </section>
       
+      {/* What I'm All About Section */}
+      <section id="about" className="py-20 relative animated-about" ref={aboutRef}>
+        <div className="container mx-auto px-6 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: isAboutInView ? 1 : 0, y: isAboutInView ? 0 : 30 }}
+            transition={{ duration: 0.7 }}
+            className="mb-16 text-center"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 section-title">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-500">
+                What I'm All About
+              </span>
+            </h2>
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+              My journey, passion, and creative approach to making impactful digital experiences.
+            </p>
+          </motion.div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-12 items-center">
+            {/* About Text */}
+            <motion.div 
+              className="md:col-span-3 bg-gray-800/30 rounded-xl p-8 border border-gray-700 shadow-lg relative overflow-hidden"
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: isAboutInView ? 1 : 0, x: isAboutInView ? 0 : -50 }}
+              transition={{ duration: 0.8 }}
+            >
+              {/* Animated background shapes */}
+              <motion.div 
+                className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-blue-500/10 backdrop-blur-3xl"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+              />
+              <motion.div 
+                className="absolute -bottom-20 -left-20 w-80 h-80 rounded-full bg-purple-500/10 backdrop-blur-3xl"
+                animate={{ rotate: -360 }}
+                transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+              />
+              
+              <div className="relative">
+                <h3 className="text-2xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-500">
+                  What I'm All About
+                </h3>
+                
+                {whatIOffer ? (
+                  <div className="text-gray-300 text-lg leading-relaxed mb-6">
+                    {whatIOffer}
+                  </div>
+                ) : aboutMe ? (
+                  <div className="text-gray-300 text-lg leading-relaxed mb-6">
+                    {aboutMe}
+                  </div>
+                ) : (
+                  <>
+                    <p className="text-gray-300 text-lg leading-relaxed mb-6">
+                      I'm a passionate professional with a focus on {domain || 'digital solutions'} within the {industry || 'creative'} industry. 
+                      My work combines expertise and innovation to create impactful results.
+                    </p>
+                    
+                    <p className="text-gray-300 text-lg leading-relaxed mb-6">
+                      With a background in {domain || 'digital arts'} and an eye for detail, I specialize in delivering 
+                      high-quality work that meets the needs of clients and stakeholders.
+                    </p>
+                  </>
+                )}
+                
+                <blockquote className="relative border-l-4 border-purple-500 pl-6 italic text-gray-300 my-8">
+                  <motion.span 
+                    className="absolute -left-3 text-4xl text-purple-500 opacity-50"
+                    animate={{ y: [0, -10, 0] }}
+                    transition={{ duration: 3, repeat: Infinity, repeatType: "reverse" }}
+                  >
+                    "
+                  </motion.span>
+                  I believe that great design brings together art, technology, and human experience to create something memorable.
+                  <motion.span 
+                    className="absolute text-4xl text-purple-500 opacity-50"
+                    animate={{ y: [0, -10, 0] }}
+                    transition={{ duration: 3, repeat: Infinity, repeatType: "reverse", delay: 1.5 }}
+                  >
+                    "
+                  </motion.span>
+                </blockquote>
+                
+                <p className="text-gray-300 text-lg leading-relaxed">
+                  When I'm not designing or coding, you can find me exploring new creative tools, collaborating with other artists, 
+                  or seeking inspiration through travel and experiences.
+                </p>
+              </div>
+            </motion.div>
+            
+            {/* Stats and Expertise */}
+            <motion.div 
+              className="md:col-span-2 space-y-6"
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: isAboutInView ? 1 : 0, x: isAboutInView ? 0 : 50 }}
+              transition={{ duration: 0.8 }}
+            >
+              {/* Core Expertise */}
+              <div className="bg-gray-800/30 rounded-xl p-6 border border-gray-700 shadow-lg">
+                <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                  <Sparkles className="h-5 w-5 mr-2 text-purple-400" />
+                  Core Expertise
+                </h3>
+                
+                <ul className="space-y-3">
+                  <motion.li 
+                    className="text-gray-300 flex items-center"
+                    whileHover={{ x: 5 }}
+                  >
+                    <span className="h-2 w-2 bg-purple-500 rounded-full mr-2" />
+                    {domain || 'Creative Design'} 
+                  </motion.li>
+                  <motion.li 
+                    className="text-gray-300 flex items-center"
+                    whileHover={{ x: 5 }}
+                  >
+                    <span className="h-2 w-2 bg-blue-500 rounded-full mr-2" />
+                    {industry || 'Digital Media'} Strategy
+                  </motion.li>
+                  <motion.li 
+                    className="text-gray-300 flex items-center"
+                    whileHover={{ x: 5 }}
+                  >
+                    <span className="h-2 w-2 bg-teal-500 rounded-full mr-2" />
+                    Innovative Problem Solving
+                  </motion.li>
+                  <motion.li 
+                    className="text-gray-300 flex items-center"
+                    whileHover={{ x: 5 }}
+                  >
+                    <span className="h-2 w-2 bg-amber-500 rounded-full mr-2" />
+                    Collaborative Leadership
+                  </motion.li>
+                </ul>
+              </div>
+              
+              {/* Fun Facts */}
+              <div className="bg-gray-800/30 rounded-xl p-6 border border-gray-700 shadow-lg">
+                <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                  <Star className="h-5 w-5 mr-2 text-amber-400" />
+                  Quick Facts
+                </h3>
+                
+                <ul className="space-y-3">
+                  <li className="flex justify-between items-center">
+                    <span className="text-gray-400">Location</span>
+                    <span className="text-gray-300 font-medium">{location || 'Global'}</span>
+                  </li>
+                  <li className="flex justify-between items-center">
+                    <span className="text-gray-400">Specialty</span>
+                    <span className="text-gray-300 font-medium">{domain || 'Design'}</span>
+                  </li>
+                  <li className="flex justify-between items-center">
+                    <span className="text-gray-400">Industry</span>
+                    <span className="text-gray-300 font-medium">{industry || 'Creative'}</span>
+                  </li>
+                  <li className="flex justify-between items-center">
+                    <span className="text-gray-400">Experience</span>
+                    <span className="text-gray-300 font-medium">{experiences.length} years</span>
+                  </li>
+                </ul>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+      
       {/* Projects Section */}
       <section id="projects" className="py-20 relative" ref={projectsRef}>
         <div className="container mx-auto px-6 relative z-10">
