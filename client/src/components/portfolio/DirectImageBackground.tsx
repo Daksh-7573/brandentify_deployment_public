@@ -37,70 +37,33 @@ const DirectImageBackground: React.FC<DirectImageBackgroundProps> = ({
     
     console.log(`[DirImgBg-${instanceId}] Processing URL: "${imageUrl}"`);
 
-    // Normalize the URL format
-    let processedUrl = imageUrl;
+    // For paths that start with /uploads, we directly use them without modification
+    // This is the simplest approach and should work with the Express static file serving
+    const directUrl = imageUrl.startsWith('/') 
+      ? imageUrl  // Use path as-is if it starts with /
+      : `/${imageUrl}`; // Add leading slash if missing
     
-    // Handle different URL formats
-    if (imageUrl.startsWith('http')) {
-      // If it's already a full URL, use it directly
-      processedUrl = imageUrl;
-      console.log(`[DirImgBg-${instanceId}] Using full URL as is`);
-    } else if (imageUrl.startsWith('/uploads')) {
-      // If it's a path starting with /uploads, prepend the origin
-      processedUrl = `${window.location.origin}${imageUrl}`;
-      console.log(`[DirImgBg-${instanceId}] Adding origin to /uploads path`);
-    } else {
-      // Try direct URL first
-      processedUrl = `${window.location.origin}${imageUrl}`;
-      console.log(`[DirImgBg-${instanceId}] Using direct path: ${processedUrl}`);
-    }
-
-    console.log(`[DirImgBg-${instanceId}] Final processed URL: ${processedUrl}`);
-
-    // Try alternative URL strategies if needed
-    const tryAlternativeUrls = (initialUrl: string) => {
-      const urls = [
-        initialUrl, 
-        `${window.location.origin}/uploads${imageUrl}`,
-        `http://localhost:5000${imageUrl}`,
-        `http://localhost:5000/uploads${imageUrl}`
-      ];
-      
-      // Test all URLs in sequence
-      let loadAttempt = 0;
-      
-      const tryNextUrl = () => {
-        if (loadAttempt >= urls.length) {
-          console.error(`[DirImgBg-${instanceId}] All URL formats failed`);
-          setHasError(true);
-          setIsLoading(false);
-          if (onError) onError();
-          return;
-        }
-        
-        const currentUrl = urls[loadAttempt];
-        console.log(`[DirImgBg-${instanceId}] Trying URL format ${loadAttempt + 1}/${urls.length}: ${currentUrl}`);
-        
-        const img = new Image();
-        img.onload = () => {
-          console.log(`[DirImgBg-${instanceId}] SUCCESS! URL loaded: ${currentUrl}`);
-          setFinalUrl(currentUrl);
-          setIsLoading(false);
-          setHasError(false);
-          if (onLoad) onLoad();
-        };
-        img.onerror = () => {
-          console.warn(`[DirImgBg-${instanceId}] Failed to load URL: ${currentUrl}`);
-          loadAttempt++;
-          tryNextUrl();
-        };
-        img.src = currentUrl;
-      };
-      
-      tryNextUrl();
+    console.log(`[DirImgBg-${instanceId}] Using direct path: ${directUrl}`);
+    
+    // Create a test image to verify if the URL is valid
+    const img = new Image();
+    
+    img.onload = () => {
+      console.log(`[DirImgBg-${instanceId}] SUCCESS! Image loaded: ${directUrl}`);
+      setFinalUrl(directUrl);
+      setIsLoading(false);
+      setHasError(false);
+      if (onLoad) onLoad();
     };
     
-    tryAlternativeUrls(processedUrl);
+    img.onerror = () => {
+      console.error(`[DirImgBg-${instanceId}] Failed to load image: ${directUrl}`);
+      setHasError(true);
+      setIsLoading(false);
+      if (onError) onError();
+    };
+    
+    img.src = directUrl;
     
   }, [imageUrl, onLoad, onError]);
 
@@ -111,7 +74,14 @@ const DirectImageBackground: React.FC<DirectImageBackgroundProps> = ({
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }
-    : { backgroundColor: fallbackColor };
+    : { 
+        backgroundColor: typeof fallbackColor === 'string' && fallbackColor.startsWith('linear-gradient') 
+          ? 'transparent' 
+          : fallbackColor,
+        backgroundImage: typeof fallbackColor === 'string' && fallbackColor.startsWith('linear-gradient')
+          ? fallbackColor
+          : 'none',
+      };
 
   return (
     <div 

@@ -930,11 +930,11 @@ export default function PortfolioBuilder() {
                       userId: p.userId,
                       startDate: p.startDate,
                       createdAt: null,
-                      projectUrl: null,
-                      category: null,
-                      thumbnailUrl: null,
-                      thumbnailFile: null,
-                      mediaUrls: [],
+                      projectUrl: p.projectUrl,
+                      category: p.category,
+                      thumbnailUrl: p.thumbnailUrl,
+                      thumbnailFile: p.thumbnailFile,
+                      mediaUrls: p.mediaUrls || [],
                       updatedAt: null
                     })) || []}
                   />
