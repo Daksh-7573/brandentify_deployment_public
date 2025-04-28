@@ -1049,99 +1049,31 @@ export function DynamicInnovator({
             <div className="grid grid-cols-1 gap-6 mt-6">
               {/* Display whatIOffer from userInfo as a primary service */}
               {userInfo.whatIOffer && (
-                <div className="tech-card p-6 relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-radial from-[#08f7fe]/10 to-transparent opacity-30 rounded-full -mt-10 -mr-10"></div>
-                  
-                  <h3 className="text-xl font-medium text-[#08f7fe] mb-3 relative z-10">
+                <div className="tech-card p-6">
+                  <h3 className="text-lg font-medium text-[#08f7fe] mb-3">
                     Professional Services
                   </h3>
+                  <p className="text-gray-300 mb-4 whitespace-pre-line">
+                    {userInfo.whatIOffer}
+                  </p>
                   
-                  <div className="rounded-md bg-[#080E24]/50 p-4 mb-5 border border-[#08f7fe]/10 relative z-10">
-                    <h4 className="text-lg font-medium text-[#fe53bb] mb-2">What I Offer</h4>
-                    <p className="text-gray-300 whitespace-pre-line">
-                      {userInfo.whatIOffer}
-                    </p>
-                  </div>
-                  
-                  <div className="flex flex-wrap gap-2 relative z-10">
-                    <Badge className="bg-gradient-to-r from-[#080E24] to-[#141F3F] border border-[#08f7fe]/30 text-[#08f7fe] shadow-glow">
-                      {userInfo.domain || "Expertise"}
-                    </Badge>
-                    
-                    <Badge className="bg-gradient-to-r from-[#080E24] to-[#141F3F] border border-[#fe53bb]/30 text-[#fe53bb] shadow-glow">
-                      {userInfo.industry || "Industry"}
-                    </Badge>
-                    
-                    <Badge className="bg-gradient-to-r from-[#080E24] to-[#141F3F] border border-[#7122FA]/30 text-[#7122FA] shadow-glow">
-                      Professional Services
-                    </Badge>
-                  </div>
+                  <Badge className="bg-[#080E24] border border-[#08f7fe]/20 text-[#08f7fe]">
+                    {userInfo.domain || userInfo.industry || "Professional Services"}
+                  </Badge>
                 </div>
               )}
               
               {/* Display any additional services */}
-              {userServices && userServices.length > 0 && (
+              {userServices.length > 0 && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
                   {userServices.map((service) => (
-                    <div key={service.id} className="tech-card p-6 flex flex-col">
-                      <h3 className="text-lg font-medium text-[#08f7fe] mb-2">{service.title}</h3>
+                    <div key={service.id} className="tech-card p-6">
+                      <h3 className="text-lg font-medium text-[#08f7fe] mb-3">{service.title}</h3>
                       <p className="text-gray-300 mb-4">{service.description}</p>
                       
-                      {/* Pricing Section */}
-                      <div className="mt-auto">
-                        <div className="flex flex-wrap items-center gap-2 mb-3">
-                          <Badge className="bg-gradient-to-r from-[#080E24] to-[#141F3F] border border-[#08f7fe]/30 text-[#08f7fe] shadow-glow">
-                            {service.category || "Technical Service"}
-                          </Badge>
-                          
-                          {service.isHourly && (
-                            <Badge variant="outline" className="border-[#fe53bb]/30 text-[#fe53bb]">
-                              Hourly Rate
-                            </Badge>
-                          )}
-                        </div>
-                        
-                        {/* Price Display */}
-                        {(service.priceInr || service.priceUsd) && (
-                          <div className="space-y-2 mt-4 border-t border-[#08f7fe]/10 pt-3">
-                            <h4 className="text-sm font-medium text-[#fe53bb]">Pricing Details</h4>
-                            <div className="flex flex-wrap gap-3">
-                              {service.priceInr && (
-                                <div className="text-white">
-                                  <span className="text-gray-400 text-xs mr-1">INR:</span>
-                                  <span className="text-[#08f7fe] font-bold">
-                                    ₹{service.priceInr}{service.isHourly ? '/hr' : ''}
-                                  </span>
-                                </div>
-                              )}
-                              
-                              {service.priceUsd && (
-                                <div className="text-white">
-                                  <span className="text-gray-400 text-xs mr-1">USD:</span>
-                                  <span className="text-[#08f7fe] font-bold">
-                                    ${service.priceUsd}{service.isHourly ? '/hr' : ''}
-                                  </span>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        )}
-                        
-                        {/* Features List */}
-                        {service.features && Array.isArray(service.features) && service.features.length > 0 && (
-                          <div className="mt-4 border-t border-[#08f7fe]/10 pt-3">
-                            <h4 className="text-sm font-medium text-[#fe53bb] mb-2">Features</h4>
-                            <ul className="text-sm text-gray-300 space-y-1">
-                              {service.features.map((feature, index) => (
-                                <li key={index} className="flex items-start">
-                                  <ChevronRight className="h-4 w-4 mt-0.5 text-[#08f7fe] flex-shrink-0" />
-                                  <span className="ml-1">{feature}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                      </div>
+                      <Badge className="bg-[#080E24] border border-[#08f7fe]/20 text-[#08f7fe]">
+                        {service.category || "Technical Service"}
+                      </Badge>
                     </div>
                   ))}
                 </div>
