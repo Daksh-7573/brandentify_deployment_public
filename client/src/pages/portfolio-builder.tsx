@@ -478,9 +478,9 @@ export default function PortfolioBuilder() {
     { 
       id: "animated-odyssey", 
       name: "Animated Odyssey", 
-      description: `✔ Theme: Space-themed, Parallax Effects, Dynamic Cosmos
-✔ Best For: Astrophysicists, Game Devs, Futurists, Space Enthusiasts`,
-      theme: "#4F46E5"
+      description: `✔ Theme: Immersive Space-Themed Interactive Experience
+✔ Best For: Technology Visionaries, Futurists, Digital Pioneers`,
+      theme: "#6a0dad"  // Deep purple
     }
   ];
 
@@ -1016,6 +1016,7 @@ export default function PortfolioBuilder() {
                       updatedAt: null
                     })) || []}
                     aboutMe={userData?.aboutMe || ''}
+                    whatIOffer={userData?.whatIOffer || userData?.aboutMe || ''}
                   />
                 </CardContent>
               </Card>
