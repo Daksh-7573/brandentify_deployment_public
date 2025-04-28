@@ -534,33 +534,46 @@ export default function FreelancerHub({
       <Dialog open={isProjectModalOpen} onOpenChange={setIsProjectModalOpen}>
         <DialogContent className="sm:max-w-[700px] rounded-xl p-0 overflow-hidden">
           <div className="relative h-64 overflow-hidden">
+            {/* Gradient background as fallback */}
             <div 
               className="absolute w-full h-full"
               style={{
-                backgroundImage: selectedProject.thumbnailUrl 
-                  ? `url(${selectedProject.thumbnailUrl.startsWith('http') ? selectedProject.thumbnailUrl : `${window.location.origin}${selectedProject.thumbnailUrl}`})` 
-                  : `linear-gradient(135deg, ${getCategoryGradient(selectedProject.category || 'design')})`,
+                background: `linear-gradient(135deg, ${getCategoryGradient(selectedProject.category || 'design')})`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center'
               }}
-            >
-              {/* Attempt to display image as fallback if background image fails */}
-              {selectedProject.thumbnailUrl && (
-                <img
-                  src={selectedProject.thumbnailUrl.startsWith('http') ? selectedProject.thumbnailUrl : `${window.location.origin}${selectedProject.thumbnailUrl}`}
-                  alt={selectedProject.title}
-                  className="w-full h-full object-cover opacity-0"
-                  onError={(e) => {
-                    console.log('Error loading image:', selectedProject.thumbnailUrl);
-                    e.currentTarget.style.opacity = '0';
-                  }}
-                  onLoad={(e) => {
-                    e.currentTarget.style.opacity = '1';
-                  }}
-                />
-              )}
-            </div>
+            />
             
+            {/* Project image with error handling */}
+            {selectedProject.thumbnailUrl && (
+              <img
+                src={selectedProject.thumbnailUrl.startsWith('http') ? selectedProject.thumbnailUrl : `${window.location.origin}${selectedProject.thumbnailUrl}`}
+                alt={selectedProject.title}
+                className="absolute inset-0 w-full h-full object-cover"
+                onError={(e) => {
+                  console.log('Error loading project header image:', selectedProject.thumbnailUrl);
+                  e.currentTarget.style.opacity = '0';
+                }}
+              />
+            )}
+            
+            {/* Try mediaUrls[0] as a fallback if thumbnailUrl fails */}
+            {selectedProject.mediaUrls && Array.isArray(selectedProject.mediaUrls) && 
+             selectedProject.mediaUrls.length > 0 && !selectedProject.thumbnailUrl && (
+              <img
+                src={selectedProject.mediaUrls[0].startsWith('http') ? 
+                    selectedProject.mediaUrls[0] : 
+                    `${window.location.origin}${selectedProject.mediaUrls[0]}`}
+                alt={`${selectedProject.title} media`}
+                className="absolute inset-0 w-full h-full object-cover"
+                onError={(e) => {
+                  console.log('Error loading fallback media image:', selectedProject.mediaUrls[0]);
+                  e.currentTarget.style.opacity = '0';
+                }}
+              />
+            )}
+            
+            {/* Dark overlay for text contrast */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10" />
             
             {/* Close button */}
@@ -592,34 +605,61 @@ export default function FreelancerHub({
               <div className="flex items-center text-violet-600 mb-4">
                 <Calendar className="h-4 w-4 mr-2" />
                 <span className="text-sm font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  {formatDate(selectedProject.startDate, true)} — {selectedProject.endDate ? formatDate(selectedProject.endDate, true) : 'Present'}
+                  {formatDate(selectedProject.startDate, true)}
                 </span>
               </div>
             )}
             
-            {/* Description */}
-            <p className="text-gray-700 mb-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
-              {selectedProject.description}
-            </p>
+            {/* Industry/Category */}
+            <div className="flex flex-wrap gap-4 mb-4">
+              {selectedProject.industry && (
+                <div className="flex items-center">
+                  <Briefcase className="h-4 w-4 mr-2 text-violet-600" />
+                  <span className="text-sm font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    {selectedProject.industry}
+                  </span>
+                </div>
+              )}
+            </div>
             
-            {/* Tags */}
-            {selectedProject.tags && (
+            {/* Description */}
+            {selectedProject.description && (
               <div className="mb-6">
                 <h4 className="text-sm font-bold mb-2 text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  Technologies & Skills
+                  About this project
                 </h4>
-                <div className="flex flex-wrap gap-2">
-                  {selectedProject.tags.split(',').map((tag, i) => (
-                    <Badge key={i} className="bg-violet-100 text-violet-700 border-none">
-                      {tag.trim()}
-                    </Badge>
+                <p className="text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  {selectedProject.description}
+                </p>
+              </div>
+            )}
+            
+            {/* Media Gallery */}
+            {selectedProject.mediaUrls && Array.isArray(selectedProject.mediaUrls) && selectedProject.mediaUrls.length > 0 && (
+              <div className="mb-6">
+                <h4 className="text-sm font-bold mb-2 text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  Project Gallery
+                </h4>
+                <div className="grid grid-cols-2 gap-2">
+                  {selectedProject.mediaUrls.map((url: string, index: number) => (
+                    <div key={index} className="rounded-lg overflow-hidden h-32">
+                      <img 
+                        src={url.startsWith('http') ? url : `${window.location.origin}${url}`}
+                        alt={`Project image ${index + 1}`}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          console.log('Error loading media image:', url);
+                          e.currentTarget.src = `${window.location.origin}/images/placeholder-image.jpg`;
+                        }}
+                      />
+                    </div>
                   ))}
                 </div>
               </div>
             )}
             
             {/* Actions */}
-            <div className="flex justify-end gap-3">
+            <div className="flex justify-end gap-3 mt-4">
               {selectedProject.projectUrl && (
                 <a 
                   href={selectedProject.projectUrl} 
@@ -1672,13 +1712,24 @@ export default function FreelancerHub({
                       <div 
                         className="project-image absolute w-full h-full"
                         style={{
-                          backgroundImage: project.thumbnailUrl 
-                            ? `url(${project.thumbnailUrl.startsWith('http') ? project.thumbnailUrl : `${window.location.origin}${project.thumbnailUrl}`})` 
-                            : `linear-gradient(135deg, ${getCategoryGradient(project.category || 'design')})`,
+                          backgroundImage: `linear-gradient(135deg, ${getCategoryGradient(project.category || 'design')})`,
                           backgroundSize: 'cover',
                           backgroundPosition: 'center'
                         }}
                       />
+                      
+                      {/* Image with error handling */}
+                      {project.thumbnailUrl && (
+                        <img
+                          src={project.thumbnailUrl.startsWith('http') ? project.thumbnailUrl : `${window.location.origin}${project.thumbnailUrl}`}
+                          alt={project.title}
+                          className="absolute inset-0 w-full h-full object-cover"
+                          onError={(e) => {
+                            console.log('Error loading thumbnail:', project.thumbnailUrl);
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                      )}
                       
                       {/* Dark overlay */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex items-end">
