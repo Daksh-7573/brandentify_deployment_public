@@ -617,7 +617,11 @@ export default function FreelancerHub({
             {/* Project image with error handling */}
             {selectedProject.thumbnailUrl && (
               <img
-                src={selectedProject.thumbnailUrl.startsWith('http') ? selectedProject.thumbnailUrl : `${window.location.origin}${selectedProject.thumbnailUrl}`}
+                src={selectedProject.thumbnailUrl.startsWith('http') 
+                  ? selectedProject.thumbnailUrl 
+                  : selectedProject.thumbnailUrl.startsWith('/uploads')
+                    ? `${window.location.origin}${selectedProject.thumbnailUrl}` 
+                    : `${window.location.origin}/uploads${selectedProject.thumbnailUrl}`}
                 alt={selectedProject.title}
                 className="absolute inset-0 w-full h-full object-cover z-10"
                 onError={(e) => {
@@ -626,8 +630,11 @@ export default function FreelancerHub({
                   if (selectedProject.mediaUrls && Array.isArray(selectedProject.mediaUrls) && selectedProject.mediaUrls.length > 0) {
                     const fallbackUrl = selectedProject.mediaUrls[0];
                     console.log('Trying fallback image from mediaUrls:', fallbackUrl);
-                    e.currentTarget.src = fallbackUrl.startsWith('http') ? 
-                      fallbackUrl : `${window.location.origin}${fallbackUrl}`;
+                    e.currentTarget.src = fallbackUrl.startsWith('http') 
+                      ? fallbackUrl 
+                      : fallbackUrl.startsWith('/uploads')
+                        ? `${window.location.origin}${fallbackUrl}` 
+                        : `${window.location.origin}/uploads${fallbackUrl}`;
                   } else {
                     e.currentTarget.style.opacity = '0';
                   }
