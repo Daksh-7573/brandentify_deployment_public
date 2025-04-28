@@ -925,31 +925,25 @@ export function DynamicInnovator({
                     </div>
                   )}
                   
-                  {/* Project overlay with details */}
+                  {/* Project overlay with details - Simplified to show only name and date */}
                   <div className="project-overlay">
                     <h3 className="text-xl font-medium mb-2 text-white">{project.title}</h3>
-                    
-                    {project.category && (
-                      <Badge className="holographic-badge mb-2 inline-flex">
-                        {project.category}
-                      </Badge>
-                    )}
                     
                     <div className="flex items-center text-[#08f7fe] text-sm mb-3">
                       <Calendar className="h-3.5 w-3.5 mr-1.5" />
                       <span>{formatDate(project.startDate)}</span>
                     </div>
                     
-                    <p className="text-sm text-gray-300 line-clamp-2 mb-4">
-                      {project.description}
-                    </p>
-                    
                     <Button 
                       size="sm" 
                       className="neon-button w-full text-xs"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openProjectDetail(project);
+                      }}
                     >
                       <Cpu className="h-3.5 w-3.5 mr-1.5" />
-                      Explore Project
+                      View Details
                     </Button>
                   </div>
                 </div>
