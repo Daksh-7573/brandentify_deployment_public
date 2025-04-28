@@ -869,12 +869,16 @@ export default function FreelancerHub({
                             src={url.startsWith('http') 
                               ? url 
                               : url.startsWith('/uploads')
-                                ? `${window.location.origin}${url}` 
-                                : `${window.location.origin}/uploads${url}`}
+                                ? `${window.location.origin}${url}?t=${Date.now()}` 
+                                : `${window.location.origin}/uploads${url}?t=${Date.now()}`}
                             alt={`Project image ${index + 1}`}
                             className="absolute inset-0 w-full h-full object-cover z-10"
+                            onLoad={() => {
+                              console.log('Successfully loaded gallery image:', url);
+                            }}
                             onError={(e) => {
-                              console.log('Error loading media image:', url);
+                              console.error('Error loading gallery image:', url);
+                              console.log('Full URL attempted:', e.currentTarget.src);
                               e.currentTarget.style.opacity = '0';
                             }}
                           />
@@ -2049,20 +2053,26 @@ export default function FreelancerHub({
                           src={project.thumbnailUrl.startsWith('http') 
                             ? project.thumbnailUrl 
                             : project.thumbnailUrl.startsWith('/uploads') 
-                              ? `${window.location.origin}${project.thumbnailUrl}` 
-                              : `${window.location.origin}/uploads${project.thumbnailUrl}`}
+                              ? `${window.location.origin}${project.thumbnailUrl}?t=${Date.now()}` 
+                              : `${window.location.origin}/uploads${project.thumbnailUrl}?t=${Date.now()}`}
                           alt={project.title}
                           className="absolute inset-0 w-full h-full object-cover z-10"
+                          onLoad={() => {
+                            console.log('Successfully loaded thumbnail image:', project.thumbnailUrl);
+                          }}
                           onError={(e) => {
-                            console.log('Error loading thumbnail:', project.thumbnailUrl);
+                            console.error('Error loading thumbnail:', project.thumbnailUrl);
+                            console.log('Full URL attempted:', e.currentTarget.src);
                             // Try to get the first item from mediaUrls as fallback
                             if (project.mediaUrls && Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0) {
                               const fallbackUrl = project.mediaUrls[0];
-                              e.currentTarget.src = fallbackUrl.startsWith('http') 
+                              const newSrc = fallbackUrl.startsWith('http') 
                                 ? fallbackUrl 
                                 : fallbackUrl.startsWith('/uploads') 
                                   ? `${window.location.origin}${fallbackUrl}` 
                                   : `${window.location.origin}/uploads${fallbackUrl}`;
+                              console.log('Trying fallback URL:', newSrc);
+                              e.currentTarget.src = newSrc;
                             } else {
                               e.currentTarget.style.opacity = '0';
                             }
@@ -2080,8 +2090,12 @@ export default function FreelancerHub({
                               : `${window.location.origin}/uploads${project.mediaUrls[0]}`}
                           alt={project.title}
                           className="absolute inset-0 w-full h-full object-cover z-10"
+                          onLoad={() => {
+                            console.log('Successfully loaded mediaUrl as thumbnail:', project.mediaUrls[0]);
+                          }}
                           onError={(e) => {
-                            console.log('Error loading media as thumbnail:', project.mediaUrls[0]);
+                            console.error('Error loading media as thumbnail:', project.mediaUrls[0]);
+                            console.log('Full URL attempted:', e.currentTarget.src);
                             e.currentTarget.style.opacity = '0';
                           }}
                         />
