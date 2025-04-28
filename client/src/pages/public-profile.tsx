@@ -173,6 +173,9 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
     enabled: !!userData?.id
   });
   
+  // Check if the AnimatedOdyssey component is defined
+  console.log("Imported AnimatedOdyssey component:", typeof AnimatedOdyssey);
+  
   // Construct portfolio data from all fetched components
   const portfolioData: PortfolioData | null = userData ? {
     layout: 'animated-odyssey', // Using the new animated-odyssey template
@@ -243,6 +246,9 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
   
   // Render the appropriate portfolio template based on user's selected layout
   const renderPortfolio = (portfolioData: PortfolioData) => {
+    // Debug layout selection
+    console.log("Selected layout:", portfolioData.layout);
+    
     // Map our portfolio data to the format each template expects
     const templateProps = {
       userInfo: {
@@ -308,6 +314,7 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
         );
         
       case 'animated-odyssey':
+        console.log("ENTERING ANIMATED ODYSSEY CASE!");
         console.log("Animated Odyssey template userInfo:", templateProps.userInfo);
         
         // Use the same content for aboutMe and whatIOffer if they're null
