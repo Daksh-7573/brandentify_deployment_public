@@ -1207,26 +1207,6 @@ export function DynamicInnovator({
                     <p className="text-gray-300 mb-4">{experience.description}</p>
                   )}
                   
-                  {/* Key Responsibilities Section */}
-                  {experience.keyResponsibilities && Array.isArray(experience.keyResponsibilities) && experience.keyResponsibilities.length > 0 && (
-                    <div className="mt-4 pt-4 border-t border-[#08f7fe]/10">
-                      <h4 className="text-sm font-medium text-[#08f7fe] mb-3 flex items-center">
-                        <Briefcase className="h-4 w-4 mr-1.5 text-[#fe53bb]" />
-                        Key Responsibilities:
-                      </h4>
-                      <ul className="text-gray-300 text-sm space-y-2">
-                        {experience.keyResponsibilities.map((responsibility, index) => (
-                          <li key={index} className="flex items-start">
-                            <div className="flex-shrink-0 mr-2 mt-0.5 h-4 w-4 rounded-full bg-[#0c162d] border border-[#fe53bb]/30 flex items-center justify-center">
-                              <Check className="h-3 w-3 text-[#fe53bb]" />
-                            </div>
-                            <span>{responsibility}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  
                   {/* Location and Industry/Domain Badges */}
                   <div className="mt-4 flex flex-wrap gap-2">
                     {experience.location && (
@@ -1246,6 +1226,26 @@ export function DynamicInnovator({
                       </Badge>
                     )}
                   </div>
+                  
+                  {/* Key Responsibilities Section - moved to the end as requested */}
+                  {experience.keyResponsibilities && Array.isArray(experience.keyResponsibilities) && experience.keyResponsibilities.length > 0 && (
+                    <div className="mt-4 pt-4 border-t border-[#08f7fe]/10">
+                      <h4 className="text-sm font-medium text-[#08f7fe] mb-3 flex items-center">
+                        <Briefcase className="h-4 w-4 mr-1.5 text-[#fe53bb]" />
+                        Key Responsibilities:
+                      </h4>
+                      <ul className="text-gray-300 text-sm space-y-2">
+                        {experience.keyResponsibilities.map((responsibility, index) => (
+                          <li key={index} className="flex items-start">
+                            <div className="flex-shrink-0 mr-2 mt-0.5 h-4 w-4 rounded-full bg-[#0c162d] border border-[#fe53bb]/30 flex items-center justify-center">
+                              <Check className="h-3 w-3 text-[#fe53bb]" />
+                            </div>
+                            <span>{responsibility}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               ))
             ) : (
