@@ -532,8 +532,35 @@ export default function FreelancerHub({
     
     return (
       <Dialog open={isProjectModalOpen} onOpenChange={setIsProjectModalOpen}>
-        <DialogContent className="sm:max-w-[700px] rounded-xl p-0 overflow-hidden">
-          <div className="relative h-64 overflow-hidden">
+        <DialogContent className="sm:max-w-[700px] rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
+          {/* Floating decorative elements to match the template style */}
+          <motion.div 
+            className="absolute -top-10 -left-10 w-60 h-60 bg-gradient-to-br from-purple-200 to-purple-50 rounded-full opacity-20 blur-3xl z-0"
+            animate={{ 
+              scale: [1, 1.2, 1],
+              rotate: [0, 15, 0]
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              repeatType: "reverse"
+            }}
+          />
+          
+          <motion.div 
+            className="absolute -bottom-20 -right-20 w-80 h-80 bg-gradient-to-tr from-amber-200 to-amber-50 rounded-full opacity-20 blur-3xl z-0"
+            animate={{ 
+              scale: [1, 1.3, 1],
+              rotate: [0, -15, 0]
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              repeatType: "reverse"
+            }}
+          />
+          
+          <div className="relative h-72 overflow-hidden">
             {/* Gradient background as fallback */}
             <div 
               className="absolute w-full h-full"
@@ -581,120 +608,165 @@ export default function FreelancerHub({
               />
             )}
             
-            {/* Dark overlay for text contrast */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10" />
+            {/* Dark overlay with gradient for text contrast */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10 z-20" />
             
             {/* Close button */}
-            <button 
+            <motion.button 
               onClick={() => setIsProjectModalOpen(false)}
-              className="absolute top-3 right-3 bg-white/20 backdrop-blur-sm p-2 rounded-full text-white hover:bg-white/40 transition-colors"
+              className="absolute top-4 right-4 bg-white/30 backdrop-blur-md p-2 rounded-full text-white hover:bg-white/50 transition-colors z-30 shadow-md"
+              whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
+              transition={{ duration: 0.3 }}
             >
               <X className="h-5 w-5" />
-            </button>
+            </motion.button>
             
             {/* Title area */}
-            <div className="absolute bottom-0 left-0 p-6 w-full">
-              <h2 className="text-2xl md:text-3xl font-bold text-white mb-1" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+            <div className="absolute bottom-0 left-0 p-7 w-full z-30">
+              <motion.h2 
+                className="text-2xl md:text-3xl font-bold text-white mb-2" 
+                style={{ fontFamily: 'Fredoka, sans-serif' }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
                 {selectedProject.title}
-              </h2>
+              </motion.h2>
+              
               {selectedProject.category && (
-                <div className="flex items-center">
-                  <Badge className="bg-white/30 text-white border-none">
+                <motion.div 
+                  className="flex items-center"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                >
+                  <Badge className="bg-white/30 backdrop-blur-sm text-white border-none px-3 py-1">
                     {selectedProject.category}
                   </Badge>
-                </div>
+                </motion.div>
               )}
             </div>
           </div>
           
-          <div className="p-6">
-            {/* Duration */}
-            {selectedProject.startDate && (
-              <div className="flex items-center text-violet-600 mb-4">
-                <Calendar className="h-4 w-4 mr-2" />
-                <span className="text-sm font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  {formatDate(selectedProject.startDate, true)}
-                </span>
-              </div>
-            )}
-            
-            {/* Industry/Category */}
-            <div className="flex flex-wrap gap-4 mb-4">
-              {selectedProject.industry && (
-                <div className="flex items-center">
-                  <Briefcase className="h-4 w-4 mr-2 text-violet-600" />
-                  <span className="text-sm font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    {selectedProject.industry}
-                  </span>
-                </div>
-              )}
-            </div>
-            
-            {/* Description */}
-            {selectedProject.description && (
-              <div className="mb-6">
-                <h4 className="text-sm font-bold mb-2 text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  About this project
-                </h4>
-                <p className="text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  {selectedProject.description}
-                </p>
-              </div>
-            )}
-            
-            {/* Media Gallery */}
-            {selectedProject.mediaUrls && Array.isArray(selectedProject.mediaUrls) && selectedProject.mediaUrls.length > 0 && (
-              <div className="mb-6">
-                <h4 className="text-sm font-bold mb-2 text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  Project Gallery
-                </h4>
-                <div className="grid grid-cols-2 gap-2">
-                  {selectedProject.mediaUrls.map((url: string, index: number) => {
-                    // Skip the first image if it's being used as the header and there are multiple images
-                    if (index === 0 && !selectedProject.thumbnailUrl && selectedProject.mediaUrls.length > 1) {
-                      return null;
-                    }
-                    
-                    return (
-                      <div key={index} className="rounded-lg overflow-hidden h-32 relative">
-                        {/* Gradient background as fallback */}
-                        <div 
-                          className="absolute inset-0"
-                          style={{
-                            background: `linear-gradient(135deg, ${getCategoryGradient(selectedProject.category || 'design')})`,
-                          }}
-                        />
-                        
-                        <img 
-                          src={url.startsWith('http') ? url : `${window.location.origin}${url}`}
-                          alt={`Project image ${index + 1}`}
-                          className="absolute inset-0 w-full h-full object-cover z-10"
-                          onError={(e) => {
-                            console.log('Error loading media image:', url);
-                            e.currentTarget.style.opacity = '0';
-                          }}
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-            
-            {/* Actions */}
-            <div className="flex justify-end gap-3 mt-4">
-              {selectedProject.projectUrl && (
-                <a 
-                  href={selectedProject.projectUrl} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-full font-medium shadow-md hover:shadow-lg transition-shadow"
-                  style={{ fontFamily: 'Poppins, sans-serif' }}
+          <div className="p-7 relative z-10 bg-white/80 backdrop-blur-sm">
+            <div className="bg-white rounded-2xl p-6 shadow-lg">
+              {/* Duration */}
+              {selectedProject.startDate && (
+                <motion.div 
+                  className="flex items-center text-violet-600 mb-4"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
                 >
-                  Visit Project
-                  <ExternalLink className="h-4 w-4 ml-2" />
-                </a>
+                  <div className="bg-violet-100 p-2 rounded-full mr-3">
+                    <Calendar className="h-4 w-4" />
+                  </div>
+                  <span className="text-sm font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    {formatDate(selectedProject.startDate, true)}
+                  </span>
+                </motion.div>
               )}
+              
+              {/* Industry/Category */}
+              <div className="flex flex-wrap gap-4 mb-5">
+                {selectedProject.industry && (
+                  <motion.div 
+                    className="flex items-center bg-blue-50 px-3 py-1.5 rounded-full"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: 0.1 }}
+                  >
+                    <Briefcase className="h-4 w-4 mr-2 text-blue-500" />
+                    <span className="text-sm font-medium text-blue-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      {selectedProject.industry}
+                    </span>
+                  </motion.div>
+                )}
+              </div>
+              
+              {/* Description */}
+              {selectedProject.description && (
+                <motion.div 
+                  className="mb-6 bg-gradient-to-r from-amber-50 to-white p-4 rounded-xl border border-amber-100"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.2 }}
+                >
+                  <h4 className="text-sm font-bold mb-2 text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    <span className="text-amber-500 mr-2">✨</span> About this project
+                  </h4>
+                  <p className="text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    {selectedProject.description}
+                  </p>
+                </motion.div>
+              )}
+              
+              {/* Media Gallery */}
+              {selectedProject.mediaUrls && Array.isArray(selectedProject.mediaUrls) && selectedProject.mediaUrls.length > 0 && (
+                <motion.div 
+                  className="mb-6"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.3 }}
+                >
+                  <h4 className="text-sm font-bold mb-3 text-gray-700 flex items-center" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    <span className="text-pink-500 mr-2">🖼️</span> Project Gallery
+                  </h4>
+                  <div className="grid grid-cols-2 gap-3">
+                    {selectedProject.mediaUrls.map((url: string, index: number) => {
+                      // Skip the first image if it's being used as the header and there are multiple images
+                      if (index === 0 && !selectedProject.thumbnailUrl && selectedProject.mediaUrls.length > 1) {
+                        return null;
+                      }
+                      
+                      return (
+                        <motion.div 
+                          key={index} 
+                          className="rounded-xl overflow-hidden h-32 relative shadow-md"
+                          whileHover={{ scale: 1.03 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          {/* Gradient background as fallback */}
+                          <div 
+                            className="absolute inset-0"
+                            style={{
+                              background: `linear-gradient(135deg, ${getCategoryGradient(selectedProject.category || 'design')})`,
+                            }}
+                          />
+                          
+                          <img 
+                            src={url.startsWith('http') ? url : `${window.location.origin}${url}`}
+                            alt={`Project image ${index + 1}`}
+                            className="absolute inset-0 w-full h-full object-cover z-10"
+                            onError={(e) => {
+                              console.log('Error loading media image:', url);
+                              e.currentTarget.style.opacity = '0';
+                            }}
+                          />
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              )}
+              
+              {/* Actions */}
+              <div className="flex justify-end gap-3 mt-6">
+                {selectedProject.projectUrl && (
+                  <motion.a 
+                    href={selectedProject.projectUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-violet-600 to-pink-500 text-white rounded-full font-medium shadow-lg hover:shadow-xl transition"
+                    style={{ fontFamily: 'Poppins, sans-serif' }}
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    Visit Project
+                    <ExternalLink className="h-4 w-4 ml-2" />
+                  </motion.a>
+                )}
+              </div>
             </div>
           </div>
         </DialogContent>
@@ -706,64 +778,120 @@ export default function FreelancerHub({
   const renderContactModal = () => {
     return (
       <Dialog open={isContactModalOpen} onOpenChange={setIsContactModalOpen}>
-        <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden rounded-2xl">
-          <div className="bg-gradient-to-r from-violet-500 via-purple-500 to-fuchsia-500 p-6">
-            <DialogTitle className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-              Let's Create Something Amazing!
-            </DialogTitle>
-            <p className="text-white/90" style={{ fontFamily: 'Poppins, sans-serif' }}>
-              I'd love to hear about your project or opportunity.
-            </p>
+        <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden rounded-3xl border-none shadow-2xl">
+          {/* Floating decorative elements to match the template style */}
+          <motion.div 
+            className="absolute -top-10 -left-10 w-60 h-60 bg-gradient-to-br from-fuchsia-200 to-fuchsia-50 rounded-full opacity-20 blur-3xl z-0"
+            animate={{ 
+              scale: [1, 1.2, 1],
+              rotate: [0, 15, 0]
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              repeatType: "reverse"
+            }}
+          />
+          
+          <motion.div 
+            className="absolute -bottom-20 -right-20 w-80 h-80 bg-gradient-to-tr from-purple-200 to-purple-50 rounded-full opacity-20 blur-3xl z-0"
+            animate={{ 
+              scale: [1, 1.3, 1],
+              rotate: [0, -15, 0]
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              repeatType: "reverse"
+            }}
+          />
+          
+          <div className="bg-gradient-to-r from-violet-500 via-purple-500 to-fuchsia-500 p-7 relative z-10">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <DialogTitle className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+                <span className="mr-2">✨</span> Let's Create Something Amazing!
+              </DialogTitle>
+              <p className="text-white/90" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                I'd love to hear about your project or opportunity.
+              </p>
+            </motion.div>
           </div>
           
-          <div className="p-6">
-            <div className="mb-6">
-              <label className="block text-sm font-medium mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                What are you looking for?
-              </label>
-              <Select value={contactPurpose} onValueChange={setContactPurpose}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select a purpose" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="project">Project Collaboration</SelectItem>
-                  <SelectItem value="job">Job Opportunity</SelectItem>
-                  <SelectItem value="mentorship">Mentorship</SelectItem>
-                  <SelectItem value="networking">Professional Networking</SelectItem>
-                  <SelectItem value="other">Something Else</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="mb-6">
-              <label className="block text-sm font-medium mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                Your Message
-              </label>
-              <Textarea 
-                placeholder="Tell me a bit about what you have in mind..."
-                className="resize-none h-32"
-                value={contactMessage}
-                onChange={(e) => setContactMessage(e.target.value)}
-              />
-            </div>
-            
-            <div className="flex justify-end gap-3">
-              <DialogClose asChild>
-                <Button variant="outline">
-                  Cancel
-                </Button>
-              </DialogClose>
-              <Button 
-                className="px-6 py-2 bg-gradient-to-r from-pink-500 to-violet-500 text-white shadow-md hover:shadow-lg transition-shadow"
-                onClick={() => {
-                  // In a real app, this would send an email or message
-                  window.open(`mailto:${userInfo.email || ''}?subject=Let's Talk: ${contactPurpose}&body=${contactMessage}`);
-                  setIsContactModalOpen(false);
-                }}
+          <div className="p-7 relative z-10 bg-white/80 backdrop-blur-sm">
+            <div className="bg-white rounded-2xl p-6 shadow-lg">
+              <motion.div 
+                className="mb-6"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
               >
-                <MessageSquare className="h-4 w-4 mr-2" />
-                Send Message
-              </Button>
+                <label className="block text-sm font-bold mb-2 text-violet-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  What are you looking for?
+                </label>
+                <Select value={contactPurpose} onValueChange={setContactPurpose}>
+                  <SelectTrigger className="w-full border-violet-200 focus:ring-violet-300">
+                    <SelectValue placeholder="Select a purpose" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="project">Project Collaboration</SelectItem>
+                    <SelectItem value="job">Job Opportunity</SelectItem>
+                    <SelectItem value="mentorship">Mentorship</SelectItem>
+                    <SelectItem value="networking">Professional Networking</SelectItem>
+                    <SelectItem value="other">Something Else</SelectItem>
+                  </SelectContent>
+                </Select>
+              </motion.div>
+              
+              <motion.div 
+                className="mb-6"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.1 }}
+              >
+                <label className="block text-sm font-bold mb-2 text-violet-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  Your Message
+                </label>
+                <Textarea 
+                  placeholder="Tell me a bit about what you have in mind..."
+                  className="resize-none h-32 border-violet-200 focus:ring-violet-300"
+                  value={contactMessage}
+                  onChange={(e) => setContactMessage(e.target.value)}
+                />
+              </motion.div>
+              
+              <motion.div 
+                className="flex justify-end gap-3 mt-8"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.2 }}
+              >
+                <DialogClose asChild>
+                  <Button 
+                    variant="outline" 
+                    className="border-violet-200 text-violet-700 hover:bg-violet-50"
+                  >
+                    Cancel
+                  </Button>
+                </DialogClose>
+                <motion.button 
+                  className="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-violet-600 to-pink-500 text-white rounded-full font-medium shadow-lg hover:shadow-xl transition"
+                  style={{ fontFamily: 'Poppins, sans-serif' }}
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  transition={{ duration: 0.2 }}
+                  onClick={() => {
+                    // In a real app, this would send an email or message
+                    window.open(`mailto:${userInfo.email || ''}?subject=Let's Talk: ${contactPurpose}&body=${contactMessage}`);
+                    setIsContactModalOpen(false);
+                  }}
+                >
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  Send Message
+                </motion.button>
+              </motion.div>
             </div>
           </div>
         </DialogContent>
