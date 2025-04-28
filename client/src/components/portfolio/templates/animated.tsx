@@ -33,68 +33,42 @@ import { Progress } from '@/components/ui/progress';
 import Lottie from 'react-lottie-player';
 
 // Define component props
-interface UserInfo {
+interface AnimatedTemplateProps {
   name: string;
   title: string;
   industry: string;
-  domain: string | null;
+  domain: string;
   location: string;
   organization?: string;
   photoURL?: string | null;
+  skills: Skill[];
+  projects: Project[];
+  experiences: WorkExperience[];
+  educations: Education[];
+  services: Service[];
   lookingFor?: string;
   email?: string;
   aboutMe?: string | null;
 }
 
-interface AnimatedTemplateProps {
-  userInfo: UserInfo;
-  userSkills: Skill[];
-  userProjects: Project[];
-  userExperiences: WorkExperience[];
-  userEducations: Education[];
-  userServices: Service[];
-}
-
 // Animated Template Component
-export default function AnimatedTemplate(props: AnimatedTemplateProps) {
-  const {
-    userInfo = {
-      name: 'Creative Professional',
-      title: 'Digital Specialist',
-      industry: 'Technology',
-      domain: 'Digital',
-      location: 'Digital Space',
-      photoURL: null,
-      lookingFor: 'Collaboration',
-      email: '',
-      aboutMe: 'Creative professional with a passion for digital experiences.'
-    },
-    userSkills = [],
-    userProjects = [],
-    userExperiences = [],
-    userEducations = [],
-    userServices = []
-  } = props || {};
-  
-  // Extract user info properties for easier access
-  const {
-    name,
-    title,
-    industry,
-    domain,
-    location,
-    photoURL,
-    lookingFor,
-    email,
-    aboutMe
-  } = userInfo;
-  
-  // Alias collections for existing component code
-  const skills = userSkills;
-  const projects = userProjects;
-  const experiences = userExperiences;
-  const educations = userEducations;
-  const services = userServices;
+export default function AnimatedTemplate({
+  name,
+  title,
+  industry,
+  domain,
+  location,
+  organization,
+  photoURL,
+  skills = [], // Provide empty array fallbacks for all collections
+  projects = [],
+  experiences = [],
+  educations = [],
+  services = [],
+  lookingFor,
+  email,
+  aboutMe
+}: AnimatedTemplateProps) {
   // Use Lumos Animation hook
   const { initAmbientAuras, animateCardStack, addSparkleEffect, addTypingEffect } = useLumosAnimations();
   
