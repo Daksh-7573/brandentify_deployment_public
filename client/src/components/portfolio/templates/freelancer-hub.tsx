@@ -866,18 +866,14 @@ export default function FreelancerHub({
                             }}
                           />
                           <img 
-                            src={url.startsWith('http') 
-                              ? url 
-                              : url.startsWith('/uploads')
-                                ? `${window.location.origin}${url}?t=${Date.now()}` 
-                                : `${window.location.origin}/uploads${url}?t=${Date.now()}`}
+                            src={`http://localhost:5000${url.startsWith('/uploads') ? url : '/uploads' + url}`}
                             alt={`Project image ${index + 1}`}
                             className="absolute inset-0 w-full h-full object-cover z-10"
                             onLoad={() => {
-                              console.log('Successfully loaded gallery image:', url);
+                              console.log('Successfully loaded gallery image using direct localhost URL:', url);
                             }}
                             onError={(e) => {
-                              console.error('Error loading gallery image:', url);
+                              console.error('Error loading gallery image with direct localhost URL:', url);
                               console.log('Full URL attempted:', e.currentTarget.src);
                               e.currentTarget.style.opacity = '0';
                             }}
@@ -2050,29 +2046,21 @@ export default function FreelancerHub({
                       {/* Direct display of the thumbnail image */}
                       {project.thumbnailUrl && (
                         <img
-                          src={project.thumbnailUrl.startsWith('http') 
-                            ? project.thumbnailUrl 
-                            : project.thumbnailUrl.startsWith('/uploads') 
-                              ? `${window.location.origin}${project.thumbnailUrl}?t=${Date.now()}` 
-                              : `${window.location.origin}/uploads${project.thumbnailUrl}?t=${Date.now()}`}
+                          src={`http://localhost:5000${project.thumbnailUrl.startsWith('/uploads') ? project.thumbnailUrl : '/uploads' + project.thumbnailUrl}`}
                           alt={project.title}
                           className="absolute inset-0 w-full h-full object-cover z-10"
                           onLoad={() => {
-                            console.log('Successfully loaded thumbnail image:', project.thumbnailUrl);
+                            console.log('Successfully loaded thumbnail image using direct localhost URL:', project.thumbnailUrl);
                           }}
                           onError={(e) => {
-                            console.error('Error loading thumbnail:', project.thumbnailUrl);
+                            console.error('Error loading thumbnail with direct localhost URL:', project.thumbnailUrl);
                             console.log('Full URL attempted:', e.currentTarget.src);
                             // Try to get the first item from mediaUrls as fallback
                             if (project.mediaUrls && Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0) {
                               const fallbackUrl = project.mediaUrls[0];
-                              const newSrc = fallbackUrl.startsWith('http') 
-                                ? fallbackUrl 
-                                : fallbackUrl.startsWith('/uploads') 
-                                  ? `${window.location.origin}${fallbackUrl}` 
-                                  : `${window.location.origin}/uploads${fallbackUrl}`;
-                              console.log('Trying fallback URL:', newSrc);
-                              e.currentTarget.src = newSrc;
+                              const fallbackImageUrl = `http://localhost:5000${fallbackUrl.startsWith('/uploads') ? fallbackUrl : '/uploads' + fallbackUrl}`;
+                              console.log('Trying fallback direct URL:', fallbackImageUrl);
+                              e.currentTarget.src = fallbackImageUrl;
                             } else {
                               e.currentTarget.style.opacity = '0';
                             }
@@ -2083,18 +2071,14 @@ export default function FreelancerHub({
                       {/* If no thumbnailUrl, try mediaUrls[0] */}
                       {!project.thumbnailUrl && project.mediaUrls && Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0 && (
                         <img
-                          src={project.mediaUrls[0].startsWith('http') 
-                            ? project.mediaUrls[0]
-                            : project.mediaUrls[0].startsWith('/uploads')
-                              ? `${window.location.origin}${project.mediaUrls[0]}`
-                              : `${window.location.origin}/uploads${project.mediaUrls[0]}`}
+                          src={`http://localhost:5000${project.mediaUrls[0].startsWith('/uploads') ? project.mediaUrls[0] : '/uploads' + project.mediaUrls[0]}`}
                           alt={project.title}
                           className="absolute inset-0 w-full h-full object-cover z-10"
                           onLoad={() => {
-                            console.log('Successfully loaded mediaUrl as thumbnail:', project.mediaUrls[0]);
+                            console.log('Successfully loaded mediaUrl as thumbnail using direct localhost URL:', project.mediaUrls[0]);
                           }}
                           onError={(e) => {
-                            console.error('Error loading media as thumbnail:', project.mediaUrls[0]);
+                            console.error('Error loading media as thumbnail with direct localhost URL:', project.mediaUrls[0]);
                             console.log('Full URL attempted:', e.currentTarget.src);
                             e.currentTarget.style.opacity = '0';
                           }}
