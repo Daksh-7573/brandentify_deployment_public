@@ -313,16 +313,10 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
           <div className="skills-grid">
             {skills && skills.length > 0 ? (
               skills.map((skill, index) => (
-                <motion.div 
+                <div 
                   key={skill.id || index}
                   className="skill-bubble"
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ 
-                    opacity: isSkillsInView ? 1 : 0, 
-                    scale: isSkillsInView ? 1 : 0 
-                  }}
-                  transition={{ duration: 0.6, delay: 0.1 * index }}
-                  whileHover={{ scale: 1.05, boxShadow: '0 0 25px rgba(79, 70, 229, 0.6)' }}
+                  style={{ opacity: 1, transform: 'scale(1)' }}
                 >
                   <div className="skill-bubble-inner">
                     <div className="skill-name">{skill.name}</div>
@@ -340,7 +334,7 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
                       {skill.level === 'Beginner' ? '30%' : skill.level === 'Intermediate' ? '65%' : '90%'}
                     </div>
                   </div>
-                </motion.div>
+                </div>
               ))
             ) : (
               <motion.div 
@@ -394,11 +388,7 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
                       
                       {/* Price Badge */}
                       <div className="price-badge">
-                        <motion.div
-                          // Animation disabled to prevent blinking
-                          // animate={{ scale: [1, 1.05, 1] }}
-                          // transition={{ duration: 2, repeat: Infinity }}
-                        >
+                        <div>
                           {service.isHourly ? (
                             <span>
                               {formatCurrency(service.pricing || 0)} / hour
@@ -408,26 +398,20 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
                               {formatCurrency(service.pricing || 0)}
                             </span>
                           )}
-                        </motion.div>
+                        </div>
                       </div>
                       
                       {/* Features */}
                       <div className="service-features">
                         {service.features && Array.isArray(service.features) ? 
                           service.features.map((feature: string, idx: number) => (
-                            <motion.div 
+                            <div 
                               key={idx} 
                               className="service-feature"
-                              initial={{ opacity: 0, x: -20 }}
-                              animate={{ 
-                                opacity: isServicesInView && index === serviceIndex ? 1 : 0, 
-                                x: isServicesInView && index === serviceIndex ? 0 : -20 
-                              }}
-                              transition={{ duration: 0.3, delay: 0.2 + (idx * 0.1) }}
                             >
                               <Sparkles className="h-4 w-4 mr-2 text-neon-blue" />
                               <span>{feature}</span>
-                            </motion.div>
+                            </div>
                           )) 
                           : null
                         }
@@ -481,19 +465,9 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
           {projects && projects.length > 0 ? (
             <div className="projects-grid">
               {projects.map((project, index) => (
-                <motion.div 
+                <div 
                   key={project.id || index}
                   className="project-card"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ 
-                    opacity: isProjectsInView ? 1 : 0, 
-                    scale: isProjectsInView ? 1 : 0.8 
-                  }}
-                  transition={{ duration: 0.6, delay: 0.1 * (index % 6) }}
-                  whileHover={{ 
-                    scale: 1.05,
-                    boxShadow: '0 0 25px rgba(79, 70, 229, 0.6)' 
-                  }}
                 >
                   <div className="project-card-inner">
                     <div className="project-thumbnail">
@@ -536,7 +510,7 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
                       )}
                     </div>
                   </div>
-                </motion.div>
+                </div>
               ))}
             </div>
           ) : (
@@ -575,97 +549,59 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
               <div className="timeline-line"></div>
               
               {experiences.map((experience, index) => (
-                <motion.div 
+                <div 
                   key={experience.id || index}
                   className={`timeline-item ${index % 2 === 0 ? 'left' : 'right'}`}
-                  initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
-                  animate={{ 
-                    opacity: isTimelineInView ? 1 : 0, 
-                    x: isTimelineInView ? 0 : (index % 2 === 0 ? -50 : 50)
-                  }}
-                  transition={{ duration: 0.6, delay: 0.2 * index }}
                 >
                   {/* Timeline dot */}
                   <div className="timeline-dot">
-                    <motion.div 
-                      className="timeline-dot-pulse"
-                      // Animation disabled to prevent blinking
-                      // animate={{ scale: [1, 1.3, 1] }}
-                      // transition={{ duration: 2, repeat: Infinity }}
-                    />
+                    <div className="timeline-dot-pulse" />
                   </div>
                   
                   {/* Timeline content */}
                   <div className="timeline-content">
                     <div className="timeline-date">
-                      {new Date(experience.startDate || '').toLocaleDateString('en-US', {
+                      {new Date(experience.startDate).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'short'
-                      })} - {' '}
-                      {experience.endDate 
-                        ? new Date(experience.endDate).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'short'
-                          })
-                        : 'Present'}
+                      })}
+                      {experience.endDate ? (
+                        <> - {new Date(experience.endDate).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'short'
+                        })}</>
+                      ) : (
+                        <> - Present</>
+                      )}
                     </div>
+                    <h3 className="timeline-title">{experience.title}</h3>
+                    <h4 className="timeline-company">{experience.company}</h4>
+                    <div className="timeline-location">
+                      <MapPin className="h-4 w-4 mr-1" />
+                      {experience.location || 'Remote'}
+                    </div>
+                    <p className="timeline-description">
+                      {experience.description || 'Responsible for delivering high-quality work and meeting project objectives.'}
+                    </p>
                     
-                    <div className="timeline-card">
-                      <h3 className="timeline-title">{experience.title}</h3>
-                      <h4 className="timeline-company">{experience.company}</h4>
-                      
-                      {experience.location && (
-                        <div className="timeline-location">
-                          <MapPin className="h-4 w-4 mr-1" />
-                          <span>{experience.location}</span>
-                        </div>
-                      )}
-                      
-                      {experience.description && (
-                        <p className="timeline-description">{experience.description}</p>
-                      )}
-                      
-                      {/* Key Responsibilities */}
-                      {experience.keyResponsibilities && 
-                       typeof experience.keyResponsibilities === 'object' &&
-                       Array.isArray(experience.keyResponsibilities) && 
-                       experience.keyResponsibilities.length > 0 && (
-                        <div className="timeline-responsibilities">
-                          <h5 className="responsibilities-title">Key Responsibilities</h5>
-                          <ul className="responsibilities-list">
-                            {experience.keyResponsibilities.map((responsibility: string, idx: number) => (
-                              <motion.li 
-                                key={idx}
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ 
-                                  opacity: isTimelineInView ? 1 : 0, 
-                                  x: isTimelineInView ? 0 : -20 
-                                }}
-                                transition={{ duration: 0.3, delay: 0.4 + (idx * 0.1) }}
-                              >
-                                {responsibility}
-                              </motion.li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                      
-                      {/* Industry & Domain badges */}
-                      <div className="timeline-badges">
-                        {experience.industry && (
-                          <Badge className="badge-industry">
-                            {experience.industry}
-                          </Badge>
-                        )}
-                        {experience.domain && (
-                          <Badge className="badge-domain">
-                            {experience.domain}
-                          </Badge>
-                        )}
+                    {/* Responsibilities */}
+                    {experience.keyResponsibilities && (
+                      <div className="timeline-responsibilities">
+                        <h5 className="responsibilities-title">Key Responsibilities:</h5>
+                        <ul className="responsibilities-list">
+                          {Array.isArray(experience.keyResponsibilities) ? 
+                            experience.keyResponsibilities.map((responsibility: string, idx: number) => (
+                              <li key={idx} className="responsibility-item">
+                                <Sparkles className="h-4 w-4 mr-2 text-neon-blue" />
+                                <span>{responsibility}</span>
+                              </li>
+                            )) : null
+                          }
+                        </ul>
                       </div>
-                    </div>
+                    )}
                   </div>
-                </motion.div>
+                </div>
               ))}
             </div>
           ) : (
@@ -675,9 +611,9 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
               animate={{ opacity: isTimelineInView ? 1 : 0 }}
               transition={{ duration: 0.6 }}
             >
-              <Briefcase className="h-16 w-16 mx-auto mb-4 text-neon-blue opacity-60" />
-              <h3 className="text-xl font-semibold mb-2">Career Journey Coming Soon</h3>
-              <p>My professional experiences will be displayed here.</p>
+              <Sparkles className="h-16 w-16 mx-auto mb-4 text-neon-blue opacity-60" />
+              <h3 className="text-xl font-semibold mb-2">Career Timeline Coming Soon</h3>
+              <p>My professional journey will be displayed here.</p>
             </motion.div>
           )}
         </div>
@@ -695,109 +631,91 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
             }}
             transition={{ duration: 0.6 }}
           >
-            Academic Background
+            Academic Journey
           </motion.h2>
           
           {educations && educations.length > 0 ? (
             <div className="education-grid">
               {educations.map((education, index) => (
-                <motion.div 
+                <div 
                   key={education.id || index}
                   className="education-card"
-                  initial={{ opacity: 0, y: 50, rotateX: -10 }}
-                  animate={{ 
-                    opacity: isEducationInView ? 1 : 0, 
-                    y: isEducationInView ? 0 : 50,
-                    rotateX: isEducationInView ? 0 : -10
-                  }}
-                  transition={{ duration: 0.6, delay: 0.2 * index }}
-                  whileHover={{ 
-                    y: -10,
-                    boxShadow: '0 20px 30px rgba(0, 0, 0, 0.2), 0 0 15px rgba(79, 70, 229, 0.5)'
-                  }}
                 >
                   <div className="education-card-inner">
-                    <div className="education-icon">
-                      <motion.div
-                        // Animation disabled to prevent blinking
-                        // animate={{ y: [0, -10, 0] }}
-                        // transition={{ duration: 2, repeat: Infinity }}
-                        className="education-icon-inner"
-                      >
-                        📚
-                      </motion.div>
+                    <div className="education-header">
+                      <h3 className="education-degree">{education.degree}</h3>
+                      <div className="education-institution">
+                        <Briefcase className="h-4 w-4 mr-2 text-neon-blue" />
+                        {education.institution}
+                      </div>
                     </div>
                     
-                    <h3 className="education-degree">{education.degree}</h3>
-                    <h4 className="education-institution">{education.institution}</h4>
-                    
-                    <div className="education-date">
-                      {new Date(education.startDate || '').toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'short'
-                      })} - {' '}
-                      {education.endDate 
-                        ? new Date(education.endDate).toLocaleDateString('en-US', {
+                    <div className="education-details">
+                      <div className="education-date">
+                        <CalendarDays className="h-4 w-4 mr-1" />
+                        {new Date(education.startDate).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'short'
+                        })}
+                        {education.endDate ? (
+                          <> - {new Date(education.endDate).toLocaleDateString('en-US', {
                             year: 'numeric',
                             month: 'short'
-                          })
-                        : 'Present'}
-                    </div>
-                    
-                    {education.location && (
-                      <div className="education-location">
-                        <MapPin className="h-4 w-4 mr-1" />
-                        <span>{education.location}</span>
+                          })}</>
+                        ) : (
+                          <> - Present</>
+                        )}
                       </div>
-                    )}
-                    
-                    {/* Field of Study, Industry, Domain */}
-                    <div className="education-details">
-                      {education.fieldOfStudy && (
-                        <Badge className="badge-field">
-                          {education.fieldOfStudy}
-                        </Badge>
-                      )}
-                      {education.industry && (
-                        <Badge className="badge-industry">
-                          {education.industry}
-                        </Badge>
-                      )}
-                      {education.domain && (
-                        <Badge className="badge-domain">
-                          {education.domain}
-                        </Badge>
-                      )}
-                    </div>
-                    
-                    {/* Skills Acquired */}
-                    {education.skillsAcquired && 
-                     typeof education.skillsAcquired === 'object' &&
-                     Array.isArray(education.skillsAcquired) && 
-                     education.skillsAcquired.length > 0 && (
-                      <div className="skills-acquired-container">
-                        <h5 className="skills-acquired-title">Skills Acquired</h5>
-                        <div className="skills-acquired-badges">
-                          {education.skillsAcquired.map((skill: string, idx: number) => (
-                            <motion.div 
-                              key={idx}
-                              className="skill-acquired-badge"
-                              initial={{ opacity: 0, scale: 0, rotate: -10 }}
-                              animate={{ 
-                                opacity: isEducationInView ? 1 : 0, 
-                                scale: isEducationInView ? 1 : 0,
-                                rotate: isEducationInView ? 0 : -10
-                              }}
-                              transition={{ duration: 0.3, delay: 0.5 + (idx * 0.1) }}
-                            >
-                              {skill}
-                            </motion.div>
-                          ))}
+                      
+                      {education.location && (
+                        <div className="education-location">
+                          <MapPin className="h-4 w-4 mr-1" />
+                          {education.location}
                         </div>
+                      )}
+                      
+                      <div className="education-details-grid">
+                        {education.industry && (
+                          <div className="education-detail-item">
+                            <span className="detail-label">Industry:</span>
+                            <span className="detail-value">{education.industry}</span>
+                          </div>
+                        )}
+                        
+                        {education.fieldOfStudy && (
+                          <div className="education-detail-item">
+                            <span className="detail-label">Field of Study:</span>
+                            <span className="detail-value">{education.fieldOfStudy}</span>
+                          </div>
+                        )}
+                        
+                        {education.domain && (
+                          <div className="education-detail-item">
+                            <span className="detail-label">Domain:</span>
+                            <span className="detail-value">{education.domain}</span>
+                          </div>
+                        )}
                       </div>
-                    )}
+                      
+                      {/* Skills Acquired */}
+                      {education.skillsAcquired && (
+                        <div className="education-skills">
+                          <h5 className="skills-title">Skills Acquired:</h5>
+                          <div className="skills-tags">
+                            {Array.isArray(education.skillsAcquired) ? 
+                              education.skillsAcquired.map((skill: string, idx: number) => (
+                                <div key={idx} className="skill-tag">
+                                  <Sparkles className="h-3 w-3 mr-1 text-neon-blue" />
+                                  <span>{skill}</span>
+                                </div>
+                              )) : null
+                            }
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </motion.div>
+                </div>
               ))}
             </div>
           ) : (
@@ -808,66 +726,35 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
               transition={{ duration: 0.6 }}
             >
               <Sparkles className="h-16 w-16 mx-auto mb-4 text-neon-blue opacity-60" />
-              <h3 className="text-xl font-semibold mb-2">Education Details Coming Soon</h3>
-              <p>My academic background will be displayed here.</p>
+              <h3 className="text-xl font-semibold mb-2">Education History Coming Soon</h3>
+              <p>My academic achievements will be displayed here.</p>
             </motion.div>
           )}
         </div>
       </section>
       
-      {/* Sticky CTA Footer */}
-      <motion.div 
-        className="sticky-cta-footer"
-        initial={{ y: 100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, delay: 1.5 }}
-      >
+      {/* Footer - Contact Section */}
+      <footer className="footer-section py-20 relative z-10">
         <div className="container">
-          <div className="cta-buttons">
-            <motion.a 
-              href={`mailto:${email}`}
-              className="cta-button cta-primary"
-              whileHover={{ scale: 1.05, boxShadow: '0 0 25px rgba(79, 70, 229, 0.8)' }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Let's Talk
-            </motion.a>
+          <div className="footer-content">
+            <div className="contact-info">
+              <h3 className="contact-title">Get in Touch</h3>
+              
+              <div className="contact-methods">
+                <div className="contact-method">
+                  <Mail className="h-5 w-5 text-neon-blue" />
+                  <a href={`mailto:${email}`} className="contact-link">{email}</a>
+                </div>
+              </div>
+            </div>
             
-            <motion.a 
-              href="#"
-              className="cta-button cta-secondary"
-              whileHover={{ scale: 1.05, boxShadow: '0 0 25px rgba(168, 85, 247, 0.8)' }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Grab My Resume
-            </motion.a>
-            
-            <motion.a 
-              href="#"
-              className="cta-button cta-tertiary"
-              whileHover={{ scale: 1.05, boxShadow: '0 0 25px rgba(251, 113, 133, 0.8)' }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Mentor Me
-            </motion.a>
+            <div className="footer-credits">
+              <p>© {new Date().getFullYear()} {name}</p>
+              <p className="made-with">Profile powered by Brandentifier</p>
+            </div>
           </div>
         </div>
-      </motion.div>
-      
-      {/* Progress Avatar (Small fixed position avatar that transforms as user scrolls) */}
-      <motion.div 
-        className="progress-avatar"
-        style={{
-          backgroundImage: photoURL ? `url(${photoURL})` : 'none'
-        }}
-      >
-        {!photoURL && (
-          <div className="progress-avatar-fallback">
-            {name.charAt(0)}
-          </div>
-        )}
-        <div className="progress-avatar-indicator"></div>
-      </motion.div>
+      </footer>
     </div>
   );
 };
