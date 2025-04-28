@@ -78,13 +78,13 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
     mouseY.set(yPos);
   };
   
-  // Spring animation for smooth parallax
-  const springX = useSpring(mouseX, { damping: 25, stiffness: 150 });
-  const springY = useSpring(mouseY, { damping: 25, stiffness: 150 });
+  // Simplified background effect with reduced intensity
+  const springX = useSpring(mouseX, { damping: 50, stiffness: 100 });
+  const springY = useSpring(mouseY, { damping: 50, stiffness: 100 });
   
-  // Transform for parallax effects
-  const moveBgX = useTransform(springX, [0, 1], ['-5%', '5%']);
-  const moveBgY = useTransform(springY, [0, 1], ['-5%', '5%']);
+  // Reduced parallax effect (2% instead of 5%)
+  const moveBgX = useTransform(springX, [0, 1], ['-2%', '2%']);
+  const moveBgY = useTransform(springY, [0, 1], ['-2%', '2%']);
   
   // Auto advance services carousel
   useEffect(() => {
@@ -115,12 +115,8 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
         }}
       />
       
-      {/* Star particles */}
-      <div className="stars-container">
-        <div className="stars stars-small"></div>
-        <div className="stars stars-medium"></div>
-        <div className="stars stars-large"></div>
-      </div>
+      {/* Static background overlay instead of animated stars */}
+      <div className="static-bg-overlay"></div>
       
       {/* Hero Section */}
       <section id="hero" className="hero-section min-h-screen flex items-center justify-center relative overflow-hidden" ref={heroRef}>
@@ -128,10 +124,9 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
           <div className="flex flex-col items-center text-center space-y-6">
             {/* Profile Photo Orbital Animation */}
             <div className="relative profile-orbit">
-              <motion.div
+              {/* Removed continuous rotation animation */}
+              <div
                 className="absolute"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
               >
                 <motion.div 
                   className="profile-photo-container"
