@@ -49,6 +49,7 @@ interface AnimatedTemplateProps {
   lookingFor?: string;
   email?: string;
   aboutMe?: string | null;
+  whatIOffer?: string | null;
 }
 
 // Animated Template Component
@@ -67,7 +68,8 @@ export default function AnimatedTemplate({
   services = [],
   lookingFor,
   email,
-  aboutMe
+  aboutMe,
+  whatIOffer
 }: AnimatedTemplateProps) {
   // Use Lumos Animation hook
   const { initAmbientAuras, animateCardStack, addSparkleEffect, addTypingEffect } = useLumosAnimations();
@@ -538,7 +540,11 @@ export default function AnimatedTemplate({
                   What I'm All About
                 </h3>
                 
-                {aboutMe ? (
+                {whatIOffer ? (
+                  <div className="text-gray-300 text-lg leading-relaxed mb-6">
+                    {whatIOffer}
+                  </div>
+                ) : aboutMe ? (
                   <div className="text-gray-300 text-lg leading-relaxed mb-6">
                     {aboutMe}
                   </div>
