@@ -544,50 +544,21 @@ export default function AnimatedTemplate({
                   What I'm All About
                 </h3>
                 
-                {whatIOffer ? (
-                  <div className="text-gray-300 text-lg leading-relaxed mb-6">
-                    {whatIOffer}
-                  </div>
-                ) : aboutMe ? (
-                  <div className="text-gray-300 text-lg leading-relaxed mb-6">
-                    {aboutMe}
-                  </div>
-                ) : (
-                  <>
-                    <p className="text-gray-300 text-lg leading-relaxed mb-6">
-                      I'm a passionate professional with a focus on {domain || 'digital solutions'} within the {industry || 'creative'} industry. 
-                      My work combines expertise and innovation to create impactful results.
-                    </p>
-                    
-                    <p className="text-gray-300 text-lg leading-relaxed mb-6">
-                      With a background in {domain || 'digital arts'} and an eye for detail, I specialize in delivering 
-                      high-quality work that meets the needs of clients and stakeholders.
-                    </p>
-                  </>
-                )}
-                
-                <blockquote className="relative border-l-4 border-purple-500 pl-6 italic text-gray-300 my-8">
-                  <motion.span 
-                    className="absolute -left-3 text-4xl text-purple-500 opacity-50"
-                    animate={{ y: [0, -10, 0] }}
-                    transition={{ duration: 3, repeat: Infinity, repeatType: "reverse" }}
-                  >
-                    "
-                  </motion.span>
-                  I believe that great design brings together art, technology, and human experience to create something memorable.
-                  <motion.span 
-                    className="absolute text-4xl text-purple-500 opacity-50"
-                    animate={{ y: [0, -10, 0] }}
-                    transition={{ duration: 3, repeat: Infinity, repeatType: "reverse", delay: 1.5 }}
-                  >
-                    "
-                  </motion.span>
-                </blockquote>
-                
-                <p className="text-gray-300 text-lg leading-relaxed">
-                  When I'm not designing or coding, you can find me exploring new creative tools, collaborating with other artists, 
-                  or seeking inspiration through travel and experiences.
-                </p>
+                <div className="text-gray-300 text-lg leading-relaxed">
+                  {whatIOffer || aboutMe || (
+                    <>
+                      <p>
+                        I'm a passionate professional with a focus on {domain || 'digital solutions'} within the {industry || 'creative'} industry. 
+                        My work combines expertise and innovation to create impactful results.
+                      </p>
+                      <br/>
+                      <p>
+                        With a background in {domain || 'digital arts'} and an eye for detail, I specialize in delivering 
+                        high-quality work that meets the needs of clients and stakeholders.
+                      </p>
+                    </>
+                  )}
+                </div>
               </div>
             </motion.div>
             
