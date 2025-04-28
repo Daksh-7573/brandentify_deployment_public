@@ -690,58 +690,99 @@ export default function FreelancerHub({
               
               {/* Industry/Category */}
               <div className="flex flex-wrap gap-4 mb-5">
-                {selectedProject.industry && (
-                  <motion.div 
-                    className="flex items-center bg-blue-50 px-3 py-1.5 rounded-full"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: 0.1 }}
-                  >
-                    <Briefcase className="h-4 w-4 mr-2 text-blue-500" />
-                    <span className="text-sm font-medium text-blue-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                      {selectedProject.industry}
-                    </span>
-                  </motion.div>
-                )}
-                
-                {/* Category Display */}
-                {selectedProject.category && (
-                  <motion.div 
-                    className="flex items-center bg-pink-50 px-3 py-1.5 rounded-full"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: 0.15 }}
-                  >
-                    <Palette className="h-4 w-4 mr-2 text-pink-500" />
-                    <span className="text-sm font-medium text-pink-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                      {selectedProject.category}
-                    </span>
-                  </motion.div>
-                )}
-              </div>
-              
-              {/* Project URL */}
-              {selectedProject.projectUrl && (
+                {/* Industry Display - always show with fallback */}
                 <motion.div 
-                  className="mb-5"
+                  className="flex items-center bg-blue-50 px-3 py-1.5 rounded-full"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: 0.2 }}
+                  transition={{ duration: 0.3, delay: 0.1 }}
                 >
-                  <div className="flex items-center bg-violet-50 px-3 py-2 rounded-lg">
-                    <Globe className="h-4 w-4 mr-2 text-violet-500 flex-shrink-0" />
-                    <a 
-                      href={selectedProject.projectUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm font-medium text-violet-700 hover:text-violet-900 hover:underline truncate"
-                      style={{ fontFamily: 'Poppins, sans-serif' }}
-                    >
-                      {selectedProject.projectUrl}
-                    </a>
-                  </div>
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="#3b82f6" 
+                    strokeWidth="2" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                    className="h-4 w-4 mr-2 text-blue-500"
+                  >
+                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                  </svg>
+                  <span className="text-sm font-medium text-blue-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    {selectedProject.industry || "Personal Project"}
+                  </span>
                 </motion.div>
-              )}
+                
+                {/* Category Display - always show with fallback */}
+                <motion.div 
+                  className="flex items-center bg-pink-50 px-3 py-1.5 rounded-full"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.15 }}
+                >
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="#ec4899" 
+                    strokeWidth="2" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                    className="h-4 w-4 mr-2 text-pink-500"
+                  >
+                    <circle cx="19" cy="5" r="3"></circle>
+                    <circle cx="5" cy="12" r="3"></circle>
+                    <circle cx="19" cy="19" r="3"></circle>
+                    <line x1="8" y1="10.3" x2="16" y2="6.7"></line>
+                    <line x1="8" y1="13.7" x2="16" y2="17.3"></line>
+                  </svg>
+                  <span className="text-sm font-medium text-pink-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    {selectedProject.category || "Creative Work"}
+                  </span>
+                </motion.div>
+              </div>
+              
+              {/* Project URL - adding a default value if missing */}
+              <motion.div 
+                className="mb-5"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.2 }}
+              >
+                <div className="flex items-center bg-violet-50 px-3 py-2 rounded-lg">
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="#8b5cf6" 
+                    strokeWidth="2" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                    className="h-4 w-4 mr-2 text-violet-500 flex-shrink-0"
+                  >
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                  </svg>
+                  <a 
+                    href={selectedProject.projectUrl || "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-medium text-violet-700 hover:text-violet-900 hover:underline truncate"
+                    style={{ fontFamily: 'Poppins, sans-serif' }}
+                  >
+                    {selectedProject.projectUrl || "Project website unavailable"}
+                  </a>
+                </div>
+              </motion.div>
               
               {/* Description */}
               {selectedProject.description && (
@@ -760,19 +801,20 @@ export default function FreelancerHub({
                 </motion.div>
               )}
               
-              {/* Media Gallery */}
-              {selectedProject.mediaUrls && Array.isArray(selectedProject.mediaUrls) && selectedProject.mediaUrls.length > 0 && (
-                <motion.div 
-                  className="mb-6"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: 0.3 }}
-                >
-                  <h4 className="text-sm font-bold mb-3 text-gray-700 flex items-center" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    <span className="text-pink-500 mr-2">🖼️</span> Project Gallery
-                  </h4>
-                  <div className="grid grid-cols-2 gap-3">
-                    {selectedProject.mediaUrls.map((url: string, index: number) => {
+              {/* Media Gallery - always display, with placeholder if empty */}
+              <motion.div 
+                className="mb-6"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.3 }}
+              >
+                <h4 className="text-sm font-bold mb-3 text-gray-700 flex items-center" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <span className="text-pink-500 mr-2">🖼️</span> Project Gallery
+                </h4>
+                <div className="grid grid-cols-2 gap-3">
+                  {selectedProject.mediaUrls && Array.isArray(selectedProject.mediaUrls) && selectedProject.mediaUrls.length > 0 ? (
+                    // Display actual media if available
+                    selectedProject.mediaUrls.map((url: string, index: number) => {
                       // Skip the first image if it's being used as the header and there are multiple images
                       if (index === 0 && !selectedProject.thumbnailUrl && selectedProject.mediaUrls.length > 1) {
                         return null;
@@ -804,10 +846,48 @@ export default function FreelancerHub({
                           />
                         </motion.div>
                       );
-                    })}
-                  </div>
-                </motion.div>
-              )}
+                    })
+                  ) : (
+                    // Placeholder media items when no media is available
+                    Array.from({ length: 2 }).map((_, index) => (
+                      <motion.div 
+                        key={index} 
+                        className="rounded-xl overflow-hidden h-32 relative shadow-md"
+                        whileHover={{ scale: 1.03 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        {/* Gradient background placeholders */}
+                        <div 
+                          className="absolute inset-0 flex items-center justify-center"
+                          style={{
+                            background: `linear-gradient(135deg, ${getCategoryGradient(index === 0 ? 'design' : 'marketing')})`,
+                          }}
+                        >
+                          <svg 
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="32"
+                            height="32" 
+                            viewBox="0 0 24 24" 
+                            fill="none" 
+                            stroke="rgba(255,255,255,0.8)" 
+                            strokeWidth="2" 
+                            strokeLinecap="round" 
+                            strokeLinejoin="round"
+                            className="h-8 w-8"
+                          >
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                          </svg>
+                        </div>
+                        <div className="absolute bottom-2 left-0 right-0 text-center text-white text-xs font-medium">
+                          No project images
+                        </div>
+                      </motion.div>
+                    ))
+                  )}
+                </div>
+              </motion.div>
               
               {/* Actions */}
               <div className="flex justify-end gap-3 mt-6">
