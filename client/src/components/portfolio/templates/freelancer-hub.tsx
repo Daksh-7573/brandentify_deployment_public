@@ -1097,8 +1097,7 @@ export default function FreelancerHub({
                       whileHover={{ scale: 1.05 }}
                     >
                       <div className="flex items-center">
-                        <Code className="h-4 w-4" />
-                        <span className="ml-2 font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                        <span className="font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
                           {skill.name}
                         </span>
                         <div className="ml-2 flex items-center">
@@ -1137,8 +1136,7 @@ export default function FreelancerHub({
                       whileHover={{ scale: 1.05 }}
                     >
                       <div className="flex items-center">
-                        <Heart className="h-4 w-4" />
-                        <span className="ml-2 font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                        <span className="font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
                           {skill.name}
                         </span>
                         <div className="ml-2 flex items-center">
@@ -1177,8 +1175,7 @@ export default function FreelancerHub({
                       whileHover={{ scale: 1.05 }}
                     >
                       <div className="flex items-center">
-                        <Briefcase className="h-4 w-4" />
-                        <span className="ml-2 font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                        <span className="font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
                           {skill.name}
                         </span>
                         <div className="ml-2 flex items-center">
@@ -1212,8 +1209,7 @@ export default function FreelancerHub({
                       whileHover={{ scale: 1.05 }}
                     >
                       <div className="flex items-center">
-                        <Star className="h-4 w-4" />
-                        <span className="ml-2 font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                        <span className="font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
                           {skill.name}
                         </span>
                         <div className="ml-2 flex items-center">
