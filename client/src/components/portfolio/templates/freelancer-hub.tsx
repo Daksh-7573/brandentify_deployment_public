@@ -247,18 +247,13 @@ export default function FreelancerHub({
   
   // Function to handle project selection and modal display
   const handleProjectClick = (project: Project) => {
-    console.log("Selected project details:", {
-      title: project.title,
-      category: project.category,
-      industry: project.industry, 
-      startDate: project.startDate,
-      projectUrl: project.projectUrl,
-      description: project.description,
-      mediaUrls: project.mediaUrls
-    });
+    // Debug log to see what data we have
+    console.log("Selected project details (raw):", project);
     
     // Make sure mediaUrls is treated as an array
     let mediaUrlsArray: string[] = [];
+    
+    // Handle various ways mediaUrls might be stored
     if (project.mediaUrls) {
       // If it's already an array, use it directly
       if (Array.isArray(project.mediaUrls)) {
@@ -275,15 +270,28 @@ export default function FreelancerHub({
           console.error("Failed to parse mediaUrls:", e);
         }
       }
+      // Handle if it's an object with unknown structure
+      else if (typeof project.mediaUrls === 'object') {
+        try {
+          // Try to convert object values to an array
+          const objValues = Object.values(project.mediaUrls);
+          if (Array.isArray(objValues) && objValues.every(item => typeof item === 'string')) {
+            mediaUrlsArray = objValues;
+          }
+        } catch (e) {
+          console.error("Failed to extract mediaUrls from object:", e);
+        }
+      }
     }
     
     // Create a properly typed version of the project with default values for optional fields
     const enhancedProject = {
       ...project,
+      id: project.id,
       title: project.title || 'Untitled Project',
-      category: project.category || '',
-      industry: project.industry || '',
-      description: project.description || '',
+      category: project.category || 'Other',
+      industry: project.industry || 'General',
+      description: project.description || 'No description provided',
       startDate: project.startDate || '',
       projectUrl: project.projectUrl || '',
       thumbnailUrl: project.thumbnailUrl || '',
@@ -294,7 +302,17 @@ export default function FreelancerHub({
     setIsProjectModalOpen(true);
     
     // Log the enhanced project to verify all fields are set
-    console.log("Enhanced project for modal:", enhancedProject);
+    console.log("Enhanced project for modal:", {
+      id: enhancedProject.id,
+      title: enhancedProject.title,
+      category: enhancedProject.category,
+      industry: enhancedProject.industry,
+      description: enhancedProject.description,
+      startDate: enhancedProject.startDate,
+      projectUrl: enhancedProject.projectUrl,
+      thumbnailUrl: enhancedProject.thumbnailUrl,
+      mediaUrlsLength: enhancedProject.mediaUrls?.length || 0
+    });
   };
   
   // Function to handle Let's Talk button click
@@ -572,9 +590,18 @@ export default function FreelancerHub({
       ? "Ready to collaborate! 🤝" 
       : "Taking it easy today 😌";
   
-  // Project Details Modal
+  // Project Details Modal - Completely rewritten for reliability
   const renderProjectDetailsModal = () => {
     if (!selectedProject) return null;
+    
+    console.log("Rendering project modal with data:", {
+      id: selectedProject.id,
+      title: selectedProject.title,
+      category: selectedProject.category,
+      industry: selectedProject.industry,
+      projectUrl: selectedProject.projectUrl,
+      mediaUrls: selectedProject.mediaUrls
+    });
     
     return (
       <Dialog open={isProjectModalOpen} onOpenChange={setIsProjectModalOpen}>
