@@ -879,22 +879,29 @@ export default function PortfolioBuilder() {
             )}
             
             {form.watch("layout") === "dynamic-innovator" && (
-              <DynamicInnovator
-                userInfo={{
-                  name: userData?.name || user?.name || '',
-                  title: userData?.title || null,
-                  industry: userData?.industry || null,
-                  domain: userData?.domain || null,
-                  location: userData?.location || null,
-                  email: userData?.email || user?.email || null,
-                  photoURL: userData?.photoURL || user?.photoURL || null,
-                  lookingFor: userData?.lookingFor || null,
-                  jobLevel: userData?.jobLevel || null
-                }}
-                userSkills={userSkills || []}
-                userExperiences={userExperiences || []}
-                userProjects={userProjects || []}
-              />
+              <>
+                {console.log("Dynamic Innovator - userInfo being passed:", userData)}
+                {console.log("Dynamic Innovator - Services data being passed:", userServices)}
+                <DynamicInnovator
+                  userInfo={{
+                    name: userData?.name || user?.name || '',
+                    title: userData?.title || null,
+                    industry: userData?.industry || null,
+                    domain: userData?.domain || null,
+                    location: userData?.location || null,
+                    email: userData?.email || user?.email || null,
+                    photoURL: userData?.photoURL || user?.photoURL || null,
+                    lookingFor: userData?.lookingFor || null,
+                    jobLevel: userData?.jobLevel || null,
+                    whatIOffer: userData?.whatIOffer || '' // Added whatIOffer field
+                  }}
+                  userSkills={userSkills || []}
+                  userExperiences={userExperiences || []}
+                  userProjects={userProjects || []}
+                  userEducations={userEducations || []}
+                  userServices={userServices || []} // Added userServices
+                />
+              </>
             )}
             
             {form.watch("layout") === "freelancer-hub" && (

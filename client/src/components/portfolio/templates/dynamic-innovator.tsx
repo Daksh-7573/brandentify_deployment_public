@@ -38,7 +38,10 @@ import {
   X,
   Upload,
   LucideIcon,
-  ChevronRight
+  ChevronRight,
+  Check,
+  Clock,
+  Tag
 } from "lucide-react";
 import {
   Dialog,
@@ -1071,9 +1074,45 @@ export function DynamicInnovator({
                       <h3 className="text-lg font-medium text-[#08f7fe] mb-3">{service.title}</h3>
                       <p className="text-gray-300 mb-4">{service.description}</p>
                       
+                      {/* Pricing information with visual distinction */}
+                      <div className="flex justify-between items-center mb-4">
+                        <div className="flex items-center text-gray-300">
+                          {service.isHourly ? (
+                            <Badge className="bg-[#0c162d] border border-[#fe53bb]/30 text-[#fe53bb] mr-2 flex items-center">
+                              <Clock className="h-3 w-3 mr-1" />
+                              Hourly Rate
+                            </Badge>
+                          ) : (
+                            <Badge className="bg-[#0c162d] border border-[#08f7fe]/30 text-[#08f7fe] mr-2 flex items-center">
+                              <Tag className="h-3 w-3 mr-1" />
+                              Fixed Price
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="text-[#08f7fe] font-bold px-3 py-1 bg-[#0c162d]/50 rounded-md border border-[#08f7fe]/20">
+                          {service.priceUsd ? `$${service.priceUsd}${service.isHourly ? '/hr' : ''}` : 
+                           (service.priceInr ? `₹${service.priceInr}${service.isHourly ? '/hr' : ''}` : 'Contact for pricing')}
+                        </div>
+                      </div>
+                      
                       <Badge className="bg-[#080E24] border border-[#08f7fe]/20 text-[#08f7fe]">
                         {service.category || "Technical Service"}
                       </Badge>
+                      
+                      {/* Display service features if available */}
+                      {service.features && Array.isArray(service.features) && service.features.length > 0 && (
+                        <div className="mt-3 pt-3 border-t border-[#08f7fe]/10">
+                          <h4 className="text-sm font-medium text-[#08f7fe] mb-2">Features:</h4>
+                          <ul className="text-gray-300 text-sm space-y-1">
+                            {service.features.map((feature, index) => (
+                              <li key={index} className="flex items-start">
+                                <Check className="h-4 w-4 text-[#fe53bb] mr-2 mt-0.5 flex-shrink-0" />
+                                <span>{feature}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

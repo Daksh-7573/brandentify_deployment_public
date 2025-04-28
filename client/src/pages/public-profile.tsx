@@ -157,7 +157,10 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
     queryFn: async () => {
       if (!userData?.id) return [];
       try {
-        return await apiRequest('GET', `/api/users/${userData.id}/services`);
+        console.log(`Public profile - Fetching services for user ID: ${userData.id}`);
+        const serviceData = await apiRequest('GET', `/api/users/${userData.id}/services`);
+        console.log('Public profile - Services data:', serviceData);
+        return serviceData;
       } catch (error) {
         console.error('Error fetching services:', error);
         return [];
