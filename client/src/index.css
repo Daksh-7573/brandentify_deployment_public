@@ -45,6 +45,28 @@
     animation: border-glow 3s ease-in-out infinite;
   }
   
+  /* Pulse animation for hourly rate badge */
+  .pulse-animation {
+    animation: pulse-effect 2s infinite;
+  }
+  
+  @keyframes pulse-effect {
+    0% {
+      box-shadow: 0 0 0 0 rgba(254, 83, 187, 0.4);
+    }
+    70% {
+      box-shadow: 0 0 0 4px rgba(254, 83, 187, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(254, 83, 187, 0);
+    }
+  }
+
+  /* Shadow glow effect for price display */
+  .shadow-glow {
+    box-shadow: 0 0 8px rgba(8, 247, 254, 0.4);
+  }
+  
   @keyframes border-glow {
     0%, 100% {
       border-color: rgba(8, 145, 178, 0.2); /* cyan-600 20% */
