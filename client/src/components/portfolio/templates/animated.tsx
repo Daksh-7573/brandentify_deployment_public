@@ -48,6 +48,7 @@ interface AnimatedTemplateProps {
   services: Service[];
   lookingFor?: string;
   email?: string;
+  aboutMe?: string | null;
 }
 
 // Animated Template Component
@@ -65,7 +66,8 @@ export default function AnimatedTemplate({
   educations = [],
   services = [],
   lookingFor,
-  email
+  email,
+  aboutMe
 }: AnimatedTemplateProps) {
   // Use Lumos Animation hook
   const { initAmbientAuras, animateCardStack, addSparkleEffect, addTypingEffect } = useLumosAnimations();
@@ -531,15 +533,27 @@ export default function AnimatedTemplate({
               />
               
               <div className="relative">
-                <p className="text-gray-300 text-lg leading-relaxed mb-6">
-                  I'm a passionate motion designer and creative developer with a focus on crafting immersive digital experiences. 
-                  My work combines artistic vision with technical expertise to build products that engage and inspire.
-                </p>
+                <h3 className="text-2xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-500">
+                  What I'm All About
+                </h3>
                 
-                <p className="text-gray-300 text-lg leading-relaxed mb-6">
-                  With a background in {domain || 'digital arts'} and an eye for detail, I specialize in creating animations, 
-                  interactive interfaces, and visual storytelling that connects with audiences on a deeper level.
-                </p>
+                {aboutMe ? (
+                  <div className="text-gray-300 text-lg leading-relaxed mb-6">
+                    {aboutMe}
+                  </div>
+                ) : (
+                  <>
+                    <p className="text-gray-300 text-lg leading-relaxed mb-6">
+                      I'm a passionate professional with a focus on {domain || 'digital solutions'} within the {industry || 'creative'} industry. 
+                      My work combines expertise and innovation to create impactful results.
+                    </p>
+                    
+                    <p className="text-gray-300 text-lg leading-relaxed mb-6">
+                      With a background in {domain || 'digital arts'} and an eye for detail, I specialize in delivering 
+                      high-quality work that meets the needs of clients and stakeholders.
+                    </p>
+                  </>
+                )}
                 
                 <blockquote className="relative border-l-4 border-purple-500 pl-6 italic text-gray-300 my-8">
                   <motion.span 
