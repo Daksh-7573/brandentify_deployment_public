@@ -91,7 +91,10 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
       try {
         const response = await apiRequest('GET', `/api/users/by-username/${username}`);
         console.log('[public-profile] User data fetched:', response);
-        console.log('[public-profile] whatIOffer value:', response.whatIOffer);
+        if (response && typeof response === 'object') {
+          // Type-safe access to whatIOffer field
+          console.log('[public-profile] whatIOffer value:', response.whatIOffer || null);
+        }
         return response as unknown as UserData;
       } catch (error) {
         console.error('Error fetching user:', error);
@@ -259,7 +262,8 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
         lookingFor: portfolioData.userData.lookingFor,
         whatIOffer: portfolioData.userData.whatIOffer || null,
         aboutMe: portfolioData.userData.aboutMe || null,
-        jobLevel: portfolioData.userData.jobLevel || null
+        // jobLevel is not defined in the UserData type, but some components may expect it
+        jobLevel: (portfolioData.userData as any).jobLevel || null
       },
       userSkills: portfolioData.skills || [],
       userExperiences: portfolioData.experiences || [],

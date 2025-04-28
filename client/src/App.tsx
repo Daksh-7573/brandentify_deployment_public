@@ -88,15 +88,25 @@ function Router() {
         {(params) => <PublicProfile username={params.username} />}
       </Route>
       
-      {/* Additional route to support /@username format */}
-      <Route path="/:atUsername">
+      {/* Handle format with @ symbol first */}
+      <Route path="/@:username">
+        {(params) => <PublicProfile username={params.username} />}
+      </Route>
+      
+      {/* Catch-all route for usernames, make sure this is AFTER other specific routes */}
+      <Route path="/:username">
         {(params) => {
-          // Extract username from the @username format if it starts with @
-          const username = params.atUsername.startsWith('@') 
-            ? params.atUsername.substring(1) 
-            : null;
+          // Exclude other known routes from being treated as usernames
+          const knownRoutes = [
+            'login', 'register', 'personal-details', 'ai-career', 'smart-connect',
+            'portfolio-builder', 'services', 'create-pulse', 'industry-pulse',
+            'search', 'news-sources', 'radar', 'musk-match', 'resume', 'feed-test',
+            'career-quests', 'onboarding', 'edit-profile', 'musk-testing', 'not-found'
+          ];
           
-          return username ? <PublicProfile username={username} /> : <Redirect to="/not-found" />;
+          return !knownRoutes.includes(params.username) 
+            ? <PublicProfile username={params.username} /> 
+            : <Redirect to="/not-found" />;
         }}
       </Route>
       <Route path="/ai-career">
