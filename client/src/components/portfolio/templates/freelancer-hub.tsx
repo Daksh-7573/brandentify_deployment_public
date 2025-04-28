@@ -2012,6 +2012,9 @@ export default function FreelancerHub({
                         <DirectImageBackground 
                           imageUrl={project.thumbnailUrl}
                           className="absolute inset-0 z-10"
+                          fallbackColor={`linear-gradient(135deg, ${getCategoryGradient(project.category || 'design')})`}
+                          onLoad={() => console.log(`Project thumbnail loaded for project ${project.id}`)}
+                          onError={() => console.error(`Failed to load thumbnail for project ${project.id}: ${project.thumbnailUrl}`)}
                         />
                       )}
                       
@@ -2020,6 +2023,9 @@ export default function FreelancerHub({
                         <DirectImageBackground 
                           imageUrl={project.mediaUrls[0]}
                           className="absolute inset-0 z-10"
+                          fallbackColor={`linear-gradient(135deg, ${getCategoryGradient(project.category || 'design')})`}
+                          onLoad={() => console.log(`Project media image loaded for project ${project.id}`)}
+                          onError={() => console.error(`Failed to load media image for project ${project.id}: ${project.mediaUrls[0]}`)}
                         />
                       )}
                       

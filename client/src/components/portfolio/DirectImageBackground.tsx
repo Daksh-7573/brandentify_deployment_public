@@ -26,10 +26,16 @@ const DirectImageBackground: React.FC<DirectImageBackgroundProps> = ({
   // Process the URL to ensure it's properly formatted
   useEffect(() => {
     if (!imageUrl) {
+      console.warn('DirectImageBackground received empty or null imageUrl');
       setHasError(true);
       setIsLoading(false);
       return;
     }
+
+    // Generate a component instance ID for tracking in logs
+    const instanceId = Math.random().toString(36).substring(2, 8);
+    
+    console.log(`[DirImgBg-${instanceId}] Processing URL: "${imageUrl}"`);
 
     // Normalize the URL format
     let processedUrl = imageUrl;
@@ -38,35 +44,64 @@ const DirectImageBackground: React.FC<DirectImageBackgroundProps> = ({
     if (imageUrl.startsWith('http')) {
       // If it's already a full URL, use it directly
       processedUrl = imageUrl;
+      console.log(`[DirImgBg-${instanceId}] Using full URL as is`);
     } else if (imageUrl.startsWith('/uploads')) {
       // If it's a path starting with /uploads, prepend the origin
       processedUrl = `${window.location.origin}${imageUrl}`;
+      console.log(`[DirImgBg-${instanceId}] Adding origin to /uploads path`);
     } else {
-      // For any other case, assume it's a relative path and prepend /uploads
-      processedUrl = `${window.location.origin}/uploads${imageUrl}`;
+      // Try direct URL first
+      processedUrl = `${window.location.origin}${imageUrl}`;
+      console.log(`[DirImgBg-${instanceId}] Using direct path: ${processedUrl}`);
     }
 
-    // For debugging purposes
-    console.log('DirectImageBackground processing URL:', imageUrl, 'to:', processedUrl);
+    console.log(`[DirImgBg-${instanceId}] Final processed URL: ${processedUrl}`);
 
-    // Create a temporary Image object to test if the image can be loaded
-    const testImage = new Image();
-    testImage.onload = () => {
-      setFinalUrl(processedUrl);
-      setIsLoading(false);
-      setHasError(false);
-      if (onLoad) onLoad();
-      console.log('DirectImageBackground successfully loaded:', processedUrl);
-    };
-    testImage.onerror = () => {
-      setHasError(true);
-      setIsLoading(false);
-      if (onError) onError();
-      console.error('DirectImageBackground failed to load:', processedUrl);
+    // Try alternative URL strategies if needed
+    const tryAlternativeUrls = (initialUrl: string) => {
+      const urls = [
+        initialUrl, 
+        `${window.location.origin}/uploads${imageUrl}`,
+        `http://localhost:5000${imageUrl}`,
+        `http://localhost:5000/uploads${imageUrl}`
+      ];
+      
+      // Test all URLs in sequence
+      let loadAttempt = 0;
+      
+      const tryNextUrl = () => {
+        if (loadAttempt >= urls.length) {
+          console.error(`[DirImgBg-${instanceId}] All URL formats failed`);
+          setHasError(true);
+          setIsLoading(false);
+          if (onError) onError();
+          return;
+        }
+        
+        const currentUrl = urls[loadAttempt];
+        console.log(`[DirImgBg-${instanceId}] Trying URL format ${loadAttempt + 1}/${urls.length}: ${currentUrl}`);
+        
+        const img = new Image();
+        img.onload = () => {
+          console.log(`[DirImgBg-${instanceId}] SUCCESS! URL loaded: ${currentUrl}`);
+          setFinalUrl(currentUrl);
+          setIsLoading(false);
+          setHasError(false);
+          if (onLoad) onLoad();
+        };
+        img.onerror = () => {
+          console.warn(`[DirImgBg-${instanceId}] Failed to load URL: ${currentUrl}`);
+          loadAttempt++;
+          tryNextUrl();
+        };
+        img.src = currentUrl;
+      };
+      
+      tryNextUrl();
     };
     
-    // Start the image loading
-    testImage.src = processedUrl;
+    tryAlternativeUrls(processedUrl);
+    
   }, [imageUrl, onLoad, onError]);
 
   // Define the background style
@@ -82,6 +117,7 @@ const DirectImageBackground: React.FC<DirectImageBackgroundProps> = ({
     <div 
       className={`direct-image-background ${className} ${isLoading ? 'loading' : ''} ${hasError ? 'error' : ''}`} 
       style={style} 
+      data-url={imageUrl}
     />
   );
 };
