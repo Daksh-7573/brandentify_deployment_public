@@ -1924,66 +1924,8 @@ export default function FreelancerHub({
                       )}
                     </div>
                     
-                    <CardContent className="p-5">
-                      {/* Include all requested details: Description, Category, Industry, Project URL */}
-                      {project.description && (
-                        <p className="text-gray-600 text-sm mb-4 line-clamp-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                          {project.description}
-                        </p>
-                      )}
-                      
-                      <div className="flex flex-wrap gap-2 mb-3">
-                        {project.category && (
-                          <span className="text-xs px-2 py-1 bg-violet-100 text-violet-700 rounded-full" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                            {project.category}
-                          </span>
-                        )}
-                        
-                        {project.industry && (
-                          <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                            {project.industry}
-                          </span>
-                        )}
-                      </div>
-                      
-                      {project.projectUrl && (
-                        <a 
-                          href={project.projectUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center text-xs text-violet-600 hover:text-violet-800 font-medium"
-                          style={{ fontFamily: 'Poppins, sans-serif' }}
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <ExternalLink className="h-3 w-3 mr-1" />
-                          Visit Project
-                        </a>
-                      )}
-                      
-                      {/* Media gallery preview for multi-image projects */}
-                      {project.mediaUrls && Array.isArray(project.mediaUrls) && project.mediaUrls.length > 1 && (
-                        <div className="mt-3 flex gap-1 overflow-x-auto pb-1">
-                          {project.mediaUrls.slice(0, 3).map((url: string, index: number) => (
-                            <div key={index} className="h-8 w-8 rounded-md overflow-hidden flex-shrink-0 relative">
-                              <img 
-                                src={url.startsWith('http') ? url : `${window.location.origin}${url}`}
-                                alt={`Project image ${index + 1}`}
-                                className="w-full h-full object-cover"
-                                onError={(e) => {
-                                  console.log('Error loading image in gallery preview:', url);
-                                  e.currentTarget.style.opacity = '0';
-                                }}
-                              />
-                            </div>
-                          ))}
-                          
-                          {project.mediaUrls.length > 3 && (
-                            <div className="h-8 w-8 rounded-md bg-violet-100 flex items-center justify-center text-violet-700 text-xs font-medium">
-                              +{project.mediaUrls.length - 3}
-                            </div>
-                          )}
-                        </div>
-                      )}
+                    <CardContent className="p-3">
+                      {/* Empty content - only title and date are shown as requested */}
                     </CardContent>
                   </Card>
                 </motion.div>
