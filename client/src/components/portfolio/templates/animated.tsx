@@ -285,19 +285,19 @@ export default function AnimatedTemplate({
                 {/* Glowing background behind profile image */}
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-600/40 to-pink-600/40 rounded-full filter blur-3xl opacity-70" />
                 
-                {/* Animated circles around profile */}
-                <div className="profile-orbit profile-orbit-1">
+                {/* Animated circles around profile - with lower z-index */}
+                <div className="profile-orbit profile-orbit-1 z-0">
                   <div className="profile-satellite bg-cyan-500"></div>
                 </div>
-                <div className="profile-orbit profile-orbit-2">
+                <div className="profile-orbit profile-orbit-2 z-0">
                   <div className="profile-satellite bg-purple-500"></div>
                 </div>
-                <div className="profile-orbit profile-orbit-3">
+                <div className="profile-orbit profile-orbit-3 z-0">
                   <div className="profile-satellite bg-pink-500"></div>
                 </div>
                 
-                {/* Profile image */}
-                <div className="w-64 h-64 sm:w-80 sm:h-80 relative z-10 rounded-full overflow-hidden border-4 border-purple-500/40 shadow-lg shadow-purple-500/30">
+                {/* Profile image - Reduced z-index so cards appear in front */}
+                <div className="w-64 h-64 sm:w-80 sm:h-80 relative z-0 rounded-full overflow-hidden border-4 border-purple-500/40 shadow-lg shadow-purple-500/30">
                   {photoURL ? (
                     <img 
                       src={photoURL} 
@@ -313,9 +313,9 @@ export default function AnimatedTemplate({
                   )}
                 </div>
                 
-                {/* Profile badges/cards */}
+                {/* Profile badges/cards - Positioned with higher z-index to appear in front of profile picture */}
                 <motion.div 
-                  className="absolute -bottom-5 -right-5 bg-gray-800/90 backdrop-blur-sm p-3 rounded-xl border border-purple-500/30 shadow-lg"
+                  className="absolute -bottom-5 -right-5 bg-gray-800/90 backdrop-blur-sm p-3 rounded-xl border border-purple-500/30 shadow-lg z-20"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: isHeroInView ? 1 : 0, y: isHeroInView ? 0 : 20 }}
                   transition={{ duration: 0.5, delay: 0.9 }}
@@ -326,7 +326,7 @@ export default function AnimatedTemplate({
                 </motion.div>
                 
                 <motion.div 
-                  className="absolute -top-5 -left-5 bg-gray-800/90 backdrop-blur-sm p-3 rounded-xl border border-blue-500/30 shadow-lg"
+                  className="absolute -top-5 -left-5 bg-gray-800/90 backdrop-blur-sm p-3 rounded-xl border border-blue-500/30 shadow-lg z-20"
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: isHeroInView ? 1 : 0, y: isHeroInView ? 0 : -20 }}
                   transition={{ duration: 0.5, delay: 1.1 }}
