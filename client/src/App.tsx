@@ -30,7 +30,6 @@ import OnboardingPage from "@/pages/onboarding";
 import EditProfilePage from "@/pages/edit-profile";
 import MuskTestingPage from "@/pages/musk-testing";
 import ManageServicesPage from "@/pages/manage-services";
-import TestRoute from "./components/test-route";
 // Lazy load the SharedCardPage to improve performance and show loader immediately
 import { lazy, Suspense } from "react";
 const SharedCardPage = lazy(() => import("@/pages/shared-card"));
@@ -85,30 +84,8 @@ function Router() {
         <ProtectedRoute path="/personal-details" component={PersonalDetailsPage} />
       </Route>
       {/* Public profile using username route (/@username) - dynamic path parameter */}
-      <Route path="/profile/:username">
-        {(params) => <PublicProfile username={params.username} />}
-      </Route>
-      
-      {/* Handle format with @ symbol first */}
       <Route path="/@:username">
         {(params) => <PublicProfile username={params.username} />}
-      </Route>
-      
-      {/* Catch-all route for usernames, make sure this is AFTER other specific routes */}
-      <Route path="/:username">
-        {(params) => {
-          // Exclude other known routes from being treated as usernames
-          const knownRoutes = [
-            'login', 'register', 'personal-details', 'ai-career', 'smart-connect',
-            'portfolio-builder', 'services', 'create-pulse', 'industry-pulse',
-            'search', 'news-sources', 'radar', 'musk-match', 'resume', 'feed-test',
-            'career-quests', 'onboarding', 'edit-profile', 'musk-testing', 'not-found'
-          ];
-          
-          return !knownRoutes.includes(params.username) 
-            ? <PublicProfile username={params.username} /> 
-            : <Redirect to="/not-found" />;
-        }}
       </Route>
       <Route path="/ai-career">
         <ProtectedRoute path="/ai-career" component={Dashboard} />
@@ -157,11 +134,6 @@ function Router() {
       </Route>
       <Route path="/musk-testing">
         <ProtectedRoute path="/musk-testing" component={MuskTestingPage} />
-      </Route>
-      
-      {/* Test routes for debugging */}
-      <Route path="/test-route/:username">
-        {(params) => <TestRoute username={params.username} />}
       </Route>
       {/* Shared Quantum Card View route */}
       <Route path="/profile/card/:userId">

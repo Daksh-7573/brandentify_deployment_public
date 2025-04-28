@@ -76,118 +76,23 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
   // If username wasn't passed as a prop, try to extract it from the URL
   if (!username) {
     const pathname = window.location.pathname;
-    
-    // Check all possible formats:
-    // 1. /@username - remove the @ symbol
-    if (pathname.startsWith('/@')) {
-      username = pathname.substring(2);
-    } 
-    // 2. /profile/username - extract from /profile/ path
-    else if (pathname.startsWith('/profile/') && pathname.length > 9) {
-      username = pathname.substring(9);
-    }
-    // 3. /username - direct username as path
-    else if (pathname.startsWith('/') && pathname.length > 1) {
-      username = pathname.substring(1);
-    }
-    
-    console.log("Username extracted from URL path:", username, "from pathname:", pathname);
+    username = pathname.startsWith('/@') ? pathname.substring(2) : undefined;
   }
   
-  // Enhanced debugging for better tracking
   console.log("Public profile page for username:", username);
-  console.log("Current window.location.pathname:", window.location.pathname);
-  console.log("Route params received in public-profile component:", { username });
-  
-  // Add direct output to help debug the component
-  useEffect(() => {
-    console.log("PublicProfile component mounted with username:", username);
-    document.title = `Profile | ${username || 'User'}`;
-    
-    // Debug message directly in DOM
-    const debugDiv = document.createElement('div');
-    debugDiv.style.position = 'fixed';
-    debugDiv.style.top = '0';
-    debugDiv.style.left = '0';
-    debugDiv.style.backgroundColor = 'rgba(255,0,0,0.7)';
-    debugDiv.style.color = 'white';
-    debugDiv.style.padding = '10px';
-    debugDiv.style.zIndex = '9999';
-    debugDiv.innerHTML = `Debug: Profile page loading for username: ${username || 'undefined'}`;
-    document.body.appendChild(debugDiv);
-    
-    return () => {
-      if (document.body.contains(debugDiv)) {
-        document.body.removeChild(debugDiv);
-      }
-    };
-  }, [username]);
   
   // Fetch user data by username
   const { data: userData, isLoading: isUserLoading, error: userError } = useQuery<UserData | null>({
     queryKey: ['/api/users/by-username', username],
     queryFn: async () => {
-      if (!username) {
-        console.error("[public-profile] No username provided for API request");
-        return null;
-      }
-      
-      console.log(`[public-profile] Attempting to fetch user data for username: ${username}`);
+      if (!username) return null;
       try {
-        // API request with detailed error handling
         const response = await apiRequest('GET', `/api/users/by-username/${username}`);
-        
-        console.log('[public-profile] User data API response:', response);
-        
-        // Detailed validation of the response
-        if (!response) {
-          console.error('[public-profile] API returned empty response for username:', username);
-          return null;
-        }
-        
-        if (typeof response !== 'object') {
-          console.error('[public-profile] API returned non-object response:', response);
-          return null;
-        }
-        
-        // Add a div to the DOM with the API response for debugging
-        const debugEl = document.createElement('div');
-        debugEl.id = 'debug-api-response';
-        debugEl.style.position = 'fixed';
-        debugEl.style.bottom = '0';
-        debugEl.style.left = '0';
-        debugEl.style.right = '0';
-        debugEl.style.backgroundColor = 'rgba(0,0,0,0.8)';
-        debugEl.style.color = 'white';
-        debugEl.style.padding = '10px';
-        debugEl.style.fontSize = '12px';
-        debugEl.style.maxHeight = '200px';
-        debugEl.style.overflow = 'auto';
-        debugEl.style.zIndex = '10000';
-        debugEl.style.fontFamily = 'monospace';
-        debugEl.innerHTML = `<strong>API Response for username ${username}:</strong><br/>${JSON.stringify(response, null, 2)}`;
-        document.body.appendChild(debugEl);
-        
-        // Type-safe access to fields
-        console.log('[public-profile] whatIOffer value:', response.whatIOffer || '(not provided)');
-        console.log('[public-profile] aboutMe value:', response.aboutMe || '(not provided)');
-        
+        console.log('[public-profile] User data fetched:', response);
+        console.log('[public-profile] whatIOffer value:', response.whatIOffer);
         return response as unknown as UserData;
       } catch (error) {
-        console.error('[public-profile] Error fetching user data:', error);
-        // Add error details to the page
-        const errorEl = document.createElement('div');
-        errorEl.style.position = 'fixed';
-        errorEl.style.top = '50%';
-        errorEl.style.left = '50%';
-        errorEl.style.transform = 'translate(-50%, -50%)';
-        errorEl.style.backgroundColor = 'rgba(255,0,0,0.9)';
-        errorEl.style.color = 'white';
-        errorEl.style.padding = '20px';
-        errorEl.style.borderRadius = '8px';
-        errorEl.style.zIndex = '10000';
-        errorEl.innerHTML = `<h3>Error loading profile</h3><p>${error.message || 'Unknown error'}</p>`;
-        document.body.appendChild(errorEl);
+        console.error('Error fetching user:', error);
         throw error;
       }
     },
@@ -352,8 +257,7 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
         lookingFor: portfolioData.userData.lookingFor,
         whatIOffer: portfolioData.userData.whatIOffer || null,
         aboutMe: portfolioData.userData.aboutMe || null,
-        // jobLevel is not defined in the UserData type, but some components may expect it
-        jobLevel: (portfolioData.userData as any).jobLevel || null
+        jobLevel: portfolioData.userData.jobLevel || null
       },
       userSkills: portfolioData.skills || [],
       userExperiences: portfolioData.experiences || [],
@@ -461,7 +365,7 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
                         <div className="flex items-center gap-2 text-sm">
                           <Globe className="h-4 w-4 text-muted-foreground" />
                           <a 
-                            href={`/${userData?.username}`} 
+                            href={`/@${userData?.username}`} 
                             className="text-primary hover:underline"
                           >
                             brandentifier.com/@{userData?.username}
@@ -486,112 +390,14 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
   }
   
   // Return the portfolio
-  try {
-    // Forcibly add debug info to DOM
-    const debugInfoExists = document.getElementById('profile-debug-info');
-    if (!debugInfoExists) {
-      const debugInfo = document.createElement('div');
-      debugInfo.id = 'profile-debug-info';
-      debugInfo.style.position = 'fixed';
-      debugInfo.style.top = '50px';
-      debugInfo.style.right = '10px';
-      debugInfo.style.backgroundColor = 'rgba(0,0,0,0.8)';
-      debugInfo.style.color = 'white';
-      debugInfo.style.padding = '10px';
-      debugInfo.style.borderRadius = '4px';
-      debugInfo.style.zIndex = '9999';
-      debugInfo.style.maxWidth = '300px';
-      debugInfo.style.fontSize = '12px';
-      debugInfo.style.fontFamily = 'monospace';
-      
-      let debugContent = `
-        <h3>Profile Debug Info</h3>
-        <p>Username: ${username || 'null'}</p>
-        <p>User ID: ${userData?.id || 'null'}</p>
-        <p>Layout: ${portfolioData?.layout || 'null'}</p>
-        <p>Skills: ${userSkills?.length || 0}</p>
-        <p>Experiences: ${userExperiences?.length || 0}</p>
-        <p>Projects: ${userProjects?.length || 0}</p>
-        <p>Educations: ${userEducations?.length || 0}</p>
-        <p>Services: ${userServices?.length || 0}</p>
-      `;
-      
-      debugInfo.innerHTML = debugContent;
-      document.body.appendChild(debugInfo);
-      
-      // Make sure we catch any rendering errors and display them
-      window.addEventListener('error', (e) => {
-        console.error('Runtime error caught:', e);
-        const errorDiv = document.createElement('div');
-        errorDiv.style.position = 'fixed';
-        errorDiv.style.top = '0';
-        errorDiv.style.left = '0';
-        errorDiv.style.width = '100%';
-        errorDiv.style.backgroundColor = 'red';
-        errorDiv.style.color = 'white';
-        errorDiv.style.padding = '10px';
-        errorDiv.style.zIndex = '10000';
-        errorDiv.textContent = `Error: ${e.message} at ${e.filename}:${e.lineno}`;
-        document.body.appendChild(errorDiv);
-      });
-    }
-  
-    return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <div className="container mx-auto py-6">
-          {portfolioData ? renderPortfolio(portfolioData as PortfolioData) : 
-            <div className="flex justify-center items-center min-h-[400px]">
-              <div className="text-center p-8 border rounded-lg bg-background">
-                <p className="text-xl mb-4">Error loading portfolio data</p>
-                <p className="text-muted-foreground">Unable to render portfolio for user {username}</p>
-              </div>
-            </div>
-          }
-        </div>
+  return (
+    <div className="min-h-screen bg-background">
+      <Header />
+      <div className="container mx-auto py-6">
+        {renderPortfolio(portfolioData as PortfolioData)}
       </div>
-    );
-  } catch (error) {
-    // Emergency fallback if the component fails to render
-    console.error("Fatal error rendering profile:", error);
-    
-    // Add error directly to the DOM
-    const errorEl = document.createElement('div');
-    errorEl.style.position = 'fixed';
-    errorEl.style.top = '0';
-    errorEl.style.left = '0';
-    errorEl.style.width = '100%';
-    errorEl.style.height = '100%';
-    errorEl.style.backgroundColor = '#fff';
-    errorEl.style.padding = '20px';
-    errorEl.style.zIndex = '10000';
-    errorEl.innerHTML = `
-      <h1 style="color: red; font-size: 24px;">Error Rendering Profile</h1>
-      <p style="margin-top: 10px;">${error.message || 'Unknown error'}</p>
-      <div style="margin-top: 20px;">
-        <h3>Debug Information:</h3>
-        <pre style="background: #f0f0f0; padding: 10px; overflow: auto;">
-        Username: ${username || 'null'}
-        Portfolio Data: ${JSON.stringify(portfolioData, null, 2)}
-        </pre>
-      </div>
-      <div style="margin-top: 20px;">
-        <a href="/" style="color: blue;">Return to home page</a>
-      </div>
-    `;
-    document.body.appendChild(errorEl);
-    
-    // Return fallback component
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl text-red-500 mb-4">Error Rendering Profile</h1>
-          <p>An unexpected error occurred while rendering this profile.</p>
-          <a href="/" className="text-primary hover:underline mt-4 inline-block">Return to home page</a>
-        </div>
-      </div>
-    );
-  }
+    </div>
+  );
 };
 
 export default PublicProfile;
