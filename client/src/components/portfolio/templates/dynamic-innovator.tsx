@@ -1070,49 +1070,89 @@ export function DynamicInnovator({
               {userServices.length > 0 && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
                   {userServices.map((service) => (
-                    <div key={service.id} className="tech-card p-6">
+                    <div key={service.id} className="tech-card p-6 relative overflow-hidden flex flex-col">
+                      {/* Service category badge - positioned top right */}
+                      <div className="absolute top-0 right-0">
+                        <Badge className="m-3 bg-[#0c162d] border border-[#08f7fe]/30 text-[#08f7fe] flex items-center">
+                          <Tag className="h-3 w-3 mr-1" />
+                          {service.category ? service.category.charAt(0).toUpperCase() + service.category.slice(1) : "Other"}
+                        </Badge>
+                      </div>
+                      
+                      {/* Service title and description */}
                       <h3 className="text-lg font-medium text-[#08f7fe] mb-3">{service.title}</h3>
                       <p className="text-gray-300 mb-4">{service.description}</p>
                       
-                      {/* Pricing information with visual distinction */}
-                      <div className="flex justify-between items-center mb-4">
-                        <div className="flex items-center text-gray-300">
-                          {service.isHourly ? (
-                            <Badge className="bg-[#0c162d] border border-[#fe53bb]/30 text-[#fe53bb] mr-2 flex items-center">
-                              <Clock className="h-3 w-3 mr-1" />
-                              Hourly Rate
-                            </Badge>
-                          ) : (
-                            <Badge className="bg-[#0c162d] border border-[#08f7fe]/30 text-[#08f7fe] mr-2 flex items-center">
-                              <Tag className="h-3 w-3 mr-1" />
-                              Fixed Price
-                            </Badge>
-                          )}
+                      {/* Pricing information with enhanced visual distinction */}
+                      <div className="mt-auto">
+                        <div className="flex justify-between items-center mb-4">
+                          <div className="flex items-center text-gray-300">
+                            {service.isHourly ? (
+                              <Badge className="bg-[#0c162d] border border-[#fe53bb]/30 text-[#fe53bb] mr-2 flex items-center pulse-animation">
+                                <Clock className="h-3 w-3 mr-1" />
+                                Hourly Rate
+                              </Badge>
+                            ) : (
+                              <Badge className="bg-[#0c162d] border border-[#08f7fe]/30 text-[#08f7fe] mr-2 flex items-center">
+                                <Tag className="h-3 w-3 mr-1" />
+                                Fixed Price
+                              </Badge>
+                            )}
+                          </div>
+                          <div className="text-[#08f7fe] font-bold px-3 py-1 bg-[#0c162d]/80 rounded-md border border-[#08f7fe]/30 shadow-glow">
+                            {service.priceUsd ? `$${service.priceUsd}${service.isHourly ? '/hr' : ''}` : 
+                             (service.priceInr ? `₹${service.priceInr}${service.isHourly ? '/hr' : ''}` : 'Contact for pricing')}
+                          </div>
                         </div>
-                        <div className="text-[#08f7fe] font-bold px-3 py-1 bg-[#0c162d]/50 rounded-md border border-[#08f7fe]/20">
-                          {service.priceUsd ? `$${service.priceUsd}${service.isHourly ? '/hr' : ''}` : 
-                           (service.priceInr ? `₹${service.priceInr}${service.isHourly ? '/hr' : ''}` : 'Contact for pricing')}
-                        </div>
-                      </div>
-                      
-                      <Badge className="bg-[#080E24] border border-[#08f7fe]/20 text-[#08f7fe]">
-                        {service.category || "Technical Service"}
-                      </Badge>
-                      
-                      {/* Display service features if available */}
-                      {service.features && Array.isArray(service.features) && service.features.length > 0 && (
-                        <div className="mt-3 pt-3 border-t border-[#08f7fe]/10">
-                          <h4 className="text-sm font-medium text-[#08f7fe] mb-2">Features:</h4>
-                          <ul className="text-gray-300 text-sm space-y-1">
-                            {service.features.map((feature, index) => (
-                              <li key={index} className="flex items-start">
-                                <Check className="h-4 w-4 text-[#fe53bb] mr-2 mt-0.5 flex-shrink-0" />
-                                <span>{feature}</span>
+                        
+                        {/* Display service features with enhanced styling */}
+                        {service.features && Array.isArray(service.features) && service.features.length > 0 ? (
+                          <div className="mt-3 pt-3 border-t border-[#08f7fe]/20">
+                            <h4 className="text-sm font-medium text-[#08f7fe] mb-2 flex items-center">
+                              <Layers className="h-4 w-4 mr-1.5 text-[#fe53bb]" />
+                              Included Features:
+                            </h4>
+                            <ul className="text-gray-300 text-sm space-y-2">
+                              {service.features.map((feature, index) => (
+                                <li key={index} className="flex items-start">
+                                  <div className="flex-shrink-0 mr-2 mt-0.5 h-4 w-4 rounded-full bg-[#0c162d] border border-[#fe53bb]/30 flex items-center justify-center">
+                                    <Check className="h-3 w-3 text-[#fe53bb]" />
+                                  </div>
+                                  <span>{feature}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ) : (
+                          // Add sample features for demo services with no features
+                          <div className="mt-3 pt-3 border-t border-[#08f7fe]/20">
+                            <h4 className="text-sm font-medium text-[#08f7fe] mb-2 flex items-center">
+                              <Layers className="h-4 w-4 mr-1.5 text-[#fe53bb]" />
+                              Included Features:
+                            </h4>
+                            <ul className="text-gray-300 text-sm space-y-2">
+                              <li className="flex items-start">
+                                <div className="flex-shrink-0 mr-2 mt-0.5 h-4 w-4 rounded-full bg-[#0c162d] border border-[#fe53bb]/30 flex items-center justify-center">
+                                  <Check className="h-3 w-3 text-[#fe53bb]" />
+                                </div>
+                                <span>Professional consultation</span>
                               </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
+                              <li className="flex items-start">
+                                <div className="flex-shrink-0 mr-2 mt-0.5 h-4 w-4 rounded-full bg-[#0c162d] border border-[#fe53bb]/30 flex items-center justify-center">
+                                  <Check className="h-3 w-3 text-[#fe53bb]" />
+                                </div>
+                                <span>Dedicated support</span>
+                              </li>
+                              <li className="flex items-start">
+                                <div className="flex-shrink-0 mr-2 mt-0.5 h-4 w-4 rounded-full bg-[#0c162d] border border-[#fe53bb]/30 flex items-center justify-center">
+                                  <Check className="h-3 w-3 text-[#fe53bb]" />
+                                </div>
+                                <span>Satisfaction guarantee</span>
+                              </li>
+                            </ul>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
