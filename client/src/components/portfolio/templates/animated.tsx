@@ -58,13 +58,23 @@ interface AnimatedTemplateProps {
 // Animated Template Component
 export default function AnimatedTemplate(props: AnimatedTemplateProps) {
   const {
-    userInfo,
+    userInfo = {
+      name: 'Creative Professional',
+      title: 'Digital Specialist',
+      industry: 'Technology',
+      domain: 'Digital',
+      location: 'Digital Space',
+      photoURL: null,
+      lookingFor: 'Collaboration',
+      email: '',
+      aboutMe: 'Creative professional with a passion for digital experiences.'
+    },
     userSkills = [],
     userProjects = [],
     userExperiences = [],
     userEducations = [],
     userServices = []
-  } = props;
+  } = props || {};
   
   // Extract user info properties for easier access
   const {
