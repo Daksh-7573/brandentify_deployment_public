@@ -538,7 +538,7 @@ export default function FreelancerHub({
               className="absolute w-full h-full"
               style={{
                 backgroundImage: selectedProject.thumbnailUrl 
-                  ? `url(${selectedProject.thumbnailUrl})` 
+                  ? `url(${selectedProject.thumbnailUrl.startsWith('http') ? selectedProject.thumbnailUrl : `${window.location.origin}${selectedProject.thumbnailUrl}`})` 
                   : `linear-gradient(135deg, ${getCategoryGradient(selectedProject.category || 'design')})`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center'
@@ -1660,7 +1660,7 @@ export default function FreelancerHub({
                         className="project-image absolute w-full h-full"
                         style={{
                           backgroundImage: project.thumbnailUrl 
-                            ? `url(${project.thumbnailUrl})` 
+                            ? `url(${project.thumbnailUrl.startsWith('http') ? project.thumbnailUrl : `${window.location.origin}${project.thumbnailUrl}`})` 
                             : `linear-gradient(135deg, ${getCategoryGradient(project.category || 'design')})`,
                           backgroundSize: 'cover',
                           backgroundPosition: 'center'
@@ -1683,7 +1683,7 @@ export default function FreelancerHub({
                           whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
                           style={{ fontFamily: 'Poppins, sans-serif' }}
                         >
-                          {new Date(project.startDate).getFullYear()}
+                          {formatDate(project.startDate, true)}
                         </motion.div>
                       )}
                     </div>
