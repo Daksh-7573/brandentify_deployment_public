@@ -1194,14 +1194,9 @@ export default function FreelancerHub({
               </div>
             )}
             
-            {/* Other Skills */}
+            {/* Additional Skills - removed "Other Skills" label as requested */}
             {skillCategories.other.length > 0 && (
               <div>
-                <h3 className="text-xl font-bold mb-4 flex items-center" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  <Star className="h-5 w-5 mr-2 text-blue-500" />
-                  Other Skills
-                </h3>
-                
                 <div className="flex flex-wrap gap-3">
                   {skillCategories.other.map((skill, index) => (
                     <motion.div
