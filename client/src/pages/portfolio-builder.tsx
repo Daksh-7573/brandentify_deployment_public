@@ -38,6 +38,7 @@ import VisualExpert from "@/components/portfolio/templates/visual-expert";
 import CorporateExecutive from "@/components/portfolio/templates/corporate-executive";
 import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innovator";
 import Animated from "@/components/portfolio/templates/animated";
+import AnimatedOdyssey from "@/components/portfolio/templates/animated-odyssey";
 import Scholar from "@/components/portfolio/templates/scholar";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
@@ -71,7 +72,7 @@ const portfolioFormSchema = z.object({
   layout: z.enum([
     "professional", "creative", "minimal", "technical", "executive", "minimalist_pro",
     "minimalist-pro", "timeline-storyteller-2", "visual-expert", "corporate-executive", 
-    "dynamic-innovator", "freelancer-hub", "animated", "scholar"
+    "dynamic-innovator", "freelancer-hub", "animated", "animated-odyssey", "scholar"
   ]),
   isPublished: z.boolean().default(false),
   publicUrl: z.string().nullable().optional(),
@@ -473,6 +474,13 @@ export default function PortfolioBuilder() {
       description: `✔ Theme: Fully Animated, Motion-Driven, Interactive
 ✔ Best For: Motion Designers, VFX Artists, Web Animators, AR/VR & Game Designers`,
       theme: "#00E5FF"
+    },
+    { 
+      id: "animated-odyssey", 
+      name: "Animated Odyssey", 
+      description: `✔ Theme: Space-themed, Parallax Effects, Dynamic Cosmos
+✔ Best For: Astrophysicists, Game Devs, Futurists, Space Enthusiasts`,
+      theme: "#4F46E5"
     }
   ];
 
