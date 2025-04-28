@@ -1056,19 +1056,26 @@ export default function FreelancerHub({
                       transition={{ duration: 0.3, delay: 0.1 * index }}
                       whileHover={{ scale: 1.05 }}
                     >
-                      <div className="flex items-center">
-                        {getSkillIcon(skill.name)}
-                        <span className="ml-2 font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                          {skill.name}
-                        </span>
-                        <div className="ml-2 flex">
-                          {Array.from({ length: 5 }).map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`h-3 w-3 ${i < (skill.proficiency || 3) ? 'text-white' : 'text-white/30'}`}
-                              fill={i < (skill.proficiency || 3) ? 'currentColor' : 'none'}
-                            />
-                          ))}
+                      <div className="flex flex-col">
+                        <div className="flex items-center mb-1">
+                          {getSkillIcon(skill.name)}
+                          <span className="ml-2 font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                            {skill.name}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex">
+                            {Array.from({ length: 5 }).map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`h-3 w-3 ${i < (skill.proficiency || 3) ? 'text-white' : 'text-white/30'}`}
+                                fill={i < (skill.proficiency || 3) ? 'currentColor' : 'none'}
+                              />
+                            ))}
+                          </div>
+                          <span className="text-xs text-white ml-2 font-medium bg-white/20 px-2 py-0.5 rounded-full">
+                            {skill.proficiency ? `${skill.proficiency * 20}%` : '60%'}
+                          </span>
                         </div>
                       </div>
                     </motion.div>
@@ -1095,19 +1102,26 @@ export default function FreelancerHub({
                       transition={{ duration: 0.3, delay: 0.1 * index }}
                       whileHover={{ scale: 1.05 }}
                     >
-                      <div className="flex items-center">
-                        <Code className="h-4 w-4" />
-                        <span className="ml-2 font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                          {skill.name}
-                        </span>
-                        <div className="ml-2 flex">
-                          {Array.from({ length: 5 }).map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`h-3 w-3 ${i < (skill.proficiency || 3) ? 'text-white' : 'text-white/30'}`}
-                              fill={i < (skill.proficiency || 3) ? 'currentColor' : 'none'}
-                            />
-                          ))}
+                      <div className="flex flex-col">
+                        <div className="flex items-center mb-1">
+                          <Code className="h-4 w-4" />
+                          <span className="ml-2 font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                            {skill.name}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex">
+                            {Array.from({ length: 5 }).map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`h-3 w-3 ${i < (skill.proficiency || 3) ? 'text-white' : 'text-white/30'}`}
+                                fill={i < (skill.proficiency || 3) ? 'currentColor' : 'none'}
+                              />
+                            ))}
+                          </div>
+                          <span className="text-xs text-white ml-2 font-medium bg-white/20 px-2 py-0.5 rounded-full">
+                            {skill.proficiency ? `${skill.proficiency * 20}%` : '60%'}
+                          </span>
                         </div>
                       </div>
                     </motion.div>
@@ -1134,19 +1148,26 @@ export default function FreelancerHub({
                       transition={{ duration: 0.3, delay: 0.1 * index }}
                       whileHover={{ scale: 1.05 }}
                     >
-                      <div className="flex items-center">
-                        <Heart className="h-4 w-4" />
-                        <span className="ml-2 font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                          {skill.name}
-                        </span>
-                        <div className="ml-2 flex">
-                          {Array.from({ length: 5 }).map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`h-3 w-3 ${i < (skill.proficiency || 3) ? 'text-white' : 'text-white/30'}`}
-                              fill={i < (skill.proficiency || 3) ? 'currentColor' : 'none'}
-                            />
-                          ))}
+                      <div className="flex flex-col">
+                        <div className="flex items-center mb-1">
+                          <Heart className="h-4 w-4" />
+                          <span className="ml-2 font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                            {skill.name}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex">
+                            {Array.from({ length: 5 }).map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`h-3 w-3 ${i < (skill.proficiency || 3) ? 'text-white' : 'text-white/30'}`}
+                                fill={i < (skill.proficiency || 3) ? 'currentColor' : 'none'}
+                              />
+                            ))}
+                          </div>
+                          <span className="text-xs text-white ml-2 font-medium bg-white/20 px-2 py-0.5 rounded-full">
+                            {skill.proficiency ? `${skill.proficiency * 20}%` : '60%'}
+                          </span>
                         </div>
                       </div>
                     </motion.div>
@@ -1173,58 +1194,26 @@ export default function FreelancerHub({
                       transition={{ duration: 0.3, delay: 0.1 * index }}
                       whileHover={{ scale: 1.05 }}
                     >
-                      <div className="flex items-center">
-                        <Briefcase className="h-4 w-4" />
-                        <span className="ml-2 font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                          {skill.name}
-                        </span>
-                        <div className="ml-2 flex">
-                          {Array.from({ length: 5 }).map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`h-3 w-3 ${i < (skill.proficiency || 3) ? 'text-white' : 'text-white/30'}`}
-                              fill={i < (skill.proficiency || 3) ? 'currentColor' : 'none'}
-                            />
-                          ))}
+                      <div className="flex flex-col">
+                        <div className="flex items-center mb-1">
+                          <Briefcase className="h-4 w-4" />
+                          <span className="ml-2 font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                            {skill.name}
+                          </span>
                         </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {/* Other Skills */}
-            {skillCategories.other.length > 0 && (
-              <div>
-                <h3 className="text-xl font-bold mb-4 flex items-center" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  <Star className="h-5 w-5 mr-2 text-blue-500" />
-                  Other Skills
-                </h3>
-                
-                <div className="flex flex-wrap gap-3">
-                  {skillCategories.other.map((skill, index) => (
-                    <motion.div
-                      key={skill.id}
-                      className="skill-tag bg-gradient-to-r from-blue-500 to-cyan-400 text-white px-4 py-2 rounded-full shadow-md"
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: isShowing ? 1 : 0, x: isShowing ? 0 : -20 }}
-                      transition={{ duration: 0.3, delay: 0.1 * index }}
-                      whileHover={{ scale: 1.05 }}
-                    >
-                      <div className="flex items-center">
-                        <Star className="h-4 w-4" />
-                        <span className="ml-2 font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                          {skill.name}
-                        </span>
-                        <div className="ml-2 flex">
-                          {Array.from({ length: 5 }).map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`h-3 w-3 ${i < (skill.proficiency || 3) ? 'text-white' : 'text-white/30'}`}
-                              fill={i < (skill.proficiency || 3) ? 'currentColor' : 'none'}
-                            />
-                          ))}
+                        <div className="flex items-center justify-between">
+                          <div className="flex">
+                            {Array.from({ length: 5 }).map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`h-3 w-3 ${i < (skill.proficiency || 3) ? 'text-white' : 'text-white/30'}`}
+                                fill={i < (skill.proficiency || 3) ? 'currentColor' : 'none'}
+                              />
+                            ))}
+                          </div>
+                          <span className="text-xs text-white ml-2 font-medium bg-white/20 px-2 py-0.5 rounded-full">
+                            {skill.proficiency ? `${skill.proficiency * 20}%` : '60%'}
+                          </span>
                         </div>
                       </div>
                     </motion.div>
