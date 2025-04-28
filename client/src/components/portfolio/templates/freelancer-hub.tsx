@@ -29,8 +29,25 @@ import {
   MessageSquare, PlusCircle
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Project, Skill, Service } from "@shared/schema";
+import { Skill, Service } from "@shared/schema";
 import { UserExperience, UserEducation } from "@/types";
+
+// Define Project interface to ensure all fields are recognized
+interface Project {
+  id: number;
+  userId: number;
+  title: string;
+  description: string | null;
+  startDate: string | null;
+  projectUrl: string | null;
+  category: string | null;
+  industry: string | null;
+  thumbnailUrl: string | null;
+  thumbnailFile: string | null;
+  mediaUrls: string[];
+  createdAt: string;
+  updatedAt: string;
+}
 
 interface FreelancerHubProps {
   userInfo: {
