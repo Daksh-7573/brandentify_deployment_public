@@ -9,7 +9,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
 import {
@@ -22,7 +21,7 @@ import {
 import { 
   Download, Palette, Heart, Music, Video, Film, 
   Briefcase, GraduationCap, Calendar, MapPin, 
-  ChevronRight, Code, Layers,
+  ChevronRight, Code, 
   Mail, Instagram, Twitter, Linkedin, Youtube, Camera, 
   FileText, PenTool, Coffee, Star, Zap, Headphones,
   Radio, Sparkles, Scissors, Pencil, Book, Gift, 
@@ -53,19 +52,6 @@ interface FreelancerHubProps {
   publicUrl?: string | null;
 }
 
-// Custom Project type to ensure proper typing
-interface EnhancedProject {
-  id: number;
-  title: string;
-  description: string;
-  startDate: string;
-  projectUrl: string;
-  category: string;
-  industry: string;
-  thumbnailUrl: string;
-  mediaUrls: string[];
-}
-
 export default function FreelancerHub({ 
   userInfo, 
   userSkills, 
@@ -74,7 +60,7 @@ export default function FreelancerHub({
   userExperiences = [], 
   userEducations = [],
   publicUrl 
-}: FreelancerHubProps): JSX.Element {
+}: FreelancerHubProps) {
   // State for animations and effects
   const [activeProject, setActiveProject] = useState<number | null>(null);
   const [energyLevel, setEnergyLevel] = useState<number>(85);
@@ -95,11 +81,6 @@ export default function FreelancerHub({
   // Scroll state for horizontal section
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [scrollPosition, setScrollPosition] = useState(0);
-  
-  // Set showing state on mount
-  useEffect(() => {
-    setIsShowing(true);
-  }, []);
   
   // Sort skills by proficiency
   const sortedSkills = [...userSkills].sort((a, b) => (b.proficiency || 0) - (a.proficiency || 0));
@@ -266,30 +247,6 @@ export default function FreelancerHub({
   
   // Function to handle project selection and modal display
   const handleProjectClick = (project: Project) => {
-    console.log("Selected project details:", project);
-    
-    // Make sure mediaUrls is treated as an array
-    let mediaUrlsArray: string[] = [];
-    
-    // Handle various ways mediaUrls might be stored
-    if (project.mediaUrls) {
-      // If it's already an array, use it directly
-      if (Array.isArray(project.mediaUrls)) {
-        mediaUrlsArray = project.mediaUrls;
-      } 
-      // Otherwise, try to parse it if it's a JSON string
-      else if (typeof project.mediaUrls === 'string') {
-        try {
-          const parsed = JSON.parse(project.mediaUrls);
-          if (Array.isArray(parsed)) {
-            mediaUrlsArray = parsed;
-          }
-        } catch (e) {
-          console.error("Failed to parse mediaUrls:", e);
-        }
-      }
-    }
-    
     setSelectedProject(project);
     setIsProjectModalOpen(true);
   };
@@ -313,214 +270,658 @@ export default function FreelancerHub({
     }
   };
   
-  // Current status text based on energy level
-  const statusText = energyLevel > 80 
-    ? "Highly creative and productive today! 🚀" 
+  // Track scroll position for animations
+  useEffect(() => {
+    const handleScrollPosition = () => {
+      setScrollPosition(window.scrollY);
+    };
+    
+    window.addEventListener('scroll', handleScrollPosition);
+    
+    return () => {
+      window.removeEventListener('scroll', handleScrollPosition);
+    };
+  }, []);
+  
+  // Load fonts and styles on mount
+  useEffect(() => {
+    // Add playful fonts
+    const poppinsFont = document.createElement('link');
+    poppinsFont.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap';
+    poppinsFont.rel = 'stylesheet';
+    
+    const fredokaFont = document.createElement('link');
+    fredokaFont.href = 'https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap';
+    fredokaFont.rel = 'stylesheet';
+    
+    const rubikFont = document.createElement('link');
+    rubikFont.href = 'https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap';
+    rubikFont.rel = 'stylesheet';
+    
+    document.head.appendChild(poppinsFont);
+    document.head.appendChild(fredokaFont);
+    document.head.appendChild(rubikFont);
+    
+    // Add custom CSS
+    const style = document.createElement('style');
+    style.textContent = `
+      /* Freelancer Hub Template - Playful Animations & Styles */
+      @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+      }
+      
+      @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
+      }
+      
+      @keyframes wiggle {
+        0% { transform: rotate(0deg); }
+        25% { transform: rotate(3deg); }
+        75% { transform: rotate(-3deg); }
+        100% { transform: rotate(0deg); }
+      }
+      
+      @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+      }
+      
+      @keyframes rainbow-border {
+        0% { border-color: #FF5757; }
+        20% { border-color: #FF914D; }
+        40% { border-color: #FFDE59; }
+        60% { border-color: #7ED957; }
+        80% { border-color: #4DB4FF; }
+        100% { border-color: #C74DFF; }
+      }
+      
+      @keyframes slide-in {
+        from { transform: translateX(-20px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+      
+      @keyframes confetti {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+      
+      @keyframes heartbeat {
+        0% { transform: scale(1); }
+        25% { transform: scale(1.1); }
+        40% { transform: scale(1); }
+        60% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+      }
+      
+      .freelancer-hub .profile-frame {
+        position: relative;
+        border-radius: 50%;
+        padding: 4px;
+        background: linear-gradient(45deg, #FF5757, #FF914D, #FFDE59, #7ED957, #4DB4FF, #C74DFF);
+        background-size: 300% 300%;
+        animation: confetti 5s ease infinite;
+      }
+      
+      .freelancer-hub .skill-tag {
+        transition: all 0.3s ease;
+      }
+      
+      .freelancer-hub .skill-tag:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      }
+      
+      .freelancer-hub .service-card {
+        transition: all 0.3s ease;
+        transform-style: preserve-3d;
+        perspective: 1000px;
+      }
+      
+      .freelancer-hub .service-card:hover {
+        transform: translateY(-10px) rotateX(5deg);
+      }
+      
+      .freelancer-hub .project-card {
+        transition: all 0.3s ease;
+        overflow: hidden;
+      }
+      
+      .freelancer-hub .project-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      }
+      
+      .freelancer-hub .project-card:hover .project-image {
+        transform: scale(1.05);
+      }
+      
+      .freelancer-hub .project-image {
+        transition: transform 0.5s ease;
+      }
+      
+      .freelancer-hub .milestone-node {
+        position: relative;
+      }
+      
+      .freelancer-hub .milestone-node::before {
+        content: '';
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: white;
+        top: 24px;
+        left: -38px;
+        border: 3px solid;
+        z-index: 1;
+      }
+      
+      .freelancer-hub .milestone-node::after {
+        content: '';
+        position: absolute;
+        width: 2px;
+        background: #e5e7eb;
+        top: 40px;
+        bottom: -20px;
+        left: -31px;
+      }
+      
+      .freelancer-hub .milestone-node:last-child::after {
+        display: none;
+      }
+      
+      .freelancer-hub .blob-button {
+        transition: all 0.3s ease;
+        position: relative;
+        z-index: 1;
+      }
+      
+      .freelancer-hub .blob-button:hover {
+        transform: scale(1.05);
+      }
+      
+      .freelancer-hub .blob-button:active {
+        transform: scale(0.95);
+      }
+      
+      .freelancer-hub .emoji-bullet {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        margin-right: 8px;
+        font-size: 14px;
+      }
+      
+      .freelancer-hub .sticker {
+        position: absolute;
+        transform: rotate(-15deg);
+        background: white;
+        border-radius: 6px;
+        padding: 5px 10px;
+        font-weight: 600;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        color: #000;
+        z-index: 10;
+      }
+      
+      .freelancer-hub .mood-bar {
+        height: 8px;
+        border-radius: 4px;
+        overflow: hidden;
+        background: #e5e7eb;
+      }
+      
+      .freelancer-hub .mood-progress {
+        height: 100%;
+        border-radius: 4px;
+        transition: width 0.5s ease;
+        background: linear-gradient(to right, #4ade80, #fbbf24);
+      }
+      
+      .freelancer-hub .highlight-text {
+        position: relative;
+        display: inline;
+      }
+      
+      .freelancer-hub .highlight-text::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 30%;
+        width: 100%;
+        background: rgba(253, 186, 116, 0.3);
+        z-index: -1;
+      }
+    `;
+    
+    document.head.appendChild(style);
+    
+    // Show content with delay for animations
+    setTimeout(() => {
+      setIsShowing(true);
+    }, 100);
+    
+    // Clean up
+    return () => {
+      document.head.removeChild(poppinsFont);
+      document.head.removeChild(fredokaFont);
+      document.head.removeChild(rubikFont);
+      document.head.removeChild(style);
+    };
+  }, []);
+  
+  // Determine if mood is good based on energy level
+  const moodMessage = energyLevel > 80 
+    ? "I'm feeling super creative today! ✨" 
     : energyLevel > 60 
       ? "Ready to collaborate! 🤝" 
       : "Taking it easy today 😌";
   
-  // Modal for project details
+  // Project Details Modal
   const renderProjectDetailsModal = () => {
     if (!selectedProject) return null;
     
-    // Get image URL with error handling
-    const getThumbnailUrl = () => {
-      if (!selectedProject.thumbnailUrl) return '';
-      return selectedProject.thumbnailUrl.startsWith('http') 
-        ? selectedProject.thumbnailUrl 
-        : `${window.location.origin}${selectedProject.thumbnailUrl}`;
-    };
-    
-    // Extract media URLs if they exist
-    const getMediaUrls = () => {
-      if (!selectedProject.mediaUrls) return [];
-      if (Array.isArray(selectedProject.mediaUrls)) {
-        return selectedProject.mediaUrls;
-      }
-      try {
-        if (typeof selectedProject.mediaUrls === 'string') {
-          const parsed = JSON.parse(selectedProject.mediaUrls);
-          if (Array.isArray(parsed)) return parsed;
-        }
-      } catch (e) {
-        console.error("Could not parse media URLs:", e);
-      }
-      return [];
-    };
-    
     return (
       <Dialog open={isProjectModalOpen} onOpenChange={setIsProjectModalOpen}>
-        <DialogContent className="p-6 max-w-lg mx-auto">
-          <DialogHeader>
-            <DialogTitle>{selectedProject.title}</DialogTitle>
-          </DialogHeader>
+        <DialogContent className="sm:max-w-[700px] rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
+          {/* Floating decorative elements to match the template style */}
+          <motion.div 
+            className="absolute -top-10 -left-10 w-60 h-60 bg-gradient-to-br from-purple-200 to-purple-50 rounded-full opacity-20 blur-3xl z-0"
+            animate={{ 
+              scale: [1, 1.2, 1],
+              rotate: [0, 15, 0]
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              repeatType: "reverse"
+            }}
+          />
           
-          {/* Thumbnail if available */}
-          {selectedProject.thumbnailUrl && (
-            <div className="w-full h-40 mb-4 overflow-hidden rounded-md bg-gray-100">
+          <motion.div 
+            className="absolute -bottom-20 -right-20 w-80 h-80 bg-gradient-to-tr from-amber-200 to-amber-50 rounded-full opacity-20 blur-3xl z-0"
+            animate={{ 
+              scale: [1, 1.3, 1],
+              rotate: [0, -15, 0]
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              repeatType: "reverse"
+            }}
+          />
+          
+          <div className="relative h-72 overflow-hidden">
+            {/* Gradient background as fallback */}
+            <div 
+              className="absolute w-full h-full"
+              style={{
+                background: `linear-gradient(135deg, ${getCategoryGradient(selectedProject.category || 'design')})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center'
+              }}
+            />
+            
+            {/* Project image with error handling */}
+            {selectedProject.thumbnailUrl && (
               <img
-                src={getThumbnailUrl()}
-                alt={selectedProject.title || 'Project thumbnail'}
-                className="w-full h-full object-cover"
+                src={selectedProject.thumbnailUrl.startsWith('http') ? selectedProject.thumbnailUrl : `${window.location.origin}${selectedProject.thumbnailUrl}`}
+                alt={selectedProject.title}
+                className="absolute inset-0 w-full h-full object-cover z-10"
                 onError={(e) => {
-                  e.currentTarget.style.display = 'none';
+                  console.log('Error loading project header image:', selectedProject.thumbnailUrl);
+                  // Try to use the first media URL as fallback
+                  if (selectedProject.mediaUrls && Array.isArray(selectedProject.mediaUrls) && selectedProject.mediaUrls.length > 0) {
+                    const fallbackUrl = selectedProject.mediaUrls[0];
+                    console.log('Trying fallback image from mediaUrls:', fallbackUrl);
+                    e.currentTarget.src = fallbackUrl.startsWith('http') ? 
+                      fallbackUrl : `${window.location.origin}${fallbackUrl}`;
+                  } else {
+                    e.currentTarget.style.opacity = '0';
+                  }
                 }}
               />
-            </div>
-          )}
-          
-          <div className="py-2">
-            <div className="flex flex-wrap gap-2 mb-4">
+            )}
+            
+            {/* Try mediaUrls[0] as a fallback if thumbnailUrl is not available */}
+            {!selectedProject.thumbnailUrl && selectedProject.mediaUrls && 
+             Array.isArray(selectedProject.mediaUrls) && selectedProject.mediaUrls.length > 0 && (
+              <img
+                src={selectedProject.mediaUrls[0].startsWith('http') ? 
+                    selectedProject.mediaUrls[0] : 
+                    `${window.location.origin}${selectedProject.mediaUrls[0]}`}
+                alt={`${selectedProject.title} media`}
+                className="absolute inset-0 w-full h-full object-cover z-10"
+                onError={(e) => {
+                  console.log('Error loading fallback media image:', selectedProject.mediaUrls[0]);
+                  e.currentTarget.style.opacity = '0';
+                }}
+              />
+            )}
+            
+            {/* Dark overlay with gradient for text contrast */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10 z-20" />
+            
+            {/* Close button */}
+            <motion.button 
+              onClick={() => setIsProjectModalOpen(false)}
+              className="absolute top-4 right-4 bg-white/30 backdrop-blur-md p-2 rounded-full text-white hover:bg-white/50 transition-colors z-30 shadow-md"
+              whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
+              transition={{ duration: 0.3 }}
+            >
+              <X className="h-5 w-5" />
+            </motion.button>
+            
+            {/* Title area */}
+            <div className="absolute bottom-0 left-0 p-7 w-full z-30">
+              <motion.h2 
+                className="text-2xl md:text-3xl font-bold text-white mb-2" 
+                style={{ fontFamily: 'Fredoka, sans-serif' }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                {selectedProject.title}
+              </motion.h2>
+              
               {selectedProject.category && (
-                <Badge className="bg-blue-100 text-blue-800">
-                  {selectedProject.category}
-                </Badge>
-              )}
-              
-              {selectedProject.industry && (
-                <Badge className="bg-purple-100 text-purple-800">
-                  {selectedProject.industry}
-                </Badge>
-              )}
-              
-              {selectedProject.startDate && (
-                <Badge className="bg-amber-100 text-amber-800">
-                  {formatDate(selectedProject.startDate, true)}
-                </Badge>
-              )}
-            </div>
-            
-            {/* Description */}
-            <div className="mb-4">
-              <h3 className="text-sm font-semibold mb-1">Description</h3>
-              <p className="text-sm text-gray-600">
-                {selectedProject.description || 'No description provided'}
-              </p>
-            </div>
-            
-            {/* URL */}
-            {selectedProject.projectUrl && (
-              <div className="mb-4">
-                <h3 className="text-sm font-semibold mb-1">Project URL</h3>
-                <a 
-                  href={selectedProject.projectUrl} 
-                  target="_blank"
-                  rel="noopener noreferrer" 
-                  className="text-blue-600 text-sm hover:underline flex items-center"
+                <motion.div 
+                  className="flex items-center"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
                 >
-                  {selectedProject.projectUrl}
-                  <ExternalLink className="h-3 w-3 ml-1" />
-                </a>
-              </div>
-            )}
-            
-            {/* Media Gallery */}
-            {getMediaUrls().length > 0 && (
-              <div className="mb-4">
-                <h3 className="text-sm font-semibold mb-2">Gallery</h3>
-                <div className="grid grid-cols-2 gap-2">
-                  {getMediaUrls().map((url, index) => (
-                    <div key={index} className="h-24 bg-gray-100 rounded-md overflow-hidden">
-                      <img
-                        src={url.startsWith('http') ? url : `${window.location.origin}${url}`}
-                        alt={`Project image ${index + 1}`}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                        }}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+                  <Badge className="bg-white/30 backdrop-blur-sm text-white border-none px-3 py-1">
+                    {selectedProject.category}
+                  </Badge>
+                </motion.div>
+              )}
+            </div>
           </div>
           
-          <div className="flex justify-end mt-4">
-            <Button variant="outline" onClick={() => setIsProjectModalOpen(false)}>
-              Close
-            </Button>
+          <div className="p-7 relative z-10 bg-white/80 backdrop-blur-sm">
+            <div className="bg-white rounded-2xl p-6 shadow-lg">
+              {/* Duration */}
+              {selectedProject.startDate && (
+                <motion.div 
+                  className="flex items-center text-violet-600 mb-4"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="bg-violet-100 p-2 rounded-full mr-3">
+                    <Calendar className="h-4 w-4" />
+                  </div>
+                  <span className="text-sm font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    {formatDate(selectedProject.startDate, true)}
+                  </span>
+                </motion.div>
+              )}
+              
+              {/* Industry/Category */}
+              <div className="flex flex-wrap gap-4 mb-5">
+                {selectedProject.industry && (
+                  <motion.div 
+                    className="flex items-center bg-blue-50 px-3 py-1.5 rounded-full"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: 0.1 }}
+                  >
+                    <Briefcase className="h-4 w-4 mr-2 text-blue-500" />
+                    <span className="text-sm font-medium text-blue-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      {selectedProject.industry}
+                    </span>
+                  </motion.div>
+                )}
+              </div>
+              
+              {/* Description */}
+              {selectedProject.description && (
+                <motion.div 
+                  className="mb-6 bg-gradient-to-r from-amber-50 to-white p-4 rounded-xl border border-amber-100"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.2 }}
+                >
+                  <h4 className="text-sm font-bold mb-2 text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    <span className="text-amber-500 mr-2">✨</span> About this project
+                  </h4>
+                  <p className="text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    {selectedProject.description}
+                  </p>
+                </motion.div>
+              )}
+              
+              {/* Media Gallery */}
+              {selectedProject.mediaUrls && Array.isArray(selectedProject.mediaUrls) && selectedProject.mediaUrls.length > 0 && (
+                <motion.div 
+                  className="mb-6"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.3 }}
+                >
+                  <h4 className="text-sm font-bold mb-3 text-gray-700 flex items-center" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    <span className="text-pink-500 mr-2">🖼️</span> Project Gallery
+                  </h4>
+                  <div className="grid grid-cols-2 gap-3">
+                    {selectedProject.mediaUrls.map((url: string, index: number) => {
+                      // Skip the first image if it's being used as the header and there are multiple images
+                      if (index === 0 && !selectedProject.thumbnailUrl && selectedProject.mediaUrls.length > 1) {
+                        return null;
+                      }
+                      
+                      return (
+                        <motion.div 
+                          key={index} 
+                          className="rounded-xl overflow-hidden h-32 relative shadow-md"
+                          whileHover={{ scale: 1.03 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          {/* Gradient background as fallback */}
+                          <div 
+                            className="absolute inset-0"
+                            style={{
+                              background: `linear-gradient(135deg, ${getCategoryGradient(selectedProject.category || 'design')})`,
+                            }}
+                          />
+                          
+                          <img 
+                            src={url.startsWith('http') ? url : `${window.location.origin}${url}`}
+                            alt={`Project image ${index + 1}`}
+                            className="absolute inset-0 w-full h-full object-cover z-10"
+                            onError={(e) => {
+                              console.log('Error loading media image:', url);
+                              e.currentTarget.style.opacity = '0';
+                            }}
+                          />
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              )}
+              
+              {/* Actions */}
+              <div className="flex justify-end gap-3 mt-6">
+                {selectedProject.projectUrl && (
+                  <motion.a 
+                    href={selectedProject.projectUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-violet-600 to-pink-500 text-white rounded-full font-medium shadow-lg hover:shadow-xl transition"
+                    style={{ fontFamily: 'Poppins, sans-serif' }}
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    Visit Project
+                    <ExternalLink className="h-4 w-4 ml-2" />
+                  </motion.a>
+                )}
+              </div>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
     );
   };
   
-  // Modal for contact
+  // Let's Talk Contact Modal
   const renderContactModal = () => {
-    if (!isContactModalOpen) return null;
-    
     return (
       <Dialog open={isContactModalOpen} onOpenChange={setIsContactModalOpen}>
-        <DialogContent className="sm:max-w-[500px] p-6">
-          <DialogHeader className="mb-4">
-            <DialogTitle className="text-center font-bold text-xl">Let's Talk!</DialogTitle>
-          </DialogHeader>
+        <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden rounded-3xl border-none shadow-2xl">
+          {/* Floating decorative elements to match the template style */}
+          <motion.div 
+            className="absolute -top-10 -left-10 w-60 h-60 bg-gradient-to-br from-fuchsia-200 to-fuchsia-50 rounded-full opacity-20 blur-3xl z-0"
+            animate={{ 
+              scale: [1, 1.2, 1],
+              rotate: [0, 15, 0]
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              repeatType: "reverse"
+            }}
+          />
           
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm font-medium mb-1 block">What can I help you with?</label>
-              <Select value={contactPurpose} onValueChange={setContactPurpose}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a purpose..." />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="project">Discuss a project</SelectItem>
-                  <SelectItem value="collaboration">Explore collaboration</SelectItem>
-                  <SelectItem value="services">Inquire about services</SelectItem>
-                  <SelectItem value="other">Something else</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div>
-              <label className="text-sm font-medium mb-1 block">Your message</label>
-              <Textarea 
-                placeholder="Tell me about your project, ideas, or questions..."
-                value={contactMessage}
-                onChange={(e) => setContactMessage(e.target.value)}
-                className="min-h-[120px]"
-              />
-            </div>
+          <motion.div 
+            className="absolute -bottom-20 -right-20 w-80 h-80 bg-gradient-to-tr from-purple-200 to-purple-50 rounded-full opacity-20 blur-3xl z-0"
+            animate={{ 
+              scale: [1, 1.3, 1],
+              rotate: [0, -15, 0]
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              repeatType: "reverse"
+            }}
+          />
+          
+          <div className="bg-gradient-to-r from-violet-500 via-purple-500 to-fuchsia-500 p-7 relative z-10">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <DialogTitle className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+                <span className="mr-2">✨</span> Let's Create Something Amazing!
+              </DialogTitle>
+              <p className="text-white/90" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                I'd love to hear about your project or opportunity.
+              </p>
+            </motion.div>
           </div>
           
-          <div className="flex justify-end gap-2 mt-6">
-            <Button variant="outline" onClick={() => setIsContactModalOpen(false)}>
-              Cancel
-            </Button>
-            <Button 
-              onClick={() => {
-                // Here you would handle the message sending logic
-                console.log("Sending message from", userInfo.email, "Purpose:", contactPurpose, "Message:", contactMessage);
-                setIsContactModalOpen(false);
-                // Reset form
-                setContactMessage("");
-                setContactPurpose("");
-              }}
-            >
-              Send Message
-            </Button>
+          <div className="p-7 relative z-10 bg-white/80 backdrop-blur-sm">
+            <div className="bg-white rounded-2xl p-6 shadow-lg">
+              <motion.div 
+                className="mb-6"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <label className="block text-sm font-bold mb-2 text-violet-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  What are you looking for?
+                </label>
+                <Select value={contactPurpose} onValueChange={setContactPurpose}>
+                  <SelectTrigger className="w-full border-violet-200 focus:ring-violet-300">
+                    <SelectValue placeholder="Select a purpose" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="project">Project Collaboration</SelectItem>
+                    <SelectItem value="job">Job Opportunity</SelectItem>
+                    <SelectItem value="mentorship">Mentorship</SelectItem>
+                    <SelectItem value="networking">Professional Networking</SelectItem>
+                    <SelectItem value="other">Something Else</SelectItem>
+                  </SelectContent>
+                </Select>
+              </motion.div>
+              
+              <motion.div 
+                className="mb-6"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.1 }}
+              >
+                <label className="block text-sm font-bold mb-2 text-violet-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  Your Message
+                </label>
+                <Textarea 
+                  placeholder="Tell me a bit about what you have in mind..."
+                  className="resize-none h-32 border-violet-200 focus:ring-violet-300"
+                  value={contactMessage}
+                  onChange={(e) => setContactMessage(e.target.value)}
+                />
+              </motion.div>
+              
+              <motion.div 
+                className="flex justify-end gap-3 mt-8"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.2 }}
+              >
+                <DialogClose asChild>
+                  <Button 
+                    variant="outline" 
+                    className="border-violet-200 text-violet-700 hover:bg-violet-50"
+                  >
+                    Cancel
+                  </Button>
+                </DialogClose>
+                <motion.button 
+                  className="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-violet-600 to-pink-500 text-white rounded-full font-medium shadow-lg hover:shadow-xl transition"
+                  style={{ fontFamily: 'Poppins, sans-serif' }}
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  transition={{ duration: 0.2 }}
+                  onClick={() => {
+                    // In a real app, this would send an email or message
+                    window.open(`mailto:${userInfo.email || ''}?subject=Let's Talk: ${contactPurpose}&body=${contactMessage}`);
+                    setIsContactModalOpen(false);
+                  }}
+                >
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  Send Message
+                </motion.button>
+              </motion.div>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
     );
   };
-
-  // Main template return
+  
   return (
-    <div className="freelancer-hub w-full overflow-x-hidden bg-white">
-      {/* Profile Header */}
-      <header className="relative min-h-[500px] md:min-h-[600px] flex items-center justify-center p-4 md:p-8 overflow-hidden">
-        {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-100 via-purple-50 to-pink-100 z-0" />
-        
-        {/* Decorative shapes */}
+    <div className="freelancer-hub bg-gradient-to-br from-fuchsia-50 via-amber-50 to-blue-50 min-h-screen pb-20">
+      {/* Mood Bar (just for fun) */}
+      <div className="sticky top-0 z-50 bg-white py-2 px-4 border-b border-gray-100 flex items-center justify-between">
+        <div className="flex items-center">
+          <span className="text-xs font-medium mr-3" style={{ fontFamily: 'Poppins, sans-serif' }}>Creative Energy:</span>
+          <div className="mood-bar w-32">
+            <div className="mood-progress" style={{ width: `${energyLevel}%` }}></div>
+          </div>
+        </div>
+        <div className="text-xs font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          {moodMessage}
+        </div>
+      </div>
+      
+      {/* Hero Section */}
+      <section className="relative py-16 px-6 md:px-10 overflow-hidden">
+        {/* Decorative elements */}
         <motion.div 
-          className="absolute top-20 left-10 w-40 h-40 bg-gradient-to-r from-blue-200 to-blue-100 rounded-full opacity-50 blur-2xl z-0"
+          className="absolute -top-10 -left-10 w-60 h-60 bg-gradient-to-br from-purple-200 to-purple-50 rounded-full opacity-30 blur-3xl"
           animate={{ 
             scale: [1, 1.2, 1],
-            y: [0, 10, 0]
+            rotate: [0, 15, 0]
           }}
           transition={{
             duration: 8,
@@ -530,10 +931,10 @@ export default function FreelancerHub({
         />
         
         <motion.div 
-          className="absolute bottom-20 right-10 w-60 h-60 bg-gradient-to-r from-purple-200 to-pink-100 rounded-full opacity-40 blur-2xl z-0"
+          className="absolute -bottom-20 -right-20 w-80 h-80 bg-gradient-to-tr from-amber-200 to-amber-50 rounded-full opacity-30 blur-3xl"
           animate={{ 
             scale: [1, 1.3, 1],
-            x: [0, 20, 0]
+            rotate: [0, -15, 0]
           }}
           transition={{
             duration: 10,
@@ -542,472 +943,847 @@ export default function FreelancerHub({
           }}
         />
         
-        {/* Content container */}
-        <div className="relative z-10 text-center">
-          {/* Profile image */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6 }}
-            className="mx-auto mb-5 md:mb-6"
-          >
-            <ProfileImage
-              url={userInfo.photoURL || ''}
-              name={userInfo.name}
-              size={180}
-              className="border-4 border-white shadow-xl"
-            />
-          </motion.div>
-          
-          {/* Name and title */}
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 text-gray-800"
-            style={{ fontFamily: 'Fredoka, sans-serif' }}
-          >
-            {userInfo.name}
-          </motion.h1>
-          
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-          >
-            <span className="text-xl md:text-2xl font-medium text-gray-600 block mb-4">
-              {userInfo.title || 'Creative Professional'} {getTitleEmoji(userInfo.title)}
-            </span>
-            
-            {(userInfo.industry || userInfo.location) && (
-              <div className="flex justify-center items-center gap-4 text-gray-500 mb-6">
-                {userInfo.industry && (
-                  <span className="flex items-center gap-1">
-                    <Briefcase className="h-4 w-4" />
-                    {userInfo.industry}
-                  </span>
-                )}
-                
-                {userInfo.location && (
-                  <span className="flex items-center gap-1">
-                    <MapPin className="h-4 w-4" />
-                    {userInfo.location}
-                  </span>
-                )}
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row items-center md:items-start gap-8 md:gap-16">
+            {/* Profile Picture with animated border */}
+            <motion.div 
+              className="flex-shrink-0 relative"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="profile-frame w-44 h-44 md:w-60 md:h-60">
+                <ProfileImage
+                  src={userInfo.photoURL}
+                  alt={userInfo.name}
+                  className="w-full h-full rounded-full object-cover"
+                />
               </div>
-            )}
-          </motion.div>
-          
-          {/* Status indicator */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="mb-6"
-          >
-            <div className="flex items-center justify-center gap-2 text-sm">
-              <span className="inline-flex relative">
-                <span className="flex h-3 w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-                </span>
-              </span>
-              <span className="text-gray-600">{statusText}</span>
-            </div>
-          </motion.div>
-          
-          {/* CTA Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-            className="flex flex-wrap justify-center gap-3"
-          >
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                onClick={handleLetsTalkClick}
-                className="shadow-lg font-bold px-6 py-5"
-                style={{
-                  background: 'linear-gradient(135deg, #f472b6, #ec4899)',
-                  fontFamily: 'Fredoka, sans-serif'
-                }}
+              
+              {/* Available badge sticker */}
+              <motion.div 
+                className="sticker -right-5 top-5"
+                initial={{ scale: 0, rotate: -15 }}
+                animate={{ scale: 1, rotate: -15 }}
+                transition={{ delay: 0.8, type: "spring", stiffness: 300, damping: 10 }}
               >
-                <MessageCircle className="h-4 w-4 mr-2" />
-                Let's Talk
-              </Button>
+                <span className="text-xs font-semibold bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                  Available for Work!
+                </span>
+              </motion.div>
+              
+              {/* Experience badge */}
+              <motion.div 
+                className="sticker -left-8 bottom-10"
+                initial={{ scale: 0, rotate: 15 }}
+                animate={{ scale: 1, rotate: 15 }}
+                transition={{ delay: 1, type: "spring", stiffness: 300, damping: 10 }}
+              >
+                <span className="text-xs font-semibold bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                  {userExperiences.length}+ Years Exp.
+                </span>
+              </motion.div>
             </motion.div>
             
-            {userInfo.email && (
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button
-                  variant="outline"
-                  onClick={() => window.location.href = `mailto:${userInfo.email}`}
-                  className="shadow font-bold px-6 py-5 border-2 border-gray-300"
-                  style={{ fontFamily: 'Fredoka, sans-serif' }}
+            {/* Intro Content */}
+            <div className="flex-1 text-center md:text-left">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
+                {/* Name and Title */}
+                <h1 className="text-4xl md:text-6xl font-bold mb-2" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+                  <span className="inline-block">
+                    <AnimatePresence>
+                      {isShowing && (
+                        <motion.span
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.5 }}
+                        >
+                          {userInfo.name}
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                  </span>
+                </h1>
+                
+                <h2 className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-600 via-pink-500 to-amber-500 mb-4" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+                  {getTitleEmoji(userInfo.title)} {userInfo.title || "Creative Professional"}
+                </h2>
+                
+                {/* Location */}
+                {userInfo.location && (
+                  <motion.div 
+                    className="flex items-center justify-center md:justify-start gap-1 mb-4"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.4 }}
+                  >
+                    <MapPin className="h-4 w-4 text-pink-500" />
+                    <span className="text-gray-600 text-lg" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      {userInfo.location}
+                    </span>
+                  </motion.div>
+                )}
+                
+                {/* Industry/Domain Tags */}
+                <motion.div 
+                  className="flex flex-wrap gap-2 justify-center md:justify-start mb-6"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6 }}
                 >
-                  <Mail className="h-4 w-4 mr-2" />
-                  Contact Me
-                </Button>
+                  {userInfo.industry && (
+                    <motion.div
+                      whileHover={{ scale: 1.05, y: -2 }}
+                      transition={{ type: "spring", stiffness: 400 }}
+                    >
+                      <Badge className="bg-gradient-to-r from-violet-500 to-purple-400 text-white text-sm py-1.5 px-3">
+                        #{userInfo.industry}
+                      </Badge>
+                    </motion.div>
+                  )}
+                  {userInfo.domain && (
+                    <motion.div
+                      whileHover={{ scale: 1.05, y: -2 }}
+                      transition={{ type: "spring", stiffness: 400 }}
+                    >
+                      <Badge className="bg-gradient-to-r from-pink-500 to-rose-400 text-white text-sm py-1.5 px-3">
+                        #{userInfo.domain}
+                      </Badge>
+                    </motion.div>
+                  )}
+                  <motion.div
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    transition={{ type: "spring", stiffness: 400 }}
+                  >
+                    <Badge className="bg-gradient-to-r from-amber-400 to-orange-400 text-white text-sm py-1.5 px-3">
+                      #Freelancer
+                    </Badge>
+                  </motion.div>
+                </motion.div>
+                
+                {/* Looking For */}
+                {userInfo.lookingFor && (
+                  <motion.div 
+                    className="bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white px-4 py-2 rounded-full inline-flex items-center mb-8 relative"
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.5, type: "spring" }}
+                  >
+                    <span className="absolute opacity-10 text-4xl right-3 transform -translate-y-1/2 top-1/2 z-0">
+                      {userInfo.lookingFor.toLowerCase().includes("mentor") ? "🧠" : "🔍"}
+                    </span>
+                    <span className="text-lg mr-2 z-10">📢</span>
+                    <span className="font-medium z-10 relative" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      {userInfo.lookingFor}
+                    </span>
+                  </motion.div>
+                )}
+                
+                {/* Spacer to replace removed social links */}
+                <div className="mb-6"></div>
+                
+                {/* Action Buttons */}
+                <div className="flex flex-col sm:flex-row flex-wrap gap-4 mt-2">
+                  {/* Connect Button */}
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.7, type: "spring" }}
+                  >
+                    <Button 
+                      onClick={handleLetsTalkClick}
+                      className="bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-lg px-6 py-6 rounded-full shadow-lg flex items-center gap-2 font-bold hover:shadow-xl transition-shadow w-full sm:w-auto"
+                      style={{ fontFamily: 'Fredoka, sans-serif' }}
+                    >
+                      <span>Let's Connect</span>
+                      <motion.span
+                        initial={{ rotate: 0 }}
+                        animate={{ rotate: [0, 15, -15, 15, 0] }}
+                        transition={{ 
+                          duration: 0.5,
+                          delay: 1.2,
+                          repeat: 1,
+                          repeatType: "reverse"
+                        }}
+                        className="text-xl"
+                      >
+                        👋
+                      </motion.span>
+                    </Button>
+                  </motion.div>
+                  
+                  {/* Mentor Button */}
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.8, type: "spring" }}
+                  >
+                    <Button 
+                      className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-lg px-6 py-6 rounded-full shadow-lg flex items-center gap-2 font-bold hover:shadow-xl transition-shadow w-full sm:w-auto"
+                      style={{ fontFamily: 'Fredoka, sans-serif' }}
+                    >
+                      <span>Mentor</span>
+                      <motion.span
+                        initial={{ scale: 1 }}
+                        animate={{ scale: [1, 1.2, 1] }}
+                        transition={{ 
+                          duration: 1,
+                          delay: 1.3,
+                          repeat: 1,
+                          repeatType: "reverse"
+                        }}
+                        className="text-xl"
+                      >
+                        🚀
+                      </motion.span>
+                    </Button>
+                  </motion.div>
+                  
+                  {/* Grab My Resume Button */}
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.9, type: "spring" }}
+                  >
+                    <Button 
+                      className="bg-gradient-to-r from-teal-500 to-emerald-500 text-white text-lg px-6 py-6 rounded-full shadow-lg flex items-center gap-2 font-bold hover:shadow-xl transition-shadow w-full sm:w-auto"
+                      style={{ fontFamily: 'Fredoka, sans-serif' }}
+                    >
+                      <span>Grab My Resume</span>
+                      <motion.span
+                        initial={{ y: 0 }}
+                        animate={{ y: [0, -5, 0] }}
+                        transition={{ 
+                          duration: 0.5,
+                          delay: 1.4,
+                          repeat: 1,
+                          repeatType: "reverse"
+                        }}
+                        className="text-xl"
+                      >
+                        📄
+                      </motion.span>
+                    </Button>
+                  </motion.div>
+                </div>
               </motion.div>
-            )}
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      {/* About Me Section */}
+      <section className="py-10 px-6 md:px-10">
+        <div className="max-w-4xl mx-auto">
+          <motion.div 
+            className="bg-white rounded-3xl p-8 shadow-xl"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 20 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h2 className="text-2xl font-bold mb-6 text-center" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+              <span className="highlight-text">What I'm All About</span>
+            </h2>
+            
+            <motion.p 
+              className="text-lg leading-relaxed text-gray-700 mb-4"
+              style={{ fontFamily: 'Poppins, sans-serif' }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: isShowing ? 1 : 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              {userInfo.aboutMe || 
+                `I'm a passionate creative who loves to bring ideas to life through ${userInfo.domain || 'creative work'}. 
+                With a blend of imagination and technical skills, I help brands and individuals express their unique stories.
+                My approach focuses on collaboration, innovation, and delivering results that exceed expectations.`
+              }
+            </motion.p>
+            
+            {/* Fun elements */}
+            <div className="flex items-center justify-center mt-6">
+              <motion.div 
+                className="flex gap-3"
+                initial={{ scale: 0 }}
+                animate={{ scale: isShowing ? 1 : 0 }}
+                transition={{ duration: 0.3, delay: 0.4 }}
+              >
+                <span className="text-sm px-3 py-1 bg-pink-100 text-pink-700 rounded-full font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  Creative
+                </span>
+                <span className="text-sm px-3 py-1 bg-purple-100 text-purple-700 rounded-full font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  Reliable
+                </span>
+                <span className="text-sm px-3 py-1 bg-blue-100 text-blue-700 rounded-full font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  Innovative
+                </span>
+              </motion.div>
+            </div>
           </motion.div>
         </div>
-        
-        {/* Floating Stickers */}
-        <motion.div 
-          className="absolute top-24 md:top-32 right-6 md:right-12 z-10"
-          initial={{ rotate: -15, scale: 0 }}
-          animate={{ rotate: -15, scale: isShowing ? 1 : 0 }}
-          transition={{ delay: 1, type: "spring", stiffness: 300, damping: 10 }}
-        >
-          <span className="text-sm font-semibold bg-red-100 text-red-800 px-3 py-1 rounded shadow flex items-center gap-1">
-            <Smile className="h-4 w-4" />
-            New!
-          </span>
-        </motion.div>
-      </header>
-    
+      </section>
+      
       {/* Skills Section */}
-      <section className="py-16 px-6 md:px-10 relative">
-        <div className="text-center mb-10">
-          <h2 className="text-2xl md:text-3xl font-bold mb-3" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-            What I'm Good At
-          </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            A selection of my top skills across creative, technical, and professional domains.
-          </p>
-        </div>
-        
-        <div className="max-w-6xl mx-auto grid gap-8">
-          {/* Creative Skills */}
-          {skillCategories.creative.length > 0 && (
-            <div className="mb-8">
-              <h3 className="flex items-center text-lg font-semibold mb-4" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-                <Palette className="h-5 w-5 mr-2 text-pink-500" />
-                Creative Skills
-              </h3>
-              
-              <div className="flex flex-wrap gap-3">
-                {skillCategories.creative.map((skill, index) => (
-                  <motion.div
-                    key={index}
-                    className="skill-tag"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: index * 0.1 }}
-                    whileHover={{ scale: 1.05, y: -5 }}
-                  >
-                    <Badge 
-                      className="px-3 py-1.5 text-sm font-medium flex items-center gap-2 bg-gradient-to-r from-pink-100 to-rose-100 border-rose-200 text-rose-700 border shadow"
-                      style={{ borderRadius: '0.5rem' }}
-                    >
-                      {getSkillIcon(skill.name)}
-                      <span className="font-medium">{skill.name}</span>
-                      {skill.level && (
-                        <span className="ml-1 text-xs opacity-80">
-                          {skill.level}
-                        </span>
-                      )}
-                      {typeof skill.proficiency === 'number' && (
-                        <span className="ml-1 text-xs opacity-80">
-                          {skill.proficiency}%
-                        </span>
-                      )}
-                    </Badge>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          )}
+      <section className="py-10 px-6 md:px-10">
+        <div className="max-w-6xl mx-auto">
+          <motion.h2 
+            className="text-3xl font-bold mb-8 text-center"
+            style={{ fontFamily: 'Fredoka, sans-serif' }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 20 }}
+            transition={{ duration: 0.5 }}
+          >
+            <span className="highlight-text">What I'm Good At</span>
+          </motion.h2>
           
-          {/* Technical Skills */}
-          {skillCategories.technical.length > 0 && (
-            <div className="mb-8">
-              <h3 className="flex items-center text-lg font-semibold mb-4" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-                <Code className="h-5 w-5 mr-2 text-blue-500" />
-                Technical Skills
-              </h3>
-              
-              <div className="flex flex-wrap gap-3">
-                {skillCategories.technical.map((skill, index) => (
-                  <motion.div
-                    key={index}
-                    className="skill-tag"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: index * 0.1 }}
-                    whileHover={{ scale: 1.05, y: -5 }}
-                  >
-                    <Badge 
-                      className="px-3 py-1.5 text-sm font-medium flex items-center gap-2 bg-gradient-to-r from-blue-100 to-cyan-100 border-blue-200 text-blue-700 border shadow"
-                      style={{ borderRadius: '0.5rem' }}
+          <div className="space-y-8">
+            {/* Creative Skills */}
+            {skillCategories.creative.length > 0 && (
+              <div>
+                <h3 className="text-xl font-bold mb-4 flex items-center" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <Palette className="h-5 w-5 mr-2 text-pink-500" />
+                  Creative Skills
+                </h3>
+                
+                <div className="flex flex-wrap gap-3">
+                  {skillCategories.creative.map((skill, index) => (
+                    <motion.div
+                      key={skill.id}
+                      className="skill-tag bg-gradient-to-r from-pink-500 to-rose-400 text-white px-4 py-2 rounded-full shadow-md"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: isShowing ? 1 : 0, x: isShowing ? 0 : -20 }}
+                      transition={{ duration: 0.3, delay: 0.1 * index }}
+                      whileHover={{ scale: 1.05 }}
                     >
-                      {getSkillIcon(skill.name)}
-                      <span className="font-medium">{skill.name}</span>
-                      {skill.level && (
-                        <span className="ml-1 text-xs opacity-80">
-                          {skill.level}
+                      <div className="flex items-center">
+                        {getSkillIcon(skill.name)}
+                        <span className="ml-2 font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                          {skill.name}
                         </span>
-                      )}
-                      {typeof skill.proficiency === 'number' && (
-                        <span className="ml-1 text-xs opacity-80">
-                          {skill.proficiency}%
-                        </span>
-                      )}
-                    </Badge>
-                  </motion.div>
-                ))}
+                        <div className="ml-2 flex items-center">
+                          {/* Badge for proficiency level text */}
+                          <span className="text-xs px-1.5 py-0.5 bg-white/20 rounded-md">
+                            {skill.level || 'Intermediate'}
+                          </span>
+                          {/* Badge for proficiency percentage */}
+                          <span className="text-xs px-1.5 py-0.5 bg-white/20 rounded-md ml-1">
+                            {skill.proficiency ? `${skill.proficiency}%` : '60%'}
+                          </span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
-          
-          {/* Soft Skills */}
-          {skillCategories.soft.length > 0 && (
-            <div className="mb-8">
-              <h3 className="flex items-center text-lg font-semibold mb-4" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-                <Zap className="h-5 w-5 mr-2 text-amber-500" />
-                Professional Skills
-              </h3>
-              
-              <div className="flex flex-wrap gap-3">
-                {skillCategories.soft.map((skill, index) => (
-                  <motion.div
-                    key={index}
-                    className="skill-tag"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: index * 0.1 }}
-                    whileHover={{ scale: 1.05, y: -5 }}
-                  >
-                    <Badge 
-                      className="px-3 py-1.5 text-sm font-medium flex items-center gap-2 bg-gradient-to-r from-amber-100 to-yellow-100 border-amber-200 text-amber-700 border shadow"
-                      style={{ borderRadius: '0.5rem' }}
+            )}
+            
+            {/* Technical Skills */}
+            {skillCategories.technical.length > 0 && (
+              <div>
+                <h3 className="text-xl font-bold mb-4 flex items-center" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <Code className="h-5 w-5 mr-2 text-violet-500" />
+                  Technical Skills
+                </h3>
+                
+                <div className="flex flex-wrap gap-3">
+                  {skillCategories.technical.map((skill, index) => (
+                    <motion.div
+                      key={skill.id}
+                      className="skill-tag bg-gradient-to-r from-violet-500 to-indigo-500 text-white px-4 py-2 rounded-full shadow-md"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: isShowing ? 1 : 0, x: isShowing ? 0 : -20 }}
+                      transition={{ duration: 0.3, delay: 0.1 * index }}
+                      whileHover={{ scale: 1.05 }}
                     >
-                      {getSkillIcon(skill.name)}
-                      <span className="font-medium">{skill.name}</span>
-                      {skill.level && (
-                        <span className="ml-1 text-xs opacity-80">
-                          {skill.level}
+                      <div className="flex items-center">
+                        <span className="font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                          {skill.name}
                         </span>
-                      )}
-                      {typeof skill.proficiency === 'number' && (
-                        <span className="ml-1 text-xs opacity-80">
-                          {skill.proficiency}%
-                        </span>
-                      )}
-                    </Badge>
-                  </motion.div>
-                ))}
+                        <div className="ml-2 flex items-center">
+                          {/* Badge for proficiency level text */}
+                          <span className="text-xs px-1.5 py-0.5 bg-white/20 rounded-md">
+                            {skill.level || 'Intermediate'}
+                          </span>
+                          {/* Badge for proficiency percentage */}
+                          <span className="text-xs px-1.5 py-0.5 bg-white/20 rounded-md ml-1">
+                            {skill.proficiency ? `${skill.proficiency}%` : '60%'}
+                          </span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
-          
-          {/* Tools Skills */}
-          {skillCategories.tools.length > 0 && (
-            <div className="mb-8">
-              <h3 className="flex items-center text-lg font-semibold mb-4" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-                <Layers className="h-5 w-5 mr-2 text-purple-500" />
-                Tools & Software
-              </h3>
-              
-              <div className="flex flex-wrap gap-3">
-                {skillCategories.tools.map((skill, index) => (
-                  <motion.div
-                    key={index}
-                    className="skill-tag"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: index * 0.1 }}
-                    whileHover={{ scale: 1.05, y: -5 }}
-                  >
-                    <Badge 
-                      className="px-3 py-1.5 text-sm font-medium flex items-center gap-2 bg-gradient-to-r from-purple-100 to-violet-100 border-purple-200 text-purple-700 border shadow"
-                      style={{ borderRadius: '0.5rem' }}
+            )}
+            
+            {/* Soft Skills */}
+            {skillCategories.soft.length > 0 && (
+              <div>
+                <h3 className="text-xl font-bold mb-4 flex items-center" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <Heart className="h-5 w-5 mr-2 text-rose-500" />
+                  Soft Skills
+                </h3>
+                
+                <div className="flex flex-wrap gap-3">
+                  {skillCategories.soft.map((skill, index) => (
+                    <motion.div
+                      key={skill.id}
+                      className="skill-tag bg-gradient-to-r from-rose-400 to-red-400 text-white px-4 py-2 rounded-full shadow-md"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: isShowing ? 1 : 0, x: isShowing ? 0 : -20 }}
+                      transition={{ duration: 0.3, delay: 0.1 * index }}
+                      whileHover={{ scale: 1.05 }}
                     >
-                      {getSkillIcon(skill.name)}
-                      <span className="font-medium">{skill.name}</span>
-                      {skill.level && (
-                        <span className="ml-1 text-xs opacity-80">
-                          {skill.level}
+                      <div className="flex items-center">
+                        <span className="font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                          {skill.name}
                         </span>
-                      )}
-                      {typeof skill.proficiency === 'number' && (
-                        <span className="ml-1 text-xs opacity-80">
-                          {skill.proficiency}%
-                        </span>
-                      )}
-                    </Badge>
-                  </motion.div>
-                ))}
+                        <div className="ml-2 flex items-center">
+                          {/* Badge for proficiency level text */}
+                          <span className="text-xs px-1.5 py-0.5 bg-white/20 rounded-md">
+                            {skill.level || 'Intermediate'}
+                          </span>
+                          {/* Badge for proficiency percentage */}
+                          <span className="text-xs px-1.5 py-0.5 bg-white/20 rounded-md ml-1">
+                            {skill.proficiency ? `${skill.proficiency}%` : '60%'}
+                          </span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
-          
-          {/* Other Skills */}
-          {skillCategories.other.length > 0 && (
-            <div>
-              <div className="flex flex-wrap gap-3">
-                {skillCategories.other.map((skill, index) => (
-                  <motion.div
-                    key={index}
-                    className="skill-tag"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: index * 0.1 }}
-                    whileHover={{ scale: 1.05, y: -5 }}
-                  >
-                    <Badge 
-                      className="px-3 py-1.5 text-sm font-medium flex items-center gap-2 bg-gradient-to-r from-gray-100 to-slate-100 border-gray-200 text-gray-700 border shadow"
-                      style={{ borderRadius: '0.5rem' }}
+            )}
+            
+            {/* Tools */}
+            {skillCategories.tools.length > 0 && (
+              <div>
+                <h3 className="text-xl font-bold mb-4 flex items-center" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <Briefcase className="h-5 w-5 mr-2 text-amber-500" />
+                  Tools & Software
+                </h3>
+                
+                <div className="flex flex-wrap gap-3">
+                  {skillCategories.tools.map((skill, index) => (
+                    <motion.div
+                      key={skill.id}
+                      className="skill-tag bg-gradient-to-r from-amber-400 to-orange-400 text-white px-4 py-2 rounded-full shadow-md"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: isShowing ? 1 : 0, x: isShowing ? 0 : -20 }}
+                      transition={{ duration: 0.3, delay: 0.1 * index }}
+                      whileHover={{ scale: 1.05 }}
                     >
-                      {getSkillIcon(skill.name)}
-                      <span className="font-medium">{skill.name}</span>
-                      {skill.level && (
-                        <span className="ml-1 text-xs opacity-80">
-                          {skill.level}
+                      <div className="flex items-center">
+                        <span className="font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                          {skill.name}
                         </span>
-                      )}
-                      {typeof skill.proficiency === 'number' && (
-                        <span className="ml-1 text-xs opacity-80">
-                          {skill.proficiency}%
-                        </span>
-                      )}
-                    </Badge>
-                  </motion.div>
-                ))}
+                        <div className="ml-2 flex items-center">
+                          {/* Badge for proficiency level text */}
+                          <span className="text-xs px-1.5 py-0.5 bg-white/20 rounded-md">
+                            {skill.level || 'Intermediate'}
+                          </span>
+                          {/* Badge for proficiency percentage */}
+                          <span className="text-xs px-1.5 py-0.5 bg-white/20 rounded-md ml-1">
+                            {skill.proficiency ? `${skill.proficiency}%` : '60%'}
+                          </span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )}
+            
+            {/* Additional Skills - removed "Other Skills" label as requested */}
+            {skillCategories.other.length > 0 && (
+              <div>
+                <div className="flex flex-wrap gap-3">
+                  {skillCategories.other.map((skill, index) => (
+                    <motion.div
+                      key={skill.id}
+                      className="skill-tag bg-gradient-to-r from-blue-500 to-cyan-400 text-white px-4 py-2 rounded-full shadow-md"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: isShowing ? 1 : 0, x: isShowing ? 0 : -20 }}
+                      transition={{ duration: 0.3, delay: 0.1 * index }}
+                      whileHover={{ scale: 1.05 }}
+                    >
+                      <div className="flex items-center">
+                        <span className="font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                          {skill.name}
+                        </span>
+                        <div className="ml-2 flex items-center">
+                          {/* Badge for proficiency level text */}
+                          <span className="text-xs px-1.5 py-0.5 bg-white/20 rounded-md">
+                            {skill.level || 'Intermediate'}
+                          </span>
+                          {/* Badge for proficiency percentage */}
+                          <span className="text-xs px-1.5 py-0.5 bg-white/20 rounded-md ml-1">
+                            {skill.proficiency ? `${skill.proficiency}%` : '60%'}
+                          </span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Empty state for skills */}
+            {userSkills.length === 0 && (
+              <motion.div
+                className="bg-white rounded-3xl p-8 text-center shadow"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: isShowing ? 1 : 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <Sparkles className="h-12 w-12 text-amber-400 mx-auto mb-3" />
+                <p className="text-gray-500" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  Your skills will appear here!
+                </p>
+              </motion.div>
+            )}
+          </div>
         </div>
       </section>
       
       {/* Services Section */}
-      <section className="py-16 px-6 md:px-10 bg-gradient-to-b from-blue-50 to-white relative">
+      <section className="py-16 px-6 md:px-10 relative overflow-hidden">
         {/* Decorative elements */}
         <motion.div 
-          className="absolute top-0 right-0 w-60 h-60 bg-gradient-to-br from-purple-100 to-pink-50 rounded-full opacity-50 blur-3xl"
+          className="absolute top-60 -right-20 w-80 h-80 bg-gradient-to-br from-fuchsia-100 to-pink-50 rounded-full opacity-30 blur-3xl"
           animate={{ 
             scale: [1, 1.2, 1],
-            y: [0, -20, 0]
+            rotate: [0, -10, 0]
           }}
           transition={{
-            duration: 10,
+            duration: 15,
             repeat: Infinity,
+            repeatType: "reverse"
           }}
         />
         
-        <motion.div 
-          className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-blue-100 to-cyan-50 rounded-full opacity-40 blur-3xl"
-          animate={{ 
-            scale: [1, 1.3, 1],
-            x: [0, 20, 0]
-          }}
-          transition={{
-            duration: 12,
-            repeat: Infinity,
-          }}
-        />
-        
-        <div className="text-center mb-12 relative z-10">
-          <h2 className="text-2xl md:text-3xl font-bold mb-3" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-            What I Offer
-          </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Professional services tailored to meet your creative and technical needs.
-          </p>
-        </div>
-        
-        <div className="max-w-6xl mx-auto relative z-10">
-          {sortedServices.length === 0 ? (
-            <div className="text-center text-gray-500 py-10">
-              No services listed yet.
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {sortedServices.map((service, index) => (
+        <div className="max-w-6xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 30 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-3 text-center" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+              <span className="highlight-text">My Services</span>
+            </h2>
+            <p className="text-center text-gray-600 mb-10 max-w-2xl mx-auto" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              Specialized offerings crafted with creativity and care
+            </p>
+          </motion.div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {sortedServices.length > 0 ? (
+              sortedServices.map((service, index) => (
                 <motion.div
                   key={service.id}
-                  className="service-card"
+                  className="service-card bg-white rounded-3xl shadow-xl overflow-hidden relative border-t-4 border-t-fuchsia-400"
                   initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: index * 0.1 }}
+                  animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 20 }}
+                  transition={{ duration: 0.5, delay: 0.1 * index }}
+                  whileHover={{ 
+                    y: -15,
+                    rotateZ: index % 2 === 0 ? 2 : -2 
+                  }}
+                  style={{
+                    borderTopColor: index % 3 === 0 ? '#ec4899' : 
+                                    index % 3 === 1 ? '#8b5cf6' : 
+                                    '#3b82f6'
+                  }}
                 >
-                  <div className="bg-white rounded-2xl shadow-lg overflow-hidden h-full border border-gray-100">
-                    {/* Service Header */}
-                    <div className="relative h-32 overflow-hidden">
-                      {/* Gradient background as default */}
-                      <div 
-                        className="absolute inset-0"
-                        style={{
-                          background: `linear-gradient(135deg, ${
-                            index % 3 === 0 ? '#f472b6, #ec4899' : 
-                            index % 3 === 1 ? '#a78bfa, #8b5cf6' : 
-                            '#60a5fa, #3b82f6'
-                          })`,
-                        }}
-                      />
-                      
-                      {/* Category Badge */}
-                      {service.category && (
-                        <div className="absolute top-3 right-3 z-20">
-                          <Badge className="bg-white/80 backdrop-blur-sm font-medium text-xs">
-                            {service.category}
-                          </Badge>
-                        </div>
-                      )}
-                      
-                      {/* Title */}
-                      <div className="absolute bottom-0 left-0 p-4 w-full z-10">
-                        <div className="bg-white/90 backdrop-blur-sm rounded-xl p-3 shadow-md">
-                          <h3 className="font-bold text-gray-800 line-clamp-1" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-                            {service.title}
-                          </h3>
-                        </div>
-                      </div>
+                  {/* Fun Background Pattern */}
+                  <div className="absolute inset-0 opacity-5">
+                    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                      <defs>
+                        <pattern id={`service-pattern-${index}`} x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+                          {index % 3 === 0 ? (
+                            <path d="M0,20 L40,20 M20,0 L20,40" stroke="#000" strokeWidth="1" />
+                          ) : index % 3 === 1 ? (
+                            <circle cx="20" cy="20" r="3" fill="#000" />
+                          ) : (
+                            <path d="M0,0 L40,40 M0,40 L40,0" stroke="#000" strokeWidth="1" />
+                          )}
+                        </pattern>
+                      </defs>
+                      <rect width="100%" height="100%" fill={`url(#service-pattern-${index})`} />
+                    </svg>
+                  </div>
+                  
+                  <div className="p-8 relative">
+                    {/* Colorful Label */}
+                    <div className="absolute -right-10 top-5 w-40 text-center transform rotate-45 text-xs font-bold py-1"
+                         style={{
+                           background: index % 3 === 0 ? 'linear-gradient(90deg, #ec4899, #f472b6)' : 
+                                       index % 3 === 1 ? 'linear-gradient(90deg, #8b5cf6, #a78bfa)' : 
+                                       'linear-gradient(90deg, #3b82f6, #60a5fa)',
+                           color: 'white',
+                           fontFamily: 'Poppins, sans-serif'
+                         }}>
+                      {index % 3 === 0 ? 'POPULAR!' : index % 3 === 1 ? 'BEST VALUE!' : 'FEATURED!'}
                     </div>
                     
-                    {/* Service Content */}
-                    <div className="p-4">
-                      {/* Description */}
-                      <p className="text-gray-600 text-sm mb-4 line-clamp-3 min-h-[3rem]">
-                        {service.description || 'Professional service offered by ' + userInfo.name}
+                    {/* Service Icon with animation */}
+                    <motion.div
+                      className="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 shadow-lg"
+                      style={{
+                        background: index % 3 === 0 ? 'linear-gradient(135deg, #f472b6, #ec4899)' : 
+                                  index % 3 === 1 ? 'linear-gradient(135deg, #a78bfa, #8b5cf6)' : 
+                                  'linear-gradient(135deg, #60a5fa, #3b82f6)',
+                      }}
+                      animate={{ 
+                        rotate: [0, 5, 0, -5, 0],
+                      }}
+                      transition={{ 
+                        duration: 5,
+                        repeat: Infinity,
+                        repeatType: "loop",
+                        ease: "easeInOut"
+                      }}
+                    >
+                      <div className="text-white text-2xl">
+                        {getSkillIcon(service.title)}
+                      </div>
+                    </motion.div>
+                    
+                    <h3 className="text-2xl font-bold mb-3" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+                      {service.title}
+                    </h3>
+                    
+                    <div className="h-24 overflow-hidden">
+                      <p className="text-gray-600 mb-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                        {service.description}
                       </p>
-                      
-                      {/* Features */}
-                      {service.features && Array.isArray(service.features) && service.features.length > 0 && (
-                        <div className="mb-4">
-                          <ul className="space-y-1">
-                            {service.features.slice(0, 3).map((feature, idx) => (
-                              <li key={idx} className="flex items-start text-sm">
-                                <div className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 flex items-center justify-center mr-2 mt-0.5">
-                                  <svg className="w-3 h-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                                  </svg>
-                                </div>
-                                <span className="text-gray-700">{feature}</span>
-                              </li>
-                            ))}
-                          </ul>
+                    </div>
+                    
+                    {/* Features List */}
+                    <ul className="mb-6 pl-1">
+                      {(service.features && Array.isArray(service.features) && service.features.length > 0 ? service.features : []).map((feature, i) => (
+                        <motion.li 
+                          key={i}
+                          className="flex items-center gap-2 text-sm text-gray-700 mb-2"
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.5 + (i * 0.1) }}
+                          style={{ fontFamily: 'Poppins, sans-serif' }}
+                        >
+                          <div className="text-xs w-5 h-5 rounded-full flex items-center justify-center"
+                               style={{
+                                 background: index % 3 === 0 ? '#fce7f3' : 
+                                             index % 3 === 1 ? '#ede9fe' : 
+                                             '#dbeafe',
+                                 color: index % 3 === 0 ? '#ec4899' : 
+                                        index % 3 === 1 ? '#8b5cf6' : 
+                                        '#3b82f6'
+                               }}>
+                            ✓
+                          </div>
+                          {feature}
+                        </motion.li>
+                      ))}
+                    </ul>
+                    
+                    <div className="flex flex-col gap-3">
+                      {/* Pricing */}
+                      {((service.priceInr && Number(service.priceInr) > 0) || 
+                       (service.priceUsd && Number(service.priceUsd) > 0)) && (
+                        <div className="text-center py-2 font-bold text-lg"
+                             style={{
+                               background: index % 3 === 0 ? '#fce7f3' : 
+                                           index % 3 === 1 ? '#ede9fe' : 
+                                           '#dbeafe',
+                               color: index % 3 === 0 ? '#be185d' : 
+                                      index % 3 === 1 ? '#6d28d9' : 
+                                      '#1e40af',
+                               fontFamily: 'Poppins, sans-serif',
+                               borderRadius: '0.75rem'
+                             }}>
+                          {service.isHourly ? (
+                            `${service.priceUsd ? `$${service.priceUsd}` : `₹${service.priceInr}`}/hour`
+                          ) : (
+                            `${service.priceUsd ? `$${service.priceUsd}` : `₹${service.priceInr}`}`
+                          )}
                         </div>
                       )}
                       
-                      {/* Price */}
-                      <div 
-                        className="text-center font-bold py-2 mb-4 rounded-xl"
-                        style={{
-                          background: index % 3 === 0 ? '#fce7f3' : 
-                                      index % 3 === 1 ? '#ede9fe' : 
-                                      '#dbeafe',
-                          color: index % 3 === 0 ? '#be185d' : 
-                                 index % 3 === 1 ? '#6d28d9' : 
-                                 '#1e40af',
-                          fontFamily: 'Poppins, sans-serif',
-                          borderRadius: '0.75rem'
-                        }}
+                      {/* CTA Button */}
+                      <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                       >
-                        {service.price && (
-                          <>{service.price} {service.isHourly ? '/hr' : ''}</>
-                        )}
+                        <Button 
+                          onClick={handleLetsTalkClick}
+                          className="w-full shadow-lg font-bold py-3"
+                          style={{
+                            background: index % 3 === 0 ? 'linear-gradient(135deg, #f472b6, #ec4899)' : 
+                                      index % 3 === 1 ? 'linear-gradient(135deg, #a78bfa, #8b5cf6)' : 
+                                      'linear-gradient(135deg, #60a5fa, #3b82f6)',
+                            color: 'white',
+                            fontFamily: 'Fredoka, sans-serif'
+                          }}
+                        >
+                          Book Now
+                        </Button>
+                      </motion.div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))
+            ) : (
+              // Default services
+              [
+                {
+                  title: "Brand Design",
+                  description: "Colorful, personality-filled branding that makes your business stand out in a crowd.",
+                  price: "From $500",
+                  icon: <Palette className="h-6 w-6 text-white" />
+                },
+                {
+                  title: "Social Media",
+                  description: "Engaging content strategy and creation to build your audience and boost engagement.",
+                  price: "$300/month",
+                  icon: <Heart className="h-6 w-6 text-white" />
+                },
+                {
+                  title: "Creative Coaching",
+                  description: "One-on-one sessions to help you unleash your creativity and level up your skills.",
+                  price: "$100/hour",
+                  icon: <Sparkles className="h-6 w-6 text-white" />
+                }
+              ].map((service, index) => (
+                <motion.div
+                  key={index}
+                  className="service-card bg-white rounded-3xl shadow-xl overflow-hidden relative border-t-4 border-t-fuchsia-400"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 20 }}
+                  transition={{ duration: 0.5, delay: 0.1 * index }}
+                  whileHover={{ 
+                    y: -15,
+                    rotateZ: index % 2 === 0 ? 2 : -2 
+                  }}
+                  style={{
+                    borderTopColor: index % 3 === 0 ? '#ec4899' : 
+                                    index % 3 === 1 ? '#8b5cf6' : 
+                                    '#3b82f6'
+                  }}
+                >
+                  {/* Fun Background Pattern */}
+                  <div className="absolute inset-0 opacity-5">
+                    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                      <defs>
+                        <pattern id={`pattern-${index}`} x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+                          {index % 3 === 0 ? (
+                            <path d="M0,20 L40,20 M20,0 L20,40" stroke="#000" strokeWidth="1" />
+                          ) : index % 3 === 1 ? (
+                            <circle cx="20" cy="20" r="3" fill="#000" />
+                          ) : (
+                            <path d="M0,0 L40,40 M0,40 L40,0" stroke="#000" strokeWidth="1" />
+                          )}
+                        </pattern>
+                      </defs>
+                      <rect width="100%" height="100%" fill={`url(#pattern-${index})`} />
+                    </svg>
+                  </div>
+                  
+                  <div className="p-8 relative">
+                    {/* Colorful Label */}
+                    <div className="absolute -right-10 top-5 w-40 text-center transform rotate-45 text-xs font-bold py-1"
+                         style={{
+                           background: index % 3 === 0 ? 'linear-gradient(90deg, #ec4899, #f472b6)' : 
+                                       index % 3 === 1 ? 'linear-gradient(90deg, #8b5cf6, #a78bfa)' : 
+                                       'linear-gradient(90deg, #3b82f6, #60a5fa)',
+                           color: 'white',
+                           fontFamily: 'Poppins, sans-serif'
+                         }}>
+                      {index % 3 === 0 ? 'POPULAR!' : index % 3 === 1 ? 'BEST VALUE!' : 'FEATURED!'}
+                    </div>
+                    
+                    {/* Service Icon with animation */}
+                    <motion.div
+                      className="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 shadow-lg"
+                      style={{
+                        background: index % 3 === 0 ? 'linear-gradient(135deg, #f472b6, #ec4899)' : 
+                                  index % 3 === 1 ? 'linear-gradient(135deg, #a78bfa, #8b5cf6)' : 
+                                  'linear-gradient(135deg, #60a5fa, #3b82f6)',
+                      }}
+                      animate={{ 
+                        rotate: [0, 5, 0, -5, 0],
+                      }}
+                      transition={{ 
+                        duration: 5,
+                        repeat: Infinity,
+                        repeatType: "loop",
+                        ease: "easeInOut"
+                      }}
+                    >
+                      <div className="text-white text-2xl">
+                        {service.icon}
+                      </div>
+                    </motion.div>
+                    
+                    <h3 className="text-2xl font-bold mb-3" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+                      {service.title}
+                    </h3>
+                    
+                    <div className="h-24 overflow-hidden">
+                      <p className="text-gray-600 mb-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                        {service.description}
+                      </p>
+                    </div>
+                    
+                    {/* Features List */}
+                    <ul className="mb-6 pl-1">
+                      {(service.features && Array.isArray(service.features) && service.features.length > 0 ? service.features : []).map((feature, i) => (
+                        <motion.li 
+                          key={i}
+                          className="flex items-center gap-2 text-sm text-gray-700 mb-2"
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.5 + (i * 0.1) }}
+                          style={{ fontFamily: 'Poppins, sans-serif' }}
+                        >
+                          <div className="text-xs w-5 h-5 rounded-full flex items-center justify-center"
+                               style={{
+                                 background: index % 3 === 0 ? '#fce7f3' : 
+                                             index % 3 === 1 ? '#ede9fe' : 
+                                             '#dbeafe',
+                                 color: index % 3 === 0 ? '#ec4899' : 
+                                        index % 3 === 1 ? '#8b5cf6' : 
+                                        '#3b82f6'
+                               }}>
+                            ✓
+                          </div>
+                          {feature}
+                        </motion.li>
+                      ))}
+                    </ul>
+                    
+                    <div className="flex flex-col gap-3">
+                      {/* Pricing */}
+                      <div className="text-center py-2 font-bold text-lg"
+                           style={{
+                             background: index % 3 === 0 ? '#fce7f3' : 
+                                         index % 3 === 1 ? '#ede9fe' : 
+                                         '#dbeafe',
+                             color: index % 3 === 0 ? '#be185d' : 
+                                    index % 3 === 1 ? '#6d28d9' : 
+                                    '#1e40af',
+                             fontFamily: 'Poppins, sans-serif',
+                             borderRadius: '0.75rem'
+                           }}>
+                        {service.price}
                       </div>
                       
                       {/* CTA Button */}
@@ -1032,9 +1808,9 @@ export default function FreelancerHub({
                     </div>
                   </div>
                 </motion.div>
-              ))}
-            </div>
-          )}
+              ))
+            )}
+          </div>
         </div>
       </section>
       
@@ -1050,471 +1826,591 @@ export default function FreelancerHub({
           transition={{
             duration: 10,
             repeat: Infinity,
+            repeatType: "reverse"
           }}
         />
         
-        <div className="text-center mb-12 relative z-10">
-          <h2 className="text-2xl md:text-3xl font-bold mb-3" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-            My Creative Showcase
-          </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            A collection of my latest projects and creative works.
-          </p>
-        </div>
-        
-        <div className="max-w-6xl mx-auto relative z-10">
-          {sortedProjects.length === 0 ? (
-            <div className="text-center text-gray-500 py-10">
-              No projects to showcase yet.
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="max-w-6xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 30 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-3 text-center" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+              <span className="highlight-text">My Creative Showcase</span>
+            </h2>
+            <p className="text-center text-gray-600 mb-10 max-w-2xl mx-auto" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              Take a look at some of my recent work. Each project represents a unique challenge solved with creativity and expertise.
+            </p>
+          </motion.div>
+          
+          {sortedProjects.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {sortedProjects.map((project, index) => (
                 <motion.div
                   key={project.id}
-                  className="project-card"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: index * 0.1 }}
-                  onClick={() => handleProjectClick(project)}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 30 }}
+                  transition={{ duration: 0.5, delay: 0.1 * index }}
+                  whileHover={{ y: -10 }}
                 >
-                  <div 
-                    className="bg-white rounded-xl overflow-hidden cursor-pointer shadow-md hover:shadow-xl transition-shadow duration-300 h-full border border-gray-100 relative"
-                    style={{ aspectRatio: '1/1' }}
+                  <Card 
+                    className="project-card h-full overflow-hidden border-none shadow-xl rounded-xl cursor-pointer"
+                    onClick={() => handleProjectClick(project)}
                   >
-                    {/* Project image */}
-                    <div className="h-full w-full relative overflow-hidden">
+                    {/* Square Project Image */}
+                    <div className="relative aspect-square overflow-hidden">
                       {/* Gradient background as fallback */}
                       <div 
-                        className="absolute inset-0 w-full h-full bg-gradient-to-br from-blue-100 to-purple-50"
+                        className="project-image absolute w-full h-full"
+                        style={{
+                          background: `linear-gradient(135deg, ${getCategoryGradient(project.category || 'design')})`,
+                          backgroundSize: 'cover',
+                          backgroundPosition: 'center'
+                        }}
                       />
                       
-                      {/* Actual project image */}
+                      {/* Direct display of the thumbnail image */}
                       {project.thumbnailUrl && (
                         <img
                           src={project.thumbnailUrl.startsWith('http') ? project.thumbnailUrl : `${window.location.origin}${project.thumbnailUrl}`}
-                          alt={project.title || 'Project thumbnail'}
-                          className="h-full w-full object-cover project-image"
+                          alt={project.title}
+                          className="absolute inset-0 w-full h-full object-cover z-10"
                           onError={(e) => {
-                            console.log('Error loading project image, hiding element');
-                            e.currentTarget.style.display = 'none';
+                            console.log('Error loading thumbnail:', project.thumbnailUrl);
+                            // Try to get the first item from mediaUrls as fallback
+                            if (project.mediaUrls && Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0) {
+                              const fallbackUrl = project.mediaUrls[0];
+                              e.currentTarget.src = fallbackUrl.startsWith('http') ? 
+                                fallbackUrl : `${window.location.origin}${fallbackUrl}`;
+                            } else {
+                              e.currentTarget.style.opacity = '0';
+                            }
                           }}
                         />
                       )}
                       
-                      {/* Gradient overlay for text */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                      {/* If no thumbnailUrl, try mediaUrls[0] */}
+                      {!project.thumbnailUrl && project.mediaUrls && Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0 && (
+                        <img
+                          src={project.mediaUrls[0].startsWith('http') ? project.mediaUrls[0] : `${window.location.origin}${project.mediaUrls[0]}`}
+                          alt={project.title}
+                          className="absolute inset-0 w-full h-full object-cover z-10"
+                          onError={(e) => {
+                            console.log('Error loading media as thumbnail:', project.mediaUrls[0]);
+                            e.currentTarget.style.opacity = '0';
+                          }}
+                        />
+                      )}
                       
-                      {/* Project info */}
-                      <div className="absolute bottom-0 left-0 p-4 w-full">
-                        <h3 className="font-bold text-white text-lg mb-1 line-clamp-1" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-                          {project.title}
-                        </h3>
-                        
-                        {project.startDate && (
-                          <div className="flex items-center text-white/80 text-sm">
-                            <Calendar className="h-3 w-3 mr-1" />
-                            {formatDate(project.startDate, true)}
-                          </div>
-                        )}
+                      {/* Dark overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex items-end">
+                        <div className="p-5 text-white">
+                          <h3 className="text-xl font-bold" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+                            {project.title}
+                          </h3>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-      
-      {/* Work Experience Timeline */}
-      {sortedExperiences.length > 0 && (
-        <section className="py-16 px-6 md:px-10 bg-gradient-to-b from-rose-50 to-white relative">
-          {/* Decorative elements */}
-          <motion.div 
-            className="absolute top-20 right-20 w-60 h-60 bg-gradient-to-br from-pink-100 to-rose-50 rounded-full opacity-40 blur-3xl"
-            animate={{ 
-              scale: [1, 1.2, 1],
-              x: [0, 10, 0]
-            }}
-            transition={{
-              duration: 8,
-              repeat: Infinity,
-            }}
-          />
-          
-          <div className="text-center mb-12 relative z-10">
-            <h2 className="text-2xl md:text-3xl font-bold mb-3" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-              My Journey
-            </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Professional experiences that have shaped my career.
-            </p>
-          </div>
-          
-          <div className="max-w-4xl mx-auto relative z-10">
-            {/* Timeline */}
-            <div className="border-l-2 border-rose-200 ml-4 md:ml-6 pl-8 md:pl-12 space-y-10">
-              {sortedExperiences.map((exp, index) => (
-                <motion.div
-                  key={exp.id}
-                  className="milestone-node"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                >
-                  <div 
-                    className="absolute left-[-43px] w-6 h-6 flex items-center justify-center rounded-full border-2"
-                    style={{ 
-                      borderColor: '#f43f5e',
-                      backgroundColor: index === 0 ? '#f43f5e' : 'white', 
-                      top: '24px'
-                    }}
-                  >
-                    {index === 0 && <div className="w-2 h-2 bg-white rounded-full"></div>}
-                  </div>
-                  
-                  <div className="bg-white rounded-xl shadow-md p-5 border border-gray-100">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
-                      <h3 className="font-bold text-gray-800 text-lg" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-                        {exp.title || 'Professional Role'}
-                      </h3>
                       
-                      <div className="flex items-center space-x-1 text-sm text-gray-500">
-                        <Calendar className="h-4 w-4" />
-                        <span>
-                          {formatDate(exp.startDate, true)} - {formatDate(exp.endDate, true)}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <div className="mb-2 text-rose-600 font-medium">
-                      {exp.company || exp.domain}
-                      {exp.location && (
-                        <span className="text-gray-500 ml-2 text-sm">
-                          <MapPin className="h-3 w-3 inline mr-1" />
-                          {exp.location}
-                        </span>
+                      {/* Floating badge for date */}
+                      {project.startDate && (
+                        <motion.div 
+                          className="absolute top-3 right-3 bg-white text-sm font-semibold px-2 py-1 rounded-full shadow-md"
+                          whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
+                          style={{ fontFamily: 'Poppins, sans-serif' }}
+                        >
+                          {formatDate(project.startDate, true)}
+                        </motion.div>
                       )}
                     </div>
                     
-                    {exp.description && (
-                      <p className="text-gray-600 text-sm mt-2">
-                        {exp.description}
-                      </p>
-                    )}
-                    
-                    {/* Domain/industry tags */}
-                    {(exp.domain || exp.industry) && (
-                      <div className="flex flex-wrap gap-2 mt-3">
-                        {exp.domain && (
-                          <Badge className="bg-rose-100 text-rose-700 text-xs font-normal">
-                            {exp.domain}
-                          </Badge>
-                        )}
-                        
-                        {exp.industry && (
-                          <Badge className="bg-blue-100 text-blue-700 text-xs font-normal">
-                            {exp.industry}
-                          </Badge>
-                        )}
-                      </div>
-                    )}
-                    
-                    {/* Key responsibilities */}
-                    {exp.keyResponsibilities && (
-                      <div className="mt-3 pt-3 border-t border-gray-100">
-                        <span className="text-xs font-medium text-gray-500 block mb-1">Key Responsibilities:</span>
-                        <p className="text-gray-600 text-sm">
-                          {exp.keyResponsibilities}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-      
-      {/* Education Section */}
-      {sortedEducations.length > 0 && (
-        <section className="py-16 px-6 md:px-10 relative">
-          {/* Decorative elements */}
-          <motion.div 
-            className="absolute bottom-20 left-20 w-60 h-60 bg-gradient-to-br from-blue-100 to-indigo-50 rounded-full opacity-30 blur-3xl"
-            animate={{ 
-              scale: [1, 1.2, 1],
-              y: [0, 10, 0]
-            }}
-            transition={{
-              duration: 12,
-              repeat: Infinity,
-            }}
-          />
-          
-          <div className="text-center mb-12 relative z-10">
-            <h2 className="text-2xl md:text-3xl font-bold mb-3" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-              Education & Certifications
-            </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Academic achievements and professional certifications.
-            </p>
-          </div>
-          
-          <div className="max-w-4xl mx-auto relative z-10">
-            <div className="space-y-6">
-              {sortedEducations.map((edu, index) => (
-                <motion.div
-                  key={edu.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: index * 0.1 }}
-                >
-                  <Card className="overflow-hidden shadow-md border-gray-100 hover:shadow-lg transition-shadow">
-                    <CardContent className="p-0">
-                      <div className="grid grid-cols-1 md:grid-cols-12">
-                        {/* Left date panel */}
-                        <div 
-                          className="md:col-span-2 p-4 flex flex-col items-center justify-center"
-                          style={{
-                            background: 'linear-gradient(to bottom right, #e0f2fe, #dbeafe)',
-                            color: '#1e40af'
-                          }}
-                        >
-                          <span className="text-sm font-semibold">
-                            {formatDate(edu.startDate, false)}
-                          </span>
-                          {edu.endDate && (
-                            <span className="text-xs">
-                              - {formatDate(edu.endDate, false)}
-                            </span>
-                          )}
-                        </div>
-                        
-                        {/* Main content */}
-                        <div className="md:col-span-10 p-4">
-                          <div className="mb-1 flex justify-between items-start">
-                            <h3 className="text-lg font-bold text-gray-800" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-                              {edu.degree}
-                            </h3>
-                            
-                            {edu.location && (
-                              <span className="text-sm text-gray-500 flex items-center ml-2 shrink-0">
-                                <MapPin className="h-3 w-3 mr-1" />
-                                {edu.location}
-                              </span>
-                            )}
-                          </div>
-                          
-                          <p className="text-blue-600 font-medium">
-                            {edu.institution}
-                          </p>
-                          
-                          {edu.fieldOfStudy && (
-                            <p className="text-gray-600 text-sm mt-1">
-                              Field: {edu.fieldOfStudy}
-                            </p>
-                          )}
-                          
-                          {/* Domain/industry tags */}
-                          {(edu.domain || edu.industry) && (
-                            <div className="flex flex-wrap gap-2 mt-3">
-                              {edu.domain && (
-                                <Badge className="bg-indigo-100 text-indigo-700 text-xs font-normal">
-                                  {edu.domain}
-                                </Badge>
-                              )}
-                              
-                              {edu.industry && (
-                                <Badge className="bg-blue-100 text-blue-700 text-xs font-normal">
-                                  {edu.industry}
-                                </Badge>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      </div>
+                    <CardContent className="p-3">
+                      {/* Empty content - only title and date are shown as requested */}
                     </CardContent>
                   </Card>
                 </motion.div>
               ))}
             </div>
-          </div>
-        </section>
-      )}
+          ) : (
+            // Empty state for projects
+            <motion.div
+              className="bg-white rounded-3xl p-10 text-center shadow-lg max-w-xl mx-auto"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: isShowing ? 1 : 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-amber-200 to-amber-100 rounded-full flex items-center justify-center">
+                <Camera className="h-10 w-10 text-amber-500" />
+              </div>
+              <h3 className="text-xl font-bold mb-2" style={{ fontFamily: 'Fredoka, sans-serif' }}>No Projects Yet</h3>
+              <p className="text-gray-500" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                Your amazing projects will be showcased here soon!
+              </p>
+              <motion.div
+                initial={{ y: 0 }}
+                animate={{ y: [0, -8, 0] }}
+                transition={{ 
+                  repeat: Infinity, 
+                  duration: 1.5,
+                  repeatDelay: 1
+                }}
+                className="mt-6"
+              >
+                <span className="text-3xl">⬇️</span>
+              </motion.div>
+            </motion.div>
+          )}
+        </div>
+      </section>
       
-      {/* Contact section */}
-      <section className="py-16 px-6 md:px-10 bg-gradient-to-b from-blue-50 via-white to-blue-50 relative">
+      {/* Experience Timeline */}
+      <section className="py-16 px-6 md:px-10 relative overflow-hidden">
         {/* Decorative elements */}
         <motion.div 
-          className="absolute top-10 left-10 w-40 h-40 bg-gradient-to-br from-pink-100 to-purple-50 rounded-full opacity-50 blur-3xl"
+          className="absolute top-40 -left-20 w-60 h-60 bg-gradient-to-br from-indigo-100 to-blue-50 rounded-full opacity-30 blur-3xl"
           animate={{ 
             scale: [1, 1.2, 1],
-            x: [0, -10, 0]
+            rotate: [0, 10, 0]
           }}
           transition={{
-            duration: 8,
+            duration: 12,
             repeat: Infinity,
+            repeatType: "reverse"
           }}
         />
         
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 30 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-3 text-center" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+              <span className="highlight-text">Career Journey</span>
+            </h2>
+            <p className="text-center text-gray-600 mb-10 max-w-2xl mx-auto" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              A timeline of my professional adventures and growth through the years
+            </p>
+          </motion.div>
+          
+          {sortedExperiences.length > 0 ? (
+            <div className="relative pl-10 md:pl-16 border-l-4 border-dashed border-violet-200">
+              {sortedExperiences.map((exp, index) => (
+                <motion.div 
+                  key={exp.id}
+                  className="milestone-node mb-16"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: isShowing ? 1 : 0, x: isShowing ? 0 : -20 }}
+                  transition={{ duration: 0.5, delay: 0.1 * index }}
+                  whileHover={{ x: 5 }}
+                  style={{ borderColor: index % 6 === 0 ? '#ec4899' : 
+                                      index % 6 === 1 ? '#8b5cf6' : 
+                                      index % 6 === 2 ? '#3b82f6' : 
+                                      index % 6 === 3 ? '#10b981' : 
+                                      index % 6 === 4 ? '#f59e0b' :
+                                      '#ef4444' }}
+                >
+                  <div className="bg-white rounded-2xl p-7 shadow-xl relative overflow-hidden">
+                    {/* Colored corner accent */}
+                    <div 
+                      className="absolute top-0 right-0 w-20 h-20 -mr-10 -mt-10 rounded-full"
+                      style={{ 
+                        background: `linear-gradient(135deg, ${
+                          index % 6 === 0 ? '#ec4899, #db2777' : 
+                          index % 6 === 1 ? '#8b5cf6, #7c3aed' : 
+                          index % 6 === 2 ? '#3b82f6, #2563eb' : 
+                          index % 6 === 3 ? '#10b981, #059669' : 
+                          index % 6 === 4 ? '#f59e0b, #d97706' :
+                          '#ef4444, #dc2626'
+                        })`,
+                        opacity: 0.15
+                      }}
+                    />
+                    
+                    <div className="flex flex-col md:flex-row justify-between mb-4">
+                      <div>
+                        <h3 className="text-xl font-bold text-gray-900" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+                          {exp.title} 
+                          <motion.span 
+                            className="inline-block ml-2"
+                            animate={{ rotate: [0, 15, 0] }}
+                            transition={{ duration: 2, repeat: Infinity, repeatDelay: 5 }}
+                          >
+                            {index % 6 === 0 ? '🚀' : 
+                             index % 6 === 1 ? '✨' : 
+                             index % 6 === 2 ? '💡' : 
+                             index % 6 === 3 ? '🌟' : 
+                             index % 6 === 4 ? '🔥' : '🎯'}
+                          </motion.span>
+                        </h3>
+                        <p className="text-violet-600 font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                          {exp.company}
+                        </p>
+                      </div>
+                      
+                      <div className="flex items-center mt-2 md:mt-0 text-gray-500 bg-gray-50 px-3 py-1 rounded-full">
+                        <Calendar className="h-4 w-4 mr-1 text-violet-500" />
+                        <span className="text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                          {formatDate(exp.startDate)} — {exp.endDate ? formatDate(exp.endDate) : 'Present'}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    {exp.location && (
+                      <div className="flex items-center text-gray-500 mb-4">
+                        <MapPin className="h-4 w-4 mr-1 text-pink-500" />
+                        <span className="text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                          {exp.location}
+                        </span>
+                      </div>
+                    )}
+                    
+                    {exp.description && (
+                      <div className="bg-gray-50 rounded-xl p-4 mb-2">
+                        <p className="text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                          {exp.description}
+                        </p>
+                      </div>
+                    )}
+                    
+                    {/* Skills used tags */}
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {['Leadership', 'Teamwork', 'Strategy', 'Innovation'].slice(0, index % 3 + 2).map((skill, i) => (
+                        <Badge key={i} className="bg-violet-100 text-violet-700 border-none">
+                          {skill}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Timeline node decoration */}
+                  <div 
+                    className="absolute -left-[22px] top-7 w-8 h-8 rounded-full z-10 flex items-center justify-center"
+                    style={{ 
+                      background: `linear-gradient(135deg, ${
+                        index % 6 === 0 ? '#ec4899, #db2777' : 
+                        index % 6 === 1 ? '#8b5cf6, #7c3aed' : 
+                        index % 6 === 2 ? '#3b82f6, #2563eb' : 
+                        index % 6 === 3 ? '#10b981, #059669' : 
+                        index % 6 === 4 ? '#f59e0b, #d97706' :
+                        '#ef4444, #dc2626'
+                      })`
+                    }}
+                  >
+                    <motion.div 
+                      className="w-4 h-4 bg-white rounded-full"
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                    />
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            // Empty state for experiences
+            <motion.div
+              className="bg-white rounded-3xl p-10 text-center shadow-lg max-w-xl mx-auto"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: isShowing ? 1 : 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-violet-200 to-violet-100 rounded-full flex items-center justify-center">
+                <Briefcase className="h-10 w-10 text-violet-500" />
+              </div>
+              <h3 className="text-xl font-bold mb-2" style={{ fontFamily: 'Fredoka, sans-serif' }}>No Experience Added Yet</h3>
+              <p className="text-gray-500" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                Your impressive career journey will be showcased here! 
+              </p>
+              <motion.div
+                initial={{ y: 0 }}
+                animate={{ y: [0, -8, 0] }}
+                transition={{ 
+                  repeat: Infinity, 
+                  duration: 1.5,
+                  repeatDelay: 1
+                }}
+                className="mt-6"
+              >
+                <span className="text-3xl">⬇️</span>
+              </motion.div>
+            </motion.div>
+          )}
+        </div>
+      </section>
+      
+      {/* Education Section */}
+      <section className="py-16 px-6 md:px-10 relative overflow-hidden">
+        {/* Decorative elements */}
         <motion.div 
-          className="absolute bottom-10 right-10 w-60 h-60 bg-gradient-to-br from-blue-100 to-cyan-50 rounded-full opacity-40 blur-3xl"
+          className="absolute -bottom-20 right-0 w-80 h-80 bg-gradient-to-br from-amber-100 to-orange-50 rounded-full opacity-30 blur-3xl"
           animate={{ 
-            scale: [1, 1.2, 1],
-            y: [0, 20, 0]
+            scale: [1, 1.1, 1],
+            rotate: [0, -5, 0]
           }}
           transition={{
             duration: 10,
             repeat: Infinity,
+            repeatType: "reverse"
           }}
         />
         
-        <div className="max-w-4xl mx-auto relative z-10">
-          <div className="text-center mb-10">
-            <h2 className="text-2xl md:text-3xl font-bold mb-3" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-              Let's Create Something Amazing
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 30 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-3 text-center" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+              <span className="highlight-text">Academic Journey</span>
             </h2>
-            <p className="text-gray-600 mx-auto">
-              Have a project in mind? I'd love to hear about it.
+            <p className="text-center text-gray-600 mb-10 max-w-2xl mx-auto" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              The foundation of knowledge that powers my creative process
             </p>
-          </div>
+          </motion.div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Contact methods */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-              className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100"
-            >
-              <h3 className="text-xl font-bold mb-4" style={{ fontFamily: 'Fredoka, sans-serif' }}>Contact Me</h3>
-              
-              <div className="space-y-4">
-                {userInfo.email && (
-                  <a 
-                    href={`mailto:${userInfo.email}`}
-                    className="flex items-center p-3 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors"
+          {sortedEducations.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {sortedEducations.map((edu, index) => (
+                <motion.div 
+                  key={edu.id}
+                  className="bg-white rounded-2xl p-6 shadow-xl overflow-hidden relative"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 20 }}
+                  transition={{ duration: 0.5, delay: 0.1 * index }}
+                  whileHover={{ y: -8, rotate: index % 2 === 0 ? 1 : -1 }}
+                >
+                  {/* Background pattern */}
+                  <div className="absolute inset-0 opacity-5">
+                    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                      <pattern id={`edu-pattern-${index}`} x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+                        {index % 3 === 0 ? (
+                          <circle cx="20" cy="20" r="3" fill="#000" />
+                        ) : index % 3 === 1 ? (
+                          <rect x="15" y="15" width="10" height="10" fill="#000" />
+                        ) : (
+                          <polygon points="20,10 10,30 30,30" fill="#000" />
+                        )}
+                      </pattern>
+                      <rect width="100%" height="100%" fill={`url(#edu-pattern-${index})`} />
+                    </svg>
+                  </div>
+                  
+                  {/* Floating graduation cap icon */}
+                  <motion.div 
+                    className="absolute -right-6 -top-6 w-20 h-20 rounded-full"
+                    animate={{ rotate: [0, 15, 0], y: [0, -5, 0] }}
+                    transition={{ duration: 5, repeat: Infinity, repeatType: "reverse" }}
                   >
-                    <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center mr-4">
-                      <Mail className="h-5 w-5 text-blue-500" />
+                    <div className="w-full h-full bg-gradient-to-br from-amber-400 to-orange-300 rounded-full flex items-center justify-center shadow-lg">
+                      <GraduationCap className="h-8 w-8 text-white" />
                     </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Email</p>
-                      <p className="font-medium text-gray-800">{userInfo.email}</p>
+                  </motion.div>
+                  
+                  <div className="relative z-10">
+                    <h3 className="text-xl font-bold mb-2" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+                      {edu.degree}
+                    </h3>
+                    
+                    <div className="px-4 py-2 bg-gradient-to-r from-amber-100 to-amber-50 rounded-lg inline-block mb-4">
+                      <p className="text-amber-700 font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                        {edu.institution}
+                      </p>
                     </div>
-                  </a>
-                )}
-                
-                {/* Mock social links - replace with actual social links when available */}
-                <a 
-                  href="#linkedin"
-                  className="flex items-center p-3 rounded-xl bg-indigo-50 hover:bg-indigo-100 transition-colors"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleLetsTalkClick();
-                  }}
-                >
-                  <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center mr-4">
-                    <Linkedin className="h-5 w-5 text-indigo-500" />
+                    
+                    <div className="flex flex-wrap gap-4 mb-3">
+                      <div className="flex items-center text-gray-500 bg-gray-50 px-3 py-1 rounded-full">
+                        <Calendar className="h-4 w-4 mr-1 text-amber-500" />
+                        <span className="text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                          {formatDate(edu.startDate, false)} — {edu.endDate ? formatDate(edu.endDate, false) : 'Present'}
+                        </span>
+                      </div>
+                      
+                      {edu.location && (
+                        <div className="flex items-center text-gray-500 bg-gray-50 px-3 py-1 rounded-full">
+                          <MapPin className="h-4 w-4 mr-1 text-amber-500" />
+                          <span className="text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                            {edu.location}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Random education fields */}
+                    <div className="flex flex-wrap gap-2 mt-4">
+                      {['Research', 'Coursework', 'Leadership', 'Projects'].slice(0, index % 3 + 2).map((field, i) => (
+                        <Badge key={i} className="bg-amber-100 text-amber-700 border-none">
+                          {field}
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-500">LinkedIn</p>
-                    <p className="font-medium text-gray-800">Connect with me</p>
-                  </div>
-                </a>
-                
-                <a 
-                  href="#instagram"
-                  className="flex items-center p-3 rounded-xl bg-rose-50 hover:bg-rose-100 transition-colors"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleLetsTalkClick();
-                  }}
-                >
-                  <div className="h-10 w-10 rounded-full bg-rose-100 flex items-center justify-center mr-4">
-                    <Instagram className="h-5 w-5 text-rose-500" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Instagram</p>
-                    <p className="font-medium text-gray-800">Follow my work</p>
-                  </div>
-                </a>
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            // Empty state for education
+            <motion.div
+              className="bg-white rounded-3xl p-10 text-center shadow-lg max-w-xl mx-auto"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: isShowing ? 1 : 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-amber-200 to-amber-100 rounded-full flex items-center justify-center">
+                <GraduationCap className="h-10 w-10 text-amber-500" />
               </div>
+              <h3 className="text-xl font-bold mb-2" style={{ fontFamily: 'Fredoka, sans-serif' }}>No Education Added Yet</h3>
+              <p className="text-gray-500" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                Your academic achievements will shine here soon!
+              </p>
+              <motion.div
+                initial={{ y: 0 }}
+                animate={{ y: [0, -8, 0] }}
+                transition={{ 
+                  repeat: Infinity, 
+                  duration: 1.5,
+                  repeatDelay: 1
+                }}
+                className="mt-6"
+              >
+                <span className="text-3xl">⬇️</span>
+              </motion.div>
+            </motion.div>
+          )}
+        </div>
+      </section>
+      
+      {/* CTA Section */}
+      <section className="py-16 px-6 md:px-10 bg-gradient-to-r from-violet-500 to-purple-600 text-white">
+        <div className="max-w-5xl mx-auto text-center">
+          <motion.h2 
+            className="text-3xl md:text-4xl font-bold mb-4"
+            style={{ fontFamily: 'Fredoka, sans-serif' }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 20 }}
+            transition={{ duration: 0.5 }}
+          >
+            Ready to Collaborate?
+          </motion.h2>
+          
+          <motion.p 
+            className="text-lg mb-8 text-purple-100"
+            style={{ fontFamily: 'Poppins, sans-serif' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: isShowing ? 1 : 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            Let's create something amazing together!
+          </motion.p>
+          
+          <motion.div 
+            className="flex flex-col md:flex-row gap-4 justify-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 20 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button 
+                className="blob-button bg-white text-violet-600 hover:bg-gray-100 text-lg px-8 py-6 rounded-full shadow-lg flex items-center gap-2 w-full md:w-auto"
+                style={{ fontFamily: 'Fredoka, sans-serif' }}
+                onClick={handleLetsTalkClick}
+              >
+                <MessageCircle className="h-5 w-5" />
+                Let's Connect 💬
+              </Button>
             </motion.div>
             
-            {/* Quick contact */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-              className="bg-gradient-to-br from-pink-500 to-purple-600 rounded-2xl p-6 shadow-lg text-white relative overflow-hidden"
-            >
-              <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
-              <div className="absolute -top-10 -left-10 w-40 h-40 bg-white/10 rounded-full blur-xl"></div>
-              
-              <h3 className="text-xl font-bold mb-4 relative z-10" style={{ fontFamily: 'Fredoka, sans-serif' }}>Quick Message</h3>
-              
-              <div className="space-y-4 relative z-10">
-                <p className="text-white/90 mb-4">
-                  Need a quick response? Send me a message and I'll get back to you as soon as possible.
-                </p>
-                
-                <motion.div
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                >
-                  <Button
-                    onClick={handleLetsTalkClick}
-                    className="w-full bg-white hover:bg-white/90 text-purple-600 font-bold py-6"
-                    style={{ fontFamily: 'Fredoka, sans-serif' }}
-                  >
-                    <MessageSquare className="h-5 w-5 mr-2" />
-                    Start a Conversation
-                  </Button>
-                </motion.div>
-                
-                <p className="text-center text-white/70 text-sm mt-4">
-                  Usually responds within 24 hours
-                </p>
-              </div>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button 
+                className="blob-button bg-purple-700 text-white hover:bg-purple-800 text-lg px-8 py-6 rounded-full shadow-lg flex items-center gap-2 w-full md:w-auto"
+                style={{ fontFamily: 'Fredoka, sans-serif' }}
+              >
+                <Download className="h-5 w-5" />
+                Grab My Resume 📄
+              </Button>
             </motion.div>
-          </div>
+          </motion.div>
         </div>
       </section>
       
       {/* Footer */}
-      <footer className="py-8 px-6 md:px-10 bg-gray-50 border-t border-gray-100">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="mb-4 md:mb-0">
-              <p className="font-bold text-gray-700" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-                {userInfo.name} • {userInfo.title || 'Creative Professional'}
-              </p>
-              <p className="text-sm text-gray-500">
-                © {new Date().getFullYear()} • All rights reserved
-              </p>
-            </div>
-            
-            <div className="flex items-center space-x-2">
-              <a 
-                href="#top" 
-                onClick={(e) => {
-                  e.preventDefault();
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
-              >
-                Back to top
-              </a>
-            </div>
-          </div>
-        </div>
+      <footer className="pb-12 px-6 text-center">
+        <p className="text-gray-500" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          © {new Date().getFullYear()} {userInfo.name} • Made with Brandentifier 💖
+        </p>
+        
+        {publicUrl && (
+          <p className="mt-2 text-sm text-gray-400" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            Public URL: <a href={publicUrl} className="text-violet-500 hover:underline">{publicUrl}</a>
+          </p>
+        )}
       </footer>
       
-      {/* Render modals */}
+      {/* Floating Stickers */}
+      <motion.div 
+        className="sticker top-24 md:top-32 right-6 md:right-12 z-10"
+        initial={{ rotate: -15, scale: 0 }}
+        animate={{ rotate: -15, scale: isShowing ? 1 : 0 }}
+        transition={{ delay: 1, type: "spring", stiffness: 300, damping: 10 }}
+      >
+        <span className="text-sm font-semibold bg-red-100 text-red-800 px-3 py-1 rounded shadow flex items-center gap-1">
+          <Smile className="h-4 w-4" />
+          New!
+        </span>
+      </motion.div>
+      
+      {/* Floating action buttons for mobile */}
+      <motion.div 
+        className="fixed bottom-4 left-0 right-0 z-50 flex justify-center md:hidden"
+        initial={{ y: 100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ 
+          type: "spring",
+          bounce: 0.5,
+          duration: 0.8,
+          delay: 0.5
+        }}
+      >
+        <div className="flex gap-4 p-3 bg-white/70 backdrop-blur-md rounded-full shadow-xl">
+          {/* Let's Talk button */}
+          <motion.button 
+            className="w-14 h-14 flex items-center justify-center rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white shadow-lg"
+            onClick={handleLetsTalkClick}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <MessageCircle className="h-6 w-6" />
+            <motion.span 
+              className="absolute -top-2 -right-2 w-6 h-6 bg-white rounded-full text-xs flex items-center justify-center text-violet-600 font-bold border-2 border-violet-400"
+              initial={{ scale: 0 }}
+              animate={{ scale: [0, 1.2, 1] }}
+              transition={{ delay: 1.2, duration: 0.5 }}
+            >
+              💬
+            </motion.span>
+          </motion.button>
+          
+          {/* Resume button */}
+          <motion.button 
+            className="w-14 h-14 flex items-center justify-center rounded-full bg-gradient-to-r from-amber-400 to-orange-400 text-white shadow-lg"
+            onClick={() => setIsResumeModalOpen(true)}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <FileText className="h-6 w-6" />
+          </motion.button>
+          
+          {/* Social media button */}
+          <motion.button 
+            className="w-14 h-14 flex items-center justify-center rounded-full bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-lg"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <Linkedin className="h-6 w-6" />
+          </motion.button>
+        </div>
+      </motion.div>
+      
+      {/* Render Modals */}
       {renderProjectDetailsModal()}
       {renderContactModal()}
     </div>
