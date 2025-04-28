@@ -655,49 +655,20 @@ export default function FreelancerHub({
               )}
             </div>
             
-            {/* Project image with error handling */}
+            {/* Project image using DirectImageBackground */}
             {selectedProject.thumbnailUrl && (
-              <img
-                src={selectedProject.thumbnailUrl.startsWith('http') 
-                  ? selectedProject.thumbnailUrl 
-                  : selectedProject.thumbnailUrl.startsWith('/uploads')
-                    ? `${window.location.origin}${selectedProject.thumbnailUrl}` 
-                    : `${window.location.origin}/uploads${selectedProject.thumbnailUrl}`}
-                alt={selectedProject.title}
-                className="absolute inset-0 w-full h-full object-cover z-10"
-                onError={(e) => {
-                  console.log('Error loading project header image:', selectedProject.thumbnailUrl);
-                  // Try to use the first media URL as fallback
-                  if (selectedProject.mediaUrls && Array.isArray(selectedProject.mediaUrls) && selectedProject.mediaUrls.length > 0) {
-                    const fallbackUrl = selectedProject.mediaUrls[0];
-                    console.log('Trying fallback image from mediaUrls:', fallbackUrl);
-                    e.currentTarget.src = fallbackUrl.startsWith('http') 
-                      ? fallbackUrl 
-                      : fallbackUrl.startsWith('/uploads')
-                        ? `${window.location.origin}${fallbackUrl}` 
-                        : `${window.location.origin}/uploads${fallbackUrl}`;
-                  } else {
-                    e.currentTarget.style.opacity = '0';
-                  }
-                }}
+              <DirectImageBackground 
+                imageUrl={selectedProject.thumbnailUrl}
+                className="absolute inset-0 z-10"
               />
             )}
             
             {/* Try mediaUrls[0] as a fallback if thumbnailUrl is not available */}
             {!selectedProject.thumbnailUrl && selectedProject.mediaUrls && 
              Array.isArray(selectedProject.mediaUrls) && selectedProject.mediaUrls.length > 0 && (
-              <img
-                src={selectedProject.mediaUrls[0].startsWith('http') 
-                  ? selectedProject.mediaUrls[0] 
-                  : selectedProject.mediaUrls[0].startsWith('/uploads')
-                    ? `${window.location.origin}${selectedProject.mediaUrls[0]}` 
-                    : `${window.location.origin}/uploads${selectedProject.mediaUrls[0]}`}
-                alt={`${selectedProject.title} media`}
-                className="absolute inset-0 w-full h-full object-cover z-10"
-                onError={(e) => {
-                  console.log('Error loading fallback media image:', selectedProject.mediaUrls[0]);
-                  e.currentTarget.style.opacity = '0';
-                }}
+              <DirectImageBackground 
+                imageUrl={selectedProject.mediaUrls[0]}
+                className="absolute inset-0 z-10"
               />
             )}
             
@@ -906,18 +877,10 @@ export default function FreelancerHub({
                               background: `linear-gradient(135deg, ${getCategoryGradient(selectedProject.category || 'design')})`,
                             }}
                           />
-                          <img 
-                            src={`http://localhost:5000${url.startsWith('/uploads') ? url : '/uploads' + url}`}
-                            alt={`Project image ${index + 1}`}
-                            className="absolute inset-0 w-full h-full object-cover z-10"
-                            onLoad={() => {
-                              console.log('Successfully loaded gallery image using direct localhost URL:', url);
-                            }}
-                            onError={(e) => {
-                              console.error('Error loading gallery image with direct localhost URL:', url);
-                              console.log('Full URL attempted:', e.currentTarget.src);
-                              e.currentTarget.style.opacity = '0';
-                            }}
+                          {/* Using DirectImageBackground for better image rendering */}
+                          <DirectImageBackground 
+                            imageUrl={url}
+                            className="absolute inset-0 z-10"
                           />
                         </motion.div>
                       );
