@@ -31,47 +31,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { Skill, Service } from "@shared/schema";
 import { UserExperience, UserEducation } from "@/types";
-
-// Direct Image component that renders a div with a background image
-// This bypasses React's image handling which may be causing issues
-const DirectImageBackground = ({ 
-  imageUrl, 
-  className = "",
-  fallbackUrl = ""
-}: { 
-  imageUrl: string | null, 
-  className?: string,
-  fallbackUrl?: string
-}) => {
-  const [url, setUrl] = useState<string>("");
-  
-  useEffect(() => {
-    if (!imageUrl) {
-      setUrl(fallbackUrl);
-      return;
-    }
-    
-    const directUrl = imageUrl.startsWith("/uploads") 
-      ? `http://localhost:5000${imageUrl}` 
-      : `http://localhost:5000/uploads${imageUrl}`;
-      
-    setUrl(directUrl);
-    
-    // Log the URL being used
-    console.log("DirectImageBackground using URL:", directUrl);
-  }, [imageUrl, fallbackUrl]);
-  
-  return (
-    <div 
-      className={`${className}`}
-      style={{ 
-        backgroundImage: `url('${url}')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }}
-    />
-  );
-};
+import DirectImageBackground from "../DirectImageBackground";
 
 // Define Project interface to ensure all fields are recognized
 interface Project {
